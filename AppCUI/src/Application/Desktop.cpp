@@ -19,16 +19,9 @@ bool DesktopControl::Create(unsigned int _width, unsigned int _height)
 void DesktopControl::Paint(AppCUI::Console::Renderer & renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
-    renderer.Clear(Members->Cfg->Desktop.DesktopFillCharacterCode, Members->Cfg->Desktop.Color);
-    char temp[2] = { ' ', 0 };
-    for (int tr = 160; tr < 200; tr++) {
-        temp[0] = tr;
-        renderer.WriteSingleLineText(tr - 160, 0, temp, 15);
-    }
-    renderer.FillHorizontalLine(5, 10, 40, '=', 14);
-    renderer.FillVerticalLine(5, 10, 20, '|', 14);
-
-    renderer.FillRectWidthHeight(60, 10, 5, 1, 'M', 12);
+    renderer.Clear(0x2591, Members->Cfg->Desktop.Color);
+    renderer.FillRect(5, 5, 50, 10, ' ', COLOR(0, 2));
+    renderer.DrawRect(5, 5, 50, 10, COLOR(15,2), false);
 }
 bool DesktopControl::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {

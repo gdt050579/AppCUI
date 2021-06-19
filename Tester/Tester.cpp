@@ -1,7 +1,10 @@
-#include <iostream>
+﻿#include <iostream>
 #include "../AppCUI/include/AppCUI.h"
 
 using namespace AppCUI;
+
+#include "Windows.h"
+
 
 int main()
 {

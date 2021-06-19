@@ -1,8 +1,11 @@
 #include "../../include/Internal.h"
-
+#include <string.h>
 
 using namespace AppCUI::Internal;
-
+int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
+       0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, // double line box
+       0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502,
+};
 
 bool ConsoleRenderer::Init()
 {
@@ -20,6 +23,9 @@ bool ConsoleRenderer::Init()
     CHECK(ReadConsoleOutput(this->hstdOut, this->BeforeInitConfig.screenBuffer, csbi.dwSize, { 0,0 }, &BufRect), false, "Unable to make a copy of the initial screen buffer !");
     CHECK(this->CreateScreenBuffers(csbi.dwSize.X, csbi.dwSize.Y), false, "Fail to create screen buffers");
 
+    // set up special characters (unicode codes)
+    SpecialCharacters = _special_characters_consolas_font;
+    
 
     //this->OriginalCursorX = csbi.dwCursorPosition.X;
     //this->OriginalCursorY = csbi.dwCursorPosition.Y;
@@ -44,7 +50,7 @@ void ConsoleRenderer::FlushToScreen()
 {
     COORD winSize = { (SHORT)this->ConsoleSize.Width, (SHORT)this->ConsoleSize.Height };
     SMALL_RECT sr = { 0,0,(SHORT)this->ConsoleSize.Width, (SHORT)this->ConsoleSize.Height };
-    WriteConsoleOutput(this->hstdOut, this->WorkingBuffer, winSize, { 0,0 }, &sr);
+    WriteConsoleOutputW(this->hstdOut, this->WorkingBuffer, winSize, { 0,0 }, &sr);
 }
 bool InputReader::Init()
 {

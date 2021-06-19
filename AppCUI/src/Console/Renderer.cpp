@@ -47,4 +47,8 @@ void Renderer::FillVerticalLineSize(int x, int y, int size, int charCode, unsign
 {
     ConsoleRendererCall(FillVerticalLine(x, y, y+size-1, charCode, color));
 }
+void Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
+{
+    ConsoleRendererCall(DrawRect(left, top, right, bottom, color, doubleLine));
+}
 #undef CRND

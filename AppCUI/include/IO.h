@@ -24,6 +24,13 @@
 
 #define KEYTRANSLATION_MATRIX_SIZE          256
 
+#define BOX_TOP_LEFT        0
+#define BOX_TOP_RIGHT       1
+#define BOX_BOTTOM_RIGHT    2
+#define BOX_BOTTOM_LEFT     3
+#define BOX_HORIZONTAL      4
+#define BOX_VERTICAL        5
+
 namespace AppCUI
 {
     namespace Internal
@@ -62,6 +69,8 @@ namespace AppCUI
                 int                     Left, Top, Right, Bottom;
                 bool                    Visible;
             } Clip;
+            int                         *SpecialCharacters;
+            
 
 #       ifdef BUILD_FOR_WINDOWS
             HANDLE			            hstdOut;
@@ -78,6 +87,7 @@ namespace AppCUI
             bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
             bool    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
             bool    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             bool    ClearClipRectangle(int charCode, unsigned int color);
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             void    Close();

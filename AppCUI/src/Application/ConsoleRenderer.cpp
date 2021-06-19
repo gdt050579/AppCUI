@@ -1,6 +1,7 @@
 #include "../../include/Internal.h"
 
 using namespace AppCUI::Internal;
+using namespace AppCUI::Console;
 
 #define TRANSLATE_X_COORDONATE(x) x+=this->TranslateX;
 #define TRANSLATE_Y_COORDONATE(y) y+=this->TranslateY;
@@ -13,6 +14,7 @@ ConsoleRenderer::ConsoleRenderer()
     ConsoleSize.Set(0, 0);
     WorkingBuffer = nullptr;
     OffsetRows = nullptr;
+    SpecialCharacters = nullptr;
     this->Clip.Visible = false;
 }
 bool ConsoleRenderer::CreateScreenBuffers(unsigned int width, unsigned int height)
@@ -229,6 +231,153 @@ bool ConsoleRenderer::FillRect(int left, int top, int right, int bottom, int cha
             {
                 SET_CHARACTER_EX(p, charCode, color);
             }
+        }
+    }
+    return true;
+}
+bool ConsoleRenderer::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
+{
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(left, top);
+    TRANSLATE_COORDONATES(right, bottom);
+
+    int orig_left = left;
+    int orig_right = right;
+    int orig_top = top;
+    int orig_bottom = bottom;
+
+    left = MAXVALUE(left, Clip.Left);
+    top = MAXVALUE(top, Clip.Top);
+    right = MINVALUE(right, Clip.Right);
+    bottom = MINVALUE(bottom, Clip.Bottom);
+
+    if ((left > right) || (top > bottom))
+        return false;
+
+    CHARACTER_INFORMATION *p, *e;
+    int char_to_draw;
+    // top line
+    if (top == orig_top)
+    {
+        p = this->OffsetRows[top] + left;
+        e = this->OffsetRows[top] + right;
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxHorizontalDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxHorizontalSingleLine];
+        if (color < 256)
+        {
+            while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p++; }
+        }
+        else {
+            while (p <= e) { SET_CHARACTER_EX(p, char_to_draw, color); p++; }
+        }
+    }
+    // bottom line
+    if (bottom == orig_bottom)
+    {
+        p = this->OffsetRows[bottom] + left;
+        e = this->OffsetRows[bottom] + right;
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxHorizontalDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxHorizontalSingleLine];
+        if (color < 256)
+        {
+            while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p++; }
+        }
+        else {
+            while (p <= e) { SET_CHARACTER_EX(p, char_to_draw, color); p++; }
+        }
+    }
+    // left line
+    if (left == orig_left)
+    {
+        p = this->OffsetRows[top] + left;
+        e = this->OffsetRows[bottom] + left;
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxVerticalDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxVerticalSingleLine];
+        if (color < 256)
+        {
+            while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p+=ConsoleSize.Width; }
+        }
+        else {
+            while (p <= e) { SET_CHARACTER_EX(p, char_to_draw, color); p += ConsoleSize.Width; }
+        }
+    }
+    // right line
+    if (right == orig_right)
+    {
+        p = this->OffsetRows[top] + right;
+        e = this->OffsetRows[bottom] + right;
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxVerticalDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxVerticalSingleLine];
+        if (color < 256)
+        {
+            while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p += ConsoleSize.Width; }
+        }
+        else {
+            while (p <= e) { SET_CHARACTER_EX(p, char_to_draw, color); p += ConsoleSize.Width; }
+        }
+    }
+    // corners
+    if ((left == orig_left) && (top == orig_top))
+    {
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxTopLeftCornerDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxTopLeftCornerSingleLine];
+        p = this->OffsetRows[top] + left;
+        if (color < 256) {
+            SET_CHARACTER(p, char_to_draw, color);
+        } else {
+            SET_CHARACTER_EX(p, char_to_draw, color);
+        }
+    }
+    if ((left == orig_left) && (bottom == orig_bottom))
+    {
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxBottomLeftCornerDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxBottomLeftCornerSingleLine];
+        p = this->OffsetRows[bottom] + left;
+        if (color < 256) {
+            SET_CHARACTER(p, char_to_draw, color);
+        }
+        else {
+            SET_CHARACTER_EX(p, char_to_draw, color);
+        }
+    }
+    if ((right == orig_right) && (bottom == orig_bottom))
+    {
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxBottomRightCornerDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxBottomRightCornerSingleLine];
+        p = this->OffsetRows[bottom] + right;
+        if (color < 256) {
+            SET_CHARACTER(p, char_to_draw, color);
+        }
+        else {
+            SET_CHARACTER_EX(p, char_to_draw, color);
+        }
+    }
+    if ((right == orig_right) && (top == orig_top))
+    {
+        if (doubleLine)
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxTopRightCornerDoubleLine];
+        else
+            char_to_draw = this->SpecialCharacters[SpecialChars::BoxTopRightCornerSingleLine];
+        p = this->OffsetRows[top] + right;
+        if (color < 256) {
+            SET_CHARACTER(p, char_to_draw, color);
+        }
+        else {
+            SET_CHARACTER_EX(p, char_to_draw, color);
         }
     }
     return true;

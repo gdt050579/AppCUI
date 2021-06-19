@@ -192,7 +192,28 @@ namespace AppCUI
                 Center
             };
         };
+        namespace SpecialChars
+        {
+            enum Type : unsigned int
+            {
+                BoxTopLeftCornerDoubleLine = 0,
+                BoxTopRightCornerDoubleLine = 1,
+                BoxBottomRightCornerDoubleLine = 2,
+                BoxBottomLeftCornerDoubleLine = 3,
+                BoxHorizontalDoubleLine = 4,
+                BoxVerticalDoubleLine = 5,
 
+                BoxTopLeftCornerSingleLine = 6,
+                BoxTopRightCornerSingleLine = 7,
+                BoxBottomRightCornerSingleLine = 8,
+                BoxBottomLeftCornerSingleLine = 9,
+                BoxHorizontalSingleLine = 10,
+                BoxVerticalSingleLine = 11,
+
+                // always last
+                Count
+            };
+        }
 
         struct Size
         {
@@ -262,6 +283,7 @@ namespace AppCUI
             void    FillHorizontalLineSize(int x, int y, int size, int charCode, unsigned int color);
             void    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
             void    FillVerticalLineSize(int x, int y, int size, int charCode, unsigned int color);
+            void    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             void    Clear(int charCode, unsigned int color);
             void    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
         };
