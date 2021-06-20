@@ -5,6 +5,6 @@ target_sources(AppCUI PUBLIC
     ConsoleRenderer.cpp
     Desktop.cpp
 )
-if (CMAKE_WIN)
-target_sources(AppCUI WindowsImplementation.cpp)
+if (MSVC)
+target_sources(AppCUI PUBLIC WindowsImplementation.cpp)
 endif()
