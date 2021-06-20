@@ -1,4 +1,4 @@
-#include "../../include/AppCUI.h"
+#include "AppCUI.h"
 
 using namespace AppCUI::Console;
 

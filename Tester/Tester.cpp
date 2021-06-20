@@ -1,10 +1,12 @@
 ﻿#include <iostream>
-#include "../AppCUI/include/AppCUI.h"
+#include "AppCUI.h"
 
 using namespace AppCUI;
 using namespace AppCUI::Controls;
 
+#ifdef BUILD_FOR_WINDOWS
 #include "Windows.h"
+#endif // BUILD_FOR_WINDOWS
 
 class MyWin : public AppCUI::Controls::Window
 {

@@ -1,3 +1,4 @@
+#ifdef BUILD_FOR_WINDOWS
 #include "Windows.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule,
@@ -15,3 +16,4 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     }
     return TRUE;
 }
+#endif // BUILD_FOR_WINDOWS

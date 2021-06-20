@@ -1,5 +1,5 @@
-﻿#include "../../include/Internal.h"
-#include "../../include/ControlContext.h"
+﻿#include "Internal.h"
+#include "ControlContext.h"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Console;

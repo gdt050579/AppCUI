@@ -1,0 +1,1 @@
+target_sources(AppCUI PUBLIC Clip.cpp Rect.cpp Renderer.cpp)

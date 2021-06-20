@@ -2,6 +2,7 @@
 #define __APPCUI_IO_HEADER__
 
 #include "AppCUI.h"
+#include <cstdint>
 
 #ifdef BUILD_FOR_WINDOWS
 #   include <Windows.h>
@@ -10,10 +11,9 @@
 #   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->Attributes = (color); }
 #   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->Char.UnicodeChar = (value);(ptrCharInfo)->Attributes = (color); }
 #   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->Attributes)
-#endif
-
-#ifdef BUILD_FOR_LINUX
-struct CHARACTER_INFORMATION { int characterCode, characterColor; };
+#else 
+// dummy replacements for other systems
+typedef struct { int characterCode, characterColor; } CHAR_INFO, CHARACTER_INFORMATION;
 #   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    { (ptrCharInfo)->characterCode = (value); }
 #   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->characterColor = (color); }
 #   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->characterCode = (value);(ptrCharInfo)->characterColor = (color); }
@@ -85,7 +85,13 @@ namespace AppCUI
                 AppCUI::Console::Size   consoleSize;
                 CHAR_INFO*              screenBuffer;
             } BeforeInitConfig;
+#       else 
+            struct {
+                AppCUI::Console::Size   consoleSize;
+                CHAR_INFO*              screenBuffer;
+            } BeforeInitConfig;
 #       endif
+
             bool    CreateScreenBuffers(unsigned int width, unsigned int height);
         public:
             int                         *SpecialCharacters;

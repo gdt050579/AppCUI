@@ -1,7 +1,7 @@
-#include "../../include/AppCUI.h"
-#include "../../include/Internal.h"
-#include "../../include/IO.h"
-#include "../../include/ControlContext.h"
+#include "AppCUI.h"
+#include "Internal.h"
+#include "IO.h"
+#include "ControlContext.h"
 
 using namespace AppCUI;
 
@@ -108,8 +108,9 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
     else
         ctrl->Paint(renderer);
     // desenez pe rand fiecare copil
-    int register cnt = Members->ControlsCount;
-    int register idx = Members->CurrentControlIndex;
+    // ISO C++17 does not allow 'register' storage class specifier
+    int /*register*/ cnt = Members->ControlsCount;
+    int /*register*/ idx = Members->CurrentControlIndex;
     if ((!focused) || (idx < 0))
     {
         for (int tr = 1; tr <= cnt; tr++)
