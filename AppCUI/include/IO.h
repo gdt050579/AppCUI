@@ -13,22 +13,7 @@
 #   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->Attributes)
 #else 
 // dummy replacements for other systems
-typedef struct _CHAR_INFO {
-  union {
-    uint16_t UnicodeChar;
-    uint8_t  AsciiChar;
-  } Char;
-  uint16_t Attributes;
-} CHAR_INFO, *PCHAR_INFO;
-#   define CHARACTER_INFORMATION	                    CHAR_INFO
-#   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    
-#   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    
-#   define SET_CHARACTER(ptrCharInfo,value,color)
-#   define GET_CHARACTER_COLOR(ptrCharInfo)             0
-#endif
-
-#ifdef BUILD_FOR_LINUX
-struct CHARACTER_INFORMATION { int characterCode, characterColor; };
+typedef struct { int characterCode, characterColor; } CHAR_INFO, CHARACTER_INFORMATION;
 #   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    { (ptrCharInfo)->characterCode = (value); }
 #   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->characterColor = (color); }
 #   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->characterCode = (value);(ptrCharInfo)->characterColor = (color); }
