@@ -296,6 +296,7 @@ namespace AppCUI
             void    Clear(int charCode, unsigned int color);
             void    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
             void    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            void    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             void    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
         };

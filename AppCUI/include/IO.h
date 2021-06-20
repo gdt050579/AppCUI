@@ -27,6 +27,14 @@ typedef struct _CHAR_INFO {
 #   define GET_CHARACTER_COLOR(ptrCharInfo)             0
 #endif
 
+#ifdef BUILD_FOR_LINUX
+struct CHARACTER_INFORMATION { int characterCode, characterColor; };
+#   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    { (ptrCharInfo)->characterCode = (value); }
+#   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->characterColor = (color); }
+#   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->characterCode = (value);(ptrCharInfo)->characterColor = (color); }
+#   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->characterColor)
+#endif
+
 
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
     if (value>=0) { SET_CHARACTER_VALUE(ptrCharInfo,value); } \
@@ -111,6 +119,7 @@ namespace AppCUI
             bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             bool    ClearClipRectangle(int charCode, unsigned int color);
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    Close();
             void    SetClip(const AppCUI::Console::Clip & clip);
