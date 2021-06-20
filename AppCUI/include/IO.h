@@ -93,7 +93,7 @@ namespace AppCUI
                 bool                    Visible;
             } Clip;                        
 
-#       ifdef _win_
+#       ifdef BUILD_FOR_WINDOWS
             HANDLE			            hstdOut;
             struct {
                 DWORD                   stdMode;
