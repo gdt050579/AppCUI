@@ -12,6 +12,14 @@
 #   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->Attributes)
 #endif
 
+#ifdef BUILD_FOR_LINUX
+struct CHARACTER_INFORMATION { int characterCode, characterColor; };
+#   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    { (ptrCharInfo)->characterCode = (value); }
+#   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->characterColor = (color); }
+#   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->characterCode = (value);(ptrCharInfo)->characterColor = (color); }
+#   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->characterColor)
+#endif
+
 
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
     if (value>=0) { SET_CHARACTER_VALUE(ptrCharInfo,value); } \
