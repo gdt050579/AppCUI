@@ -36,6 +36,8 @@ int main()
 {
     Application::Init(Application::Flags::HAS_COMMANDBAR);
     Application::AddWindow(new MyWin());
+    Application::AddWindow(new MyWin());
+    Application::AddWindow(new MyWin());
     Application::Run();
 }
 

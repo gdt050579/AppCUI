@@ -90,6 +90,7 @@ namespace AppCUI
             bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             bool    ClearClipRectangle(int charCode, unsigned int color);
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    Close();
             void    SetClip(const AppCUI::Console::Clip & clip);
