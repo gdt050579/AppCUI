@@ -20,8 +20,7 @@ void DesktopControl::Paint(AppCUI::Console::Renderer & renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.Clear(0x2591, Members->Cfg->Desktop.Color);
-    renderer.FillRect(5, 5, 50, 10, ' ', COLOR(0, 2));
-    renderer.DrawRect(5, 5, 50, 10, COLOR(15,2), false);
+
 }
 bool DesktopControl::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {

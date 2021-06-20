@@ -197,18 +197,26 @@ namespace AppCUI
             enum Type : unsigned int
             {
                 BoxTopLeftCornerDoubleLine = 0,
-                BoxTopRightCornerDoubleLine = 1,
-                BoxBottomRightCornerDoubleLine = 2,
-                BoxBottomLeftCornerDoubleLine = 3,
-                BoxHorizontalDoubleLine = 4,
-                BoxVerticalDoubleLine = 5,
+                BoxTopRightCornerDoubleLine,
+                BoxBottomRightCornerDoubleLine,
+                BoxBottomLeftCornerDoubleLine,
+                BoxHorizontalDoubleLine,
+                BoxVerticalDoubleLine,
 
-                BoxTopLeftCornerSingleLine = 6,
-                BoxTopRightCornerSingleLine = 7,
-                BoxBottomRightCornerSingleLine = 8,
-                BoxBottomLeftCornerSingleLine = 9,
-                BoxHorizontalSingleLine = 10,
-                BoxVerticalSingleLine = 11,
+                BoxTopLeftCornerSingleLine,
+                BoxTopRightCornerSingleLine,
+                BoxBottomRightCornerSingleLine,
+                BoxBottomLeftCornerSingleLine,
+                BoxHorizontalSingleLine,
+                BoxVerticalSingleLine,
+
+                // arrows
+                ArrowUp,
+                ArrowDown,
+                ArrowLeft,
+                ArrowRight,
+                ArrowUpDown,
+                ArrowLeftRight,
 
                 // always last
                 Count
@@ -284,8 +292,12 @@ namespace AppCUI
             void    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
             void    FillVerticalLineSize(int x, int y, int size, int charCode, unsigned int color);
             void    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
+            void    DrawRectWidthHeight(int x, int y, int width, int height, unsigned int color, bool doubleLine);
             void    Clear(int charCode, unsigned int color);
+            void    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
             void    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            void    WriteCharacter(int x, int y, int charCode, unsigned int color);
+            void    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
         };
 
 
@@ -307,6 +319,8 @@ namespace AppCUI
         {
             enum Event
             {
+                EVENT_WINDOW_CLOSE,
+                EVENT_WINDOW_ACCEPT,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND
             };
@@ -442,6 +456,43 @@ namespace AppCUI
 
         };
 
+        namespace WindowFlags
+        {
+            enum Type : unsigned int
+            {
+                NONE = 0,
+                SIZEABLE = 0x000100,
+                NOTIFYBOX = 0x000200,
+                ERRORBOX = 0x000400,
+                WARNINGBOX = 0x000800,
+                NOCLOSEBUTTON = 0x001000,
+                FIXED = 0x004000,
+                CENTERED = 0x008000,
+                MAXIMIZED = 0x010000
+            };
+        }
+        class EXPORT Window : public Control {
+        public:
+            bool	Create(const char* text, const char * layout, WindowFlags::Type windowsFlags);
+            void	Paint(Console::Renderer & renderer) override;
+            void	OnMousePressed(int x, int y, int Button) override;
+            void	OnMouseReleased(int x, int y, int Button) override;
+            bool	OnMouseDrag(int x, int y, int Button) override;
+            bool    OnMouseOver(int x, int y) override;
+            bool    OnMouseLeave() override;
+            int		Show();
+            int		GetDialogResult();
+            bool	MaximizeRestore();
+            bool	OnBeforeResize(int newWidth, int newHeight) override;
+            void	OnAfterResize(int newWidth, int newHeight) override;
+            bool	CenterScreen();
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	Exit(int dialogResult);
+            bool	IsWindowInResizeMode();
+
+            virtual ~Window();
+        };
+
     };
 
     namespace Application
@@ -469,6 +520,16 @@ namespace AppCUI
                     unsigned int NameColor;
                 } Normal, Hover, Pressed;
             } CommandBar;
+            struct {
+                unsigned int    ActiveColor;
+                unsigned int    InactiveColor;
+                unsigned int    TitleActiveColor;
+                unsigned int    TitleInactiveColor;
+                unsigned int    ControlButtonColor;
+                unsigned int    ControlButtonInactiveColor;
+                unsigned int    ControlButtonHoverColor;
+                unsigned int    ControlButtonPressedColor;
+            } Window, DialogError, DialogNotify, DialogWarning;
 
             void SetDarkTheme();
         };
@@ -477,6 +538,7 @@ namespace AppCUI
         EXPORT Config*      GetAppConfig();
         EXPORT bool         Init(Application::Flags::Type flags = Application::Flags::NONE, EventHandler eventCallback = nullptr);
         EXPORT bool         Run();
+        EXPORT bool         AddWindow(AppCUI::Controls::Window * wnd);
         EXPORT bool         GetApplicationSize(AppCUI::Console::Size & size);
         EXPORT bool         GetDesktopSize(AppCUI::Console::Size & size);
         EXPORT void         Repaint();
@@ -500,4 +562,9 @@ inline constexpr void operator|=(AppCUI::Input::Key::Type & f1, AppCUI::Input::K
 {
     f1 = static_cast<AppCUI::Input::Key::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
+inline constexpr AppCUI::Controls::WindowFlags::Type operator|(AppCUI::Controls::WindowFlags::Type f1, AppCUI::Controls::WindowFlags::Type f2)
+{
+    return static_cast<AppCUI::Controls::WindowFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+
 #endif

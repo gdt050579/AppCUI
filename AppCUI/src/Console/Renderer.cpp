@@ -27,6 +27,13 @@ void Renderer::Clear(int charCode, unsigned int color)
 {
     ConsoleRendererCall(ClearClipRectangle(charCode, color));
 }
+void Renderer::ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color)
+{
+    if (this->consoleRenderer)
+    {
+        CRND->ClearClipRectangle(CRND->SpecialCharacters[(unsigned int)charID], color);
+    }
+}
 void Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize)
 {
     ConsoleRendererCall(WriteSingleLineText(x, y, text, color, textSize));
@@ -50,5 +57,20 @@ void Renderer::FillVerticalLineSize(int x, int y, int size, int charCode, unsign
 void Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
 {
     ConsoleRendererCall(DrawRect(left, top, right, bottom, color, doubleLine));
+}
+void Renderer::DrawRectWidthHeight(int x, int y, int width, int height, unsigned int color, bool doubleLine)
+{
+    ConsoleRendererCall(DrawRect(x, y, x+width-1, y+height-1, color, doubleLine));
+}
+void Renderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
+{
+    ConsoleRendererCall(WriteCharacter(x, y, charCode, color));
+}
+void Renderer::WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color)
+{
+    if (this->consoleRenderer)
+    {
+        CRND->WriteCharacter(x, y, CRND->SpecialCharacters[(unsigned int)charID], color);
+    }
 }
 #undef CRND

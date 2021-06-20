@@ -15,6 +15,7 @@ using namespace AppCUI::Utils;
 
 struct ControlContext
 {
+
 public:
 	AppCUI::Console::Clip			        ScreenClip;
     struct 
@@ -75,6 +76,26 @@ public:
     bool    UpdateLayoutFormat(const char * format);
     bool    RecomputeLayout(Control *parent);
 };
+
+#define WINDOW_DRAG_STATUS_NONE	0
+#define WINDOW_DRAG_STATUS_MOVE	1
+#define WINDOW_DRAG_STATUS_SIZE 2
+
+struct WindowControlContext : public ControlContext
+{
+public:
+    int							oldPosX, oldPosY, oldW, oldH;
+    int							dragStatus, dragOffsetX, dragOffsetY;
+    int							MinWidth, MaxWidth, MinHeight, MaxHeight;
+    int							DialogResult;
+    struct {
+        unsigned int            Left, Right, Y;
+        inline bool             Contains(unsigned int x, unsigned int y) const { return (y == Y) && (x >= Left) && (x <= Right); }
+    } rCloseButton, rMaximizeButton, rResizeButton;
+    unsigned char               winButtonState;
+    bool						Maximized;
+};
+
 
 #define CREATE_CONTROL_CONTEXT(object,name,retValue)		ControlContext * name = (ControlContext*)((object)->Context); if (name == nullptr) return retValue;
 #define CREATE_TYPECONTROL_CONTEXT(type,name,retValue)		type * name = (type*)((this)->Context); if (name == nullptr) return retValue;

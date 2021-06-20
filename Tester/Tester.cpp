@@ -2,17 +2,40 @@
 #include "../AppCUI/include/AppCUI.h"
 
 using namespace AppCUI;
+using namespace AppCUI::Controls;
 
 #include "Windows.h"
 
+class MyWin : public AppCUI::Controls::Window
+{
+public:
+    MyWin() 
+    {
+        this->Create("Test", "x:10,y:10,w:40,h:20", WindowFlags::CENTERED | WindowFlags::SIZEABLE);
+    }
+    bool OnEvent(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID) override
+    {
+        if (eventType == AppCUI::Controls::Events::EVENT_WINDOW_CLOSE)
+        {
+            Application::Close();
+            return true;
+        }
+        return false;
+    }
+    bool OnUpdateCommandBar() override
+    {
+        Application::SetCommand(Input::Key::F1, "Run", 100);
+        Application::SetCommand(Input::Key::F2, "Debug", 100);
+        Application::SetCommand(Input::Key::F3, "Run as admin", 100);
+        return true;
+    }
+
+};
 
 int main()
 {
     Application::Init(Application::Flags::HAS_COMMANDBAR);
-    Application::SetCommand(Input::Key::F1, "Run", 100);
-    Application::SetCommand(Input::Key::F2, "Debug", 100);
-    Application::SetCommand(Input::Key::F3, "Run as admin", 100);
+    Application::AddWindow(new MyWin());
     Application::Run();
-    Application::Close();
 }
 

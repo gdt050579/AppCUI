@@ -68,9 +68,7 @@ namespace AppCUI
             struct {
                 int                     Left, Top, Right, Bottom;
                 bool                    Visible;
-            } Clip;
-            int                         *SpecialCharacters;
-            
+            } Clip;                        
 
 #       ifdef BUILD_FOR_WINDOWS
             HANDLE			            hstdOut;
@@ -82,6 +80,8 @@ namespace AppCUI
 #       endif
             bool    CreateScreenBuffers(unsigned int width, unsigned int height);
         public:
+            int                         *SpecialCharacters;
+        public:
             ConsoleRenderer();
             bool    Init();
             bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
@@ -90,6 +90,7 @@ namespace AppCUI
             bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             bool    ClearClipRectangle(int charCode, unsigned int color);
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    Close();
             void    SetClip(const AppCUI::Console::Clip & clip);
             void    ResetClip();

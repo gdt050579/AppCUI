@@ -158,6 +158,7 @@
     <ClCompile Include="src\Console\Rect.cpp" />
     <ClCompile Include="src\Console\Renderer.cpp" />
     <ClCompile Include="src\Controls\Control.cpp" />
+    <ClCompile Include="src\Controls\Window.cpp" />
     <ClCompile Include="src\Utils\KeyUtils.cpp" />
     <ClCompile Include="src\Utils\String.cpp" />
   </ItemGroup>

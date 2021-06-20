@@ -107,10 +107,26 @@ void ConsoleRenderer::Prepare()
     this->Clip.Bottom = this->ConsoleSize.Height - 1;
     this->Clip.Visible = true;
 }
+bool ConsoleRenderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
+{
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+    if ((x < Clip.Left) || (x > Clip.Right) || (y < Clip.Top) || (y > Clip.Bottom))
+        return false;
+    CHARACTER_INFORMATION *p = this->OffsetRows[y] + x;
+    if ((charCode > 0) && (color < 256))
+    {
+        SET_CHARACTER(p, charCode, color);
+    }
+    else {
+        SET_CHARACTER_EX(p, charCode, color);
+    }
+    return true;
+}
 bool ConsoleRenderer::ClearClipRectangle(int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
-    if ((Clip.Left == 0) && (Clip.Top == 0) && (Clip.Right == this->ConsoleSize.Width+1) && (Clip.Bottom == this->ConsoleSize.Height+1))
+    if ((Clip.Left == 0) && (Clip.Top == 0) && (Clip.Right+1 == this->ConsoleSize.Width) && (Clip.Bottom+1 == this->ConsoleSize.Height))
     {
         //optimize for the entire screen
         CHARACTER_INFORMATION * start = this->WorkingBuffer;
@@ -131,7 +147,7 @@ bool ConsoleRenderer::ClearClipRectangle(int charCode, unsigned int color)
         return true;
     }
     else {
-        return FillRect(Clip.Left, Clip.Top, Clip.Right, Clip.Bottom, charCode, color);
+        return FillRect(Clip.Left-TranslateX, Clip.Top-TranslateY, Clip.Right-TranslateX, Clip.Bottom-TranslateY, charCode, color);
     }
 }
 bool ConsoleRenderer::FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color)

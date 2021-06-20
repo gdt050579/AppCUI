@@ -49,6 +49,10 @@ void AppCUI::Application::Close()
     if (app)
         app->Terminate();
 }
+bool AppCUI::Application::AddWindow(AppCUI::Controls::Window * wnd)
+{
+    return app->Desktop.AddControl(wnd);
+}
 
 AppCUI::Application::Config* AppCUI::Application::GetAppConfig()
 {
