@@ -100,35 +100,53 @@ void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
 
     switch (ir.EventType)
     {
-    case KEY_EVENT:
-        if ((ir.Event.KeyEvent.uChar.AsciiChar >= 32) && (ir.Event.KeyEvent.uChar.AsciiChar <= 127) && (ir.Event.KeyEvent.bKeyDown))
-            evnt.asciiCode = ir.Event.KeyEvent.uChar.AsciiChar;
-        else
-            evnt.asciiCode = 0;                  
-        if (ir.Event.KeyEvent.wVirtualKeyCode < KEYTRANSLATION_MATRIX_SIZE)
-            evnt.keyCode = KeyTranslationMatrix[ir.Event.KeyEvent.wVirtualKeyCode];
-        else
-            evnt.keyCode = AppCUI::Input::Key::None;
+        case KEY_EVENT:
+            if ((ir.Event.KeyEvent.uChar.AsciiChar >= 32) && (ir.Event.KeyEvent.uChar.AsciiChar <= 127) && (ir.Event.KeyEvent.bKeyDown))
+                evnt.asciiCode = ir.Event.KeyEvent.uChar.AsciiChar;
+            else
+                evnt.asciiCode = 0;                  
+            if (ir.Event.KeyEvent.wVirtualKeyCode < KEYTRANSLATION_MATRIX_SIZE)
+                evnt.keyCode = KeyTranslationMatrix[ir.Event.KeyEvent.wVirtualKeyCode];
+            else
+                evnt.keyCode = AppCUI::Input::Key::None;
 
-        eventShiftState = AppCUI::Input::Key::None;
-        if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0)
-            eventShiftState |= AppCUI::Input::Key::Alt;
-        if ((ir.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) != 0)
-            eventShiftState |= AppCUI::Input::Key::Shift;
-        if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0)
-            eventShiftState |= AppCUI::Input::Key::Ctrl;
+            eventShiftState = AppCUI::Input::Key::None;
+            if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0)
+                eventShiftState |= AppCUI::Input::Key::Alt;
+            if ((ir.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) != 0)
+                eventShiftState |= AppCUI::Input::Key::Shift;
+            if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0)
+                eventShiftState |= AppCUI::Input::Key::Ctrl;
 
-        if (eventShiftState != AppCUI::Input::Key::None)
-            evnt.keyCode |= eventShiftState;
+            if (eventShiftState != AppCUI::Input::Key::None)
+                evnt.keyCode |= eventShiftState;
 
-        // if ALT or CTRL are pressed, clear the ascii code
-        if ((evnt.keyCode & (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl)) != 0)
-            evnt.asciiCode = 0;
+            // if ALT or CTRL are pressed, clear the ascii code
+            if ((evnt.keyCode & (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl)) != 0)
+                evnt.asciiCode = 0;
 
-        if ((ir.Event.KeyEvent.bKeyDown) || (eventShiftState != this->shiftState))
-            evnt.eventType = SystemEvents::KEY_PRESSED;
-        this->shiftState = eventShiftState;
-        break;
+            if ((ir.Event.KeyEvent.bKeyDown) || (eventShiftState != this->shiftState))
+                evnt.eventType = SystemEvents::KEY_PRESSED;
+            this->shiftState = eventShiftState;
+            break;
+        case MOUSE_EVENT:
+            evnt.mouseX = ir.Event.MouseEvent.dwMousePosition.X;
+            evnt.mouseY = ir.Event.MouseEvent.dwMousePosition.Y;
+            
+            if (ir.Event.MouseEvent.dwEventFlags == 0)
+            {
+                if (ir.Event.MouseEvent.dwButtonState)
+                    evnt.eventType = SystemEvents::MOUSE_DOWN;
+                else
+                    evnt.eventType = SystemEvents::MOUSE_UP;
+                return;
+            }
+            if (ir.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
+            {
+                evnt.eventType = SystemEvents::MOUSE_MOVE;
+                return;
+            }
+            break;
     }
 
 }
