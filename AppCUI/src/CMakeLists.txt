@@ -1,0 +1,4 @@
+add_subdirectory(Application)
+add_subdirectory(Console)
+add_subdirectory(Controls)
+add_subdirectory(Utils)

@@ -2,6 +2,7 @@
 #define __APPCUI_IO_HEADER__
 
 #include "AppCUI.h"
+#include <cstdint>
 
 #ifdef BUILD_FOR_WINDOWS
 #   include <Windows.h>
@@ -10,6 +11,20 @@
 #   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    { (ptrCharInfo)->Attributes = (color); }
 #   define SET_CHARACTER(ptrCharInfo,value,color)       { (ptrCharInfo)->Char.UnicodeChar = (value);(ptrCharInfo)->Attributes = (color); }
 #   define GET_CHARACTER_COLOR(ptrCharInfo)             ((ptrCharInfo)->Attributes)
+#else 
+// dummy replacements for other systems
+typedef struct _CHAR_INFO {
+  union {
+    uint16_t UnicodeChar;
+    uint8_t  AsciiChar;
+  } Char;
+  uint16_t Attributes;
+} CHAR_INFO, *PCHAR_INFO;
+#   define CHARACTER_INFORMATION	                    CHAR_INFO
+#   define SET_CHARACTER_VALUE(ptrCharInfo,value)	    
+#   define SET_CHARACTER_COLOR(ptrCharInfo,color)	    
+#   define SET_CHARACTER(ptrCharInfo,value,color)
+#   define GET_CHARACTER_COLOR(ptrCharInfo)             0
 #endif
 
 
@@ -70,14 +85,20 @@ namespace AppCUI
                 bool                    Visible;
             } Clip;                        
 
-#       ifdef BUILD_FOR_WINDOWS
+#       ifdef _win_
             HANDLE			            hstdOut;
             struct {
                 DWORD                   stdMode;
                 AppCUI::Console::Size   consoleSize;
                 CHAR_INFO*              screenBuffer;
             } BeforeInitConfig;
+#       else 
+            struct {
+                AppCUI::Console::Size   consoleSize;
+                CHAR_INFO*              screenBuffer;
+            } BeforeInitConfig;
 #       endif
+
             bool    CreateScreenBuffers(unsigned int width, unsigned int height);
         public:
             int                         *SpecialCharacters;

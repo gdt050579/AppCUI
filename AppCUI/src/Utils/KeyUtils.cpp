@@ -1,4 +1,4 @@
-#include "../../include/AppCUI.h"
+#include "AppCUI.h"
 
 static const char* _Key_Modifiers[8] = {
 	/* 0 */ "",

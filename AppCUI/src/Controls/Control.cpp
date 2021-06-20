@@ -1,4 +1,4 @@
-#include "../../include/ControlContext.h"
+#include "ControlContext.h"
 #include <string.h>
 
 using namespace AppCUI::Controls;
@@ -46,7 +46,9 @@ using namespace AppCUI::Console;
 #define SKIP_SPACES                     while (__char_types__[*p] == CHAR_TYPE_SPACE) p++;
 #define UPDATE_STRING_HASH(resultValue) while (__char_types__[*p] == CHAR_TYPE_WORD) { resultValue = ((resultValue) << 2) ^ ((unsigned int)(('Z' + 1) - (((*p) & ((unsigned char)(~0x20)))))); p++; }
 
-#define SET_LAYOUT_INFO(flag,field)     { inf.flags |= flag; inf.##field = value; if (l.ValueType=='%') inf.percentagesMask |= flag; }
+// for gcc, building a field should look like var.field, not var.##field
+// http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
+#define SET_LAYOUT_INFO(flag,field)     { inf.flags |= flag; inf.field = value; if (l.ValueType=='%') inf.percentagesMask |= flag; }
 
 
 struct LayoutInformation

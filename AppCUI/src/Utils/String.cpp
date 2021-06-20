@@ -1,4 +1,4 @@
-#include "../../include/AppCUI.h"
+#include "AppCUI.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -30,9 +30,9 @@ const unsigned char __lower_case_table__[256] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,1
     const unsigned char *p1 = (const unsigned char *)sir1; \
     const unsigned char *p2 = (const unsigned char *)sir2;
 
-#define VALIDATE_ALLOCATED_SPACE(requiredSpace) \
+#define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue) \
     if ((requiredSpace) > Allocated) { \
-        CHECK(Grow(requiredSpace), false, "Fail to allocate space for %d bytes", (requiredSpace)); \
+        CHECK(Grow(requiredSpace), returnValue, "Fail to allocate space for %d bytes", (requiredSpace)); \
     }
 
 #define MEMCOPY	memcpy
@@ -281,7 +281,7 @@ bool AppCUI::Utils::String::Add(const char *text,unsigned int txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
-    VALIDATE_ALLOCATED_SPACE(this->Size + txSize + 1);
+    VALIDATE_ALLOCATED_SPACE(this->Size + txSize + 1, false);
     MEMCOPY(this->Text + this->Size, text, txSize);
     this->Size += txSize;
     this->Text[this->Size] = 0;
@@ -308,7 +308,7 @@ bool AppCUI::Utils::String::AddChars(char ch,unsigned int count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
-    VALIDATE_ALLOCATED_SPACE(this->Size + count + 1);
+    VALIDATE_ALLOCATED_SPACE(this->Size + count + 1, false);
     char * p = this->Text + this->Size;
     this->Size += count;
     while (count) { *p = ch; p++; count--; }
@@ -321,7 +321,7 @@ bool AppCUI::Utils::String::Set(const char *text,unsigned int txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
-    VALIDATE_ALLOCATED_SPACE(txSize + 1);
+    VALIDATE_ALLOCATED_SPACE(txSize + 1, false);
     MEMCOPY(this->Text, text, txSize);
     this->Size = txSize;
     this->Text[this->Size] = 0;
@@ -340,7 +340,7 @@ bool AppCUI::Utils::String::SetChars(char ch, unsigned int count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
-    VALIDATE_ALLOCATED_SPACE(count + 1);
+    VALIDATE_ALLOCATED_SPACE(count + 1, false);
     char * p = this->Text;
     this->Size += count;
     while (count) { *p = ch; p++; count--; }
@@ -387,7 +387,7 @@ bool AppCUI::Utils::String::SetFormat(const char *format, ...)
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args); 
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2);
+    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2, false);
 	
 	va_start( args, format );
 	len2 = vsnprintf( Text, Allocated-1, format, args );
@@ -411,7 +411,7 @@ bool AppCUI::Utils::String::AddFormat(const char *format, ...)
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2 + this->Size);
+    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2 + this->Size, false);
 
     va_start(args, format);
     len2 = vsnprintf(Text, Allocated - 1, format, args);
@@ -435,7 +435,8 @@ const char* AppCUI::Utils::String::Format(const char *format, ...)
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, nullptr, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2);
+
+    VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2, nullptr);
 
     va_start(args, format);
     len2 = vsnprintf(Text, Allocated - 1, format, args);
