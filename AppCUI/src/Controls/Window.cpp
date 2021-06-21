@@ -435,16 +435,16 @@ bool Window::Exit(int dialogResult)
 	CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
 	Members->DialogResult = dialogResult;
-    _asm int 3;
+    // _asm int 3;
     //GetExecutionLoop()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
 	return true;
 }
 int  Window::Show()
 {
 	CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
-    _asm int 3;
+    //_asm int 3;
     //ExecutionLoop *loop = GetExecutionLoop();
-    _asm int 3;
+    //_asm int 3;
     //CHECK(loop->ExecuteUI(this), -1, "Failed to start execution loop !");
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
 	return Members->DialogResult;
