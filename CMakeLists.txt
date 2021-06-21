@@ -17,24 +17,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(AppCUI/include)
 
-
 # libAppCUI
-#file(GLOB HEADER_FILES "AppCUI/include/*.h")
-#file(GLOB APPLICATION_FILES "AppCUI/src/Application/*.cpp")
-#file(GLOB CONSOLE_FILES "AppCUI/src/Console/*.cpp")
-#file(GLOB CONTROLS_FILES "AppCUI/src/Controls/*.cpp")
-#file(GLOB UTILS_FILES "AppCUI/src/Utils/*.cpp")
-source_group(TREE include)
-source_group(TREE src)
-#source_group("src/Application" FILES ${APPLICATION_FILES})
-#source_group("src/Console" FILES ${CONSOLE_FILES})
-#source_group("src/Controls" FILES ${CONTROLS_FILES})
-#source_group("src/Utils" FILES ${UTILS_FILES})
 add_library(AppCUI SHARED)
 add_subdirectory(AppCUI/src)
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 
+# sln configuration for MSVC
+# headers have to be inserted manually as target_sources 
+# for VS to see them
+file(GLOB_RECURSE APP_CUI_HEADERS AppCUI/include/*.h)
+target_sources(AppCUI PRIVATE ${APP_CUI_HEADERS})
+get_target_property(APP_CUI_SOURCES AppCUI SOURCES)
+source_group(TREE ${CMAKE_SOURCE_DIR}/AppCUI FILES ${APP_CUI_SOURCES} ${APP_CUI_HEADERS})
+
+
 # tester
-# get_target_property(APP_CUI_SOURCES AppCUI SOURCES)
 add_executable(tester Tester/Tester.cpp)
 target_link_libraries(tester AppCUI)
