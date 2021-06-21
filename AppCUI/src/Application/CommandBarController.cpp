@@ -135,7 +135,7 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
             colCfg = &this->Cfg->CommandBar.Normal;
 
         renderer.WriteSingleLineText(cmd->StartScreenPos + 1, BarLayout.Y, cmd->KeyName, colCfg->KeyColor, cmd->KeyNameWidth);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + 1+ cmd->KeyNameWidth, BarLayout.Y, cmd->Name, colCfg->NameColor, cmd->NameWidth);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + 2 + cmd->KeyNameWidth, BarLayout.Y, cmd->Name, colCfg->NameColor, cmd->NameWidth);
 
         bi++;
 	}
