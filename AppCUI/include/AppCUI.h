@@ -2,7 +2,11 @@
 #define __APPCUI_MAIN_HEADER__
 
 #ifdef BUILD_AS_DYNAMIC_LIB
-#   define EXPORT __declspec(dllexport)
+#   ifdef BUILD_FOR_WINDOWS
+#       define EXPORT __declspec(dllexport)
+#   else
+#       define EXPORT
+#   endif
 #else
 #   define EXPORT
 #endif

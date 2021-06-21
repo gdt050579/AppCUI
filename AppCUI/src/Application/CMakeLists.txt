@@ -7,4 +7,6 @@ target_sources(AppCUI PUBLIC
 )
 if (MSVC)
 target_sources(AppCUI PUBLIC WindowsImplementation.cpp)
+else()
+target_sources(AppCUI PUBLIC MacImplementation.cpp)
 endif()
