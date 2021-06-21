@@ -9,7 +9,8 @@ else()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 endif()
 
-set(CMAKE_CXX_FLAGS "-W3")
+# removed temporarily for build
+# set(CMAKE_CXX_FLAGS "-W3")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(CMAKE_CXX_STANDARD 20)
