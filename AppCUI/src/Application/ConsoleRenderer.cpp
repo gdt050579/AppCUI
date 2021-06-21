@@ -16,6 +16,11 @@ ConsoleRenderer::ConsoleRenderer()
     OffsetRows = nullptr;
     SpecialCharacters = nullptr;
     this->Clip.Visible = false;
+    this->Cursor.Visible = false;
+    this->Cursor.X = this->Cursor.Y = 0;
+    this->LastUpdateCursor.Visible = false;
+    this->LastUpdateCursor.X = 0xFFFFFFFF;
+    this->LastUpdateCursor.Y = 0xFFFFFFFF;
 }
 bool ConsoleRenderer::CreateScreenBuffers(unsigned int width, unsigned int height)
 {
@@ -106,6 +111,38 @@ void ConsoleRenderer::Prepare()
     this->Clip.Right = this->ConsoleSize.Width - 1;
     this->Clip.Bottom = this->ConsoleSize.Height - 1;
     this->Clip.Visible = true;
+    this->HideCursor();
+}
+void ConsoleRenderer::UpdateScreen()
+{
+    this->FlushToScreen();
+    if ((this->Cursor.Visible != this->LastUpdateCursor.Visible) ||
+        (this->Cursor.X != this->LastUpdateCursor.X) || 
+        (this->Cursor.Y != this->LastUpdateCursor.Y))
+    {
+        if (this->UpdateCursor())
+        {
+            // update last cursor information
+            this->LastUpdateCursor = this->Cursor;
+        }
+    }
+    
+}
+void ConsoleRenderer::HideCursor()
+{
+    this->Cursor.Visible = false;
+}
+bool ConsoleRenderer::ShowCursor(unsigned int x, unsigned int y)
+{
+    if ((x >= this->ConsoleSize.Width) || (y >= this->ConsoleSize.Height))
+    {
+        this->Cursor.Visible = false;
+        return false;
+    }
+    this->Cursor.X = x;
+    this->Cursor.Y = y;
+    this->Cursor.Visible = true;
+    return true;
 }
 bool ConsoleRenderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
 {

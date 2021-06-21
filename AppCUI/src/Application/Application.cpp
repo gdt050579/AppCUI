@@ -460,7 +460,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
                     ComputePositions();
                 if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
                     Paint();
-                this->consoleRenderer.FlushToScreen();
+                this->consoleRenderer.UpdateScreen();
             }
             RepaintStatus = REPAINT_STATUS_NONE;
         }

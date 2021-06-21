@@ -47,11 +47,30 @@ bool ConsoleRenderer::Init()
 
     return true;
 }
+void ConsoleRenderer::Uninit()
+{
+
+}
 void ConsoleRenderer::FlushToScreen()
 {
     COORD winSize = { (SHORT)this->ConsoleSize.Width, (SHORT)this->ConsoleSize.Height };
     SMALL_RECT sr = { 0,0,(SHORT)this->ConsoleSize.Width, (SHORT)this->ConsoleSize.Height };
     WriteConsoleOutputW(this->hstdOut, this->WorkingBuffer, winSize, { 0,0 }, &sr);
+}
+bool ConsoleRenderer::UpdateCursor()
+{
+    if (Cursor.Visible)
+    {
+        COORD c = { (SHORT)Cursor.X, (SHORT)Cursor.Y };
+        CHECK(SetConsoleCursorPosition(this->hstdOut, c), false, "SetConsoleCursorPosition failed !");
+        CONSOLE_CURSOR_INFO	ci = { 10,TRUE };
+        CHECK(SetConsoleCursorInfo(this->hstdOut, &ci), false, "SetConsoleCursorInfo failed !");
+    }
+    else {
+        CONSOLE_CURSOR_INFO	ci = { 10,FALSE };
+        CHECK(SetConsoleCursorInfo(this->hstdOut, &ci), false, "SetConsoleCursorInfo failed !");
+    }
+    return true;
 }
 bool InputReader::Init()
 {
@@ -88,6 +107,10 @@ bool InputReader::Init()
     this->shiftState = AppCUI::Input::Key::None;
 
     return true;
+}
+void InputReader::Uninit()
+{
+
 }
 void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
 {

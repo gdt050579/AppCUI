@@ -13,7 +13,7 @@ class MyWin : public AppCUI::Controls::Window
 public:
     MyWin() 
     {
-        this->Create("Test", "x:10,y:10,w:40,h:20", WindowFlags::CENTERED | WindowFlags::SIZEABLE);
+        this->Create("Test", "a:c,w:50%,h:50%",  WindowFlags::SIZEABLE);
     }
     bool OnEvent(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID) override
     {
@@ -41,5 +41,6 @@ int main()
     Application::AddWindow(new MyWin());
     Application::AddWindow(new MyWin());
     Application::Run();
+    Application::Close();
 }
 

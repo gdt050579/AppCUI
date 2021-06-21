@@ -76,7 +76,11 @@ namespace AppCUI
             struct {
                 int                     Left, Top, Right, Bottom;
                 bool                    Visible;
-            } Clip;                        
+            } Clip;      
+            struct {
+                unsigned int            X, Y;
+                bool                    Visible;
+            } Cursor,LastUpdateCursor;
 
 #       ifdef BUILD_FOR_WINDOWS
             HANDLE			            hstdOut;
@@ -97,7 +101,13 @@ namespace AppCUI
             int                         *SpecialCharacters;
         public:
             ConsoleRenderer();
+            // OS specific
             bool    Init();
+            void    Uninit();
+            void    FlushToScreen();
+            bool    UpdateCursor();
+
+            // Generic methods
             bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
             bool    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
             bool    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
@@ -106,13 +116,14 @@ namespace AppCUI
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
-            void    Close();
+            void    HideCursor();
+            bool    ShowCursor(unsigned int x, unsigned int y);
             void    SetClip(const AppCUI::Console::Clip & clip);
             void    ResetClip();
             void    SetTranslate(int offX, int offY);
-            bool    SetSize(unsigned int width, unsigned int height);
-            void    FlushToScreen();
+            bool    SetSize(unsigned int width, unsigned int height);            
             void    Prepare();
+            void    UpdateScreen();
 
             // inlines
             inline const AppCUI::Console::Size& GetConsoleSize() const { return ConsoleSize; }
@@ -128,6 +139,7 @@ namespace AppCUI
 #       endif
         public:
             bool                    Init();
+            void                    Uninit();
             void                    GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt);
         };
     }
