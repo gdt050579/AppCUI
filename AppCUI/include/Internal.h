@@ -108,7 +108,8 @@ namespace AppCUI
 
 
             DesktopControl			                Desktop;
-            CommandBarController	                CommandBar;
+            CommandBarController	                CommandBarObject;
+            AppCUI::Application::CommandBar         CommandBarWrapper;
             AppCUI::Controls::Control *             ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
             AppCUI::Controls::Control *             MouseLockedControl;
             AppCUI::Controls::Control *             MouseOverControl;

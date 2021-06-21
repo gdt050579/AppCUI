@@ -2,6 +2,7 @@
 #include "AppCUI.h"
 
 using namespace AppCUI;
+using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
 #ifdef BUILD_FOR_WINDOWS
@@ -24,11 +25,11 @@ public:
         }
         return false;
     }
-    bool OnUpdateCommandBar() override
+    bool OnUpdateCommandBar(CommandBar & cmdBar) override
     {
-        Application::SetCommand(Input::Key::F1, "Run", 100);
-        Application::SetCommand(Input::Key::F2, "Debug", 100);
-        Application::SetCommand(Input::Key::F3, "Run as admin", 100);
+        cmdBar.SetCommand(Input::Key::F1, "Run", 100);
+        cmdBar.SetCommand(Input::Key::F2, "Debug", 100);
+        cmdBar.SetCommand(Input::Key::F3, "Run as admin", 100);
         return true;
     }
 

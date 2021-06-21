@@ -1032,7 +1032,7 @@ bool AppCUI::Controls::Control::OnEvent(const void* sender, Events::Event eventT
 {
 	return false;
 }
-bool AppCUI::Controls::Control::OnUpdateCommandBar()
+bool AppCUI::Controls::Control::OnUpdateCommandBar(AppCUI::Application::CommandBar & commandBar)
 {
 	return false;
 }

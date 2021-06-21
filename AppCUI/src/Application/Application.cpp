@@ -34,16 +34,12 @@ bool AppCUI::Application::GetDesktopSize(AppCUI::Console::Size & size)
     CHECK(app, false, "Application has not been initialized !");
     size.Width = app->consoleRenderer.GetConsoleSize().Width;
     size.Height = app->consoleRenderer.GetConsoleSize().Height;
-    if (app->CommandBar.IsVisible())
+    if (app->CommandBarObject.IsVisible())
         size.Height--;
     //GDT: trebuie scazut meniul si bara de jos
     return true;
 }
-bool AppCUI::Application::SetCommand(AppCUI::Input::Key::Type keyCode, const char* Name, int CommandID)
-{
-    CHECK(app, false, "Application has not been initialized !");
-    return app->CommandBar.Set(keyCode, Name, CommandID);
-}
+
 void AppCUI::Application::Close()
 {
     if (app)
@@ -191,7 +187,7 @@ AppCUI::Controls::Control *GetFocusedControl(AppCUI::Controls::Control *ctrl)
 }
 void UpdateCommandBar(AppCUI::Controls::Control *obj)
 {
-    app->CommandBar.Clear();
+    app->CommandBarObject.Clear();
     while (obj != nullptr)
     {
         if (((ControlContext*)(obj->Context))->Handlers.OnUpdateCommandBarHandler != nullptr)
@@ -200,7 +196,7 @@ void UpdateCommandBar(AppCUI::Controls::Control *obj)
                 break;
         }
         else {
-            if (obj->OnUpdateCommandBar() == true)
+            if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
                 break;
         }
         obj = ((ControlContext*)(obj->Context))->Parent;
@@ -214,8 +210,8 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags,
     CHECK(this->inputReader.Init(), false, "Fail to initialize OS-Specific input reader");
     this->renderer.Init(&this->consoleRenderer);
     this->config.SetDarkTheme();    
-    this->CommandBar.Init(consoleRenderer.GetConsoleSize().Width, consoleRenderer.GetConsoleSize().Height, &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
-    
+    this->CommandBarObject.Init(consoleRenderer.GetConsoleSize().Width, consoleRenderer.GetConsoleSize().Height, &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
+    this->CommandBarWrapper.Init(&this->CommandBarObject);
     
     CHECK(Desktop.Create(consoleRenderer.GetConsoleSize().Width, consoleRenderer.GetConsoleSize().Height), false, "Failed to create desktop !");
     LoopStatus = LOOP_STATUS_NORMAL;
@@ -253,7 +249,7 @@ void AppCUI::Internal::Application::Paint()
     // Acceleratorii
     this->consoleRenderer.ResetClip();
     this->consoleRenderer.SetTranslate(0, 0);
-    this->CommandBar.Paint(this->renderer);
+    this->CommandBarObject.Paint(this->renderer);
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
@@ -297,14 +293,14 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key::Type Key
     if (!found)
     {
         // verific in accelarator
-        int cmd = this->CommandBar.GetCommandForKey(KeyCode);
+        int cmd = this->CommandBarObject.GetCommandForKey(KeyCode);
         if (cmd > 0)
             SendCommand(cmd);
     }
 }
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, int buttonState)
 {
-    if (this->CommandBar.OnMouseDown())
+    if (this->CommandBarObject.OnMouseDown())
     {
         RepaintStatus |= REPAINT_STATUS_DRAW;
         MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
@@ -338,7 +334,7 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, int buttonState)
     switch (MouseLockedObject)
     {
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
-        if (this->CommandBar.OnMouseUp(commandID))
+        if (this->CommandBarObject.OnMouseUp(commandID))
             RepaintStatus |= REPAINT_STATUS_DRAW;
         if (commandID>0)
             SendCommand(commandID);
@@ -369,7 +365,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, int buttonState)
         break;
     case MOUSE_LOCKED_OBJECT_NONE:
         // validez acceleratorii mai intai
-        if (this->CommandBar.OnMouseOver(x, y, repaint))
+        if (this->CommandBarObject.OnMouseOver(x, y, repaint))
         {
             if (this->MouseOverControl)
             {
@@ -428,7 +424,7 @@ void AppCUI::Internal::Application::OnMouseWheel()
 }
 void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key::Type ShiftState)
 {
-    if (this->CommandBar.SetShiftKey(ShiftState))
+    if (this->CommandBarObject.SetShiftKey(ShiftState))
         RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
@@ -475,7 +471,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
                 {
                     this->consoleRenderer.SetSize(evnt.newWidth,evnt.newHeight);
                     this->Desktop.Resize(this->consoleRenderer.GetConsoleSize().Width, this->consoleRenderer.GetConsoleSize().Height);
-                    this->CommandBar.SetDesktopSize(this->consoleRenderer.GetConsoleSize().Width, this->consoleRenderer.GetConsoleSize().Height);
+                    this->CommandBarObject.SetDesktopSize(this->consoleRenderer.GetConsoleSize().Width, this->consoleRenderer.GetConsoleSize().Height);
                     this->RepaintStatus = REPAINT_STATUS_ALL;
                 }
                 break;

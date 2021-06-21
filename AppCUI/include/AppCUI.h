@@ -31,6 +31,7 @@ namespace AppCUI
     namespace Application
     {
         struct Config;
+        class CommandBar;
     };
     namespace Input
     {
@@ -448,7 +449,7 @@ namespace AppCUI
 
             virtual void	OnMouseWheel(int direction);
             virtual bool	OnEvent(const void* sender, Events::Event eventType, int controlID);
-            virtual bool	OnUpdateCommandBar();
+            virtual bool	OnUpdateCommandBar(AppCUI::Application::CommandBar & commandBar);
 
             virtual bool	OnBeforeResize(int newWidth, int newHeight);
             virtual void	OnAfterResize(int newWidth, int newHeight);
@@ -511,6 +512,15 @@ namespace AppCUI
             };
         }
 
+        EXPORT class CommandBar
+        {
+            void* Controller;
+        public:
+            CommandBar();
+            void  Init(void* controller);
+            bool  SetCommand(AppCUI::Input::Key::Type keyCode, const char* Name, int CommandID);
+        };
+
         struct Config
         {
             struct {
@@ -549,7 +559,6 @@ namespace AppCUI
         EXPORT void         Repaint();
         EXPORT void         RecomputeControlsLayout();
         EXPORT void         RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Events::Event eventType, int controlID);
-        EXPORT bool         SetCommand(AppCUI::Input::Key::Type keyCode, const char* Name, int CommandID);
         EXPORT void         Close();
     };
 }

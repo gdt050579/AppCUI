@@ -1,5 +1,6 @@
 target_sources(AppCUI PUBLIC
     Application.cpp
+    CommandBar.cpp
     CommandBarController.cpp
     Config.cpp
     ConsoleRenderer.cpp
