@@ -145,7 +145,8 @@ namespace AppCUI
 
             // Returns the name of the Key without modifiers
             static const char*	            GetKeyName(AppCUI::Input::Key::Type keyCode);
-            static const char*	            GetKeyModifierName(AppCUI::Input::Key::Type keyCode);
+            static const char*	            GetKeyNamePadded(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize = nullptr);
+            static const char*	            GetKeyModifierName(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize = nullptr);
             static bool			            ToString(AppCUI::Input::Key::Type keyCode, char* text, int maxTextSize);
             static bool			            ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String *text);
             static bool			            ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String &text);

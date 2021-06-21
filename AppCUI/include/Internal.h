@@ -53,15 +53,11 @@ namespace AppCUI
                 int Y, Width;                
             } BarLayout;
 
-            struct ShiftKeyIndicator {
-                const char *    Name;
-                int             X, Width;
-                bool            Visible;
-
-                void Init(const char * name);
-            } Ctrl,Alt,Shift;
+            struct {
+                const char *                Name;
+                unsigned int                Size;
+            } ShiftStatus;
             
-
             AppCUI::Application::Config	*   Cfg;
             AppCUI::Input::Key::Type        CurrentShiftKey;
             int						        LastCommand;

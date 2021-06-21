@@ -14,7 +14,7 @@ class MyWin : public AppCUI::Controls::Window
 public:
     MyWin() 
     {
-        this->Create("Test", "a:c,w:50%,h:50%",  WindowFlags::SIZEABLE);
+        this->Create("Test", "a:rb,w:50%,h:50%",  WindowFlags::SIZEABLE);
     }
     bool OnEvent(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID) override
     {
@@ -29,7 +29,7 @@ public:
     {
         cmdBar.SetCommand(Input::Key::F1, "Run", 100);
         cmdBar.SetCommand(Input::Key::F2, "Debug", 100);
-        cmdBar.SetCommand(Input::Key::F3, "Run as admin", 100);
+        cmdBar.SetCommand(Input::Key::F3|Input::Key::Alt, "Run as admin", 100);
         return true;
     }
 

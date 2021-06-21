@@ -142,15 +142,21 @@ void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
             if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0)
                 eventShiftState |= AppCUI::Input::Key::Ctrl;
 
-            if (eventShiftState != AppCUI::Input::Key::None)
-                evnt.keyCode |= eventShiftState;
-
             // if ALT or CTRL are pressed, clear the ascii code
-            if ((evnt.keyCode & (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl)) != 0)
+            if ((eventShiftState & (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl)) != 0)
                 evnt.asciiCode = 0;
 
-            if ((ir.Event.KeyEvent.bKeyDown) || (eventShiftState != this->shiftState))
-                evnt.eventType = SystemEvents::KEY_PRESSED;
+            if (evnt.keyCode == AppCUI::Input::Key::None)
+            {
+                if (eventShiftState != this->shiftState)
+                    evnt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+                evnt.keyCode = eventShiftState;
+            }
+            else {
+                evnt.keyCode |= eventShiftState;
+                if (ir.Event.KeyEvent.bKeyDown)
+                    evnt.eventType = SystemEvents::KEY_PRESSED;
+            }
             this->shiftState = eventShiftState;
             break;
         case MOUSE_EVENT:

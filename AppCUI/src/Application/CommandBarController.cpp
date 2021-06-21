@@ -5,15 +5,6 @@ using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
 
-void CommandBarController::ShiftKeyIndicator::Init(const char * _name)
-{
-    AppCUI::Console::Size sz;
-
-    this->Visible = false;
-    this->Name = _name;
-    this->X = 0;
-    this->Width = String::Len(_name);
-}
 
 void CommandBarController::Init(unsigned int desktopWidth,unsigned int desktopHeight,  AppCUI::Application::Config * cfg, bool visible)
 {
@@ -26,12 +17,8 @@ void CommandBarController::Init(unsigned int desktopWidth,unsigned int desktopHe
 	PressedField = nullptr;
     HoveredField = nullptr;
 	LastCommand = 0;
-    
-
-    // init shift keys
-    Ctrl.Init("Ctrl");
-    Alt.Init("Alt");
-    Shift.Init("Shift");
+    ShiftStatus.Size = 0;
+    ShiftStatus.Name = nullptr;
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
 {
@@ -81,18 +68,21 @@ bool CommandBarController::Set(AppCUI::Input::Key::Type keyCode, const char* Nam
 	b->Version = CurrentVersion;
 	const char* nm = Name;
 	char* s = &b->Name[0];
-	char* e = s + (MAX_COMMANDBAR_FIELD_NAME-1);
+	char* e = s + (MAX_COMMANDBAR_FIELD_NAME-2);
 	while ((s < e) && ((*nm) != 0))
 	{
 		(*s) = (*nm);
 		s++;
 		nm++;
 	}
-	(*s) = 0;
+	(*s) = ' '; // one extra spare
+    s++;
+    (*s) = 0;    
     // Precompute text sizes
-    b->KeyName = AppCUI::Utils::KeyUtils::GetKeyName(b->KeyCode);
-    b->NameWidth = String::Len(b->Name);
-    b->KeyNameWidth = String::Len(b->KeyName);
+    b->NameWidth = (int)(s - (b->Name));
+    unsigned int keyNameSize = 0;
+    b->KeyName = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode, &keyNameSize);
+    b->KeyNameWidth = keyNameSize;
 	HasKeys[shift] = true;
 	RecomputeScreenPos = true;
 	return true;
@@ -105,6 +95,10 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
     renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
 	if (RecomputeScreenPos)
 		ComputeScreenPos();
+    
+    if (ShiftStatus.Size > 0)
+        renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus.Name, Cfg->CommandBar.ShiftKeysColor, ShiftStatus.Size);
+
 	unsigned int shift = CurrentShiftKey >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS;
 	if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
 		return;
@@ -116,14 +110,6 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
     CommandBarField *cmd;
     auto * colCfg = &this->Cfg->CommandBar.Normal;
 
-    // Shift States
-    //if (Ctrl.Visible)
-    //    DRAW_SHIFT_KEY(Ctrl);
-    //if (Alt.Visible)
-    //    DRAW_SHIFT_KEY(Alt);
-    //if (Shift.Visible)
-    //    DRAW_SHIFT_KEY(Shift);
-
 	while (bi < ei)
 	{
 		cmd = bi->Field;
@@ -134,8 +120,8 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
         else 
             colCfg = &this->Cfg->CommandBar.Normal;
 
-        renderer.WriteSingleLineText(cmd->StartScreenPos + 1, BarLayout.Y, cmd->KeyName, colCfg->KeyColor, cmd->KeyNameWidth);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + 2 + cmd->KeyNameWidth, BarLayout.Y, cmd->Name, colCfg->NameColor, cmd->NameWidth);
+        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor, cmd->KeyNameWidth);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyNameWidth, BarLayout.Y, cmd->Name, colCfg->NameColor, cmd->NameWidth);
 
         bi++;
 	}
@@ -145,29 +131,15 @@ void CommandBarController::ComputeScreenPos()
     if (!Visible)
         return;
 
-    int startPoz = 0;
+    int startPoz;
     // validez shift state
-    Ctrl.Visible = ((this->CurrentShiftKey & Key::Ctrl) != 0);
-    Shift.Visible = ((this->CurrentShiftKey & Key::Shift) != 0);
-    Alt.Visible = ((this->CurrentShiftKey & Key::Alt) != 0);
-    if (Ctrl.Visible)
-    {
-        Ctrl.X = startPoz;
-        startPoz += (Ctrl.Width + 4);
-    }
-    if (Alt.Visible)
-    {
-        Alt.X = startPoz;
-        startPoz += (Alt.Width + 4);
-    }
-    if (Shift.Visible)
-    {
-        Shift.X = startPoz;
-        startPoz += (Shift.Width + 4);
-    }
-    if (Ctrl.Visible || Shift.Visible || Alt.Visible)
-        startPoz += 12;
-	// creez lista secundara de pointeri
+    ShiftStatus.Size = 0;
+    ShiftStatus.Name = Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey, &ShiftStatus.Size);
+    startPoz = (int)ShiftStatus.Size;
+    if (startPoz > 0)
+        startPoz++;
+
+    // creez lista secundara de pointeri    
 	bool *hasKeys = &HasKeys[0];
 	for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++,hasKeys++)
 	{
@@ -185,7 +157,7 @@ void CommandBarController::ComputeScreenPos()
 				current->Field = bf;
 				current++;
 				bf->StartScreenPos = start;
-                start += bf->KeyNameWidth + bf->NameWidth + 3; // One space (to separate key from name) and 2 spaces (one before the key and one after)
+                start += bf->KeyNameWidth + bf->NameWidth;
                 bf->EndScreenPos = start;
 				
 				if (start > this->BarLayout.Width)

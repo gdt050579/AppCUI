@@ -12,8 +12,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->CommandBar.Normal.KeyColor = COLOR(Color::DarkRed, Color::White);
     this->CommandBar.Normal.NameColor = COLOR(Color::Black, Color::White);
     this->CommandBar.Hover.KeyColor = COLOR(Color::DarkRed, Color::Silver);
-    this->CommandBar.Hover.NameColor = COLOR(Color::DarkRed, Color::Silver);
-    this->CommandBar.Pressed.KeyColor = COLOR(Color::Black, Color::Magenta);
+    this->CommandBar.Hover.NameColor = COLOR(Color::Black, Color::Silver);
+    this->CommandBar.Pressed.KeyColor = COLOR(Color::White, Color::Magenta);
     this->CommandBar.Pressed.NameColor = COLOR(Color::Yellow, Color::Magenta);
 
     this->Window.ActiveColor = COLOR(Color::White, Color::DarkBlue);
