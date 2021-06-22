@@ -224,6 +224,17 @@ namespace AppCUI
                 ArrowUpDown,
                 ArrowLeftRight,
 
+                // Blocks
+                Block0,
+                Block25,
+                Block50,
+                Block75,
+                Block100,
+                BlockUpperHalf,
+                BlockLowerHalf,
+                BlockLeftHalf,
+                BlockRightHalf,
+
                 // always last
                 Count
             };
