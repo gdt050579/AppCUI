@@ -38,6 +38,10 @@ void Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int
 {
     ConsoleRendererCall(WriteSingleLineText(x, y, text, color, textSize));
 }
+void Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor,int textSize)
+{
+    ConsoleRendererCall(WriteSingleLineTextWithHotKey(x, y, text, color, hotKeyColor, textSize));
+}
 void Renderer::WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize)
 {
     ConsoleRendererCall(WriteMultiLineText(x, y, text, color, textSize));

@@ -465,6 +465,46 @@ bool ConsoleRenderer::WriteSingleLineText(int x, int y, const char * text, unsig
     }    
     return true;
 }
+bool ConsoleRenderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+{
+    CHECK(text, false, "Expecting a valid (non-null) text ");
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+
+    if ((y < Clip.Top) || (y > Clip.Bottom))
+        return false;
+    if (textSize < 0)
+        textSize = AppCUI::Utils::String::Len(text);
+    if (x > Clip.Right)
+        return false;
+    if (x + textSize < Clip.Left)
+        return false;
+    const unsigned char * s = (const unsigned char *)text;
+    const unsigned char * e = s + textSize;
+    // needs more optimizations
+    CHARACTER_INFORMATION * c = this->OffsetRows[y] + x;
+    CHARACTER_INFORMATION * hotkey = nullptr;
+    while ((s < e) && (x <= Clip.Right))
+    {
+        if (x >= Clip.Left)
+        {
+            if ((!hotkey) && ((*s) == '&')) {
+                hotkey = c;
+                x--;
+                c--;
+            }
+            else {
+                SET_CHARACTER_EX(c, *s, color);
+            }
+        }
+        c++;
+        s++;
+        x++;
+    }
+    if (hotkey)
+        SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
+    return true;
+}
 bool ConsoleRenderer::WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
