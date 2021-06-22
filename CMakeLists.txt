@@ -5,12 +5,13 @@ project(appcui VERSION 1.0)
 
 if (MSVC)
 add_definitions(-DBUILD_FOR_WINDOWS)
+set(CMAKE_CXX_FLAGS "-W3")
 else()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS "-W")
 endif()
 
 # removed temporarily for build
-set(CMAKE_CXX_FLAGS "-W3")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(CMAKE_CXX_STANDARD 20)
