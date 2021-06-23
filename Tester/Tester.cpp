@@ -14,6 +14,7 @@ class MyWin : public AppCUI::Controls::Window
     Label l1, l2, l3;
     Button b1, b2;
     CheckBox cb1;
+    RadioBox rb1, rb2, rb3;
 public:
     MyWin() 
     {
@@ -22,6 +23,10 @@ public:
         l2.Create(this, "&Multi line label \nwith hot key 'M'", "x:1,y:4,w:15,h:2");
         l3.Create(this, "1234567890ABCDEFGHIJKLMNOPQRSTUV", "x:10,y:9,w:30,h:1");
         cb1.Create(this, "Run on &Windows", "x:40,y:1,w:20");
+        rb1.Create(this, "Option &1", "x:40,y:3,w:20", 5);
+        rb2.Create(this, "Option &2", "x:40,y:4,w:20", 5);
+        rb3.Create(this, "Option &3", "x:40,y:5,w:20", 5);
+
         b1.Create(this, "&OK", "l:1,b:0,w:90%,h:2", 100);
         b2.Create(this, "&Cancel", "x:26,y:10,w:15", 102);
     }

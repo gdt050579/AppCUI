@@ -140,11 +140,6 @@ bool ConsoleRenderer::ShowCursor(int x, int y)
         this->Cursor.Visible = false;
         return false;
     }
-    if ((x >= this->ConsoleSize.Width) || (y >= this->ConsoleSize.Height))
-    {
-        this->Cursor.Visible = false;
-        return false;
-    }
     this->Cursor.X = (unsigned int)x;
     this->Cursor.Y = (unsigned int)y;
     this->Cursor.Visible = true;

@@ -235,6 +235,11 @@ namespace AppCUI
                 BlockLeftHalf,
                 BlockRightHalf,
 
+                // symbols
+                CircleFilled,
+                CircleEmpty,
+                CheckMark,
+
                 // always last
                 Count
             };
@@ -541,6 +546,17 @@ namespace AppCUI
         {
         public:
             bool	Create(Control *parent, const char * text, const char * layout, int controlID = 0);
+            void	OnMouseReleased(int x, int y, int Button) override;
+            void	Paint(Console::Renderer & renderer) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void	OnHotKey() override;
+            bool    OnMouseEnter() override;
+            bool    OnMouseLeave() override;
+        };
+        class EXPORT RadioBox : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout, int groupID, int controlID = 0);
             void	OnMouseReleased(int x, int y, int Button) override;
             void	Paint(Console::Renderer & renderer) override;
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
