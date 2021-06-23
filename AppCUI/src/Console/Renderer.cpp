@@ -54,6 +54,13 @@ void Renderer::FillHorizontalLine(int left, int y, int right, int charCode, unsi
 {
     ConsoleRendererCall(FillHorizontalLine(left, y, right, charCode, color));
 }
+void Renderer::FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color)
+{
+    if (this->consoleRenderer)
+    {
+        CRND->FillHorizontalLine(left, y, right, CRND->SpecialCharacters[(unsigned int)charID], color);
+    }
+}
 void Renderer::FillHorizontalLineSize(int x, int y, int size, int charCode, unsigned int color)
 {
     ConsoleRendererCall(FillHorizontalLine(x, y, x+size-1, charCode, color));
@@ -61,6 +68,13 @@ void Renderer::FillHorizontalLineSize(int x, int y, int size, int charCode, unsi
 void Renderer::FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color)
 {
     ConsoleRendererCall(FillVerticalLine(x, top, bottom, charCode, color));
+}
+void Renderer::FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color)
+{
+    if (this->consoleRenderer)
+    {
+        CRND->FillVerticalLine(x, top, bottom, CRND->SpecialCharacters[(unsigned int)charID], color);
+    }
 }
 void Renderer::FillVerticalLineSize(int x, int y, int size, int charCode, unsigned int color)
 {

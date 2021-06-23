@@ -11,13 +11,17 @@ using namespace AppCUI::Controls;
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Label l1, l2;
+    Label l1, l2, l3;
+    Button b1, b2;
 public:
     MyWin() 
     {
         this->Create("Test", "a:c,w:50%,h:50%",  WindowFlags::SIZEABLE);
         l1.Create(this, "&Single line label with hot key 'S'", "x:1,y:2,w:90%,h:1");
         l2.Create(this, "&Multi line label \nwith hot key 'M'", "x:1,y:4,w:90%,h:2");
+        l3.Create(this, "1234567890ABCDEFGHIJKLMNOPQRSTUV", "x:10,y:9,w:30,h:1");
+        b1.Create(this, "&OK", "l:1,b:0,w:90%,h:2", 100);
+        b2.Create(this, "&Cancel", "x:26,y:10,w:15", 102);
     }
     bool OnEvent(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID) override
     {

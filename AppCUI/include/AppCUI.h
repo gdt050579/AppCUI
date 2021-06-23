@@ -305,8 +305,10 @@ namespace AppCUI
             void    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
             void    FillRectWidthHeight(int x, int y, int width, int height, int charCode, unsigned int color);
             void    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
+            void    FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color);
             void    FillHorizontalLineSize(int x, int y, int size, int charCode, unsigned int color);
             void    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            void    FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color);
             void    FillVerticalLineSize(int x, int y, int size, int charCode, unsigned int color);
             void    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
             void    DrawRectWidthHeight(int x, int y, int width, int height, unsigned int color, bool doubleLine);
@@ -341,6 +343,7 @@ namespace AppCUI
             {
                 EVENT_WINDOW_CLOSE,
                 EVENT_WINDOW_ACCEPT,
+                EVENT_BUTTON_CLICKED,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND
             };
@@ -519,6 +522,19 @@ namespace AppCUI
             bool	Create(Control *parent, const char * text, const char * layout);
             void	Paint(Console::Renderer & renderer) override;
         };
+        class EXPORT Button : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout, int controlID = 0);
+            void	OnMousePressed(int x, int y, int Button) override;
+            void	OnMouseReleased(int x, int y, int Button) override;
+            bool	OnMouseDrag(int x, int y, int Button) override;
+            void	Paint(Console::Renderer & renderer) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void	OnHotKey() override;
+            bool    OnMouseEnter() override;
+            bool    OnMouseLeave() override;
+        };
 
 
     };
@@ -534,7 +550,7 @@ namespace AppCUI
             };
         }
 
-        EXPORT class CommandBar
+        class EXPORT CommandBar
         {
             void* Controller;
         public:
@@ -571,6 +587,11 @@ namespace AppCUI
                 unsigned int    NormalColor;
                 unsigned int    HotKeyColor;
             } Label;
+            struct {
+                struct {
+                    unsigned int TextColor, HotKeyColor;
+                } Normal, Focused, Inactive, Hover;
+            } Button;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID);

@@ -28,5 +28,12 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Label.NormalColor = COLOR(Color::Silver, Color::Transparent);
     this->Label.HotKeyColor = COLOR(Color::Yellow, Color::Transparent);
 
-
+    this->Button.Normal.TextColor = COLOR(Color::Silver, Color::Gray);
+    this->Button.Normal.HotKeyColor = COLOR(Color::Yellow, Color::Gray);
+    this->Button.Focused.TextColor = COLOR(Color::Black, Color::White);
+    this->Button.Focused.HotKeyColor = COLOR(Color::Magenta, Color::White);
+    this->Button.Inactive.TextColor = COLOR(Color::Gray, Color::Black);
+    this->Button.Inactive.HotKeyColor = COLOR(Color::Gray, Color::Black);
+    this->Button.Hover.TextColor = COLOR(Color::Black, Color::Yellow);
+    this->Button.Hover.HotKeyColor = COLOR(Color::Magenta, Color::Yellow);
 }

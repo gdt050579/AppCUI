@@ -486,7 +486,17 @@ bool ControlContext::RecomputeLayout(Control *controlParent)
 
     int a_l, a_r, a_t, a_b;
     this->Layout.Width = ComputeXAxesValue(this->Layout.Format.Width, md, LAYOUT_FLAG_WIDTH);
+    if (this->Layout.Width < this->Layout.MinWidth)
+        this->Layout.Width = this->Layout.MinWidth;
+    if (this->Layout.Width > this->Layout.MaxWidth)
+        this->Layout.Width = this->Layout.MaxWidth;
+
     this->Layout.Height = ComputeYAxesValue(this->Layout.Format.Height, md, LAYOUT_FLAG_HEIGHT);
+    if (this->Layout.Height < this->Layout.MinHeight)
+        this->Layout.Height = this->Layout.MinHeight;
+    if (this->Layout.Height > this->Layout.MaxHeight)
+        this->Layout.Height = this->Layout.MaxHeight;
+
     a_l = ComputeXAxesValue(this->Layout.Format.AnchorLeft, md, LAYOUT_FLAG_ANCH_LEFT);
     a_r = ComputeXAxesValue(this->Layout.Format.AnchorRight, md, LAYOUT_FLAG_ANCH_RIGHT);
     a_t = ComputeYAxesValue(this->Layout.Format.AnchorTop, md, LAYOUT_FLAG_ANCH_TOP);
