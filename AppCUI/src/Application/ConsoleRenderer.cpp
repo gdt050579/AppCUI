@@ -443,10 +443,10 @@ bool ConsoleRenderer::WriteSingleLineText(int x, int y, const char * text, unsig
 
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false;
-    if (textSize < 0)
-        textSize = AppCUI::Utils::String::Len(text);
     if (x > Clip.Right)
         return false;
+    if (textSize < 0)
+        textSize = AppCUI::Utils::String::Len(text);
     if (x + textSize < Clip.Left)
         return false;
     const unsigned char * s = (const unsigned char *)text;
@@ -473,10 +473,10 @@ bool ConsoleRenderer::WriteSingleLineTextWithHotKey(int x, int y, const char * t
 
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false;
-    if (textSize < 0)
-        textSize = AppCUI::Utils::String::Len(text);
     if (x > Clip.Right)
         return false;
+    if (textSize < 0)
+        textSize = AppCUI::Utils::String::Len(text);
     if (x + textSize < Clip.Left)
         return false;
     const unsigned char * s = (const unsigned char *)text;
@@ -535,5 +535,47 @@ bool ConsoleRenderer::WriteMultiLineText(int x, int y, const char * text, unsign
         }
         s++;
     }
+    return true;
+}
+bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+{
+    CHECK(text, false, "Expecting a valid (non-null) text ");
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+
+    if (textSize < 0)
+        textSize = AppCUI::Utils::String::Len(text);
+    const unsigned char * s = (const unsigned char *)text;
+    const unsigned char * e = s + textSize;
+    CHARACTER_INFORMATION * c = this->OffsetRows[y] + x;
+    CHARACTER_INFORMATION * hotkey = nullptr;
+    int orig_x = x;
+    while ((s < e) && (y < Clip.Bottom))
+    {
+        if ((*s) != '\n')
+        {
+            if ((x >= Clip.Left) && (x <= Clip.Right))
+            {
+                if ((!hotkey) && ((*s) == '&')) {
+                    hotkey = c;
+                    x--;
+                    c--;
+                }
+                else {
+                    SET_CHARACTER_EX(c, *s, color);
+                }
+            }
+            c++;
+            x++;
+        }
+        else {
+            y++;
+            x = orig_x;
+            c = this->OffsetRows[y] + x;
+        }
+        s++;
+    }
+    if (hotkey)
+        SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
