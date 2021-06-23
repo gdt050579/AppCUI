@@ -178,6 +178,11 @@ void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
                 return;
             }
             break;
+        case WINDOW_BUFFER_SIZE_EVENT:
+            evnt.newWidth = ir.Event.WindowBufferSizeEvent.dwSize.X;
+            evnt.newHeight = ir.Event.WindowBufferSizeEvent.dwSize.Y;
+            evnt.eventType = SystemEvents::APP_RESIZED;
+            break;
     }
 
 }
