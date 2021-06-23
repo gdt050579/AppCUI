@@ -30,7 +30,7 @@ void Button::Paint(Console::Renderer & renderer)
 	// daca e disable
 	if (!IsEnabled())
 	{
-        bc = &Members->Cfg->Button.Inactive; // dar cu alpha
+        bc = &Members->Cfg->Button.Inactive; 
     }
     else {
         if (IsChecked())

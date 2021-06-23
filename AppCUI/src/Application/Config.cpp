@@ -36,4 +36,18 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Button.Inactive.HotKeyColor = COLOR(Color::Gray, Color::Black);
     this->Button.Hover.TextColor = COLOR(Color::Black, Color::Yellow);
     this->Button.Hover.HotKeyColor = COLOR(Color::Magenta, Color::Yellow);
+
+    this->StateControl.Normal.TextColor = COLOR(Color::Silver, Color::Transparent);
+    this->StateControl.Normal.HotKeyColor = COLOR(Color::Aqua, Color::Transparent);
+    this->StateControl.Normal.StateSymbolColor = COLOR(Color::Green, Color::Transparent);
+    this->StateControl.Focused.TextColor = COLOR(Color::White, Color::Transparent);
+    this->StateControl.Focused.HotKeyColor = COLOR(Color::Aqua, Color::Transparent);
+    this->StateControl.Focused.StateSymbolColor = COLOR(Color::Green, Color::Transparent);
+    this->StateControl.Hover.TextColor = COLOR(Color::Yellow, Color::Transparent);
+    this->StateControl.Hover.HotKeyColor = COLOR(Color::Aqua, Color::Transparent);
+    this->StateControl.Hover.StateSymbolColor = COLOR(Color::Green, Color::Transparent);
+    this->StateControl.Inactive.TextColor = COLOR(Color::Gray, Color::Transparent);
+    this->StateControl.Inactive.HotKeyColor = COLOR(Color::Gray, Color::Transparent);
+    this->StateControl.Inactive.StateSymbolColor = COLOR(Color::Gray, Color::Transparent);
+
 }

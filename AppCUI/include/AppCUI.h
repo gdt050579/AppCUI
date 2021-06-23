@@ -320,6 +320,7 @@ namespace AppCUI
             void    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             void    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
+            void    SetCursor(int x, int y);
         };
 
 
@@ -344,6 +345,7 @@ namespace AppCUI
                 EVENT_WINDOW_CLOSE,
                 EVENT_WINDOW_ACCEPT,
                 EVENT_BUTTON_CLICKED,
+                EVENT_CHECKED_STATUS_CHANGED,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND
             };
@@ -535,6 +537,17 @@ namespace AppCUI
             bool    OnMouseEnter() override;
             bool    OnMouseLeave() override;
         };
+        class EXPORT CheckBox : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout, int controlID = 0);
+            void	OnMouseReleased(int x, int y, int Button) override;
+            void	Paint(Console::Renderer & renderer) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void	OnHotKey() override;
+            bool    OnMouseEnter() override;
+            bool    OnMouseLeave() override;
+        };
 
 
     };
@@ -592,6 +605,11 @@ namespace AppCUI
                     unsigned int TextColor, HotKeyColor;
                 } Normal, Focused, Inactive, Hover;
             } Button;
+            struct {
+                struct {
+                    unsigned int TextColor, HotKeyColor,StateSymbolColor;
+                } Normal, Focused, Inactive, Hover;
+            } StateControl;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID);

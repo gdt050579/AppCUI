@@ -99,4 +99,8 @@ void Renderer::WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, un
         CRND->WriteCharacter(x, y, CRND->SpecialCharacters[(unsigned int)charID], color);
     }
 }
+void Renderer::SetCursor(int x, int y)
+{
+    ConsoleRendererCall(ShowCursor(x, y));
+}
 #undef CRND

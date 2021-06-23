@@ -132,15 +132,21 @@ void ConsoleRenderer::HideCursor()
 {
     this->Cursor.Visible = false;
 }
-bool ConsoleRenderer::ShowCursor(unsigned int x, unsigned int y)
+bool ConsoleRenderer::ShowCursor(int x, int y)
 {
+    TRANSLATE_COORDONATES(x, y);
+    if ((x < Clip.Left) || (x > Clip.Right) || (y < Clip.Top) || (y > Clip.Bottom))
+    {
+        this->Cursor.Visible = false;
+        return false;
+    }
     if ((x >= this->ConsoleSize.Width) || (y >= this->ConsoleSize.Height))
     {
         this->Cursor.Visible = false;
         return false;
     }
-    this->Cursor.X = x;
-    this->Cursor.Y = y;
+    this->Cursor.X = (unsigned int)x;
+    this->Cursor.Y = (unsigned int)y;
     this->Cursor.Visible = true;
     return true;
 }
