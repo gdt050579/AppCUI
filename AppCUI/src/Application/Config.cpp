@@ -25,5 +25,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Window.ControlButtonPressedColor = COLOR(Color::Black, Color::Yellow);
     this->Window.ControlButtonInactiveColor = COLOR(Color::Silver, Color::Black);
 
+    this->Label.NormalColor = COLOR(Color::Silver, Color::Transparent);
+    this->Label.HotKeyColor = COLOR(Color::Yellow, Color::Transparent);
+
 
 }

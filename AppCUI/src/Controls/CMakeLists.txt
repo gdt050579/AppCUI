@@ -1,1 +1,1 @@
-target_sources(AppCUI PUBLIC Control.cpp Window.cpp)
+target_sources(AppCUI PUBLIC Control.cpp Label.cpp Window.cpp)

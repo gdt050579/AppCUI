@@ -517,7 +517,7 @@ bool ConsoleRenderer::WriteMultiLineText(int x, int y, const char * text, unsign
     const unsigned char * e = s + textSize;
     CHARACTER_INFORMATION * c = this->OffsetRows[y] + x;
     int orig_x = x;
-    while ((s < e) && (y < Clip.Bottom))
+    while ((s < e) && (y <= Clip.Bottom))
     {
         if ((*s) != '\n')
         {
@@ -550,7 +550,7 @@ bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * te
     CHARACTER_INFORMATION * c = this->OffsetRows[y] + x;
     CHARACTER_INFORMATION * hotkey = nullptr;
     int orig_x = x;
-    while ((s < e) && (y < Clip.Bottom))
+    while ((s < e) && (y <= Clip.Bottom))
     {
         if ((*s) != '\n')
         {

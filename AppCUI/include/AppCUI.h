@@ -491,7 +491,8 @@ namespace AppCUI
                 MAXIMIZED = 0x010000
             };
         }
-        class EXPORT Window : public Control {
+        class EXPORT Window : public Control 
+        {
         public:
             bool	Create(const char* text, const char * layout, WindowFlags::Type windowsFlags);
             void	Paint(Console::Renderer & renderer) override;
@@ -512,6 +513,13 @@ namespace AppCUI
 
             virtual ~Window();
         };
+        class EXPORT Label : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout);
+            void	Paint(Console::Renderer & renderer) override;
+        };
+
 
     };
 
@@ -559,7 +567,10 @@ namespace AppCUI
                 unsigned int    ControlButtonHoverColor;
                 unsigned int    ControlButtonPressedColor;
             } Window, DialogError, DialogNotify, DialogWarning;
-
+            struct {
+                unsigned int    NormalColor;
+                unsigned int    HotKeyColor;
+            } Label;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID);
