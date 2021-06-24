@@ -564,6 +564,34 @@ namespace AppCUI
             bool    OnMouseEnter() override;
             bool    OnMouseLeave() override;
         };
+        class EXPORT Splitter : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * layout, bool vertical);
+            void	Paint(Console::Renderer & renderer) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	SetSecondPanelSize(int newSize);
+            bool	HideSecondPanel();
+            bool	MaximizeSecondPanel();
+            void	OnAfterResize(int newWidth, int newHeight) override;
+            void	OnFocus() override;
+            bool	OnBeforeAddControl(Control *ctrl) override;
+            void	OnAfterAddControl(Control *ctrl) override;
+            void	OnMousePressed(int x, int y, int Button) override;
+            void	OnMouseReleased(int x, int y, int Button) override;
+            bool	OnMouseDrag(int x, int y, int Button) override;
+            bool    OnMouseEnter() override;
+            bool    OnMouseLeave() override;
+            int		GetSplitterPosition();
+            virtual ~Splitter();
+        };
+        class EXPORT Panel : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout);
+            bool	Create(Control *parent, const char * layout);
+            void	Paint(Console::Renderer & renderer) override;
+        };
 
 
     };
@@ -626,6 +654,12 @@ namespace AppCUI
                     unsigned int TextColor, HotKeyColor,StateSymbolColor;
                 } Normal, Focused, Inactive, Hover;
             } StateControl;
+            struct {
+                unsigned int NormalColor, ClickColor, HoverColor;
+            } Splitter;
+            struct {
+                unsigned int NormalColor, TextColor;
+            } Panel;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID);

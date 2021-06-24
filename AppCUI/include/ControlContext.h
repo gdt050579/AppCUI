@@ -96,6 +96,14 @@ public:
     bool						Maximized;
 };
 
+class SplitterControlContext : public ControlContext
+{
+public:
+    int					SecondPanelSize;
+    unsigned int        DragStatus;
+};
+
+
 
 #define CREATE_CONTROL_CONTEXT(object,name,retValue)		ControlContext * name = (ControlContext*)((object)->Context); if (name == nullptr) return retValue;
 #define CREATE_TYPECONTROL_CONTEXT(type,name,retValue)		type * name = (type*)((this)->Context); if (name == nullptr) return retValue;
