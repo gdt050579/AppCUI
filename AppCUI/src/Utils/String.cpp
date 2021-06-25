@@ -348,6 +348,39 @@ bool AppCUI::Utils::String::SetChars(char ch, unsigned int count)
     return true;
 }
 
+bool AppCUI::Utils::String::InsertChar(char character, unsigned int position)
+{
+    CHECK(character, false, "NULL character can not be added !");    
+    VALIDATE_ALLOCATED_SPACE(this->Size + 2, false);
+    CHECK(position <= this->Size, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Size);
+    if (position == this->Size)
+    {
+        this->Text[this->Size++] = character;
+        this->Text[this->Size] = 0;
+    }
+    else {
+        memmove(this->Text + position + 1, this->Text + position, this->Size - position);
+        this->Text[position] = character;
+        this->Size++;
+        this->Text[this->Size] = 0;
+    }
+    return true;
+}
+bool AppCUI::Utils::String::DeleteChar(unsigned int position)
+{
+    CHECK(position < this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", position, this->Size-1);
+    if ((position+1) == this->Size)
+    {
+        this->Size--;
+        this->Text[this->Size] = 0;        
+    }
+    else {
+        memmove(this->Text + position, this->Text + position + 1, this->Size - (position + 1));
+        this->Size--;
+        this->Text[this->Size] = 0;
+    }
+    return true;
+}
 
 int  AppCUI::Utils::String::GetChar(int index) const
 {
