@@ -102,6 +102,19 @@ public:
     int					SecondPanelSize;
     unsigned int        DragStatus;
 };
+class TextFieldControlContext : public ControlContext
+{
+public:
+    struct {
+        int StartOffset, Pos;
+    } Cursor;
+    struct {
+        int Start, End, Origin;
+    } Selection;
+    unsigned int *	            CharColors;
+    unsigned int                CharColorsAllocated;
+
+};
 
 
 

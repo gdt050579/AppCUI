@@ -57,4 +57,9 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Panel.NormalColor = COLOR(Color::Silver, Color::Transparent);
     this->Panel.TextColor = COLOR(Color::White, Color::Transparent);
 
+    this->TextField.SelectionColor = COLOR(Color::Yellow, Color::Magenta);
+    this->TextField.NormalColor = COLOR(Color::Silver, Color::Black);
+    this->TextField.FocusColor = COLOR(Color::White, Color::Black);
+    this->TextField.InactiveColor = COLOR(Color::Gray, Color::Black);
+    this->TextField.HoverColor = COLOR(Color::Yellow, Color::Black);
 }

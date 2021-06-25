@@ -75,57 +75,61 @@ namespace AppCUI
             static bool		    EndsWith    (const char *sir, const char *text, bool ignoreCase = false, unsigned int sirTextSize = 0xFFFFFFFF, unsigned int textSize = 0xFFFFFFFF);
 
             // Create string object
-            bool			Create(unsigned int initialAllocatedBuffer = 64);
-            bool			Create(const char* text);
-            bool			Create(char* buffer, unsigned int bufferSize, bool emptyString = false);
+            bool			    Create(unsigned int initialAllocatedBuffer = 64);
+            bool			    Create(const char* text);
+            bool			    Create(char* buffer, unsigned int bufferSize, bool emptyString = false);
 
-            const char*		GetText() const { return Text; }
-            unsigned int	Len() const { return Size; }
-            unsigned int	GetAllocatedSize() const { return Allocated & 0x7FFFFFFF; }
+            const char*		    GetText() const { return Text; }
+            unsigned int	    Len() const { return Size; }
+            unsigned int	    GetAllocatedSize() const { return Allocated & 0x7FFFFFFF; }
 
-            int				GetChar(int index) const;
-            bool			SetChar(int index, char value);
+            int				    GetChar(int index) const;
+            bool			    SetChar(int index, char value);
 
-            bool			Add(const char *text, unsigned int size = 0xFFFFFFFF);
-            bool			Add(const String& text);
-            bool			Add(const String* text);
-            bool			AddChar(char ch);
-            bool			AddChars(char ch, unsigned int count);
+            bool			    Add(const char *text, unsigned int size = 0xFFFFFFFF);
+            bool			    Add(const String& text);
+            bool			    Add(const String* text);
+            bool			    AddChar(char ch);
+            bool			    AddChars(char ch, unsigned int count);
 
-            bool			Set(const char *text, unsigned int size = 0xFFFFFFFF);
-            bool			Set(const String& text);
-            bool			Set(const String* text);
-            bool			SetChars(char ch, unsigned int count);
+            bool                InsertChar(char character, unsigned int position);
+            bool                DeleteChar(unsigned int position);
+            bool                Delete(unsigned int start, unsigned int end);
 
-            bool			SetFormat(const char *format, ...);
-            bool			AddFormat(const char *format, ...);
-            const char*		Format(const char *format, ...);
+            bool			    Set(const char *text, unsigned int size = 0xFFFFFFFF);
+            bool			    Set(const String& text);
+            bool			    Set(const String* text);
+            bool			    SetChars(char ch, unsigned int count);
 
-            bool			Realloc(unsigned int newSize);
-            void			Destroy();
-            bool			Truncate(unsigned int newSize);
-            void			Clear();
+            bool			    SetFormat(const char *format, ...);
+            bool			    AddFormat(const char *format, ...);
+            const char*		    Format(const char *format, ...);
 
-            bool			StartsWith(const char *text, bool ignoreCase = false) const;
-            bool			StartsWith(const String *text, bool ignoreCase = false) const;
-            bool			StartsWith(const String &text, bool ignoreCase = false) const;
-            bool			EndsWith(const char *text, bool ignoreCase = false) const;
-            bool			EndsWith(const String *text, bool ignoreCase = false) const;
-            bool			EndsWith(const String &text, bool ignoreCase = false) const;
-            bool			Equals(const char *text, bool ignoreCase = false) const;
-            bool			Equals(const String &ss, bool ignoreCase = false) const;
+            bool			    Realloc(unsigned int newSize);
+            void			    Destroy();
+            bool			    Truncate(unsigned int newSize);
+            void			    Clear();
+
+            bool			    StartsWith(const char *text, bool ignoreCase = false) const;
+            bool			    StartsWith(const String *text, bool ignoreCase = false) const;
+            bool			    StartsWith(const String &text, bool ignoreCase = false) const;
+            bool			    EndsWith(const char *text, bool ignoreCase = false) const;
+            bool			    EndsWith(const String *text, bool ignoreCase = false) const;
+            bool			    EndsWith(const String &text, bool ignoreCase = false) const;
+            bool			    Equals(const char *text, bool ignoreCase = false) const;
+            bool			    Equals(const String &ss, bool ignoreCase = false) const;
 
             
-            inline String&	operator=  (const String &s) { this->Set(s); return *this; }
-            inline String&  operator=  (const char * text) { this->Set(text); return *this; }
-            inline operator char *() const { return Text; }
-            inline operator const char *() const  { return Text; }
-            inline String&  operator+= (const String &s) { this->Add(s); return *this; }
-            inline String&  operator+= (const char* text) { this->Add(text); return *this; }
+            inline String&	    operator=  (const String &s) { this->Set(s); return *this; }
+            inline String&      operator=  (const char * text) { this->Set(text); return *this; }
+            inline              operator char *() const { return Text; }
+            inline              operator const char *() const  { return Text; }
+            inline String&      operator+= (const String &s) { this->Add(s); return *this; }
+            inline String&      operator+= (const char* text) { this->Add(text); return *this; }
 
-            inline bool     operator== (const String &s) const { return this->Equals(s); }
-            inline bool		operator!= (const String &s) const { return !this->Equals(s); }
-            char&		    operator[] (int poz);
+            inline bool         operator== (const String &s) const { return this->Equals(s); }
+            inline bool		    operator!= (const String &s) const { return !this->Equals(s); }
+            char&		        operator[] (int poz);
             
         };
         template <int size>
@@ -351,6 +355,8 @@ namespace AppCUI
                 EVENT_WINDOW_ACCEPT,
                 EVENT_BUTTON_CLICKED,
                 EVENT_CHECKED_STATUS_CHANGED,
+                EVENT_TEXT_CHANGED,
+                EVENT_TEXTFIELD_VALIDATE,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND
             };
@@ -592,6 +598,29 @@ namespace AppCUI
             bool	Create(Control *parent, const char * layout);
             void	Paint(Console::Renderer & renderer) override;
         };
+        namespace TextFieldFlags {
+            enum Type : unsigned int {
+                NONE = 0,
+                PROCESS_ENTER = 0x000100,
+                READONLY_TEXT = 0x000200,
+                PASSWORD = 0x000400,
+                SYNTAX_HIGHLIGHTING = 0x000800,
+            };
+        }
+        class EXPORT TextField : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE);
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void	OnAfterSetText(const char *text) override;
+            void	Paint(Console::Renderer & renderer) override;
+            void	OnFocus() override;
+
+            void	SelectAll();
+            void	ClearSelection();
+
+            virtual ~TextField();
+        };
 
 
     };
@@ -660,6 +689,9 @@ namespace AppCUI
             struct {
                 unsigned int NormalColor, TextColor;
             } Panel;
+            struct {
+                unsigned int NormalColor, FocusColor, InactiveColor, HoverColor, SelectionColor;
+            } TextField;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Events::Event eventType, int controlID);
