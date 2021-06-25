@@ -381,7 +381,22 @@ bool AppCUI::Utils::String::DeleteChar(unsigned int position)
     }
     return true;
 }
-
+bool AppCUI::Utils::String::Delete(unsigned int start, unsigned int end)
+{
+    CHECK(end <= this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", position, this->Size);
+    CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
+    if (end == this->Size)
+    {
+        this->Size = start;
+        this->Text[this->Size] = 0;
+    }
+    else {
+        memmove(this->Text + start, this->Text + end, this->Size - (end-start));
+        this->Size-=(end-start);
+        this->Text[this->Size] = 0;
+    }
+    return true;
+}
 int  AppCUI::Utils::String::GetChar(int index) const
 {
 	if (Text==nullptr)
