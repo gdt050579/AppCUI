@@ -580,3 +580,10 @@ bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * te
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
+bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb)
+{
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+
+    return true;
+}

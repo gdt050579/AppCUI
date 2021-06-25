@@ -263,6 +263,11 @@ namespace AppCUI
             inline Point(int x, int y) : X(x), Y(y) { }
             inline void Set(int x, int y) { X = x; Y = y; }
         };
+        struct Character
+        {
+            unsigned short  Code;
+            unsigned short  Color;
+        };
         class EXPORT Rect
         {
             int X, Y, Width, Height;
@@ -305,6 +310,25 @@ namespace AppCUI
             void			Set(int x, int y, int width, int height);
         };
 
+        class EXPORT CharacterBuffer
+        {
+            Character *     Buffer;
+            unsigned int    Count;
+            unsigned int    Allocated;
+            bool            Grow(unsigned int newSize);
+        public:
+            CharacterBuffer();
+            ~CharacterBuffer();
+
+            void Destroy();
+            void Clear();
+
+            inline unsigned int    Len() const { return Count; }
+
+            bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
+            bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
+        };
+        
         class EXPORT Renderer
         {
             void*   consoleRenderer;
@@ -332,6 +356,7 @@ namespace AppCUI
             void    SetCursor(int x, int y);
         };
 
+        
 
     };
     namespace Controls

@@ -1,1 +1,1 @@
-target_sources(AppCUI PUBLIC Clip.cpp Rect.cpp Renderer.cpp)
+target_sources(AppCUI PUBLIC CharacterBuffer.cpp Clip.cpp Rect.cpp Renderer.cpp )

@@ -118,6 +118,7 @@ namespace AppCUI
             bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
+            bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer& cb);
             void    HideCursor();
             bool    ShowCursor(int x, int y);
             void    SetClip(const AppCUI::Console::Clip & clip);
