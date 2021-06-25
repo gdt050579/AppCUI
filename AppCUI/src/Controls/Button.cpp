@@ -26,7 +26,8 @@ void Button::Paint(Console::Renderer & renderer)
 
     auto * bc = &Members->Cfg->Button.Normal;
     bool pressed = false;
-
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::OVERWRITE_COLORS);
+    
 	// daca e disable
 	if (!IsEnabled())
 	{
@@ -65,13 +66,19 @@ void Button::Paint(Console::Renderer & renderer)
     if (pressed)
     {
         renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
-        if (sz > 0)
-            renderer.WriteSingleLineTextWithHotKey(x + 2, 0, Members->Text.GetText(), Members->Cfg->Button.Focused.TextColor, Members->Cfg->Button.Focused.HotKeyColor, sz);
+        if (sz > 0) {
+            params.Color = Members->Cfg->Button.Focused.TextColor;
+            params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
+            renderer.WriteCharacterBuffer(x, 0, Members->Text, params);            
+        }
     }
     else {
         renderer.FillHorizontalLine(0, 0, Members->Layout.Width-2, ' ', bc->TextColor);
-        if (sz > 0)
-            renderer.WriteSingleLineTextWithHotKey(x + 1, 0, Members->Text.GetText(), bc->TextColor, bc->HotKeyColor, sz);
+        if (sz > 0) {
+            params.Color = bc->TextColor;
+            params.HotKeyColor = bc->HotKeyColor;
+            renderer.WriteCharacterBuffer(x+1, 0, Members->Text, params);
+        }
         renderer.FillHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, COLOR(Color::Black, Color::Transparent));
         renderer.WriteSpecialCharacter(Members->Layout.Width-1, 0, SpecialChars::BlockLowerHalf, COLOR(Color::Black, Color::Transparent));
     }

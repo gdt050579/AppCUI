@@ -23,10 +23,15 @@ typedef struct { int characterCode, characterColor; } CHAR_INFO, CHARACTER_INFOR
 
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
     if (value>=0) { SET_CHARACTER_VALUE(ptrCharInfo,value); } \
-    if (color != AppCUI::Console::Color::NoColor) { \
-        if (color & 256) color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0x0F)|(color & 0xFFFFF0); \
-        if (color & (256<<4)) color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0xF0)|(color & 0xFFFF0F); \
-        SET_CHARACTER_COLOR(ptrCharInfo,(color & 0xFF));\
+    if (color<256) { \
+        SET_CHARACTER_COLOR(ptrCharInfo, color); \
+    } else { \
+        if (color != AppCUI::Console::Color::NoColor) { \
+            unsigned int temp_color = color; \
+            if (color & 256) temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0x0F)|(temp_color & 0xFFFFF0); \
+            if (color & (256<<4)) temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0xF0)|(temp_color & 0xFFFF0F); \
+            SET_CHARACTER_COLOR(ptrCharInfo,(temp_color & 0xFF));\
+        } \
     } \
 }
 
@@ -118,7 +123,7 @@ namespace AppCUI
             bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
-            bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer& cb);
+            bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
             void    HideCursor();
             bool    ShowCursor(int x, int y);
             void    SetClip(const AppCUI::Console::Clip & clip);

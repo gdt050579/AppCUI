@@ -20,8 +20,13 @@ bool Label::Create(Control *parent, const char * text, const char * layout)
 void Label::Paint(Console::Renderer & renderer)
 {
 	CREATE_CONTROL_CONTEXT(this, Members, );
-    if (Members->Layout.Height == 1)
-        renderer.WriteSingleLineTextWithHotKey(0, 0, Members->Text, Members->Cfg->Label.NormalColor, Members->Cfg->Label.HotKeyColor, Members->Text.Len());
-    else
-        renderer.WriteMultiLineTextWithHotKey(0, 0, Members->Text, Members->Cfg->Label.NormalColor, Members->Cfg->Label.HotKeyColor, Members->Text.Len());
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS);
+    params.Color = Members->Cfg->Label.NormalColor;
+    params.HotKeyColor = Members->Cfg->Label.HotKeyColor;
+    if (Members->Layout.Height == 1) {
+        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+    } else {
+        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
+    }
+    renderer.WriteCharacterBuffer(0, 0, Members->Text, params);
 }

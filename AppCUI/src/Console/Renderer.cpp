@@ -103,4 +103,8 @@ void Renderer::SetCursor(int x, int y)
 {
     ConsoleRendererCall(ShowCursor(x, y));
 }
+void Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
+{
+    ConsoleRendererCall(WriteCharacterBuffer(x, y, cb, params));
+}
 #undef CRND

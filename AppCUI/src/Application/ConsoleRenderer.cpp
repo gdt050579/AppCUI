@@ -580,10 +580,61 @@ bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * te
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
-bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb)
+bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, y);
+    unsigned int start = 0;
+    unsigned int end = cb.Len();
 
+    if (params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)
+    {
+        if ((y < Clip.Top) || (y > Clip.Bottom))
+            return false;
+        if (x > Clip.Right)
+            return false;
+        if (x < Clip.Left)
+        {
+            start += (unsigned int)(Clip.Left - x);
+            x = Clip.Left;
+            if (start >= end)
+                return false;
+        }
+        if ((Clip.Right +1 - x) <= (end - start))
+            end = start + (Clip.Right + 1 - x);
+        if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
+        {
+            if ((end - start) > params.Width)
+                end = start + params.Width;
+        }
+        const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
+        CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
+        if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+        {
+            if (params.Color < 256)
+            {
+                while (start < end)
+                {
+                    SET_CHARACTER(p, ch->Code, params.Color);
+                    p++; ch++; start++;
+                }
+            }
+            else {
+                while (start < end)
+                {
+                    SET_CHARACTER_EX(p, ch->Code, params.Color);
+                    p++; ch++; start++;
+                }
+            }
+            // hotkey
+        }
+        else {
+            while (start < end)
+            {
+                SET_CHARACTER_EX(p, ch->Code, ch->Color);
+                p++; ch++; start++;
+            }
+        }
+    }
     return true;
 }

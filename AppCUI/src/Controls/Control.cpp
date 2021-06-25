@@ -844,7 +844,7 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String *text)
 		return false;
 	if (OnBeforeSetText(text->GetText()) == false)
 		return false;
-	if (CTRLC->Text.Set(text) == false)
+	if (CTRLC->Text.Set(text->GetText(),Color::NoColor,text->Len()) == false)
 		return false;
 	OnAfterSetText(text->GetText());
 	return true;
@@ -853,25 +853,25 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text)
 {
 	if (OnBeforeSetText(text.GetText()) == false)
 		return false;
-	if (CTRLC->Text.Set(&text) == false)
+	if (CTRLC->Text.Set(text.GetText(), Color::NoColor, text.Len()) == false)
 		return false;
 	OnAfterSetText(text.GetText());
 	return true;
 }
 
-const char*		AppCUI::Controls::Control::GetText()
-{
-	return CTRLC->Text.GetText();
-}
-bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String *text)
-{
-	CHECK(text != nullptr, "", false);
-	return text->Set(&CTRLC->Text);
-}
-bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String &text)
-{
-	return text.Set(&CTRLC->Text);
-}
+//const char*		AppCUI::Controls::Control::GetText()
+//{
+//	return CTRLC->Text.GetText();
+//}
+//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String *text)
+//{
+//	CHECK(text != nullptr, "", false);
+//	return text->Set(&CTRLC->Text);
+//}
+//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String &text)
+//{
+//	return text.Set(&CTRLC->Text);
+//}
 
 int	 AppCUI::Controls::Control::GetGroup()
 {

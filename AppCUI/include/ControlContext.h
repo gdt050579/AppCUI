@@ -42,7 +42,7 @@ public:
 	AppCUI::Controls::Control				**Controls;
     AppCUI::Controls::Control				*Parent;
     AppCUI::Application::Config              *Cfg;
-    AppCUI::Utils::LocalString<32>		    Text;
+    AppCUI::Console::CharacterBuffer		Text;
 	bool									Inited,Focused,MouseIsOver;
 
 	// Handlers

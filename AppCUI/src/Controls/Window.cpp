@@ -196,7 +196,10 @@ void Window::Paint(Console::Renderer & renderer)
     int txW = Members->Text.Len();
     txW = MINVALUE(txW, Members->Layout.Width - 10);
     int txX = (Members->Layout.Width - txW) / 2;
-    renderer.WriteSingleLineText(txX, 0, Members->Text.GetText(), colorTitle, txW);
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
+    params.Color = colorTitle;
+    params.Width = txW;
+    renderer.WriteCharacterBuffer(txX, 0, Members->Text, params);
     renderer.WriteCharacter(txX - 1, 0, ' ', colorTitle);
     renderer.WriteCharacter(txX + txW, 0, ' ', colorTitle);
     // close button

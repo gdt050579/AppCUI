@@ -248,6 +248,18 @@ namespace AppCUI
                 Count
             };
         }
+        namespace WriteCharacterBufferFlags
+        {
+            enum Type : unsigned int
+            {
+                NONE                = 0,
+                SINGLE_LINE         = 0x0000001,
+                MULTIPLE_LINES      = 0x0000002,
+                OVERWRITE_COLORS    = 0x0000004,
+                WRAP_TO_WIDTH       = 0x0000008,
+                PART_OF_BUFFER      = 0x0000010,
+            };
+        }
 
         struct Size
         {
@@ -267,6 +279,16 @@ namespace AppCUI
         {
             unsigned short  Code;
             unsigned short  Color;
+        };
+        struct WriteCharacterBufferParams
+        {
+            WriteCharacterBufferFlags::Type Flags;
+            unsigned int Color;
+            unsigned int HotKeyColor;
+            unsigned int Start, End;
+            unsigned int Width;
+            WriteCharacterBufferParams(): Flags(WriteCharacterBufferFlags::NONE) { }
+            WriteCharacterBufferParams(WriteCharacterBufferFlags::Type _flg) : Flags(_flg) { }
         };
         class EXPORT Rect
         {
@@ -323,7 +345,8 @@ namespace AppCUI
             void Destroy();
             void Clear();
 
-            inline unsigned int    Len() const { return Count; }
+            inline unsigned int     Len() const { return Count; }
+            inline const Character* GetBuffer() const { return Buffer; }
 
             bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
             bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
@@ -353,6 +376,7 @@ namespace AppCUI
             void    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             void    WriteCharacter(int x, int y, int charCode, unsigned int color);
             void    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
+            void    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
             void    SetCursor(int x, int y);
         };
 
@@ -467,9 +491,9 @@ namespace AppCUI
             bool			SetText(const char * text);
             bool			SetText(AppCUI::Utils::String *text);
             bool			SetText(AppCUI::Utils::String &text);
-            const char*		GetText();
-            bool			GetText(AppCUI::Utils::String *text);
-            bool			GetText(AppCUI::Utils::String &text);
+            //const char*		GetText();
+            //bool			GetText(AppCUI::Utils::String *text);
+            //bool			GetText(AppCUI::Utils::String &text);
 
             // handlere
             void			SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void *Context = nullptr);
@@ -751,5 +775,12 @@ inline constexpr AppCUI::Controls::WindowFlags::Type operator|(AppCUI::Controls:
 {
     return static_cast<AppCUI::Controls::WindowFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
-
+inline constexpr AppCUI::Console::WriteCharacterBufferFlags::Type operator|(AppCUI::Console::WriteCharacterBufferFlags::Type f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
+{
+    return static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+inline constexpr void operator|=(AppCUI::Console::WriteCharacterBufferFlags::Type & f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
+{
+    f1 = static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
 #endif

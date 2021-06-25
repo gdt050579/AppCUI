@@ -28,12 +28,18 @@ void AppCUI::Controls::RadioBox::Paint(Console::Renderer & renderer)
         cbc = &Members->Cfg->StateControl.Focused;
     else if (Members->MouseIsOver)
         cbc = &Members->Cfg->StateControl.Hover;
-
     renderer.WriteSingleLineText(0, 0, "( ) ", cbc->TextColor, 4);
-    if (Members->Layout.Height == 1)
-        renderer.WriteSingleLineTextWithHotKey(4, 0, Members->Text, cbc->TextColor, cbc->HotKeyColor, Members->Text.Len());
-    else
-        renderer.WriteMultiLineTextWithHotKey(4, 0, Members->Text, cbc->TextColor, cbc->HotKeyColor, Members->Text.Len());
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS);
+    if (Members->Layout.Height == 1) {
+        params.Color = cbc->TextColor;
+        params.HotKeyColor = cbc->HotKeyColor;
+        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+    } else {
+        params.Color = cbc->TextColor;
+        params.HotKeyColor = cbc->HotKeyColor;
+        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
+    }
+    renderer.WriteCharacterBuffer(4, 0, Members->Text, params);
 
     if (IsChecked())
         renderer.WriteSpecialCharacter(1, 0, SpecialChars::CircleFilled, cbc->StateSymbolColor);

@@ -43,9 +43,10 @@ void TextField_MoveTo(TextField *control, int newPoz, bool selected)
 	int c_width = C_WIDTH;
 	if ((!selected) && (Members->Selection.Start!= -1))
 		control->ClearSelection();
-	const char * Text = Members->Text.GetText();
-	if ((Text[Members->Cursor.Pos] == 0) && (newPoz>Members->Cursor.Pos))
-		return;
+    //GDT:FIX
+	//const char * Text = Members->Text.GetText();
+	//if ((Text[Members->Cursor.Pos] == 0) && (newPoz>Members->Cursor.Pos))
+	//	return;
 	if ((selected) && (Members->Selection.Start== -1))
 	{
 		Members->Selection.Start= Members->Selection.End = Members->Selection.Origin = Members->Cursor.Pos;
@@ -54,7 +55,8 @@ void TextField_MoveTo(TextField *control, int newPoz, bool selected)
 	{
 		if (Members->Cursor.Pos>newPoz) Members->Cursor.Pos--; else if (Members->Cursor.Pos<newPoz) Members->Cursor.Pos++;
 		if (Members->Cursor.Pos<0) { Members->Cursor.Pos = newPoz = 0; }
-		if (Text[Members->Cursor.Pos] == 0) newPoz = Members->Cursor.Pos;
+        //GDT:FIX
+		//if (Text[Members->Cursor.Pos] == 0) newPoz = Members->Cursor.Pos;
 		if (Members->Cursor.Pos<Members->Cursor.StartOffset) Members->Cursor.StartOffset = Members->Cursor.Pos;
 		if (Members->Cursor.Pos>Members->Cursor.StartOffset + c_width) Members->Cursor.StartOffset = Members->Cursor.Pos - c_width;
 	}
@@ -76,18 +78,20 @@ void TextField_DeleteSelected(TextField *control)
 	{
 		TextField_MoveTo(control, Members->Cursor.Pos - (se - ss + 1), false);
 	}
-	Members->Text.Delete(ss, se+1);
+    //GDT:FIX
+	//Members->Text.Delete(ss, se+1);
 	control->ClearSelection();
 }
 void TextField_AddChar(TextField *control, char ch)
 {
-	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-	EXIT_IF_READONLY();
-	TextField_DeleteSelected(control);
-    if (Members->Cursor.Pos > (int)Members->Text.Len())
-        Members->Text.InsertChar(ch, Members->Text.Len());
-    else
-        Members->Text.InsertChar(ch, (unsigned int)(Members->Cursor.Pos));
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    EXIT_IF_READONLY();
+    TextField_DeleteSelected(control);
+    //GDT:FIX
+    //if (Members->Cursor.Pos > (int)Members->Text.Len())
+    //    Members->Text.InsertChar(ch, Members->Text.Len());
+    //else
+    //    Members->Text.InsertChar(ch, (unsigned int)(Members->Cursor.Pos));
 	TextField_MoveTo(control, Members->Cursor.Pos + 1, false);
 	TextField_SendTextChangedEvent(control);
 }
@@ -97,7 +101,8 @@ void TextField_KeyBack(TextField *control)
 	EXIT_IF_READONLY();
 	if (Members->Selection.Start!= -1) { TextField_DeleteSelected(control); return; }
 	if (Members->Cursor.Pos == 0) return;
-	Members->Text.DeleteChar(Members->Cursor.Pos - 1);
+    //GDT:FIX
+	//Members->Text.DeleteChar(Members->Cursor.Pos - 1);
 	TextField_MoveTo(control, Members->Cursor.Pos - 1, false);
 	TextField_SendTextChangedEvent(control);
 }
@@ -106,7 +111,8 @@ void TextField_KeyDelete(TextField *control)
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
 	EXIT_IF_READONLY();
 	if (Members->Selection.Start!= -1) { TextField_DeleteSelected(control); return; }
-	Members->Text.DeleteChar(Members->Cursor.Pos);
+    //GDT:FIX
+	//Members->Text.DeleteChar(Members->Cursor.Pos);
 	TextField_SendTextChangedEvent(control);;
 }
 bool TextField_HasSelection(TextField *control)
@@ -268,29 +274,29 @@ void TextField::Paint(Console::Renderer & renderer)
         color = Members->Cfg->TextField.NormalColor;
 
     renderer.Clear(' ', color);
-    if ((Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING) && (Members->Focused))
-    {
-    }
-    else {
-        const char * start = Members->Text.GetText() + Members->Cursor.StartOffset;
-        int size = (int)(Members->Text.Len() - Members->Cursor.StartOffset);
-        int y = 0;
-        int w = Members->Layout.Width - 2;
-        int txW;
-        while ((size > 0) && (y< Members->Layout.Height))
-        {
-            txW = MINVALUE(size, w);
-            renderer.WriteSingleLineText(1, y, start, color, txW);
-            y++;
-            start += txW;
-            size -= txW;
-        }
-        if (Members->Focused)
-        {
-            y = (Members->Cursor.Pos - Members->Cursor.StartOffset) / w;
-            renderer.SetCursor(((Members->Cursor.Pos - Members->Cursor.StartOffset) % w) + 1, y);
-        }
-    }
+    //if ((Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING) && (Members->Focused))
+    //{
+    //}
+    //else {
+    //    const char * start = Members->Text.GetText() + Members->Cursor.StartOffset;
+    //    int size = (int)(Members->Text.Len() - Members->Cursor.StartOffset);
+    //    int y = 0;
+    //    int w = Members->Layout.Width - 2;
+    //    int txW;
+    //    while ((size > 0) && (y< Members->Layout.Height))
+    //    {
+    //        txW = MINVALUE(size, w);
+    //        renderer.WriteSingleLineText(1, y, start, color, txW);
+    //        y++;
+    //        start += txW;
+    //        size -= txW;
+    //    }
+    //    if (Members->Focused)
+    //    {
+    //        y = (Members->Cursor.Pos - Members->Cursor.StartOffset) / w;
+    //        renderer.SetCursor(((Members->Cursor.Pos - Members->Cursor.StartOffset) % w) + 1, y);
+    //    }
+    //}
 }
 void TextField::OnFocus()
 {
