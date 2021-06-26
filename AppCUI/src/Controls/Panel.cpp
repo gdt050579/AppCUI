@@ -30,10 +30,13 @@ void Panel::Paint(Console::Renderer & renderer)
 	if (Members->Flags & PANEL_ATTR_BORDER)
 	{
         renderer.DrawRectWidthHeight(0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, false);
-        WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::WRAP_TO_WIDTH | WriteCharacterBufferFlags::SINGLE_LINE);
-        params.Color = Members->Cfg->Panel.TextColor;
-        params.HotKeyColor = Members->Cfg->Panel.TextColor;
-        params.Width = Members->Layout.Width - 6;
-        renderer.WriteCharacterBuffer(3, 0, Members->Text, params);
+        if (Members->Layout.Width > 6) {
+            WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | 
+                                              WriteCharacterBufferFlags::WRAP_TO_WIDTH | 
+                                              WriteCharacterBufferFlags::SINGLE_LINE);
+            params.Color = Members->Cfg->Panel.TextColor;
+            params.Width = Members->Layout.Width - 6;
+            renderer.WriteCharacterBuffer(3, 0, Members->Text, params);
+        }
 	}
 }
