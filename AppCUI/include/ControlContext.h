@@ -37,7 +37,8 @@ public:
     } Margins;
 	int										ControlID;
 	int										GroupID;
-    AppCUI::Input::Key::Type                 HotKey;
+    AppCUI::Input::Key::Type                HotKey;
+    unsigned int                            HotKeyOffset;
 	unsigned int							Flags, ControlsCount, CurrentControlIndex;
 	AppCUI::Controls::Control				**Controls;
     AppCUI::Controls::Control				*Parent;

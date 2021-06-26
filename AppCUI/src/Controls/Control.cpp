@@ -381,6 +381,7 @@ ControlContext::ControlContext()
 	this->Focused = false;
     this->MouseIsOver = false;
     this->Cfg = AppCUI::Application::GetAppConfig();
+    this->HotKeyOffset = 0xFFFFFFFF;
 	// curat automat
 	memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
@@ -564,11 +565,16 @@ bool AppCUI::Controls::Control::Init(Control *parent, const char *text, const ch
 
 	CTRLC->Text.Set(text);
 
-	if (computeHotKey)
-	{
-        SetHotKeyFromText(text);
-	}
-
+    if (computeHotKey)
+    {        
+        if (CTRLC->Text.SetWithHotKey(text, CTRLC->HotKeyOffset))
+        {
+            this->SetHotKey(text[CTRLC->HotKeyOffset + 1]);
+        }
+    }
+    else {
+        CTRLC->Text.Set(text);
+    }
     CTRLC->Inited = true;
     // 
 
@@ -886,22 +892,7 @@ void AppCUI::Controls::Control::ClearGroup()
 {
 	CTRLC->GroupID = 0;
 }
-bool AppCUI::Controls::Control::SetHotKeyFromText(const char * text, bool clearCurrentHotKey)
-{
-    if (clearCurrentHotKey)
-        CTRLC->HotKey = Input::Key::None;
-    CHECK(text, false, "");
-    while (*text)
-    {
-        if (((*text) == '&') && ((*(text+1)) != 0))
-        {
-            if (SetHotKey(*(text+1)))
-                break;
-        }
-        text++;
-    }
-    return true;
-}
+
 bool AppCUI::Controls::Control::SetHotKey(char hotKey)
 {
 	hotKey |= 0x20;
@@ -936,7 +927,8 @@ AppCUI::Input::Key::Type	 AppCUI::Controls::Control::GetHotKey()
 }
 void AppCUI::Controls::Control::ClearHotKey()
 {
-	CTRLC->HotKey =Key::None;
+    CTRLC->HotKey = Key::None;
+    CTRLC->HotKeyOffset = 0xFFFFFFFF;
 }
 void AppCUI::Controls::Control::SetControlID(int newID)
 {

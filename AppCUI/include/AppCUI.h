@@ -257,7 +257,7 @@ namespace AppCUI
                 MULTIPLE_LINES      = 0x0000002,
                 OVERWRITE_COLORS    = 0x0000004,
                 WRAP_TO_WIDTH       = 0x0000008,
-                PART_OF_BUFFER      = 0x0000010,
+                HIGHLIGHT_HOTKEY    = 0x0000010,
             };
         }
 
@@ -285,6 +285,7 @@ namespace AppCUI
             WriteCharacterBufferFlags::Type Flags;
             unsigned int Color;
             unsigned int HotKeyColor;
+            unsigned int HotKeyPosition;
             unsigned int Start, End;
             unsigned int Width;
             WriteCharacterBufferParams(): Flags(WriteCharacterBufferFlags::NONE) { }
@@ -350,6 +351,7 @@ namespace AppCUI
 
             bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
             bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
+            bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
         };
         
         class EXPORT Renderer

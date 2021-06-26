@@ -600,8 +600,8 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
             if (start >= end)
                 return false;
         }
-        if ((Clip.Right +1 - x) <= (end - start))
-            end = start + (Clip.Right + 1 - x);
+        if ((Clip.Right + 1 - x) <= (int)(end - start))
+            end = start + (unsigned int)(Clip.Right + 1 - x);
         if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
         {
             if ((end - start) > params.Width)
@@ -611,22 +611,31 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
         CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
         if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
         {
+            unsigned int position = start;
             if (params.Color < 256)
             {
-                while (start < end)
+                while (position < end)
                 {
                     SET_CHARACTER(p, ch->Code, params.Color);
-                    p++; ch++; start++;
+                    p++; ch++; position++;
                 }
             }
             else {
-                while (start < end)
+                while (position < end)
                 {
                     SET_CHARACTER_EX(p, ch->Code, params.Color);
-                    p++; ch++; start++;
+                    p++; ch++; position++;
                 }
             }
-            // hotkey
+            if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
+            {
+                if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= start))
+                {
+                    ch = cb.GetBuffer() + params.HotKeyPosition;
+                    p = this->OffsetRows[y] + x + (params.HotKeyPosition - start);
+                    SET_CHARACTER_EX(p, ch->Code, params.HotKeyColor);
+                }
+            }
         }
         else {
             while (start < end)

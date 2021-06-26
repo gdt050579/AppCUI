@@ -67,6 +67,35 @@ bool CharacterBuffer::Set(const char * text, unsigned int color, unsigned int te
     this->Count = 0;
     return Add(text, color, textSize);
 }
+bool CharacterBuffer::SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, unsigned int color, unsigned int textSize)
+{
+    hotKeyCharacterPosition = 0xFFFFFFFF;
+    CHECK(text, false, "Expecting a valid (non-null) text");
+    COMPUTE_TEXT_SIZE(text, textSize);
+    VALIDATE_ALLOCATED_SPACE(textSize, false);
+    Character* ch = this->Buffer;
+    const unsigned char * p = (const unsigned char *)text;
+    while (textSize > 0)
+    {
+        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize>1 /* not the last character*/))
+        {
+            char tmp = p[1] | 0x20;
+            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
+            {
+                hotKeyCharacterPosition = (unsigned int)(p - (const unsigned char *)text);
+                p++; textSize--;
+                continue;
+            }
+        }
+        ch->Color = color;
+        ch->Code = *p;
+        ch++;
+        p++;
+        textSize--;
+    }
+    this->Count = (unsigned int)(ch - this->Buffer);
+    return true;
+}
 void CharacterBuffer::Clear()
 {
     this->Count = 0;

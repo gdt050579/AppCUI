@@ -26,8 +26,11 @@ void Button::Paint(Console::Renderer & renderer)
 
     auto * bc = &Members->Cfg->Button.Normal;
     bool pressed = false;
-    WriteCharacterBufferParams params(WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::OVERWRITE_COLORS);
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::SINGLE_LINE | 
+                                      WriteCharacterBufferFlags::OVERWRITE_COLORS | 
+                                      WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
     
+    params.HotKeyPosition = Members->HotKeyOffset;
 	// daca e disable
 	if (!IsEnabled())
 	{
@@ -56,7 +59,7 @@ void Button::Paint(Console::Renderer & renderer)
             sz = Members->Layout.Width - 3;
         }
         else {
-            x = (Members->Layout.Width - 2 - sz) >> 1; // one char could be &
+            x = (Members->Layout.Width - 1 - sz) >> 1;
         }
     }
     else {
@@ -69,7 +72,7 @@ void Button::Paint(Console::Renderer & renderer)
         if (sz > 0) {
             params.Color = Members->Cfg->Button.Focused.TextColor;
             params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
-            renderer.WriteCharacterBuffer(x, 0, Members->Text, params);            
+            renderer.WriteCharacterBuffer(x + 1, 0, Members->Text, params);
         }
     }
     else {
@@ -77,7 +80,7 @@ void Button::Paint(Console::Renderer & renderer)
         if (sz > 0) {
             params.Color = bc->TextColor;
             params.HotKeyColor = bc->HotKeyColor;
-            renderer.WriteCharacterBuffer(x+1, 0, Members->Text, params);
+            renderer.WriteCharacterBuffer(x, 0, Members->Text, params);
         }
         renderer.FillHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, COLOR(Color::Black, Color::Transparent));
         renderer.WriteSpecialCharacter(Members->Layout.Width-1, 0, SpecialChars::BlockLowerHalf, COLOR(Color::Black, Color::Transparent));
