@@ -30,7 +30,8 @@ void AppCUI::Controls::CheckBox::Paint(Console::Renderer & renderer)
 
     renderer.WriteSingleLineText(0, 0, "[ ] ", cbc->TextColor, 4);
 
-    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS);
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    params.HotKeyPosition = Members->HotKeyOffset;
     if (Members->Layout.Height == 1) {
         params.Color = cbc->TextColor;
         params.HotKeyColor = cbc->HotKeyColor;

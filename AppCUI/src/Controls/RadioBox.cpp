@@ -29,7 +29,9 @@ void AppCUI::Controls::RadioBox::Paint(Console::Renderer & renderer)
     else if (Members->MouseIsOver)
         cbc = &Members->Cfg->StateControl.Hover;
     renderer.WriteSingleLineText(0, 0, "( ) ", cbc->TextColor, 4);
-    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS);
+
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    params.HotKeyPosition = Members->HotKeyOffset;
     if (Members->Layout.Height == 1) {
         params.Color = cbc->TextColor;
         params.HotKeyColor = cbc->HotKeyColor;
