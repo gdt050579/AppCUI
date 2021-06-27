@@ -152,6 +152,8 @@ void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
             {
                 if (eventShiftState != this->shiftState)
                     evnt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+                else if ((evnt.asciiCode>0) && (ir.Event.KeyEvent.bKeyDown))
+                    evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.keyCode = eventShiftState;
             }
             else {
