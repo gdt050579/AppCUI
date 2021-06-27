@@ -22,8 +22,13 @@ void TextField_SendTextChangedEvent(TextField *control)
 void TextField_MoveSelTo(TextField *control,int poz)
 {
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-	if (Members->Selection.Start== -1) return;
-	if (poz == Members->Selection.Origin) { control->ClearSelection(); return; }
+    if (Members->Selection.Start == -1)
+        return;
+	if (poz == Members->Selection.Origin) { 
+        control->ClearSelection(); 
+        Members->Modified = true;
+        return; 
+    }
 	if (poz<Members->Selection.Origin)
 	{
         Members->Selection.Start = poz;
@@ -35,6 +40,7 @@ void TextField_MoveSelTo(TextField *control,int poz)
         Members->Selection.End = poz - 1;
 		Members->Selection.Start= Members->Selection.Origin;
 	}
+    Members->Modified = true;
 	//if (poz<SelStart) SelStart=poz; else SelEnd=poz-1;
 }
 void TextField_MoveTo(TextField *control, int newPoz, bool selected)
@@ -43,10 +49,10 @@ void TextField_MoveTo(TextField *control, int newPoz, bool selected)
 	int c_width = C_WIDTH;
 	if ((!selected) && (Members->Selection.Start!= -1))
 		control->ClearSelection();
-    //GDT:FIX
-	//const char * Text = Members->Text.GetText();
-	//if ((Text[Members->Cursor.Pos] == 0) && (newPoz>Members->Cursor.Pos))
-	//	return;
+    if ((Members->Cursor.Pos == Members->Text.Len()) && (newPoz > Members->Cursor.Pos))
+        return;
+
+
 	if ((selected) && (Members->Selection.Start== -1))
 	{
 		Members->Selection.Start= Members->Selection.End = Members->Selection.Origin = Members->Cursor.Pos;
@@ -55,8 +61,8 @@ void TextField_MoveTo(TextField *control, int newPoz, bool selected)
 	{
 		if (Members->Cursor.Pos>newPoz) Members->Cursor.Pos--; else if (Members->Cursor.Pos<newPoz) Members->Cursor.Pos++;
 		if (Members->Cursor.Pos<0) { Members->Cursor.Pos = newPoz = 0; }
-        //GDT:FIX
-		//if (Text[Members->Cursor.Pos] == 0) newPoz = Members->Cursor.Pos;
+        if (Members->Cursor.Pos == Members->Text.Len())
+            newPoz = Members->Cursor.Pos;
 		if (Members->Cursor.Pos<Members->Cursor.StartOffset) Members->Cursor.StartOffset = Members->Cursor.Pos;
 		if (Members->Cursor.Pos>Members->Cursor.StartOffset + c_width) Members->Cursor.StartOffset = Members->Cursor.Pos - c_width;
 	}
@@ -78,42 +84,53 @@ void TextField_DeleteSelected(TextField *control)
 	{
 		TextField_MoveTo(control, Members->Cursor.Pos - (se - ss + 1), false);
 	}
-    //GDT:FIX
-	//Members->Text.Delete(ss, se+1);
+	Members->Text.Delete(ss, se+1);
 	control->ClearSelection();
+    Members->Modified = true;
 }
 void TextField_AddChar(TextField *control, char ch)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
     TextField_DeleteSelected(control);
-    //GDT:FIX
-    //if (Members->Cursor.Pos > (int)Members->Text.Len())
-    //    Members->Text.InsertChar(ch, Members->Text.Len());
-    //else
-    //    Members->Text.InsertChar(ch, (unsigned int)(Members->Cursor.Pos));
+    if (Members->Cursor.Pos > (int)Members->Text.Len())
+        Members->Text.InsertChar(ch, Members->Text.Len());
+    else
+        Members->Text.InsertChar(ch, (unsigned int)(Members->Cursor.Pos));
 	TextField_MoveTo(control, Members->Cursor.Pos + 1, false);
 	TextField_SendTextChangedEvent(control);
+    Members->Modified = true;
 }
 void TextField_KeyBack(TextField *control)
 {
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
 	EXIT_IF_READONLY();
-	if (Members->Selection.Start!= -1) { TextField_DeleteSelected(control); return; }
-	if (Members->Cursor.Pos == 0) return;
-    //GDT:FIX
-	//Members->Text.DeleteChar(Members->Cursor.Pos - 1);
+	if (Members->Selection.Start!= -1) 
+    { 
+        TextField_DeleteSelected(control);
+        Members->Modified = true;
+        return; 
+    }
+	if (Members->Cursor.Pos == 0) 
+        return;
+	Members->Text.DeleteChar(Members->Cursor.Pos - 1);
 	TextField_MoveTo(control, Members->Cursor.Pos - 1, false);
 	TextField_SendTextChangedEvent(control);
+    Members->Modified = true;
 }
 void TextField_KeyDelete(TextField *control)
 {
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
 	EXIT_IF_READONLY();
-	if (Members->Selection.Start!= -1) { TextField_DeleteSelected(control); return; }
-    //GDT:FIX
-	//Members->Text.DeleteChar(Members->Cursor.Pos);
-	TextField_SendTextChangedEvent(control);;
+	if (Members->Selection.Start!= -1) 
+    { 
+        TextField_DeleteSelected(control);
+        Members->Modified = true;
+        return; 
+    }
+	Members->Text.DeleteChar(Members->Cursor.Pos);
+	TextField_SendTextChangedEvent(control);
+    Members->Modified = true;
 }
 bool TextField_HasSelection(TextField *control)
 {
@@ -127,6 +144,7 @@ void TextField_SetSelection(TextField *control,int start, int end)
 	{
 		Members->Selection.Start= Members->Selection.Origin = start; 
 		Members->Selection.End= end;
+        Members->Modified = true;
 	}
 }
 void TextField_CopyToClipboard(TextField *control)
@@ -135,6 +153,7 @@ void TextField_CopyToClipboard(TextField *control)
 }
 void TextField_PasteFromClipboard(TextField *control)
 {
+    //Members->Modified = true;
 }
 //============================================================================
 TextField::~TextField()
@@ -150,6 +169,7 @@ bool TextField::Create(Control *parent, const char * text, const char * layout, 
 	CHECK(Init(parent, text, layout, false), false, "Failed to create text field !");
 	
 	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)flags;
+    Members->Modified = true;
 	ClearSelection();
 	Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
 	TextField_MoveTo(this, 0xFFFF, false);
@@ -165,11 +185,13 @@ void TextField::SelectAll()
 	Members->Selection.End= Members->Text.Len() - 1;
 	if (Members->Selection.End<0) 
 		ClearSelection();
+    Members->Modified = true;
 }
 void TextField::ClearSelection()
 {
 	CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
 	Members->Selection.Start= Members->Selection.End= Members->Selection.Origin = -1;
+    Members->Modified = true;
 }
 
 bool TextField::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
@@ -262,41 +284,60 @@ void TextField::OnAfterSetText(const char *text)
 void TextField::Paint(Console::Renderer & renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
-    unsigned int color;
+    
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::BUFFER_RANGE | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
+    params.Start = Members->Cursor.StartOffset;
+    params.End = Members->Text.Len();
+    params.Width = Members->Layout.Width - 2;
+    if (Members->Layout.Height == 1)
+        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+    else
+        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
 
     if (!this->IsEnabled())
-        color = Members->Cfg->TextField.InactiveColor;
+        params.Color = Members->Cfg->TextField.InactiveColor;
     if (Members->Focused)
-        color = Members->Cfg->TextField.FocusColor;
+        params.Color = Members->Cfg->TextField.FocusColor;
     else if (Members->MouseIsOver)
-        color = Members->Cfg->TextField.HoverColor;
+        params.Color = Members->Cfg->TextField.HoverColor;
     else
-        color = Members->Cfg->TextField.NormalColor;
+        params.Color = Members->Cfg->TextField.NormalColor;
 
-    renderer.Clear(' ', color);
-    //if ((Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING) && (Members->Focused))
-    //{
-    //}
-    //else {
-    //    const char * start = Members->Text.GetText() + Members->Cursor.StartOffset;
-    //    int size = (int)(Members->Text.Len() - Members->Cursor.StartOffset);
-    //    int y = 0;
-    //    int w = Members->Layout.Width - 2;
-    //    int txW;
-    //    while ((size > 0) && (y< Members->Layout.Height))
-    //    {
-    //        txW = MINVALUE(size, w);
-    //        renderer.WriteSingleLineText(1, y, start, color, txW);
-    //        y++;
-    //        start += txW;
-    //        size -= txW;
-    //    }
-    //    if (Members->Focused)
-    //    {
-    //        y = (Members->Cursor.Pos - Members->Cursor.StartOffset) / w;
-    //        renderer.SetCursor(((Members->Cursor.Pos - Members->Cursor.StartOffset) % w) + 1, y);
-    //    }
-    //}
+    renderer.Clear(' ', params.Color);
+
+    if (Members->Focused)
+    {
+        if (Members->Modified)
+        {
+            if (Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING)
+            {
+
+            } else 
+                Members->Text.SetColor(params.Color);
+            if ((Members->Selection.Start >= 0) && (Members->Selection.End >= 0) && (Members->Selection.End >= Members->Selection.Start))
+                Members->Text.SetColor(Members->Selection.Start, Members->Selection.End + 1, Members->Cfg->TextField.SelectionColor);
+            Members->Modified = false;
+        }
+        else {
+            // if no selection is present and no syntax highlighting --> use overwrite colors as it is faster
+            if ((Members->Selection.Start<0) && ((Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING)==0))
+                params.Flags |= WriteCharacterBufferFlags::OVERWRITE_COLORS;
+        }
+    }
+    else {
+        params.Flags |= WriteCharacterBufferFlags::OVERWRITE_COLORS;        
+    }
+    renderer.WriteCharacterBuffer(1, 0, Members->Text, params);
+    if (Members->Focused)
+    {       
+        int y = (Members->Cursor.Pos - Members->Cursor.StartOffset) / params.Width;
+        int x = (Members->Cursor.Pos - Members->Cursor.StartOffset) % params.Width;
+        if ((x == 0) && (y == Members->Layout.Height)) {
+            x = params.Width;
+            y--;
+        }
+        renderer.SetCursor(x + 1, y);
+    }
 }
 void TextField::OnFocus()
 {

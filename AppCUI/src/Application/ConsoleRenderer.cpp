@@ -586,7 +586,16 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
     TRANSLATE_COORDONATES(x, y);
     unsigned int start = 0;
     unsigned int end = cb.Len();
+    if (params.Flags & WriteCharacterBufferFlags::BUFFER_RANGE)
+    {
+        CHECK(params.Start < end, false, "Start param (%d) should be smaller than buffer range: %d", params.Start, end);
+        start = params.Start;
+        if (end>params.End)
+            end = params.End;
+        CHECK(start < end, false, "Invalid start(%d) and end(%d) params for WriteCharacterBuffer. Start should be smaller than end.",start,end);        
+    }
 
+    // single line
     if (params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)
     {
         if ((y < Clip.Top) || (y > Clip.Bottom))

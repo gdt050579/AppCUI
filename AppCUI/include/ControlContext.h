@@ -112,9 +112,7 @@ public:
     struct {
         int Start, End, Origin;
     } Selection;
-    unsigned int *	            CharColors;
-    unsigned int                CharColorsAllocated;
-
+    bool Modified;
 };
 
 

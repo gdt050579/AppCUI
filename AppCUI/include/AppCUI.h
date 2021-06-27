@@ -258,6 +258,7 @@ namespace AppCUI
                 OVERWRITE_COLORS    = 0x0000004,
                 WRAP_TO_WIDTH       = 0x0000008,
                 HIGHLIGHT_HOTKEY    = 0x0000010,
+                BUFFER_RANGE        = 0x0000020,
             };
         }
 
@@ -352,6 +353,11 @@ namespace AppCUI
             bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
             bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
             bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
+            bool Delete(unsigned int start, unsigned int end);
+            bool DeleteChar(unsigned int position);
+            bool InsertChar(unsigned short characterCode, unsigned int position, unsigned int color = Color::NoColor);
+            bool SetColor(unsigned int start, unsigned int end, unsigned int color);
+            void SetColor(unsigned int color);
         };
         
         class EXPORT Renderer

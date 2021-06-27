@@ -65,13 +65,13 @@ public:
     MyWin2()
     {
         this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::NONE);
-        tx1.Create(this, "Salut", "x:1,y:1,w:30,h:5");
+        tx1.Create(this, "Salut", "x:1,y:1,w:30,h:1");
     }
 };
 int main()
 {
     Application::Init(Application::Flags::HAS_COMMANDBAR);
-    Application::AddWindow(new MyWin());
+    Application::AddWindow(new MyWin2());
     Application::Run();
     Application::Close();
 }
