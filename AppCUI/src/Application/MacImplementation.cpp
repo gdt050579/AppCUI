@@ -70,7 +70,7 @@ void ConsoleRenderer::FlushToScreen()
     {
         for (size_t x = 0; x < ConsoleSize.Width; x++) 
         {
-            mvaddch(y, x, WorkingBuffer->characterCode);
+            mvaddch(y, x, WorkingBuffer[y*ConsoleSize.Width + x].characterCode);
         }
     }
     refresh();
@@ -80,12 +80,13 @@ bool ConsoleRenderer::UpdateCursor()
     if (Cursor.Visible)
     {
         curs_set(1);
-        move(Cursor.X, Cursor.Y);
+        move(Cursor.Y, Cursor.X);
     }
     else 
     {
         curs_set(0);
     }
+    refresh();
     return true;
 }
 
