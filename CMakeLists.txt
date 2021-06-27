@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.13)
 # Project setup
 project(appcui VERSION 1.0)
 
+if (CMAKE_BUILD_TYPE MATCHES DEBUG)
+    set_property(DEBUG_BUILD)
+endif()
+
 if (MSVC)
 add_definitions(-DBUILD_FOR_WINDOWS)
 set(CMAKE_CXX_FLAGS "-W3")
@@ -23,6 +27,16 @@ include_directories(AppCUI/include)
 add_library(AppCUI SHARED)
 add_subdirectory(AppCUI/src)
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
+# Preserve source file paths in debug mode for shared lib
+if (${DEBUG_BUILD})
+set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
+endif()
+
+if (UNIX)
+find_package(curses REQUIRED)
+target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
+target_link_libraries(AppCUI ${CURSES_LIBRARIES})
+endif()
 
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 
