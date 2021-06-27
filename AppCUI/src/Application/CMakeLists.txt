@@ -1,4 +1,4 @@
-target_sources(AppCUI PUBLIC
+target_sources(AppCUI PRIVATE
     Application.cpp
     CommandBar.cpp
     CommandBarController.cpp
@@ -7,7 +7,7 @@ target_sources(AppCUI PUBLIC
     Desktop.cpp
 )
 if (MSVC)
-target_sources(AppCUI PUBLIC WindowsImplementation.cpp)
+target_sources(AppCUI PRIVATE WindowsImplementation.cpp)
 else()
-target_sources(AppCUI PUBLIC MacImplementation.cpp)
+target_sources(AppCUI PRIVATE MacImplementation.cpp)
 endif()

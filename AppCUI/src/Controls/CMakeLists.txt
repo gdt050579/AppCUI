@@ -1,4 +1,4 @@
-target_sources(AppCUI PUBLIC 
+target_sources(AppCUI PRIVATE
 	Button.cpp 
 	CheckBox.cpp 
 	Control.cpp 

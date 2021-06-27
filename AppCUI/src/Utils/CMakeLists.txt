@@ -1,1 +1,1 @@
-target_sources(AppCUI PUBLIC KeyUtils.cpp String.cpp)
+target_sources(AppCUI PRIVATE KeyUtils.cpp String.cpp)

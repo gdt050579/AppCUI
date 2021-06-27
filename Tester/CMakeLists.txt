@@ -1,6 +1,7 @@
-# tester
+set(PROJECT_NAME tester)
 include_directories(../AppCUI/include)
-add_executable(tester Tester.cpp)
-target_link_libraries(tester PUBLIC AppCUI)
-set_target_properties(tester PROPERTIES FOLDER "Tests")
+add_executable(${PROJECT_NAME} Tester.cpp)
+add_dependencies(${PROJECT_NAME} AppCUI)
+target_link_libraries(${PROJECT_NAME} PRIVATE AppCUI)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tests")
 
