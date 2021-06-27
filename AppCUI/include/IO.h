@@ -102,6 +102,9 @@ namespace AppCUI
 #       endif
 
             bool    CreateScreenBuffers(unsigned int width, unsigned int height);
+            bool    WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool    WriteCharacterBuffer_MultiLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool    WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
         public:
             int                         *SpecialCharacters;
         public:

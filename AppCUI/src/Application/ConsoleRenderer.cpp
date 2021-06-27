@@ -580,10 +580,79 @@ bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * te
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
+bool ConsoleRenderer::WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+{
+    TRANSLATE_COORDONATES(x, y);
+    if ((y < Clip.Top) || (y > Clip.Bottom))
+        return false;
+    if (x > Clip.Right)
+        return false;
+    if (x < Clip.Left)
+    {
+        start += (unsigned int)(Clip.Left - x);
+        x = Clip.Left;
+        if (start >= end)
+            return false;
+    }
+    if ((Clip.Right + 1 - x) <= (int)(end - start))
+        end = start + (unsigned int)(Clip.Right + 1 - x);
+    if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
+    {
+        if ((end - start) > params.Width)
+            end = start + params.Width;
+    }
+    const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
+    CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
+    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    {
+        unsigned int position = start;
+        if (params.Color < 256)
+        {
+            while (position < end)
+            {
+                SET_CHARACTER(p, ch->Code, params.Color);
+                p++; ch++; position++;
+            }
+        }
+        else {
+            while (position < end)
+            {
+                SET_CHARACTER_EX(p, ch->Code, params.Color);
+                p++; ch++; position++;
+            }
+        }
+        if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
+        {
+            if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= start))
+            {
+                ch = cb.GetBuffer() + params.HotKeyPosition;
+                p = this->OffsetRows[y] + x + (params.HotKeyPosition - start);
+                SET_CHARACTER_EX(p, ch->Code, params.HotKeyColor);
+            }
+        }
+    }
+    else {
+        while (start < end)
+        {
+            SET_CHARACTER_EX(p, ch->Code, ch->Color);
+            p++; ch++; start++;
+        }
+    }
+    return true;
+}
+bool ConsoleRenderer::WriteCharacterBuffer_MultiLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+{
+    NOT_IMPLEMENTED(false);
+}
+
 bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
 {
     CHECK_VISIBLE;
-    TRANSLATE_COORDONATES(x, y);
+    
     unsigned int start = 0;
     unsigned int end = cb.Len();
     if (params.Flags & WriteCharacterBufferFlags::BUFFER_RANGE)
@@ -597,62 +666,18 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
 
     // single line
     if (params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)
+        return WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
+
+    // multi line
+    if (params.Flags & WriteCharacterBufferFlags::MULTIPLE_LINES)
     {
-        if ((y < Clip.Top) || (y > Clip.Bottom))
-            return false;
-        if (x > Clip.Right)
-            return false;
-        if (x < Clip.Left)
-        {
-            start += (unsigned int)(Clip.Left - x);
-            x = Clip.Left;
-            if (start >= end)
-                return false;
-        }
-        if ((Clip.Right + 1 - x) <= (int)(end - start))
-            end = start + (unsigned int)(Clip.Right + 1 - x);
-        if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
-        {
-            if ((end - start) > params.Width)
-                end = start + params.Width;
-        }
-        const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
-        CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
-        if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
-        {
-            unsigned int position = start;
-            if (params.Color < 256)
-            {
-                while (position < end)
-                {
-                    SET_CHARACTER(p, ch->Code, params.Color);
-                    p++; ch++; position++;
-                }
-            }
-            else {
-                while (position < end)
-                {
-                    SET_CHARACTER_EX(p, ch->Code, params.Color);
-                    p++; ch++; position++;
-                }
-            }
-            if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
-            {
-                if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= start))
-                {
-                    ch = cb.GetBuffer() + params.HotKeyPosition;
-                    p = this->OffsetRows[y] + x + (params.HotKeyPosition - start);
-                    SET_CHARACTER_EX(p, ch->Code, params.HotKeyColor);
-                }
-            }
-        }
-        else {
-            while (start < end)
-            {
-                SET_CHARACTER_EX(p, ch->Code, ch->Color);
-                p++; ch++; start++;
-            }
-        }
+        // if new line will not be process and there is no width limit, than its like a single line
+        if (!(params.Flags & (WriteCharacterBufferFlags::WRAP_TO_WIDTH| WriteCharacterBufferFlags::PROCESS_NEW_LINE)))
+            return WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
+        if (params.Flags & WriteCharacterBufferFlags::PROCESS_NEW_LINE)
+            return WriteCharacterBuffer_MultiLine_ProcessNewLine(x, y, cb, params, start, end);
+        else
+            return WriteCharacterBuffer_MultiLine(x, y, cb, params, start, end);
     }
     return true;
 }

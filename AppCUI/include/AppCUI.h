@@ -259,6 +259,7 @@ namespace AppCUI
                 WRAP_TO_WIDTH       = 0x0000008,
                 HIGHLIGHT_HOTKEY    = 0x0000010,
                 BUFFER_RANGE        = 0x0000020,
+                PROCESS_NEW_LINE    = 0x0000040,
             };
         }
 
