@@ -653,8 +653,10 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
     const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
     CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
     int rel_ofs = 0;
+    //GDT: not efficient - further improvements can be done
     if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
     {
+        unsigned int orig_start = start;
         while (start < end)
         {
             if (((x+ rel_ofs) >= Clip.Left) && ((x+ rel_ofs) <= Clip.Right) && (y >= Clip.Top)) {
@@ -667,6 +669,15 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
                 if (y > Clip.Bottom)
                     break;
                 p = this->OffsetRows[y] + x;
+            }
+        }
+        if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
+        {
+            if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= orig_start))
+            {
+                ch = cb.GetBuffer() + params.HotKeyPosition;
+                p = this->OffsetRows[(params.HotKeyPosition-orig_start)/params.Width] + x + ((params.HotKeyPosition - orig_start) % params.Width);
+                SET_CHARACTER_EX(p, ch->Code, params.HotKeyColor);
             }
         }
     } else {
