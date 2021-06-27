@@ -391,7 +391,7 @@ bool AppCUI::Utils::String::Delete(unsigned int start, unsigned int end)
         this->Text[this->Size] = 0;
     }
     else {
-        memmove(this->Text + start, this->Text + end, this->Size - (end-start));
+        memmove(this->Text + start, this->Text + end, this->Size - end);
         this->Size-=(end-start);
         this->Text[this->Size] = 0;
     }
