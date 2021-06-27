@@ -75,4 +75,3 @@ int main()
     Application::Run();
     Application::Close();
 }
-
