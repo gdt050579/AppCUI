@@ -33,7 +33,7 @@ set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
 if (UNIX)
-find_package(curses REQUIRED)
+find_package(Curses REQUIRED)
 target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
 target_link_libraries(AppCUI ${CURSES_LIBRARIES})
 endif()
