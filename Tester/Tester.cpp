@@ -65,7 +65,7 @@ public:
     MyWin2()
     {
         this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::NONE);
-        tx1.Create(this, "Salut", "x:1,y:1,w:30,h:1");
+        tx1.Create(this, "Salut", "x:1,y:1,w:30,h:3");
     }
 };
 int main()

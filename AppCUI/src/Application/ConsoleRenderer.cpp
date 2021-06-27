@@ -640,12 +640,58 @@ bool ConsoleRenderer::WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI
     }
     return true;
 }
-bool ConsoleRenderer::WriteCharacterBuffer_MultiLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
 {
-    NOT_IMPLEMENTED(false);
+    TRANSLATE_COORDONATES(x, y);
+    if (x > Clip.Right)
+        return false;
+    if ((params.Width == 0) || (end==start))
+        return true; // nothing to draw
+    unsigned int nrLines = (end - start - 1) / params.Width;
+    if ((y + (int)nrLines < Clip.Top) || (y>Clip.Bottom))
+        return false;
+    const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
+    CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
+    int rel_ofs = 0;
+    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    {
+        while (start < end)
+        {
+            if (((x+ rel_ofs) >= Clip.Left) && ((x+ rel_ofs) <= Clip.Right) && (y >= Clip.Top)) {
+                SET_CHARACTER_EX(p, ch->Code, params.Color);
+            }
+            p++; ch++; rel_ofs++; start++;
+            if (rel_ofs == params.Width) {
+                rel_ofs = 0;
+                y++;
+                if (y > Clip.Bottom)
+                    break;
+                p = this->OffsetRows[y] + x;
+            }
+        }
+    } else {
+        while (start < end)
+        {
+            if (((x + rel_ofs) >= Clip.Left) && ((x + rel_ofs) <= Clip.Right) && (y >= Clip.Top)) {
+                SET_CHARACTER_EX(p, ch->Code, ch->Color);
+            }
+            p++; ch++; rel_ofs++; start++;
+            if (rel_ofs == params.Width) {
+                rel_ofs = 0;
+                y++;
+                if (y > Clip.Bottom)
+                    break;
+                p = this->OffsetRows[y] + x;
+            }
+        }
+    }
+    return true;
 }
 bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
 {
+    TRANSLATE_COORDONATES(x, y);
+    if (x > Clip.Right)
+        return false;
     NOT_IMPLEMENTED(false);
 }
 
@@ -663,7 +709,8 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
             end = params.End;
         CHECK(start < end, false, "Invalid start(%d) and end(%d) params for WriteCharacterBuffer. Start should be smaller than end.",start,end);        
     }
-
+    if (end <= start)
+        return true; // Nothing to draw
     // single line
     if (params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)
         return WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
@@ -672,12 +719,13 @@ bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::
     if (params.Flags & WriteCharacterBufferFlags::MULTIPLE_LINES)
     {
         // if new line will not be process and there is no width limit, than its like a single line
-        if (!(params.Flags & (WriteCharacterBufferFlags::WRAP_TO_WIDTH| WriteCharacterBufferFlags::PROCESS_NEW_LINE)))
+        if (!(params.Flags & (WriteCharacterBufferFlags::WRAP_TO_WIDTH | WriteCharacterBufferFlags::PROCESS_NEW_LINE)))
             return WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
         if (params.Flags & WriteCharacterBufferFlags::PROCESS_NEW_LINE)
             return WriteCharacterBuffer_MultiLine_ProcessNewLine(x, y, cb, params, start, end);
         else
-            return WriteCharacterBuffer_MultiLine(x, y, cb, params, start, end);
+            // implies that WriteCharacterBufferFlags::WRAP_TO_WIDTH is set
+            return WriteCharacterBuffer_MultiLine_WithWidth(x, y, cb, params, start, end);
     }
     return true;
 }
