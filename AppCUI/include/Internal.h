@@ -1,7 +1,8 @@
 #ifndef __APPCUI_INTERNAL_HEADER__
 #define __APPCUI_INTERNAL_HEADER__
 
-#include "IO.h"
+#include "AppCUI.h"
+#include "OSDefinitions.h"
 
 #define REPAINT_STATUS_COMPUTE_POSITION		1
 #define REPAINT_STATUS_DRAW					2
@@ -20,14 +21,52 @@
 
 #define IS_CONTROL_AVAILABLE(ctrl)			((bool)((ctrl->Members.Flags & (Flags::GATTR_VISIBLE | Flags::GATTR_VISIBLE)) == (Flags::GATTR_VISIBLE | Flags::GATTR_VISIBLE)))
 
-#define MAX_COMMANDBAR_FIELD_NAME		24
-#define MAX_COMMANDBAR_SHIFTSTATES		8
+#define MAX_COMMANDBAR_FIELD_NAME		    24
+#define MAX_COMMANDBAR_SHIFTSTATES		    8
+
+#define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
+    if (value>=0) { SET_CHARACTER_VALUE(ptrCharInfo,value); } \
+    if (color<256) { \
+        SET_CHARACTER_COLOR(ptrCharInfo, color); \
+    } else { \
+        if (color != AppCUI::Console::Color::NoColor) { \
+            unsigned int temp_color = color; \
+            if (color & 256) temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0x0F)|(temp_color & 0xFFFFF0); \
+            if (color & (256<<4)) temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0xF0)|(temp_color & 0xFFFF0F); \
+            SET_CHARACTER_COLOR(ptrCharInfo,(temp_color & 0xFF));\
+        } \
+    } \
+}
 
 
 namespace AppCUI
 {
     namespace Internal
     {
+        namespace SystemEvents
+        {
+            enum Type : unsigned int
+            {
+                NONE = 0,
+                MOUSE_DOWN,
+                MOUSE_UP,
+                MOUSE_MOVE,
+                APP_CLOSE,
+                APP_RESIZED,
+                KEY_PRESSED,
+                SHIFT_STATE_CHANGED
+            };
+            struct Event
+            {
+                SystemEvents::Type      eventType;
+                int                     mouseX, mouseY;
+                unsigned int            newWidth, newHeight;
+                unsigned int            mouseButtonState;
+                AppCUI::Input::Key::Type keyCode;
+                char                    asciiCode;
+            };
+        }
+
         struct CommandBarField
         {
             int				         Command, StartScreenPos, EndScreenPos;
@@ -85,6 +124,79 @@ namespace AppCUI
         };
 
 
+        class AbstractConsole
+        {
+        protected:
+            bool                        Inited;
+            int                         TranslateX, TranslateY;
+            AppCUI::Console::Size       ConsoleSize;
+            CHARACTER_INFORMATION*      WorkingBuffer;
+            CHARACTER_INFORMATION**     OffsetRows;
+            struct {
+                int                     Left, Top, Right, Bottom;
+                bool                    Visible;
+            } Clip;
+            struct {
+                unsigned int            X, Y;
+                bool                    Visible;
+            } Cursor, LastUpdateCursor;
+            struct {
+                AppCUI::Console::Size   consoleSize;
+                CHAR_INFO*              screenBuffer;
+                unsigned int            CursorX, CursorY, CursorVisible;
+            } BeforeInitConfig;
+
+            bool            CreateScreenBuffers(unsigned int width, unsigned int height);
+            bool            WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+
+            virtual bool    OnInit() = 0;
+            virtual void    OnUninit() = 0;
+            virtual void    OnFlushToScreen() = 0;
+            virtual bool    OnUpdateCursor() = 0;
+
+        public:
+            int                         *SpecialCharacters;
+        public:
+            AbstractConsole();
+            ~AbstractConsole();
+            bool    Init();
+            void    Uninit();
+
+            // Generic methods
+            bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
+            bool    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
+            bool    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
+            bool    ClearClipRectangle(int charCode, unsigned int color);
+            bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
+            bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
+            bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
+            bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
+            void    HideCursor();
+            bool    ShowCursor(int x, int y);
+            void    SetClip(const AppCUI::Console::Clip & clip);
+            void    ResetClip();
+            void    SetTranslate(int offX, int offY);
+            bool    SetSize(unsigned int width, unsigned int height);
+            void    Prepare();
+            void    Update();
+
+            // inlines
+            inline const AppCUI::Console::Size& GetConsoleSize() const { return ConsoleSize; }
+        };
+
+        class AbstractInput
+        {
+        public:
+            virtual bool  Init() = 0;
+            virtual void  Uninit() = 0;
+            virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) = 0;
+        };
+
 
         class DesktopControl: public AppCUI::Controls::Control 
         {
@@ -97,8 +209,8 @@ namespace AppCUI
         {
             AppCUI::Application::Config             config;
             AppCUI::Console::Renderer               renderer;
-            AppCUI::Internal::ConsoleRenderer*      consoleRenderer;
-            AppCUI::Internal::InputReader           inputReader;
+            AppCUI::Internal::AbstractConsole*      console;
+            AppCUI::Internal::AbstractInput*        input;
             bool                                    Inited;
             
 

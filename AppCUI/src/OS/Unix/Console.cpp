@@ -1,12 +1,4 @@
-#include "Internal.h"
-#include <iostream>
-#include <string.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <stdio.h>
-#include <curses.h>
+#include "os.h"
 
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
@@ -25,7 +17,7 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
 
 using namespace AppCUI::Internal;
 
-bool MACConsoleRenderer::OnInit()
+bool Console::OnInit()
 {
     initscr();
     cbreak();
@@ -58,12 +50,12 @@ bool MACConsoleRenderer::OnInit()
     return true; 
 }
 
-void MACConsoleRenderer::OnUninit()
+void Console::OnUninit()
 { 
     endwin();
 }
 
-void MACConsoleRenderer::OnFlushToScreen()
+void Console::OnFlushToScreen()
 {
     clear();
     for (size_t y = 0; y < ConsoleSize.Height; y++) 
@@ -75,7 +67,7 @@ void MACConsoleRenderer::OnFlushToScreen()
     }
     refresh();
 }
-bool MACConsoleRenderer::OnUpdateCursor()
+bool Console::OnUpdateCursor()
 {
     if (Cursor.Visible)
     {
@@ -90,17 +82,3 @@ bool MACConsoleRenderer::OnUpdateCursor()
     return true;
 }
 
-bool InputReader::Init() 
-{ 
-    return true; 
-}
-
-void InputReader::Uninit() 
-{ 
-
-}
-
-void InputReader::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& /*evnt*/) 
-{
-
-}

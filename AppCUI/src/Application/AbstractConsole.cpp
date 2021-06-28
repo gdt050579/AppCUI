@@ -8,7 +8,7 @@ using namespace AppCUI::Console;
 #define TRANSLATE_COORDONATES(x,y) { x += this->TranslateX; y += this->TranslateY; }
 #define CHECK_VISIBLE if (this->Clip.Visible == false) return false;
 
-ConsoleRenderer::ConsoleRenderer()
+AbstractConsole::AbstractConsole()
 {
     TranslateX = TranslateY = 0;
     ConsoleSize.Set(0, 0);
@@ -31,15 +31,15 @@ ConsoleRenderer::ConsoleRenderer()
 }
 
 
-bool ConsoleRenderer::Init()
+bool AbstractConsole::Init()
 {
     return OnInit();
 }
-void ConsoleRenderer::Uninit()
+void AbstractConsole::Uninit()
 {
 
 }
-void ConsoleRenderer::Prepare()
+void AbstractConsole::Prepare()
 {
     this->TranslateX = this->TranslateY = 0;
     this->Clip.Left = this->Clip.Right = 0;
@@ -48,7 +48,7 @@ void ConsoleRenderer::Prepare()
     this->Clip.Visible = true;
     this->HideCursor();
 }
-void ConsoleRenderer::Update()
+void AbstractConsole::Update()
 {
     this->OnFlushToScreen();
     if ((this->Cursor.Visible != this->LastUpdateCursor.Visible) ||
@@ -63,7 +63,7 @@ void ConsoleRenderer::Update()
     }
 }
 
-bool ConsoleRenderer::CreateScreenBuffers(unsigned int width, unsigned int height)
+bool AbstractConsole::CreateScreenBuffers(unsigned int width, unsigned int height)
 {
     this->Clip.Visible = false;
     CHECK(width > 0, false, "width must be bigger than 0");
@@ -109,7 +109,7 @@ bool ConsoleRenderer::CreateScreenBuffers(unsigned int width, unsigned int heigh
 
     return true;
 }
-void ConsoleRenderer::SetClip(const AppCUI::Console::Clip & clip)
+void AbstractConsole::SetClip(const AppCUI::Console::Clip & clip)
 {
     if (clip.Visible)
     {
@@ -128,28 +128,28 @@ void ConsoleRenderer::SetClip(const AppCUI::Console::Clip & clip)
         this->Clip.Visible = false;
     }
 }
-void ConsoleRenderer::ResetClip()
+void AbstractConsole::ResetClip()
 {
     this->Clip.Left = this->Clip.Right = 0;
     this->Clip.Right = this->ConsoleSize.Width - 1;
     this->Clip.Bottom = this->ConsoleSize.Height - 1;
     this->Clip.Visible = true;
 }
-void ConsoleRenderer::SetTranslate(int offX, int offY)
+void AbstractConsole::SetTranslate(int offX, int offY)
 {
     this->TranslateX = offX;
     this->TranslateY = offY;
 }
-bool ConsoleRenderer::SetSize(unsigned int width, unsigned int height)
+bool AbstractConsole::SetSize(unsigned int width, unsigned int height)
 {
     CHECK(CreateScreenBuffers(width, height), false, "Fail to create a screen buffer !");
     return true;
 }
-void ConsoleRenderer::HideCursor()
+void AbstractConsole::HideCursor()
 {
     this->Cursor.Visible = false;
 }
-bool ConsoleRenderer::ShowCursor(int x, int y)
+bool AbstractConsole::ShowCursor(int x, int y)
 {
     TRANSLATE_COORDONATES(x, y);
     if ((x < Clip.Left) || (x > Clip.Right) || (y < Clip.Top) || (y > Clip.Bottom))
@@ -162,7 +162,7 @@ bool ConsoleRenderer::ShowCursor(int x, int y)
     this->Cursor.Visible = true;
     return true;
 }
-bool ConsoleRenderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
+bool AbstractConsole::WriteCharacter(int x, int y, int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, y);
@@ -178,7 +178,7 @@ bool ConsoleRenderer::WriteCharacter(int x, int y, int charCode, unsigned int co
     }
     return true;
 }
-bool ConsoleRenderer::ClearClipRectangle(int charCode, unsigned int color)
+bool AbstractConsole::ClearClipRectangle(int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
     if ((Clip.Left == 0) && (Clip.Top == 0) && (Clip.Right+1 == this->ConsoleSize.Width) && (Clip.Bottom+1 == this->ConsoleSize.Height))
@@ -205,7 +205,7 @@ bool ConsoleRenderer::ClearClipRectangle(int charCode, unsigned int color)
         return FillRect(Clip.Left-TranslateX, Clip.Top-TranslateY, Clip.Right-TranslateX, Clip.Bottom-TranslateY, charCode, color);
     }
 }
-bool ConsoleRenderer::FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color)
+bool AbstractConsole::FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, y);
@@ -236,7 +236,7 @@ bool ConsoleRenderer::FillHorizontalLine(int left, int y, int right, int charCod
     }
     return true;
 }
-bool ConsoleRenderer::FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color)
+bool AbstractConsole::FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, top);
@@ -267,7 +267,7 @@ bool ConsoleRenderer::FillVerticalLine(int x, int top, int bottom, int charCode,
     }
     return true;
 }
-bool ConsoleRenderer::FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color)
+bool AbstractConsole::FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -306,7 +306,7 @@ bool ConsoleRenderer::FillRect(int left, int top, int right, int bottom, int cha
     }
     return true;
 }
-bool ConsoleRenderer::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
+bool AbstractConsole::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -453,7 +453,7 @@ bool ConsoleRenderer::DrawRect(int left, int top, int right, int bottom, unsigne
     }
     return true;
 }
-bool ConsoleRenderer::WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize)
+bool AbstractConsole::WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -483,7 +483,7 @@ bool ConsoleRenderer::WriteSingleLineText(int x, int y, const char * text, unsig
     }    
     return true;
 }
-bool ConsoleRenderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+bool AbstractConsole::WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -523,7 +523,7 @@ bool ConsoleRenderer::WriteSingleLineTextWithHotKey(int x, int y, const char * t
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
-bool ConsoleRenderer::WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize)
+bool AbstractConsole::WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -555,7 +555,7 @@ bool ConsoleRenderer::WriteMultiLineText(int x, int y, const char * text, unsign
     }
     return true;
 }
-bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+bool AbstractConsole::WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -597,7 +597,7 @@ bool ConsoleRenderer::WriteMultiLineTextWithHotKey(int x, int y, const char * te
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
-bool ConsoleRenderer::WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+bool AbstractConsole::WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
 {
     TRANSLATE_COORDONATES(x, y);
     if ((y < Clip.Top) || (y > Clip.Bottom))
@@ -657,7 +657,7 @@ bool ConsoleRenderer::WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI
     }
     return true;
 }
-bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+bool AbstractConsole::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
 {
     TRANSLATE_COORDONATES(x, y);
     if (x > Clip.Right)
@@ -718,7 +718,7 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
     }
     return true;
 }
-bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
+bool AbstractConsole::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end)
 {
     TRANSLATE_COORDONATES(x, y);
     if (x > Clip.Right)
@@ -726,7 +726,7 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y
     NOT_IMPLEMENTED(false);
 }
 
-bool ConsoleRenderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
+bool AbstractConsole::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
 {
     CHECK_VISIBLE;
     

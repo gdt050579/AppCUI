@@ -1,4 +1,10 @@
 include_directories(include)
+if (MSVC)
+include_directories(include/Windows)
+else()
+include_directories(include/Unix)
+endif()
+
 
 add_library(AppCUI SHARED)
 add_subdirectory(src)

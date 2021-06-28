@@ -1,6 +1,6 @@
 #include "AppCUI.h"
 #include "Internal.h"
-#include "IO.h"
+#include "os.h"
 #include "ControlContext.h"
 
 using namespace AppCUI;
@@ -26,15 +26,15 @@ bool AppCUI::Application::Run()
 bool AppCUI::Application::GetApplicationSize(AppCUI::Console::Size & size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    size.Width = app->consoleRenderer->GetConsoleSize().Width;
-    size.Height = app->consoleRenderer->GetConsoleSize().Height;
+    size.Width = app->console->GetConsoleSize().Width;
+    size.Height = app->console->GetConsoleSize().Height;
     return true;
 }
 bool AppCUI::Application::GetDesktopSize(AppCUI::Console::Size & size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    size.Width = app->consoleRenderer->GetConsoleSize().Width;
-    size.Height = app->consoleRenderer->GetConsoleSize().Height;
+    size.Width = app->console->GetConsoleSize().Width;
+    size.Height = app->console->GetConsoleSize().Height;
     if (app->CommandBarObject.IsVisible())
         size.Height--;
     //GDT: trebuie scazut meniul si bara de jos
@@ -77,8 +77,8 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
     // ma desenez pe mine    
-    app->consoleRenderer->SetClip(Members->ScreenClip);
-    app->consoleRenderer->SetTranslate(Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
+    app->console->SetClip(Members->ScreenClip);
+    app->console->SetTranslate(Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
     if (focused != Members->Focused)
     {
         if (focused) {
@@ -206,20 +206,16 @@ void UpdateCommandBar(AppCUI::Controls::Control *obj)
 
 bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler)
 {
-#ifdef BUILD_FOR_WINDOWS
-    this->consoleRenderer = new WindowsConsoleRenderer();
-#else
-    this->consoleRenderer = new MACConsoleRenderer();
-#endif
-    CHECK(this->consoleRenderer, false, "Fail to allocate a console renderer object !");
-    CHECK(this->consoleRenderer->Init(), false, "Fail to create OS-Specific Console Renderer");
-    CHECK(this->inputReader.Init(), false, "Fail to initialize OS-Specific input reader");
-    this->renderer.Init(this->consoleRenderer);
+    CHECK((this->console = new AppCUI::Internal::Console()), false, "Fail to allocate a console renderer object !");
+    CHECK(this->console->Init(), false, "Fail to create OS-Specific Console Renderer");
+    CHECK((this->input = new AppCUI::Internal::Input()), false, "Fail to allocate a input event reader !");
+    CHECK(this->input->Init(), false, "Fail to initialize OS-Specific input reader");
+    this->renderer.Init(this->console);
     this->config.SetDarkTheme();    
-    this->CommandBarObject.Init(consoleRenderer->GetConsoleSize().Width, consoleRenderer->GetConsoleSize().Height, &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
+    this->CommandBarObject.Init(console->GetConsoleSize().Width, console->GetConsoleSize().Height, &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
     this->CommandBarWrapper.Init(&this->CommandBarObject);
     
-    CHECK(Desktop.Create(consoleRenderer->GetConsoleSize().Width, consoleRenderer->GetConsoleSize().Height), false, "Failed to create desktop !");
+    CHECK(Desktop.Create(console->GetConsoleSize().Width, console->GetConsoleSize().Height), false, "Failed to create desktop !");
     LoopStatus = LOOP_STATUS_NORMAL;
     RepaintStatus = REPAINT_STATUS_ALL;
     MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
@@ -233,7 +229,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags,
 }
 void AppCUI::Internal::Application::Paint()
 {
-    this->consoleRenderer->Prepare();
+    this->console->Prepare();
     // controalele
 
     if (ModalControlsCount > 0)
@@ -253,14 +249,14 @@ void AppCUI::Internal::Application::Paint()
         PaintControl(&Desktop, this->renderer, true);
     }
     // Acceleratorii
-    this->consoleRenderer->ResetClip();
-    this->consoleRenderer->SetTranslate(0, 0);
+    this->console->ResetClip();
+    this->console->SetTranslate(0, 0);
     this->CommandBarObject.Paint(this->renderer);
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
     AppCUI::Console::Clip full;
-    full.Set(0, 0, app->consoleRenderer->GetConsoleSize().Width, app->consoleRenderer->GetConsoleSize().Height);
+    full.Set(0, 0, app->console->GetConsoleSize().Width, app->console->GetConsoleSize().Height);
     ComputeControlLayout(full, &Desktop);
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
@@ -462,22 +458,22 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
                     ComputePositions();
                 if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
                     Paint();
-                this->consoleRenderer->Update();
+                this->console->Update();
             }
             RepaintStatus = REPAINT_STATUS_NONE;
         }
-        this->inputReader.GetSystemEvent(evnt);
+        this->input->GetSystemEvent(evnt);
         switch (evnt.eventType)
         {
             case SystemEvents::APP_CLOSE:
                 LoopStatus = LOOP_STATUS_STOP_APP;
                 break;
             case SystemEvents::APP_RESIZED:
-                if (((evnt.newWidth != this->consoleRenderer->GetConsoleSize().Width) || (evnt.newHeight != this->consoleRenderer->GetConsoleSize().Height)) && (evnt.newWidth>0) && (evnt.newHeight>0))
+                if (((evnt.newWidth != this->console->GetConsoleSize().Width) || (evnt.newHeight != this->console->GetConsoleSize().Height)) && (evnt.newWidth>0) && (evnt.newHeight>0))
                 {
-                    this->consoleRenderer->SetSize(evnt.newWidth,evnt.newHeight);
-                    this->Desktop.Resize(this->consoleRenderer->GetConsoleSize().Width, this->consoleRenderer->GetConsoleSize().Height);
-                    this->CommandBarObject.SetDesktopSize(this->consoleRenderer->GetConsoleSize().Width, this->consoleRenderer->GetConsoleSize().Height);
+                    this->console->SetSize(evnt.newWidth,evnt.newHeight);
+                    this->Desktop.Resize(this->console->GetConsoleSize().Width, this->console->GetConsoleSize().Height);
+                    this->CommandBarObject.SetDesktopSize(this->console->GetConsoleSize().Width, this->console->GetConsoleSize().Height);
                     this->RepaintStatus = REPAINT_STATUS_ALL;
                 }
                 break;
@@ -567,7 +563,7 @@ void AppCUI::Internal::Application::Terminate()
 bool AppCUI::Internal::Application::Uninit()
 {
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
-    this->consoleRenderer->Uninit();
-    this->inputReader.Uninit();
+    this->console->Uninit();
+    this->input->Uninit();
     return true;
 }

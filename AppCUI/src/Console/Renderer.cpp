@@ -3,7 +3,7 @@
 
 using namespace AppCUI::Console;
 
-#define CRND  ((AppCUI::Internal::ConsoleRenderer*)this->consoleRenderer)
+#define CRND  ((AppCUI::Internal::AbstractConsole*)this->consoleRenderer)
 #define ConsoleRendererCall(x) if (this->consoleRenderer) CRND->x;
 
 Renderer::Renderer()

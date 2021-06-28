@@ -1,0 +1,1 @@
+target_sources(AppCUI PRIVATE Input.cpp Console.cpp )
