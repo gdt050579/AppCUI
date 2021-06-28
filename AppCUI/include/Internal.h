@@ -142,7 +142,7 @@ namespace AppCUI
             } Cursor, LastUpdateCursor;
             struct {
                 AppCUI::Console::Size   consoleSize;
-                CHAR_INFO*              screenBuffer;
+                CHARACTER_INFORMATION*  screenBuffer;
                 unsigned int            CursorX, CursorY, CursorVisible;
             } BeforeInitConfig;
 
@@ -160,7 +160,8 @@ namespace AppCUI
             int                         *SpecialCharacters;
         public:
             AbstractConsole();
-            ~AbstractConsole();
+            virtual ~AbstractConsole();
+
             bool    Init();
             void    Uninit();
 
@@ -195,6 +196,7 @@ namespace AppCUI
             virtual bool  Init() = 0;
             virtual void  Uninit() = 0;
             virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) = 0;
+            virtual ~AbstractInput() = 0;
         };
 
 
@@ -227,8 +229,10 @@ namespace AppCUI
             int						                MouseLockedObject;
             AppCUI::Application::EventHandler	    Handler;
 
+            Application();
+            ~Application();
             
-            
+            void    Destroy();
             void	ComputePositions();
             void	ProcessKeyPress(AppCUI::Input::Key::Type keyCode, int AsciiCode);
             void	ProcessShiftState(AppCUI::Input::Key::Type ShiftState);

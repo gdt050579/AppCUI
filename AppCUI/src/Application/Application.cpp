@@ -12,8 +12,10 @@ bool AppCUI::Application::Init(Application::Flags::Type flags, EventHandler even
     CHECK(app == nullptr, false, "Application has already been initialized !");
     app = new AppCUI::Internal::Application();
     CHECK(app, false, "Fail to allocate space for application object !");
-    CHECK(app->Init(flags, eventCallback), false, "Fail to initialize application !");
-    return true;
+    if (app->Init(flags, eventCallback))
+        return true;
+    delete app;
+    RETURNERROR(false, "Fail to initialized application !");
 }
 bool AppCUI::Application::Run()
 {
@@ -21,6 +23,8 @@ bool AppCUI::Application::Run()
     CHECK(app->Inited,false,"Application has not been corectly initialized !");
     app->ExecuteEventLoop();
     app->Uninit();
+    delete app;
+    app = nullptr;
     return true;
 }
 bool AppCUI::Application::GetApplicationSize(AppCUI::Console::Size & size)
@@ -204,8 +208,43 @@ void UpdateCommandBar(AppCUI::Controls::Control *obj)
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 
+AppCUI::Internal::Application::Application()
+{
+    this->console = nullptr;
+    this->input = nullptr;
+    this->Inited = false;
+    this->MouseLockedControl = nullptr;
+    this->MouseOverControl = nullptr;
+    this->ModalControlsCount = 0;
+    this->Handler = nullptr;
+    this->LoopStatus = LOOP_STATUS_NORMAL;
+    this->RepaintStatus = REPAINT_STATUS_ALL;
+    this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
+}
+AppCUI::Internal::Application::~Application()
+{
+    this->Destroy();
+}
+void AppCUI::Internal::Application::Destroy()
+{
+    if (this->console)
+        delete this->console;
+    if (this->input)
+        delete this->input;
+    this->console = nullptr;
+    this->input = nullptr;
+    this->Inited = false;
+    this->MouseLockedControl = nullptr;
+    this->MouseOverControl = nullptr;
+    this->ModalControlsCount = 0;
+    this->Handler = nullptr;
+    this->LoopStatus = LOOP_STATUS_NORMAL;
+    this->RepaintStatus = REPAINT_STATUS_ALL;
+    this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
+}
 bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler)
 {
+    CHECK(!this->Inited, false, "Application has already been initialized !");
     CHECK((this->console = new AppCUI::Internal::Console()), false, "Fail to allocate a console renderer object !");
     CHECK(this->console->Init(), false, "Fail to create OS-Specific Console Renderer");
     CHECK((this->input = new AppCUI::Internal::Input()), false, "Fail to allocate a input event reader !");
@@ -565,5 +604,10 @@ bool AppCUI::Internal::Application::Uninit()
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
     this->console->Uninit();
     this->input->Uninit();
+    delete this->console;
+    delete this->input;
+    this->console = nullptr;
+    this->input = nullptr;
+    this->Inited = false;
     return true;
 }

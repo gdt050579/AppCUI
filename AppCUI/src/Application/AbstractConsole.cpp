@@ -29,7 +29,18 @@ AbstractConsole::AbstractConsole()
     this->BeforeInitConfig.CursorY = 0;
     this->Inited = false;
 }
-
+AbstractConsole::~AbstractConsole()
+{
+    if (WorkingBuffer)
+        delete[] WorkingBuffer;
+    if (OffsetRows)
+        delete[] OffsetRows;
+    if (BeforeInitConfig.screenBuffer)
+        delete[] BeforeInitConfig.screenBuffer;
+    WorkingBuffer = nullptr;
+    OffsetRows = nullptr;
+    this->BeforeInitConfig.screenBuffer = nullptr;
+}
 
 bool AbstractConsole::Init()
 {

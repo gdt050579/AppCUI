@@ -2,6 +2,10 @@
 
 using namespace AppCUI::Internal;
 
+Input::~Input()
+{
+
+}
 bool Input::Init()
 {
     return true;

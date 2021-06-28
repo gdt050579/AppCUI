@@ -10,6 +10,10 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
        0x25CF, 0x25CB, 0x221A,                                              // symbols
 };
 
+Console::~Console()
+{
+
+}
 bool Console::OnInit()
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;

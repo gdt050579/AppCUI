@@ -2,6 +2,10 @@
 
 using namespace AppCUI::Internal;
 
+Input::~Input()
+{
+
+}
 bool Input::Init()
 {
     this->hstdIn = GetStdHandle(STD_INPUT_HANDLE);

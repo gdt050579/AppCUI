@@ -17,6 +17,11 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
 
 using namespace AppCUI::Internal;
 
+Console::~Console()
+{
+
+}
+
 bool Console::OnInit()
 {
     initscr();
