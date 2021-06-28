@@ -63,7 +63,7 @@ void AppCUI::Application::Repaint()
 {
     app->Paint();
 }
-void AppCUI::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Events::Event eventType, int controlID)
+void AppCUI::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID)
 {
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
@@ -520,7 +520,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
     if (ctrl != nullptr)
     {
-        RaiseEvent(ctrl, nullptr, AppCUI::Controls::Events::EVENT_COMMAND, command);
+        RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::EVENT_COMMAND, command);
         // refac si command bar-ul
         // update la acceleratori
         if (ModalControlsCount == 0)
@@ -529,7 +529,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
 }
-void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Events::Event eventType, int controlID)
+void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID)
 {
     while (control != nullptr)
     {

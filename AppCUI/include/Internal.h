@@ -132,7 +132,7 @@ namespace AppCUI
             bool	                Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);
             bool	                ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
             void                    Paint();
-            void                    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Events::Event eventType, int controlID);
+            void                    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
         };
     }
 }

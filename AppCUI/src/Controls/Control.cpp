@@ -979,7 +979,7 @@ bool AppCUI::Controls::Control::SetFocus()
 	//UpdateCommandBar(this);
 	return true;
 }
-void AppCUI::Controls::Control::RaiseEvent(Events::Event eventType)
+void AppCUI::Controls::Control::RaiseEvent(Event::Type eventType)
 {
 	AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
 }
@@ -1030,7 +1030,7 @@ void AppCUI::Controls::Control::OnMouseWheel(int direction)
 void AppCUI::Controls::Control::OnHotKey()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(const void* sender, Events::Event eventType, int controlID)
+bool AppCUI::Controls::Control::OnEvent(const void* sender, Event::Type eventType, int controlID)
 {
 	return false;
 }

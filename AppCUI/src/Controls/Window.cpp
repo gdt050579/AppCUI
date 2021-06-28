@@ -328,7 +328,7 @@ void Window::OnMouseReleased(int x, int y, int butonState)
         return;
     }
 	if (Members->winButtonState == (WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE)) {
-		RaiseEvent(Events::EVENT_WINDOW_CLOSE);
+		RaiseEvent(Event::EVENT_WINDOW_CLOSE);
 		return;
 	}
 	//if (Members->fnMouseReleaseHandler != nullptr)
@@ -425,10 +425,10 @@ bool Window::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode)
 		if (tmp != nullptr) tmp->SetFocus();
 		return true;
 	case Key::Escape:
-		RaiseEvent(Events::EVENT_WINDOW_CLOSE);
+		RaiseEvent(Event::EVENT_WINDOW_CLOSE);
 		return true;
 	case Key::Enter:
-		RaiseEvent(Events::EVENT_WINDOW_ACCEPT);
+		RaiseEvent(Event::EVENT_WINDOW_ACCEPT);
 		return true;
 	}
 	if ((KeyCode & (Key::Shift | Key::Alt | Key::Ctrl)) == Key::Alt)

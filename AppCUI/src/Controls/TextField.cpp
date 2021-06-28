@@ -16,7 +16,7 @@ void TextField_SendTextChangedEvent(TextField *control)
 	{
         // todo highlight update
 	}
-	control->RaiseEvent(Events::EVENT_TEXT_CHANGED);
+	control->RaiseEvent(Event::EVENT_TEXT_CHANGED);
 }
 
 void TextField_MoveSelTo(TextField *control,int poz)
@@ -260,7 +260,7 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 		case Key::Enter:
 			if ((Members->Flags & TextFieldFlags::PROCESS_ENTER) != 0)
 			{
-				RaiseEvent(Events::EVENT_TEXTFIELD_VALIDATE);
+				RaiseEvent(Event::EVENT_TEXTFIELD_VALIDATE);
 				return true;
 			}
 			return false;

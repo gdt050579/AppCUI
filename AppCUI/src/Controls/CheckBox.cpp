@@ -51,7 +51,7 @@ void AppCUI::Controls::CheckBox::Paint(Console::Renderer & renderer)
 void AppCUI::Controls::CheckBox::OnHotKey()
 {
 	SetChecked(!IsChecked());
-	RaiseEvent(Events::EVENT_CHECKED_STATUS_CHANGED);
+	RaiseEvent(Event::EVENT_CHECKED_STATUS_CHANGED);
 }
 bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode)
 {

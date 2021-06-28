@@ -88,7 +88,7 @@ void Button::Paint(Console::Renderer & renderer)
 }
 void Button::OnHotKey()
 {
-	RaiseEvent(Events::EVENT_BUTTON_CLICKED);
+	RaiseEvent(Event::EVENT_BUTTON_CLICKED);
 }
 bool Button::OnKeyEvent(Key::Type KeyCode, char AsciiCode)
 {
