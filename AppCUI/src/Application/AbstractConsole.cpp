@@ -47,8 +47,33 @@ bool AbstractConsole::Init()
     return OnInit();
 }
 void AbstractConsole::Uninit()
-{
-
+{    
+    CHARACTER_INFORMATION * p = this->WorkingBuffer;
+    // clear up current buffer
+    for (unsigned int tr = 0; tr < this->ConsoleSize.Width*this->ConsoleSize.Height; tr++, p++)
+    {
+        SET_CHARACTER(p, ' ', COLOR(Color::Silver, Color::Black));
+    }
+    // copy the original buffer
+    for (unsigned int y = 0; y < this->BeforeInitConfig.consoleSize.Height; y++)
+    {
+        p = this->OffsetRows[y];
+        CHARACTER_INFORMATION * s = &this->BeforeInitConfig.screenBuffer[y*this->BeforeInitConfig.consoleSize.Width];
+        for (unsigned int x = 0; (x < this->BeforeInitConfig.consoleSize.Width) && (x < this->ConsoleSize.Width); x++, p++, s++)
+        {
+            SET_CHARACTER(p, GET_CHARACTER_VALUE(s), GET_CHARACTER_COLOR(s));
+        }
+    }
+    // restore the original buffer
+    this->OnFlushToScreen();
+    // Copy cursor position
+    Cursor.X = this->BeforeInitConfig.CursorX;
+    Cursor.Y = this->BeforeInitConfig.CursorY;
+    Cursor.Visible = this->BeforeInitConfig.CursorVisible;
+    // restore the original cursor position
+    this->OnUpdateCursor();
+    // OS specific On-unit
+    this->OnUninit();
 }
 void AbstractConsole::Prepare()
 {
