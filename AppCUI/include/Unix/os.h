@@ -14,6 +14,7 @@ namespace AppCUI
             virtual void    OnUninit() override;
             virtual void    OnFlushToScreen() override;
             virtual bool    OnUpdateCursor() override;
+            virtual ~Console();
         };
         class Input : public AbstractInput
         {
@@ -21,6 +22,7 @@ namespace AppCUI
             virtual bool  Init() override;
             virtual void  Uninit() override;
             virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
+            virtual ~Input();
         };
     }
 }
