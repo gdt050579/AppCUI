@@ -394,17 +394,6 @@ namespace AppCUI
     };
     namespace Controls
     {
-        namespace Anchor
-        {
-            enum Type : unsigned char
-            {
-                Top         = 0x01,
-                Left        = 0x02,
-                Bottom      = 0x04,
-                Right       = 0x08,
-                Center
-            };
-        }
         namespace Event
         {
             enum Type: unsigned int
@@ -568,7 +557,7 @@ namespace AppCUI
         class EXPORT Window : public Control 
         {
         public:
-            bool	Create(const char* text, const char * layout, WindowFlags::Type windowsFlags);
+            bool	Create(const char* text, const char * layout, WindowFlags::Type windowsFlags = WindowFlags::NONE);
             void	Paint(Console::Renderer & renderer) override;
             void	OnMousePressed(int x, int y, int Button) override;
             void	OnMouseReleased(int x, int y, int Button) override;

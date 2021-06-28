@@ -97,7 +97,7 @@ namespace AppCUI
         {
             AppCUI::Application::Config             config;
             AppCUI::Console::Renderer               renderer;
-            AppCUI::Internal::ConsoleRenderer       consoleRenderer;
+            AppCUI::Internal::ConsoleRenderer*      consoleRenderer;
             AppCUI::Internal::InputReader           inputReader;
             bool                                    Inited;
             
@@ -120,7 +120,6 @@ namespace AppCUI
             void	ComputePositions();
             void	ProcessKeyPress(AppCUI::Input::Key::Type keyCode, int AsciiCode);
             void	ProcessShiftState(AppCUI::Input::Key::Type ShiftState);
-            //void	ProcessMouseEvent(GLib::OS::InputEvent *evn);
             void	OnMouseDown(int x, int y, int buttonState);
             void	OnMouseUp(int x, int y, int buttonState);
             void	OnMouseMove(int x, int y, int buttonState);
@@ -130,6 +129,7 @@ namespace AppCUI
 
             //Common implementations
             bool	                Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);
+            bool                    Uninit();
             bool	                ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
             void                    Paint();
             void                    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);

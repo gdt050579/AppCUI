@@ -25,7 +25,7 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
 
 using namespace AppCUI::Internal;
 
-bool ConsoleRenderer::Init() 
+bool MACConsoleRenderer::OnInit()
 {
     initscr();
     cbreak();
@@ -58,12 +58,12 @@ bool ConsoleRenderer::Init()
     return true; 
 }
 
-void ConsoleRenderer::Uninit() 
+void MACConsoleRenderer::OnUninit()
 { 
     endwin();
 }
 
-void ConsoleRenderer::FlushToScreen() 
+void MACConsoleRenderer::OnFlushToScreen()
 {
     clear();
     for (size_t y = 0; y < ConsoleSize.Height; y++) 
@@ -75,7 +75,7 @@ void ConsoleRenderer::FlushToScreen()
     }
     refresh();
 }
-bool ConsoleRenderer::UpdateCursor() 
+bool MACConsoleRenderer::OnUpdateCursor()
 {
     if (Cursor.Visible)
     {

@@ -27,7 +27,8 @@ void Label::Paint(Console::Renderer & renderer)
     if (Members->Layout.Height == 1) {
         params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
     } else {
-        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
+        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES | WriteCharacterBufferFlags::WRAP_TO_WIDTH;
+        params.Width = Members->Layout.Width;
     }
     renderer.WriteCharacterBuffer(0, 0, Members->Text, params);
 }

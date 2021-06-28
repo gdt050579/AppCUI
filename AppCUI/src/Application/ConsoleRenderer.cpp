@@ -21,7 +21,48 @@ ConsoleRenderer::ConsoleRenderer()
     this->LastUpdateCursor.Visible = false;
     this->LastUpdateCursor.X = 0xFFFFFFFF;
     this->LastUpdateCursor.Y = 0xFFFFFFFF;
+    this->BeforeInitConfig.consoleSize.Width = 0;
+    this->BeforeInitConfig.consoleSize.Height = 0;
+    this->BeforeInitConfig.screenBuffer = nullptr;
+    this->BeforeInitConfig.CursorVisible = false;
+    this->BeforeInitConfig.CursorX = 0;
+    this->BeforeInitConfig.CursorY = 0;
+    this->Inited = false;
 }
+
+
+bool ConsoleRenderer::Init()
+{
+    return OnInit();
+}
+void ConsoleRenderer::Uninit()
+{
+
+}
+void ConsoleRenderer::Prepare()
+{
+    this->TranslateX = this->TranslateY = 0;
+    this->Clip.Left = this->Clip.Right = 0;
+    this->Clip.Right = this->ConsoleSize.Width - 1;
+    this->Clip.Bottom = this->ConsoleSize.Height - 1;
+    this->Clip.Visible = true;
+    this->HideCursor();
+}
+void ConsoleRenderer::Update()
+{
+    this->OnFlushToScreen();
+    if ((this->Cursor.Visible != this->LastUpdateCursor.Visible) ||
+        (this->Cursor.X != this->LastUpdateCursor.X) ||
+        (this->Cursor.Y != this->LastUpdateCursor.Y))
+    {
+        if (this->OnUpdateCursor())
+        {
+            // update last cursor information
+            this->LastUpdateCursor = this->Cursor;
+        }
+    }
+}
+
 bool ConsoleRenderer::CreateScreenBuffers(unsigned int width, unsigned int height)
 {
     this->Clip.Visible = false;
@@ -103,30 +144,6 @@ bool ConsoleRenderer::SetSize(unsigned int width, unsigned int height)
 {
     CHECK(CreateScreenBuffers(width, height), false, "Fail to create a screen buffer !");
     return true;
-}
-void ConsoleRenderer::Prepare()
-{
-    this->TranslateX = this->TranslateY = 0;
-    this->Clip.Left = this->Clip.Right = 0;
-    this->Clip.Right = this->ConsoleSize.Width - 1;
-    this->Clip.Bottom = this->ConsoleSize.Height - 1;
-    this->Clip.Visible = true;
-    this->HideCursor();
-}
-void ConsoleRenderer::UpdateScreen()
-{
-    this->FlushToScreen();
-    if ((this->Cursor.Visible != this->LastUpdateCursor.Visible) ||
-        (this->Cursor.X != this->LastUpdateCursor.X) || 
-        (this->Cursor.Y != this->LastUpdateCursor.Y))
-    {
-        if (this->UpdateCursor())
-        {
-            // update last cursor information
-            this->LastUpdateCursor = this->Cursor;
-        }
-    }
-    
 }
 void ConsoleRenderer::HideCursor()
 {
@@ -652,22 +669,24 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
         return false;
     const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
     CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
-    int rel_ofs = 0;
+    unsigned int rel_ofs = params.Width;
+    int original_x = x;
     //GDT: not efficient - further improvements can be done
     if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
     {
-        unsigned int orig_start = start;
+        unsigned int orig_start = start;        
         while (start < end)
         {
-            if (((x+ rel_ofs) >= Clip.Left) && ((x+ rel_ofs) <= Clip.Right) && (y >= Clip.Top)) {
+            if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
                 SET_CHARACTER_EX(p, ch->Code, params.Color);
             }
-            p++; ch++; rel_ofs++; start++;
-            if (rel_ofs == params.Width) {
-                rel_ofs = 0;
+            p++; ch++; rel_ofs--; start++; x++;
+            if (rel_ofs == 0) {
+                rel_ofs = params.Width;
                 y++;
                 if (y > Clip.Bottom)
                     break;
+                x = original_x;
                 p = this->OffsetRows[y] + x;
             }
         }
@@ -683,15 +702,16 @@ bool ConsoleRenderer::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
     } else {
         while (start < end)
         {
-            if (((x + rel_ofs) >= Clip.Left) && ((x + rel_ofs) <= Clip.Right) && (y >= Clip.Top)) {
-                SET_CHARACTER_EX(p, ch->Code, ch->Color);
+            if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
+                SET_CHARACTER_EX(p, ch->Code, params.Color);
             }
-            p++; ch++; rel_ofs++; start++;
-            if (rel_ofs == params.Width) {
-                rel_ofs = 0;
+            p++; ch++; rel_ofs--; start++; x++;
+            if (rel_ofs == 0) {
+                rel_ofs = params.Width;
                 y++;
                 if (y > Clip.Bottom)
                     break;
+                x = original_x;
                 p = this->OffsetRows[y] + x;
             }
         }

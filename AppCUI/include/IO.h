@@ -74,6 +74,8 @@ namespace AppCUI
 
         class ConsoleRenderer
         {
+        protected:
+            bool                        Inited;
             int                         TranslateX, TranslateY;
             AppCUI::Console::Size       ConsoleSize;
             CHARACTER_INFORMATION*      WorkingBuffer;
@@ -86,34 +88,29 @@ namespace AppCUI
                 unsigned int            X, Y;
                 bool                    Visible;
             } Cursor,LastUpdateCursor;
-
-#       ifdef BUILD_FOR_WINDOWS
-            HANDLE			            hstdOut;
-            struct {
-                DWORD                   stdMode;
-                AppCUI::Console::Size   consoleSize;
-                CHAR_INFO*              screenBuffer;
-            } BeforeInitConfig;
-#       else 
             struct {
                 AppCUI::Console::Size   consoleSize;
                 CHAR_INFO*              screenBuffer;
+                unsigned int            CursorX, CursorY, CursorVisible;
             } BeforeInitConfig;
-#       endif
 
-            bool    CreateScreenBuffers(unsigned int width, unsigned int height);
-            bool    WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
-            bool    WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
-            bool    WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            CreateScreenBuffers(unsigned int width, unsigned int height);
+            bool            WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+
+            virtual bool    OnInit() = 0;
+            virtual void    OnUninit() = 0;
+            virtual void    OnFlushToScreen() = 0;
+            virtual bool    OnUpdateCursor() = 0;
+
         public:
             int                         *SpecialCharacters;
         public:
             ConsoleRenderer();
-            // OS specific
+            ~ConsoleRenderer();
             bool    Init();
             void    Uninit();
-            void    FlushToScreen();
-            bool    UpdateCursor();
 
             // Generic methods
             bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
@@ -134,11 +131,39 @@ namespace AppCUI
             void    SetTranslate(int offX, int offY);
             bool    SetSize(unsigned int width, unsigned int height);            
             void    Prepare();
-            void    UpdateScreen();
+            void    Update();
 
             // inlines
             inline const AppCUI::Console::Size& GetConsoleSize() const { return ConsoleSize; }
         };
+
+#       ifdef BUILD_FOR_WINDOWS
+        class WindowsConsoleRenderer : public ConsoleRenderer
+        {
+            struct {
+                HANDLE			        hstdOut;
+                DWORD                   stdMode;
+            } OSSpecific;
+        protected:
+            virtual bool    OnInit() override;
+            virtual void    OnUninit() override;
+            virtual void    OnFlushToScreen() override;
+            virtual bool    OnUpdateCursor() override;
+        };
+#       else
+        class MACConsoleRenderer : public ConsoleRenderer
+        {
+            //struct {
+            //    HANDLE			        hstdOut;
+            //    DWORD                   stdMode;
+            //} OSSpecific;
+        protected:
+            virtual bool    OnInit() override;
+            virtual void    OnUninit() override;
+            virtual void    OnFlushToScreen() override;
+            virtual bool    OnUpdateCursor() override;
+        };
+#       endif
 
         class InputReader
         {
