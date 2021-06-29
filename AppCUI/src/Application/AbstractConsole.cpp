@@ -759,7 +759,72 @@ bool AbstractConsole::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y
     TRANSLATE_COORDONATES(x, y);
     if (x > Clip.Right)
         return false;
-    NOT_IMPLEMENTED(false);
+    if ((params.Width == 0) || (end == start))
+        return true; // nothing to draw
+    unsigned int w;
+    if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
+        w = params.Width;
+    else
+        w = 0xFFFFFFFF;
+    const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
+    CHARACTER_INFORMATION * p = this->OffsetRows[y] + x;
+    CHARACTER_INFORMATION * hotkey = nullptr;
+    unsigned int rel_ofs = w;
+    int original_x = x;
+    bool has_hotkey = (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY) != 0;
+    //GDT: not efficient - further improvements can be done
+    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    {
+        unsigned int orig_start = start;
+        while (start < end)
+        {
+            if ((rel_ofs == 0) || (ch->Code == '\n')) {
+                rel_ofs = w;
+                y++;
+                if (y > Clip.Bottom)
+                    break;
+                x = original_x;
+                p = this->OffsetRows[y] + x;
+                if (ch->Code == '\n')
+                {
+                    ch++; start++;
+                    continue;
+                }
+            }
+            if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
+                SET_CHARACTER_EX(p, ch->Code, params.Color);
+                if ((has_hotkey) && (!hotkey) && (start== params.HotKeyPosition))
+                    hotkey = p;
+            }
+            p++; ch++; rel_ofs--; start++; x++;
+        }
+        if (hotkey) {
+            SET_CHARACTER_EX(hotkey, -1, params.HotKeyColor);
+        }
+    }
+    else {
+        while (start < end)
+        {
+            if ((rel_ofs == 0) || (ch->Code == '\n')) {
+                rel_ofs = w;
+                y++;
+                if (y > Clip.Bottom)
+                    break;
+                x = original_x;
+                p = this->OffsetRows[y] + x;
+                if (ch->Code == '\n')
+                {
+                    ch++; start++;
+                    continue;
+                }
+            }
+            if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
+                SET_CHARACTER_EX(p, ch->Code, params.Color);
+            }
+            p++; ch++; rel_ofs--; start++; x++;
+        }
+    }
+    return true;
 }
 
 bool AbstractConsole::WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params)
