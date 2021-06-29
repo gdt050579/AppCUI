@@ -30,7 +30,10 @@ void AppCUI::Controls::RadioBox::Paint(Console::Renderer & renderer)
         cbc = &Members->Cfg->StateControl.Hover;
     renderer.WriteSingleLineText(0, 0, "( ) ", cbc->TextColor, 4);
 
-    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
+                                      WriteCharacterBufferFlags::PROCESS_NEW_LINE |
+                                      WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+
     params.HotKeyPosition = Members->HotKeyOffset;
     if (Members->Layout.Height == 1) {
         params.Color = cbc->TextColor;

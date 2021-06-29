@@ -20,7 +20,10 @@ bool Label::Create(Control *parent, const char * text, const char * layout)
 void Label::Paint(Console::Renderer & renderer)
 {
 	CREATE_CONTROL_CONTEXT(this, Members, );
-    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
+                                      WriteCharacterBufferFlags::PROCESS_NEW_LINE |
+                                      WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+
     params.Color = Members->Cfg->Label.NormalColor;
     params.HotKeyColor = Members->Cfg->Label.HotKeyColor;
     params.HotKeyPosition = Members->HotKeyOffset;

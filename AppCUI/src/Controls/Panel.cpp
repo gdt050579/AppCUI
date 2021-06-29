@@ -37,6 +37,12 @@ void Panel::Paint(Console::Renderer & renderer)
             params.Color = Members->Cfg->Panel.TextColor;
             params.Width = Members->Layout.Width - 6;
             renderer.WriteCharacterBuffer(3, 0, Members->Text, params);
+            renderer.WriteCharacter(2, 0, ' ', Members->Cfg->Panel.NormalColor);
+            unsigned int w = Members->Text.Len();
+            if (w > params.Width)
+                renderer.WriteCharacter(3 + params.Width, 0, ' ', Members->Cfg->Panel.NormalColor);
+            else
+                renderer.WriteCharacter(3 + w, 0, ' ', Members->Cfg->Panel.NormalColor);
         }
 	}
 }
