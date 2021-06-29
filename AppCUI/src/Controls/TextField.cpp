@@ -296,7 +296,7 @@ void TextField::Paint(Console::Renderer & renderer)
 
     if (!this->IsEnabled())
         params.Color = Members->Cfg->TextField.InactiveColor;
-    if (Members->Focused)
+    else if (Members->Focused)
         params.Color = Members->Cfg->TextField.FocusColor;
     else if (Members->MouseIsOver)
         params.Color = Members->Cfg->TextField.HoverColor;
