@@ -39,7 +39,8 @@ void AppCUI::Controls::CheckBox::Paint(Console::Renderer & renderer)
     } else {
         params.Color = cbc->TextColor;
         params.HotKeyColor = cbc->HotKeyColor;
-        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
+        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES | WriteCharacterBufferFlags::WRAP_TO_WIDTH;
+        params.Width = Members->Layout.Width - 4; // without the '[ ] ' characters
     }
     renderer.WriteCharacterBuffer(4, 0, Members->Text, params);
 

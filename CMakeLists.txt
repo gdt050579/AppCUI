@@ -39,5 +39,6 @@ add_subdirectory(Tester)
 #examples
 add_subdirectory(Examples/SimpleWindow)
 add_subdirectory(Examples/MultipleWindows)
+add_subdirectory(Examples/Checkboxes)
 
 
