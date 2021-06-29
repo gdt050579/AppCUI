@@ -50,6 +50,12 @@ using namespace AppCUI::Console;
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
 #define SET_LAYOUT_INFO(flag,field)     { inf.flags |= flag; inf.field = value; if (l.ValueType=='%') inf.percentagesMask |= flag; }
 
+#define TRANSFER_MASK(fromBit,toBit) { \
+    if (inf.percentagesMask & fromBit) \
+        inf.percentagesMask |= toBit; \
+    else \
+        inf.percentagesMask -= (inf.percentagesMask & toBit); \
+}
 
 struct LayoutInformation
 {
@@ -404,14 +410,34 @@ bool ControlContext::UpdateLayoutFormat(const char * format)
     {
         switch (inf.anchor)
         {
-            case Alignament::TopLeft:       inf.a_left = inf.x; inf.a_top = inf.y; break;
-            case Alignament::Top:           inf.a_top = inf.y; break;
-            case Alignament::TopRight:      inf.a_right = inf.x; inf.a_top = inf.y;  break;
-            case Alignament::Right:         inf.a_right = inf.x; break;
-            case Alignament::BottomRight:   inf.a_right = inf.x; inf.a_bottom = inf.y; break;
-            case Alignament::Bottom:        inf.a_bottom = inf.y; break;
-            case Alignament::BottomLeft:    inf.a_left = inf.x; inf.a_bottom = inf.y; break;
-            case Alignament::Left:          inf.a_left = inf.x; break;
+            case Alignament::TopLeft:       
+                inf.a_left = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT); 
+                inf.a_top = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
+                break;
+            case Alignament::Top:           
+                inf.a_top = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP); 
+                break;
+            case Alignament::TopRight:      
+                inf.a_right = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
+                inf.a_top = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
+                break;
+            case Alignament::Right:
+                inf.a_right = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
+                break;
+            case Alignament::BottomRight:   
+                inf.a_right = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
+                inf.a_bottom = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
+                break;
+            case Alignament::Bottom:        
+                inf.a_bottom = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM); 
+                break;
+            case Alignament::BottomLeft:    
+                inf.a_left = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
+                inf.a_bottom = inf.y; TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
+                break;                
+            case Alignament::Left:          
+                inf.a_left = inf.x; TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
+                break;
             case Alignament::Center:        break;
         };
     }
