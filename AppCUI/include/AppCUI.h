@@ -159,8 +159,18 @@ namespace AppCUI
             static AppCUI::Input::Key::Type	FromString(AppCUI::Utils::String &text);
         };
     };
-
-
+    namespace OS
+    {
+        class EXPORT Clipboard
+        {
+            Clipboard() = delete;
+        public:
+            static bool		SetText(const char *text, unsigned int textLen = 0xFFFFFFFF);
+            static bool		SetText(const AppCUI::Utils::String &text);
+            static bool		GetText(AppCUI::Utils::String &text);
+            static bool		Clear();
+        };
+    }
     namespace Console
     {
         namespace Color
