@@ -40,5 +40,6 @@ add_subdirectory(Tester)
 add_subdirectory(Examples/SimpleWindow)
 add_subdirectory(Examples/MultipleWindows)
 add_subdirectory(Examples/Checkboxes)
-
+add_subdirectory(Examples/Radioboxes)
+add_subdirectory(Examples/Buttons)
 
