@@ -739,7 +739,7 @@ bool AbstractConsole::WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, con
         while (start < end)
         {
             if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
-                SET_CHARACTER_EX(p, ch->Code, params.Color);
+                SET_CHARACTER_EX(p, ch->Code, ch->Color);
             }
             p++; ch++; rel_ofs--; start++; x++;
             if (rel_ofs == 0) {
@@ -819,7 +819,7 @@ bool AbstractConsole::WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y
                 }
             }
             if ((x >= Clip.Left) && (x <= Clip.Right) && (y >= Clip.Top)) {
-                SET_CHARACTER_EX(p, ch->Code, params.Color);
+                SET_CHARACTER_EX(p, ch->Code, ch->Color);
             }
             p++; ch++; rel_ofs--; start++; x++;
         }
