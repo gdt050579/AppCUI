@@ -17,7 +17,7 @@ public:
         c1.Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
         c2.Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56");
         c2.SetEnabled(false);
-        c3.Create(this, "A &multi line checkbox that has an ID (defined as A_CHECKBOX_ID with value 12345) that can be used to see if the checkbox has been clicked",
+        c3.Create(this, "A &multi line checkbox that has an ID (defined as\nA_CHECKBOX_ID with value 12345) that can be used\nto see if the checkbox has been clicked",
                   "x:1,y:4,w:56,h:4",
                   A_CHECKBOX_ID);
         c3_info.Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
