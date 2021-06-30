@@ -683,6 +683,28 @@ namespace AppCUI
         };
 
 
+        namespace DialogResult
+        {
+            enum Type : int
+            {
+                RESULT_NONE = 0,
+                RESULT_OK = 1,
+                RESULT_CANCEL = 2,
+                RESULT_YES = 3,
+                RESULT_NO = 4,
+            };
+        }
+        class EXPORT MessageBox
+        {
+            MessageBox() = delete;
+        public:
+            static void                 ShowError(const char * title, const char * message);
+            static void                 ShowNotification(const char *title, const char *message);
+            static void                 ShowWarning(const char *title, const char *message);
+            static DialogResult::Type   ShowOkCancel(const char *title, const char *message);
+            static DialogResult::Type   ShowYesNoCancel(const char *title, const char *message);
+        };
+
     };
 
     namespace Application

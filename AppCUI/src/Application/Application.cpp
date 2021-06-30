@@ -73,6 +73,11 @@ void AppCUI::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI:
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
 
+AppCUI::Internal::Application* AppCUI::Application::GetApplication()
+{
+    return app;
+}
+
 void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & renderer, bool focused)
 {
     if (ctrl == nullptr)
@@ -274,14 +279,10 @@ void AppCUI::Internal::Application::Paint()
     if (ModalControlsCount > 0)
     {
         PaintControl(&Desktop, this->renderer, false);
-        if (ModalControlsCount > 1)
-        {
-            unsigned int tmp = ModalControlsCount - 1;
-            for (unsigned int tr = 0; tr < tmp; tr++)
-                PaintControl(ModalControlsStack[tr], this->renderer, false);
-        }
-        // desenez si pe cel activ
-        //Console::Gray();
+        unsigned int tmp = ModalControlsCount - 1;
+        for (unsigned int tr = 0; tr < tmp; tr++)
+            PaintControl(ModalControlsStack[tr], this->renderer, false);
+        this->console->DarkenScreen();
         PaintControl(ModalControlsStack[ModalControlsCount - 1], this->renderer, true);
     }
     else {
@@ -471,6 +472,7 @@ void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key::Type S
 bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
 {
     AppCUI::Internal::SystemEvents::Event evnt;
+    RepaintStatus = REPAINT_STATUS_ALL;
     if (ctrl != nullptr)
     {
         CHECK(ModalControlsCount < MAX_MODAL_CONTROLS_STACK, false, "Too many modal calls !");
@@ -535,20 +537,23 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
     }
     if (ctrl != nullptr)
     {
-        ModalControlsCount--;
-        if (ModalControlsCount < 0) ModalControlsCount = 0;
-        // update la acceleratori
+        if (ModalControlsCount > 0)
+            ModalControlsCount--;
         if (ModalControlsCount == 0)
             UpdateCommandBar(GetFocusedControl(&Desktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
-        Paint();
-        RepaintStatus |= REPAINT_STATUS_DRAW;
+        this->MouseLockedControl = nullptr;
+        this->MouseOverControl = nullptr;
+        this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
+        RepaintStatus = REPAINT_STATUS_ALL;
     }
     // daca vreau sa opresc doar bucla curenta
     if (LoopStatus == LOOP_STATUS_STOP_CURRENT)
+    {
         LoopStatus = LOOP_STATUS_NORMAL;
-    //*/
+        RepaintStatus = REPAINT_STATUS_ALL;
+    }
     return true;
 }
 void AppCUI::Internal::Application::SendCommand(int command)

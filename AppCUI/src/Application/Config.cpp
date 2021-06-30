@@ -25,10 +25,38 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Window.ControlButtonPressedColor = COLOR(Color::Black, Color::Yellow);
     this->Window.ControlButtonInactiveColor = COLOR(Color::Silver, Color::Black);
 
+    this->DialogError.ActiveColor = COLOR(Color::White, Color::DarkRed);
+    this->DialogError.InactiveColor = COLOR(Color::Silver, Color::DarkRed);
+    this->DialogError.TitleActiveColor = COLOR(Color::Yellow, Color::DarkRed);
+    this->DialogError.TitleInactiveColor = COLOR(Color::Silver, Color::DarkRed);
+    this->DialogError.ControlButtonColor = COLOR(Color::Aqua, Color::DarkRed);
+    this->DialogError.ControlButtonHoverColor = COLOR(Color::Black, Color::Aqua);
+    this->DialogError.ControlButtonPressedColor = COLOR(Color::Black, Color::Yellow);
+    this->DialogError.ControlButtonInactiveColor = COLOR(Color::Silver, Color::Black);
+
+    this->DialogNotify.ActiveColor = COLOR(Color::White, Color::DarkGreen);
+    this->DialogNotify.InactiveColor = COLOR(Color::Silver, Color::DarkGreen);
+    this->DialogNotify.TitleActiveColor = COLOR(Color::Yellow, Color::DarkGreen);
+    this->DialogNotify.TitleInactiveColor = COLOR(Color::Silver, Color::DarkGreen);
+    this->DialogNotify.ControlButtonColor = COLOR(Color::Aqua, Color::DarkGreen);
+    this->DialogNotify.ControlButtonHoverColor = COLOR(Color::Black, Color::Aqua);
+    this->DialogNotify.ControlButtonPressedColor = COLOR(Color::Black, Color::Yellow);
+    this->DialogNotify.ControlButtonInactiveColor = COLOR(Color::Silver, Color::Black);
+
+    this->DialogWarning.ActiveColor = COLOR(Color::White, Color::Olive);
+    this->DialogWarning.InactiveColor = COLOR(Color::Silver, Color::Olive);
+    this->DialogWarning.TitleActiveColor = COLOR(Color::Yellow, Color::Olive);
+    this->DialogWarning.TitleInactiveColor = COLOR(Color::Silver, Color::Olive);
+    this->DialogWarning.ControlButtonColor = COLOR(Color::Aqua, Color::Olive);
+    this->DialogWarning.ControlButtonHoverColor = COLOR(Color::Black, Color::Aqua);
+    this->DialogWarning.ControlButtonPressedColor = COLOR(Color::Black, Color::Yellow);
+    this->DialogWarning.ControlButtonInactiveColor = COLOR(Color::Silver, Color::Black);
+
+
     this->Label.NormalColor = COLOR(Color::Silver, Color::Transparent);
     this->Label.HotKeyColor = COLOR(Color::Yellow, Color::Transparent);
 
-    this->Button.Normal.TextColor = COLOR(Color::Silver, Color::Gray);
+    this->Button.Normal.TextColor = COLOR(Color::White, Color::Gray);
     this->Button.Normal.HotKeyColor = COLOR(Color::Yellow, Color::Gray);
     this->Button.Focused.TextColor = COLOR(Color::Black, Color::White);
     this->Button.Focused.HotKeyColor = COLOR(Color::Magenta, Color::White);

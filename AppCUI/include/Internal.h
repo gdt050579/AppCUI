@@ -185,6 +185,7 @@ namespace AppCUI
             bool    SetSize(unsigned int width, unsigned int height);
             void    Prepare();
             void    Update();
+            void    DarkenScreen();
 
             // inlines
             inline const AppCUI::Console::Size& GetConsoleSize() const { return ConsoleSize; }
@@ -250,6 +251,10 @@ namespace AppCUI
             void    Paint();
             void    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
         };
+    }
+    namespace Application
+    {
+        AppCUI::Internal::Application* GetApplication();
     }
 }
 
