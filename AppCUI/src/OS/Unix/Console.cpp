@@ -17,11 +17,6 @@
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
-bool constexpr is_invalid_sizes(const size_t width, const size_t height)
-{
-    return height >= MAX_TTY_ROW || width >= MAX_TTY_COL;
-}
-
 int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
     0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551,                     // double line box
     0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502,                     // single line box
@@ -34,7 +29,7 @@ using namespace AppCUI::Internal;
 
 #define COLOR_LIGHT(color) ((color) | (1 << 3))
 
-constexpr auto color_mapping = std::array<int, 18>{
+constexpr auto color_mapping = std::array<int, 16>{
     /* Black */     COLOR_BLACK,
     /* DarkBlue */  COLOR_BLUE,
     /* DarkGreen */ COLOR_GREEN,
@@ -52,21 +47,10 @@ constexpr auto color_mapping = std::array<int, 18>{
     /* Pink */      COLOR_LIGHT(COLOR_MAGENTA),
     /* Yellow */    COLOR_LIGHT(COLOR_YELLOW),
     /* White */     COLOR_LIGHT(COLOR_WHITE),
-
-    /* Transparent */ -1,
-    /* NoColor     */ -1,
 };
 
 int map_internal_color_to_ncurses(int color) 
 {
-    if (color == AppCUI::Console::Color::Transparent) 
-    {
-        return 16;
-    }
-    if (color == AppCUI::Console::Color::NoColor) 
-    {
-        return 17;
-    }
     return color;  
 }
 
@@ -116,7 +100,7 @@ bool Console::OnInit()
     size_t width = 0;
     size_t height = 0;
     getmaxyx(stdscr, height, width);
-    CHECK(!is_invalid_sizes(width, height), false, "Failed to get window sizes");
+    CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
 
     SpecialCharacters = _special_characters_consolas_font;
     this->BeforeInitConfig.consoleSize.Set(width, height);
@@ -136,9 +120,7 @@ void Console::OnUninit()
 void Console::OnFlushToScreen()
 {
 #ifndef NO_CURSES
-    //clear();
     /*
-    clear();
     for (size_t fg = 0; fg < color_mapping.size(); fg++) {
         for (size_t bg = 0; bg < color_mapping.size(); bg++) {
             setcolor(fg, bg);
@@ -149,14 +131,14 @@ void Console::OnFlushToScreen()
 
     refresh();
     return;
-    */
+    //*/
     for (size_t y = 0; y < ConsoleSize.Height; y++)
     {
         for (size_t x = 0; x < ConsoleSize.Width; x++)
         {
             CHAR_INFO& ch = WorkingBuffer[y * ConsoleSize.Width + x];
-            const int fg = ch.characterColor & 0xF;
-            const int bg = ch.characterColor >> 4;
+            const int fg = (ch.characterColor & 0xF);
+            const int bg = (ch.characterColor >> 4);
             setcolor(fg, bg);
             cchar_t t = {0, {ch.characterCode, 0}};
             mvadd_wch(y, x, &t);
@@ -166,6 +148,8 @@ void Console::OnFlushToScreen()
     refresh();
 #endif 
 }
+
+
 bool Console::OnUpdateCursor()
 {
 #ifndef NO_CURSES

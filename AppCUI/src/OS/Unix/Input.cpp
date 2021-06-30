@@ -8,15 +8,18 @@ using namespace AppCUI::Internal;
 Input::~Input()
 {
 }
+
 bool Input::Init()
 {
     keypad(stdscr, TRUE);
     mouseinterval(0);
     return true;
 }
+
 void Input::Uninit()
 {
 }
+
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
 #ifndef NO_CURSES
