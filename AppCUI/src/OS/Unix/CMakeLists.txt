@@ -1,1 +1,5 @@
-target_sources(AppCUI PRIVATE Input.cpp Console.cpp Clipboard.cpp)
+if (CURSES_FOUND)
+    target_sources(AppCUI PRIVATE Input.cpp Console.cpp Clipboard.cpp)
+else()
+    target_sources(AppCUI PRIVATE InputDefault.cpp ConsoleDefault.cpp Clipboard.cpp)
+endif()

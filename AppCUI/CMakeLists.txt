@@ -5,15 +5,8 @@ else()
 include_directories(include/Unix)
 endif()
 
-
+# Add libAppCUI
 add_library(AppCUI SHARED)
-add_subdirectory(src)
-target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
-
-# Preserve source file paths in debug mode for shared lib
-if (DEBUG_BUILD)
-    set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
-endif()
 
 if (UNIX)
     set(CURSES_NEED_WIDE "TRUE")
@@ -22,10 +15,18 @@ if (UNIX)
     if (CURSES_FOUND)
         target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
         target_link_libraries(AppCUI ${CURSES_LIBRARIES})
-    else()
-        add_compile_definitions(NO_CURSES)
     endif()
 endif()
+
+add_subdirectory(src)
+target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
+
+# Preserve source file paths in debug mode for shared lib
+if (DEBUG_BUILD)
+    set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
+endif()
+
+
 
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 
