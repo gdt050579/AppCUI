@@ -61,7 +61,9 @@ bool Console::OnInit()
 
 void Console::OnUninit()
 { 
+#ifndef NO_CURSES
     endwin();
+#endif 
 }
 
 void Console::OnFlushToScreen()
