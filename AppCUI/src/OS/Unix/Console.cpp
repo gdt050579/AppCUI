@@ -136,7 +136,7 @@ void Console::OnUninit()
 void Console::OnFlushToScreen()
 {
 #ifndef NO_CURSES
-    clear();
+    //clear();
     /*
     clear();
     for (size_t fg = 0; fg < color_mapping.size(); fg++) {
