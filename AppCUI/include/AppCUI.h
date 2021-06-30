@@ -687,11 +687,11 @@ namespace AppCUI
         {
             enum Type : int
             {
-                NONE = 0,
-                OK = 1,
-                CANCEL = 2,
-                YES = 3,
-                NO = 4,
+                RESULT_NONE = 0,
+                RESULT_OK = 1,
+                RESULT_CANCEL = 2,
+                RESULT_YES = 3,
+                RESULT_NO = 4,
             };
         }
         class EXPORT MessageBox

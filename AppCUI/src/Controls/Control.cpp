@@ -770,7 +770,7 @@ bool AppCUI::Controls::Control::GetChildIndex(Control *control, unsigned int &in
 	Control** lst = CTRLC->Controls;
 	Control** end = lst + (CTRLC->ControlsCount);
 	if (lst == nullptr)
-		false;
+		return false;
 	unsigned int c_index = 0;
 	while (lst < end)
 	{

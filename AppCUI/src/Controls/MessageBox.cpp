@@ -11,13 +11,15 @@ bool MessageBoxWindowEventHandler(Control *control, const void* sender, AppCUI::
 	switch (eventType)
 	{
 		case Event::EVENT_WINDOW_CLOSE:
-			((Window*)control)->Exit(DialogResult::CANCEL);
-			break;
+			((Window*)control)->Exit(DialogResult::RESULT_CANCEL);
+            return true;
 		case Event::EVENT_BUTTON_CLICKED:
 			((Window*)control)->Exit(controlID);
-			break;
+            return true;
+        default:
+            return false;
 	}
-	return true;
+    return false;
 }
 
 bool CreateMessageBoxWindow(const char* title, const char * content, WindowFlags::Type flags, int buttonsType, int *result)
@@ -32,18 +34,18 @@ bool CreateMessageBoxWindow(const char* title, const char * content, WindowFlags
 	switch (buttonsType)
 	{
 	case MSGBOX_BUTTONS_OK:
-		btnOK.Create(&wnd, "&Ok", "x:23,y:6,w:15", DialogResult::OK);
+		btnOK.Create(&wnd, "&Ok", "x:23,y:6,w:15", DialogResult::RESULT_OK);
 		btnOK.SetFocus();
 		break;
 	case MSGBOX_BUTTONS_OK_CANCEL:
-		btnOK.Create(&wnd, "&Ok", "x:15,y:6,w:15", DialogResult::OK);
-		btnCancel.Create(&wnd, "&Cancel", "x:31,y:6,w:15", DialogResult::CANCEL);
+		btnOK.Create(&wnd, "&Ok", "x:15,y:6,w:15", DialogResult::RESULT_OK);
+		btnCancel.Create(&wnd, "&Cancel", "x:31,y:6,w:15", DialogResult::RESULT_CANCEL);
 		btnOK.SetFocus();
 		break;
 	case MSGBOX_BUTTONS_YES_NO_CANCEL:
-		btnYes.Create(&wnd, "&Yes", "x:7,y:6,w:15", DialogResult::YES);
-		btnNo.Create(&wnd, "&No", "x:23,y:6,w:15", DialogResult::NO);
-		btnCancel.Create(&wnd, "&Cancel", "x:39,y:6,w:15", DialogResult::CANCEL);
+		btnYes.Create(&wnd, "&Yes", "x:7,y:6,w:15", DialogResult::RESULT_YES);
+		btnNo.Create(&wnd, "&No", "x:23,y:6,w:15", DialogResult::RESULT_NO);
+		btnCancel.Create(&wnd, "&Cancel", "x:39,y:6,w:15", DialogResult::RESULT_CANCEL);
 		btnYes.SetFocus();
 		break;
 	}
@@ -77,18 +79,18 @@ void MessageBox::ShowWarning(const char *title, const char *message)
 DialogResult::Type  MessageBox::ShowYesNoCancel(const char *title, const char *message)
 {
 	if ((title == nullptr) || (message == nullptr))
-		return DialogResult::CANCEL;
+		return DialogResult::RESULT_CANCEL;
 	int result;
 	if (CreateMessageBoxWindow(title, message, WindowFlags::NOTIFYBOX, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) == false)
-		return DialogResult::CANCEL;
+		return DialogResult::RESULT_CANCEL;
 	return (DialogResult::Type)result;
 }
 DialogResult::Type  MessageBox::ShowOkCancel(const char *title, const char *message)
 {
     if ((title == nullptr) || (message == nullptr))
-        return DialogResult::CANCEL;
+        return DialogResult::RESULT_CANCEL;
     int result;
     if (CreateMessageBoxWindow(title, message, WindowFlags::NOTIFYBOX, MSGBOX_BUTTONS_OK_CANCEL, &result) == false)
-        return DialogResult::CANCEL;
+        return DialogResult::RESULT_CANCEL;
     return (DialogResult::Type)result;
 }
