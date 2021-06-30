@@ -73,7 +73,7 @@ void Console::OnFlushToScreen()
             CHAR_INFO& ch = WorkingBuffer[y * ConsoleSize.Width + x];
             //auto pair = init_pair(y * ConsoleSize.Width + x, ch.characterColor & 0xF, ch.characterColor >> 4);
             //attron(COLOR_PAIR(pair));
-            cchar_t t{ch.characterColor, {ch.characterCode, 0}};
+            cchar_t t{0, {ch.characterCode, 0}};
             mvadd_wch(y, x, &t);
             //attroff(COLOR_PAIR(pair));
 
