@@ -251,6 +251,10 @@ namespace AppCUI
             void                    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
         };
     }
+    namespace Application
+    {
+        AppCUI::Internal::Application* GetApplication();
+    }
 }
 
 
