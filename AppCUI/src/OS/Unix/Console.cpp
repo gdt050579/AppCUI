@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <stdio.h>
+#include <array>
 #include <ncurses.h>
 
 #include "os.h"
@@ -31,9 +32,72 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
 
 using namespace AppCUI::Internal;
 
-Console::~Console()
-{
+#define COLOR_LIGHT(color) ((color) | (1 << 3))
 
+constexpr auto color_mapping = std::array<int, 18>{
+    /* Black */     COLOR_BLACK,
+    /* DarkBlue */  COLOR_BLUE,
+    /* DarkGreen */ COLOR_GREEN,
+    /* Teal */      COLOR_CYAN,
+    /* DarkRed */   COLOR_RED,
+    /* Magenta */   COLOR_MAGENTA,
+    /* Olive */     COLOR_YELLOW,
+    /* Silver */    COLOR_WHITE,
+
+    /* GRAY */      COLOR_LIGHT(COLOR_BLACK),
+    /* Blue */      COLOR_LIGHT(COLOR_BLUE),
+    /* Green */     COLOR_LIGHT(COLOR_GREEN),
+    /* Aqua */      COLOR_LIGHT(COLOR_CYAN),
+    /* Red */       COLOR_LIGHT(COLOR_RED),
+    /* Pink */      COLOR_LIGHT(COLOR_MAGENTA),
+    /* Yellow */    COLOR_LIGHT(COLOR_YELLOW),
+    /* White */     COLOR_LIGHT(COLOR_WHITE),
+
+    /* Transparent */ -1,
+    /* NoColor     */ -1,
+};
+
+int map_internal_color_to_ncurses(int color) 
+{
+    if (color == AppCUI::Console::Color::Transparent) 
+    {
+        return 16;
+    }
+    if (color == AppCUI::Console::Color::NoColor) 
+    {
+        return 17;
+    }
+    return color;  
+}
+
+constexpr int get_pair_id(const int fg, const int bg) 
+{
+    return 1 + fg * color_mapping.size() + bg;
+}
+
+void init_colorpairs(void)
+{
+    for (size_t fg = 0; fg < color_mapping.size(); fg++) {
+        for (size_t bg = 0; bg < color_mapping.size(); bg++) {
+            init_pair(get_pair_id(fg, bg), color_mapping[fg], color_mapping[bg]);
+        }
+    }
+}
+
+void setcolor(int fg, int bg)
+{
+    fg = map_internal_color_to_ncurses(fg);
+    bg = map_internal_color_to_ncurses(bg);
+    const int color_num = get_pair_id(fg, bg);
+    attron(COLOR_PAIR(color_num));
+}
+
+void unsetcolor(int fg, int bg)
+{
+    fg = map_internal_color_to_ncurses(fg);
+    bg = map_internal_color_to_ncurses(bg);
+    const int color_num = get_pair_id(fg, bg);
+    attroff(COLOR_PAIR(color_num));
 }
 
 bool Console::OnInit()
@@ -44,7 +108,10 @@ bool Console::OnInit()
     cbreak();
     noecho();
     clear();
+
     start_color();
+    use_default_colors();
+    init_colorpairs();
 
     size_t width = 0;
     size_t height = 0;
@@ -70,17 +137,30 @@ void Console::OnFlushToScreen()
 {
 #ifndef NO_CURSES
     clear();
+    /*
+    clear();
+    for (size_t fg = 0; fg < color_mapping.size(); fg++) {
+        for (size_t bg = 0; bg < color_mapping.size(); bg++) {
+            setcolor(fg, bg);
+            mvaddch(fg, bg, 'a');
+            unsetcolor(fg, bg);
+        }
+    }
+
+    refresh();
+    return;
+    */
     for (size_t y = 0; y < ConsoleSize.Height; y++)
     {
         for (size_t x = 0; x < ConsoleSize.Width; x++)
         {
             CHAR_INFO& ch = WorkingBuffer[y * ConsoleSize.Width + x];
-            //auto pair = init_pair(y * ConsoleSize.Width + x, ch.characterColor & 0xF, ch.characterColor >> 4);
-            //attron(COLOR_PAIR(pair));
-            cchar_t t{0, {ch.characterCode, 0}};
+            const int fg = ch.characterColor & 0xF;
+            const int bg = ch.characterColor >> 4;
+            setcolor(fg, bg);
+            cchar_t t = {0, {ch.characterCode, 0}};
             mvadd_wch(y, x, &t);
-            //attroff(COLOR_PAIR(pair));
-
+            unsetcolor(fg, bg);
         }
     }
     refresh();
@@ -101,4 +181,8 @@ bool Console::OnUpdateCursor()
     refresh();
 #endif 
     return true;
+}
+
+Console::~Console()
+{
 }

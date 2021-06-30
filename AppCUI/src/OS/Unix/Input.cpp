@@ -10,6 +10,8 @@ Input::~Input()
 }
 bool Input::Init()
 {
+    keypad(stdscr, TRUE);
+    mouseinterval(0);
     return true;
 }
 void Input::Uninit()
@@ -18,36 +20,49 @@ void Input::Uninit()
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
 #ifndef NO_CURSES
-    mousemask(ALL_MOUSE_EVENTS, NULL);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     int c = getch();
-    MEVENT mouse_event;
+
     switch (c)
     {
     case KEY_UP:
-        printf("keyup");
         break;
     case KEY_DOWN:
-        printf("keydown");
         break;
     case KEY_MOUSE:
+        // Need xterm-1003 for mouse events & colors
+        MEVENT mouse_event;
         if (getmouse(&mouse_event) == OK)
         {
             evnt.mouseX = mouse_event.x;
             evnt.mouseY = mouse_event.y;
             const auto &state = mouse_event.bstate;
-
-            if (state & BUTTON1_PRESSED)
+            mvaddstr(0, 0, (std::to_string(mouse_event.y) +  " " + std::to_string(mouse_event.x)).c_str());
+            if ((state & BUTTON1_PRESSED) || (state & BUTTON1_RELEASED))
             {
-                evnt.eventType = SystemEvents::MOUSE_DOWN;
-                printw("pressed");
+                if (state & BUTTON1_PRESSED) 
+                {
+                    evnt.eventType = SystemEvents::MOUSE_DOWN;
+                    mvaddstr(mouse_event.y, mouse_event.x, "pressed");
+                }
+                if (state & BUTTON1_RELEASED)
+                {
+                    evnt.eventType = SystemEvents::MOUSE_UP;
+                    mvaddstr(mouse_event.y, mouse_event.x, "released");
+                }
+                if (state & BUTTON1_CLICKED)
+                {
+                    mvaddstr(mouse_event.y, mouse_event.x, "clicked");
+                }
             }
-            else if (state & BUTTON1_RELEASED)
+            else if (state & REPORT_MOUSE_POSITION) 
             {
-                evnt.eventType = SystemEvents::MOUSE_UP;
-                printw("up");
+                evnt.eventType = SystemEvents::MOUSE_MOVE;
+                mvaddstr(mouse_event.y, mouse_event.x, "update");
             }
         }
         break;
     }
+    refresh();
 #endif
 }
