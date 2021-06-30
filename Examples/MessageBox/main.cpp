@@ -3,52 +3,25 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
-using namespace AppCUI::Console;
 
-void HighlightNumberAndCapitalLetters(TextField * tx, Console::Character * chars, unsigned int charsCount, void* Context)
-{
-    Console::Character * end = chars + charsCount;
-    while (chars < end)
-    {
-        if ((chars->Code >= '0') && (chars->Code <= '9'))
-            chars->Color = COLOR(Color::Aqua, Color::Black);
-        else if ((chars->Code >= 'A') && (chars->Code <= 'Z'))
-            chars->Color = COLOR(Color::Yellow, Color::Black);
-        else
-            chars->Color = COLOR(Color::Silver, Color::Black);
-        chars++;
-    }
-}
+#define BUTTON_ID_SHOW_ERROR        1
+#define BUTTON_ID_SHOW_NOTIFICATION 2
+#define BUTTON_ID_SHOW_QUESTION     3
+#define BUTTON_ID_SHOW_YNC_QUESTION 4
+#define BUTTON_ID_SHOW_WARNING      5
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Label l1, l2, l3, l4, l5;
-    TextField t1, t2, t3, t4, t5;
-
+    Button b1, b2, b3, b4, b5;
 public:
     MyWin()
     {
-        this->Create("Text Field Example", "a:c,w:70,h:20");
-        l1.Create(this, "&Normal text", "x:1,y:1,w:15");
-        t1.Create(this, "a normal text", "x:19,y:1,w:48");
-        t1.SetHotKey('N');
-
-        l2.Create(this, "&Read only", "x:1,y:3,w:15");
-        t2.Create(this, "this text cannnot be changed", "x:19,y:3,w:48", TextFieldFlags::READONLY_TEXT);
-        t2.SetHotKey('R');
-
-        l3.Create(this, "Inactive text", "x:1,y:5,w:15");
-        t3.Create(this, "this text is inactive", "x:19,y:5,w:48");
-        t3.SetEnabled(false);
-
-        l4.Create(this, "&Multi-line", "x:1,y:7,w:15");
-        t4.Create(this, "this is a large text the expends for over the next lines", "x:19,y:7,w:48,h:3");
-        t4.SetHotKey('M');
-
-        l5.Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
-        t5.Create(this, "Capital Letters and numbers (12345)", "x:19,y:11,w:48", TextFieldFlags::SYNTAX_HIGHLIGHTING, HighlightNumberAndCapitalLetters);
-        t5.SetHotKey('H');
+        this->Create("Message box example", "a:c,w:40,h:13");
+        b1.Create(this, "Show an &error !", "x:1,y:1,w:36", BUTTON_ID_SHOW_ERROR);
+        b2.Create(this, "Show an &notification", "x:1,y:3,w:36", BUTTON_ID_SHOW_NOTIFICATION);
+        b3.Create(this, "Ask a &question", "x:1,y:5,w:36", BUTTON_ID_SHOW_QUESTION);
+        b4.Create(this, "Ask a &Yes/No/Cancel question", "x:1,y:7,w:36", BUTTON_ID_SHOW_YNC_QUESTION);
+        b5.Create(this, "Show a &warning !", "x:1,y:9,w:36", BUTTON_ID_SHOW_WARNING);
     }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
     {
@@ -57,12 +30,24 @@ public:
             Application::Close();
             return true;
         }
+        if (eventType == Event::EVENT_BUTTON_CLICKED)
+        {
+            switch (controlID)
+            {
+            case BUTTON_ID_SHOW_ERROR: MessageBox::ShowError("Error", "This is an error message example !"); break;
+            case BUTTON_ID_SHOW_NOTIFICATION: MessageBox::ShowNotification("Notification", "This is a notification message example !"); break;
+            case BUTTON_ID_SHOW_QUESTION: MessageBox::ShowOkCancel("Question", "Are you ok with this ?"); break;
+            case BUTTON_ID_SHOW_YNC_QUESTION: MessageBox::ShowYesNoCancel("Question", "Are you ok with this ?"); break;
+            case BUTTON_ID_SHOW_WARNING: MessageBox::ShowWarning("Warning", "This is a warning message example !"); break;
+            }
+            return true;
+        }
         return false;
     }
 };
 int main()
 {
-    Application::Init(Application::Flags::HAS_COMMANDBAR);
+    Application::Init();
     Application::AddWindow(new MyWin());
     Application::Run();
     return 0;
