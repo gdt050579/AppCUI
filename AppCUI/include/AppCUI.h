@@ -685,7 +685,7 @@ namespace AppCUI
 
         namespace DialogResult
         {
-            enum Type : unsigned int
+            enum Type : int
             {
                 NONE = 0,
                 OK = 1,
