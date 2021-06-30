@@ -27,6 +27,7 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
 
 using namespace AppCUI::Internal;
 
+#ifndef NO_CURSES
 #define COLOR_LIGHT(color) ((color) | (1 << 3))
 
 constexpr auto color_mapping = std::array<int, 16>{
@@ -83,6 +84,7 @@ void unsetcolor(int fg, int bg)
     const int color_num = get_pair_id(fg, bg);
     attroff(COLOR_PAIR(color_num));
 }
+#endif
 
 bool Console::OnInit()
 {
