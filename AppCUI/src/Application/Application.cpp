@@ -282,7 +282,7 @@ void AppCUI::Internal::Application::Paint()
         unsigned int tmp = ModalControlsCount - 1;
         for (unsigned int tr = 0; tr < tmp; tr++)
             PaintControl(ModalControlsStack[tr], this->renderer, false);
-        //Console::Gray();
+        this->console->DarkenScreen();
         PaintControl(ModalControlsStack[ModalControlsCount - 1], this->renderer, true);
     }
     else {

@@ -185,6 +185,7 @@ namespace AppCUI
             bool    SetSize(unsigned int width, unsigned int height);
             void    Prepare();
             void    Update();
+            void    DarkenScreen();
 
             // inlines
             inline const AppCUI::Console::Size& GetConsoleSize() const { return ConsoleSize; }

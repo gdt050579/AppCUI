@@ -99,6 +99,16 @@ void AbstractConsole::Update()
     }
 }
 
+void AbstractConsole::DarkenScreen()
+{
+    CHARACTER_INFORMATION * start = this->WorkingBuffer;
+    CHARACTER_INFORMATION * end = this->WorkingBuffer + (this->ConsoleSize.Width * this->ConsoleSize.Height);
+    while (start < end) {
+        SET_CHARACTER_COLOR(start, COLOR(Color::Gray,Color::Black));
+        start++;
+    }
+}
+
 bool AbstractConsole::CreateScreenBuffers(unsigned int width, unsigned int height)
 {
     this->Clip.Visible = false;
