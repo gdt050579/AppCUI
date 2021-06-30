@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE_EXTENDED
 #include <iostream>
 #include <string>
 #include <string.h>
@@ -6,7 +7,6 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <stdio.h>
-#define _XOPEN_SOURCE_EXTENDED
 #include <ncurses.h>
 
 #include "os.h"
@@ -38,6 +38,7 @@ Console::~Console()
 
 bool Console::OnInit()
 {
+#ifndef NO_CURSES
     setlocale(LC_ALL, "");
     initscr();
     cbreak();
@@ -54,7 +55,7 @@ bool Console::OnInit()
     this->BeforeInitConfig.consoleSize.Set(width, height);
     this->BeforeInitConfig.screenBuffer = new CHAR_INFO[BeforeInitConfig.consoleSize.Width * BeforeInitConfig.consoleSize.Height];
     CHECK(this->CreateScreenBuffers(width, height), false, "Fail to create screen buffers");
-
+#endif
     return true;
 }
 
@@ -65,6 +66,7 @@ void Console::OnUninit()
 
 void Console::OnFlushToScreen()
 {
+#ifndef NO_CURSES
     clear();
     for (size_t y = 0; y < ConsoleSize.Height; y++)
     {
@@ -80,9 +82,11 @@ void Console::OnFlushToScreen()
         }
     }
     refresh();
+#endif 
 }
 bool Console::OnUpdateCursor()
 {
+#ifndef NO_CURSES
     if (Cursor.Visible)
     {
         curs_set(1);
@@ -93,5 +97,6 @@ bool Console::OnUpdateCursor()
         curs_set(0);
     }
     refresh();
+#endif 
     return true;
 }

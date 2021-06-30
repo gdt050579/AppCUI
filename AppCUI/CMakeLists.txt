@@ -17,10 +17,14 @@ endif()
 
 if (UNIX)
     set(CURSES_NEED_WIDE "TRUE")
-    # set(CURSES_NEED_NCURSES "TRUE")
-    find_package(Curses REQUIRED)
+    set(CURSES_NEED_NCURSES "TRUE")
+    find_package(Curses)
+    if (CURSES_FOUND)
     target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
     target_link_libraries(AppCUI ${CURSES_LIBRARIES})
+    else()
+        add_compile_options(NO_CURSES)
+    endif()
 endif()
 
 # sln configuration for MSVC
