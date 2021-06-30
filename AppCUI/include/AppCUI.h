@@ -359,7 +359,7 @@ namespace AppCUI
             void Clear();
 
             inline unsigned int     Len() const { return Count; }
-            inline const Character* GetBuffer() const { return Buffer; }
+            inline Character*       GetBuffer() const { return Buffer; }
 
             bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
             bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
@@ -419,6 +419,7 @@ namespace AppCUI
             };
         }
         class EXPORT Control;
+        class EXPORT TextField;
         namespace Handlers
         {
             typedef void(*AfterResizeHandler) (AppCUI::Controls::Control *control, int newWidth, int newHeight, void *Context);
@@ -431,6 +432,7 @@ namespace AppCUI
             typedef bool(*EventHandler)(AppCUI::Controls::Control *control, const void* sender, AppCUI::Controls::Event::Type eventType, int controlID, void *Context);
             typedef void(*MousePressedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*MouseReleasedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
+            typedef void(*TextFieldSyntaxHighlightHandler) (AppCUI::Controls::TextField * textField, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
         }
 
         class EXPORT Control
@@ -657,17 +659,16 @@ namespace AppCUI
         };
         namespace TextFieldFlags {
             enum Type : unsigned int {
-                NONE = 0,
-                PROCESS_ENTER = 0x000100,
-                READONLY_TEXT = 0x000200,
-                PASSWORD = 0x000400,
-                SYNTAX_HIGHLIGHTING = 0x000800,
+                NONE                = 0,
+                PROCESS_ENTER       = 0x000100,
+                READONLY_TEXT       = 0x000200,
+                SYNTAX_HIGHLIGHTING = 0x000400,
             };
         }
         class EXPORT TextField : public Control
         {
         public:
-            bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE);
+            bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE, Handlers::TextFieldSyntaxHighlightHandler handler = nullptr, void* Context = nullptr);
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void	OnAfterSetText(const char *text) override;
             void	Paint(Console::Renderer & renderer) override;

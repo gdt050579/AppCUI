@@ -112,6 +112,10 @@ public:
     struct {
         int Start, End, Origin;
     } Selection;
+    struct {
+        Handlers::TextFieldSyntaxHighlightHandler   Handler;
+        void*                                       Context;
+    } SyntaxHighlight;
     bool Modified;
 };
 
