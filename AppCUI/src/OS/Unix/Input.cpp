@@ -11,8 +11,10 @@ Input::~Input()
 
 bool Input::Init()
 {
+#ifndef NO_CURSES
     keypad(stdscr, TRUE);
     mouseinterval(0);
+#endif 
     return true;
 }
 
