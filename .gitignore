@@ -5,3 +5,4 @@
 *.vcxproj.user
 .vscode
 build
+bin

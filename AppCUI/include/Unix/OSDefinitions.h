@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <stdio.h>
-#include <curses.h>
 
 
 // dummy replacements for other systems
