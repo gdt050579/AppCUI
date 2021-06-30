@@ -673,6 +673,8 @@ namespace AppCUI
             void	OnAfterSetText(const char *text) override;
             void	Paint(Console::Renderer & renderer) override;
             void	OnFocus() override;
+            bool    OnMouseEnter() override;
+            bool    OnMouseLeave() override;
 
             void	SelectAll();
             void	ClearSelection();

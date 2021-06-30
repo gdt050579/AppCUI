@@ -348,5 +348,12 @@ void TextField::OnFocus()
 {
 	SelectAll();
 }
-
+bool TextField::OnMouseEnter()
+{
+    return true;
+}
+bool TextField::OnMouseLeave()
+{
+    return true;
+}
 //*/
