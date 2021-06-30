@@ -157,7 +157,7 @@ namespace AppCUI
             virtual bool    OnUpdateCursor() = 0;
 
         public:
-            int                         *SpecialCharacters;
+            int *SpecialCharacters;
         public:
             AbstractConsole();
             virtual ~AbstractConsole();
@@ -244,11 +244,11 @@ namespace AppCUI
             void	Terminate();
 
             //Common implementations
-            bool	                Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);
-            bool                    Uninit();
-            bool	                ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
-            void                    Paint();
-            void                    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
+            bool    Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);
+            bool    Uninit();
+            bool    ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
+            void    Paint();
+            void    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
         };
     }
 }
