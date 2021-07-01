@@ -473,6 +473,9 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
 {
     AppCUI::Internal::SystemEvents::Event evnt;
     RepaintStatus = REPAINT_STATUS_ALL;
+    this->MouseLockedControl = nullptr;
+    this->MouseOverControl = nullptr;
+    this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
     if (ctrl != nullptr)
     {
         CHECK(ModalControlsCount < MAX_MODAL_CONTROLS_STACK, false, "Too many modal calls !");

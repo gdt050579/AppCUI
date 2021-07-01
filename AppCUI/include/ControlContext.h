@@ -118,6 +118,21 @@ public:
     } SyntaxHighlight;
     bool Modified;
 };
+struct TabControlContext : public ControlContext
+{
+public:
+    Control*        currentTab;
+    unsigned int    TabTitleSize;
+    int             HoveredTabIndex;
+
+
+    int             MousePositionToPanel(int x, int y);
+    void            UpdateMargins();
+    void            PaintTopPanelTab(Console::Renderer & renderer);
+    void            PaintBottomPanelTab(Console::Renderer & renderer);
+    void            PaintLeftPanelTab(Console::Renderer & renderer);
+    void            PaintListPanelTab(Console::Renderer & renderer);
+};
 
 
 

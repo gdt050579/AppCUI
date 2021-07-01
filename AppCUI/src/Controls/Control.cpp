@@ -861,32 +861,52 @@ void AppCUI::Controls::Control::RecomputeLayout()
 
     AppCUI::Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const char * text)
+bool AppCUI::Controls::Control::SetText(const char * text, bool updateHotKey)
 {
 	if (OnBeforeSetText(text) == false)
 		return false;
-	if (CTRLC->Text.Set(text) == false)
-		return false;
+    if (updateHotKey)
+    {
+        if (CTRLC->Text.SetWithHotKey(text,CTRLC->HotKeyOffset) == false)
+            return false;
+    } else {
+        if (CTRLC->Text.Set(text) == false)
+            return false;
+    }
 	OnAfterSetText(text);
 	return true;
 }
-bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String *text)
+bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String *text, bool updateHotKey)
 {
 	if (text == nullptr)
 		return false;
 	if (OnBeforeSetText(text->GetText()) == false)
 		return false;
-	if (CTRLC->Text.Set(text->GetText(),Color::NoColor,text->Len()) == false)
-		return false;
+
+    if (updateHotKey)
+    {
+        if (CTRLC->Text.SetWithHotKey(text->GetText(),CTRLC->HotKeyOffset,Color::NoColor,text->Len()) == false)
+            return false;
+    } else {
+        if (CTRLC->Text.Set(text->GetText(), Color::NoColor, text->Len()) == false)
+            return false;
+    }
+
 	OnAfterSetText(text->GetText());
 	return true;
 }
-bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text)
+bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text, bool updateHotKey)
 {
 	if (OnBeforeSetText(text.GetText()) == false)
 		return false;
-	if (CTRLC->Text.Set(text.GetText(), Color::NoColor, text.Len()) == false)
-		return false;
+    if (updateHotKey)
+    {
+        if (CTRLC->Text.SetWithHotKey(text.GetText(),CTRLC->HotKeyOffset,Color::NoColor,text.Len()) == false)
+            return false;
+    } else {
+        if (CTRLC->Text.Set(text.GetText(), Color::NoColor, text.Len()) == false)
+            return false;
+    }
 	OnAfterSetText(text.GetText());
 	return true;
 }

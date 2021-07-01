@@ -90,4 +90,13 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->TextField.FocusColor = COLOR(Color::White, Color::Black);
     this->TextField.InactiveColor = COLOR(Color::Gray, Color::Transparent);
     this->TextField.HoverColor = COLOR(Color::Yellow, Color::Black);
+
+    this->Tab.PageColor = COLOR(Color::White, Color::Blue);
+    this->Tab.PageHotKeyColor = COLOR(Color::Yellow, Color::Blue);
+    this->Tab.TabBarColor = COLOR(Color::Silver, Color::Gray);
+    this->Tab.TabBarHotKeyColor = COLOR(Color::White, Color::Gray);
+    this->Tab.HoverColor = COLOR(Color::Yellow, Color::Magenta);
+    this->Tab.HoverHotKeyColor = COLOR(Color::White, Color::Magenta);
+    this->Tab.ListSelectedPageColor = COLOR(Color::Black, Color::White);
+    this->Tab.ListSelectedPageHotKey = COLOR(Color::DarkRed, Color::White);
 }

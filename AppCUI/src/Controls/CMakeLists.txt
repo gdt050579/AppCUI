@@ -7,5 +7,6 @@ target_sources(AppCUI PRIVATE
 	Panel.cpp 
 	RadioBox.cpp 
 	Splitter.cpp 
+	Tab.cpp
 	TextField.cpp
 	Window.cpp)

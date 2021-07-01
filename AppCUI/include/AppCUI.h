@@ -414,6 +414,7 @@ namespace AppCUI
                 EVENT_CHECKED_STATUS_CHANGED,
                 EVENT_TEXT_CHANGED,
                 EVENT_TEXTFIELD_VALIDATE,
+                EVENT_TAB_CHANGED,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND
             };
@@ -469,7 +470,6 @@ namespace AppCUI
 
             // hot key
             bool			SetHotKey(char hotKey);
-            bool            SetHotKeyFromText(const char * text, bool clearCurrentHotKey = true);
             Input::Key::Type GetHotKey();
             void			ClearHotKey();
 
@@ -498,9 +498,9 @@ namespace AppCUI
             void			SetControlID(int newID);
 
             // Text
-            bool			SetText(const char * text);
-            bool			SetText(AppCUI::Utils::String *text);
-            bool			SetText(AppCUI::Utils::String &text);
+            bool			SetText(const char * text, bool updateHotKey = false);
+            bool			SetText(AppCUI::Utils::String *text, bool updateHotKey = false);
+            bool			SetText(AppCUI::Utils::String &text, bool updateHotKey = false);
             //const char*		GetText();
             //bool			GetText(AppCUI::Utils::String *text);
             //bool			GetText(AppCUI::Utils::String &text);
@@ -682,6 +682,44 @@ namespace AppCUI
             virtual ~TextField();
         };
 
+        namespace TabFlags
+        {
+            enum Type : unsigned int
+            {
+                TOP_TABS                = 0x000000, // default mode
+                BOTTOM_TABS             = 0x000100,
+                LEFT_TABS               = 0x000200,
+                LIST                    = 0x000300,
+                TRANSPARENT_BACKGROUND  = 0x001000,
+                HAS_TABBAR              = 0x002000,
+            };
+        }
+        class EXPORT TabPage : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * text);
+            bool	OnBeforeResize(int newWidth, int newHeight);
+        };
+        class EXPORT Tab : public Control
+        {
+        public:
+            bool	Create(Control *parent, const char * layout, TabFlags::Type flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
+            bool	SetCurrentTabPage(unsigned int index);
+            bool	SetTabPageTitleSize(unsigned int newSize);
+            bool	SetTabPageName(unsigned int index, const char* name);
+            bool	SetTabPageName(unsigned int index, AppCUI::Utils::String* name);
+            bool	SetTabPageName(unsigned int index, AppCUI::Utils::String& name);
+            void	OnAfterResize(int newWidth, int newHeight) override;
+            void	OnFocus() override;
+            void	OnMouseReleased(int x, int y, int buttonState) override;
+            bool    OnMouseLeave() override;
+            bool    OnMouseOver(int x, int y) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void	OnAfterAddControl(Control *ctrl) override;
+            void	Paint(Console::Renderer & renderer) override;
+            Control* GetCurrentTab();
+        };
+
 
         namespace DialogResult
         {
@@ -774,6 +812,10 @@ namespace AppCUI
             struct {
                 unsigned int NormalColor, FocusColor, InactiveColor, HoverColor, SelectionColor;
             } TextField;
+            struct {
+                unsigned int PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
+                unsigned int ListSelectedPageColor, ListSelectedPageHotKey;
+            } Tab;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);
@@ -816,4 +858,9 @@ inline constexpr void operator|=(AppCUI::Console::WriteCharacterBufferFlags::Typ
 {
     f1 = static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
+inline constexpr AppCUI::Controls::TabFlags::Type operator|(AppCUI::Controls::TabFlags::Type f1, AppCUI::Controls::TabFlags::Type f2)
+{
+    return static_cast<AppCUI::Controls::TabFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+
 #endif
