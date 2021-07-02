@@ -6,7 +6,7 @@
 ## Building for UNIX systems
 
 On Linux and MacOS - the project will require ncurses to work. If you have it installed an it's the newest version
-(6.2 as of writing) - everything should work smoothly. Otherwise, you may need to tell cmake the path to your ncurses"
+(6.2 as of writing) - everything should work smoothly. Otherwise, you may need to tell cmake the path to your ncurses
 
 This is done by setting the `-DCMAKE_PREFIX_PATH`
 
@@ -30,7 +30,7 @@ For mouse events we can use `xterm-1003` capabilities, the `kmous`, `XM` and `xm
 
 Thus, we have crafted the following terminal capabilities file - `docs/terminal/xterm-256color-mouse`
 
-### Linux 
+### Unix 
 
 1. Run the terminfo compiler `tic -x docs/terminal/xterm-256color-mouse`
 2. Set the current terminal `export TERM=xterm-256color-mouse`
