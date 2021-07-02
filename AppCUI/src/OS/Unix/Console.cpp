@@ -13,6 +13,7 @@
 #include "os.h"
 #include "Internal.h"
 
+using namespace AppCUI::Internal;
 
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
@@ -25,7 +26,6 @@ int _special_characters_consolas_font[AppCUI::Console::SpecialChars::Count] = {
     0x25CF, 0x25CB, 0x221A,                                             // symbols
 };
 
-using namespace AppCUI::Internal;
 const size_t NR_COLORS = 16;
 
 #define COLOR_LIGHT(color) ((color) | (1 << 3))
@@ -132,6 +132,11 @@ bool Console::OnInit()
     noecho();
     clear();
 
+    nodelay(stdscr, TRUE);
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    mouseinterval(0);
+
     if (has_colors())
     {
         term_has_colors = true;
@@ -139,7 +144,6 @@ bool Console::OnInit()
         use_default_colors();
         init_colorpairs();
     }
-    
 
     size_t width = 0;
     size_t height = 0;

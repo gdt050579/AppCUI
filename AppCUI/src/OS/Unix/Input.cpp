@@ -11,10 +11,6 @@ Input::~Input()
 
 bool Input::Init()
 {
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
-    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
-    mouseinterval(0);
     return true;
 }
 
