@@ -3,10 +3,10 @@
 using namespace AppCUI::OS;
 
 IFile::~IFile() { }
-bool                IFile::Read(void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead) {
+bool                IFile::Read(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) {
     NOT_IMPLEMENTED(false);
 }
-bool                IFile::Write(const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten) {
+bool                IFile::Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten) {
     NOT_IMPLEMENTED(false);
 }
 unsigned long long  IFile::GetSize() {
@@ -24,28 +24,28 @@ bool                IFile::SetCurrentPos(unsigned long long newPosition) {
 void                IFile::Close() { }
 
 
-bool IFile::Read(void* buffer, unsigned long long bufferSize)
+bool IFile::Read(void* buffer, unsigned int bufferSize)
 {
-    unsigned long long temp;
+    unsigned int temp;
     CHECK(this->Read(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
     CHECK(temp == bufferSize, false, "Unable to read %lld bytes required (only %lld bytes available)", bufferSize,temp);
     return true;
 }
-bool IFile::Write(const void* buffer, unsigned long long bufferSize)
+bool IFile::Write(const void* buffer, unsigned int bufferSize)
 {
-    unsigned long long temp;
+    unsigned int temp;
     CHECK(this->Write(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
     CHECK(temp == bufferSize, false, "Unable to write %lld bytes required (only %lld were written)", bufferSize, temp);
     return true;
 }
-bool IFile::Read(unsigned long long offset, void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead)
+bool IFile::Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int & bytesRead)
 {
     bytesRead = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
     CHECK(this->Read(buffer, bufferSize, bytesRead), false, "Fail to read %lld bytes", bufferSize);
     return true;
 }
-bool IFile::Write(unsigned long long offset, const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten)
+bool IFile::Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten)
 {
     bytesWritten = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);

@@ -176,8 +176,8 @@ namespace AppCUI
             virtual ~IFile();
 
             // virtual methods
-            virtual bool                Read(void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead);
-            virtual bool                Write(const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten);
+            virtual bool                Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
+            virtual bool                Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
             virtual unsigned long long  GetSize();
             virtual unsigned long long  GetCurrentPos();
             virtual bool                SetSize(unsigned long long newSize);
@@ -185,10 +185,48 @@ namespace AppCUI
             virtual void                Close();
 
             // other methods
-            bool                        Read(void* buffer, unsigned long long bufferSize);
-            bool                        Write(const void* buffer, unsigned long long bufferSize);
-            bool                        Read(unsigned long long offset, void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead);
-            bool                        Write(unsigned long long offset, const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten);
+            bool                        Read(void* buffer, unsigned int bufferSize);
+            bool                        Write(const void* buffer, unsigned int bufferSize);
+            bool                        Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
+            bool                        Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
+        };
+
+        class EXPORT File : public IFile
+        {
+            union {
+                void*               Handle;
+                unsigned long long  u64Value;
+                unsigned int        u32Value;
+                int                 fid;
+            } FileID;
+        public:
+            File();
+            ~File();
+            
+            /**
+             * Opens a file for Read/Write. The file MUST exists. The file pointer will be set at the end of the file.
+             * @param[in] filePath is the full path to an existing file.
+             */
+            bool                OpenWrite(const char * filePath);
+            /**
+             * Opens a file for Read. The file MUST exists. The file pointer will be set at the begining of the file.
+             * @param[in] filePath is the full path to an existing file.
+             */
+            bool                OpenRead(const char * filePath);
+            /**
+             * Creates a new file. If the file exists and overwriteExisting parameter is set to true, it will be overwritten.
+             * @param[in] filePath is the full path to an existing file.
+             * @param[in] overwriteExisting - if set to true and the file exists it will overwrite the file. If set to false and a file exists, will fail to overwrite and the method will return false.
+             */
+            bool                Create(const char * filePath, bool overwriteExisting = true);
+
+            bool                Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead) override;
+            bool                Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten) override;
+            unsigned long long  GetSize() override;
+            unsigned long long  GetCurrentPos() override;
+            bool                SetSize(unsigned long long newSize) override;
+            bool                SetCurrentPos(unsigned long long newPosition) override;
+            void                Close() override;
         };
 
     }
