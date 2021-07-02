@@ -1,7 +1,5 @@
 #include "os.h"
-#ifndef NO_CURSES
 #include <ncurses.h>
-#endif
 
 using namespace AppCUI::Internal;
 
@@ -11,10 +9,8 @@ Input::~Input()
 
 bool Input::Init()
 {
-#ifndef NO_CURSES
     keypad(stdscr, TRUE);
     mouseinterval(0);
-#endif 
     return true;
 }
 
@@ -24,7 +20,6 @@ void Input::Uninit()
 
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
-#ifndef NO_CURSES
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     int c = getch();
 
@@ -66,5 +61,4 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         break;
     }
     // refresh();
-#endif
 }
