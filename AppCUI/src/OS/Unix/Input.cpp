@@ -1,6 +1,8 @@
 #include "os.h"
 #include <ncurses.h>
 
+#define ESC_STR  "\033"
+
 using namespace AppCUI::Internal;
 
 Input::~Input()
@@ -9,9 +11,19 @@ Input::~Input()
 
 bool Input::Init()
 {
+    nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     mouseinterval(0);
+    //printf (ESC_STR "[?1001s");
+
+    /* enable mouse tracking */
+    //printf (ESC_STR "[?1000h");
+
+    /* enable SGR extended mouse reporting */
+    //printf (ESC_STR "[?1006h");
+
+    //fflush (stdout);
     return true;
 }
 
@@ -21,7 +33,13 @@ void Input::Uninit()
 
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
+    evnt.eventType = SystemEvents::NONE;
+
     int c = getch();
+    if (c == ERR) 
+    {
+        return;    
+    }
 
     switch (c)
     {
@@ -37,25 +55,25 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
             evnt.mouseX = mouse_event.x;
             evnt.mouseY = mouse_event.y;
             const auto &state = mouse_event.bstate;
-            // mvaddstr(0, 0, (std::to_string(mouse_event.y) +  " " + std::to_string(mouse_event.x)).c_str());
+            mvaddstr(0, 0, (std::to_string(mouse_event.y) +  " " + std::to_string(mouse_event.x)).c_str());
 
             if (((state & BUTTON1_PRESSED) != 0) || ((state & BUTTON1_RELEASED) != 0))
             {
                 if (state & BUTTON1_PRESSED) 
                 {
                     evnt.eventType = SystemEvents::MOUSE_DOWN;
-                    // mvaddstr(mouse_event.y, mouse_event.x, "pressed");
+                    mvaddstr(mouse_event.y, mouse_event.x, "pressed");
                 }
                 else if (state & BUTTON1_RELEASED)
                 {
                     evnt.eventType = SystemEvents::MOUSE_UP;
-                    // mvaddstr(mouse_event.y, mouse_event.x, "released");
+                    mvaddstr(mouse_event.y, mouse_event.x, "released");
                 }
             }
             else if (state & REPORT_MOUSE_POSITION) 
             {
                 evnt.eventType = SystemEvents::MOUSE_MOVE;
-                // mvaddstr(mouse_event.y, mouse_event.x, "update");
+                mvaddstr(mouse_event.y, mouse_event.x, "update");
             }
         }
         break;
