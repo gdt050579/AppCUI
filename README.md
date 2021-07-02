@@ -16,6 +16,9 @@ Also `rm -rf` the build folder and reconfigure again to remove the cache
 
 ## Setting up a proper terminal
 
+If you wish to just have mouse button press functionality without drag, you can stick with `xterm-256color`, without
+chaning anything
+
 Details can be found in `docs/terminal/TERMINAL.md`
 
 We would need the terminal capabilities for `256 colors` and the terminal capabilities for proper mouse events like
