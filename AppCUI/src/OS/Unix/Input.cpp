@@ -10,6 +10,7 @@ Input::~Input()
 bool Input::Init()
 {
     keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     mouseinterval(0);
     return true;
 }
@@ -20,7 +21,6 @@ void Input::Uninit()
 
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
-    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     int c = getch();
 
     switch (c)
@@ -39,14 +39,14 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
             const auto &state = mouse_event.bstate;
             // mvaddstr(0, 0, (std::to_string(mouse_event.y) +  " " + std::to_string(mouse_event.x)).c_str());
 
-            if ((state & BUTTON1_PRESSED) || (state & BUTTON1_RELEASED))
+            if (((state & BUTTON1_PRESSED) != 0) || ((state & BUTTON1_RELEASED) != 0))
             {
                 if (state & BUTTON1_PRESSED) 
                 {
                     evnt.eventType = SystemEvents::MOUSE_DOWN;
                     // mvaddstr(mouse_event.y, mouse_event.x, "pressed");
                 }
-                if (state & BUTTON1_RELEASED)
+                else if (state & BUTTON1_RELEASED)
                 {
                     evnt.eventType = SystemEvents::MOUSE_UP;
                     // mvaddstr(mouse_event.y, mouse_event.x, "released");
@@ -60,5 +60,5 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
         break;
     }
-    // refresh();
+    refresh();
 }

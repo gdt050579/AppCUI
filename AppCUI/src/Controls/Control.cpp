@@ -1,5 +1,6 @@
 #include "ControlContext.h"
 #include <string.h>
+#include <cstring>
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
