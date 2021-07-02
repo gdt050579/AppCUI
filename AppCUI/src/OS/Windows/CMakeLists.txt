@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Input.cpp Console.cpp Clipboard.cpp)
+target_sources(AppCUI PRIVATE Input.cpp Console.cpp Clipboard.cpp File.cpp)
