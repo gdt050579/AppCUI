@@ -719,7 +719,12 @@ namespace AppCUI
             void	Paint(Console::Renderer & renderer) override;
             Control* GetCurrentTab();
         };
-
+        class EXPORT UserControl : public Control
+        {
+        public:
+            bool    Create(Control *parent, const char * text, const char * layout);
+            bool    Create(Control *parent, const char * layout);
+        };
 
         namespace DialogResult
         {
