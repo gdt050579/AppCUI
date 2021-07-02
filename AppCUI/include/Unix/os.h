@@ -9,13 +9,18 @@ namespace AppCUI
     {
         class Console : public AbstractConsole
         {
+        public:
+            Console();
         protected:
             virtual bool    OnInit() override;
             virtual void    OnUninit() override;
             virtual void    OnFlushToScreen() override;
             virtual bool    OnUpdateCursor() override;
             virtual ~Console();
+        private:
+            bool term_has_colors;
         };
+
         class Input : public AbstractInput
         {
         public:

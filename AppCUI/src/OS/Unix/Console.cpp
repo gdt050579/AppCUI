@@ -88,6 +88,8 @@ constexpr int pair_mapping[] = {
     0, 241, 242, 0243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255,
 };
 
+
+
 constexpr int get_pair_id(int fg, int bg) 
 {
     fg = internal_color_mapping[fg];
@@ -118,6 +120,10 @@ void unsetcolor(int fg, int bg)
     attroff(COLOR_PAIR(color_num));
 }
 
+Console::Console() : AbstractConsole(), term_has_colors(false)
+{
+}
+
 bool Console::OnInit()
 {
     setlocale(LC_ALL, "");
@@ -126,9 +132,14 @@ bool Console::OnInit()
     noecho();
     clear();
 
-    start_color();
-    use_default_colors();
-    init_colorpairs();
+    if (has_colors())
+    {
+        term_has_colors = true;
+        start_color();
+        use_default_colors();
+        init_colorpairs();
+    }
+    
 
     size_t width = 0;
     size_t height = 0;
@@ -173,10 +184,17 @@ void Console::OnFlushToScreen()
             CHAR_INFO& ch = WorkingBuffer[y * ConsoleSize.Width + x];
             const int fg = (ch.characterColor & 0xF);
             const int bg = (ch.characterColor >> 4);
-            setcolor(fg, bg);
             cchar_t t = {0, {ch.characterCode, 0}};
-            mvadd_wch(y, x, &t);
-            unsetcolor(fg, bg);
+            if (term_has_colors)
+            {
+                setcolor(fg, bg);
+                mvadd_wch(y, x, &t);
+                unsetcolor(fg, bg);
+            }
+            else 
+            {
+                mvadd_wch(y, x, &t);
+            }
         }
     }
     refresh();
