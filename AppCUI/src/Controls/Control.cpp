@@ -1029,6 +1029,10 @@ void AppCUI::Controls::Control::RaiseEvent(Event::Type eventType)
 {
 	AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
 }
+void AppCUI::Controls::Control::RaiseEvent(Event::Type eventType, int ID)
+{
+    AppCUI::Application::RaiseEvent(this, this, eventType, ID);
+}
 void AppCUI::Controls::Control::Paint(Console::Renderer & renderer)
 {
 }

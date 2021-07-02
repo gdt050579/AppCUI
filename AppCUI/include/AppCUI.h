@@ -416,7 +416,8 @@ namespace AppCUI
                 EVENT_TEXTFIELD_VALIDATE,
                 EVENT_TAB_CHANGED,
                 EVENT_TERMINATE_APPLICATION,
-                EVENT_COMMAND
+                EVENT_COMMAND,
+                EVENT_CUSTOM,
             };
         }
         class EXPORT Control;
@@ -492,7 +493,7 @@ namespace AppCUI
 
             // Events
             void			RaiseEvent(Event::Type eventType);
-
+            void			RaiseEvent(Event::Type eventType, int ID);
             // focus
             bool			SetFocus();
             void			SetControlID(int newID);
