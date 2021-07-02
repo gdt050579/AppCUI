@@ -170,6 +170,27 @@ namespace AppCUI
             static bool		GetText(AppCUI::Utils::String &text);
             static bool		Clear();
         };
+        class EXPORT IFile 
+        {
+        public:
+            virtual ~IFile();
+
+            // virtual methods
+            virtual bool                Read(void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead);
+            virtual bool                Write(const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten);
+            virtual unsigned long long  GetSize();
+            virtual unsigned long long  GetCurrentPos();
+            virtual bool                SetSize(unsigned long long newSize);
+            virtual bool                SetCurrentPos(unsigned long long newPosition);
+            virtual void                Close();
+
+            // other methods
+            bool                        Read(void* buffer, unsigned long long bufferSize);
+            bool                        Write(const void* buffer, unsigned long long bufferSize);
+            bool                        Read(unsigned long long offset, void* buffer, unsigned long long bufferSize, unsigned long long & bytesRead);
+            bool                        Write(unsigned long long offset, const void* buffer, unsigned long long bufferSize, unsigned long long & bytesWritten);
+        };
+
     }
     namespace Console
     {
