@@ -117,7 +117,14 @@ public:
         }
         if (eventType == Event::EVENT_CUSTOM)
         {
-
+            switch(controlID)
+            {
+                case X_HAS_WON_EVENT: MessageBox::ShowNotification("Tic Tac Toe", "X has won !"); break;
+                case O_HAS_WON_EVENT: MessageBox::ShowNotification("Tic Tac Toe", "O has won !"); break;
+                case DRAW_GAME: MessageBox::ShowNotification("Tic Tac Toe", "Draw Game !"); break;
+            }
+            game.Start(); // restart a new game
+            return true;
         }
         return false;
     }

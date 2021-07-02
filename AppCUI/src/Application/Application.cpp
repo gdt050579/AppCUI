@@ -362,8 +362,13 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, int buttonState)
             cc->Handlers.OnMousePressedHandler(MouseLockedControl, x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, buttonState, cc->Handlers.OnMousePressedHandlerContext);
         else
             MouseLockedControl->OnMousePressed(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, buttonState);
-        MouseLockedObject = MOUSE_LOCKED_OBJECT_CONTROL;
-        RepaintStatus |= REPAINT_STATUS_DRAW;
+
+        // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
+        if (MouseLockedControl) 
+        {
+            MouseLockedObject = MOUSE_LOCKED_OBJECT_CONTROL;
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        }
         return;
     }
 
@@ -442,6 +447,10 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, int buttonState)
             {
                 if (this->MouseOverControl->OnMouseEnter())
                     RepaintStatus |= REPAINT_STATUS_DRAW;
+            }
+            if (this->MouseOverControl)
+            {
+                // it is possible the OnMouseEnter might reset the MouseOverControl variable
                 ControlContext* cc = ((ControlContext*)(MouseOverControl->Context));
                 cc->MouseIsOver = true;
                 if (MouseOverControl->OnMouseOver(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
@@ -546,8 +555,11 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
             UpdateCommandBar(GetFocusedControl(&Desktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
-        this->MouseLockedControl = nullptr;
-        this->MouseOverControl = nullptr;
+        if (this->MouseOverControl) {
+            ((ControlContext*)(MouseOverControl->Context))->MouseIsOver = false;
+            this->MouseOverControl = nullptr;
+        }
+        this->MouseLockedControl = nullptr;        
         this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
         RepaintStatus = REPAINT_STATUS_ALL;
     }
