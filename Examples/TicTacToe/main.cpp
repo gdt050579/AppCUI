@@ -1,5 +1,6 @@
 #include "AppCUI.h"
 #include <string>
+#include <cstring>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
