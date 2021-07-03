@@ -79,12 +79,13 @@ it usually starts a shell, for a friendly commandline interface. Common shells a
 
 The general structure is going to be like that (the examples uses `bash` and `xterm` but the idea is the same)
 
+```
   read()       input <-               input (forwarded back to xterm)       write("\033[1m")
 |---------| ------------- |------| ------------------------------------- |--------------------|
 |  XTERM  |  -> starts    | bash |  -> user starts ./my_drawing_app      |   my_drawing_app   |
 |---------| ------------- |------| ------------------------------------- |--------------------|
   write()     output ->             output (forwarded to my_drawing_app)       read() 
-
+```
 
 ### NCurses (and curses)
 
