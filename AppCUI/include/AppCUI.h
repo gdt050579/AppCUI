@@ -362,6 +362,7 @@ namespace AppCUI
             WriteCharacterBufferParams(): Flags(WriteCharacterBufferFlags::NONE) { }
             WriteCharacterBufferParams(WriteCharacterBufferFlags::Type _flg) : Flags(_flg) { }
         };
+        
         class EXPORT Rect
         {
             int X, Y, Width, Height;
@@ -430,6 +431,27 @@ namespace AppCUI
             void SetColor(unsigned int color);
         };
         
+        class EXPORT Image
+        {
+            unsigned int*	Pixels;
+            unsigned int	Width;
+            unsigned int	Height;
+        public:
+            Image();
+            ~Image();
+            bool			        Create(unsigned int width, unsigned int height);
+            bool                    SetPixel(unsigned int x, unsigned int y, const Color::Type color);
+            bool			        SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
+            bool			        SetPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue, unsigned char Alpha = 255);
+            unsigned int	        GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0);
+            bool			        GetPixel(unsigned int x, unsigned int y, unsigned int &color);
+            bool                    Clear(unsigned int color);
+            bool                    Clear(const Color::Type color);
+            inline unsigned int	    GetWidth() const { return Width; }
+            inline unsigned int	    GetHeight() const { return Height; }
+            inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
+        };
+
         class EXPORT Renderer
         {
             void*   consoleRenderer;
@@ -809,7 +831,6 @@ namespace AppCUI
         };
 
     };
-
     namespace Application
     {
         namespace Flags
