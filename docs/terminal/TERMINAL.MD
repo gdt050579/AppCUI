@@ -152,6 +152,9 @@ What we have:
 2. xterm-1003 that can send mouse position update, as long as properly handle press and release functionality
 3. They kiss and make a baby
 
+`kmous` and `XM` capabilites are what we need to have in our new capability file so that new mouse
+events are properly reported. We don't really need to know how they pass the information.
+
 Something like
 
 ```
