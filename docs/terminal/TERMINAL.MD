@@ -71,6 +71,11 @@ mouse events and send them. `xterm` will have special commands the application h
 like coloring a cell, moving the cursor, etc. It will also have special commands the application will receive that
 signify events like typing a character, a mouse position change, etc.
 
+Why are there multiple capabilities files for the same terminal? Why is there `xterm-256color`, `xterm-1003`,
+`xterm-new` and others? My guess would be that as the terminal was evolving and new features were introduced -
+different capabilities were added and the old capabilities files remained for compatibility reasons. A new 
+feature shouldn't break old code.
+
 ### Shell
 Usually a program that can be run and can do complex operations such as creating processes, piping
 stuff, also usually contains a scripting language. When running a terminal in modern systems, 
