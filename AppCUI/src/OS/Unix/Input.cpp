@@ -4,6 +4,43 @@
 // See docs/TERMINAL.md
 
 using namespace AppCUI::Internal;
+using namespace AppCUI::Input;
+
+constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = KEY_MAX - KEY_MIN;
+constexpr int KEY_DELETE = 0x7F;
+
+constexpr int translateKey(int key)
+{
+    return key - KEY_MIN;
+}
+
+Input::Input() : AbstractInput()
+{
+    KeyTranslationMatrix.reserve(KEY_TRANSLATION_MATRIX_SIZE);
+    for (size_t i = 0; i < 12; i++)
+    {
+        KeyTranslationMatrix[KEY_F(i+1)] = static_cast<Key::Type>(Key::F1 + i);
+    }
+    KeyTranslationMatrix[KEY_ENTER] = Key::Enter;
+    //KeyTranslationMatrix[KEY_ESCAPE] ? 
+    //KeyTranslationMatrix[KEY_INSERT] ? 
+    KeyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
+    // KeyTranslationMatrix[KEY_DELETE] = Key::Backspace;
+    // KeyTranslationMatrix['\t'] = Key::Tab;
+
+    KeyTranslationMatrix[KEY_UP] = Key::Up;
+    KeyTranslationMatrix[KEY_RIGHT] = Key::Right;
+    KeyTranslationMatrix[KEY_DOWN] = Key::Down;
+    KeyTranslationMatrix[KEY_LEFT] = Key::Left;
+
+    KeyTranslationMatrix[KEY_PPAGE] = Key::PageUp;
+    KeyTranslationMatrix[KEY_NPAGE] = Key::PageDown;
+
+    KeyTranslationMatrix[KEY_HOME] = Key::Home;
+    KeyTranslationMatrix[KEY_END] = Key::End;
+
+    KeyTranslationMatrix[' '] = Key::Space;
+}
 
 Input::~Input()
 {
@@ -11,6 +48,12 @@ Input::~Input()
 
 bool Input::Init()
 {
+    shiftState = Key::None;
+    for (size_t tr = 0; tr < KEY_TRANSLATION_MATRIX_SIZE; tr++)
+    {
+        this->KeyTranslationMatrix[tr] = AppCUI::Input::Key::None;
+    }
+
     return true;
 }
 
@@ -21,7 +64,6 @@ void Input::Uninit()
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
     evnt.eventType = SystemEvents::NONE;
-
     int c = getch();
     if (c == ERR) 
     {
@@ -30,40 +72,52 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 
     switch (c)
     {
-    case KEY_UP:
-        break;
-    case KEY_DOWN:
-        break;
-    case KEY_MOUSE:
-        // Need xterm-1003 for mouse events & colors
-        MEVENT mouse_event;
-        if (getmouse(&mouse_event) == OK)
+        case KEY_MOUSE:
         {
-            evnt.mouseX = mouse_event.x;
-            evnt.mouseY = mouse_event.y;
-            const auto &state = mouse_event.bstate;
-            //mvaddstr(0, 0, (std::to_string(mouse_event.y) +  " " + std::to_string(mouse_event.x)).c_str());
-
-            if (((state & BUTTON1_PRESSED) != 0) || ((state & BUTTON1_RELEASED) != 0))
+            // Need xterm-1003 for mouse events & colors
+            MEVENT mouseEvent;
+            if (getmouse(&mouseEvent) == OK)
             {
+                evnt.mouseX = mouseEvent.x;
+                evnt.mouseY = mouseEvent.y;
+                const auto &state = mouseEvent.bstate;
+
                 if (state & BUTTON1_PRESSED) 
                 {
                     evnt.eventType = SystemEvents::MOUSE_DOWN;
-                    //mvaddstr(mouse_event.y, mouse_event.x, "pressed");
                 }
                 else if (state & BUTTON1_RELEASED)
                 {
                     evnt.eventType = SystemEvents::MOUSE_UP;
-                    //mvaddstr(mouse_event.y, mouse_event.x, "released");
+                }
+                else if (state & REPORT_MOUSE_POSITION) 
+                {
+                    evnt.eventType = SystemEvents::MOUSE_MOVE;
                 }
             }
-            else if (state & REPORT_MOUSE_POSITION) 
-            {
-                evnt.eventType = SystemEvents::MOUSE_MOVE;
-                //mvaddstr(mouse_event.y, mouse_event.x, "update");
-            }
+            break;
         }
-        break;
+        default:
+        {
+            //mvaddstr(0, 0, (std::string("key: ") + " " + (char)c + " " + std::to_string(c)).c_str());
+            //std::string_view myName = keyname(c);
+            //mvaddstr(1, 0, (std::string("ctrl: ") + unctrl(c) + " " + myName.data() + " " + std::to_string(c)).c_str());
+            
+            if (KeyTranslationMatrix[c] != Key::None)
+            {
+                evnt.eventType = SystemEvents::KEY_PRESSED;
+                evnt.keyCode = KeyTranslationMatrix[c];
+                break;
+            }
+
+            else if ((c >= 32) && (c <= 127))
+            {
+                evnt.eventType = SystemEvents::KEY_PRESSED;
+                evnt.asciiCode = c;
+                break;
+            }
+            break;
+        }
     }
     refresh();
 }

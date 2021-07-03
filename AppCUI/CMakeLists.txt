@@ -14,7 +14,7 @@ if (UNIX)
     find_package(Curses REQUIRED)
     target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
     target_link_libraries(AppCUI ${CURSES_LIBRARIES})
-
+    add_compile_definitions(NCURSES_WIDECHAR)
 endif()
 
 add_subdirectory(src)

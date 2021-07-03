@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE_EXTENDED
 #include <iostream>
 #include <string>
 #include <string.h>
@@ -69,7 +68,7 @@ constexpr int internal_color_mapping[NR_COLORS] = {
 // result is the pair id 
 //
 // Notice the little 0 after 240 (it's fg=WHITE=15 * NR_COLORS + bg=BLACK=0)
-constexpr int pair_mapping[] = {
+constexpr int pairMapping[] = {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
@@ -90,33 +89,33 @@ constexpr int pair_mapping[] = {
 
 
 
-constexpr int get_pair_id(int fg, int bg) 
+constexpr int getPairId(int fg, int bg) 
 {
     fg = internal_color_mapping[fg];
     bg = internal_color_mapping[bg];
-    return pair_mapping[fg * NR_COLORS + bg];
+    return pairMapping[fg * NR_COLORS + bg];
 }
 
-void init_colorpairs(void)
+void initColorPairs(void)
 {
     for (size_t fg = 0; fg < NR_COLORS; fg++) {
         for (size_t bg = 0; bg < NR_COLORS; bg++) {
-            const size_t pair_id = get_pair_id(fg, bg);
+            const size_t pair_id = getPairId(fg, bg);
             if (pair_id == 0) continue;
             init_pair(pair_id, internal_color_mapping[fg], internal_color_mapping[bg]);
         }
     }
 }
 
-void setcolor(int fg, int bg)
+void setColor(int fg, int bg)
 {
-    const int color_num = get_pair_id(fg, bg);
+    const int color_num = getPairId(fg, bg);
     attron(COLOR_PAIR(color_num));
 }
 
-void unsetcolor(int fg, int bg)
+void unsetColor(int fg, int bg)
 {
-    const int color_num = get_pair_id(fg, bg);
+    const int color_num = getPairId(fg, bg);
     attroff(COLOR_PAIR(color_num));
 }
 
@@ -131,18 +130,22 @@ bool Console::OnInit()
     cbreak();
     noecho();
     clear();
-
+    
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
+    meta(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     mouseinterval(0);
+
+    //raw();
+    use_extended_names(true);
 
     if (has_colors())
     {
         term_has_colors = true;
         start_color();
         use_default_colors();
-        init_colorpairs();
+        initColorPairs();
     }
 
     size_t width = 0;
@@ -168,9 +171,9 @@ void drawPalette() {
     {
         for (size_t bg = 0; bg < NR_COLORS; bg++) 
         {
-            setcolor(fg, bg);
+            setColor(fg, bg);
             mvaddch(fg, bg, 'a');
-            unsetcolor(fg, bg);
+            unsetColor(fg, bg);
         }
     }
     refresh();
@@ -180,7 +183,6 @@ void Console::OnFlushToScreen()
 {
     //drawPalette();    
     //return;
-
     for (size_t y = 0; y < ConsoleSize.Height; y++)
     {
         for (size_t x = 0; x < ConsoleSize.Width; x++)
@@ -191,9 +193,9 @@ void Console::OnFlushToScreen()
             cchar_t t = {0, {ch.characterCode, 0}};
             if (term_has_colors)
             {
-                setcolor(fg, bg);
+                setColor(fg, bg);
                 mvadd_wch(y, x, &t);
-                unsetcolor(fg, bg);
+                unsetColor(fg, bg);
             }
             else 
             {
