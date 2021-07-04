@@ -145,5 +145,4 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
     }
     refresh();
-    timeout(10);
 }
