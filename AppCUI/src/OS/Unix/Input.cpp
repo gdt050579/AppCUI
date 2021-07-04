@@ -93,7 +93,7 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
                 evnt.mouseX = mouseEvent.x;
                 evnt.mouseY = mouseEvent.y;
                 const auto &state = mouseEvent.bstate;
-
+                
                 if (state & BUTTON1_PRESSED) 
                 {
                     evnt.eventType = SystemEvents::MOUSE_DOWN;
@@ -111,17 +111,21 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
         default:
         {
-            //debugChar(0, c, "key");
-
+            debugChar(0, c, "key");
+            evnt.eventType = SystemEvents::KEY_PRESSED;
             if (c > KEY_MIN && c < KEY_MAX && KeyTranslationMatrix[c] != Key::None)
             {
-                evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.keyCode = KeyTranslationMatrix[c];
+                break;
+            }
+            else if (c >= KEY_F(13) && c <= KEY_F(24))
+            {
+                // F1 - F12 + shift
+                evnt.keyCode = KeyTranslationMatrix[c - KEY_F(12)] | Key::Shift;
                 break;
             }
             else if ((c >= 32) && (c <= 127))
             {
-                evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.asciiCode = c;
                 //debugChar(0, c, "normal key");
                 // This is only for letters
@@ -133,9 +137,9 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 
                 break;
             }
-            else if (iscntrl(c))
+            else 
             {
-
+                evnt.eventType = SystemEvents::NONE;
             }
             break;
         }
