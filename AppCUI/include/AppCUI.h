@@ -348,8 +348,13 @@ namespace AppCUI
         };
         struct Character
         {
-            unsigned short  Code;
-            unsigned short  Color;
+            union {
+                struct {
+                    unsigned short  Code;
+                    unsigned short  Color;
+                };
+                unsigned int        PackedValue;
+            };
         };
         struct WriteCharacterBufferParams
         {
@@ -454,22 +459,63 @@ namespace AppCUI
 
         class EXPORT Canvas
         {
-            Character*      Characters;
-            unsigned int    Width, Height;
+            Character*          Characters;
+            Character**         OffsetRows;
+            unsigned int        Width, Height;
+            int                 TranslateX, TranslateY;            
+            struct {
+                int             Left, Top, Right, Bottom;
+                bool            Visible;
+            } Clip;
+            struct {
+                unsigned int    X, Y;
+                bool            Visible;
+            } Cursor;
+
+        protected:
+            bool            WriteCharacterBuffer_SingleLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
         public:
             Canvas();
             ~Canvas();
 
-            bool                    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
-            bool                    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
-            void                    Destroy();
+            bool    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
+            bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
+            void    Destroy();
 
-            bool                    Clear(unsigned int color);
-            bool                    Clear(int character, unsigned int color);
-            bool                    Set(int x, int y, int character, unsigned int color);
+            // Draw methods
+            bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
+            bool    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
+            bool    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
+            bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
+            bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
+            bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
+            bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
+            bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
+            bool    ClearClipRectangle(int charCode, unsigned int color);
+            bool    Clear(unsigned int color);
+            bool    Clear(int character, unsigned int color);
+            void    DarkenScreen();
 
-            bool                    FillRect(int left, int top, int right, int bottom, int fillCharacter, unsigned int color);
-            bool                    FillRectWithSize(int x, int y, unsigned int width, unsigned int height, int fillCharacter, unsigned int color);
+            // Cursor
+            void    HideCursor();
+            bool    ShowCursor(int x, int y);
+
+            // Clipping & Translate
+            void    SetClip(const AppCUI::Console::Clip & clip);
+            void    ResetClip();
+            void    SetTranslate(int offX, int offY);
+
+            bool    SetSize(unsigned int width, unsigned int height);
+            void    Reset();
+            void    Update();           
+
+            // inlines
+            inline unsigned int GetWidth() const { return this->Width; }
+            inline unsigned int GetHeight() const { return this->Height; }
         };
 
         class EXPORT Renderer
