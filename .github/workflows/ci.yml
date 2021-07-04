@@ -33,6 +33,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
   build-ubuntu:
+    runs-on: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
     - name: Configure CMake
@@ -41,6 +42,8 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
   valgrind-test:
+    # this could probably use the results of build-ubuntu
+    # but I don't know how to do that yet
     runs-on: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
