@@ -7,7 +7,7 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
-constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = KEY_MAX - KEY_MIN;
+constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = KEY_MAX;
 constexpr int KEY_DELETE = 0x7F;
 
 constexpr int translateKey(int key)
