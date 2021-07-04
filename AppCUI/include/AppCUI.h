@@ -468,6 +468,8 @@ namespace AppCUI
             bool                    Clear(int character, unsigned int color);
             bool                    Set(int x, int y, int character, unsigned int color);
 
+            bool                    FillRect(int left, int top, int right, int bottom, int fillCharacter, unsigned int color);
+            bool                    FillRectWithSize(int x, int y, unsigned int width, unsigned int height, int fillCharacter, unsigned int color);
         };
 
         class EXPORT Renderer
