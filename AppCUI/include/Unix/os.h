@@ -1,8 +1,9 @@
 #ifndef __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
 #define __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
 
-#include "../Internal.h"
 #include <vector>
+#include "Internal.h"
+#include "Color.h"
 
 namespace AppCUI
 {
@@ -20,7 +21,7 @@ namespace AppCUI
             virtual ~Console();
 
         protected:
-            bool term_has_colors;
+            AppCUI::Terminal::ColorManager colors;
         };
 
         class Input : public AbstractInput
