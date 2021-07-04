@@ -63,6 +63,7 @@ bool                File::Write(const void* buffer, unsigned int bufferSize, uns
     DWORD nrBytesWrittem = 0;
     CHECK(WriteFile(F_HNDL, buffer, bufferSize, &nrBytesWrittem, NULL), false, "Reading from file failed with code: %d", GetLastError());
     bytesWritten = nrBytesWrittem;
+    return true;
 }
 unsigned long long  File::GetSize()
 {
