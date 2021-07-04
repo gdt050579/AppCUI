@@ -4,6 +4,12 @@
 
 // See docs/TERMINAL.md
 
+/*
+    Some of the keys are not yet supported.
+    KeyTranslationMatrix is used for low hanging fruit Key command translation.
+    Advanced commands that fill more than event.keyCode are processed separately
+*/
+
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
@@ -46,12 +52,11 @@ bool Input::Init()
     KeyTranslationMatrix[13] = Key::Enter;
     KeyTranslationMatrix[10] = Key::Enter;
 
-    //KeyTranslationMatrix[KEY_ESCAPE] ? 
-    //KeyTranslationMatrix[KEY_INSERT] ? 
     KeyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
-    // KeyTranslationMatrix[KEY_DELETE] = Key::Backspace;
-    // KeyTranslationMatrix['\t'] = Key::Tab;
+    KeyTranslationMatrix[0x7F] = Key::Backspace;
+    KeyTranslationMatrix[KEY_DELETE] = Key::Delete;
 
+    
     KeyTranslationMatrix[KEY_UP] = Key::Up;
     KeyTranslationMatrix[KEY_RIGHT] = Key::Right;
     KeyTranslationMatrix[KEY_DOWN] = Key::Down;
@@ -62,9 +67,11 @@ bool Input::Init()
 
     KeyTranslationMatrix[KEY_HOME] = Key::Home;
     KeyTranslationMatrix[KEY_END] = Key::End;
-    //KeyTranslationMatrix[' '] = Key::Space;
-    KeyTranslationMatrix[0x7F] = Key::Backspace;
 
+    // KeyTranslationMatrix[] = Key::Tab;
+    //KeyTranslationMatrix[KEY_ESCAPE] ? 
+    //KeyTranslationMatrix[KEY_INSERT] ? 
+ 
     return true;
 }
 
