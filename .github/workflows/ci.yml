@@ -2,7 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ main, feature_* ]
+    branches: 
+    - '**'
+    
   pull_request:
 
 env:
