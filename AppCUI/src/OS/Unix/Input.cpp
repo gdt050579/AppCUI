@@ -111,7 +111,7 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
         default:
         {
-            debugChar(0, c, "key");
+            //debugChar(0, c, "key");
             evnt.eventType = SystemEvents::KEY_PRESSED;
             if (c > KEY_MIN && c < KEY_MAX && KeyTranslationMatrix[c] != Key::None)
             {
