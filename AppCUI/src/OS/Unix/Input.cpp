@@ -64,6 +64,17 @@ void Input::Uninit()
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
     evnt.eventType = SystemEvents::NONE;
+
+    // select on stdin with timeout, should  translate to about ~30 fps
+    fd_set rdfds;
+    FD_ZERO(&rdfds);
+    FD_SET(STDIN_FILENO, &rdfds);
+    timeval timeout;
+    timeout.tv_sec = 0;
+    // just enough to have ~30 fps
+    timeout.tv_usec = 32768;
+    select(STDIN_FILENO + 1, &rdfds, nullptr, nullptr, &timeout);
+
     int c = getch();
     if (c == ERR) 
     {
@@ -120,4 +131,5 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
     }
     refresh();
+    timeout(10);
 }
