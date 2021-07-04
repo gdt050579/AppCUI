@@ -45,7 +45,8 @@ bool Console::OnInit()
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     mouseinterval(0);
     raw();
-    
+    nonl();
+
     use_extended_names(true);
 
     start_color();
