@@ -452,6 +452,24 @@ namespace AppCUI
             inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
         };
 
+        class EXPORT Canvas
+        {
+            Character*      Characters;
+            unsigned int    Width, Height;
+        public:
+            Canvas();
+            ~Canvas();
+
+            bool                    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
+            bool                    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
+            void                    Destroy();
+
+            bool                    Clear(unsigned int color);
+            bool                    Clear(int character, unsigned int color);
+            bool                    Set(int x, int y, int character, unsigned int color);
+
+        };
+
         class EXPORT Renderer
         {
             void*   consoleRenderer;
