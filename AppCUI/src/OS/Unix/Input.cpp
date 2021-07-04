@@ -1,5 +1,6 @@
 #include "os.h"
 #include <ncurses.h>
+#include <poll.h>
 
 // See docs/TERMINAL.md
 
@@ -66,14 +67,11 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     evnt.eventType = SystemEvents::NONE;
 
     // select on stdin with timeout, should  translate to about ~30 fps
-    fd_set rdfds;
-    FD_ZERO(&rdfds);
-    FD_SET(STDIN_FILENO, &rdfds);
-    timeval timeout;
-    timeout.tv_sec = 0;
-    // just enough to have ~30 fps
-    timeout.tv_usec = 32768;
-    select(STDIN_FILENO + 1, &rdfds, nullptr, nullptr, &timeout);
+    pollfd readFD;
+    readFD.fd = STDIN_FILENO;
+    readFD.events = POLLIN | POLLERR;
+    // poll for 30 milliseconds
+    poll(&readFD, 1, 30);
 
     int c = getch();
     if (c == ERR) 
