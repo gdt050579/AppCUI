@@ -12,11 +12,25 @@ constexpr int KEY_DELETE = 0x7F;
 
 Input::Input() : AbstractInput()
 {
+    shiftState = Key::None;
+
     KeyTranslationMatrix.reserve(KEY_TRANSLATION_MATRIX_SIZE);
+    for (size_t tr = 0; tr < KEY_TRANSLATION_MATRIX_SIZE; tr++)
+    {
+        this->KeyTranslationMatrix[tr] = AppCUI::Input::Key::None;
+    }
     for (size_t i = 0; i < 12; i++)
     {
         KeyTranslationMatrix[KEY_F(i+1)] = static_cast<Key::Type>(Key::F1 + i);
     }
+}
+
+Input::~Input()
+{
+}
+
+bool Input::Init()
+{
     KeyTranslationMatrix[KEY_ENTER] = Key::Enter;
     //KeyTranslationMatrix[KEY_ESCAPE] ? 
     //KeyTranslationMatrix[KEY_INSERT] ? 
@@ -36,25 +50,19 @@ Input::Input() : AbstractInput()
     KeyTranslationMatrix[KEY_END] = Key::End;
 
     KeyTranslationMatrix[' '] = Key::Space;
-}
-
-Input::~Input()
-{
-}
-
-bool Input::Init()
-{
-    shiftState = Key::None;
-    for (size_t tr = 0; tr < KEY_TRANSLATION_MATRIX_SIZE; tr++)
-    {
-        this->KeyTranslationMatrix[tr] = AppCUI::Input::Key::None;
-    }
-
     return true;
 }
 
 void Input::Uninit()
 {
+}
+
+void debugChar(int y, int c, const char* prefix)
+{
+    std::string_view myName = keyname(c);
+    move(y, 0);
+    clrtoeol();
+    addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
 }
 
 void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
@@ -103,23 +111,31 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
         default:
         {
-            std::string_view myName = keyname(c);
-            move(0, 0);
-            clrtoeol();
-            mvaddstr(0, 0, (std::string("key: ") + " " + (char)c + " " + std::to_string(c) + " " + myName.data()).c_str());
-            
+            //debugChar(0, c, "key");
+
             if (c > KEY_MIN && c < KEY_MAX && KeyTranslationMatrix[c] != Key::None)
             {
                 evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.keyCode = KeyTranslationMatrix[c];
                 break;
             }
-
             else if ((c >= 32) && (c <= 127))
             {
                 evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.asciiCode = c;
+                //debugChar(0, c, "normal key");
+                // This is only for letters
+                if (isupper(c))
+                {
+                    //debugChar(0, c, "shift key");
+                    evnt.keyCode = Key::Shift;
+                }
+
                 break;
+            }
+            else if (iscntrl(c))
+            {
+
             }
             break;
         }

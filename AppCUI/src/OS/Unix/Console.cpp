@@ -44,8 +44,8 @@ bool Console::OnInit()
     meta(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     mouseinterval(0);
-
-    //raw();
+    raw();
+    
     use_extended_names(true);
 
     start_color();
