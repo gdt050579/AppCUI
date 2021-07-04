@@ -1,13 +1,16 @@
 #ifndef __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
 #define __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
 
-#include "../Internal.h"
-#include <vector>
+#include <array>
+#include "Internal.h"
+#include "Color.h"
 
 namespace AppCUI
 {
     namespace Internal
     {
+        constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = 65536;
+
         class Console : public AbstractConsole
         {
         public:
@@ -20,7 +23,7 @@ namespace AppCUI
             virtual ~Console();
 
         protected:
-            bool term_has_colors;
+            AppCUI::Terminal::ColorManager colors;
         };
 
         class Input : public AbstractInput
@@ -31,9 +34,14 @@ namespace AppCUI
             virtual void  Uninit() override;
             virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
             virtual ~Input();
+
+        protected:
+            void handleMouse(SystemEvents::Event &evt, const int c);
+            void handleKey(SystemEvents::Event &evt, const int c);
+
         protected:
 
-            std::vector<AppCUI::Input::Key::Type> KeyTranslationMatrix;
+            std::array<AppCUI::Input::Key::Type, KEY_TRANSLATION_MATRIX_SIZE> KeyTranslationMatrix;
             AppCUI::Input::Key::Type shiftState;
         };
     }
