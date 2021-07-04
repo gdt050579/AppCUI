@@ -10,11 +10,6 @@ using namespace AppCUI::Input;
 constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = KEY_MAX;
 constexpr int KEY_DELETE = 0x7F;
 
-constexpr int translateKey(int key)
-{
-    return key - KEY_MIN;
-}
-
 Input::Input() : AbstractInput()
 {
     KeyTranslationMatrix.reserve(KEY_TRANSLATION_MATRIX_SIZE);
@@ -108,11 +103,12 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         }
         default:
         {
-            //mvaddstr(0, 0, (std::string("key: ") + " " + (char)c + " " + std::to_string(c)).c_str());
-            //std::string_view myName = keyname(c);
-            //mvaddstr(1, 0, (std::string("ctrl: ") + unctrl(c) + " " + myName.data() + " " + std::to_string(c)).c_str());
+            std::string_view myName = keyname(c);
+            move(0, 0);
+            clrtoeol();
+            mvaddstr(0, 0, (std::string("key: ") + " " + (char)c + " " + std::to_string(c) + " " + myName.data()).c_str());
             
-            if (KeyTranslationMatrix[c] != Key::None)
+            if (c > KEY_MIN && c < KEY_MAX && KeyTranslationMatrix[c] != Key::None)
             {
                 evnt.eventType = SystemEvents::KEY_PRESSED;
                 evnt.keyCode = KeyTranslationMatrix[c];
