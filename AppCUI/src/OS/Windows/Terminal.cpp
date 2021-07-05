@@ -55,7 +55,7 @@ bool Terminal::OnInit()
     {
         for (unsigned int x = 0; x < (unsigned int)csbi.dwSize.X; x++,p++)
         {
-            this->OriginalScreenCanvas.WriteCharacter(x, y, p->Char.UnicodeChar, p->Attributes);
+            this->OriginalScreenCanvas.WriteCharacter(x, y, p->Char.UnicodeChar, AppCUI::Console::ColorPair{static_cast<AppCUI::Console::Color>(p->Attributes & 0x0F),static_cast<AppCUI::Console::Color>((p->Attributes & 0xF0)>>4)});
         }
     }
 
@@ -113,7 +113,7 @@ void Terminal::OnFlushToScreen()
     CHAR_INFO* d = this->ConsoleBuffer;
     while (c < e) {
         d->Char.UnicodeChar = c->Code;
-        d->Attributes = c->Color & 0xFF;
+        d->Attributes = ((unsigned char)c->Color.Forenground) | (((unsigned char)(c->Color.Background)) << 4);
         d++;
         c++;
     }    

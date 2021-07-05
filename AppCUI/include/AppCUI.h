@@ -24,7 +24,7 @@
 #define MAXVALUE(x,y)	((x)>(y)?(x):(y))
 #define MINVALUE(x,y)	((x)<(y)?(x):(y))
 
-#define COLOR(fore,back) (((unsigned int)(fore))|(((unsigned int)(back))<<4))
+#define COLOR(fore,back) AppCUI::Console::ColorPair{fore,back}
 
 namespace AppCUI
 {
@@ -232,29 +232,25 @@ namespace AppCUI
     }
     namespace Console
     {
-        namespace Color
+        enum class Color: unsigned char
         {
-            enum Type : unsigned int
-            {
-                Black       = 0x00,
-                DarkBlue    = 0x01,
-                DarkGreen   = 0x02,
-                Teal        = 0x03,
-                DarkRed     = 0x04,
-                Magenta     = 0x05,
-                Olive       = 0x06,
-                Silver      = 0x07,
-                Gray        = 0x08,
-                Blue        = 0x09,
-                Green       = 0x0A,
-                Aqua        = 0x0B,
-                Red         = 0x0C,
-                Pink        = 0x0D,
-                Yellow      = 0x0E,
-                White       = 0x0F,
-                Transparent = 0x100,
-                NoColor     = 0x1100
-            };
+            Black       = 0x00,
+            DarkBlue    = 0x01,
+            DarkGreen   = 0x02,
+            Teal        = 0x03,
+            DarkRed     = 0x04,
+            Magenta     = 0x05,
+            Olive       = 0x06,
+            Silver      = 0x07,
+            Gray        = 0x08,
+            Blue        = 0x09,
+            Green       = 0x0A,
+            Aqua        = 0x0B,
+            Red         = 0x0C,
+            Pink        = 0x0D,
+            Yellow      = 0x0E,
+            White       = 0x0F,
+            Transparent = 0x10,
         };
         namespace Alignament
         {
@@ -346,21 +342,29 @@ namespace AppCUI
             inline Point(int x, int y) : X(x), Y(y) { }
             inline void Set(int x, int y) { X = x; Y = y; }
         };
+        struct ColorPair
+        {
+            Color Forenground;
+            Color Background;
+        };
+        constexpr ColorPair NoColorPair = ColorPair{ Color::Transparent, Color::Transparent };
+        constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
         struct Character
         {
             union {
                 struct {
-                    unsigned short  Code;
-                    unsigned short  Color;
+                    char16_t    Code;
+                    ColorPair   Color;
                 };
-                unsigned int        PackedValue;
+                unsigned int    PackedValue;
             };
         };
+
         struct WriteCharacterBufferParams
         {
             WriteCharacterBufferFlags::Type Flags;
-            unsigned int Color;
-            unsigned int HotKeyColor;
+            ColorPair    Color;
+            ColorPair    HotKeyColor;
             unsigned int HotKeyPosition;
             unsigned int Start, End;
             unsigned int Width;
@@ -426,14 +430,14 @@ namespace AppCUI
             inline unsigned int     Len() const { return Count; }
             inline Character*       GetBuffer() const { return Buffer; }
 
-            bool Add(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
-            bool Set(const char * text, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
-            bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, unsigned int color = Color::NoColor, unsigned int textSize = 0xFFFFFFFF);
+            bool Add(const char * text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+            bool Set(const char * text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+            bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
             bool Delete(unsigned int start, unsigned int end);
             bool DeleteChar(unsigned int position);
-            bool InsertChar(unsigned short characterCode, unsigned int position, unsigned int color = Color::NoColor);
-            bool SetColor(unsigned int start, unsigned int end, unsigned int color);
-            void SetColor(unsigned int color);
+            bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
+            bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
+            void SetColor(const ColorPair color);
         };
         
         class EXPORT Image
@@ -445,13 +449,13 @@ namespace AppCUI
             Image();
             ~Image();
             bool			        Create(unsigned int width, unsigned int height);
-            bool                    SetPixel(unsigned int x, unsigned int y, const Color::Type color);
+            bool                    SetPixel(unsigned int x, unsigned int y, const Color color);
             bool			        SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
             bool			        SetPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue, unsigned char Alpha = 255);
             unsigned int	        GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0);
             bool			        GetPixel(unsigned int x, unsigned int y, unsigned int &color);
             bool                    Clear(unsigned int color);
-            bool                    Clear(const Color::Type color);
+            bool                    Clear(const Color color);
             inline unsigned int	    GetWidth() const { return Width; }
             inline unsigned int	    GetHeight() const { return Height; }
             inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
@@ -478,42 +482,42 @@ namespace AppCUI
             ~Renderer();
 
             void            _Destroy();
-            bool            _ClearEntireSurface(int character, unsigned int color);
+            bool            _ClearEntireSurface(int character, const ColorPair color);
             bool            _WriteCharacterBuffer_SingleLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
             bool            _WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
             bool            _WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
         public:
             
             // Horizontal lines
-            bool    DrawHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
-            bool    DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color);
-            bool    DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color);
+            bool    DrawHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
+            bool    DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+            bool    DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, const ColorPair color);
             
             // Vertical lines
-            bool    DrawVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
-            bool    DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color);
-            bool    DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color);
+            bool    DrawVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
+            bool    DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+            bool    DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, const ColorPair color);
 
             // Rectangle
-            bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);  
-            bool    FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, unsigned int color);
-            bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
-            bool    DrawRectSize(int x, int y, unsigned int width, unsigned int height, unsigned int color, bool doubleLine);
+            bool    FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);  
+            bool    FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color);
+            bool    DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
+            bool    DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
             // Texts & Characters
-            bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
-            bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
-            bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
-            bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
-            bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
-            bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
+            bool    WriteSingleLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
+            bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
+            bool    WriteMultiLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
+            bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
+            bool    WriteCharacter(int x, int y, int charCode, const ColorPair color);
+            bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, const ColorPair color);
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
 
             // Canvas & Images
             bool    DrawCanvas(int x, int y, const Canvas& canvas);
 
-            bool    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
-            bool    Clear(int charCode, unsigned int color);
+            bool    ClearWithSpecialChar(SpecialChars::Type charID, const ColorPair color);
+            bool    Clear(int charCode, const ColorPair color);
             
 
             // Cursor
@@ -528,8 +532,8 @@ namespace AppCUI
         public:
             Canvas();
             ~Canvas();
-            bool    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned int color = COLOR(Color::White, Color::Black));
-            bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned int color = COLOR(Color::White,Color::Black));
+            bool    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
+            bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
 
             // Clipping & Translate
             void    SetClip(const AppCUI::Console::Clip & clip);
@@ -540,7 +544,7 @@ namespace AppCUI
             void    Reset();
             void    Update();
             void    DarkenScreen();
-            bool    ClearEntireSurface(int character, unsigned int color);
+            bool    ClearEntireSurface(int character, const ColorPair color);
 
             // inlines
             inline unsigned int GetWidth() const            { return this->Width; }
@@ -926,52 +930,52 @@ namespace AppCUI
         {
             struct {
                 int             DesktopFillCharacterCode;
-                unsigned int    Color;
+                Console::ColorPair    Color;
             } Desktop;
             struct {
-                unsigned int BackgroundColor;
-                unsigned int ShiftKeysColor;
+                Console::ColorPair BackgroundColor;
+                Console::ColorPair ShiftKeysColor;
                 struct {
-                    unsigned int KeyColor;
-                    unsigned int NameColor;
+                    Console::ColorPair KeyColor;
+                    Console::ColorPair NameColor;
                 } Normal, Hover, Pressed;
             } CommandBar;
             struct {
-                unsigned int    ActiveColor;
-                unsigned int    InactiveColor;
-                unsigned int    TitleActiveColor;
-                unsigned int    TitleInactiveColor;
-                unsigned int    ControlButtonColor;
-                unsigned int    ControlButtonInactiveColor;
-                unsigned int    ControlButtonHoverColor;
-                unsigned int    ControlButtonPressedColor;
+                Console::ColorPair    ActiveColor;
+                Console::ColorPair    InactiveColor;
+                Console::ColorPair    TitleActiveColor;
+                Console::ColorPair    TitleInactiveColor;
+                Console::ColorPair    ControlButtonColor;
+                Console::ColorPair    ControlButtonInactiveColor;
+                Console::ColorPair    ControlButtonHoverColor;
+                Console::ColorPair    ControlButtonPressedColor;
             } Window, DialogError, DialogNotify, DialogWarning;
             struct {
-                unsigned int    NormalColor;
-                unsigned int    HotKeyColor;
+                Console::ColorPair    NormalColor;
+                Console::ColorPair    HotKeyColor;
             } Label;
             struct {
                 struct {
-                    unsigned int TextColor, HotKeyColor;
+                    Console::ColorPair TextColor, HotKeyColor;
                 } Normal, Focused, Inactive, Hover;
             } Button;
             struct {
                 struct {
-                    unsigned int TextColor, HotKeyColor,StateSymbolColor;
+                    Console::ColorPair TextColor, HotKeyColor,StateSymbolColor;
                 } Normal, Focused, Inactive, Hover;
             } StateControl;
             struct {
-                unsigned int NormalColor, ClickColor, HoverColor;
+                Console::ColorPair NormalColor, ClickColor, HoverColor;
             } Splitter;
             struct {
-                unsigned int NormalColor, TextColor;
+                Console::ColorPair NormalColor, TextColor;
             } Panel;
             struct {
-                unsigned int NormalColor, FocusColor, InactiveColor, HoverColor, SelectionColor;
+                Console::ColorPair NormalColor, FocusColor, InactiveColor, HoverColor, SelectionColor;
             } TextField;
             struct {
-                unsigned int PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
-                unsigned int ListSelectedPageColor, ListSelectedPageHotKey;
+                Console::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
+                Console::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
             } Tab;
             void SetDarkTheme();
         };

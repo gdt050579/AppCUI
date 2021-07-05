@@ -110,7 +110,7 @@ void Splitter::Paint(Console::Renderer & renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
 
-    unsigned int col = Members->Cfg->Splitter.NormalColor;
+    auto col = Members->Cfg->Splitter.NormalColor;
     unsigned int poz;
 
     if (Members->DragStatus == SPLITTER_DRAG_STATUS_MOVE)

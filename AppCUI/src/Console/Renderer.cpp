@@ -17,18 +17,10 @@ int* SpecialCharacters = nullptr;
 #define SET_CHARACTER(ptrCharInfo,value,color)      { (ptrCharInfo)->Code = (value);(ptrCharInfo)->Color = (color); }
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
     if (value>=0) { ptrCharInfo->Code = (value); } \
-    if (color<256) { \
-        ptrCharInfo->Color = color; \
-    } else { \
-        if (color != AppCUI::Console::Color::NoColor) { \
-            unsigned int temp_color = color; \
-            if (color & 256) temp_color = (ptrCharInfo->Color & 0x0F)|(temp_color & 0xFFFFF0); \
-            if (color & (256<<4)) temp_color = (ptrCharInfo->Color & 0xF0)|(temp_color & 0xFFFF0F); \
-            ptrCharInfo->Color = temp_color; \
-        } \
-    } \
+    if (color.Forenground != AppCUI::Console::Color::Transparent) { ptrCharInfo->Color.Forenground = color.Forenground; } \
+    if (color.Background != AppCUI::Console::Color::Transparent) { ptrCharInfo->Color.Background = color.Background; } \
 }
-
+#define NO_TRANSPARENCY(color) ((color.Forenground != AppCUI::Console::Color::Transparent) && (color.Background != AppCUI::Console::Color::Transparent))
 
 using namespace AppCUI::Console;
 
@@ -69,12 +61,6 @@ void Renderer::_Destroy()
     Height = 0;
 }
 
-
-
-
-
-
-
 void Renderer::HideCursor()
 {
     this->Cursor.Visible = false;
@@ -92,14 +78,14 @@ bool Renderer::SetCursor(int x, int y)
     this->Cursor.Visible = true;
     return true;
 }
-bool Renderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
+bool Renderer::WriteCharacter(int x, int y, int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, y);
     if ((x < Clip.Left) || (x > Clip.Right) || (y < Clip.Top) || (y > Clip.Bottom))
         return false;
     Character *p = this->OffsetRows[y] + x;
-    if ((charCode > 0) && (color < 256))
+    if ((charCode > 0) && (NO_TRANSPARENCY(color)))
     {
         SET_CHARACTER(p, charCode, color);
     }
@@ -108,18 +94,22 @@ bool Renderer::WriteCharacter(int x, int y, int charCode, unsigned int color)
     }
     return true;
 }
-bool Renderer::WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color)
+bool Renderer::WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, const ColorPair color)
 {
     return WriteCharacter(x, y, SpecialCharacters[(unsigned int)charID], color);
 }
 
-bool Renderer::_ClearEntireSurface(int character, unsigned int color)
+bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
 {
     CHECK_CANVAS_INITIALIZE;
     Character * s = this->Characters;
     Character * e = s + (this->Width* this->Height);
     Character tmp;
-    tmp.Color = color & 0xFF; // no transparency allowed
+    tmp.Color = DefaultColorPair;
+    if (color.Background != Color::Transparent)
+        tmp.Color.Background = color.Background;
+    if (color.Forenground != Color::Transparent)
+        tmp.Color.Forenground = color.Forenground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
         tmp.Code = (unsigned short)(character & 0xFFFF);
@@ -129,7 +119,7 @@ bool Renderer::_ClearEntireSurface(int character, unsigned int color)
     }
     return true;
 }
-bool Renderer::Clear(int charCode, unsigned int color)
+bool Renderer::Clear(int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
     if ((Clip.Left == 0) && (Clip.Top == 0) && (Clip.Right + 1 == this->Width) && (Clip.Bottom + 1 == this->Height))
@@ -140,11 +130,11 @@ bool Renderer::Clear(int charCode, unsigned int color)
         return FillRect(Clip.Left - TranslateX, Clip.Top - TranslateY, Clip.Right - TranslateX, Clip.Bottom - TranslateY, charCode, color);
     }
 }
-bool Renderer::ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color)
+bool Renderer::ClearWithSpecialChar(SpecialChars::Type charID, const ColorPair color)
 {
     return Clear(SpecialCharacters[(unsigned int)charID], color);
 }
-bool Renderer::DrawHorizontalLine(int left, int y, int right, int charCode, unsigned int color)
+bool Renderer::DrawHorizontalLine(int left, int y, int right, int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, y);
@@ -156,7 +146,7 @@ bool Renderer::DrawHorizontalLine(int left, int y, int right, int charCode, unsi
     if (left > right)
         return false;
     Character * p = this->OffsetRows[y] + left;
-    if ((charCode >= 0) && (color < 256))
+    if ((charCode >= 0) && (NO_TRANSPARENCY(color)))
     {
         while (left <= right)
         {
@@ -175,16 +165,16 @@ bool Renderer::DrawHorizontalLine(int left, int y, int right, int charCode, unsi
     }
     return true;
 }
-bool Renderer::DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color)
+bool Renderer::DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, const ColorPair color)
 {
     return DrawHorizontalLine(left,y,right, SpecialCharacters[(unsigned int)charID], color);
 }
-bool Renderer::DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color)
+bool Renderer::DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color)
 {
     CHECK(size > 0, false, "");
     return DrawHorizontalLine(x, y, x + ((int)size) - 1, charCode, color);
 }
-bool Renderer::DrawVerticalLine(int x, int top, int bottom, int charCode, unsigned int color)
+bool Renderer::DrawVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, top);
@@ -196,7 +186,7 @@ bool Renderer::DrawVerticalLine(int x, int top, int bottom, int charCode, unsign
     if (top > bottom)
         return false;
     Character * p = this->OffsetRows[top] + x;
-    if ((charCode >= 0) && (color < 256))
+    if ((charCode >= 0) && (NO_TRANSPARENCY(color)))
     {
         while (top <= bottom)
         {
@@ -215,16 +205,16 @@ bool Renderer::DrawVerticalLine(int x, int top, int bottom, int charCode, unsign
     }
     return true;
 }
-bool Renderer::DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color)
+bool Renderer::DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color)
 {
     CHECK(size > 0, false, "");
     return DrawVerticalLine(x, y, y + ((int)size) - 1, charCode, color);
 }
-bool Renderer::DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color)
+bool Renderer::DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, const ColorPair color)
 {
     return DrawVerticalLine(x, top, bottom, SpecialCharacters[(unsigned int)charID], color);
 }
-bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color)
+bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -240,7 +230,7 @@ bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, 
     Character *p;
     Character **row = this->OffsetRows;
     row += top;
-    if ((charCode >= 0) && (color < 256))
+    if ((charCode >= 0) && (NO_TRANSPARENCY(color)))
     {
         for (int y = top; y <= bottom; y++, row++)
         {
@@ -263,7 +253,7 @@ bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, 
     }
     return true;
 }
-bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine)
+bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -293,7 +283,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
             char_to_draw = SpecialCharacters[SpecialChars::BoxHorizontalDoubleLine];
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxHorizontalSingleLine];
-        if (color < 256)
+        if (NO_TRANSPARENCY(color))
         {
             while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p++; }
         }
@@ -310,7 +300,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
             char_to_draw = SpecialCharacters[SpecialChars::BoxHorizontalDoubleLine];
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxHorizontalSingleLine];
-        if (color < 256)
+        if (NO_TRANSPARENCY(color))
         {
             while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p++; }
         }
@@ -327,7 +317,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
             char_to_draw = SpecialCharacters[SpecialChars::BoxVerticalDoubleLine];
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxVerticalSingleLine];
-        if (color < 256)
+        if (NO_TRANSPARENCY(color))
         {
             while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p += Width; }
         }
@@ -344,7 +334,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
             char_to_draw = SpecialCharacters[SpecialChars::BoxVerticalDoubleLine];
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxVerticalSingleLine];
-        if (color < 256)
+        if (NO_TRANSPARENCY(color))
         {
             while (p <= e) { SET_CHARACTER(p, char_to_draw, color); p += Width; }
         }
@@ -360,7 +350,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxTopLeftCornerSingleLine];
         p = this->OffsetRows[top] + left;
-        if (color < 256) {
+        if (NO_TRANSPARENCY(color)) {
             SET_CHARACTER(p, char_to_draw, color);
         }
         else {
@@ -374,7 +364,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxBottomLeftCornerSingleLine];
         p = this->OffsetRows[bottom] + left;
-        if (color < 256) {
+        if (NO_TRANSPARENCY(color)) {
             SET_CHARACTER(p, char_to_draw, color);
         }
         else {
@@ -388,7 +378,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxBottomRightCornerSingleLine];
         p = this->OffsetRows[bottom] + right;
-        if (color < 256) {
+        if (NO_TRANSPARENCY(color)) {
             SET_CHARACTER(p, char_to_draw, color);
         }
         else {
@@ -402,7 +392,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
         else
             char_to_draw = SpecialCharacters[SpecialChars::BoxTopRightCornerSingleLine];
         p = this->OffsetRows[top] + right;
-        if (color < 256) {
+        if (NO_TRANSPARENCY(color)) {
             SET_CHARACTER(p, char_to_draw, color);
         }
         else {
@@ -411,17 +401,17 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, unsigned int c
     }
     return true;
 }
-bool Renderer::FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, unsigned int color)
+bool Renderer::FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color)
 {
     CHECK(((width > 0) && (height > 0)), false, "");
     return FillRect(x, y, x + ((int)width) - 1, y + ((int)height) - 1, charCode, color);
 }
-bool Renderer::DrawRectSize(int x, int y, unsigned int width, unsigned int height, unsigned int color, bool doubleLine)
+bool Renderer::DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine)
 {
     CHECK(((width > 0) && (height > 0)), false, "");
     return DrawRect(x, y, x + ((int)width) - 1, y + ((int)height) - 1, color, doubleLine);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize)
+bool Renderer::WriteSingleLineText(int x, int y, const char * text, const ColorPair color, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -451,7 +441,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int
     }
     return true;
 }
-bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -491,7 +481,7 @@ bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, un
         SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
     return true;
 }
-bool Renderer::WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize)
+bool Renderer::WriteMultiLineText(int x, int y, const char * text, const ColorPair color, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -523,7 +513,7 @@ bool Renderer::WriteMultiLineText(int x, int y, const char * text, unsigned int 
     }
     return true;
 }
-bool Renderer::WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize)
+bool Renderer::WriteMultiLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text ");
     CHECK_VISIBLE;
@@ -591,7 +581,7 @@ bool Renderer::_WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Cons
     if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
     {
         unsigned int position = start;
-        if (params.Color < 256)
+        if (NO_TRANSPARENCY(params.Color))
         {
             while (position < end)
             {

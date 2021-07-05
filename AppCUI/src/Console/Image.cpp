@@ -72,7 +72,7 @@ bool Image::SetPixel(unsigned int x, unsigned  int y, unsigned int color)
 	return true;
 }
 
-bool Image::SetPixel(unsigned int x, unsigned int y, const Color::Type color) {
+bool Image::SetPixel(unsigned int x, unsigned int y, const Color color) {
   CHECK_INDEX(false);
   if (((unsigned int)color)<16)
     *pixel = _console_colors_[(unsigned int)color];
@@ -87,7 +87,7 @@ bool Image::Clear(unsigned int color)
     while (s < e) { (*s) = color; s++; }
     return true;
 }
-bool Image::Clear(const Color::Type color)
+bool Image::Clear(const Color color)
 {
     VALIDATE_CONSOLE_INDEX;
     return Clear(_console_colors_[(unsigned int)color]);

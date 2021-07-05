@@ -5,7 +5,7 @@ using namespace AppCUI::Console;
 
 Canvas::Canvas() { }
 Canvas::~Canvas() { }
-bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, unsigned int color)
+bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, const ColorPair color)
 {
     CHECK(width > 0, false, "Width must be greater than 0.");
     CHECK(height > 0, false, "Height must be greater than 0.");
@@ -34,7 +34,7 @@ bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, 
     
     return true;
 }
-bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, unsigned int color)
+bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, const ColorPair color)
 {
     if (this->Characters == nullptr)
         return Create(width, height, fillCharacter, color);
@@ -50,7 +50,6 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     for (unsigned int tr = 0; tr < height; tr++, p += width)
         ofs_tmp[tr] = p;
 
-    unsigned short col = color & 0xFF; // no transparency allowed
     unsigned short chr = ' ';
 
     if ((fillCharacter >= 0) && (fillCharacter <= 0xFFFF))
@@ -75,7 +74,7 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
             for (unsigned int x = min_w; x < width; x++, p_temp++)
             {
                 p_temp->Code = chr;
-                p_temp->Color = col;
+                p_temp->Color = color;
             }
         }
     }
@@ -87,7 +86,7 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
             for (unsigned int x = 0; x < min_w; x++, p_temp++)
             {
                 p_temp->Code = chr;
-                p_temp->Color = col;
+                p_temp->Color = color;
             }
         }
     }
@@ -149,7 +148,7 @@ void Canvas::DarkenScreen()
         start++;
     }
 }
-bool Canvas::ClearEntireSurface(int character, unsigned int color)
+bool Canvas::ClearEntireSurface(int character, const ColorPair color)
 {
     return _ClearEntireSurface(character, color);
 }

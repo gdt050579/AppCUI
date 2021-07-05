@@ -886,10 +886,10 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String *text, bool update
 
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text->GetText(),CTRLC->HotKeyOffset,Color::NoColor,text->Len()) == false)
+        if (CTRLC->Text.SetWithHotKey(text->GetText(),CTRLC->HotKeyOffset,NoColorPair,text->Len()) == false)
             return false;
     } else {
-        if (CTRLC->Text.Set(text->GetText(), Color::NoColor, text->Len()) == false)
+        if (CTRLC->Text.Set(text->GetText(), NoColorPair, text->Len()) == false)
             return false;
     }
 
@@ -902,10 +902,10 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text, bool update
 		return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text.GetText(),CTRLC->HotKeyOffset,Color::NoColor,text.Len()) == false)
+        if (CTRLC->Text.SetWithHotKey(text.GetText(),CTRLC->HotKeyOffset, NoColorPair,text.Len()) == false)
             return false;
     } else {
-        if (CTRLC->Text.Set(text.GetText(), Color::NoColor, text.Len()) == false)
+        if (CTRLC->Text.Set(text.GetText(), NoColorPair, text.Len()) == false)
             return false;
     }
 	OnAfterSetText(text.GetText());

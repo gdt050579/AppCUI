@@ -44,7 +44,7 @@ bool CharacterBuffer::Grow(unsigned int newSize)
     Allocated = newSize;
     return true;
 }
-bool CharacterBuffer::Add(const char * text, unsigned int color, unsigned int textSize)
+bool CharacterBuffer::Add(const char * text, const ColorPair color, unsigned int textSize)
 {
     CHECK(text, false, "Expecting a valid (non-null) text");
     COMPUTE_TEXT_SIZE(text, textSize);
@@ -62,12 +62,12 @@ bool CharacterBuffer::Add(const char * text, unsigned int color, unsigned int te
     }
     return true;
 }
-bool CharacterBuffer::Set(const char * text, unsigned int color, unsigned int textSize)
+bool CharacterBuffer::Set(const char * text, const ColorPair color, unsigned int textSize)
 {
     this->Count = 0;
     return Add(text, color, textSize);
 }
-bool CharacterBuffer::SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, unsigned int color, unsigned int textSize)
+bool CharacterBuffer::SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, const ColorPair color, unsigned int textSize)
 {
     hotKeyCharacterPosition = 0xFFFFFFFF;
     CHECK(text, false, "Expecting a valid (non-null) text");
@@ -121,7 +121,7 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
     this->Count--;
     return true;
 }
-bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, unsigned int color)
+bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(this->Count + 1, false);
     CHECK(position <= this->Count, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Size);
@@ -134,7 +134,7 @@ bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int posi
     this->Count++;
     return true;
 }
-bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, unsigned int color)
+bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, const ColorPair color)
 {
     if (end > this->Count)
         end = this->Count;
@@ -148,7 +148,7 @@ bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, unsigned in
     }
     return true;
 }
-void CharacterBuffer::SetColor(unsigned int color)
+void CharacterBuffer::SetColor(const ColorPair color)
 {
     Character* ch = this->Buffer;
     unsigned int sz = this->Count;

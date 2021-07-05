@@ -163,7 +163,7 @@ void Window::Paint(Console::Renderer & renderer)
 {
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto * wcfg = &Members->Cfg->Window;
-    unsigned int colorTitle, colorWindow, colorWindowButton, c1,c2;
+    ColorPair colorTitle, colorWindow, colorWindowButton, c1,c2;
     bool doubleLine;
 
     if ((Members->Flags & WindowFlags::WARNINGBOX) != 0)
