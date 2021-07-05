@@ -157,7 +157,7 @@ bool Canvas::DrawCanvas(int x, int y, const Canvas& canvas)
 {
     x += this->TranslateX;
     y += this->TranslateY;
-    if (!Clip.Visible)
+    if ((!Clip.Visible) || (canvas.Characters==nullptr))
         return false;
     if ((x == 0) && (y == 0) && (this->Width == canvas.Width) && (this->Height == canvas.Height))
     {
@@ -165,5 +165,42 @@ bool Canvas::DrawCanvas(int x, int y, const Canvas& canvas)
         memcpy(this->Characters, canvas.Characters, sizeof(Character)*canvas.Height*canvas.Width);
         return true;
     }
-    NOT_IMPLEMENTED(false);
+    int canvas_left = 0; 
+    int canvas_top = 0;
+    int canvas_width_memory_size;
+    int canvas_height;
+
+    if (x < 0) {
+        canvas_left = -x;
+        x = 0;
+    }
+    if (y < 0) {
+        canvas_top = -y;
+        y = 0;
+    }
+    if (x >= (int)this->Width)
+        return false;
+    if (y >= (int)this->Height)
+        return false;
+    
+    // width block size
+    if ((x + (int)canvas.Width) > ((int)(this->Width)))
+        canvas_width_memory_size = ((int)this->Width) - x;
+    else
+        canvas_width_memory_size = canvas.Width;
+    canvas_width_memory_size *= sizeof(Characters);
+    // draw height
+    if ((y + (int)canvas.Height) > ((int)(this->Height)))
+        canvas_height = ((int)this->Height) - y;
+    else
+        canvas_height = canvas.Height;
+    // copy memory
+    while (canvas_height > 0)
+    {
+        memcpy(this->OffsetRows[y] + x, canvas.OffsetRows[canvas_top] + canvas_left, canvas_width_memory_size);
+        canvas_top++;
+        y++;
+        canvas_height--;
+    }
+    return true;
 }
