@@ -456,7 +456,7 @@ namespace AppCUI
             inline unsigned int	    GetHeight() const { return Height; }
             inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
         };
-
+        class EXPORT Canvas;
         class EXPORT Renderer
         {
         protected:
@@ -509,6 +509,8 @@ namespace AppCUI
             bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
 
+            // Canvas & Images
+            bool    DrawCanvas(int x, int y, const Canvas& canvas);
 
             bool    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
             bool    Clear(int charCode, unsigned int color);
@@ -539,8 +541,6 @@ namespace AppCUI
             void    Update();
             void    DarkenScreen();
             bool    ClearEntireSurface(int character, unsigned int color);
-
-            bool    DrawCanvas(int x, int y, const Canvas& canvas);
 
             // inlines
             inline unsigned int GetWidth() const            { return this->Width; }
