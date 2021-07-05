@@ -457,8 +457,9 @@ namespace AppCUI
             inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
         };
 
-        class EXPORT Canvas
+        class EXPORT Renderer
         {
+        protected:
             Character*          Characters;
             Character**         OffsetRows;
             unsigned int        Width, Height;
@@ -472,37 +473,61 @@ namespace AppCUI
                 bool            Visible;
             } Cursor;
 
-        protected:
-            bool            WriteCharacterBuffer_SingleLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
-            bool            WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
-            bool            WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+        
+            Renderer();
+            ~Renderer();
+
+            void            _Destroy();
+            bool            _ClearEntireSurface(int character, unsigned int color);
+            bool            _WriteCharacterBuffer_SingleLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            _WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
+            bool            _WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, const CharacterBuffer & cb, const WriteCharacterBufferParams& params, unsigned int start, unsigned int end);
         public:
-            Canvas();
-            ~Canvas();
+            
+            // Horizontal lines
+            bool    DrawHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
+            bool    DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color);
+            bool    DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color);
+            
+            // Vertical lines
+            bool    DrawVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            bool    DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, unsigned int color);
+            bool    DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color);
 
-            bool    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
-            bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned color = COLOR(Color::Silver, Color::Black));
-            void    Destroy();
-
-            // Draw methods
-            bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
-            bool    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
-            bool    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
+            // Rectangle
+            bool    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);  
+            bool    FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, unsigned int color);
             bool    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
+            bool    DrawRectSize(int x, int y, unsigned int width, unsigned int height, unsigned int color, bool doubleLine);
+
+            // Texts & Characters
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             bool    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
             bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
             bool    WriteCharacter(int x, int y, int charCode, unsigned int color);
+            bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
-            bool    ClearClipRectangle(int charCode, unsigned int color);
-            bool    Clear(unsigned int color);
-            bool    Clear(int character, unsigned int color);
-            void    DarkenScreen();
+
+
+            bool    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
+            bool    Clear(int charCode, unsigned int color);
+            
 
             // Cursor
             void    HideCursor();
-            bool    ShowCursor(int x, int y);
+            bool    SetCursor(int x, int y);
+
+
+        };
+
+        class EXPORT Canvas: public Renderer
+        {
+        public:
+            Canvas();
+            ~Canvas();
+            bool    Create(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned int color = COLOR(Color::White, Color::Black));
+            bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', unsigned int color = COLOR(Color::White,Color::Black));
 
             // Clipping & Translate
             void    SetClip(const AppCUI::Console::Clip & clip);
@@ -511,39 +536,19 @@ namespace AppCUI
 
             bool    SetSize(unsigned int width, unsigned int height);
             void    Reset();
-            void    Update();           
+            void    Update();
+            void    DarkenScreen();
+            bool    ClearEntireSurface(int character, unsigned int color);
+
+            bool    DrawCanvas(int x, int y, const Canvas& canvas);
 
             // inlines
-            inline unsigned int GetWidth() const { return this->Width; }
-            inline unsigned int GetHeight() const { return this->Height; }
-        };
-
-        class EXPORT Renderer
-        {
-            void*   consoleRenderer;
-        public:
-            Renderer();
-            void    Init(void* consoleRenderer);
-            void    FillRect(int left, int top, int right, int bottom, int charCode, unsigned int color);
-            void    FillRectWidthHeight(int x, int y, int width, int height, int charCode, unsigned int color);
-            void    FillHorizontalLine(int left, int y, int right, int charCode, unsigned int color);
-            void    FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, unsigned int color);
-            void    FillHorizontalLineSize(int x, int y, int size, int charCode, unsigned int color);
-            void    FillVerticalLine(int x, int top, int bottom, int charCode, unsigned int color);
-            void    FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, unsigned int color);
-            void    FillVerticalLineSize(int x, int y, int size, int charCode, unsigned int color);
-            void    DrawRect(int left, int top, int right, int bottom, unsigned int color, bool doubleLine);
-            void    DrawRectWidthHeight(int x, int y, int width, int height, unsigned int color, bool doubleLine);
-            void    Clear(int charCode, unsigned int color);
-            void    ClearWithSpecialChar(SpecialChars::Type charID, unsigned int color);
-            void    WriteSingleLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
-            void    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
-            void    WriteMultiLineText(int x, int y, const char * text, unsigned int color, int textSize = -1);
-            void    WriteMultiLineTextWithHotKey(int x, int y, const char * text, unsigned int color, unsigned int hotKeyColor, int textSize = -1);
-            void    WriteCharacter(int x, int y, int charCode, unsigned int color);
-            void    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, unsigned int color);
-            void    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
-            void    SetCursor(int x, int y);
+            inline unsigned int GetWidth() const            { return this->Width; }
+            inline unsigned int GetHeight() const           { return this->Height; }
+            inline bool         GetCursorVisibility() const { return this->Cursor.Visible; }
+            inline unsigned int GetCursorX() const          { return this->Cursor.X; }
+            inline unsigned int GetCursorY() const          { return this->Cursor.Y; }
+            inline Character*   GetCharactersBuffer() const { return this->Characters; }
         };
 
         

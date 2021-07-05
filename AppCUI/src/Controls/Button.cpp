@@ -68,7 +68,7 @@ void Button::Paint(Console::Renderer & renderer)
 
     if (pressed)
     {
-        renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
+        renderer.DrawHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
         if (sz > 0) {
             params.Color = Members->Cfg->Button.Focused.TextColor;
             params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
@@ -76,13 +76,13 @@ void Button::Paint(Console::Renderer & renderer)
         }
     }
     else {
-        renderer.FillHorizontalLine(0, 0, Members->Layout.Width-2, ' ', bc->TextColor);
+        renderer.DrawHorizontalLine(0, 0, Members->Layout.Width-2, ' ', bc->TextColor);
         if (sz > 0) {
             params.Color = bc->TextColor;
             params.HotKeyColor = bc->HotKeyColor;
             renderer.WriteCharacterBuffer(x, 0, Members->Text, params);
         }
-        renderer.FillHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, COLOR(Color::Black, Color::Transparent));
+        renderer.DrawHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, COLOR(Color::Black, Color::Transparent));
         renderer.WriteSpecialCharacter(Members->Layout.Width-1, 0, SpecialChars::BlockLowerHalf, COLOR(Color::Black, Color::Transparent));
     }
 }

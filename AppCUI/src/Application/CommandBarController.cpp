@@ -92,7 +92,7 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
     if (!Visible)
         return;
     
-    renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
+    renderer.DrawHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
 	if (RecomputeScreenPos)
 		ComputeScreenPos();
     

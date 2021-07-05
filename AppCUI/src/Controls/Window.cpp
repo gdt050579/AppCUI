@@ -193,7 +193,7 @@ void Window::Paint(Console::Renderer & renderer)
         doubleLine = false;
     }
     renderer.Clear(' ', colorWindow);
-    renderer.DrawRectWidthHeight(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
+    renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
     int txW = Members->Text.Len();
     txW = MINVALUE(txW, Members->Layout.Width - 10);
     int txX = (Members->Layout.Width - txW) / 2;

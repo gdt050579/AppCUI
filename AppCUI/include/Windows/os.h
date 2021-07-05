@@ -7,30 +7,26 @@ namespace AppCUI
 {
     namespace Internal
     {
-        class Console : public AbstractConsole
+        class Terminal : public AbstractTerminal
         {
-            struct {
-                HANDLE			        hstdOut;
-                DWORD                   stdMode;
-            } OSSpecific;
-        protected:
-            virtual bool    OnInit() override;
-            virtual void    OnUninit() override;
-            virtual void    OnFlushToScreen() override;
-            virtual bool    OnUpdateCursor() override;
-            virtual ~Console();
-        };
-        class Input : public AbstractInput
-        {
-            AppCUI::Input::Key::Type    KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
+            HANDLE			            hstdOut;
             HANDLE			            hstdIn;
             DWORD                       originalStdMode;
+            DWORD                       stdMode;
+            CHAR_INFO*                  ConsoleBuffer;
+            unsigned int                ConsoleBufferCount;
+            AppCUI::Input::Key::Type    KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
             AppCUI::Input::Key::Type    shiftState;
+
+            bool                        ResizeConsoleBuffer(unsigned int width, unsigned int height);
         public:
-            virtual bool  Init() override;
-            virtual void  Uninit() override;
-            virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
-            virtual ~Input();
+            Terminal();
+            virtual bool                OnInit() override;
+            virtual void                OnUninit() override;
+            virtual void                OnFlushToScreen() override;
+            virtual bool                OnUpdateCursor() override;
+            virtual void                GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
+            virtual ~Terminal();
         };
     }
 }

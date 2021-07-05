@@ -29,7 +29,7 @@ void Panel::Paint(Console::Renderer & renderer)
     renderer.Clear(' ', Members->Cfg->Panel.NormalColor);
 	if (Members->Flags & PANEL_ATTR_BORDER)
 	{
-        renderer.DrawRectWidthHeight(0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, false);
+        renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, false);
         if (Members->Layout.Width > 6) {
             WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | 
                                               WriteCharacterBufferFlags::WRAP_TO_WIDTH | 

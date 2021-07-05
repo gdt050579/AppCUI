@@ -1,7 +1,6 @@
 target_sources(AppCUI PRIVATE
     Application.cpp
-    AbstractConsole.cpp
-    AbstractInput.cpp
+    AbstractTerminal.cpp
     CommandBar.cpp
     CommandBarController.cpp
     Config.cpp

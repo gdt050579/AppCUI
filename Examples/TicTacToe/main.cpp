@@ -66,10 +66,10 @@ public:
                 if (table[y][x] == CELL_WITH_O)
                     DrawO(renderer, x, y);
             }
-        renderer.FillHorizontalLineWithSpecialChar(0, 4, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.FillHorizontalLineWithSpecialChar(0, 9, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.FillVerticalLineWithSpecialChar(4, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.FillVerticalLineWithSpecialChar(9, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
+        renderer.DrawHorizontalLineWithSpecialChar(0, 4, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
+        renderer.DrawHorizontalLineWithSpecialChar(0, 9, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
+        renderer.DrawVerticalLineWithSpecialChar(4, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
+        renderer.DrawVerticalLineWithSpecialChar(9, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
     }
     void OnMousePressed(int x, int y, int Button) override
     {

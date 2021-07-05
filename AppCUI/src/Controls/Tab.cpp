@@ -89,9 +89,9 @@ int TabControlContext::MousePositionToPanel(int x, int y)
 void TabControlContext::PaintTopPanelTab(Console::Renderer & renderer)
 {
     if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
-        renderer.FillRectWidthHeight(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+        renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
     if (this->Flags & TabFlags::HAS_TABBAR)
-        renderer.FillHorizontalLineSize(0,0,this->Layout.Width,' ', this->Cfg->Tab.TabBarColor);
+        renderer.DrawHorizontalLineSize(0,0,this->Layout.Width,' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
                                       WriteCharacterBufferFlags::SINGLE_LINE |
                                       WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY | 
@@ -123,7 +123,7 @@ void TabControlContext::PaintTopPanelTab(Console::Renderer & renderer)
             params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
         }
 
-        renderer.FillHorizontalLineSize(poz, 0, this->TabTitleSize, ' ', params.Color);
+        renderer.DrawHorizontalLineSize(poz, 0, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
         txLen = cc->Text.Len();
         if (txLen<params.Width)
@@ -136,9 +136,9 @@ void TabControlContext::PaintBottomPanelTab(Console::Renderer & renderer)
 {
     int y_poz = this->Layout.Height - 1;
     if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
-        renderer.FillRectWidthHeight(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+        renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
     if (this->Flags & TabFlags::HAS_TABBAR)
-        renderer.FillHorizontalLineSize(0, y_poz, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
+        renderer.DrawHorizontalLineSize(0, y_poz, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
         WriteCharacterBufferFlags::SINGLE_LINE |
         WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY |
@@ -170,7 +170,7 @@ void TabControlContext::PaintBottomPanelTab(Console::Renderer & renderer)
             params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
         }
 
-        renderer.FillHorizontalLineSize(poz, y_poz, this->TabTitleSize, ' ', params.Color);
+        renderer.DrawHorizontalLineSize(poz, y_poz, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
         txLen = cc->Text.Len();
         if (txLen < params.Width)
@@ -182,9 +182,9 @@ void TabControlContext::PaintBottomPanelTab(Console::Renderer & renderer)
 void TabControlContext::PaintLeftPanelTab(Console::Renderer & renderer)
 {
     if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
-        renderer.FillRectWidthHeight(this->TabTitleSize, 0, this->Layout.Width - this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.PageColor);
+        renderer.FillRectSize(this->TabTitleSize, 0, this->Layout.Width - this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.PageColor);
     if (this->Flags & TabFlags::HAS_TABBAR)
-        renderer.FillRectWidthHeight(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
+        renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
     
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
                                       WriteCharacterBufferFlags::SINGLE_LINE |
@@ -212,7 +212,7 @@ void TabControlContext::PaintLeftPanelTab(Console::Renderer & renderer)
             params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
         }
 
-        renderer.FillHorizontalLineSize(0, tr+1, this->TabTitleSize, ' ', params.Color);
+        renderer.DrawHorizontalLineSize(0, tr+1, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
         renderer.WriteCharacterBuffer(1,tr+1, cc->Text, params);
     }
@@ -252,7 +252,7 @@ void TabControlContext::PaintListPanelTab(Console::Renderer & renderer)
             ypoz = tr;
         else
             ypoz = this->Layout.Height - (this->ControlsCount - tr);
-        renderer.FillHorizontalLineSize(0, ypoz, this->Layout.Width, ' ', params.Color);
+        renderer.DrawHorizontalLineSize(0, ypoz, this->Layout.Width, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
         renderer.WriteCharacterBuffer(1, ypoz, cc->Text, params);
     }
