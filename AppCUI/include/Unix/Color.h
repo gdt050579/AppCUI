@@ -37,11 +37,12 @@ namespace AppCUI
             private:
                 void initColorPairs();
                 int getPairId(const AppColor fg, const AppColor bg);
+                char mapColor(const AppColor color);
 
 
             private:
                 size_t nrColors;
-                std::map<AppColor, int> appcuiColorMapping;
+                std::array<int, NR_APPCUI_COLORS> appcuiColorMapping;
                 std::array<int, NR_APPCUI_COLORS * NR_APPCUI_COLORS> pairMapping;
         };
     }
