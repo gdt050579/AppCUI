@@ -1,5 +1,6 @@
 #ifndef __APPCUI_MAIN_HEADER__
 #define __APPCUI_MAIN_HEADER__
+#include <array>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #   ifdef BUILD_FOR_WINDOWS
@@ -249,6 +250,7 @@ namespace AppCUI
             White       = 0x0F,
             Transparent = 0x10,
         };
+
         namespace Alignament
         {
             enum Type : unsigned int

@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Input.cpp Console.cpp Clipboard.cpp Color.cpp)
+target_sources(AppCUI PRIVATE Terminal.cpp TerminalScreen.cpp TerminalInput.cpp Clipboard.cpp Color.cpp)

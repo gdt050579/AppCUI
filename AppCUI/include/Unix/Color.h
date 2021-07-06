@@ -2,6 +2,7 @@
 #define _COLOR_H_INCLUDED_
 #include <unistd.h>
 #include <array>
+#include <map>
 
 #include "Internal.h"
 
@@ -20,27 +21,27 @@ namespace AppCUI
     namespace Terminal
     {
         constexpr size_t NR_APPCUI_COLORS = 16;
-        using AppColor = AppCUI::Console::Color::Type;
-
+        using AppColor = AppCUI::Console::Color;
+        
         class ColorManager
         {
             public: 
                 ColorManager();
 
                 // Should be called before anything can work
-                void Init(const size_t nrColors);
-                void SetColor(AppColor fg, AppColor bg);
-                void UnsetColor(AppColor fg, AppColor bg);
+                void Init();
+                void SetColor(const AppColor fg, const AppColor bg);
+                void UnsetColor(const AppColor fg, const AppColor bg);
                 void ResetColor();
 
             private:
-                void initColorPairs(void);
-                constexpr int getPairId(const int fg, const int bg);
+                void initColorPairs();
+                constexpr int getPairId(const AppColor fg, const AppColor bg);
 
 
             private:
                 size_t nrColors;
-                std::array<int, NR_APPCUI_COLORS> appcuiColorMapping;
+                std::map<AppColor, int> appcuiColorMapping;
                 std::array<int, NR_APPCUI_COLORS * NR_APPCUI_COLORS> pairMapping;
         };
     }

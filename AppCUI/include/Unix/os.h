@@ -11,38 +11,30 @@ namespace AppCUI
     {
         constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = 65536;
 
-        class Console : public AbstractConsole
+        class Terminal : public AbstractTerminal
         {
-        public:
-            Console();
-        protected:
-            virtual bool    OnInit() override;
-            virtual void    OnUninit() override;
-            virtual void    OnFlushToScreen() override;
-            virtual bool    OnUpdateCursor() override;
-            virtual ~Console();
-
-        protected:
+        private:
+            std::array<AppCUI::Input::Key::Type, KEY_TRANSLATION_MATRIX_SIZE> KeyTranslationMatrix;
+            AppCUI::Input::Key::Type shiftState;
             AppCUI::Terminal::ColorManager colors;
-        };
 
-        class Input : public AbstractInput
-        {
         public:
-            Input();
-            virtual bool  Init() override;
-            virtual void  Uninit() override;
-            virtual void  GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
-            virtual ~Input();
+            virtual bool                OnInit() override;
+            virtual void                OnUninit() override;
+            virtual void                OnFlushToScreen() override;
+            virtual bool                OnUpdateCursor() override;
+            virtual void                GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
 
-        protected:
+        private:
+            bool initScreen();
+            bool initInput();
+
+            void uninitScreen();
+            void uninitInput();
+
             void handleMouse(SystemEvents::Event &evt, const int c);
             void handleKey(SystemEvents::Event &evt, const int c);
 
-        protected:
-
-            std::array<AppCUI::Input::Key::Type, KEY_TRANSLATION_MATRIX_SIZE> KeyTranslationMatrix;
-            AppCUI::Input::Key::Type shiftState;
         };
     }
 }

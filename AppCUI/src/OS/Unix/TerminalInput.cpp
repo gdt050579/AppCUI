@@ -26,20 +26,29 @@ constexpr int unMetaCharacter8bit(const int val)
     return (val & (~META_BIT));
 }
 
-Input::Input() : AbstractInput()
+void debugChar(int y, int c, const char* prefix)
 {
+    std::string_view myName = keyname(c);
+    move(y, 0);
+    clrtoeol();
+    addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
+}
+
+bool Terminal::initInput()
+{
+    nodelay(stdscr, TRUE);
+    keypad(stdscr, TRUE);
+    meta(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    mouseinterval(0);
+    raw();
+    nonl();
+
     for (size_t tr = 0; tr < KEY_TRANSLATION_MATRIX_SIZE; tr++)
     {
         this->KeyTranslationMatrix[tr] = Key::None;
     }
-}
 
-Input::~Input()
-{
-}
-
-bool Input::Init()
-{
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
@@ -54,7 +63,6 @@ bool Input::Init()
 
     KeyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
     KeyTranslationMatrix[0x7F] = Key::Backspace;
-    KeyTranslationMatrix[KEY_DELETE] = Key::Delete;
 
     
     KeyTranslationMatrix[KEY_UP] = Key::Up;
@@ -71,23 +79,12 @@ bool Input::Init()
     // KeyTranslationMatrix[] = Key::Tab;
     //KeyTranslationMatrix[KEY_ESCAPE] ? 
     //KeyTranslationMatrix[KEY_INSERT] ? 
- 
+    // KeyTranslationMatrix[KEY_DELETE] = Key::Delete;
     return true;
 }
 
-void Input::Uninit()
-{
-}
 
-void debugChar(int y, int c, const char* prefix)
-{
-    std::string_view myName = keyname(c);
-    move(y, 0);
-    clrtoeol();
-    addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
-}
-
-void Input::handleMouse(SystemEvents::Event &evt, const int c)
+void Terminal::handleMouse(SystemEvents::Event &evt, const int c)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)
@@ -111,7 +108,7 @@ void Input::handleMouse(SystemEvents::Event &evt, const int c)
     }   
 }
 
-void Input::handleKey(SystemEvents::Event &evt, const int c)
+void Terminal::handleKey(SystemEvents::Event &evt, const int c)
 {
     // debugChar(0, c, "key");
     evt.eventType = SystemEvents::KEY_PRESSED;
@@ -151,7 +148,7 @@ void Input::handleKey(SystemEvents::Event &evt, const int c)
 }
 
 
-void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
+void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
     evnt.eventType = SystemEvents::NONE;
     evnt.keyCode = Key::None;
@@ -185,4 +182,8 @@ void Input::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         return;
     }
     refresh();
+}
+
+void Terminal::uninitInput()
+{
 }

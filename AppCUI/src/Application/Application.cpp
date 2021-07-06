@@ -539,6 +539,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
             case SystemEvents::SHIFT_STATE_CHANGED:
                 ProcessShiftState(evnt.keyCode);
                 break;
+            default:
+                break;
         }
     }
     if (ctrl != nullptr)
