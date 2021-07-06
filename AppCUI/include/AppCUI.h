@@ -513,7 +513,7 @@ namespace AppCUI
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
 
             // Canvas & Images
-            bool    DrawCanvas(int x, int y, const Canvas& canvas);
+            bool    DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);            
 
             bool    ClearWithSpecialChar(SpecialChars::Type charID, const ColorPair color);
             bool    Clear(int charCode, const ColorPair color);

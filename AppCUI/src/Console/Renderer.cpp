@@ -784,7 +784,7 @@ bool Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::Charact
     }
     return true;
 }
-bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas)
+bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor)
 {
     if ((!Clip.Visible) || (canvas.Characters == nullptr))
         return false;
@@ -831,13 +831,57 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas)
         return false;
 
     canvas_width_memory_size = canvas_width * sizeof(Character);
-    // copy memory
-    while (canvas_height > 0)
+    
+    if ((overwriteColor.Background == Color::Transparent) && (overwriteColor.Forenground == Color::Transparent))
     {
-        memcpy(this->OffsetRows[y] + x, canvas.OffsetRows[canvas_top] + canvas_left, canvas_width_memory_size);
-        canvas_top++;
-        y++;
-        canvas_height--;
+        // copy memory
+        while (canvas_height > 0)
+        {
+            memcpy(this->OffsetRows[y] + x, canvas.OffsetRows[canvas_top] + canvas_left, canvas_width_memory_size);
+            canvas_top++;
+            y++;
+            canvas_height--;
+        }
+    }
+    else {
+        // write character by character, changing the color
+        if ((overwriteColor.Background != Color::Transparent) && (overwriteColor.Forenground != Color::Transparent))
+        {
+            while (canvas_height > 0)
+            {
+                Character * d = this->OffsetRows[y] + x;
+                Character * s = canvas.OffsetRows[canvas_top] + canvas_left;
+                unsigned int count = canvas_width;
+                while (count)
+                {
+                    SET_CHARACTER(d, s->Code, overwriteColor);
+                    d++;
+                    s++;
+                    count--;
+                }
+                canvas_top++;
+                y++;
+                canvas_height--;
+            }
+        } else {
+            while (canvas_height > 0)
+            {
+                Character * d = this->OffsetRows[y] + x;
+                Character * s = canvas.OffsetRows[canvas_top] + canvas_left;
+                unsigned int count = canvas_width;
+                while (count)
+                {
+                    SET_CHARACTER_EX(d, s->Code, overwriteColor);
+                    d++;
+                    s++;
+                    count--;
+                }
+                canvas_top++;
+                y++;
+                canvas_height--;
+            }
+
+        }
     }
     return true;
 }
