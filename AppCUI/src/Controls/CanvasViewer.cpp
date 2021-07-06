@@ -43,6 +43,9 @@ void CanvasViewer::Paint(Console::Renderer & renderer)
     if (Members->Flags & ViewerFlags::BORDER)
     {
         renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
+        if (Members->Layout.Width > 6) {
+            renderer.WriteCharacterBuffer(3, 0, Members->Layout.Width - 6, Members->Text, col->Text, col->Hotkey, Members->HotKeyOffset, TextAlignament::Left | TextAlignament::Padding);
+        }
         if (!renderer.SetClipMargins(1, 1, 1, 1))
             return; // clipping is not visible --> no need to try to draw the rest
     }

@@ -194,20 +194,11 @@ void Window::Paint(Console::Renderer & renderer)
     }
     renderer.Clear(' ', colorWindow);
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
-    int txW = Members->Text.Len();
-    txW = MINVALUE(txW, Members->Layout.Width - 10);
-    int txX = (Members->Layout.Width - txW) / 2;
-    if (txW > 0) 
+
+    if (Members->Layout.Width > 10)
     {
-        WriteCharacterBufferParams params(WriteCharacterBufferFlags::SINGLE_LINE |
-                                          WriteCharacterBufferFlags::OVERWRITE_COLORS |
-                                          WriteCharacterBufferFlags::WRAP_TO_WIDTH);
-        params.Color = colorTitle;
-        params.Width = txW;
-        renderer.WriteCharacterBuffer(txX, 0, Members->Text, params);
+        renderer.WriteCharacterBuffer(Members->Layout.Width/2, 0, Members->Layout.Width - 10, Members->Text, colorTitle, TextAlignament::Center | TextAlignament::Padding);
     }
-    renderer.WriteCharacter(txX - 1, 0, ' ', colorTitle);
-    renderer.WriteCharacter(txX + txW, 0, ' ', colorTitle);
     // close button
     if (!(Members->Flags & WindowFlags::NOCLOSEBUTTON))
     {

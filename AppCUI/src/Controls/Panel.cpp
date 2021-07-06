@@ -31,18 +31,7 @@ void Panel::Paint(Console::Renderer & renderer)
 	{
         renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, false);
         if (Members->Layout.Width > 6) {
-            WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | 
-                                              WriteCharacterBufferFlags::WRAP_TO_WIDTH | 
-                                              WriteCharacterBufferFlags::SINGLE_LINE);
-            params.Color = Members->Cfg->Panel.TextColor;
-            params.Width = Members->Layout.Width - 6;
-            renderer.WriteCharacterBuffer(3, 0, Members->Text, params);
-            renderer.WriteCharacter(2, 0, ' ', Members->Cfg->Panel.NormalColor);
-            unsigned int w = Members->Text.Len();
-            if (w > params.Width)
-                renderer.WriteCharacter(3 + params.Width, 0, ' ', Members->Cfg->Panel.NormalColor);
-            else
-                renderer.WriteCharacter(3 + w, 0, ' ', Members->Cfg->Panel.NormalColor);
+            renderer.WriteCharacterBuffer(3, 0, Members->Layout.Width - 6, Members->Text, Members->Cfg->Panel.NormalColor, TextAlignament::Left | TextAlignament::Padding);
         }
 	}
 }

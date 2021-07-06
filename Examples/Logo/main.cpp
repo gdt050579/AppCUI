@@ -65,7 +65,7 @@ public:
     {
         this->Create("Canvas example", "a:c,w:80,h:22");
         viewLogo.Create(this, "&Logo", "x:1,y:1,w:29,h:16",28,15, ViewerFlags::BORDER);
-        viewInactive.Create(this, "&Inactive", "x:32,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
+        viewInactive.Create(this, "Inactive", "x:32,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
         viewSmall.Create(this, "&Small", "x:63,y:1,w:14,h:9", 28, 15, ViewerFlags::BORDER);
         viewInactive.SetEnabled(false);
         CreateImage(viewLogo.GetCanvas());
