@@ -3,6 +3,10 @@
 ![Build icon](https://github.com/gdt050579/AppCUI/actions/workflows/ci.yml/badge.svg)
 
 
+![AppCUI logo](https://github.com/gdt050579/AppCUI/tree/main/docs/logo.png)
+
+This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`.
+
 ## Building for UNIX systems
 
 On Linux and MacOS - the project will require ncurses to work. If you have it installed an it's the newest version
