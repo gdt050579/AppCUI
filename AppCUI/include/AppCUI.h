@@ -130,6 +130,7 @@ namespace AppCUI
             char&		        operator[] (int poz);
             
         };
+        
         template <int size>
         class LocalString : public String
         {
@@ -137,8 +138,6 @@ namespace AppCUI
         public:
             LocalString() { Create(tempBuffer, size, true); }
         };
-
-
 
         class EXPORT KeyUtils
         {
@@ -458,6 +457,7 @@ namespace AppCUI
             inline unsigned int	    GetHeight() const { return Height; }
             inline unsigned int*	GetPixelsBuffer() const { return Pixels; }
         };
+        
         class EXPORT Canvas;
         class EXPORT Renderer
         {
