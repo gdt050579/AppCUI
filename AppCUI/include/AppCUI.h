@@ -895,6 +895,8 @@ namespace AppCUI
             bool	Create(Control* parent, const char * title, const char * layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags::Type flags = ViewerFlags::NONE);
             void	Paint(Console::Renderer & renderer) override;
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool    OnMouseLeave() override;
+            bool    OnMouseEnter() override;
 
             Console::Canvas*	GetCanvas();
         };
@@ -994,6 +996,12 @@ namespace AppCUI
                 Console::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
                 Console::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
             } Tab;
+            struct {
+                struct {
+                    Console::ColorPair Border, Text, Hotkey;
+                } Normal, Focused, Inactive, Hover;
+                Console::ColorPair InactiveCanvasColor;
+            } View;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);

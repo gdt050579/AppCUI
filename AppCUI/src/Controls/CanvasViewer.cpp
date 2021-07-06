@@ -31,8 +31,24 @@ CanvasViewer::~CanvasViewer() {
 
 void CanvasViewer::Paint(Console::Renderer & renderer)
 {
-	CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );  
-    renderer.DrawCanvas(Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas);
+	CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, ); 
+    auto * col = &Members->Cfg->View.Normal;
+    if (!this->IsEnabled())
+        col = &Members->Cfg->View.Inactive;
+    else if (Members->Focused)
+        col = &Members->Cfg->View.Focused;
+    else if (Members->MouseIsOver)
+        col = &Members->Cfg->View.Hover;
+
+    if (Members->Flags & ViewerFlags::BORDER)
+    {
+        renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
+    }
+    if (!this->IsEnabled())
+        renderer.DrawCanvas(Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas, Members->Cfg->View.InactiveCanvasColor);
+    else
+        renderer.DrawCanvas(Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas);
+
 }
 
 
@@ -61,7 +77,14 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode) 
     }
     return false;
 }
-
+bool AppCUI::Controls::CanvasViewer::OnMouseEnter()
+{
+    return true;
+}
+bool AppCUI::Controls::CanvasViewer::OnMouseLeave()
+{
+    return true;
+}
 
 Canvas*	CanvasViewer::GetCanvas()
 {

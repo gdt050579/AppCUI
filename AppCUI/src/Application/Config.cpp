@@ -99,4 +99,18 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tab.HoverHotKeyColor = ColorPair{Color::White, Color::Magenta};
     this->Tab.ListSelectedPageColor = ColorPair{Color::Black, Color::White};
     this->Tab.ListSelectedPageHotKey = ColorPair{Color::DarkRed, Color::White};
+
+    this->View.Normal.Border = ColorPair{ Color::Silver, Color::Transparent };
+    this->View.Normal.Hotkey = ColorPair{ Color::Yellow, Color::Transparent };
+    this->View.Normal.Text = ColorPair{ Color::Silver, Color::Transparent };
+    this->View.Focused.Border = ColorPair{ Color::White, Color::Transparent };
+    this->View.Focused.Hotkey = ColorPair{ Color::Yellow, Color::Transparent };
+    this->View.Focused.Text = ColorPair{ Color::Yellow, Color::Transparent };
+    this->View.Hover.Border = ColorPair{ Color::Yellow, Color::Transparent };
+    this->View.Hover.Hotkey = ColorPair{ Color::Red, Color::Transparent };
+    this->View.Hover.Text = ColorPair{ Color::White, Color::Transparent };
+    this->View.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->View.Inactive.Hotkey = ColorPair{ Color::Gray, Color::Transparent };
+    this->View.Inactive.Text = ColorPair{ Color::Gray, Color::Transparent };
+    this->View.InactiveCanvasColor = ColorPair{ Color::Black, Color::Transparent };
 }
