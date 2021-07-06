@@ -535,8 +535,8 @@ namespace AppCUI
             bool    Resize(unsigned int width, unsigned int height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
 
             // Clipping & Translate
-            void    SetClip(const AppCUI::Console::Clip & clip);
-            void    ResetClip();
+            void    SetAbsoluteClip(const AppCUI::Console::Clip & clip);
+            void    ClearClip();
             void    SetTranslate(int offX, int offY);
 
             bool    SetSize(unsigned int width, unsigned int height);

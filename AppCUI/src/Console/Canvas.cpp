@@ -108,7 +108,7 @@ void Canvas::Reset()
     this->Clip.Visible = true;
     this->HideCursor();
 }
-void Canvas::SetClip(const AppCUI::Console::Clip & clip)
+void Canvas::SetAbsoluteClip(const AppCUI::Console::Clip & clip)
 {
     if (clip.Visible)
     {
@@ -127,7 +127,7 @@ void Canvas::SetClip(const AppCUI::Console::Clip & clip)
         this->Clip.Visible = false;
     }
 }
-void Canvas::ResetClip()
+void Canvas::ClearClip()
 {
     this->Clip.Left = this->Clip.Right = 0;
     this->Clip.Right = this->Width - 1;

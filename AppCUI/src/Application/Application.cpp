@@ -87,7 +87,7 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
     // ma desenez pe mine    
-    app->terminal->ScreenCanvas.SetClip(Members->ScreenClip);
+    app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ScreenClip);
     app->terminal->ScreenCanvas.SetTranslate(Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
     if (focused != Members->Focused)
     {
@@ -282,8 +282,8 @@ void AppCUI::Internal::Application::Paint()
     else {
         PaintControl(&Desktop, this->terminal->ScreenCanvas, true);
     }
-    // Acceleratorii
-    this->terminal->ScreenCanvas.ResetClip();
+    // draw command bar
+    this->terminal->ScreenCanvas.ClearClip();
     this->terminal->ScreenCanvas.SetTranslate(0, 0);
     this->CommandBarObject.Paint(this->terminal->ScreenCanvas);
 }
