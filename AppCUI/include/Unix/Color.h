@@ -36,7 +36,7 @@ namespace AppCUI
 
             private:
                 void initColorPairs();
-                constexpr int getPairId(const AppColor fg, const AppColor bg);
+                int getPairId(const AppColor fg, const AppColor bg);
 
 
             private:

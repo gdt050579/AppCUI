@@ -148,7 +148,7 @@ void ColorManager::Init()
     initColorPairs();
 }
 
-constexpr int ColorManager::getPairId(const AppColor fg, const AppColor bg) 
+int ColorManager::getPairId(const AppColor fg, const AppColor bg) 
 {
     const char fgMapped = std::underlying_type<AppColor>::type(appcuiColorMapping[fg]);
     const char bgMapped = std::underlying_type<AppColor>::type(appcuiColorMapping[bg]);

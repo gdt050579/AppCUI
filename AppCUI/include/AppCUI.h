@@ -1,6 +1,5 @@
 #ifndef __APPCUI_MAIN_HEADER__
 #define __APPCUI_MAIN_HEADER__
-#include <array>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #   ifdef BUILD_FOR_WINDOWS
