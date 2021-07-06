@@ -133,7 +133,11 @@ public:
     void            PaintLeftPanelTab(Console::Renderer & renderer);
     void            PaintListPanelTab(Console::Renderer & renderer);
 };
-
+struct CanvasControlContext : public ControlContext
+{
+    AppCUI::Console::Canvas     canvas;
+    int                         CanvasScrollX, CanvasScrollY;
+};
 
 
 #define CREATE_CONTROL_CONTEXT(object,name,retValue)		ControlContext * name = (ControlContext*)((object)->Context); if (name == nullptr) return retValue;
