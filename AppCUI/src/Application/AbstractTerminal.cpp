@@ -21,7 +21,7 @@ bool AbstractTerminal::Init()
 void AbstractTerminal::Uninit()
 {    
     // clear up current buffer
-    this->ScreenCanvas.ClearEntireSurface(' ', COLOR(Color::Silver, Color::Black));
+    this->ScreenCanvas.ClearEntireSurface(' ', ColorPair{ Color::Silver, Color::Black });
     // copy the original buffer
     this->ScreenCanvas.DrawCanvas(0, 0, this->OriginalScreenCanvas);
     // restore the original buffer

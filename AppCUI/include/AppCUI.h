@@ -24,8 +24,6 @@
 #define MAXVALUE(x,y)	((x)>(y)?(x):(y))
 #define MINVALUE(x,y)	((x)<(y)?(x):(y))
 
-#define COLOR(fore,back) AppCUI::Console::ColorPair{fore,back}
-
 namespace AppCUI
 {
     namespace Application

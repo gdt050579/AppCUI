@@ -144,7 +144,7 @@ void Canvas::DarkenScreen()
     Character * start = this->Characters;
     Character * end = this->Characters + (this->Width * this->Height);
     while (start < end) {
-        start->Color = COLOR(Color::Gray, Color::Black);
+        start->Color = ColorPair{ Color::Gray, Color::Black };
         start++;
     }
 }

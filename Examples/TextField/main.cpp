@@ -12,11 +12,11 @@ void HighlightNumberAndCapitalLetters(TextField * tx, Console::Character * chars
     while (chars < end)
     {
         if ((chars->Code >= '0') && (chars->Code <= '9'))
-            chars->Color = COLOR(Color::Aqua, Color::Black);
+            chars->Color = ColorPair{ Color::Aqua, Color::Black };
         else if ((chars->Code >= 'A') && (chars->Code <= 'Z'))
-            chars->Color = COLOR(Color::Yellow, Color::Black);
+            chars->Color = ColorPair{ Color::Yellow, Color::Black };
         else
-            chars->Color = COLOR(Color::Silver, Color::Black);
+            chars->Color = ColorPair{ Color::Silver, Color::Black };
         chars++;
     }
 }

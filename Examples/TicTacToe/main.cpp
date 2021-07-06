@@ -41,8 +41,8 @@ public:
         int py = y * 5;
         for (int tr = 0; tr < 4; tr++)
         {
-            renderer.WriteCharacter(px + tr, py + tr, '\\', COLOR(Color::Aqua, Color::Black));
-            renderer.WriteCharacter(px + 3 - tr, py + tr, '/', COLOR(Color::Aqua, Color::Black));
+            renderer.WriteCharacter(px + tr, py + tr, '\\', ColorPair{ Color::Aqua, Color::Black });
+            renderer.WriteCharacter(px + 3 - tr, py + tr, '/', ColorPair{ Color::Aqua, Color::Black });
         }
     }
     void DrawO(Console::Renderer & renderer, int x, int y)
@@ -50,14 +50,14 @@ public:
         
         int px = x * 5;
         int py = y * 5;
-        renderer.WriteSingleLineText(px, py+0, "/--\\", COLOR(Color::Red, Color::Black));
-        renderer.WriteSingleLineText(px, py+1, "|  |", COLOR(Color::Red, Color::Black));
-        renderer.WriteSingleLineText(px, py+2, "|  |", COLOR(Color::Red, Color::Black));
-        renderer.WriteSingleLineText(px, py+3, "\\--/", COLOR(Color::Red, Color::Black));
+        renderer.WriteSingleLineText(px, py + 0, "/--\\", ColorPair{ Color::Red, Color::Black });
+        renderer.WriteSingleLineText(px, py + 1, "|  |", ColorPair{ Color::Red, Color::Black });
+        renderer.WriteSingleLineText(px, py + 2, "|  |", ColorPair{ Color::Red, Color::Black });
+        renderer.WriteSingleLineText(px, py + 3, "\\--/", ColorPair{ Color::Red, Color::Black });
     }
     void Paint(Console::Renderer & renderer) override
     {
-        renderer.Clear(' ', COLOR(Color::White, Color::Black));
+        renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         for (int y=0;y<3;y++) 
             for (int x = 0; x < 3; x++)
             {
@@ -66,10 +66,10 @@ public:
                 if (table[y][x] == CELL_WITH_O)
                     DrawO(renderer, x, y);
             }
-        renderer.DrawHorizontalLineWithSpecialChar(0, 4, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.DrawHorizontalLineWithSpecialChar(0, 9, 13, SpecialChars::BoxHorizontalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.DrawVerticalLineWithSpecialChar(4, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
-        renderer.DrawVerticalLineWithSpecialChar(9, 0, 13, SpecialChars::BoxVerticalSingleLine, COLOR(Color::White, Color::Black));
+        renderer.DrawHorizontalLineWithSpecialChar(0, 4, 13, SpecialChars::BoxHorizontalSingleLine, ColorPair{ Color::White, Color::Black });
+        renderer.DrawHorizontalLineWithSpecialChar(0, 9, 13, SpecialChars::BoxHorizontalSingleLine, ColorPair{ Color::White, Color::Black });
+        renderer.DrawVerticalLineWithSpecialChar(4, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
+        renderer.DrawVerticalLineWithSpecialChar(9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
     void OnMousePressed(int x, int y, int Button) override
     {

@@ -82,8 +82,8 @@ void Button::Paint(Console::Renderer & renderer)
             params.HotKeyColor = bc->HotKeyColor;
             renderer.WriteCharacterBuffer(x, 0, Members->Text, params);
         }
-        renderer.DrawHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, COLOR(Color::Black, Color::Transparent));
-        renderer.WriteSpecialCharacter(Members->Layout.Width-1, 0, SpecialChars::BlockLowerHalf, COLOR(Color::Black, Color::Transparent));
+        renderer.DrawHorizontalLineWithSpecialChar(1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, ColorPair{ Color::Black, Color::Transparent });
+        renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::BlockLowerHalf, ColorPair{ Color::Black, Color::Transparent });
     }
 }
 void Button::OnHotKey()
