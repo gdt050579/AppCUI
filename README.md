@@ -5,7 +5,7 @@
 
 ![AppCUI logo](https://raw.githubusercontent.com/gdt050579/AppCUI/main/docs/logo.png)
 
-This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`.
+This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`
 
 ## Building for UNIX systems
 
