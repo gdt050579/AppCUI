@@ -173,8 +173,8 @@ namespace AppCUI
             virtual ~IFile();
 
             // virtual methods
-            virtual bool                Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
-            virtual bool                Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
+            virtual bool                ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
+            virtual bool                WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
             virtual unsigned long long  GetSize();
             virtual unsigned long long  GetCurrentPos();
             virtual bool                SetSize(unsigned long long newSize);
@@ -182,6 +182,8 @@ namespace AppCUI
             virtual void                Close();
 
             // other methods
+            bool                        Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
+            bool                        Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
             bool                        Read(void* buffer, unsigned int bufferSize);
             bool                        Write(const void* buffer, unsigned int bufferSize);
             bool                        Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
@@ -217,14 +219,42 @@ namespace AppCUI
              */
             bool                Create(const char * filePath, bool overwriteExisting = true);
 
-            bool                Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead) override;
-            bool                Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten) override;
+            bool                ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int & bytesRead) override;
+            bool                WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten) override;
             unsigned long long  GetSize() override;
             unsigned long long  GetCurrentPos() override;
             bool                SetSize(unsigned long long newSize) override;
             bool                SetCurrentPos(unsigned long long newPosition) override;
             void                Close() override;
         };
+
+        typedef bool(*EnumerateFilesCallback) (const char *fullPath, const char* Name, unsigned long long size, bool Folder, void *Context);
+        typedef bool(*CopyFileCallback)       (const char * source, const char* destination, unsigned long long copiedBytesSoFar, unsigned long long totalFileSize, void* Context);
+        typedef bool(*DeleteFileCallback)     (const char * fileName, void *Context);
+
+
+        class EXPORT FileSystem
+        {
+            FileSystem() = delete;
+        public:
+            static bool			EnumerateFiles(AppCUI::Utils::String &path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
+            static bool			EnumerateFiles(const char* path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
+            static bool			FileExists(const char *path);
+            static bool			DirectoryExists(const char *path);
+            static bool			GetCurrentDir(AppCUI::Utils::String &path);
+            static bool			Join(AppCUI::Utils::String& path, const char * name);
+            static bool			CopyDirectoryName(const char * path, AppCUI::Utils::String& result);
+            static bool			IsRootPath(const char *path);
+            static bool			CreateFolder(const char *name);
+            static bool			DeleteFile(const char *name, bool failIfFileIsMissing = false);
+
+            static bool			DeleteFolder(AppCUI::Utils::String &name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
+            static bool			DeleteFolder(const char *name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
+
+
+            static bool			CopyFile(const char* source, const char* destination, CopyFileCallback callback = nullptr, void* Context = nullptr);
+        };
+    
 
     }
     namespace Console

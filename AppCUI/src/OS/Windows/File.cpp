@@ -43,7 +43,7 @@ bool                File::Create(const char * filePath, bool overwriteExisting)
     return true;
 }
 
-bool                File::Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead)
+bool                File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int & bytesRead)
 {
     bytesRead = 0;
     VALIDATE_FILE_HANLDE(false);
@@ -54,7 +54,7 @@ bool                File::Read(void* buffer, unsigned int bufferSize, unsigned i
     bytesRead = nrBytesRead;
     return true;
 }
-bool                File::Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten)
+bool                File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten)
 {
     bytesWritten = 0;
     VALIDATE_FILE_HANLDE(false);

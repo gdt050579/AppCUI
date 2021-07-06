@@ -23,11 +23,11 @@ bool                File::Create(const char * filePath, bool overwriteExisting)
 {
     NOT_IMPLEMENTED(false);
 }
-bool                File::Read(void* buffer, unsigned int bufferSize, unsigned int & bytesRead)
+bool                File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int & bytesRead)
 {
     NOT_IMPLEMENTED(false);
 }
-bool                File::Write(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten)
+bool                File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten)
 {
     NOT_IMPLEMENTED(false);
 }
