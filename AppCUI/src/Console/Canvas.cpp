@@ -106,6 +106,9 @@ void Canvas::Reset()
     this->Clip.Right = this->Width - 1;
     this->Clip.Bottom = this->Height - 1;
     this->Clip.Visible = true;
+    this->ClipCopy.Bottom = this->ClipCopy.Top = this->ClipCopy.Left = this->ClipCopy.Right = -1;
+    this->ClipCopy.Visible = false;
+    this->ClipHasBeenCopied = false;
     this->HideCursor();
 }
 void Canvas::SetAbsoluteClip(const AppCUI::Console::Clip & clip)
@@ -126,6 +129,7 @@ void Canvas::SetAbsoluteClip(const AppCUI::Console::Clip & clip)
     else {
         this->Clip.Visible = false;
     }
+    this->ClipHasBeenCopied = false;
 }
 void Canvas::ClearClip()
 {
@@ -133,6 +137,7 @@ void Canvas::ClearClip()
     this->Clip.Right = this->Width - 1;
     this->Clip.Bottom = this->Height - 1;
     this->Clip.Visible = true;
+    this->ClipHasBeenCopied = false;
 }
 void Canvas::SetTranslate(int offX, int offY)
 {

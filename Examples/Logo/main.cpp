@@ -28,7 +28,7 @@ const char * AppCuiLogo[15] = {
 
 class LogoWin : public AppCUI::Controls::Window
 {
-    CanvasViewer viewLogo, viewA;
+    CanvasViewer viewLogo, viewInactive, viewSmall;
     void CreateImage(Canvas * c)
     {
         if (!c) return;
@@ -64,11 +64,13 @@ public:
     LogoWin()
     {
         this->Create("Canvas example", "a:c,w:80,h:22");
-        viewLogo.Create(this, "&Logo", "x:2,y:1,w:30,h:15",28,15, ViewerFlags::BORDER);
-        viewA.Create(this, "&Arrow", "x:40,y:1,w:30,h:15", 28, 15, ViewerFlags::BORDER);
-        viewA.SetEnabled(false);
+        viewLogo.Create(this, "&Logo", "x:1,y:1,w:29,h:16",28,15, ViewerFlags::BORDER);
+        viewInactive.Create(this, "&Inactive", "x:32,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
+        viewSmall.Create(this, "&Small", "x:63,y:1,w:14,h:9", 28, 15, ViewerFlags::BORDER);
+        viewInactive.SetEnabled(false);
         CreateImage(viewLogo.GetCanvas());
-        CreateImage(viewA.GetCanvas());
+        CreateImage(viewInactive.GetCanvas());
+        CreateImage(viewSmall.GetCanvas());
     }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
     {

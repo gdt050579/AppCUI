@@ -470,12 +470,13 @@ namespace AppCUI
             struct {
                 int             Left, Top, Right, Bottom;
                 bool            Visible;
-            } Clip;
+            } Clip, ClipCopy;
+            bool                ClipHasBeenCopied;
             struct {
                 unsigned int    X, Y;
                 bool            Visible;
             } Cursor;
-
+            
         
             Renderer();
             ~Renderer();
@@ -515,9 +516,14 @@ namespace AppCUI
             // Canvas & Images
             bool    DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);            
 
+
+            // Clear
             bool    ClearWithSpecialChar(SpecialChars::Type charID, const ColorPair color);
             bool    Clear(int charCode, const ColorPair color);
             
+            // Clipping
+            bool    SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
+            bool    ResetClip();
 
             // Cursor
             void    HideCursor();

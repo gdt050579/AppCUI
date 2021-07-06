@@ -42,6 +42,9 @@ Renderer::Renderer()
     this->Clip.Visible = false;
     this->Cursor.Visible = false;
     this->Cursor.X = this->Cursor.Y = 0;
+    this->ClipCopy.Bottom = this->ClipCopy.Top = this->ClipCopy.Left = this->ClipCopy.Right = -1;
+    this->ClipCopy.Visible = false;
+    this->ClipHasBeenCopied = false;
 }
 Renderer::~Renderer()
 {
@@ -809,22 +812,21 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair ov
         canvas_top = Clip.Top - y;
         y = Clip.Top;
     }
-    if (y < 0) {
-        canvas_top = -y;
-        y = 0;
-    }
+
     if ((x > Clip.Right) || (y>Clip.Bottom))
         return false;
     if (canvas_left >= (int)canvas.Width)
         return false;
     if (canvas_top >= (int)canvas.Height)
         return false;
-    canvas_height = (Clip.Bottom - canvas_top) + 1;
+
+    canvas_height = (Clip.Bottom - y)+1;
     if (canvas_height > ((int)canvas.Height - canvas_top))
         canvas_height = (int)canvas.Height - canvas_top;
     if (canvas_height <= 0)
         return false;
-    canvas_width = (Clip.Right - canvas_left) + 1;
+
+    canvas_width = (Clip.Right - x)+1;
     if (canvas_width > ((int)canvas.Width - canvas_left))
         canvas_width = (int)canvas.Width - canvas_left;
     if (canvas_width <= 0)
@@ -876,6 +878,7 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair ov
                     s++;
                     count--;
                 }
+
                 canvas_top++;
                 y++;
                 canvas_height--;
@@ -883,5 +886,29 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair ov
 
         }
     }
+    return true;
+}
+
+bool Renderer::SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin)
+{
+    if (!this->ClipHasBeenCopied)
+    {
+        this->ClipCopy = this->Clip;
+        this->ClipHasBeenCopied = true;
+    }
+    if (!this->Clip.Visible)
+        return false;
+
+    Clip.Left = ClipCopy.Left + MAXVALUE(leftMargin, 0);
+    Clip.Top = ClipCopy.Top + MAXVALUE(topMargin, 0);
+    Clip.Right = ClipCopy.Right - MAXVALUE(rightMargin, 0);
+    Clip.Bottom = ClipCopy.Bottom - MAXVALUE(bottomMargin, 0);
+    this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
+    return this->Clip.Visible;
+}
+bool Renderer::ResetClip()
+{
+    CHECK(this->ClipHasBeenCopied, false, "Call to 'ResetClip' method wihout calling 'SetClip' first !");
+    this->Clip = this->ClipCopy;
     return true;
 }
