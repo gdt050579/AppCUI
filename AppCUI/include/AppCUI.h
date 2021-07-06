@@ -837,7 +837,6 @@ namespace AppCUI
 
             virtual ~TextField();
         };
-
         namespace TabFlags
         {
             enum Type : unsigned int
@@ -881,6 +880,25 @@ namespace AppCUI
             bool    Create(Control *parent, const char * text, const char * layout);
             bool    Create(Control *parent, const char * layout);
         };
+        namespace ViewerFlags
+        {
+            enum Type : unsigned int
+            {
+                NONE        = 0,
+                BORDER      = 0x000100,
+            };
+        }
+        class EXPORT CanvasViewer : public Control {
+        public:
+            ~CanvasViewer();
+            bool	Create(Control* parent, const char * layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags::Type flags = ViewerFlags::NONE);
+            bool	Create(Control* parent, const char * title, const char * layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags::Type flags = ViewerFlags::NONE);
+            void	Paint(Console::Renderer & renderer) override;
+            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+
+            Console::Canvas*	GetCanvas();
+        };
+
 
         namespace DialogResult
         {
