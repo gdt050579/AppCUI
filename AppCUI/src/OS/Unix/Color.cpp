@@ -1,56 +1,64 @@
 #include <ncurses.h>
+#include <map>
 
 #include "Color.h"
 #include "Internal.h"
 
 using namespace AppCUI::Terminal;
-
-
+using namespace AppCUI::Console;
 
 constexpr size_t EXTENDED_COLORSET_SIZE = 16;
 constexpr size_t REDUCED_COLORSET_SIZE = 8;
 
-#define COLOR_LIGHT(color) ((color) | (1 << 3))
-// Mapping from AppCUI::Console::Color to ncurses colors
-constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
-    /* Black */     COLOR_BLACK,
-    /* DarkBlue */  COLOR_BLUE,
-    /* DarkGreen */ COLOR_GREEN,
-    /* Teal */      COLOR_CYAN,
-    /* DarkRed */   COLOR_RED,
-    /* Magenta */   COLOR_MAGENTA,
-    /* Olive */     COLOR_YELLOW,
-    /* Silver */    COLOR_WHITE,
-
-    /* GRAY */      COLOR_LIGHT(COLOR_BLACK),
-    /* Blue */      COLOR_LIGHT(COLOR_BLUE),
-    /* Green */     COLOR_LIGHT(COLOR_GREEN),
-    /* Aqua */      COLOR_LIGHT(COLOR_CYAN),
-    /* Red */       COLOR_LIGHT(COLOR_RED),
-    /* Pink */      COLOR_LIGHT(COLOR_MAGENTA),
-    /* Yellow */    COLOR_LIGHT(COLOR_YELLOW),
-    /* White */     COLOR_LIGHT(COLOR_WHITE),
+constexpr std::array<Color, NR_APPCUI_COLORS> TrueColors = {
+    Color::Black, Color::DarkBlue, Color::DarkGreen, Color::Teal, 
+    Color::DarkRed, Color::Magenta, Color::Olive, Color::Silver, 
+    Color::Gray, Color::Blue, Color::Green, Color::Aqua, 
+    Color::Red, Color::Pink, Color::Yellow, Color::White
 };
 
-// Mapping from AppCUI::Console::Color to ncurses colors but only with 8 base colors
-constexpr std::array<int, NR_APPCUI_COLORS*NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
-    /* Black */     COLOR_BLACK,
-    /* DarkBlue */  COLOR_BLUE,
-    /* DarkGreen */ COLOR_GREEN,
-    /* Teal */      COLOR_CYAN,
-    /* DarkRed */   COLOR_RED,
-    /* Magenta */   COLOR_MAGENTA,
-    /* Olive */     COLOR_YELLOW,
-    /* Silver */    COLOR_WHITE,
+#define COLOR_LIGHT(color) ((color) | (1 << 3))
+// Mapping from AppCUI::Console::Color to ncurses colors
+std::map<AppColor, int> appcuiColorToCursesColorExtended = {
+    /* Black */     {AppColor::Black, COLOR_BLACK},
+    /* DarkBlue */  {AppColor::DarkBlue, COLOR_BLUE},
+    /* DarkGreen */ {AppColor::DarkGreen, COLOR_GREEN},
+    /* Teal */      {AppColor::Teal, COLOR_CYAN},
+    /* DarkRed */   {AppColor::DarkRed, COLOR_RED},
+    /* Magenta */   {AppColor::Magenta, COLOR_MAGENTA},
+    /* Olive */     {AppColor::Olive, COLOR_YELLOW},
+    /* Silver */    {AppColor::Silver, COLOR_WHITE},
 
-    /* GRAY */      COLOR_WHITE,
-    /* Blue */      COLOR_BLUE,
-    /* Green */     COLOR_GREEN,
-    /* Aqua */      COLOR_CYAN,
-    /* Red */       COLOR_RED,
-    /* Pink */      COLOR_MAGENTA,
-    /* Yellow */    COLOR_YELLOW,
-    /* White */     COLOR_WHITE,
+    /* GRAY */      {AppColor::Gray, COLOR_LIGHT(COLOR_BLACK)},
+    /* Blue */      {AppColor::Blue, COLOR_LIGHT(COLOR_BLUE)},
+    /* Green */     {AppColor::Green, COLOR_LIGHT(COLOR_GREEN)},
+    /* Aqua */      {AppColor::Aqua, COLOR_LIGHT(COLOR_CYAN)},
+    /* Red */       {AppColor::Red, COLOR_LIGHT(COLOR_RED)},
+    /* Pink */      {AppColor::Pink, COLOR_LIGHT(COLOR_MAGENTA)},
+    /* Yellow */    {AppColor::Yellow, COLOR_LIGHT(COLOR_YELLOW)},
+    /* White */     {AppColor::White, COLOR_LIGHT(COLOR_WHITE)}
+};
+
+
+// Mapping from AppCUI::Console::Color to ncurses colors but only with 8 base colors
+std::map<AppColor, int> appcuiColorToCursesColorReduced = {
+    /* Black */     {AppColor::Black, COLOR_BLACK},
+    /* DarkBlue */  {AppColor::DarkBlue, COLOR_BLUE},
+    /* DarkGreen */ {AppColor::DarkGreen, COLOR_GREEN},
+    /* Teal */      {AppColor::Teal, COLOR_CYAN},
+    /* DarkRed */   {AppColor::DarkRed, COLOR_RED},
+    /* Magenta */   {AppColor::Magenta, COLOR_MAGENTA},
+    /* Olive */     {AppColor::Olive, COLOR_YELLOW},
+    /* Silver */    {AppColor::Silver, COLOR_WHITE},
+
+    /* GRAY */      {AppColor::Gray, COLOR_BLACK},
+    /* Blue */      {AppColor::Blue, COLOR_BLUE},
+    /* Green */     {AppColor::Green, COLOR_GREEN},
+    /* Aqua */      {AppColor::Aqua, COLOR_CYAN},
+    /* Red */       {AppColor::Red, COLOR_RED},
+    /* Pink */      {AppColor::Pink, COLOR_MAGENTA},
+    /* Yellow */    {AppColor::Yellow, COLOR_YELLOW},
+    /* White */     {AppColor::White, COLOR_WHITE}
 };
 
 // In ncurses, we have to declare the color we're gonna use
@@ -114,15 +122,19 @@ ColorManager::ColorManager(): nrColors(0)
     
 }
 
-void ColorManager::Init(const size_t _nrColors)
+void ColorManager::Init()
 {
-    if (_nrColors >= EXTENDED_COLORSET_SIZE)
+    start_color();
+    use_default_colors();
+    nrColors = COLORS;
+
+    if (nrColors >= EXTENDED_COLORSET_SIZE)
     {
         nrColors = EXTENDED_COLORSET_SIZE;
         appcuiColorMapping = appcuiColorToCursesColorExtended;
         pairMapping = pairMappingExtended;
     }
-    else if (_nrColors >= REDUCED_COLORSET_SIZE)
+    else if (nrColors >= REDUCED_COLORSET_SIZE)
     {
         nrColors = REDUCED_COLORSET_SIZE;
         appcuiColorMapping = appcuiColorToCursesColorExtended;
@@ -136,17 +148,18 @@ void ColorManager::Init(const size_t _nrColors)
     initColorPairs();
 }
 
-constexpr int ColorManager::getPairId(const int fg, const int bg) 
+int ColorManager::getPairId(const AppColor fg, const AppColor bg) 
 {
-    const int fgMapped = appcuiColorMapping[fg];
-    const int bgMapped = appcuiColorMapping[bg];
-    return pairMapping[fgMapped * NR_APPCUI_COLORS + bg];
+    const char fgMapped = std::underlying_type<AppColor>::type(appcuiColorMapping[fg]);
+    const char bgMapped = std::underlying_type<AppColor>::type(appcuiColorMapping[bg]);
+    return pairMapping[fgMapped * NR_APPCUI_COLORS + bgMapped];
 }
 
 void ColorManager::initColorPairs(void)
 {
-    for (size_t fg = 0; fg < nrColors; fg++) {
-        for (size_t bg = 0; bg < nrColors; bg++) {
+
+    for (const AppColor& fg: TrueColors) {
+        for (const AppColor& bg: TrueColors) {
             const size_t pair_id = getPairId(fg, bg);
             if (pair_id == 0) continue;
             init_pair(pair_id, appcuiColorMapping[fg], appcuiColorMapping[bg]);
@@ -154,14 +167,14 @@ void ColorManager::initColorPairs(void)
     }
 }
 
-void ColorManager::SetColor(AppColor fg, AppColor bg)
+void ColorManager::SetColor(const AppColor fg, const AppColor bg)
 {
     if (nrColors == 0) return;
     const int color_num = getPairId(fg, bg);
     attron(COLOR_PAIR(color_num));
 }
 
-void ColorManager::UnsetColor(AppColor fg, AppColor bg)
+void ColorManager::UnsetColor(const AppColor fg, const AppColor bg)
 {
     if (nrColors == 0) return;
     const int color_num = getPairId(fg, bg);

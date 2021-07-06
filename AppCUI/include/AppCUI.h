@@ -249,6 +249,7 @@ namespace AppCUI
             White       = 0x0F,
             Transparent = 0x10,
         };
+
         namespace Alignament
         {
             enum Type : unsigned int
