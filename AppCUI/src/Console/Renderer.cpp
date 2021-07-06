@@ -787,6 +787,57 @@ bool Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::Charact
     }
     return true;
 }
+bool Renderer::WriteCharacterBuffer(int x, int y, unsigned int width, const AppCUI::Console::CharacterBuffer & cb, const ColorPair textColor, TextAlignament align)
+{
+    return WriteCharacterBuffer(x, y, width, cb, textColor, NoColorPair, 0xFFFFFFFF, align);
+}
+bool Renderer::WriteCharacterBuffer(int x, int y, unsigned int width, const AppCUI::Console::CharacterBuffer & cb, const ColorPair textColor, const ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
+{
+    WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS | 
+                                    WriteCharacterBufferFlags::WRAP_TO_WIDTH | 
+                                    WriteCharacterBufferFlags::SINGLE_LINE);
+    params.Color = textColor;
+    if (hotKeyOffset != 0xFFFFFFFF)
+    {
+        params.Flags |= WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY;
+        params.HotKeyColor = hotKeyColor;
+        params.HotKeyPosition = hotKeyOffset;
+    }
+    bool hasPadding = ((align & TextAlignament::Padding) == TextAlignament::Padding);
+    if (hasPadding)
+    {
+        CHECK(width >= 2, false, "width parameter must be bigger than 2 to support padding !");
+        width -= 2;
+    }
+    params.Width = width;
+    unsigned int txSize = cb.Len();
+    txSize = MINVALUE(txSize, width);
+
+    if ((align & TextAlignament::Right)== TextAlignament::Right)
+    {
+        // align on right
+        x = (x - (int)txSize);
+    } 
+    else if ((align & TextAlignament::Center) == TextAlignament::Center)
+    {
+        // align on right
+        x = (x - ((int)txSize >> 1));
+    }
+    else 
+    {
+        // align on left
+        x++;
+    }
+    if (hasPadding)
+    {
+        CHECK(WriteCharacter(x - 1, y, ' ', textColor), false, "Fail to write left padding !");
+        CHECK(WriteCharacter(x + txSize, y, ' ', textColor), false, "Fail to write write padding !");
+    }
+    CHECK(WriteCharacterBuffer(x, y, cb, params), false, "Fail to write text !");
+    return true;
+}
+
+
 bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor)
 {
     if ((!Clip.Visible) || (canvas.Characters == nullptr))

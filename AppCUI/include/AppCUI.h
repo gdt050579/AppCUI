@@ -325,6 +325,14 @@ namespace AppCUI
                 PROCESS_NEW_LINE    = 0x0000040,
             };
         }
+        enum class TextAlignament : unsigned int
+        {
+            Left        = 0x00,
+            Center      = 0x01,
+            Right       = 0x02,
+            Padding     = 0x04
+        };
+
 
         struct Size
         {
@@ -504,14 +512,20 @@ namespace AppCUI
             bool    DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
             bool    DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
-            // Texts & Characters
+            // Texts
             bool    WriteSingleLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
             bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
             bool    WriteMultiLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
             bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
+
+            // Characters
             bool    WriteCharacter(int x, int y, int charCode, const ColorPair color);
             bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, const ColorPair color);
+
+            // Character Buffer
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
+            bool    WriteCharacterBuffer(int x, int y, unsigned int width, const AppCUI::Console::CharacterBuffer & cb, const ColorPair textColor, TextAlignament align);
+            bool    WriteCharacterBuffer(int x, int y, unsigned int width, const AppCUI::Console::CharacterBuffer & cb, const ColorPair textColor, const ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align);
 
             // Canvas & Images
             bool    DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);            
@@ -1045,6 +1059,14 @@ inline constexpr AppCUI::Controls::WindowFlags::Type operator|(AppCUI::Controls:
 inline constexpr AppCUI::Console::WriteCharacterBufferFlags::Type operator|(AppCUI::Console::WriteCharacterBufferFlags::Type f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
 {
     return static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+inline constexpr AppCUI::Console::TextAlignament operator| (AppCUI::Console::TextAlignament f1, AppCUI::Console::TextAlignament f2)
+{
+    return static_cast<AppCUI::Console::TextAlignament>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+inline constexpr AppCUI::Console::TextAlignament operator& (AppCUI::Console::TextAlignament f1, AppCUI::Console::TextAlignament f2)
+{
+    return static_cast<AppCUI::Console::TextAlignament>(static_cast<unsigned int>(f1) & static_cast<unsigned int>(f2));
 }
 inline constexpr void operator|=(AppCUI::Console::WriteCharacterBufferFlags::Type & f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
 {
