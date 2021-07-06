@@ -3,7 +3,7 @@
 ![Build icon](https://github.com/gdt050579/AppCUI/actions/workflows/ci.yml/badge.svg)
 
 
-![AppCUI logo](https://github.com/gdt050579/AppCUI/tree/main/docs/logo.png)
+![AppCUI logo](https://raw.githubusercontent.com/gdt050579/AppCUI/main/docs/logo.png)
 
 This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`.
 
