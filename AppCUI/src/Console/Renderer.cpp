@@ -786,8 +786,6 @@ bool Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::Charact
 }
 bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas)
 {
-    x += this->TranslateX;
-    y += this->TranslateY;
     if ((!Clip.Visible) || (canvas.Characters == nullptr))
         return false;
     if ((x == 0) && (y == 0) && (this->Width == canvas.Width) && (this->Height == canvas.Height))
@@ -796,35 +794,43 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas)
         memcpy(this->Characters, canvas.Characters, sizeof(Character)*canvas.Height*canvas.Width);
         return true;
     }
+    TRANSLATE_COORDONATES(x, y);
     int canvas_left = 0;
     int canvas_top = 0;
     int canvas_width_memory_size;
+    int canvas_width;
     int canvas_height;
 
-    if (x < 0) {
-        canvas_left = -x;
-        x = 0;
+    if (x < Clip.Left) {
+        canvas_left = Clip.Left - x;
+        x = Clip.Left;
+    }
+    if (y < Clip.Top) {
+        canvas_top = Clip.Top - y;
+        y = Clip.Top;
     }
     if (y < 0) {
         canvas_top = -y;
         y = 0;
     }
-    if (x >= (int)this->Width)
+    if ((x > Clip.Right) || (y>Clip.Bottom))
         return false;
-    if (y >= (int)this->Height)
+    if (canvas_left >= (int)canvas.Width)
+        return false;
+    if (canvas_top >= (int)canvas.Height)
+        return false;
+    canvas_height = (Clip.Bottom - canvas_top) + 1;
+    if (canvas_height > ((int)canvas.Height - canvas_top))
+        canvas_height = (int)canvas.Height - canvas_top;
+    if (canvas_height <= 0)
+        return false;
+    canvas_width = (Clip.Right - canvas_left) + 1;
+    if (canvas_width > ((int)canvas.Width - canvas_left))
+        canvas_width = (int)canvas.Width - canvas_left;
+    if (canvas_width <= 0)
         return false;
 
-    // width block size
-    if ((x + (int)canvas.Width) > ((int)(this->Width)))
-        canvas_width_memory_size = ((int)this->Width) - x;
-    else
-        canvas_width_memory_size = canvas.Width;
-    canvas_width_memory_size *= sizeof(Characters);
-    // draw height
-    if ((y + (int)canvas.Height) > ((int)(this->Height)))
-        canvas_height = ((int)this->Height) - y;
-    else
-        canvas_height = canvas.Height;
+    canvas_width_memory_size = canvas_width * sizeof(Character);
     // copy memory
     while (canvas_height > 0)
     {
