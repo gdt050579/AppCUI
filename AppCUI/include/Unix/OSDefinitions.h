@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 
 // dummy replacements for other systems
