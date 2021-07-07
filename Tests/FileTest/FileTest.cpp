@@ -1,7 +1,5 @@
 #include "AppCUI.h"
-#include <unistd.h>
 #include <stdio.h>
-#include <limits.h>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
