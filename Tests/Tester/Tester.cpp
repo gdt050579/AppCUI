@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include "AppCUI.h"
 
 using namespace AppCUI;

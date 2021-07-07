@@ -40,7 +40,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 
 add_subdirectory(AppCUI)
-add_subdirectory(Tester)
+add_subdirectory(Tests/Tester)
+add_subdirectory(Tests/FileTest)
 
 #examples
 add_subdirectory(Examples/SimpleWindow)
