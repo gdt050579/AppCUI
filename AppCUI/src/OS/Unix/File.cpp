@@ -13,7 +13,7 @@ File::~File() {
 }
 
 bool File::OpenWrite(const char * filePath) {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.")
+    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
     int fileId = open(filePath, O_RDWR | O_APPEND);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
@@ -22,7 +22,7 @@ bool File::OpenWrite(const char * filePath) {
 }
 
 bool File::OpenRead(const char * filePath) {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.")
+    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
     int fileId = open(filePath, O_RDONLY);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
@@ -31,7 +31,7 @@ bool File::OpenRead(const char * filePath) {
 }
 
 bool File::Create(const char * filePath, bool overwriteExisting) {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.")
+    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
     int fileId = open(filePath, overwriteExisting? O_CREAT | O_RDWR | O_EXCL: O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
