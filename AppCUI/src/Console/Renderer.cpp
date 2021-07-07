@@ -9,6 +9,7 @@ int _special_characters_consolas_unicode_[AppCUI::Console::SpecialChars::Count] 
        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502,                      // single line box
        0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                      // arrows
        32, 0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590,  // blocks
+       0x25B2, 0x25BC, 0x25C4, 0x25BA,                                      // Trangles
        0x25CF, 0x25CB, 0x221A,                                              // symbols
 };
 int* SpecialCharacters = nullptr;

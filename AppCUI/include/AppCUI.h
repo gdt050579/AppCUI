@@ -333,6 +333,12 @@ namespace AppCUI
                 BlockLeftHalf,
                 BlockRightHalf,
 
+                // Trangles
+                TriangleUp,
+                TriangleDown,
+                TriangleLeft,
+                TriangleRight,
+
                 // symbols
                 CircleFilled,
                 CircleEmpty,
