@@ -240,7 +240,7 @@ namespace AppCUI
                 EXPORT bool		Join(AppCUI::Utils::String& path, const char * name);
                 EXPORT bool		CopyDirectoryName(const char * path, AppCUI::Utils::String& result);
                 EXPORT bool		IsRootPath(const char *path);
-            }
+            };
             EXPORT bool			EnumerateFiles(AppCUI::Utils::String &path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
             EXPORT bool			EnumerateFiles(const char* path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
             EXPORT bool			FileExists(const char *path);
@@ -249,6 +249,7 @@ namespace AppCUI
             EXPORT bool			CreateFolder(const char *name);
             EXPORT bool			DeleteFile(const char *name, bool failIfFileIsMissing = false);
 
+            EXPORT bool         DeleteEmptyFoler(const char * name);
             EXPORT bool			DeleteFolder(AppCUI::Utils::String &name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
             EXPORT bool			DeleteFolder(const char *name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
 

@@ -1,4 +1,4 @@
-target_sources(AppCUI PRIVATE IFile.cpp)
+target_sources(AppCUI PRIVATE IFile.cpp FileSystemCommon.cpp)
 if (MSVC)
 add_subdirectory(Windows)
 elseif(UNIX)
