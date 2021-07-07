@@ -56,6 +56,12 @@ void CanvasViewer::Paint(Console::Renderer & renderer)
 
 }
 
+void CanvasViewer::OnUpdateScrollBars()
+{
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
+    UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight());
+    UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth());
+}
 
 bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode) {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);

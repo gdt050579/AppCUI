@@ -592,6 +592,12 @@ void ControlContext::PaintScrollbars(Console::Renderer & renderer)
             renderer.DrawVerticalLineWithSpecialChar(x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
             renderer.WriteSpecialCharacter(x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows);
             renderer.WriteSpecialCharacter(x, y-2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
+            if (ScrollBars.MaxVerticalValue)
+            {
+                unsigned int sz = (unsigned int)(y - (2 + ScrollBars.TopMargin + 2/*two arrows*/));
+                unsigned int poz = (unsigned int)((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                renderer.WriteSpecialCharacter(x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
+            }
         }                    
     }
     if (Flags & GATTR_HSCROLL)
@@ -601,6 +607,12 @@ void ControlContext::PaintScrollbars(Console::Renderer & renderer)
             renderer.DrawHorizontalLineWithSpecialChar(ScrollBars.LeftMargin, y, x-2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
             renderer.WriteSpecialCharacter(ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows);
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
+            if (ScrollBars.MaxHorizontalValue)
+            {
+                unsigned int sz = (unsigned int)(x - (2 + ScrollBars.LeftMargin + 2/*two arrows*/));
+                unsigned int poz = (unsigned int)((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                renderer.WriteSpecialCharacter(ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
+            }
         }
     }
 }
@@ -823,17 +835,6 @@ void AppCUI::Controls::Control::MoveTo(int newX, int newY)
     AppCUI::Application::Config * cfg = AppCUI::Application::GetAppConfig();
     if (!cfg)
         return;
-    //if (newX >= 1000000)
-    //    newX = (newX - 1000000) * cfg->Grid.Width + cfg->Grid.MarginLeft;
-    //else if (newX <= -1000000)
-    //    newX = (newX + 1000000) * cfg->Grid.Width + cfg->Grid.MarginLeft;
-
-    //if (newY >= 1000000)
-    //    newY = (newY - 1000000) * cfg->Grid.Height + cfg->Grid.MarginTop;
-    //else if (newY <= -1000000)
-    //    newY = (newY + 1000000) * cfg->Grid.Height + cfg->Grid.MarginTop;
-
-
 	if ((newX == CTRLC->Layout.X) && (newY == CTRLC->Layout.Y))
 		return;
 	CTRLC->Layout.X = newX;
@@ -847,10 +848,6 @@ bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
 {
     AppCUI::Application::Config * cfg = AppCUI::Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
-    //if (newWidth >= 1000000)
-    //    newWidth = (newWidth - 1000000) * cfg->Grid.Width;
-    //if (newHeight >= 1000000)
-    //    newHeight = (newHeight - 1000000) * cfg->Grid.Height;
 
     if (newWidth < CTRLC->Layout.MinWidth)
         newWidth = CTRLC->Layout.MinWidth;
@@ -942,21 +939,20 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text, bool update
 	OnAfterSetText(text.GetText());
 	return true;
 }
-
-//const char*		AppCUI::Controls::Control::GetText()
-//{
-//	return CTRLC->Text.GetText();
-//}
-//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String *text)
-//{
-//	CHECK(text != nullptr, "", false);
-//	return text->Set(&CTRLC->Text);
-//}
-//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String &text)
-//{
-//	return text.Set(&CTRLC->Text);
-//}
-
+void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
+{
+    if (value > maxValue)
+        value = maxValue;
+    CTRLC->ScrollBars.HorizontalValue = value;
+    CTRLC->ScrollBars.MaxHorizontalValue = maxValue;
+}
+void AppCUI::Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
+{
+    if (value > maxValue)
+        value = maxValue;
+    CTRLC->ScrollBars.VerticalValue = value;
+    CTRLC->ScrollBars.MaxVerticalValue = maxValue;
+}
 int	 AppCUI::Controls::Control::GetGroup()
 {
 	return CTRLC->GroupID;

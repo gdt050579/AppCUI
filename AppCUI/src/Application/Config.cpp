@@ -114,7 +114,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->View.Inactive.Text = ColorPair{ Color::Gray, Color::Transparent };
     this->View.InactiveCanvasColor = ColorPair{ Color::Black, Color::Transparent };
 
-    this->ScrollBar.Arrows = ColorPair{ Color::White, Color::Teal };
+    this->ScrollBar.Arrows = ColorPair{ Color::White, Color::Magenta };
     this->ScrollBar.Bar = ColorPair{ Color::Black, Color::Teal };
-    this->ScrollBar.Position = ColorPair{ Color::Yellow, Color::Teal };
+    this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 }

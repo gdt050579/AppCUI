@@ -332,6 +332,7 @@ namespace AppCUI
                 BlockLowerHalf,
                 BlockLeftHalf,
                 BlockRightHalf,
+                BlockCentered,
 
                 // Trangles
                 TriangleUp,
@@ -714,9 +715,10 @@ namespace AppCUI
             bool			SetText(const char * text, bool updateHotKey = false);
             bool			SetText(AppCUI::Utils::String *text, bool updateHotKey = false);
             bool			SetText(AppCUI::Utils::String &text, bool updateHotKey = false);
-            //const char*		GetText();
-            //bool			GetText(AppCUI::Utils::String *text);
-            //bool			GetText(AppCUI::Utils::String &text);
+            
+            // Scroll bars
+            void            UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
+            void            UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
 
             // handlere
             void			SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void *Context = nullptr);
@@ -955,7 +957,7 @@ namespace AppCUI
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             bool    OnMouseLeave() override;
             bool    OnMouseEnter() override;
-
+            void    OnUpdateScrollBars() override;
             Console::Canvas*	GetCanvas();
         };
 
