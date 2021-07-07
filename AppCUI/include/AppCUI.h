@@ -752,6 +752,7 @@ namespace AppCUI
             virtual void	OnMouseWheel(int direction);
             virtual bool	OnEvent(const void* sender, Event::Type eventType, int controlID);
             virtual bool	OnUpdateCommandBar(AppCUI::Application::CommandBar & commandBar);
+            virtual void    OnUpdateScrollBars();
 
             virtual bool	OnBeforeResize(int newWidth, int newHeight);
             virtual void	OnAfterResize(int newWidth, int newHeight);
@@ -1059,6 +1060,9 @@ namespace AppCUI
                 } Normal, Focused, Inactive, Hover;
                 Console::ColorPair InactiveCanvasColor;
             } View;
+            struct {
+                Console::ColorPair Bar, Arrows, Position;
+            } ScrollBar;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);
