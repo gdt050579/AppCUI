@@ -233,28 +233,28 @@ namespace AppCUI
         typedef bool(*DeleteFileCallback)     (const char * fileName, void *Context);
 
 
-        class EXPORT FileSystem
+        namespace FileSystem
         {
-            FileSystem() = delete;
-        public:
-            static bool			EnumerateFiles(AppCUI::Utils::String &path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
-            static bool			EnumerateFiles(const char* path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
-            static bool			FileExists(const char *path);
-            static bool			DirectoryExists(const char *path);
-            static bool			GetCurrentDir(AppCUI::Utils::String &path);
-            static bool			Join(AppCUI::Utils::String& path, const char * name);
-            static bool			CopyDirectoryName(const char * path, AppCUI::Utils::String& result);
-            static bool			IsRootPath(const char *path);
-            static bool			CreateFolder(const char *name);
-            static bool			DeleteFile(const char *name, bool failIfFileIsMissing = false);
+            namespace Path
+            {
+                EXPORT bool		Join(AppCUI::Utils::String& path, const char * name);
+                EXPORT bool		CopyDirectoryName(const char * path, AppCUI::Utils::String& result);
+                EXPORT bool		IsRootPath(const char *path);
+            }
+            EXPORT bool			EnumerateFiles(AppCUI::Utils::String &path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
+            EXPORT bool			EnumerateFiles(const char* path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles = false);
+            EXPORT bool			FileExists(const char *path);
+            EXPORT bool			DirectoryExists(const char *path);
+            EXPORT bool			GetCurrentDir(AppCUI::Utils::String &path);
+            EXPORT bool			CreateFolder(const char *name);
+            EXPORT bool			DeleteFile(const char *name, bool failIfFileIsMissing = false);
 
-            static bool			DeleteFolder(AppCUI::Utils::String &name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
-            static bool			DeleteFolder(const char *name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
+            EXPORT bool			DeleteFolder(AppCUI::Utils::String &name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
+            EXPORT bool			DeleteFolder(const char *name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
 
-
-            static bool			CopyFile(const char* source, const char* destination, CopyFileCallback callback = nullptr, void* Context = nullptr);
+            EXPORT bool			CopyFile(const char* source, const char* destination, CopyFileCallback callback = nullptr, void* Context = nullptr);
         };
-    
+
 
     }
     namespace Console

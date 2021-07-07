@@ -43,7 +43,7 @@ bool		FileSystem::EnumerateFiles(AppCUI::Utils::String &path, bool recursive, En
 	WIN32_FIND_DATAA	dt;
 	HANDLE				hFindFile;
 
-	CHECK(Join(path,"*.*"), false, "Unable to add mask (*.*) to path variable !");
+	CHECK(Path::Join(path,"*.*"), false, "Unable to add mask (*.*) to path variable !");
 	hFindFile = FindFirstFileA(path.GetText(), &dt);
 	CHECK(path.Truncate(len), false, "Unable to truncate path variable !");
 	CHECK(hFindFile != INVALID_HANDLE_VALUE, false, "Invalid path (%s) - ErrorCode: %08X", path.GetText(), GetLastError());
@@ -51,14 +51,14 @@ bool		FileSystem::EnumerateFiles(AppCUI::Utils::String &path, bool recursive, En
 		CHECK(path.Truncate(len), false, "Unable to truncate path variable !");
 		if ((dt.dwFileAttributes & 16) == 0)
 		{
-			CHECK(Join(path, dt.cFileName), false, "Unable to add file name (%s) to path variable !", dt.cFileName);
+			CHECK(Path::Join(path, dt.cFileName), false, "Unable to add file name (%s) to path variable !", dt.cFileName);
 			CHECK(callback(path.GetText(),dt.cFileName, (((unsigned long long)dt.nFileSizeHigh) << 32) | ((unsigned long long)dt.nFileSizeLow),false, Context), false, "Callback stop by user !");
 			CHECK(path.Truncate(len), false, "Unable to truncate path variable !");
 		}
 		else {
 			if (((Utils::String::Equals(dt.cFileName, ".") == false) && (Utils::String::Equals(dt.cFileName, "..") == false)))
 			{
-				CHECK(Join(path, dt.cFileName), false, "Unable to add directory name (%s) to path variable !", dt.cFileName);
+				CHECK(Path::Join(path, dt.cFileName), false, "Unable to add directory name (%s) to path variable !", dt.cFileName);
 				if (callFolderCallbackAfterProcessingAllOfItsFiles == false) {
 					CHECK(callback(path.GetText(), dt.cFileName, 0, true, Context), false, "Callback stop by user !");
 				}
@@ -117,33 +117,7 @@ bool		FileSystem::DirectoryExists(const char *path)
 	return ((FindFileData.dwFileAttributes & 16) != 0); // not a file	
 }
 
-// Paths
-bool        FileSystem::Join(AppCUI::Utils::String& path, const char * name)
-{
-    if (!path.EndsWith("\\"))
-    {
-        CHECK(path.AddChar('\\'), false, "");
-    }
-    CHECK(path.Add(name), false, "");
-    return true;
-}
 
-
-bool		FileSystem::CopyDirectoryName(const char * path, AppCUI::Utils::String& result) 
-{
-    unsigned int poz = -1;
-    CHECK(path, false, "Expecting a valid (non-null) path !");
-    for (unsigned int tr = 0; path[tr] != 0; tr++)
-        if ((path[tr] == '\\') || (path[tr] == '/'))
-            poz = tr;
-    if (poz == -1)
-    {
-        CHECK(result.Set(""), false, "No folder present !");
-    } else {
-        CHECK(result.Set(path,poz+1), false, "Fail to copy folder");
-    }
-    return true;
-}
 bool		FileSystem::GetCurrentDir(AppCUI::Utils::String &path)
 {
     char temp[4096];
@@ -157,18 +131,6 @@ bool		FileSystem::GetCurrentDir(AppCUI::Utils::String &path)
 		CHECK(path.AddChar('\\'),false,"");
 	}
 	return true;
-}
-bool		FileSystem::IsRootPath(const char *path)
-{
-	CHECK(path != nullptr, false, "");
-	int count = 0;
-	while ((*path) != 0)
-	{
-		if (((*path) == '\\') || ((*path) == '/'))
-			count++;
-		path++;
-	}
-	return (count <= 1);
 }
 
 bool		FileSystem::CreateFolder(const char *name)
