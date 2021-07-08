@@ -1026,6 +1026,7 @@ namespace AppCUI
         void EXPORT SetLogCallback(void(*callback)(const Message &));
         bool EXPORT ToFile(const char * fileName);
         bool EXPORT ToOutputDebugString();
+        bool EXPORT ToStdErr();
     }
     namespace Application
     {

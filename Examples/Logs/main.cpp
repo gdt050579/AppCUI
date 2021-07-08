@@ -33,8 +33,13 @@ public:
 int main()
 {
     Log::ToFile("./appcuilogs.txt");
+    
     // Window users can also use
     //    Log::ToOutputDebugString();
+
+    // If you want to log to stderr, use
+    //    Log::ToStdErr();
+    // Example: Run 'Logs.exe 2>err_log.txt' after enable logging to stderr. This will write all logs to a file (err_log.txt)
     Application::Init();
     Application::AddWindow(new SimpleWin());
     Application::Run();
