@@ -15,9 +15,10 @@ File::~File() {
 bool File::OpenWrite(const char * filePath) {
     CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
-    int fileId = open(filePath, O_RDWR | O_APPEND);
+    int fileId = open(filePath, O_RDWR);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
+    CHECK(lseek(this->FileID.fid, 0, SEEK_END) >= 0, false, "ERROR: %s", strerror(errno));
     return true;
 }
 
