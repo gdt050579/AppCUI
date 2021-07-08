@@ -1024,6 +1024,8 @@ namespace AppCUI
         };
         void EXPORT Report(Severity type, const char* fileName, const char *function, const char *condition, int line, const char *format, ...);
         void EXPORT SetLogCallback(void(*callback)(const Message &));
+        bool EXPORT ToFile(const char * fileName);
+        bool EXPORT ToOutputDebugString();
     }
     namespace Application
     {

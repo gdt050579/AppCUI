@@ -448,7 +448,7 @@ bool AppCUI::Utils::String::AddFormat(const char *format, ...)
     VALIDATE_ALLOCATED_SPACE(((unsigned int)len) + 2 + this->Size, false);
 
     va_start(args, format);
-    len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
+    len2 = vsnprintf(Text+this->Size, (Allocated & 0x7FFFFFFF) - 1, format, args);
     va_end(args);
     if (len2 < 0) {
         Clear();

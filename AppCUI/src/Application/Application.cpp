@@ -19,11 +19,14 @@ bool AppCUI::Application::Init(Application::Flags::Type flags, EventHandler even
     RETURNERROR(false, "Fail to initialized application !");
 }
 bool AppCUI::Application::Run()
-{
+{    
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited,false,"Application has not been corectly initialized !");
     app->ExecuteEventLoop();
+    LOG_INFO("Starting to unitiale AppCUI ...");
     app->Uninit();
+    Log::Unit();
+    LOG_INFO("Uninit succesiful");
     delete app;
     app = nullptr;
     return true;
@@ -253,12 +256,14 @@ void AppCUI::Internal::Application::Destroy()
 }
 bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler)
 {
+    LOG_INFO("Starting AppCUI ...");
     CHECK(!this->Inited, false, "Application has already been initialized !");
     CHECK((this->terminal = new AppCUI::Internal::Terminal()), false, "Fail to allocate a terminal object !");
     CHECK(this->terminal->Init(), false, "Fail to initialize OS-Specific terminal !");
     this->config.SetDarkTheme();    
     this->CommandBarObject.Init(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
     this->CommandBarWrapper.Init(&this->CommandBarObject);
+    LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
     
     CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()), false, "Failed to create desktop !");
     LoopStatus = LOOP_STATUS_NORMAL;
@@ -270,6 +275,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags,
     Handler = handler;
     
     this->Inited = true;
+    LOG_INFO("AppCUI initialized succesifully");
     return true;
 }
 void AppCUI::Internal::Application::Paint()

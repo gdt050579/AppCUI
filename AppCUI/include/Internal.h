@@ -198,6 +198,10 @@ namespace AppCUI
     {
         AppCUI::Internal::Application* GetApplication();
     }
+    namespace Log
+    {
+        void Unit(); // needed to release some alocation buffers
+    }
 }
 
 

@@ -1,4 +1,5 @@
 #include "AppCUI.h"
+#include "../Internal.h"
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -15,6 +16,8 @@ using namespace AppCUI::Utils;
 }
 
 void (*fnMessageLogCallbak)     (const Log::Message& msg)   = nullptr;
+AppCUI::OS::File* logFile = nullptr;
+
 const char * _severity_type_names_[4] = {
     "[Information] ",
     "[  Warning  ] ",
@@ -88,5 +91,62 @@ void Log::SetLogCallback(void(*callback)(const Message &))
     fnMessageLogCallbak = callback;
 }
 
+
+void _write_to_file_callback_(const AppCUI::Log::Message & msg)
+{
+    LocalString<2048> tmpString;
+    if ((_LogMessage_to_String_(msg, tmpString, true, true)) && (logFile))
+    {
+        logFile->Write(tmpString.GetText(), tmpString.Len());
+    }
+}
+bool Log::ToFile(const char * fileName)
+{
+    if (logFile == nullptr)
+    {
+        if ((logFile = new AppCUI::OS::File()) == nullptr)
+            return false; // fail to allocate memory for File object        
+    }
+    if (logFile->Create(fileName, true) == false)
+    {
+        delete logFile;
+        logFile = nullptr;
+        return false;
+    }
+    // all good
+    fnMessageLogCallbak = _write_to_file_callback_;
+    return true;
+}
+
+#ifdef OutputDebugString
+void _write_to_OutDebugString_(const AppCUI::Log::Message & msg)
+{
+    LocalString<2048> tmpString;
+    if (_LogMessage_to_String_(msg, tmpString, false, true))
+    {
+        OutputDebugStringA(tmpString.GetText());
+    }
+}
+#endif
+bool Log::ToOutputDebugString()
+{
+#ifdef OutputDebugString
+    fnMessageLogCallbak = _write_to_OutDebugString_;
+    return true;
+#endif
+    return false; // not on Windows
+}
+
+
+// only available for internal usage
+void Log::Unit()
+{
+    if (logFile != nullptr)
+    {
+        logFile->Close();
+        delete logFile;
+        logFile = nullptr;
+    }
+}
 #undef EXIT_IF_ERROR
 #undef CHECK_INTERNAL_CONDITION
