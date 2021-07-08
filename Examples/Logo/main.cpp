@@ -29,6 +29,9 @@ const char * AppCuiLogo[15] = {
 class LogoWin : public AppCUI::Controls::Window
 {
     CanvasViewer viewLogo, viewInactive, viewSmall;
+    Splitter sp;
+    Panel pn;
+
     void CreateImage(Canvas * c)
     {
         if (!c) return;
@@ -64,9 +67,12 @@ public:
     LogoWin()
     {
         this->Create("Canvas example", "a:c,w:80,h:22");
-        viewLogo.Create(this, "&Logo", "x:1,y:1,w:29,h:16",28,15, ViewerFlags::BORDER);
-        viewInactive.Create(this, "Inactive", "x:32,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
-        viewSmall.Create(this, "&Small", "x:63,y:1,w:14,h:9", 28, 15, ViewerFlags::BORDER);
+        sp.Create(this, "x:0,y:0,w:100%,h:100%", true);
+        viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%",28,15);
+
+        pn.Create(&sp, "x:0,y:0,w:100%,h:100%");
+        viewInactive.Create(&pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
+        viewSmall.Create(&pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::BORDER);
         viewInactive.SetEnabled(false);
         CreateImage(viewLogo.GetCanvas());
         CreateImage(viewInactive.GetCanvas());

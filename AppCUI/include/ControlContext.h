@@ -44,6 +44,7 @@ public:
         unsigned long long                  MaxVerticalValue;
         unsigned long long                  HorizontalValue;
         unsigned long long                  VerticalValue;
+        bool                                OutsideControl;
     } ScrollBars;
 	int										ControlID;
 	int										GroupID;

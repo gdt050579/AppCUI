@@ -612,6 +612,7 @@ namespace AppCUI
 
             // Clipping & Translate
             void    SetAbsoluteClip(const AppCUI::Console::Clip & clip);
+            void    ExtendAbsoluteCliptToRightBottomCorner();
             void    ClearClip();
             void    SetTranslate(int offX, int offY);
 

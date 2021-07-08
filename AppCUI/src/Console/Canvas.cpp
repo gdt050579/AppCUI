@@ -131,6 +131,16 @@ void Canvas::SetAbsoluteClip(const AppCUI::Console::Clip & clip)
     }
     this->ClipHasBeenCopied = false;
 }
+void Canvas::ExtendAbsoluteCliptToRightBottomCorner()
+{
+    if (Clip.Visible)
+    {
+        if ((Clip.Right + 1) < (int)this->Width)
+            Clip.Right++;
+        if ((Clip.Bottom + 1) < (int)this->Height)
+            Clip.Bottom++;
+    }
+}
 void Canvas::ClearClip()
 {
     this->Clip.Left = this->Clip.Right = 0;

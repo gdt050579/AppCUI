@@ -397,6 +397,7 @@ ControlContext::ControlContext()
     this->ScrollBars.HorizontalValue = 0;
     this->ScrollBars.MaxHorizontalValue = 0;
     this->ScrollBars.MaxVerticalValue = 0;
+    this->ScrollBars.OutsideControl = false;
 	// curat automat
 	memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
@@ -583,8 +584,16 @@ bool ControlContext::RecomputeLayout(Control *controlParent)
 }
 void ControlContext::PaintScrollbars(Console::Renderer & renderer)
 {
-    int x = Layout.Width - 1;
-    int y = Layout.Height - 1;    
+    int x, y;
+    if (ScrollBars.OutsideControl)
+    {
+        x = Layout.Width;
+        y = Layout.Height;
+    } else {
+        x = Layout.Width - 1;
+        y = Layout.Height - 1;
+    }
+    
     if (Flags & GATTR_VSCROLL)
     {
         if (Layout.Height >= (int)(ScrollBars.TopMargin + 2 + MINIM_SCORLL_BAR_LENGTH))

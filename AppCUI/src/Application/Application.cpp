@@ -121,6 +121,8 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
     if ((Members->Focused) && (Members->Flags & (GATTR_VSCROLL | GATTR_HSCROLL)))
     {
         renderer.ResetClip(); // make sure that the entire surface is available
+        if (Members->ScrollBars.OutsideControl)
+            app->terminal->ScreenCanvas.ExtendAbsoluteCliptToRightBottomCorner();
         ctrl->OnUpdateScrollBars(); // update scroll bars value
         Members->PaintScrollbars(renderer);
     }
