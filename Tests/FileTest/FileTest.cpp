@@ -13,7 +13,13 @@ int main(void) {
     app.OpenWrite(fileName);
     unsigned int bytesWritten = 0;
     app.WriteBuffer("GDT1", 4, bytesWritten);
-    printf("size: %llu\n", app.GetSize());
+    printf("Size: %llu\n", app.GetSize());
+    printf("Get poz: %llu\n", app.GetCurrentPos());
+    app.SetCurrentPos(app.GetSize()/2);
+    printf("New poz: %llu\n", app.GetCurrentPos());
+    app.SetSize(app.GetSize()/2);
+    printf("New size: %llu\n", app.GetSize());
+    printf("Get poz: %llu\n", app.GetCurrentPos());
     app.Close();
     return 0;
 }
