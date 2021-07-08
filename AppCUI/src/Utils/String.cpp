@@ -369,7 +369,7 @@ bool AppCUI::Utils::String::DeleteChar(unsigned int position)
 }
 bool AppCUI::Utils::String::Delete(unsigned int start, unsigned int end)
 {
-    CHECK(end <= this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", position, this->Size);
+    CHECK(end <= this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", end, this->Size);
     CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
     if (end == this->Size)
     {

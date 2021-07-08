@@ -11,13 +11,27 @@
 #   define EXPORT
 #endif
 
-#define CHECK(c,returnValue,format,...) { if (!(c)) return (returnValue); }
-#define RETURNERROR(returnValue,format,...) { return (returnValue);}
-#define CHECKBK(c,format,...) if (!(c)) break;
-
-#define NOT_IMPLEMENTED(returnValue) { return (returnValue); }
-#define LOG_INFO(format,...)
-#define LOG_ERROR(format,...)
+#ifdef ENABLE_LOGGING
+#   define CHECK(c,returnValue,format,...) { \
+        if (!(c)) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__); return (returnValue); } \
+    }
+#   define CHECKBK(c,format,...) { \
+        if (!(c)) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__); break; } \
+    }
+#   define RETURNERROR(returnValue,format,...) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__); return (returnValue); }
+#   define NOT_IMPLEMENTED(returnValue) { AppCUI::Log::Report(AppCUI::Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, "Current function/method is not implemented under current OS"); return (returnValue); }
+#   define LOG_INFO(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Information, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#   define LOG_WARNING(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#   define LOG_ERROR(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#else
+#   define CHECK(c,returnValue,format,...) { if (!(c)) return (returnValue); }
+#   define RETURNERROR(returnValue,format,...) { return (returnValue);}
+#   define CHECKBK(c,format,...) if (!(c)) break;
+#   define NOT_IMPLEMENTED(returnValue) { return (returnValue); }
+#   define LOG_INFO(format,...)
+#   define LOG_WARNING(format,...) 
+#   define LOG_ERROR(format,...)
+#endif
 
 #define PATH_SEPARATOR '\\'
 
@@ -990,10 +1004,10 @@ namespace AppCUI
     {
         enum class Severity: unsigned int
         {
-            InternalError,
-            Error,
-            Warning,
-            Information,
+            InternalError   = 3,
+            Error           = 2,
+            Warning         = 1,
+            Information     = 0,
         };
         struct Message
         {

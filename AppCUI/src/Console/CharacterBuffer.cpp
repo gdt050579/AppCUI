@@ -102,7 +102,7 @@ void CharacterBuffer::Clear()
 }
 bool CharacterBuffer::Delete(unsigned int start, unsigned int end)
 {
-    CHECK(end <= this->Count, false, "Invalid delete offset: %d (should be between 0 and %d)", position, this->Size);
+    CHECK(end <= this->Count, false, "Invalid delete offset: %d (should be between 0 and %d)", end, this->Count);
     CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
     if (end == this->Count) {
         this->Count = start;
@@ -124,7 +124,7 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
 bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(this->Count + 1, false);
-    CHECK(position <= this->Count, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Size);
+    CHECK(position <= this->Count, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Count);
     if (position < this->Count) {
         memmove(this->Buffer + position + 1, this->Buffer + position, (this->Count - position) * sizeof(Character));    
     }

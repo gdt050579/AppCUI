@@ -577,7 +577,7 @@ bool ControlContext::RecomputeLayout(Control *controlParent)
             this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
             break;            
         default:
-            RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.Mode);
+            RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.LayoutMode);
     }
     return true;
 }
