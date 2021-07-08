@@ -11,6 +11,10 @@
 #   define EXPORT
 #endif
 
+#if _DEBUG
+#   define ENABLE_LOGGING
+#endif
+
 #ifdef ENABLE_LOGGING
 #   define CHECK(c,returnValue,format,...) { \
         if (!(c)) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__); return (returnValue); } \
