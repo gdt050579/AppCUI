@@ -985,6 +985,28 @@ namespace AppCUI
         };
 
     };
+    
+    namespace Log
+    {
+        enum class Severity: unsigned int
+        {
+            InternalError,
+            Error,
+            Warning,
+            Information,
+        };
+        struct Message
+        {
+            Severity        Type;
+            const char*     Content;
+            const char*     FileName;
+            const char*     Function;
+            const char*     Condition;
+            int             LineNumber;
+        };
+        void EXPORT Report(Severity type, const char* fileName, const char *function, const char *condition, int line, const char *format, ...);
+        void EXPORT SetLogCallback(void(*callback)(const Message &));
+    }
     namespace Application
     {
         namespace Flags
