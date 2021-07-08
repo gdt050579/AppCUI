@@ -123,7 +123,6 @@ namespace AppCUI
             inline bool IsVisible() const { return Visible; }
         };
 
-
         struct AbstractTerminal
         {            
             unsigned int                LastCursorX, LastCursorY;

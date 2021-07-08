@@ -11,13 +11,31 @@
 #   define EXPORT
 #endif
 
-#define CHECK(c,returnValue,format,...) { if (!(c)) return (returnValue); }
-#define RETURNERROR(returnValue,format,...) { return (returnValue);}
-#define CHECKBK(c,format,...) if (!(c)) break;
+#if _DEBUG
+#   define ENABLE_LOGGING
+#endif
 
-#define NOT_IMPLEMENTED(returnValue) { return (returnValue); }
-#define LOG_INFO(format,...)
-#define LOG_ERROR(format,...)
+#ifdef ENABLE_LOGGING
+#   define CHECK(c,returnValue,format,...) { \
+        if (!(c)) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__); return (returnValue); } \
+    }
+#   define CHECKBK(c,format,...) { \
+        if (!(c)) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__); break; } \
+    }
+#   define RETURNERROR(returnValue,format,...) { AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__); return (returnValue); }
+#   define NOT_IMPLEMENTED(returnValue) { AppCUI::Log::Report(AppCUI::Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, "Current function/method is not implemented under current OS"); return (returnValue); }
+#   define LOG_INFO(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Information, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#   define LOG_WARNING(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#   define LOG_ERROR(format,...) AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+#else
+#   define CHECK(c,returnValue,format,...) { if (!(c)) return (returnValue); }
+#   define RETURNERROR(returnValue,format,...) { return (returnValue);}
+#   define CHECKBK(c,format,...) if (!(c)) break;
+#   define NOT_IMPLEMENTED(returnValue) { return (returnValue); }
+#   define LOG_INFO(format,...)
+#   define LOG_WARNING(format,...) 
+#   define LOG_ERROR(format,...)
+#endif
 
 #define PATH_SEPARATOR '\\'
 
@@ -332,6 +350,13 @@ namespace AppCUI
                 BlockLowerHalf,
                 BlockLeftHalf,
                 BlockRightHalf,
+                BlockCentered,
+
+                // Trangles
+                TriangleUp,
+                TriangleDown,
+                TriangleLeft,
+                TriangleRight,
 
                 // symbols
                 CircleFilled,
@@ -708,9 +733,10 @@ namespace AppCUI
             bool			SetText(const char * text, bool updateHotKey = false);
             bool			SetText(AppCUI::Utils::String *text, bool updateHotKey = false);
             bool			SetText(AppCUI::Utils::String &text, bool updateHotKey = false);
-            //const char*		GetText();
-            //bool			GetText(AppCUI::Utils::String *text);
-            //bool			GetText(AppCUI::Utils::String &text);
+            
+            // Scroll bars
+            void            UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
+            void            UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
 
             // handlere
             void			SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void *Context = nullptr);
@@ -746,6 +772,7 @@ namespace AppCUI
             virtual void	OnMouseWheel(int direction);
             virtual bool	OnEvent(const void* sender, Event::Type eventType, int controlID);
             virtual bool	OnUpdateCommandBar(AppCUI::Application::CommandBar & commandBar);
+            virtual void    OnUpdateScrollBars();
 
             virtual bool	OnBeforeResize(int newWidth, int newHeight);
             virtual void	OnAfterResize(int newWidth, int newHeight);
@@ -948,7 +975,7 @@ namespace AppCUI
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             bool    OnMouseLeave() override;
             bool    OnMouseEnter() override;
-
+            void    OnUpdateScrollBars() override;
             Console::Canvas*	GetCanvas();
         };
 
@@ -976,6 +1003,28 @@ namespace AppCUI
         };
 
     };
+    
+    namespace Log
+    {
+        enum class Severity: unsigned int
+        {
+            InternalError   = 3,
+            Error           = 2,
+            Warning         = 1,
+            Information     = 0,
+        };
+        struct Message
+        {
+            Severity        Type;
+            const char*     Content;
+            const char*     FileName;
+            const char*     Function;
+            const char*     Condition;
+            int             LineNumber;
+        };
+        void EXPORT Report(Severity type, const char* fileName, const char *function, const char *condition, int line, const char *format, ...);
+        void EXPORT SetLogCallback(void(*callback)(const Message &));
+    }
     namespace Application
     {
         namespace Flags
@@ -1053,6 +1102,9 @@ namespace AppCUI
                 } Normal, Focused, Inactive, Hover;
                 Console::ColorPair InactiveCanvasColor;
             } View;
+            struct {
+                Console::ColorPair Bar, Arrows, Position;
+            } ScrollBar;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);

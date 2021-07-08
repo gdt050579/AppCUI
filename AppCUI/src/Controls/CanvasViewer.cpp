@@ -16,7 +16,7 @@ bool CanvasViewer::Create(Control* parent, const char * title, const char * layo
     CONTROL_INIT_CONTEXT(CanvasControlContext);
     CHECK(Init(parent, title, layout, true), false, "Failed to create Canvas viewer object");
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL| GATTR_HSCROLL | flags;
     Members->CanvasScrollX = 0;
     Members->CanvasScrollY = 0;
     CHECK(Members->canvas.Create(canvasWidth, canvasHeight), false, "Fail to create a canvas of size %d x %d", canvasWidth, canvasHeight);
@@ -56,6 +56,12 @@ void CanvasViewer::Paint(Console::Renderer & renderer)
 
 }
 
+void CanvasViewer::OnUpdateScrollBars()
+{
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
+    UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight());
+    UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth());
+}
 
 bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode) {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);

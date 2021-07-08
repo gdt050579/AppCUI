@@ -110,10 +110,17 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
         }
         Members->Focused = focused;
     }
+    // draw current control
     if (Members->Handlers.OnPaintHandler != nullptr)
         Members->Handlers.OnPaintHandler(ctrl, Members->Handlers.OnPaintHandlerContext);
     else
         ctrl->Paint(renderer);
+    if ((Members->Focused) && (Members->Flags & (GATTR_VSCROLL | GATTR_HSCROLL)))
+    {
+        renderer.ResetClip(); // make sure that the entire surface is available
+        ctrl->OnUpdateScrollBars(); // update scroll bars value
+        Members->PaintScrollbars(renderer);
+    }
 
     int cnt = Members->ControlsCount;
     int idx = Members->CurrentControlIndex;

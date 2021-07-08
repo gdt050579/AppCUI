@@ -12,6 +12,8 @@ using namespace AppCUI::Utils;
 #define GATTR_VISIBLE	0x000002
 #define GATTR_CHECKED	0x000004
 #define GATTR_TABSTOP	0x000008
+#define GATTR_VSCROLL   0x000010
+#define GATTR_HSCROLL   0x000020
 
 struct ControlContext
 {
@@ -35,6 +37,14 @@ public:
     {
         int                                 Left, Top, Right, Bottom;
     } Margins;
+    struct {
+        unsigned int                        TopMargin;
+        unsigned int                        LeftMargin;
+        unsigned long long                  MaxHorizontalValue;
+        unsigned long long                  MaxVerticalValue;
+        unsigned long long                  HorizontalValue;
+        unsigned long long                  VerticalValue;
+    } ScrollBars;
 	int										ControlID;
 	int										GroupID;
     AppCUI::Input::Key::Type                HotKey;
@@ -76,6 +86,7 @@ public:
 
     bool    UpdateLayoutFormat(const char * format);
     bool    RecomputeLayout(Control *parent);
+    void    PaintScrollbars(Console::Renderer & renderer);
 };
 
 #define WINDOW_DRAG_STATUS_NONE	0

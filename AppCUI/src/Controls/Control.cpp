@@ -6,28 +6,28 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
 
-#define CTRLC	            ((ControlContext*)Context)
+#define CTRLC	                        ((ControlContext*)Context)
 
-#define CHAR_TYPE_EOS       0
-#define CHAR_TYPE_OTHER     1
-#define CHAR_TYPE_WORD      2
-#define CHAR_TYPE_NUMBER    3
-#define CHAR_TYPE_SPACE     4
-#define CHAR_TYPE_EQ        5
-#define CHAR_TYPE_SEPARATOR 6
-#define CHAR_TYPE_POINT     7
-#define CHAR_TYPE_MINUS     8
+#define CHAR_TYPE_EOS                   0
+#define CHAR_TYPE_OTHER                 1
+#define CHAR_TYPE_WORD                  2
+#define CHAR_TYPE_NUMBER                3
+#define CHAR_TYPE_SPACE                 4
+#define CHAR_TYPE_EQ                    5
+#define CHAR_TYPE_SEPARATOR             6
+#define CHAR_TYPE_POINT                 7
+#define CHAR_TYPE_MINUS                 8
 
 
-#define LAYOUT_FLAG_WIDTH       0x0001
-#define LAYOUT_FLAG_HEIGHT      0x0002
-#define LAYOUT_FLAG_ANCH_LEFT   0x0004
-#define LAYOUT_FLAG_ANCH_RIGHT  0x0008
-#define LAYOUT_FLAG_ANCH_TOP    0x0010
-#define LAYOUT_FLAG_ANCH_BOTTOM 0x0020
-#define LAYOUT_FLAG_ANCHOR      0x0040
-#define LAYOUT_FLAG_X           0x0100
-#define LAYOUT_FLAG_Y           0x0200
+#define LAYOUT_FLAG_WIDTH               0x0001
+#define LAYOUT_FLAG_HEIGHT              0x0002
+#define LAYOUT_FLAG_ANCH_LEFT           0x0004
+#define LAYOUT_FLAG_ANCH_RIGHT          0x0008
+#define LAYOUT_FLAG_ANCH_TOP            0x0010
+#define LAYOUT_FLAG_ANCH_BOTTOM         0x0020
+#define LAYOUT_FLAG_ANCHOR              0x0040
+#define LAYOUT_FLAG_X                   0x0100
+#define LAYOUT_FLAG_Y                   0x0200
 
 
 
@@ -141,6 +141,8 @@ unsigned char __char_types__[256] = { CHAR_TYPE_EOS,CHAR_TYPE_OTHER,CHAR_TYPE_OT
 #define HASH_ALIGN_CENTER                           0x00007561
 #define HASH_ALIGN_C                                0x00000018
 
+// <xxx> (Arrow left, 3 character, Arrow right)
+#define MINIM_SCORLL_BAR_LENGTH                     5
 
 bool HashToAlignament(unsigned int hash, Alignament::Type & result)
 {
@@ -389,6 +391,12 @@ ControlContext::ControlContext()
     this->MouseIsOver = false;
     this->Cfg = AppCUI::Application::GetAppConfig();
     this->HotKeyOffset = 0xFFFFFFFF;
+    this->ScrollBars.LeftMargin = 2;
+    this->ScrollBars.TopMargin = 2;
+    this->ScrollBars.VerticalValue = 0;
+    this->ScrollBars.HorizontalValue = 0;
+    this->ScrollBars.MaxHorizontalValue = 0;
+    this->ScrollBars.MaxVerticalValue = 0;
 	// curat automat
 	memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
@@ -569,9 +577,44 @@ bool ControlContext::RecomputeLayout(Control *controlParent)
             this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
             break;            
         default:
-            RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.Mode);
+            RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.LayoutMode);
     }
     return true;
+}
+void ControlContext::PaintScrollbars(Console::Renderer & renderer)
+{
+    int x = Layout.Width - 1;
+    int y = Layout.Height - 1;    
+    if (Flags & GATTR_VSCROLL)
+    {
+        if (Layout.Height >= (int)(ScrollBars.TopMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
+        {
+            renderer.DrawVerticalLineWithSpecialChar(x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
+            renderer.WriteSpecialCharacter(x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows);
+            renderer.WriteSpecialCharacter(x, y-2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
+            if (ScrollBars.MaxVerticalValue)
+            {
+                unsigned int sz = (unsigned int)(y - (2 + ScrollBars.TopMargin + 2/*two arrows*/));
+                unsigned int poz = (unsigned int)((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                renderer.WriteSpecialCharacter(x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
+            }
+        }                    
+    }
+    if (Flags & GATTR_HSCROLL)
+    {
+        if (Layout.Width >= (int)(ScrollBars.LeftMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
+        {
+            renderer.DrawHorizontalLineWithSpecialChar(ScrollBars.LeftMargin, y, x-2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
+            renderer.WriteSpecialCharacter(ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows);
+            renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
+            if (ScrollBars.MaxHorizontalValue)
+            {
+                unsigned int sz = (unsigned int)(x - (2 + ScrollBars.LeftMargin + 2/*two arrows*/));
+                unsigned int poz = (unsigned int)((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                renderer.WriteSpecialCharacter(ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
+            }
+        }
+    }
 }
 //=======================================================================================================================================================
 AppCUI::Controls::Control::Control()
@@ -792,17 +835,6 @@ void AppCUI::Controls::Control::MoveTo(int newX, int newY)
     AppCUI::Application::Config * cfg = AppCUI::Application::GetAppConfig();
     if (!cfg)
         return;
-    //if (newX >= 1000000)
-    //    newX = (newX - 1000000) * cfg->Grid.Width + cfg->Grid.MarginLeft;
-    //else if (newX <= -1000000)
-    //    newX = (newX + 1000000) * cfg->Grid.Width + cfg->Grid.MarginLeft;
-
-    //if (newY >= 1000000)
-    //    newY = (newY - 1000000) * cfg->Grid.Height + cfg->Grid.MarginTop;
-    //else if (newY <= -1000000)
-    //    newY = (newY + 1000000) * cfg->Grid.Height + cfg->Grid.MarginTop;
-
-
 	if ((newX == CTRLC->Layout.X) && (newY == CTRLC->Layout.Y))
 		return;
 	CTRLC->Layout.X = newX;
@@ -816,10 +848,6 @@ bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
 {
     AppCUI::Application::Config * cfg = AppCUI::Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
-    //if (newWidth >= 1000000)
-    //    newWidth = (newWidth - 1000000) * cfg->Grid.Width;
-    //if (newHeight >= 1000000)
-    //    newHeight = (newHeight - 1000000) * cfg->Grid.Height;
 
     if (newWidth < CTRLC->Layout.MinWidth)
         newWidth = CTRLC->Layout.MinWidth;
@@ -911,21 +939,20 @@ bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text, bool update
 	OnAfterSetText(text.GetText());
 	return true;
 }
-
-//const char*		AppCUI::Controls::Control::GetText()
-//{
-//	return CTRLC->Text.GetText();
-//}
-//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String *text)
-//{
-//	CHECK(text != nullptr, "", false);
-//	return text->Set(&CTRLC->Text);
-//}
-//bool			AppCUI::Controls::Control::GetText(AppCUI::Utils::String &text)
-//{
-//	return text.Set(&CTRLC->Text);
-//}
-
+void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
+{
+    if (value > maxValue)
+        value = maxValue;
+    CTRLC->ScrollBars.HorizontalValue = value;
+    CTRLC->ScrollBars.MaxHorizontalValue = maxValue;
+}
+void AppCUI::Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
+{
+    if (value > maxValue)
+        value = maxValue;
+    CTRLC->ScrollBars.VerticalValue = value;
+    CTRLC->ScrollBars.MaxVerticalValue = maxValue;
+}
 int	 AppCUI::Controls::Control::GetGroup()
 {
 	return CTRLC->GroupID;
@@ -1111,6 +1138,9 @@ bool AppCUI::Controls::Control::OnBeforeSetText(const char * text)
 	return true; 
 }
 void AppCUI::Controls::Control::OnAfterSetText(const char * text)
+{
+}
+void AppCUI::Controls::Control::OnUpdateScrollBars()
 {
 }
 void AppCUI::Controls::Control::SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void *objContext)
