@@ -7,6 +7,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
+using namespace AppCUI::Dialogs;
 
 #define CELL_WITH_X 1
 #define CELL_WITH_O 2

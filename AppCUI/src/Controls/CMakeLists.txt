@@ -4,7 +4,6 @@ target_sources(AppCUI PRIVATE
 	CheckBox.cpp 
 	Control.cpp 
 	Label.cpp 
-	MessageBox.cpp
 	Panel.cpp 
 	RadioBox.cpp 
 	Splitter.cpp 

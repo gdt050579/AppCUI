@@ -979,19 +979,17 @@ namespace AppCUI
             void    OnUpdateScrollBars() override;
             Console::Canvas*	GetCanvas();
         };
-
-
-        namespace DialogResult
+    };
+    namespace Dialogs
+    {
+        enum class DialogResult : int
         {
-            enum Type : int
-            {
-                RESULT_NONE = 0,
-                RESULT_OK = 1,
-                RESULT_CANCEL = 2,
-                RESULT_YES = 3,
-                RESULT_NO = 4,
-            };
-        }
+            RESULT_NONE = 0,
+            RESULT_OK = 1,
+            RESULT_CANCEL = 2,
+            RESULT_YES = 3,
+            RESULT_NO = 4,
+        };
         class EXPORT MessageBox
         {
             MessageBox() = delete;
@@ -999,12 +997,11 @@ namespace AppCUI
             static void                 ShowError(const char * title, const char * message);
             static void                 ShowNotification(const char *title, const char *message);
             static void                 ShowWarning(const char *title, const char *message);
-            static DialogResult::Type   ShowOkCancel(const char *title, const char *message);
-            static DialogResult::Type   ShowYesNoCancel(const char *title, const char *message);
+            static DialogResult         ShowOkCancel(const char *title, const char *message);
+            static DialogResult     ShowYesNoCancel(const char *title, const char *message);
         };
 
-    };
-    
+    }
     namespace Log
     {
         enum class Severity: unsigned int

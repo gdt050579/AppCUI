@@ -3,6 +3,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Dialogs;
 
 #define BUTTON_ID_SHOW_ERROR        1
 #define BUTTON_ID_SHOW_NOTIFICATION 2
