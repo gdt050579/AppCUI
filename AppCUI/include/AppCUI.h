@@ -520,6 +520,7 @@ namespace AppCUI
 
             bool Add(const char * text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
             bool Set(const char * text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+            bool SetWithNewLines(const char * text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
             bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
             bool Delete(unsigned int start, unsigned int end);
             bool DeleteChar(unsigned int position);

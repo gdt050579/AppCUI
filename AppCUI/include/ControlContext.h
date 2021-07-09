@@ -16,6 +16,8 @@ using namespace AppCUI::Utils;
 #define GATTR_VSCROLL   0x000010
 #define GATTR_HSCROLL   0x000020
 
+
+
 struct ControlContext
 {
 
@@ -155,7 +157,7 @@ public:
     int		GetLineSize(int lineIndex);
     int		GetLineStart(int lineIndex);
     void	DrawLineNumber(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);
-    void	DrawLine(int lineIndex, int pozY, const Console::ColorPair lineNumberCol);
+    void	DrawLine(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberCol);
     void	DrawToolTip();
 
 

@@ -24,6 +24,8 @@
 #define MAX_COMMANDBAR_FIELD_NAME		    24
 #define MAX_COMMANDBAR_SHIFTSTATES		    8
 
+#define NEW_LINE_CODE                       10
+
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
     if (value>=0) { SET_CHARACTER_VALUE(ptrCharInfo,value); } \
     if (color<256) { \

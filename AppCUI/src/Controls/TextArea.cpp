@@ -1,11 +1,11 @@
 #include "../../include/ControlContext.h"
+#include <Internal.h>
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 using namespace AppCUI::Input;
 using namespace AppCUI::OS;
 
-#define MAX_LINE_SIZE_COLORS	1024
 
 #define WRAPPER	((TextAreaControlContext*)this->Context)
 
@@ -19,7 +19,7 @@ void TextAreaControlContext::SelAll()
 }
 void TextAreaControlContext::ClearSel()
 {
-	SelStart=SelEnd=SelOrigin=-1;
+    SelStart = SelEnd = SelOrigin = -1;
 }
 void TextAreaControlContext::MoveSelTo(int poz)
 {
@@ -73,8 +73,9 @@ void TextAreaControlContext::UpdateView()
 	}
 	if (cLine>=startLine+viewLines)
 	{
-		startLine=cLine-viewLines;
-		if (startLine<0) startLine=0;
+        startLine = cLine - viewLines;
+        if (startLine < 0)
+            startLine = 0;
 	}
 }
 void TextAreaControlContext::UpdateLines()
@@ -86,8 +87,8 @@ void TextAreaControlContext::UpdateLines()
 
     lineNumber = 0;
     
-	textSize=0;
-	cLine=0;
+    textSize = 0;
+    cLine = 0;
     Lines.Clear();
 	do
 	{
@@ -97,19 +98,12 @@ void TextAreaControlContext::UpdateLines()
         Lines.Push(txSize);
 		lineNumber++;
 
-        while ((c < c_End) && (c->Code != 13) && (c->Code != 10))
+        while ((c < c_End) && (c->Code != NEW_LINE_CODE))
             c++;
-
-        if (c < c_End)
-        {
-            if ((c->Code == 13) && ((c + 1) < c_End) && ((c + 1)->Code == 10))
-                c += 2; //CRLF
-            else if ((c->Code == 10) && ((c + 1) < c_End) && ((c + 1)->Code == 13))
-                c += 2; //LFCR
-            else
-                c++;    //either a CR or a LF
-        }
+        if (c < c_End) // a '\n' was found
+            c++;
     } while (c < c_End);
+    textSize = Text.Len();
 	UpdateView();
 }
 int  TextAreaControlContext::GetLineSize(int lineIndex)
@@ -119,7 +113,7 @@ int  TextAreaControlContext::GetLineSize(int lineIndex)
 		return 0;
 	if ((lineIndex+1)<(int)Lines.Len())
 	{
-		return pLines[lineIndex+1]-(pLines[lineIndex]+1);
+		return pLines[lineIndex+1]-(pLines[lineIndex]+1) ; // not including the last NEW_LINE character
 	} else {
 		return textSize-pLines[lineIndex];
 	}
@@ -150,53 +144,45 @@ void TextAreaControlContext::SetColorFunction(Handlers::TextAreaSyntaxHighlightH
 void TextAreaControlContext::DrawToolTip()
 {
 }
-void TextAreaControlContext::DrawLine(int lineIndex,int pozY,const ColorPair lineNumberColor)
+void TextAreaControlContext::DrawLine(Console::Renderer & renderer, int lineIndex,int pozY,const ColorPair lineNumberColor)
 {
-	//int				poz,c,pozX;
-	//int				lnSize,tr;
-	//char			ch;
-	//unsigned char	colors[MAX_LINE_SIZE_COLORS];
-	//const char*		Txt;
+	int				poz,c,pozX;
+	int				lnSize,tr;
+	char			ch;
+	Character*		Txt;
 
-	//if ((lineIndex>=(int)Lines.GetSize()) || (lineIndex<0))
-	//	return;
-	//poz = *(((int *)Lines.GetVector()) + lineIndex);
-	//if ((poz<0) || (poz>=textSize))
-	//	return;
-	//lnSize=GetLineSize(lineIndex);
-	//Txt = Text.GetText();
-	//if (fnGetLineColor)
-	//	fnGetLineColor(&Txt[poz],colors,lnSize,MAX_LINE_SIZE_COLORS,colorPData);
-	//pozX=1;
-	//if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
-	//	pozX+=3;
-	//for (tr=0;tr<lnSize;tr++,poz++)
-	//{
-	//	c=Cfg->TextCol[(int)activ];
-	//	if ((fnGetLineColor) && (tr<MAX_LINE_SIZE_COLORS))
-	//		c=colors[tr];
-	//	if ((poz>=SelStart) && (poz<=SelEnd) && (activ)) 
-	//		c=Cfg->TextSelectCol;
-	//	if ((Flags & GATTR_ENABLE)==0)
-	//		c=Cfg->TextInactivCol;
-	//	ch=Txt[poz];
-	//	if (ch=='\t') 
-	//		ch=tabChar;
-	//	if ((ch=='\n') || (ch=='\r')) 
-	//		ch=' ';
-	//	Console::WriteChar(pozX,pozY,ch,c);
-	//	if ((activ) && (poz==cLocation)) 
-	//		Console::SetCursorPos(pozX,pozY); 
-	//	if (Txt[poz]=='\t')
-	//	{
-	//		if ((pozX % 4)==0)
-	//			pozX+=4;
-	//		else
-	//			pozX = ((pozX/4)+1)*4;
-	//	} else {
-	//		pozX++;
-	//	}
-	//}
+    if ((lineIndex < 0) || (lineIndex >= (int)Lines.Len()))
+        return;
+	poz = *(((int *)Lines.GetInt32Array()) + lineIndex);
+	if ((poz<0) || (poz>=textSize))
+		return;
+	lnSize=GetLineSize(lineIndex);
+    Txt = Text.GetBuffer();
+	pozX=1;
+	if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
+		pozX+=3;
+	for (tr=0;tr<lnSize;tr++,poz++)
+	{
+		//if ((poz>=SelStart) && (poz<=SelEnd) && (activ)) 
+		//	c=Cfg->TextSelectCol;
+		//if ((Flags & GATTR_ENABLE)==0)
+		//	c=Cfg->TextInactivCol;
+		ch=Txt[poz].Code;
+		if (ch=='\t') 
+			ch=tabChar;
+		renderer.WriteCharacter(pozX,pozY,ch,DefaultColorPair);
+		if ((Flags & GATTR_ENABLE) && (poz==cLocation))
+			renderer.SetCursor(pozX,pozY);
+		if (Txt[poz].Code=='\t')
+		{
+			if ((pozX % 4)==0)
+				pozX+=4;
+			else
+				pozX = ((pozX/4)+1)*4;
+		} else {
+			pozX++;
+		}
+	}
 	//if ((activ) && (poz==cLocation)) 
 	//	Console::SetCursorPos(pozX,pozY); 
 }
@@ -251,12 +237,10 @@ void TextAreaControlContext::Paint(Console::Renderer & renderer)
         }
         renderer.DrawVerticalLineWithSpecialChar(startLine + 3, 0, viewLines,SpecialChars::BoxVerticalSingleLine,col->Border);
     }
-	//for (int tr=0;tr<=viewLines;tr++)
-	//{
-	//	DrawLine(tr+startLine,tr,activ);
-	//	if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
-	//		DrawLineNumber(tr+startLine,tr,activ);
-	//}
+	for (int tr=0;tr<=viewLines;tr++)
+	{
+		DrawLine(renderer, tr+startLine,tr,col->Text);
+	}
 }
 void TextAreaControlContext::MoveTo(int newPoz,bool selected)
 {
@@ -473,6 +457,7 @@ bool		TextArea::Create(Control *parent, const char * text, const char * layout, 
     CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
 	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)flags;
 	// initializam
+    CHECK(Members->Text.SetWithNewLines(text), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
 	Members->fnGetLineColor = nullptr;
 	Members->colorPData = nullptr;

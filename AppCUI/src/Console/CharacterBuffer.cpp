@@ -1,4 +1,5 @@
 #include "AppCUI.h"
+#include "Internal.h"
 #include <string.h>
 
 using namespace AppCUI::Console;
@@ -77,7 +78,7 @@ bool CharacterBuffer::SetWithHotKey(const char * text, unsigned int & hotKeyChar
     const unsigned char * p = (const unsigned char *)text;
     while (textSize > 0)
     {
-        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize>1 /* not the last character*/))
+        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
         {
             char tmp = p[1] | 0x20;
             if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
@@ -86,6 +87,54 @@ bool CharacterBuffer::SetWithHotKey(const char * text, unsigned int & hotKeyChar
                 p++; textSize--;
                 continue;
             }
+        }
+        ch->Color = color;
+        ch->Code = *p;
+        ch++;
+        p++;
+        textSize--;
+    }
+    this->Count = (unsigned int)(ch - this->Buffer);
+    return true;
+}
+bool CharacterBuffer::SetWithNewLines(const char * text, const ColorPair color, unsigned int textSize)
+{
+    CHECK(text, false, "Expecting a valid (non-null) text");
+    COMPUTE_TEXT_SIZE(text, textSize);
+    VALIDATE_ALLOCATED_SPACE(textSize, false);
+    Character* ch = this->Buffer;
+    const unsigned char * p = (const unsigned char *)text;
+    while (textSize > 0)
+    {
+        if ((*p) == '\r')
+        {
+            ch->Color = color;
+            ch->Code = NEW_LINE_CODE;
+            p++;
+            ch++;
+            textSize--;
+            if ((textSize > 0) && ((*p) == '\n'))
+            {
+                // skip
+                p++;
+                textSize--;
+            }
+            continue;
+        }
+        if ((*p) == '\n')
+        {
+            ch->Color = color;
+            ch->Code = NEW_LINE_CODE;
+            p++;
+            ch++;
+            textSize--;
+            if ((textSize > 0) && ((*p) == '\r'))
+            {
+                // skip
+                p++;
+                textSize--;
+            }
+            continue;
         }
         ch->Color = color;
         ch->Code = *p;
