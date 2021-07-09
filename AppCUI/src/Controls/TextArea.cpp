@@ -150,7 +150,7 @@ void TextAreaControlContext::SetColorFunction(Handlers::TextAreaSyntaxHighlightH
 void TextAreaControlContext::DrawToolTip()
 {
 }
-void TextAreaControlContext::DrawLine(int lineIndex,int pozY,bool activ)
+void TextAreaControlContext::DrawLine(int lineIndex,int pozY,const ColorPair lineNumberColor)
 {
 	//int				poz,c,pozX;
 	//int				lnSize,tr;
@@ -200,7 +200,7 @@ void TextAreaControlContext::DrawLine(int lineIndex,int pozY,bool activ)
 	//if ((activ) && (poz==cLocation)) 
 	//	Console::SetCursorPos(pozX,pozY); 
 }
-void TextAreaControlContext::DrawLineNumber(int lineIndex,int pozY,bool activ)
+void TextAreaControlContext::DrawLineNumber(Console::Renderer & renderer, int lineIndex,int pozY, const ColorPair lineNumberColor)
 {
 	char temp[32];
 	int poz = 30;
@@ -225,8 +225,7 @@ void TextAreaControlContext::DrawLineNumber(int lineIndex,int pozY,bool activ)
 		temp[30] = '?';
 		temp[31] = 0;
 	}
-	//Console::WriteString(0,pozY,&temp[28],Cfg->TextErrorCol);
-	//Console::WriteChar(3,pozY,179,Cfg->TextCol[(int)activ]);
+    renderer.WriteSingleLineText(0, pozY, temp + 28, lineNumberColor, 3);
 }
 void TextAreaControlContext::Paint(Console::Renderer & renderer)
 {
@@ -244,6 +243,14 @@ void TextAreaControlContext::Paint(Console::Renderer & renderer)
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
         renderer.SetClipMargins(1, 1, 1, 1);
 	}
+    if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
+    {
+        for (int tr = 0; tr <= viewLines; tr++)
+        {
+            DrawLineNumber(renderer, tr + startLine, tr, col->LineNumbers);
+        }
+        renderer.DrawVerticalLineWithSpecialChar(startLine + 3, 0, viewLines,SpecialChars::BoxVerticalSingleLine,col->Border);
+    }
 	//for (int tr=0;tr<=viewLines;tr++)
 	//{
 	//	DrawLine(tr+startLine,tr,activ);

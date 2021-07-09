@@ -154,8 +154,8 @@ public:
     void	DeleteSelected();
     int		GetLineSize(int lineIndex);
     int		GetLineStart(int lineIndex);
-    void	DrawLineNumber(int lineIndex, int pozY, bool activ);
-    void	DrawLine(int lineIndex, int pozY, bool activ);
+    void	DrawLineNumber(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);
+    void	DrawLine(int lineIndex, int pozY, const Console::ColorPair lineNumberCol);
     void	DrawToolTip();
 
 
