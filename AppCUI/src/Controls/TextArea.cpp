@@ -228,27 +228,22 @@ void TextAreaControlContext::DrawLineNumber(int lineIndex,int pozY,bool activ)
 	//Console::WriteString(0,pozY,&temp[28],Cfg->TextErrorCol);
 	//Console::WriteChar(3,pozY,179,Cfg->TextCol[(int)activ]);
 }
-void TextAreaControlContext::Paint(bool activ)
+void TextAreaControlContext::Paint(Console::Renderer & renderer)
 {
-	//int a=(int)activ;
+    auto col = &this->Cfg->Text.Normal;
+    if ((this->Flags & GATTR_ENABLE)==0)
+        col = &this->Cfg->Text.Inactive;
+    else if (this->Focused)
+        col = &this->Cfg->Text.Focus;
+    else if (this->MouseIsOver)
+        col = &this->Cfg->Text.Hover;
 
-	//if (Flags & (unsigned int)TextAreaFlags::BORDER)
-	//{
-	//	Console::DrawRect(0,0,Width-1,Height-1,Cfg->TextCol[a],false);
-	//	if (activ)
-	//	{
-	//		VBar.Set(Width-1,1,Height-4,false);
-	//		VBar.SetValue(cLine);
-	//		VBar.SetMaxValue(Lines.GetSize());
-	//		VBar.Paint();
-	//	}
-	//	itemsClip.Create(ScreenClip, 1, 1, Width - 2, Height - 2);
-	//	Console::SetClip(&itemsClip);
-	//}
-	//if (Flags & GATTR_ENABLE)
-	//	Console::FillRect(0,0,Width,Height,32,Cfg->TextCol[a]);
-	//else 
-	//	Console::FillRect(0, 0, Width, Height, 32, Cfg->TextInactivCol);
+    renderer.Clear(' ',col->Text);
+	if (Flags & (unsigned int)TextAreaFlags::BORDER)
+	{
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
+        renderer.SetClipMargins(1, 1, 1, 1);
+	}
 	//for (int tr=0;tr<=viewLines;tr++)
 	//{
 	//	DrawLine(tr+startLine,tr,activ);
@@ -495,7 +490,7 @@ bool		TextArea::Create(Control *parent, const char * text, const char * layout, 
 void		TextArea::Paint(Console::Renderer & renderer)
 {
 	CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
-	Members->Paint(Members->Focused);
+	Members->Paint(renderer);
 }
 bool		TextArea::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {

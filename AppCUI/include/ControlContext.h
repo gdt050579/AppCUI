@@ -175,7 +175,7 @@ public:
     bool	IsReadOnly();
 
     void	SetToolTip(char *ss);
-    void	Paint(bool activ);
+    void	Paint(Console::Renderer & renderer);
     bool	OnKeyEvent(int KeyCode, char AsciiCode);
     void	OnAfterResize();
     void	AnalyzeCurrentText();
