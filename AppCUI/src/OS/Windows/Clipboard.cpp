@@ -50,8 +50,8 @@ bool Clipboard::GetText(AppCUI::Utils::String &text)
     while (true)
     {
         const char *temp = (const char *)GetClipboardData(CF_TEXT);
-        CHECKBK(temp, false, "Invalid object received from clipboard data (null)");
-        CHECKBK(text.Set(temp), false, "Fail to copy text into String buffer !");
+        CHECKBK(temp, "Invalid object received from clipboard data (null)");
+        CHECKBK(text.Set(temp), "Fail to copy text into String buffer !");
         CloseClipboard();
         return true;
     }
