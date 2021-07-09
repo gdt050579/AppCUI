@@ -70,6 +70,32 @@ namespace AppCUI
     };
     namespace Utils
     {
+        class EXPORT Array32
+        {
+            unsigned int*   Data;
+            unsigned int    Count, Allocated;
+
+            bool				 Grow(unsigned int newSize);
+        public:
+            Array32();
+            ~Array32();
+            void                 Destroy();
+
+            bool			     Create(unsigned int allocatedCount = 64);
+            bool			     Create(unsigned int * vector, unsigned int vectorSize, unsigned int elementsCount = 0);
+            bool			     Create(int * vector, unsigned int vectorSize, unsigned int elementsCount = 0);
+
+            inline unsigned int* GetUInt32Array() const { return Data; }
+            inline int*          GetInt32Array() const { return (int*)Data; }
+            inline unsigned int	 Len() const { return Count; }
+            inline unsigned int	 GetAllocatedSize() const { return Allocated & 0x7FFFFFFF; }
+
+            inline void          Clear() { Count = 0; }
+            bool                 Reserve(unsigned int newSize);
+            bool                 Resize(unsigned int newSize);
+            bool                 Push(unsigned int value);
+            bool                 Push(int value);
+        };
         class EXPORT String 
         {
             char	            *Text;
@@ -667,6 +693,8 @@ namespace AppCUI
             typedef void(*MousePressedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*MouseReleasedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*TextFieldSyntaxHighlightHandler) (AppCUI::Controls::TextField * textField, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
+            typedef void(*TextAreaSyntaxHighlightHandler)(const char *ptrLine, unsigned char *ptrColors, unsigned int LineSize, unsigned int ColorVectSize, void *Context);
+
         }
 
         class EXPORT Control
@@ -916,6 +944,31 @@ namespace AppCUI
 
             virtual ~TextField();
         };
+        enum class TextAreaFlags : unsigned int
+        {
+            NONE                = 0x000000,
+            BORDER              = 0x000100,
+            SHOW_LINE_NUMBERS   = 0x000200,
+            PROCESS_TAB         = 0x000400,
+            READONLY            = 0x000800,
+        };
+
+        class EXPORT TextArea : public Control
+        {
+        public:
+            bool		Create(Control *parent, const char * text,  const char * layout, TextAreaFlags flags = TextAreaFlags::NONE);
+            void	    Paint(Console::Renderer & renderer) override;
+            bool	    OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void		OnFocus();
+            void		OnAfterResize(int newWidth, int newHeight);
+            void		OnAfterSetText(const char* newText);
+            void		SetReadOnly(bool value);
+            bool		IsReadOnly();
+            void		SetTabCharacter(char tabCharacter);
+            void		SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *Context);
+            virtual ~TextArea();
+        };
+
         namespace TabFlags
         {
             enum Type : unsigned int

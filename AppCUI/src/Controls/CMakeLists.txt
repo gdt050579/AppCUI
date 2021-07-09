@@ -9,5 +9,6 @@ target_sources(AppCUI PRIVATE
 	Splitter.cpp 
 	Tab.cpp
 	TextField.cpp
+	TextArea.cpp
 	UserControl.cpp
 	Window.cpp)

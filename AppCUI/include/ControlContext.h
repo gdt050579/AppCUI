@@ -3,6 +3,7 @@
 
 #include "AppCUI.h"
 #include <string.h>
+#include <vector>
 
 using namespace AppCUI;
 using namespace AppCUI::Controls;
@@ -130,6 +131,61 @@ public:
     } SyntaxHighlight;
     bool Modified;
 };
+class TextAreaControlContext : public ControlContext
+{
+public:
+    Utils::Array32              Lines;
+    Utils::String				toolTipInfo;
+    bool						toolTipVisible;
+    int							toolTipX, toolTipY, toolTipWidth, toolTipHeight;
+    AppCUI::Console::Clip	    itemsClip;
+    int							px, cLocation, textSize, cLine, viewLines, viewColumns, startLine;
+    int							SelStart, SelEnd, SelOrigin;
+    char						tabChar;
+    Handlers::TextAreaSyntaxHighlightHandler	fnGetLineColor;
+    void*						colorPData;    
+    Controls::Control*			Host;
+
+    void	UpdateView();
+    void	UpdateLines();
+    void	SelAll();
+    void	ClearSel();
+    void	MoveSelTo(int poz);
+    void	DeleteSelected();
+    int		GetLineSize(int lineIndex);
+    int		GetLineStart(int lineIndex);
+    void	DrawLineNumber(int lineIndex, int pozY, bool activ);
+    void	DrawLine(int lineIndex, int pozY, bool activ);
+    void	DrawToolTip();
+
+
+    void	MoveToLine(int times, bool selected);
+    void	MoveTo(int newPoz, bool selected);
+    void	MoveHome(bool selected);
+    void	MoveEnd(bool selected);
+    void	AddChar(char ch);
+    void	KeyDelete();
+    void	KeyBack();
+    void	CopyToClipboard();
+    void	PasteFromClipboard();
+    bool	HasSelection();
+
+
+    void	SetReadOnly(bool value);
+    bool	IsReadOnly();
+
+    void	SetToolTip(char *ss);
+    void	Paint(bool activ);
+    bool	OnKeyEvent(int KeyCode, char AsciiCode);
+    void	OnAfterResize();
+    void	AnalyzeCurrentText();
+    void	SetSelection(int start, int end);
+    void	SetTabCharacter(char tabCharacter);
+    void	SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *pData);
+    void	SendMsg(Event::Type eventType);
+
+};
+
 struct TabControlContext : public ControlContext
 {
 public:
