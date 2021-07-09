@@ -85,11 +85,20 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Panel.NormalColor = ColorPair{Color::Silver, Color::Transparent};
     this->Panel.TextColor = ColorPair{Color::White, Color::Transparent};
 
-    this->TextField.SelectionColor = ColorPair{Color::Yellow, Color::Magenta};
-    this->TextField.NormalColor = ColorPair{Color::Silver, Color::Black};
-    this->TextField.FocusColor = ColorPair{Color::White, Color::Black};
-    this->TextField.InactiveColor = ColorPair{Color::Gray, Color::Transparent};
-    this->TextField.HoverColor = ColorPair{Color::Yellow, Color::Black};
+    this->Text.SelectionColor = ColorPair{Color::Yellow, Color::Magenta};
+    this->Text.Normal.Text = ColorPair{ Color::Silver, Color::Black };
+    this->Text.Normal.Border = ColorPair{ Color::Silver, Color::Transparent };
+    this->Text.Normal.LineNumbers = ColorPair{ Color::Gray, Color::Black };
+    this->Text.Hover.Text = ColorPair{ Color::Yellow, Color::Black };
+    this->Text.Hover.Border = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Text.Hover.LineNumbers = ColorPair{ Color::Gray, Color::Black };
+    this->Text.Inactive.Text = ColorPair{ Color::Gray, Color::Transparent };
+    this->Text.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->Text.Inactive.LineNumbers = ColorPair{ Color::Gray, Color::Transparent };
+    this->Text.Focus.Text = ColorPair{ Color::White, Color::Black };
+    this->Text.Focus.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->Text.Focus.LineNumbers = ColorPair{ Color::Yellow, Color::Magenta };
+
 
     this->Tab.PageColor = ColorPair{Color::White, Color::Blue};
     this->Tab.PageHotKeyColor = ColorPair{Color::Yellow, Color::Blue};

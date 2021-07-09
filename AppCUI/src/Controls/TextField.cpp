@@ -300,13 +300,13 @@ void TextField::Paint(Console::Renderer & renderer)
         params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
 
     if (!this->IsEnabled())
-        params.Color = Members->Cfg->TextField.InactiveColor;
+        params.Color = Members->Cfg->Text.Inactive.Text;
     else if (Members->Focused)
-        params.Color = Members->Cfg->TextField.FocusColor;
+        params.Color = Members->Cfg->Text.Focus.Text;
     else if (Members->MouseIsOver)
-        params.Color = Members->Cfg->TextField.HoverColor;
+        params.Color = Members->Cfg->Text.Hover.Text;
     else
-        params.Color = Members->Cfg->TextField.NormalColor;
+        params.Color = Members->Cfg->Text.Normal.Text;
 
     renderer.Clear(' ', params.Color);
 
@@ -320,7 +320,7 @@ void TextField::Paint(Console::Renderer & renderer)
             } else 
                 Members->Text.SetColor(params.Color);
             if ((Members->Selection.Start >= 0) && (Members->Selection.End >= 0) && (Members->Selection.End >= Members->Selection.Start))
-                Members->Text.SetColor(Members->Selection.Start, Members->Selection.End + 1, Members->Cfg->TextField.SelectionColor);
+                Members->Text.SetColor(Members->Selection.Start, Members->Selection.End + 1, Members->Cfg->Text.SelectionColor);
             Members->Modified = false;
         }
         else {
