@@ -395,6 +395,7 @@ void TextAreaControlContext::MoveLeft(bool selected)
             // move to another line (next line)
             View.CurrentLine--;
             View.HorizontalOffset = 0;
+            UpdateView();
         }
         UpdateViewXOffset();
     }
@@ -414,6 +415,7 @@ void TextAreaControlContext::MoveRight(bool selected)
             // move to another line (next line)
             View.CurrentLine++;
             View.HorizontalOffset = 0;            
+            UpdateView();
         }
         UpdateViewXOffset();
     }
