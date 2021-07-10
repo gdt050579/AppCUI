@@ -14,7 +14,7 @@ void TextField_SendTextChangedEvent(TextField *control)
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
 	if (Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING)
 	{
-        Members->SyntaxHighlight.Handler(control, Members->Text.GetBuffer(), Members->Text.Len(), Members->SyntaxHighlight.Context);
+        Members->Syntax.Handler(control, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
 	}
 	control->RaiseEvent(Event::EVENT_TEXT_CHANGED);
 }
@@ -160,14 +160,14 @@ TextField::~TextField()
 {
 	DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-bool TextField::Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags, Handlers::TextFieldSyntaxHighlightHandler handler, void* handlerContext)
+bool TextField::Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags, Handlers::SyntaxHighlightHandler handler, void* handlerContext)
 {
 	CONTROL_INIT_CONTEXT(TextFieldControlContext);
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
     Members->Layout.MinWidth = 3;
     Members->Layout.MinHeight = 1;
-    Members->SyntaxHighlight.Handler = nullptr;
-    Members->SyntaxHighlight.Context = nullptr;
+    Members->Syntax.Handler = nullptr;
+    Members->Syntax.Context = nullptr;
 	
     CHECK(Init(parent, text, layout, false), false, "Failed to create text field !");
 	
@@ -177,8 +177,8 @@ bool TextField::Create(Control *parent, const char * text, const char * layout, 
 	Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
 	TextField_MoveTo(this, 0xFFFF, false);
 	if (Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING) {
-        Members->SyntaxHighlight.Handler = handler;
-        Members->SyntaxHighlight.Context = handlerContext;
+        Members->Syntax.Handler = handler;
+        Members->Syntax.Context = handlerContext;
         CHECK(handler, false, "if 'TextFieldFlags::SYNTAX_HIGHLIGHTING` is set a syntaxt highligh handler must be provided");
 	}
 	return true;
@@ -316,7 +316,7 @@ void TextField::Paint(Console::Renderer & renderer)
         {
             if (Members->Flags & TextFieldFlags::SYNTAX_HIGHLIGHTING)
             {
-                Members->SyntaxHighlight.Handler(this, Members->Text.GetBuffer(), Members->Text.Len(), Members->SyntaxHighlight.Context);
+                Members->Syntax.Handler(this, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
             } else 
                 Members->Text.SetColor(params.Color);
             if ((Members->Selection.Start >= 0) && (Members->Selection.End >= 0) && (Members->Selection.End >= Members->Selection.Start))

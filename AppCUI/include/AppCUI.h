@@ -695,8 +695,8 @@ namespace AppCUI
             typedef bool(*EventHandler)(AppCUI::Controls::Control *control, const void* sender, AppCUI::Controls::Event::Type eventType, int controlID, void *Context);
             typedef void(*MousePressedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*MouseReleasedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
-            typedef void(*TextFieldSyntaxHighlightHandler) (AppCUI::Controls::TextField * textField, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
-            typedef void(*TextAreaSyntaxHighlightHandler)(const char *ptrLine, unsigned char *ptrColors, unsigned int LineSize, unsigned int ColorVectSize, void *Context);
+            typedef void(*SyntaxHighlightHandler) (AppCUI::Controls::Control * control, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
+            typedef void(*TextASyntaxHighlightHandler)(const char *ptrLine, unsigned char *ptrColors, unsigned int LineSize, unsigned int ColorVectSize, void *Context);
 
         }
 
@@ -934,7 +934,7 @@ namespace AppCUI
         class EXPORT TextField : public Control
         {
         public:
-            bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE, Handlers::TextFieldSyntaxHighlightHandler handler = nullptr, void* Context = nullptr);
+            bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE, Handlers::SyntaxHighlightHandler handler = nullptr, void* Context = nullptr);
             bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void	OnAfterSetText(const char *text) override;
             void	Paint(Console::Renderer & renderer) override;
@@ -955,12 +955,13 @@ namespace AppCUI
             PROCESS_TAB         = 0x000400,
             READONLY            = 0x000800,
             SCROLLBARS          = 0x001000,
+            SYNTAX_HIGHLIGHTING = 0x002000,
         };
 
         class EXPORT TextArea : public Control
         {
         public:
-            bool		Create(Control *parent, const char * text,  const char * layout, TextAreaFlags flags = TextAreaFlags::NONE);
+            bool		Create(Control *parent, const char * text,  const char * layout, TextAreaFlags flags = TextAreaFlags::NONE, Handlers::SyntaxHighlightHandler handler = nullptr, void* handlerContext = nullptr);
             void	    Paint(Console::Renderer & renderer) override;
             bool	    OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void        OnUpdateScrollBars() override;
@@ -970,7 +971,6 @@ namespace AppCUI
             void		SetReadOnly(bool value);
             bool		IsReadOnly();
             void		SetTabCharacter(char tabCharacter);
-            void		SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *Context);
             virtual ~TextArea();
         };
 
@@ -1056,7 +1056,7 @@ namespace AppCUI
             static void                 ShowNotification(const char *title, const char *message);
             static void                 ShowWarning(const char *title, const char *message);
             static DialogResult         ShowOkCancel(const char *title, const char *message);
-            static DialogResult     ShowYesNoCancel(const char *title, const char *message);
+            static DialogResult         ShowYesNoCancel(const char *title, const char *message);
         };
 
     }

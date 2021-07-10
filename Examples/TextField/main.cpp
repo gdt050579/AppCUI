@@ -6,7 +6,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
 
-void HighlightNumberAndCapitalLetters(TextField * tx, Console::Character * chars, unsigned int charsCount, void* Context)
+void HighlightNumberAndCapitalLetters(Control * tx, Console::Character * chars, unsigned int charsCount, void* Context)
 {
     Console::Character * end = chars + charsCount;
     while (chars < end)

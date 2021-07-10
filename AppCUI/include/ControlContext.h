@@ -128,19 +128,16 @@ public:
         int Start, End, Origin;
     } Selection;
     struct {
-        Handlers::TextFieldSyntaxHighlightHandler   Handler;
-        void*                                       Context;
-    } SyntaxHighlight;
+        Handlers::SyntaxHighlightHandler   Handler;
+        void*                              Context;
+    } Syntax;
     bool Modified;
 };
 class TextAreaControlContext : public ControlContext
 {
 public:
     Utils::Array32              Lines;
-    //Utils::String				toolTipInfo;
-    //bool						toolTipVisible;
-    //int							toolTipX, toolTipY, toolTipWidth, toolTipHeight;
-    //AppCUI::Console::Clip	    itemsClip;
+
     struct {
         unsigned int            CurrentLine;
         unsigned int            CurrentRow;
@@ -153,11 +150,12 @@ public:
     struct {
         unsigned int            Start, End, Origin;
     } Selection;
-    
+    struct {
+        Handlers::SyntaxHighlightHandler    Handler;
+        void*                               Context;
+    } Syntax;
     char						tabChar;
-    Handlers::TextAreaSyntaxHighlightHandler	fnGetLineColor;
-    //void*						colorPData;    
-    Controls::Control*			Host;
+    AppCUI::Controls::Control*  Host;
 
     void    ComputeVisibleLinesAndRows();
 
@@ -201,9 +199,7 @@ public:
     void	AnalyzeCurrentText();
     void	SetSelection(unsigned int start, unsigned int end);
     void	SetTabCharacter(char tabCharacter);
-    void	SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *pData);
     void	SendMsg(Event::Type eventType);
-
 };
 
 struct TabControlContext : public ControlContext

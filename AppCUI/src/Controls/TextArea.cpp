@@ -199,6 +199,10 @@ void TextAreaControlContext::UpdateLines()
             lineNumber++;            
         }
     } while (c < c_End);
+    if (this->Flags & (unsigned int)TextAreaFlags::SYNTAX_HIGHLIGHTING)
+    {
+        this->Syntax.Handler(this->Host, this->Text.GetBuffer(), this->Text.Len(), this->Syntax.Context);
+    }
 	UpdateView();
 }
 unsigned int  TextAreaControlContext::GetLineStart(unsigned int lineIndex)
@@ -234,11 +238,6 @@ void TextAreaControlContext::SetTabCharacter(char tabCharacter)
 {
 	tabChar = tabCharacter;
 }
-void TextAreaControlContext::SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler GetLineColorFunction, void *Context)
-{
-	fnGetLineColor = GetLineColorFunction;
-	//colorPData = Context;
-}
 
 void TextAreaControlContext::DrawToolTip()
 {
@@ -267,7 +266,7 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
     ch_end = Text.GetBuffer() + Text.Len();
     ch = Text.GetBuffer() + poz;
     pozX = ofsX;
-    useHighlighing = false;
+    useHighlighing = (Flags & (unsigned int)TextAreaFlags::SYNTAX_HIGHLIGHTING) != 0;
     cursorPoz = -1;
     col = textColor;    
     if (pozX < 4)
@@ -288,7 +287,7 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
                 col = textColor;
         }
 
-    renderer.WriteCharacter(pozX, pozY, ch->Code, col);
+        renderer.WriteCharacter(pozX, pozY, ch->Code, col);
 
         if (ch->Code == '\t')
         {
@@ -646,13 +645,15 @@ TextArea::~TextArea()
 {
 	DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-bool		TextArea::Create(Control *parent, const char * text, const char * layout, TextAreaFlags flags)
+bool		TextArea::Create(Control *parent, const char * text, const char * layout, TextAreaFlags flags, Handlers::SyntaxHighlightHandler handler, void* handlerContext)
 {
 	CHECK(text != nullptr, false, "Text should not be null !");
 	CONTROL_INIT_CONTEXT(TextAreaControlContext);
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, false);
     Members->Layout.MinWidth = 5;
     Members->Layout.MinHeight = 3;
+    Members->Syntax.Handler = nullptr;
+    Members->Syntax.Context = nullptr;
     CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
 	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)flags;
 	// initializam
@@ -664,11 +665,15 @@ bool		TextArea::Create(Control *parent, const char * text, const char * layout, 
         Members->Flags |= GATTR_VSCROLL;
         Members->ScrollBars.OutsideControl = (((unsigned int)flags & (unsigned int)TextAreaFlags::BORDER) == 0);        
     }
-	Members->fnGetLineColor = nullptr;
+    if (Members->Flags & (unsigned int)TextAreaFlags::SYNTAX_HIGHLIGHTING) {
+        Members->Syntax.Handler = handler;
+        Members->Syntax.Context = handlerContext;
+        CHECK(handler, false, "if 'TextAreaFlags::SYNTAX_HIGHLIGHTING` is set a syntaxt highligh handler must be provided");
+    }
 	Members->tabChar = ' ';
-	Members->Host = this;
     Members->View.CurrentPosition = 0;
     Members->View.TopLine = 0;
+    Members->Host = this;
     Members->ComputeVisibleLinesAndRows();
     Members->ClearSel();    
 	Members->AnalyzeCurrentText();
@@ -714,8 +719,5 @@ void		TextArea::SetTabCharacter(char tabCharacter)
 {
 	WRAPPER->SetTabCharacter(tabCharacter);
 }
-void		TextArea::SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *Context)
-{
-	WRAPPER->SetColorFunction(handler, Context);
-}
+
 
