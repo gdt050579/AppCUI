@@ -95,10 +95,12 @@ void TextAreaControlContext::DeleteSelected()
 {
 	if (Selection.Start == INVALID_SELECTION) 
 		return;
-    Text.Delete(Selection.Start, Selection.End);
-    View.CurrentPosition = Selection.Start;
-	UpdateLines();
-	ClearSel();
+    if (Text.Delete(Selection.Start, Selection.End))
+    {
+        View.CurrentPosition = Selection.Start;
+        UpdateLines();
+        ClearSel();
+    }
 }
 
 void TextAreaControlContext::UpdateView()
@@ -504,10 +506,12 @@ void TextAreaControlContext::AddChar(char ch)
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY)!=0) 
 		return;
 	DeleteSelected();
-	Text.InsertChar(ch, View.CurrentPosition);
-	MoveTo(View.CurrentPosition +1,false);
-	UpdateLines();
-	SendMsg(Event::EVENT_TEXT_CHANGED);
+    if (Text.InsertChar(ch, View.CurrentPosition))
+    {
+        View.CurrentPosition++;
+        UpdateLines();
+        SendMsg(Event::EVENT_TEXT_CHANGED);
+    }
 }
 void TextAreaControlContext::KeyBack()
 {
@@ -520,10 +524,12 @@ void TextAreaControlContext::KeyBack()
     }
     if (View.CurrentPosition == 0)
         return;
-	Text.DeleteChar(View.CurrentPosition - 1);
-    MoveTo(View.CurrentPosition - 1, false);
-	UpdateLines();
-	SendMsg(Event::EVENT_TEXT_CHANGED);
+    if (Text.DeleteChar(View.CurrentPosition - 1))
+    {
+        View.CurrentPosition--;
+        UpdateLines();
+        SendMsg(Event::EVENT_TEXT_CHANGED);
+    }
 }
 void TextAreaControlContext::KeyDelete()
 {
@@ -534,9 +540,11 @@ void TextAreaControlContext::KeyDelete()
         DeleteSelected();
         return;
     }
-	Text.DeleteChar(View.CurrentPosition);
-	UpdateLines();
-	SendMsg(Event::EVENT_TEXT_CHANGED);
+    if (Text.DeleteChar(View.CurrentPosition))
+    {
+        UpdateLines();
+        SendMsg(Event::EVENT_TEXT_CHANGED);
+    }
 }
 bool TextAreaControlContext::HasSelection()
 {
