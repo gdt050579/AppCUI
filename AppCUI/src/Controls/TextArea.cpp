@@ -183,9 +183,15 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
     if (lineIndex >= Lines.Len())
         return;
     poz = *(Lines.GetUInt32Array() + lineIndex);
-    if (poz >= Text.Len())
+    if (poz >= Text.Len()) {
+        if (Flags & GATTR_ENABLE)
+        {
+            // if its the last character (EOF) --> show the cursor
+            if (poz == View.CurrentPosition)
+                renderer.SetCursor(ofsX - ((int)View.HorizontalOffset), pozY);
+        }
         return;
-
+    }
     lnSize = GetLineSize(lineIndex);
     ch = Text.GetBuffer() + poz;
     pozX = ofsX - ((int)View.HorizontalOffset);
