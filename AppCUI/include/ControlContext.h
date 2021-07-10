@@ -137,30 +137,45 @@ class TextAreaControlContext : public ControlContext
 {
 public:
     Utils::Array32              Lines;
-    Utils::String				toolTipInfo;
-    bool						toolTipVisible;
-    int							toolTipX, toolTipY, toolTipWidth, toolTipHeight;
-    AppCUI::Console::Clip	    itemsClip;
-    int							px, cLocation, textSize, cLine, viewLines, viewColumns, startLine;
-    int							SelStart, SelEnd, SelOrigin;
+    //Utils::String				toolTipInfo;
+    //bool						toolTipVisible;
+    //int							toolTipX, toolTipY, toolTipWidth, toolTipHeight;
+    //AppCUI::Console::Clip	    itemsClip;
+    struct {
+        unsigned int            CurrentLine;
+        unsigned int            CurrentRow;
+        unsigned int            CurrentPosition;
+        unsigned int            HorizontalOffset;
+        unsigned int            TopLine;
+        unsigned int            VisibleLinesCount;
+        unsigned int            VisibleRowsCount;
+    } View;
+    struct {
+        unsigned int            Start, End, Origin;
+    } Selection;
+    
     char						tabChar;
     Handlers::TextAreaSyntaxHighlightHandler	fnGetLineColor;
-    void*						colorPData;    
+    //void*						colorPData;    
     Controls::Control*			Host;
 
-    void	UpdateView();
-    void	UpdateLines();
-    void	SelAll();
-    void	ClearSel();
-    void	MoveSelTo(int poz);
-    void	DeleteSelected();
-    int		GetLineSize(int lineIndex);
-    int		GetLineStart(int lineIndex);
-    void	DrawLineNumber(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);
-    void	DrawLine(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberCol);
-    void	DrawToolTip();
+    void    ComputeVisibleLinesAndRows();
+
+    void	        UpdateView();
+    void	        UpdateLines();
+    void	        SelAll();
+    void	        ClearSel();
+    void	        MoveSelectionTo(unsigned int poz);
+    void	        DeleteSelected();
+    unsigned int    GetLineSize(unsigned int lineIndex);
+    unsigned int	GetLineStart(unsigned int lineIndex);
+    void	        DrawLineNumber(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);
+    void	        DrawLine(Console::Renderer & renderer, unsigned int lineIndex, int ofsX, int pozY, const Console::ColorPair textColor);
+    void	        DrawToolTip();
 
 
+    void    MoveLeft(bool selected);
+    void    MoveRight(bool selected);
     void	MoveToLine(int times, bool selected);
     void	MoveTo(int newPoz, bool selected);
     void	MoveHome(bool selected);
@@ -181,7 +196,7 @@ public:
     bool	OnKeyEvent(int KeyCode, char AsciiCode);
     void	OnAfterResize();
     void	AnalyzeCurrentText();
-    void	SetSelection(int start, int end);
+    void	SetSelection(unsigned int start, unsigned int end);
     void	SetTabCharacter(char tabCharacter);
     void	SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler handler, void *pData);
     void	SendMsg(Event::Type eventType);

@@ -6,77 +6,103 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Input;
 using namespace AppCUI::OS;
 
+#define LINE_NUMBERS_WIDTH  4
+#define INVALID_SELECTION   0xFFFFFFFF
+
+#define CLEAR_SELECTION     \
+    if ((!selected) && (Selection.Start != INVALID_SELECTION)) { ClearSel(); } \
+    if ((selected) && (Selection.Start == INVALID_SELECTION)) { Selection.Origin = View.CurrentPosition; }
+
+#define UPDATE_SELECTION    if (selected) MoveSelectionTo(View.CurrentPosition);
+
 
 #define WRAPPER	((TextAreaControlContext*)this->Context)
 
+void TextAreaControlContext::ComputeVisibleLinesAndRows()
+{
+    unsigned int extraY = 0;
+    unsigned int extraX = 0;
+
+    if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
+        extraX += LINE_NUMBERS_WIDTH;
+    if (Flags & (unsigned int)TextAreaFlags::BORDER)
+    {
+        extraX += 2;
+        extraY += 2;
+    }
+    if (extraX < Layout.Width)
+        this->View.VisibleRowsCount = ((unsigned int)Layout.Width) - extraX;
+    else
+        this->View.VisibleRowsCount = 0;
+    if (extraY < Layout.Height)
+        this->View.VisibleLinesCount = ((unsigned int)Layout.Height) - extraY;
+    else
+        this->View.VisibleLinesCount = 0;
+}
 void TextAreaControlContext::SelAll()
 {
-    SelStart = 0;
-	SelEnd = Text.Len();
-	SelEnd--;
-	if (SelEnd<0) 
-		ClearSel();
+    if (Text.Len() == 0)
+        ClearSel();
+    else {
+        Selection.Start = 0;
+        Selection.Origin = 0;
+        Selection.End = Text.Len();
+    }
 }
 void TextAreaControlContext::ClearSel()
 {
-    SelStart = SelEnd = SelOrigin = -1;
+    Selection.Start = INVALID_SELECTION;
+    Selection.End = INVALID_SELECTION;
+    Selection.Origin = INVALID_SELECTION;
 }
-void TextAreaControlContext::MoveSelTo(int poz)
+void TextAreaControlContext::MoveSelectionTo(unsigned int poz)
 {
-	if (SelStart==-1) 
-		return ;
-	if (poz==SelOrigin) 
-	{ 
-		ClearSel(); 
-		return; 
-	}
-	if (poz<SelOrigin)
-	{
-		SelStart=poz;
-		SelEnd=SelOrigin-1;
-	} else if (poz>SelOrigin)
-	{
-		SelEnd=poz-1;
-		SelStart=SelOrigin;
-	} 
-	//if (poz<SelStart) SelStart=poz; else SelEnd=poz-1;
+    if ((Selection.Origin == INVALID_SELECTION) || (poz==Selection.Origin))
+    {
+        ClearSel();
+        return;
+    }
+    if (poz < Selection.Origin)
+    {
+        Selection.Start = poz;
+        Selection.End = Selection.Origin;
+    } else {
+        Selection.Start = Selection.Origin;
+        Selection.End = poz;
+    }
 }
 
 void TextAreaControlContext::DeleteSelected()
 {
 	int ss,se;
-	if (SelStart==-1) 
+	if (Selection.Start == INVALID_SELECTION) 
 		return;
-	ss=SelStart;se=SelEnd;
-	if (SelStart<SelOrigin)
-	{
-		SelStart++;
-	}
-	if (cLocation>=SelStart)
-	{
-		MoveTo(cLocation-(se-ss+1),false);
-	}
-	Text.Delete(ss, se + 1);
+    Text.Delete(Selection.Start, Selection.End);
+    View.CurrentPosition = Selection.Start;
 	UpdateLines();
 	ClearSel();
 }
 
 void TextAreaControlContext::UpdateView()
 {
-	int *pLines = Lines.GetInt32Array();
-	for (unsigned int tr=0;tr<Lines.Len();tr++)
-		if (cLocation>=pLines[tr])
-			cLine=tr;
-	if (cLine<startLine)
+	unsigned int *pLines = Lines.GetUInt32Array();
+    unsigned int cnt = Lines.Len();
+    View.CurrentLine = 0;
+    for (unsigned int tr = 0; tr < cnt; tr++)
+    {
+        if (View.CurrentPosition < pLines[tr])
+            break;
+        else
+            View.CurrentLine = tr;
+    }
+    if (View.CurrentLine < View.TopLine)
 	{
-		startLine=cLine;
+        View.TopLine = View.CurrentLine;
 	}
-	if (cLine>=startLine+viewLines)
-	{
-        startLine = cLine - viewLines;
-        if (startLine < 0)
-            startLine = 0;
-	}
+    if (View.CurrentLine >= View.TopLine + View.VisibleLinesCount)
+    {
+        View.TopLine = View.CurrentLine - View.VisibleLinesCount;
+    }
 }
 void TextAreaControlContext::UpdateLines()
 {
@@ -85,51 +111,52 @@ void TextAreaControlContext::UpdateLines()
     Character* s = c;
     Character* c_End = c + Text.Len();
 
-    lineNumber = 0;
-    
-    textSize = 0;
-    cLine = 0;
+    View.CurrentLine = 0;
     Lines.Clear();
-	do
-	{
-        txSize = (unsigned int)(c - s);
-        if (cLocation >= (int)txSize)
-            cLine = lineNumber;
-        Lines.Push(txSize);
-		lineNumber++;
+    Lines.Push(0);  // first line
+    lineNumber = 1; // at least one line
 
+    do
+	{
         while ((c < c_End) && (c->Code != NEW_LINE_CODE))
             c++;
-        if (c < c_End) // a '\n' was found
+        if (c < c_End) // a new line was found
+        {
             c++;
+            txSize = (unsigned int)(c - s);
+            if (View.CurrentPosition >= txSize)
+                View.CurrentLine = lineNumber;
+            Lines.Push(txSize);
+            lineNumber++;            
+        }
     } while (c < c_End);
-    textSize = Text.Len();
 	UpdateView();
 }
-int  TextAreaControlContext::GetLineSize(int lineIndex)
+unsigned int  TextAreaControlContext::GetLineSize(unsigned int lineIndex)
 {
-    int *pLines = Lines.GetInt32Array();
-	if ((pLines==nullptr) || (lineIndex<0) || (lineIndex>=(int)Lines.Len()))
-		return 0;
-	if ((lineIndex+1)<(int)Lines.Len())
-	{
-		return pLines[lineIndex+1]-(pLines[lineIndex]+1) ; // not including the last NEW_LINE character
-	} else {
-		return textSize-pLines[lineIndex];
-	}
+    unsigned int linesCount = Lines.Len();
+    unsigned int *p = Lines.GetUInt32Array();
+    if ((lineIndex + 1) < linesCount)
+        return p[lineIndex + 1] - (p[lineIndex] + 1); // ingnore the final NEW_LINE character
+    if (lineIndex >= linesCount)
+        return 0; // line index outside 
+    return Text.Len() - p[lineIndex];
 }
-int	 TextAreaControlContext::GetLineStart(int lineIndex)
+unsigned int  TextAreaControlContext::GetLineStart(unsigned int lineIndex)
 {
-    int *pLines = Lines.GetInt32Array();
-	if ((pLines==nullptr) || (lineIndex<0) || (lineIndex>=(int)Lines.Len()))
-		return 0;
-	return pLines[lineIndex];
+    unsigned int value;
+    if (Lines.Get(lineIndex, value) == false)
+        return 0;
+    return value;
 }
 void TextAreaControlContext::AnalyzeCurrentText()
 {
 	UpdateLines();
-	cLocation=px=0;
-	MoveTo(textSize,false);
+    View.CurrentLine = 0;
+    View.CurrentPosition = 0;
+    View.HorizontalOffset = 0;
+ //   cLocation = px = 0;
+	//MoveTo(textSize,false);
 }
 void TextAreaControlContext::SetTabCharacter(char tabCharacter)
 {
@@ -138,53 +165,69 @@ void TextAreaControlContext::SetTabCharacter(char tabCharacter)
 void TextAreaControlContext::SetColorFunction(Handlers::TextAreaSyntaxHighlightHandler GetLineColorFunction, void *Context)
 {
 	fnGetLineColor = GetLineColorFunction;
-	colorPData = Context;
+	//colorPData = Context;
 }
 
 void TextAreaControlContext::DrawToolTip()
 {
 }
-void TextAreaControlContext::DrawLine(Console::Renderer & renderer, int lineIndex,int pozY,const ColorPair lineNumberColor)
+void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int lineIndex, int ofsX, int pozY,const ColorPair textColor)
 {
-	int				poz,c,pozX;
-	int				lnSize,tr;
-	char			ch;
-	Character*		Txt;
+    unsigned int    poz, lnSize;
+	int				c,pozX;
+	int				tr,cursorPoz;
+    bool            useHighlighing;
+	Character*		ch;
+    ColorPair       col;
 
-    if ((lineIndex < 0) || (lineIndex >= (int)Lines.Len()))
+    if (lineIndex >= Lines.Len())
         return;
-	poz = *(((int *)Lines.GetInt32Array()) + lineIndex);
-	if ((poz<0) || (poz>=textSize))
-		return;
-	lnSize=GetLineSize(lineIndex);
-    Txt = Text.GetBuffer();
-	pozX=1;
-	if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
-		pozX+=3;
-	for (tr=0;tr<lnSize;tr++,poz++)
-	{
-		//if ((poz>=SelStart) && (poz<=SelEnd) && (activ)) 
-		//	c=Cfg->TextSelectCol;
-		//if ((Flags & GATTR_ENABLE)==0)
-		//	c=Cfg->TextInactivCol;
-		ch=Txt[poz].Code;
-		if (ch=='\t') 
-			ch=tabChar;
-		renderer.WriteCharacter(pozX,pozY,ch,DefaultColorPair);
-		if ((Flags & GATTR_ENABLE) && (poz==cLocation))
-			renderer.SetCursor(pozX,pozY);
-		if (Txt[poz].Code=='\t')
-		{
-			if ((pozX % 4)==0)
-				pozX+=4;
-			else
-				pozX = ((pozX/4)+1)*4;
-		} else {
-			pozX++;
-		}
-	}
-	//if ((activ) && (poz==cLocation)) 
-	//	Console::SetCursorPos(pozX,pozY); 
+    poz = *(Lines.GetUInt32Array() + lineIndex);
+    if (poz >= Text.Len())
+        return;
+
+    lnSize = GetLineSize(lineIndex);
+    ch = Text.GetBuffer() + poz;
+    pozX = ofsX - ((int)View.HorizontalOffset);
+    useHighlighing = false;
+    cursorPoz = -1;
+    col = textColor;
+    for (tr = 0; tr < lnSize; tr++, poz++, ch++)
+    {
+        if (Flags & GATTR_ENABLE)
+        {
+            if (poz == View.CurrentPosition)
+                cursorPoz = pozX;
+            if ((poz >= Selection.Start) && (poz < Selection.End))
+                col = Cfg->Text.SelectionColor;
+            else if (useHighlighing)
+                col = ch->Color;
+            else
+                col = textColor;
+        }
+        
+        renderer.WriteCharacter(pozX, pozY, ch->Code, col);
+
+        if (ch->Code == '\t')
+        {
+            if ((pozX % 4) == 0)
+                pozX += 4;
+            else
+                pozX = ((pozX >> 2) + 1) << 2;
+        }
+        else {
+            pozX++;
+        }
+        if (pozX > (int)View.VisibleRowsCount)
+            break;
+    }
+    if (Flags & GATTR_ENABLE)
+    {
+        if (poz == View.CurrentPosition)
+            cursorPoz = pozX;
+        if (cursorPoz>=0)
+            renderer.SetCursor(cursorPoz, pozY);
+    }
 }
 void TextAreaControlContext::DrawLineNumber(Console::Renderer & renderer, int lineIndex,int pozY, const ColorPair lineNumberColor)
 {
@@ -192,26 +235,19 @@ void TextAreaControlContext::DrawLineNumber(Console::Renderer & renderer, int li
 	int poz = 30;
 	temp[31] = 0;
 	lineIndex++;
-	if (lineIndex >= 0)
+
+	do
 	{
-		do
-		{
-			temp[poz--] = lineIndex % 10 + '0';
-			lineIndex /= 10;
-		} while (lineIndex > 0);
-		while (poz > 27) {
-			temp[poz--] = ' ';
-		}
-		if (poz < 27)
-			temp[28] = '.';
+		temp[poz--] = lineIndex % 10 + '0';
+		lineIndex /= 10;
+	} while (lineIndex > 0);
+	while (poz > 27) {
+		temp[poz--] = ' ';
 	}
-	else {
-		temp[28] = '?';
-		temp[29] = '?';
-		temp[30] = '?';
-		temp[31] = 0;
-	}
-    renderer.WriteSingleLineText(0, pozY, temp + 28, lineNumberColor, 3);
+	if (poz < 27)
+		temp[28] = '.';
+
+    renderer.WriteSingleLineText(0, pozY, temp + 28, lineNumberColor, LINE_NUMBERS_WIDTH-1);
 }
 void TextAreaControlContext::Paint(Console::Renderer & renderer)
 {
@@ -224,71 +260,123 @@ void TextAreaControlContext::Paint(Console::Renderer & renderer)
         col = &this->Cfg->Text.Hover;
 
     renderer.Clear(' ',col->Text);
+    int lm, tm, rm, bm;
+    lm = tm = rm = bm = 0;
 	if (Flags & (unsigned int)TextAreaFlags::BORDER)
 	{
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
+        lm = tm = rm = bm = 1;
         renderer.SetClipMargins(1, 1, 1, 1);
 	}
     if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
     {
-        for (int tr = 0; tr <= viewLines; tr++)
+        unsigned int lnCount = Lines.Len();
+        unsigned int tr = 0;
+        unsigned int lnIndex = View.TopLine;
+        while ((lnIndex < lnCount) && (tr < View.VisibleLinesCount))
         {
-            DrawLineNumber(renderer, tr + startLine, tr, col->LineNumbers);
+            if (lnIndex == View.CurrentLine)
+                DrawLineNumber(renderer, lnIndex, tr, col->CurrentLineNumber);
+            else
+                DrawLineNumber(renderer, lnIndex, tr, col->LineNumbers);
+            lnIndex++;
+            tr++;
         }
-        renderer.DrawVerticalLineWithSpecialChar(startLine + 3, 0, viewLines,SpecialChars::BoxVerticalSingleLine,col->Border);
+        if (tr < View.VisibleLinesCount)
+        {
+            renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', col->LineNumbers);
+        }
+        renderer.DrawVerticalLineWithSpecialChar(View.TopLine + LINE_NUMBERS_WIDTH - 1, 0, View.VisibleRowsCount,SpecialChars::BoxVerticalSingleLine,col->Border);
+        lm += LINE_NUMBERS_WIDTH;
     }
-	for (int tr=0;tr<=viewLines;tr++)
-	{
-		DrawLine(renderer, tr+startLine,tr,col->Text);
-	}
+    renderer.SetClipMargins(lm, tm, rm, bm);
+    for (unsigned int tr = 0; tr < View.VisibleLinesCount; tr++)
+    {
+        DrawLine(renderer, tr + View.TopLine, lm, tr+tm, col->Text);
+    }
+}
+void TextAreaControlContext::MoveLeft(bool selected)
+{
+    CLEAR_SELECTION;
+
+    if (View.CurrentPosition > 0)
+    {
+        View.CurrentPosition--;
+        if (Text.GetBuffer()[View.CurrentPosition].Code == NEW_LINE_CODE)
+        {
+            // move to another line (next line)
+            View.CurrentLine--;
+            View.HorizontalOffset = 0;
+        }
+    }
+
+    UPDATE_SELECTION;
+}
+void TextAreaControlContext::MoveRight(bool selected)
+{
+    CLEAR_SELECTION;
+
+    if (View.CurrentPosition < Text.Len())
+    {
+        bool isEOL = (Text.GetBuffer()[View.CurrentPosition].Code == NEW_LINE_CODE);
+        View.CurrentPosition++;
+        if (isEOL)
+        {
+            // move to another line (next line)
+            View.CurrentLine++;
+            View.HorizontalOffset = 0;            
+        }
+    }
+
+    UPDATE_SELECTION;
 }
 void TextAreaControlContext::MoveTo(int newPoz,bool selected)
 {
-	if ((!selected) && (SelStart!=-1)) 
-		ClearSel();
-	
-	if ((cLocation>=(int)Text.Len()) && (newPoz>cLocation)) 
-		return;
-	if ((selected) && (SelStart==-1)) 
-	{ 
-		SelStart=SelEnd=SelOrigin=cLocation; 
-	}
-	while (cLocation!=newPoz)
-	{
-		if (cLocation>newPoz) cLocation--; else if (cLocation<newPoz) cLocation++; 
-		if (cLocation<0) { cLocation=newPoz=0; }
-		if (cLocation >= (int)Text.Len())  newPoz=cLocation;
-		if (cLocation<px) px=cLocation;
-        if (cLocation > px + Layout.Width - 2) px = cLocation - Layout.Width + 2;
-	} 
-	if (selected) MoveSelTo(cLocation);
-	UpdateView();
+	//if ((!selected) && (SelStart!=-1)) 
+	//	ClearSel();
+	//
+	//if ((cLocation>=(int)Text.Len()) && (newPoz>cLocation)) 
+	//	return;
+	//if ((selected) && (SelStart==-1)) 
+	//{ 
+ //       SelStart = SelEnd = SelOrigin = cLocation;
+	//}
+	//while (cLocation!=newPoz)
+	//{
+	//	if (cLocation>newPoz) cLocation--; else if (cLocation<newPoz) cLocation++; 
+	//	if (cLocation<0) { cLocation=newPoz=0; }
+	//	if (cLocation >= (int)Text.Len())  newPoz=cLocation;
+	//	if (cLocation<px) px=cLocation;
+ //       if (cLocation > px + Layout.Width - 2) px = cLocation - Layout.Width + 2;
+	//} 
+	//if (selected) MoveSelTo(cLocation);
+	//UpdateView();
 }
 void TextAreaControlContext::MoveToLine(int times,bool selected)
 {
-	int xOffset,newLine,newLineSize;
+	//int xOffset,newLine,newLineSize;
 
-	if (Lines.Len()==0)
-		return;
+	//if (Lines.Len()==0)
+	//	return;
 
-	xOffset = cLocation - GetLineStart(cLine);
-	newLine = cLine+times;
-	if (newLine<0) 
-		newLine=0;
-	if (newLine>=(int)Lines.Len())
-		newLine=Lines.Len()-1;
-	newLineSize = GetLineSize(newLine);
-	if (newLineSize<xOffset)
-		xOffset = newLineSize;
-	MoveTo(xOffset+GetLineStart(newLine),selected);
+	//xOffset = cLocation - GetLineStart(cLine);
+	//newLine = cLine+times;
+	//if (newLine<0) 
+	//	newLine=0;
+	//if (newLine>=(int)Lines.Len())
+	//	newLine=Lines.Len()-1;
+	//newLineSize = GetLineSize(newLine);
+	//if (newLineSize<xOffset)
+	//	xOffset = newLineSize;
+	//MoveTo(xOffset+GetLineStart(newLine),selected);
 }
 void TextAreaControlContext::MoveHome(bool selected)
 {
-	MoveTo(GetLineStart(cLine),selected);
+	//MoveTo(GetLineStart(cLine),selected);
 }
 void TextAreaControlContext::MoveEnd(bool selected)
 {
-	MoveTo(GetLineStart(cLine)+GetLineSize(cLine),selected);
+	//MoveTo(GetLineStart(cLine)+GetLineSize(cLine),selected);
 }
 
 void TextAreaControlContext::AddChar(char ch)
@@ -296,8 +384,8 @@ void TextAreaControlContext::AddChar(char ch)
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY)!=0) 
 		return;
 	DeleteSelected();
-	Text.InsertChar(ch, cLocation);
-	MoveTo(cLocation+1,false);
+	Text.InsertChar(ch, View.CurrentPosition);
+	MoveTo(View.CurrentPosition +1,false);
 	UpdateLines();
 	SendMsg(Event::EVENT_TEXT_CHANGED);
 }
@@ -305,15 +393,15 @@ void TextAreaControlContext::KeyBack()
 {
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY) != 0)
 		return;
-	if (SelStart!=-1) 
-	{ 
-		DeleteSelected();
-		return; 
-	}
-	if (cLocation==0) 
-		return;
-	Text.DeleteChar(cLocation - 1);
-	MoveTo(cLocation-1,false);
+    if (Selection.Start != INVALID_SELECTION)
+    {
+        DeleteSelected();
+        return;
+    }
+    if (View.CurrentPosition == 0)
+        return;
+	Text.DeleteChar(View.CurrentPosition - 1);
+    MoveTo(View.CurrentPosition - 1, false);
 	UpdateLines();
 	SendMsg(Event::EVENT_TEXT_CHANGED);
 }
@@ -321,24 +409,26 @@ void TextAreaControlContext::KeyDelete()
 {
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY) != 0)
 		return;
-	if (SelStart!=-1) 
-	{ 
-		DeleteSelected();
-		return; 
-	}
-	Text.DeleteChar(cLocation);
+    if (Selection.Start != INVALID_SELECTION)
+    {
+        DeleteSelected();
+        return;
+    }
+	Text.DeleteChar(View.CurrentPosition);
 	UpdateLines();
 	SendMsg(Event::EVENT_TEXT_CHANGED);
 }
 bool TextAreaControlContext::HasSelection()
 {
-	return ((SelStart >= 0) && (SelEnd >= 0) && (SelEnd >= SelStart));
+    return Selection.Start != INVALID_SELECTION;
 }
-void TextAreaControlContext::SetSelection(int start,int end)
+void TextAreaControlContext::SetSelection(unsigned int start,unsigned int end)
 {
-	if ((start>=0) && (start<=end)) 
+	if ((start<end) && (end<=Text.Len()))
 	{	
-		SelStart=SelOrigin=start;SelEnd=end;
+        Selection.Start = start;
+        Selection.Origin = start;
+        Selection.End = end;
 	}
 }
 void TextAreaControlContext::CopyToClipboard()
@@ -366,27 +456,27 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 {
 	switch (KeyCode)
 	{
-		case Key::Left							: MoveTo(cLocation-1,false); return true;
-		case Key::Right						    : MoveTo(cLocation + 1, false); return true;
-		case Key::Up							: MoveToLine(-1,false); return true;
-		case Key::PageUp						: MoveToLine(-viewLines,false); return true;
-		case Key::Down							: MoveToLine(1,false); return true;
-		case Key::PageDown						: MoveToLine(viewLines,false); return true;
-		case Key::Home							: MoveHome(false); return true;
-		case Key::End							: MoveEnd(false); return true;
-		case Key::Ctrl|Key::Home				: MoveTo(0,false); return true;
-		case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
+		case Key::Left							: MoveLeft(false); return true;
+		case Key::Right						    : MoveRight(false); return true;
+		//case Key::Up							: MoveToLine(-1,false); return true;
+		//case Key::PageUp						: MoveToLine(-viewLines,false); return true;
+		//case Key::Down							: MoveToLine(1,false); return true;
+		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
+		//case Key::Home							: MoveHome(false); return true;
+		//case Key::End							: MoveEnd(false); return true;
+		//case Key::Ctrl|Key::Home				: MoveTo(0,false); return true;
+		//case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
 
-		case Key::Shift|Key::Left				: MoveTo(cLocation - 1, true); return true;
-		case Key::Shift | Key::Right			: MoveTo(cLocation + 1, true); return true;
-		case Key::Shift | Key::Up				: MoveToLine(-1, true); return true;
-		case Key::Shift | Key::PageUp			: MoveToLine(-viewLines, true); return true;
-		case Key::Shift | Key::Down			    : MoveToLine(1, true); return true;
-		case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
-		case Key::Shift | Key::Home			    : MoveHome(true); return true;
-		case Key::Shift | Key::End			    : MoveEnd(true); return true;
-		case Key::Shift | Key::Ctrl | Key::Home : MoveTo(0, true); return true;
-		case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
+		case Key::Shift | Key::Left				: MoveLeft(true); return true;
+		case Key::Shift | Key::Right			: MoveRight(true); return true;
+		//case Key::Shift | Key::Up				: MoveToLine(-1, true); return true;
+		//case Key::Shift | Key::PageUp			: MoveToLine(-viewLines, true); return true;
+		//case Key::Shift | Key::Down			    : MoveToLine(1, true); return true;
+		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
+		//case Key::Shift | Key::Home			    : MoveHome(true); return true;
+		//case Key::Shift | Key::End			    : MoveEnd(true); return true;
+		//case Key::Shift | Key::Ctrl | Key::Home : MoveTo(0, true); return true;
+		//case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
 
 		case Key::Tab							: if (Flags & (unsigned int)TextAreaFlags::PROCESS_TAB) { AddChar('\t'); return true; }
 												  return false;
@@ -410,21 +500,13 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 
 void TextAreaControlContext::OnAfterResize()
 {
-    viewLines = Layout.Height - 1;
-	viewColumns = Layout.Width - 2;
-	if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS) 
-		viewColumns -= 4;
-	if (Flags & (unsigned int)TextAreaFlags::BORDER)
-	{
-		viewLines -=2;
-		viewColumns -=2;
-	}
+    ComputeVisibleLinesAndRows();
 	UpdateLines();
 }
 void TextAreaControlContext::SetToolTip(char *ss)
 {
-	toolTipInfo.Set(ss);
-	toolTipVisible=true;
+	//toolTipInfo.Set(ss);
+	//toolTipVisible=true;
 }
 bool TextAreaControlContext::IsReadOnly()
 {
@@ -460,21 +542,12 @@ bool		TextArea::Create(Control *parent, const char * text, const char * layout, 
     CHECK(Members->Text.SetWithNewLines(text), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
 	Members->fnGetLineColor = nullptr;
-	Members->colorPData = nullptr;
 	Members->tabChar = ' ';
 	Members->Host = this;
-
-	Members->viewLines = Members->Layout.Height - 1;
-	Members->viewColumns = Members->Layout.Width - 2;
-	if ((unsigned int)flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
-		Members->viewColumns -= 4;
-	if (Members->Flags & (unsigned int)TextAreaFlags::BORDER)
-	{
-		Members->viewLines -= 2;
-		Members->viewColumns -= 2;
-	}
-	Members->startLine = 0;
-	Members->ClearSel();
+    Members->View.CurrentPosition = 0;
+    Members->View.TopLine = 0;
+    Members->ComputeVisibleLinesAndRows();
+    Members->ClearSel();    
 	Members->AnalyzeCurrentText();
 	// all is good
 	return true;

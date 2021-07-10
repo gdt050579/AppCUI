@@ -1148,9 +1148,9 @@ namespace AppCUI
             } Panel;
             struct {
                 struct {
-                    Console::ColorPair  Text, Border, LineNumbers;
+                    Console::ColorPair  Text, Border, LineNumbers, CurrentLineNumber;
                 } Normal, Focus, Inactive, Hover;
-                Console::ColorPair SelectionColor;
+                Console::ColorPair SelectionColor;                
             } Text;
             struct {
                 Console::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
