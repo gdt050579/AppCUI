@@ -18,7 +18,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
 public:
     PythonEditorWin()
     {
-        this->Create("Python Editor", "a:c,w:70,h:20");
+        this->Create("Python Editor", "a:c,w:40,h:20");
         editor.Create(this, python_code, "x:0,y:0,w:100%,h:100%", TextAreaFlags::SHOW_LINE_NUMBERS);
     }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override

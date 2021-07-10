@@ -20,8 +20,8 @@ using namespace AppCUI::OS;
 
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
-    unsigned int extraY = 0;
-    unsigned int extraX = 0;
+    unsigned int extraY = 0; 
+    unsigned int extraX = 1; // one character has to be left of the cursor (at the end of the line)
 
     if (Flags & (unsigned int)TextAreaFlags::SHOW_LINE_NUMBERS)
         extraX += LINE_NUMBERS_WIDTH;
@@ -38,6 +38,25 @@ void TextAreaControlContext::ComputeVisibleLinesAndRows()
         this->View.VisibleLinesCount = ((unsigned int)Layout.Height) - extraY;
     else
         this->View.VisibleLinesCount = 0;
+}
+void TextAreaControlContext::UpdateViewXOffset()
+{
+    unsigned int startLine;
+    // some sanity checks
+    if (Lines.Get(View.CurrentLine, startLine) == false)
+        return; // internal error
+    if (startLine > View.CurrentPosition)
+        return; // internal error
+    if ((startLine + View.HorizontalOffset) > View.CurrentPosition)
+    {
+        View.HorizontalOffset = View.CurrentPosition - startLine;
+        return;
+    }
+    if ((startLine + View.HorizontalOffset + View.VisibleRowsCount) < View.CurrentPosition)
+    {
+        View.HorizontalOffset = View.CurrentPosition - (View.VisibleRowsCount + startLine);
+        return;
+    }
 }
 void TextAreaControlContext::SelAll()
 {
@@ -149,6 +168,19 @@ unsigned int  TextAreaControlContext::GetLineStart(unsigned int lineIndex)
         return 0;
     return value;
 }
+bool TextAreaControlContext::GetLineRange(unsigned int lineIndex, unsigned int & start, unsigned int &end)
+{
+    unsigned int linesCount = Lines.Len();
+    unsigned int *p = Lines.GetUInt32Array();
+    CHECK(lineIndex < linesCount, false, "Invalid line index: %d (should be less than %d)",lineIndex, linesCount);
+    p += lineIndex;
+    start = *p;
+    if (lineIndex + 1 < linesCount)
+        end = p[1];
+    else
+        end = Text.Len();
+    return true;
+}
 void TextAreaControlContext::AnalyzeCurrentText()
 {
 	UpdateLines();
@@ -173,17 +205,18 @@ void TextAreaControlContext::DrawToolTip()
 }
 void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int lineIndex, int ofsX, int pozY,const ColorPair textColor)
 {
-    unsigned int    poz, lnSize;
+    unsigned int    poz, lineStart, lineEnd;
 	int				c,pozX;
 	int				tr,cursorPoz;
     bool            useHighlighing;
 	Character*		ch;
+    Character*      ch_end;
     ColorPair       col;
 
-    if (lineIndex >= Lines.Len())
+    if (GetLineRange(lineIndex, lineStart, lineEnd) == false)
         return;
-    poz = *(Lines.GetUInt32Array() + lineIndex);
-    if (poz >= Text.Len()) {
+    poz = lineStart + View.HorizontalOffset;
+    if (poz >= lineEnd) {
         if (Flags & GATTR_ENABLE)
         {
             // if its the last character (EOF) --> show the cursor
@@ -192,13 +225,17 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
         }
         return;
     }
-    lnSize = GetLineSize(lineIndex);
+    ch_end = Text.GetBuffer() + Text.Len();
     ch = Text.GetBuffer() + poz;
-    pozX = ofsX - ((int)View.HorizontalOffset);
+    pozX = ofsX;
     useHighlighing = false;
     cursorPoz = -1;
-    col = textColor;
-    for (tr = 0; tr < lnSize; tr++, poz++, ch++)
+    col = textColor;    
+    if (pozX < 4)
+    {
+        cursorPoz = -1;
+    }
+    for (tr = 0; (ch<ch_end) && (tr <= /* show last char*/ View.VisibleRowsCount) && (ch->Code != NEW_LINE_CODE);poz++, tr++, ch++)
     {
         if (Flags & GATTR_ENABLE)
         {
@@ -211,8 +248,8 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
             else
                 col = textColor;
         }
-        
-        renderer.WriteCharacter(pozX, pozY, ch->Code, col);
+
+    renderer.WriteCharacter(pozX, pozY, ch->Code, col);
 
         if (ch->Code == '\t')
         {
@@ -224,14 +261,12 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
         else {
             pozX++;
         }
-        if (pozX > (int)View.VisibleRowsCount)
-            break;
     }
     if (Flags & GATTR_ENABLE)
     {
         if (poz == View.CurrentPosition)
             cursorPoz = pozX;
-        if (cursorPoz>=0)
+        if (cursorPoz >= 0)
             renderer.SetCursor(cursorPoz, pozY);
     }
 }
@@ -314,6 +349,7 @@ void TextAreaControlContext::MoveLeft(bool selected)
             View.CurrentLine--;
             View.HorizontalOffset = 0;
         }
+        UpdateViewXOffset();
     }
 
     UPDATE_SELECTION;
@@ -332,6 +368,7 @@ void TextAreaControlContext::MoveRight(bool selected)
             View.CurrentLine++;
             View.HorizontalOffset = 0;            
         }
+        UpdateViewXOffset();
     }
 
     UPDATE_SELECTION;
