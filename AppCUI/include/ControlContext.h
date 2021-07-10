@@ -168,7 +168,6 @@ public:
     void	        MoveSelectionTo(unsigned int poz);
     void            UpdateViewXOffset();
     void	        DeleteSelected();
-    unsigned int    GetLineSize(unsigned int lineIndex);
     unsigned int	GetLineStart(unsigned int lineIndex);
     bool            GetLineRange(unsigned int lineIndex, unsigned int & start, unsigned int &end);
     void	        DrawLineNumber(Console::Renderer & renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);

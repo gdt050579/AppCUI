@@ -199,16 +199,6 @@ void TextAreaControlContext::UpdateLines()
     } while (c < c_End);
 	UpdateView();
 }
-unsigned int  TextAreaControlContext::GetLineSize(unsigned int lineIndex)
-{
-    unsigned int linesCount = Lines.Len();
-    unsigned int *p = Lines.GetUInt32Array();
-    if ((lineIndex + 1) < linesCount)
-        return p[lineIndex + 1] - (p[lineIndex] + 1); // ingnore the final NEW_LINE character
-    if (lineIndex >= linesCount)
-        return 0; // line index outside 
-    return Text.Len() - p[lineIndex];
-}
 unsigned int  TextAreaControlContext::GetLineStart(unsigned int lineIndex)
 {
     unsigned int value;
@@ -563,23 +553,12 @@ void TextAreaControlContext::SetSelection(unsigned int start,unsigned int end)
 }
 void TextAreaControlContext::CopyToClipboard()
 {
-	//if (HasSelection())  
-	//	Clipboard::SetText(Text.GetText(),SelStart,SelEnd);
+
 }
 void TextAreaControlContext::PasteFromClipboard()
 {
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY) != 0)
 		return;
-	//int tr;
-	//const char *ss;
-	//ss=Clipboard::GetText();
-	//if (ss!=nullptr)
-	//{
-	//	if (HasSelection()) 
-	//		DeleteSelected();
-	//	for (tr=0;ss[tr]!=0;tr++) AddChar(ss[tr]);
-	//}
-	//UpdateLines();
 }
 
 bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
