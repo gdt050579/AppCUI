@@ -226,7 +226,7 @@ bool TextAreaControlContext::GetLineRange(unsigned int lineIndex, unsigned int &
     if (lineIndex + 1 < linesCount)
         end = p[1];
     else
-        end = Text.Len();
+        end = Text.Len() + 1;
     return true;
 }
 void TextAreaControlContext::AnalyzeCurrentText()
@@ -424,43 +424,45 @@ void TextAreaControlContext::MoveRight(bool selected)
 }
 void TextAreaControlContext::MoveTo(int newPoz,bool selected)
 {
-	//if ((!selected) && (SelStart!=-1)) 
-	//	ClearSel();
-	//
-	//if ((cLocation>=(int)Text.Len()) && (newPoz>cLocation)) 
-	//	return;
-	//if ((selected) && (SelStart==-1)) 
-	//{ 
- //       SelStart = SelEnd = SelOrigin = cLocation;
-	//}
-	//while (cLocation!=newPoz)
-	//{
-	//	if (cLocation>newPoz) cLocation--; else if (cLocation<newPoz) cLocation++; 
-	//	if (cLocation<0) { cLocation=newPoz=0; }
-	//	if (cLocation >= (int)Text.Len())  newPoz=cLocation;
-	//	if (cLocation<px) px=cLocation;
- //       if (cLocation > px + Layout.Width - 2) px = cLocation - Layout.Width + 2;
-	//} 
-	//if (selected) MoveSelTo(cLocation);
-	//UpdateView();
+
 }
-void TextAreaControlContext::MoveToLine(int times,bool selected)
+void TextAreaControlContext::MoveUpDown(unsigned int times, bool moveUp, bool selected)
 {
-	//int xOffset,newLine,newLineSize;
+    unsigned int rowNumber;
+    unsigned int start, end;
 
-	//if (Lines.Len()==0)
-	//	return;
-
-	//xOffset = cLocation - GetLineStart(cLine);
-	//newLine = cLine+times;
-	//if (newLine<0) 
-	//	newLine=0;
-	//if (newLine>=(int)Lines.Len())
-	//	newLine=Lines.Len()-1;
-	//newLineSize = GetLineSize(newLine);
-	//if (newLineSize<xOffset)
-	//	xOffset = newLineSize;
-	//MoveTo(xOffset+GetLineStart(newLine),selected);
+    CLEAR_SELECTION;
+    if (GetLineRange(View.CurrentLine, start, end))
+        rowNumber = View.CurrentPosition - start;
+    else
+        rowNumber = 0;
+    if (moveUp)
+    {
+        if (times > View.CurrentLine)
+            View.CurrentLine = 0;
+        else
+            View.CurrentLine -= times;
+    } else {
+        View.CurrentLine += times;
+        if (View.CurrentLine >= Lines.Len())
+            View.CurrentLine = Lines.Len() - 1;
+    }
+    // compute CurrentPosition
+    if (GetLineRange(View.CurrentLine, start, end))
+    {
+        if (start + rowNumber >= end)
+            View.CurrentPosition = end - 1;
+        else
+            View.CurrentPosition = start + rowNumber;
+    } else {
+        // internal error (this code should not me match) --> reset the position to the start of the file
+        View.HorizontalOffset = 0;
+        View.CurrentPosition = 0;
+        View.CurrentLine = 0;
+        View.TopLine = 0;
+    }
+    UpdateView();
+    UPDATE_SELECTION;
 }
 void TextAreaControlContext::MoveHome(bool selected)
 {
@@ -483,10 +485,7 @@ void TextAreaControlContext::MoveEnd(bool selected)
     } else {
         if (GetLineRange(View.CurrentLine, start, end))
         {
-            if (View.CurrentLine + 1 == Lines.Len()) // Last line
-                View.CurrentPosition = end;
-            else
-                View.CurrentPosition = end - 1;
+            View.CurrentPosition = end - 1;
             View.HorizontalOffset = 0;
             UpdateViewXOffset();
         }
@@ -589,9 +588,9 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 	{
 		case Key::Left							: MoveLeft(false); return true;
 		case Key::Right						    : MoveRight(false); return true;
-		//case Key::Up							: MoveToLine(-1,false); return true;
+		case Key::Up							: MoveUpDown(1,true,false); return true;
 		//case Key::PageUp						: MoveToLine(-viewLines,false); return true;
-		//case Key::Down							: MoveToLine(1,false); return true;
+		case Key::Down							: MoveUpDown(1,false, false); return true;
 		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
 		case Key::Home							: MoveHome(false); return true;
 		case Key::End							: MoveEnd(false); return true;
@@ -600,9 +599,9 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 
 		case Key::Shift | Key::Left				: MoveLeft(true); return true;
 		case Key::Shift | Key::Right			: MoveRight(true); return true;
-		//case Key::Shift | Key::Up				: MoveToLine(-1, true); return true;
+		case Key::Shift | Key::Up				: MoveUpDown(1, true, true);  return true;
 		//case Key::Shift | Key::PageUp			: MoveToLine(-viewLines, true); return true;
-		//case Key::Shift | Key::Down			    : MoveToLine(1, true); return true;
+		case Key::Shift | Key::Down			    : MoveUpDown(1, false, true); return true;
 		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
 		case Key::Shift | Key::Home			    : MoveHome(true); return true;
 		case Key::Shift | Key::End			    : MoveEnd(true); return true;

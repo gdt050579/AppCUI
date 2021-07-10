@@ -178,7 +178,7 @@ public:
 
     void    MoveLeft(bool selected);
     void    MoveRight(bool selected);
-    void	MoveToLine(int times, bool selected);
+    void	MoveUpDown(unsigned int times,bool moveUp, bool selected);
     void	MoveTo(int newPoz, bool selected);
     void	MoveHome(bool selected);
     void	MoveEnd(bool selected);
