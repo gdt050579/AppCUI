@@ -954,6 +954,7 @@ namespace AppCUI
             SHOW_LINE_NUMBERS   = 0x000200,
             PROCESS_TAB         = 0x000400,
             READONLY            = 0x000800,
+            SCROLLBARS          = 0x001000,
         };
 
         class EXPORT TextArea : public Control
@@ -962,9 +963,10 @@ namespace AppCUI
             bool		Create(Control *parent, const char * text,  const char * layout, TextAreaFlags flags = TextAreaFlags::NONE);
             void	    Paint(Console::Renderer & renderer) override;
             bool	    OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
-            void		OnFocus();
-            void		OnAfterResize(int newWidth, int newHeight);
-            void		OnAfterSetText(const char* newText);
+            void        OnUpdateScrollBars() override;
+            void		OnFocus() override;
+            void		OnAfterResize(int newWidth, int newHeight) override;
+            void		OnAfterSetText(const char* newText) override;
             void		SetReadOnly(bool value);
             bool		IsReadOnly();
             void		SetTabCharacter(char tabCharacter);
@@ -1218,6 +1220,10 @@ inline constexpr void operator|=(AppCUI::Console::WriteCharacterBufferFlags::Typ
 inline constexpr AppCUI::Controls::TabFlags::Type operator|(AppCUI::Controls::TabFlags::Type f1, AppCUI::Controls::TabFlags::Type f2)
 {
     return static_cast<AppCUI::Controls::TabFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
+inline constexpr AppCUI::Controls::TextAreaFlags operator|(AppCUI::Controls::TextAreaFlags f1, AppCUI::Controls::TextAreaFlags f2)
+{
+    return static_cast<AppCUI::Controls::TextAreaFlags>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
 
 #endif

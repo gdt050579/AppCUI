@@ -658,6 +658,12 @@ bool		TextArea::Create(Control *parent, const char * text, const char * layout, 
 	// initializam
     CHECK(Members->Text.SetWithNewLines(text), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
+    // scroll bars
+    if ((unsigned int)flags & (unsigned int)TextAreaFlags::SCROLLBARS)
+    {
+        Members->Flags |= GATTR_VSCROLL;
+        Members->ScrollBars.OutsideControl = (((unsigned int)flags & (unsigned int)TextAreaFlags::BORDER) == 0);        
+    }
 	Members->fnGetLineColor = nullptr;
 	Members->tabChar = ' ';
 	Members->Host = this;
@@ -681,6 +687,11 @@ bool		TextArea::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 void		TextArea::OnAfterResize(int newWidth,int newHeight)
 {
 	WRAPPER->OnAfterResize();
+}
+void        TextArea::OnUpdateScrollBars()
+{
+    CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
+    UpdateVScrollBar(Members->View.CurrentLine, Members->Lines.Len()-1);    
 }
 void		TextArea::OnFocus()
 {
