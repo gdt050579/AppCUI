@@ -589,9 +589,9 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		case Key::Left							: MoveLeft(false); return true;
 		case Key::Right						    : MoveRight(false); return true;
 		case Key::Up							: MoveUpDown(1,true,false); return true;
-		//case Key::PageUp						: MoveToLine(-viewLines,false); return true;
+		case Key::PageUp						: MoveUpDown(View.VisibleLinesCount, true, false); return true;
 		case Key::Down							: MoveUpDown(1,false, false); return true;
-		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
+		case Key::PageDown						: MoveUpDown(View.VisibleLinesCount, false, false); return true;
 		case Key::Home							: MoveHome(false); return true;
 		case Key::End							: MoveEnd(false); return true;
 		case Key::Ctrl|Key::Home				: MoveToStartOfTheFile(false); return true;
@@ -600,9 +600,9 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		case Key::Shift | Key::Left				: MoveLeft(true); return true;
 		case Key::Shift | Key::Right			: MoveRight(true); return true;
 		case Key::Shift | Key::Up				: MoveUpDown(1, true, true);  return true;
-		//case Key::Shift | Key::PageUp			: MoveToLine(-viewLines, true); return true;
+		case Key::Shift | Key::PageUp			: MoveUpDown(View.VisibleLinesCount, true, true); return true;
 		case Key::Shift | Key::Down			    : MoveUpDown(1, false, true); return true;
-		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
+		case Key::Shift | Key::PageDown		    : MoveUpDown(View.VisibleLinesCount, false, true); return true;
 		case Key::Shift | Key::Home			    : MoveHome(true); return true;
 		case Key::Shift | Key::End			    : MoveEnd(true); return true;
 		case Key::Shift | Key::Ctrl | Key::Home : MoveToStartOfTheFile(true); return true;
