@@ -182,6 +182,8 @@ public:
     void	MoveTo(int newPoz, bool selected);
     void	MoveHome(bool selected);
     void	MoveEnd(bool selected);
+    void    MoveToStartOfTheFile(bool selected);
+    void    MoveToEndOfTheFile(bool selected);
     void	AddChar(char ch);
     void	KeyDelete();
     void	KeyBack();

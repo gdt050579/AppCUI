@@ -442,6 +442,19 @@ void TextAreaControlContext::MoveEnd(bool selected)
     }    
     UPDATE_SELECTION;
 }
+void TextAreaControlContext::MoveToStartOfTheFile(bool selected)
+{
+    CLEAR_SELECTION;
+    View.HorizontalOffset = 0;
+    View.CurrentPosition = 0;
+    View.CurrentLine = 0;
+    View.TopLine = 0;
+    UPDATE_SELECTION;
+}
+void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
+{
+
+}
 
 void TextAreaControlContext::AddChar(char ch)
 {
@@ -528,7 +541,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
 		case Key::Home							: MoveHome(false); return true;
 		case Key::End							: MoveEnd(false); return true;
-		//case Key::Ctrl|Key::Home				: MoveTo(0,false); return true;
+		case Key::Ctrl|Key::Home				: MoveToStartOfTheFile(false); return true;
 		//case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
 
 		case Key::Shift | Key::Left				: MoveLeft(true); return true;
@@ -539,7 +552,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
 		case Key::Shift | Key::Home			    : MoveHome(true); return true;
 		case Key::Shift | Key::End			    : MoveEnd(true); return true;
-		//case Key::Shift | Key::Ctrl | Key::Home : MoveTo(0, true); return true;
+		case Key::Shift | Key::Ctrl | Key::Home : MoveToStartOfTheFile(true); return true;
 		//case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
 
 		case Key::Tab							: if (Flags & (unsigned int)TextAreaFlags::PROCESS_TAB) { AddChar('\t'); return true; }
