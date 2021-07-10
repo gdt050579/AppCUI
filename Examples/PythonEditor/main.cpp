@@ -6,10 +6,28 @@ using namespace AppCUI::Controls;
 
 const char * python_code = R"PYTHON(
 import os;
-#this code will print all files that starts with letter 'a'
+d = {}
+#this code will count how many files that starts with a specific letter exists
 for fname in os.listdir("."):
-    if fname.startswith("a"):
-        print("Found: "+fname)
+    fname = fname.lower()
+    if not fname[0] in d:
+        d[fname[0]] = [fname]
+    else:
+        d[fname[0]] += [fname]
+
+#show statistics
+for letter in d:
+    print("Letter: "+letter+" => "+str(len(d[letter]))
+    index = 1
+    for fname in d[letter]:
+        print("%3d => %s"%(index,fname))
+        index += 1
+
+#other statistics
+total = 0
+for letter in d:
+    total += len(d[letter])
+print("Total files: "+str(total))
 )PYTHON";
 
 class PythonEditorWin : public AppCUI::Controls::Window

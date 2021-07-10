@@ -103,24 +103,73 @@ void TextAreaControlContext::DeleteSelected()
 
 void TextAreaControlContext::UpdateView()
 {
-	unsigned int *pLines = Lines.GetUInt32Array();
-    unsigned int cnt = Lines.Len();
-    View.CurrentLine = 0;
-    for (unsigned int tr = 0; tr < cnt; tr++)
+    unsigned int start, end;
+    unsigned int idxStart, idxEnd, idxMiddle;
+    bool currentLineComputedCorectly = false;
+    if (GetLineRange(View.CurrentLine, start, end))
     {
-        if (View.CurrentPosition < pLines[tr])
-            break;
-        else
-            View.CurrentLine = tr;
+        currentLineComputedCorectly = ((View.CurrentPosition >= start) && (View.CurrentPosition < end));
     }
+    if (!currentLineComputedCorectly)
+    {
+        unsigned int *pLines = Lines.GetUInt32Array();
+        unsigned int cnt = Lines.Len();
+
+        // binary search
+        idxStart = 0;
+        idxEnd = cnt - 1; // there is implicitely at least one line
+        do {
+            idxMiddle = ((idxStart + idxEnd) >> 1);
+            start = pLines[idxMiddle];
+            if (idxMiddle + 1 < cnt)
+                end = pLines[idxMiddle + 1];
+            else
+                end = Text.Len() + 1;
+            if ((View.CurrentPosition >= start) && (View.CurrentPosition < end))
+            {
+                // found the line
+                View.CurrentLine = idxMiddle;
+                currentLineComputedCorectly = true;
+                break;
+            }
+            if (View.CurrentPosition < start)
+            {
+                idxEnd = idxMiddle - 1;
+            }
+            else {
+                idxStart = idxMiddle + 1;
+            }
+        } while ((idxStart <= idxEnd) && (idxEnd < cnt) && (idxEnd != 0xFFFFFFFF));
+    }
+    if (!currentLineComputedCorectly)
+    {
+        // reset everything to the first line / first character
+        // --- error case --- (this condition should not be match - this is but a sanity check ---
+        View.CurrentLine = 0;
+        View.CurrentPosition = 0;
+        View.HorizontalOffset = 0;
+        View.TopLine = 0;
+        return;
+    }
+
+    // validate ToLine 
     if (View.CurrentLine < View.TopLine)
 	{
         View.TopLine = View.CurrentLine;
 	}
-    if (View.CurrentLine >= View.TopLine + View.VisibleLinesCount)
+    if (View.VisibleLinesCount == 0)
     {
-        View.TopLine = View.CurrentLine - View.VisibleLinesCount;
+        View.TopLine = 0;
     }
+    else {
+        if (View.CurrentLine >= View.TopLine + View.VisibleLinesCount)
+        {
+            View.TopLine = View.CurrentLine - (View.VisibleLinesCount - 1);
+        }
+    }
+
+    // finaly - update "X" offset
+    UpdateViewXOffset();
 }
 void TextAreaControlContext::UpdateLines()
 {
@@ -325,8 +374,8 @@ void TextAreaControlContext::Paint(Console::Renderer & renderer)
         {
             renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', col->LineNumbers);
         }
-        renderer.DrawVerticalLineWithSpecialChar(View.TopLine + LINE_NUMBERS_WIDTH - 1, 0, View.VisibleRowsCount,SpecialChars::BoxVerticalSingleLine,col->Border);
         lm += LINE_NUMBERS_WIDTH;
+        renderer.DrawVerticalLineWithSpecialChar(lm - 1, 0, View.VisibleRowsCount,SpecialChars::BoxVerticalSingleLine,col->Border);        
     }
     renderer.SetClipMargins(lm, tm, rm, bm);
     for (unsigned int tr = 0; tr < View.VisibleLinesCount; tr++)
@@ -453,7 +502,10 @@ void TextAreaControlContext::MoveToStartOfTheFile(bool selected)
 }
 void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
 {
-
+    CLEAR_SELECTION;
+    View.CurrentPosition = Text.Len();
+    UpdateView();
+    UPDATE_SELECTION;
 }
 
 void TextAreaControlContext::AddChar(char ch)
@@ -542,7 +594,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		case Key::Home							: MoveHome(false); return true;
 		case Key::End							: MoveEnd(false); return true;
 		case Key::Ctrl|Key::Home				: MoveToStartOfTheFile(false); return true;
-		//case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
+		case Key::Ctrl|Key::End				    : MoveToEndOfTheFile(false); return true;
 
 		case Key::Shift | Key::Left				: MoveLeft(true); return true;
 		case Key::Shift | Key::Right			: MoveRight(true); return true;
@@ -553,11 +605,11 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		case Key::Shift | Key::Home			    : MoveHome(true); return true;
 		case Key::Shift | Key::End			    : MoveEnd(true); return true;
 		case Key::Shift | Key::Ctrl | Key::Home : MoveToStartOfTheFile(true); return true;
-		//case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
+		case Key::Shift | Key::Ctrl | Key::End  : MoveToEndOfTheFile(true); return true;
 
 		case Key::Tab							: if (Flags & (unsigned int)TextAreaFlags::PROCESS_TAB) { AddChar('\t'); return true; }
 												  return false;
-		case Key::Enter						    : AddChar('\n'); return true;
+		case Key::Enter						    : AddChar(NEW_LINE_CODE); return true;
 		case Key::Backspace					    : KeyBack(); return true;
 		case Key::Delete						: KeyDelete(); return true;
 
