@@ -30,11 +30,11 @@ void TextAreaControlContext::ComputeVisibleLinesAndRows()
         extraX += 2;
         extraY += 2;
     }
-    if (extraX < Layout.Width)
+    if ((int)extraX < Layout.Width)
         this->View.VisibleRowsCount = ((unsigned int)Layout.Width) - extraX;
     else
         this->View.VisibleRowsCount = 0;
-    if (extraY < Layout.Height)
+    if ((int)extraY < Layout.Height)
         this->View.VisibleLinesCount = ((unsigned int)Layout.Height) - extraY;
     else
         this->View.VisibleLinesCount = 0;
@@ -93,7 +93,6 @@ void TextAreaControlContext::MoveSelectionTo(unsigned int poz)
 
 void TextAreaControlContext::DeleteSelected()
 {
-	int ss,se;
 	if (Selection.Start == INVALID_SELECTION) 
 		return;
     Text.Delete(Selection.Start, Selection.End);
@@ -205,9 +204,8 @@ void TextAreaControlContext::DrawToolTip()
 }
 void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int lineIndex, int ofsX, int pozY,const ColorPair textColor)
 {
-    unsigned int    poz, lineStart, lineEnd;
-	int				c,pozX;
-	int				tr,cursorPoz;
+    unsigned int    poz, lineStart, lineEnd, tr;
+	int				pozX, cursorPoz;
     bool            useHighlighing;
 	Character*		ch;
     Character*      ch_end;
@@ -416,7 +414,6 @@ void TextAreaControlContext::MoveToLine(int times,bool selected)
 void TextAreaControlContext::MoveHome(bool selected)
 {
     CLEAR_SELECTION;
-    unsigned int start, end;
     View.HorizontalOffset = 0;
     View.CurrentPosition = GetLineStart(View.CurrentLine);
     UpdateViewXOffset();
@@ -424,7 +421,26 @@ void TextAreaControlContext::MoveHome(bool selected)
 }
 void TextAreaControlContext::MoveEnd(bool selected)
 {
-	//MoveTo(GetLineStart(cLine)+GetLineSize(cLine),selected);
+    CLEAR_SELECTION;
+    unsigned int start, end;
+    if (Text.Len() == 0)
+    {
+        View.CurrentPosition = 0;
+        View.CurrentLine = 0;
+        View.HorizontalOffset = 0;
+        UpdateViewXOffset();
+    } else {
+        if (GetLineRange(View.CurrentLine, start, end))
+        {
+            if (View.CurrentLine + 1 == Lines.Len()) // Last line
+                View.CurrentPosition = end;
+            else
+                View.CurrentPosition = end - 1;
+            View.HorizontalOffset = 0;
+            UpdateViewXOffset();
+        }
+    }    
+    UPDATE_SELECTION;
 }
 
 void TextAreaControlContext::AddChar(char ch)
@@ -511,7 +527,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::Down							: MoveToLine(1,false); return true;
 		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
 		case Key::Home							: MoveHome(false); return true;
-		//case Key::End							: MoveEnd(false); return true;
+		case Key::End							: MoveEnd(false); return true;
 		//case Key::Ctrl|Key::Home				: MoveTo(0,false); return true;
 		//case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
 
@@ -522,7 +538,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::Shift | Key::Down			    : MoveToLine(1, true); return true;
 		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
 		case Key::Shift | Key::Home			    : MoveHome(true); return true;
-		//case Key::Shift | Key::End			    : MoveEnd(true); return true;
+		case Key::Shift | Key::End			    : MoveEnd(true); return true;
 		//case Key::Shift | Key::Ctrl | Key::Home : MoveTo(0, true); return true;
 		//case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
 
