@@ -415,7 +415,12 @@ void TextAreaControlContext::MoveToLine(int times,bool selected)
 }
 void TextAreaControlContext::MoveHome(bool selected)
 {
-	//MoveTo(GetLineStart(cLine),selected);
+    CLEAR_SELECTION;
+    unsigned int start, end;
+    View.HorizontalOffset = 0;
+    View.CurrentPosition = GetLineStart(View.CurrentLine);
+    UpdateViewXOffset();
+    UPDATE_SELECTION;
 }
 void TextAreaControlContext::MoveEnd(bool selected)
 {
@@ -505,7 +510,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::PageUp						: MoveToLine(-viewLines,false); return true;
 		//case Key::Down							: MoveToLine(1,false); return true;
 		//case Key::PageDown						: MoveToLine(viewLines,false); return true;
-		//case Key::Home							: MoveHome(false); return true;
+		case Key::Home							: MoveHome(false); return true;
 		//case Key::End							: MoveEnd(false); return true;
 		//case Key::Ctrl|Key::Home				: MoveTo(0,false); return true;
 		//case Key::Ctrl|Key::End				    : MoveTo(textSize,false); return true;
@@ -516,7 +521,7 @@ bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		//case Key::Shift | Key::PageUp			: MoveToLine(-viewLines, true); return true;
 		//case Key::Shift | Key::Down			    : MoveToLine(1, true); return true;
 		//case Key::Shift | Key::PageDown		    : MoveToLine(viewLines, true); return true;
-		//case Key::Shift | Key::Home			    : MoveHome(true); return true;
+		case Key::Shift | Key::Home			    : MoveHome(true); return true;
 		//case Key::Shift | Key::End			    : MoveEnd(true); return true;
 		//case Key::Shift | Key::Ctrl | Key::Home : MoveTo(0, true); return true;
 		//case Key::Shift | Key::Ctrl | Key::End  : MoveTo(textSize, true); return true;
