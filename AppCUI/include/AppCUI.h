@@ -95,6 +95,8 @@ namespace AppCUI
             bool                 Resize(unsigned int newSize);
             bool                 Push(unsigned int value);
             bool                 Push(int value);
+            bool                 Get(unsigned int index, unsigned int & value);
+            bool                 Get(unsigned int index, int & value);
         };
         class EXPORT String 
         {

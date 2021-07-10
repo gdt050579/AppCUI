@@ -91,3 +91,15 @@ bool Array32::Push(int value)
     Count++;
     return true;
 }
+bool Array32::Get(unsigned int index, unsigned int & value)
+{
+    CHECK(index < Count, false, "Invalid index - should be between [0 and %d)", Count);
+    value = Data[index];
+    return true;
+}
+bool Array32::Get(unsigned int index, int & value)
+{
+    CHECK(index < Count, false, "Invalid index - should be between [0 and %d)", Count);
+    value = *(int*)(Data + Count);
+    return true;
+}
