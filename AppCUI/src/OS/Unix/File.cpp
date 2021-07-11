@@ -48,6 +48,7 @@ bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int & byte
     ssize_t readSize = read(this->FileID.fid, buffer, bufferSize);
     CHECK(readSize > 0, false, "ERROR: %s", strerror(errno));
     bytesRead = readSize;
+    return true;
 }
 
 bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten) {
@@ -58,6 +59,7 @@ bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int
     ssize_t writeSize = write(this->FileID.fid, buffer, bufferSize);
     CHECK(writeSize > 0, false, "ERROR: %s", strerror(errno));
     bytesWritten = writeSize;
+    return true;
 }
 
 unsigned long long File::GetSize() {
