@@ -287,7 +287,10 @@ void TextAreaControlContext::DrawLine(Console::Renderer & renderer, unsigned int
                 col = textColor;
         }
 
-        renderer.WriteCharacter(pozX, pozY, ch->Code, col);
+        if (ch->Code == '\t')
+            renderer.WriteCharacter(pozX, pozY, this->tabChar, col);
+        else
+            renderer.WriteCharacter(pozX, pozY, ch->Code, col);
 
         if (ch->Code == '\t')
         {
@@ -584,6 +587,7 @@ void TextAreaControlContext::PasteFromClipboard()
         return;
     }
     DeleteSelected();
+    temp.ConvertToInternalNewLineFormat();
     if (Text.Insert(temp,View.CurrentPosition))
     {
         View.CurrentPosition += temp.Len();
