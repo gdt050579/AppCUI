@@ -529,6 +529,8 @@ namespace AppCUI
             bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
             bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
             void SetColor(const ColorPair color);
+            bool CopyString(Utils::String & text, unsigned int start, unsigned int end);
+            bool CopyString(Utils::String & text);
         };
         
         class EXPORT Image

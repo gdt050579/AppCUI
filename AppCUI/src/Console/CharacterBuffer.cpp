@@ -207,3 +207,22 @@ void CharacterBuffer::SetColor(const ColorPair color)
         ch++;
     }
 }
+bool CharacterBuffer::CopyString(AppCUI::Utils::String & text, unsigned int start, unsigned int end)
+{
+    CHECK(start < end, false, "Start position (%d) should be smaller than the end position (%d)", start, end);
+    CHECK(end <= Count, false, "Invalid end position (%d), should be smaller or equal to maximum characters in the buffer (%d)", end, Count);
+    CHECK(text.Realloc(end - start), false, "Fail to allocate %d character to be copied", end - start);
+    
+    Character * s = this->Buffer + start;
+    Character * e = s + (end - start);
+    text.Clear();
+    while (s < e) {
+        CHECK(text.AddChar(s->Code), false, "Fail to copy character with code: %d to string", s->Code);
+        s++;
+    }
+    return true;
+}
+bool CharacterBuffer::CopyString(AppCUI::Utils::String & text)
+{
+    return CopyString(text, 0, this->Count);
+}
