@@ -46,8 +46,9 @@ void AppCUI::Controls::CheckBox::Paint(Console::Renderer & renderer)
     }
     renderer.WriteCharacterBuffer(4, 0, Members->Text, params);
 
-    if (IsChecked())
-        renderer.WriteCharacter(1, 0, 'X', cbc->StateSymbolColor);   
+    if (IsChecked()) {
+        renderer.WriteCharacter(1, 0, 'X', cbc->StateSymbolColor);
+    }
     if (Members->Focused)
         renderer.SetCursor(1, 0);
 }

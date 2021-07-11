@@ -344,59 +344,56 @@ namespace AppCUI
                 Center
             };
         };
-        namespace SpecialChars
+        enum class SpecialChars : unsigned int
         {
-            enum Type : unsigned int
-            {
-                BoxTopLeftCornerDoubleLine = 0,
-                BoxTopRightCornerDoubleLine,
-                BoxBottomRightCornerDoubleLine,
-                BoxBottomLeftCornerDoubleLine,
-                BoxHorizontalDoubleLine,
-                BoxVerticalDoubleLine,
+            BoxTopLeftCornerDoubleLine = 0,
+            BoxTopRightCornerDoubleLine,
+            BoxBottomRightCornerDoubleLine,
+            BoxBottomLeftCornerDoubleLine,
+            BoxHorizontalDoubleLine,
+            BoxVerticalDoubleLine,
 
-                BoxTopLeftCornerSingleLine,
-                BoxTopRightCornerSingleLine,
-                BoxBottomRightCornerSingleLine,
-                BoxBottomLeftCornerSingleLine,
-                BoxHorizontalSingleLine,
-                BoxVerticalSingleLine,
+            BoxTopLeftCornerSingleLine,
+            BoxTopRightCornerSingleLine,
+            BoxBottomRightCornerSingleLine,
+            BoxBottomLeftCornerSingleLine,
+            BoxHorizontalSingleLine,
+            BoxVerticalSingleLine,
 
-                // arrows
-                ArrowUp,
-                ArrowDown,
-                ArrowLeft,
-                ArrowRight,
-                ArrowUpDown,
-                ArrowLeftRight,
+            // arrows
+            ArrowUp,
+            ArrowDown,
+            ArrowLeft,
+            ArrowRight,
+            ArrowUpDown,
+            ArrowLeftRight,
 
-                // Blocks
-                Block0,
-                Block25,
-                Block50,
-                Block75,
-                Block100,
-                BlockUpperHalf,
-                BlockLowerHalf,
-                BlockLeftHalf,
-                BlockRightHalf,
-                BlockCentered,
+            // Blocks
+            Block0,
+            Block25,
+            Block50,
+            Block75,
+            Block100,
+            BlockUpperHalf,
+            BlockLowerHalf,
+            BlockLeftHalf,
+            BlockRightHalf,
+            BlockCentered,
 
-                // Trangles
-                TriangleUp,
-                TriangleDown,
-                TriangleLeft,
-                TriangleRight,
+            // Trangles
+            TriangleUp,
+            TriangleDown,
+            TriangleLeft,
+            TriangleRight,
 
-                // symbols
-                CircleFilled,
-                CircleEmpty,
-                CheckMark,
+            // symbols
+            CircleFilled,
+            CircleEmpty,
+            CheckMark,
 
-                // always last
-                Count
-            };
-        }
+            // always last
+            Count
+        };
         namespace WriteCharacterBufferFlags
         {
             enum Type : unsigned int
@@ -590,12 +587,12 @@ namespace AppCUI
             // Horizontal lines
             bool    DrawHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
             bool    DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
-            bool    DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars::Type charID, const ColorPair color);
+            bool    DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
             
             // Vertical lines
             bool    DrawVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
             bool    DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
-            bool    DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars::Type charID, const ColorPair color);
+            bool    DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
 
             // Rectangle
             bool    FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);  
@@ -611,7 +608,7 @@ namespace AppCUI
 
             // Characters
             bool    WriteCharacter(int x, int y, int charCode, const ColorPair color);
-            bool    WriteSpecialCharacter(int x, int y, SpecialChars::Type charID, const ColorPair color);
+            bool    WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 
             // Character Buffer
             bool    WriteCharacterBuffer(int x, int y, const AppCUI::Console::CharacterBuffer & cb, const AppCUI::Console::WriteCharacterBufferParams& params);
@@ -623,7 +620,7 @@ namespace AppCUI
 
 
             // Clear
-            bool    ClearWithSpecialChar(SpecialChars::Type charID, const ColorPair color);
+            bool    ClearWithSpecialChar(SpecialChars charID, const ColorPair color);
             bool    Clear(int charCode, const ColorPair color);
             
             // Clipping
