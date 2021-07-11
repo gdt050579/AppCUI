@@ -1,4 +1,5 @@
 #include "AppCUI.h"
+#include "Internal.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -552,4 +553,35 @@ char&	    AppCUI::Utils::String::operator[] (int poz)
         return	tempCharForReferenceReturn;
     }
     return Text[poz];
+}
+void AppCUI::Utils::String::ConvertToInternalNewLineFormat()
+{
+    if ((this->Text == nullptr) || (this->Size == 0))
+        return; // nothing to convert
+    char * s = Text;
+    char * e = Text + this->Size;
+    char * o = Text;
+    while (s < e)
+    {
+        if ((*s) == '\r')
+        {
+            *o = NEW_LINE_CODE;
+            s++; o++;
+            if ((s<e) && ((*s) == '\n'))
+                s++;
+            continue;
+        }
+        if ((*s) == '\n')
+        {
+            *o = NEW_LINE_CODE;
+            s++; o++;
+            if ((s < e) && ((*s) == '\r'))
+                s++;
+            continue;
+        }
+        *o = *s;
+        o++; s++;
+    }
+    this->Size -= (unsigned int)(s - o);
+    this->Text[this->Size] = 0;
 }

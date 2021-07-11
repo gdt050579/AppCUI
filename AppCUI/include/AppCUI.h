@@ -163,6 +163,8 @@ namespace AppCUI
             bool			    Equals(const char *text, bool ignoreCase = false) const;
             bool			    Equals(const String &ss, bool ignoreCase = false) const;
 
+            void                ConvertToInternalNewLineFormat();
+
             
             inline String&	    operator=  (const String &s) { this->Set(s); return *this; }
             inline String&      operator=  (const char * text) { this->Set(text); return *this; }
