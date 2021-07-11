@@ -8,7 +8,7 @@ using namespace AppCUI::Input;
 #define EXIT_IF_READONLY()	if ((Members->Flags & TextFieldFlags::READONLY_TEXT)!=0) { return; };
 
 #define DEFAULT_TEXT_COLOR	0xFFFFFFFF
-//*
+
 void TextField_SendTextChangedEvent(TextField *control)
 {
 	CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
@@ -149,7 +149,21 @@ void TextField_SetSelection(TextField *control,int start, int end)
 }
 void TextField_CopyToClipboard(TextField *control)
 {
-
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    LocalString<2048> temp;
+    
+    if (!TextField_HasSelection(control))
+        return;
+    if (Members->Text.CopyString(temp, Members->Selection.Start, Members->Selection.End+1))
+    {
+        if (!AppCUI::OS::Clipboard::SetText(temp))
+        {
+            LOG_WARNING("Fail to copy string to the clipboard: %s", temp.GetText());
+        }
+    }
+    else {
+        LOG_WARNING("Fail to copy string from character buffers");
+    }
 }
 void TextField_PasteFromClipboard(TextField *control)
 {
@@ -357,4 +371,3 @@ bool TextField::OnMouseLeave()
     return true;
 }
 
-//*/
