@@ -170,6 +170,33 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
     this->Count--;
     return true;
 }
+bool CharacterBuffer::Insert(const char * text, unsigned int position, const ColorPair color, unsigned int textSize)
+{
+    CHECK(text, false, "Expecting a valid (non-null) text");
+    CHECK(position <= this->Count, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Count);
+    COMPUTE_TEXT_SIZE(text, textSize);
+    if (textSize == 0)
+        return true; // nothing to insert
+    VALIDATE_ALLOCATED_SPACE(textSize + this->Count, false);
+    if (position < this->Count) {
+        memmove(this->Buffer + position + textSize, this->Buffer + position, (this->Count - position) * sizeof(Character));
+    }
+    auto c = this->Buffer + position;
+    while (textSize > 0)
+    {
+        c->Code = *text;
+        c->Color = color;
+        text++;
+        c++;
+        textSize--;
+    }
+    this->Count += textSize;
+    return true;
+}
+bool CharacterBuffer::Insert(const AppCUI::Utils::String& text, unsigned int position, const ColorPair color)
+{
+    return Insert(text.GetText(), position, color, text.Len());
+}
 bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(this->Count + 1, false);

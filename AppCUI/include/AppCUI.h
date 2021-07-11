@@ -526,6 +526,8 @@ namespace AppCUI
             bool SetWithHotKey(const char * text, unsigned int & hotKeyCharacterPosition, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
             bool Delete(unsigned int start, unsigned int end);
             bool DeleteChar(unsigned int position);
+            bool Insert(const char * text, unsigned int position, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+            bool Insert(const AppCUI::Utils::String& text, unsigned int position, const ColorPair color = NoColorPair);
             bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
             bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
             void SetColor(const ColorPair color);
