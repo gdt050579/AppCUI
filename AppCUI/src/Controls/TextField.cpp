@@ -167,7 +167,21 @@ void TextField_CopyToClipboard(TextField *control)
 }
 void TextField_PasteFromClipboard(TextField *control)
 {
-    //Members->Modified = true;
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    EXIT_IF_READONLY();    
+    LocalString<2048> temp;
+    if (AppCUI::OS::Clipboard::GetText(temp) == false)
+    {
+        LOG_WARNING("Fail to retrive a text from the clipboard.");
+        return;
+    }
+    TextField_DeleteSelected(control);
+    if (Members->Text.Insert(temp, Members->Cursor.Pos))
+    {
+        TextField_MoveTo(control, Members->Cursor.Pos + temp.Len(), false);
+    }
+    TextField_SendTextChangedEvent(control);
+    Members->Modified = true;
 }
 //============================================================================
 TextField::~TextField()
