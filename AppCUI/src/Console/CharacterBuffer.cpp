@@ -182,6 +182,7 @@ bool CharacterBuffer::Insert(const char * text, unsigned int position, const Col
         memmove(this->Buffer + position + textSize, this->Buffer + position, (this->Count - position) * sizeof(Character));
     }
     auto c = this->Buffer + position;
+    this->Count += textSize;
     while (textSize > 0)
     {
         c->Code = *text;
@@ -189,8 +190,7 @@ bool CharacterBuffer::Insert(const char * text, unsigned int position, const Col
         text++;
         c++;
         textSize--;
-    }
-    this->Count += textSize;
+    }    
     return true;
 }
 bool CharacterBuffer::Insert(const AppCUI::Utils::String& text, unsigned int position, const ColorPair color)

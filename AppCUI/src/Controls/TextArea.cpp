@@ -577,6 +577,19 @@ void TextAreaControlContext::PasteFromClipboard()
 {
 	if ((Flags & (unsigned int)TextAreaFlags::READONLY) != 0)
 		return;
+    LocalString<2048> temp;
+    if (Clipboard::GetText(temp) == false)
+    {
+        LOG_WARNING("Fail to retrive a text from the clipboard.");
+        return;
+    }
+    DeleteSelected();
+    if (Text.Insert(temp,View.CurrentPosition))
+    {
+        View.CurrentPosition += temp.Len();
+        UpdateLines();
+        SendMsg(Event::EVENT_TEXT_CHANGED);
+    }
 }
 
 bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
