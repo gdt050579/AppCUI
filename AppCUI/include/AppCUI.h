@@ -1089,10 +1089,10 @@ namespace AppCUI
         {
         public:
             bool			Create(Control *parent, const char * layout, ListViewFlags flags);
-            void			Paint();
-            bool			OnKeyEvent(int KeyCode, char AsciiCode);
-            void			OnMouseReleased(int x, int y, int butonState);
-            void			OnFocus();
+            void	        Paint(Console::Renderer & renderer) override;
+            bool	        OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void			OnMouseReleased(int x, int y, int butonState) override;
+            void			OnFocus() override;
 
             // coloane
             bool			AddColumn(const char *text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);

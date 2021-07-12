@@ -280,8 +280,8 @@ public:
 
     int					SearchItem(int startPoz, unsigned int colIndex);
     void				UpdateSearch(int startPoz);
-    void				DrawHeader();
-    void				DrawItem(bool activ, unsigned int index, int y);
+    void				DrawHeader(Console::Renderer & renderer);
+    void				DrawItem(Console::Renderer & renderer, bool activ, unsigned int index, int y);
     void				UpdateBars();
 
     // movement
@@ -331,10 +331,10 @@ public:
     bool				SetItemHeight(ItemHandle item, unsigned int Height);
     unsigned int		GetItemHeight(ItemHandle item);
 
-    void				Paint(bool activ);
+    void				Paint(Console::Renderer & renderer);
     void				OnMouseReleased(int x, int y, int butonState);
     void				SetSortColumn(unsigned int colIndex);
-    bool				OnKeyEvent(int KeyCode, char AsciiCode);
+    bool				OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode);
     void				SendMsg(Event::Type eventType);
     bool				Sort();
 

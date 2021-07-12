@@ -35,11 +35,11 @@ ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
     return &ItemsList[idx];
 }
 
-void ListViewControlContext::DrawHeader()
+void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
 {
 
 }
-void ListViewControlContext::DrawItem(bool activ, unsigned int index, int y)
+void ListViewControlContext::DrawItem(Console::Renderer & renderer,bool activ, unsigned int index, int y)
 {
 }
 
@@ -47,8 +47,10 @@ void ListViewControlContext::UpdateBars()
 {
 
 }
-void ListViewControlContext::Paint(bool activ)
+void ListViewControlContext::Paint(Console::Renderer & renderer)
 {
+    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, DefaultColorPair, false);
+    renderer.SetClipMargins(1, 1, 1, 1);
 }
 // coloane	
 bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, int Size)
@@ -396,7 +398,7 @@ void ListViewControlContext::MoveTo(int index)
 	if (originalPoz != index) 
 		SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
 }
-bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
+bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {
 	Utils::String	temp;
 	int				tr, gr;
@@ -406,7 +408,7 @@ bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 	if (resizeColumnMode)
 	{
 		searchMode = false;
-		switch (KeyCode)
+		switch (keyCode)
 		{
 			case Key::Ctrl | Key::Right: 
                 columnToResize++;
@@ -426,7 +428,7 @@ bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 				H[columnToResize].Size = MINVALUE(H[columnToResize].Size+1, 256);
 				return true;
 		};
-		if ((AsciiCode>0) || (KeyCode>0))
+		if ((AsciiCode>0) || (keyCode>0))
 		{
 			resizeColumnMode = false;
             columnToResize = INVALID_COLUMN_INDEX;
@@ -441,7 +443,7 @@ bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 				selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
 			else
 				selected = false;
-			switch (KeyCode)
+			switch (keyCode)
 			{
 			case Key::Shift | Key::Up:
 				UpdateSelection(CurentItemIndex, CurentItemIndex - 1, !selected);
@@ -481,7 +483,7 @@ bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 				return true;
 			};
 		}
-		switch (KeyCode)
+		switch (keyCode)
 		{
 		case Key::Up: MoveTo(CurentItemIndex - 1); searchMode = false; return true;
 		case Key::Down: MoveTo(CurentItemIndex + 1); searchMode = false; return true;
@@ -597,7 +599,7 @@ bool ListViewControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
 		{
 			for (int tr = 0; tr < NrHeaders; tr++)
 			{
-				if (H[tr].HotKeyCode == KeyCode)
+				if (H[tr].HotKeyCode == keyCode)
 				{
 					ColumnSort(tr);
 					return true;
@@ -844,14 +846,14 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
 	// all is good
 	return true;
 }
-void		ListView::Paint()
+void		ListView::Paint(Console::Renderer & renderer)
 {
 	CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
-	Members->Paint(Members->Focused);
+	Members->Paint(renderer);
 }
-bool		ListView::OnKeyEvent(int KeyCode, char AsciiCode)
+bool		ListView::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {
-	return WRAPPER->OnKeyEvent(KeyCode, AsciiCode);
+	return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
 }
 
 bool		ListView::AddColumn(const char *text, TextAlignament Align, unsigned int Size)
