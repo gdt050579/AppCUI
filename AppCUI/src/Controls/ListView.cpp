@@ -13,7 +13,7 @@ using namespace AppCUI::Input;
 
 
 #define PREPARE_LISTVIEW_ITEM(index,returnValue) \
-    CHECK(index<ItemsList.size(),false,"Invalid index: %d",index); \
+    CHECK(index<ItemsList.size(),returnValue,"Invalid index: %d",index); \
     ListViewItem &i = ItemsList[index];
 
 #define WRAPPER	((ListViewControlContext*)this->Context)
@@ -194,7 +194,7 @@ bool ListViewControlContext::SetItemData(ItemHandle item, ItemData Data)
 ItemData* ListViewControlContext::GetItemData(ItemHandle item)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
-	return &(i.Data);
+	return &i.Data;
 }
 bool ListViewControlContext::SetItemXOffset(ItemHandle item, unsigned int XOffset)
 {
