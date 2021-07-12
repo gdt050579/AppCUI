@@ -10,6 +10,77 @@ using namespace AppCUI::Utils;
     }
 
 
+template <typename T>
+void __HeapSortContext(T *Data, int(*cmpFunc)(T elem1, T elem2, void* Context), int nrElements, bool ascendent, void *Context)
+{
+    T		        tempElement;
+    unsigned int	n = nrElements, parent = nrElements / 2, index, child;
+
+
+    if (ascendent)
+    {
+        for (;;) {
+            if (parent > 0) {
+                tempElement = Data[(--parent)];
+            }
+            else {
+                n--;
+                if (n == 0) return;
+                tempElement = Data[n];
+                Data[n] = Data[0];
+            }
+            index = parent;
+            child = index * 2 + 1;
+            while (child < n) {
+                if ((child + 1 < n) && (cmpFunc(Data[(child + 1)], Data[child], Context) > 0))
+                    child++;
+
+                if (cmpFunc(Data[child], tempElement, Context) > 0)
+                {
+                    Data[index] = Data[child];
+                    index = child;
+                    child = index * 2 + 1;
+                }
+                else {
+                    break;
+                }
+            }
+            Data[index] = tempElement;
+        }
+    }
+    else {
+        for (;;) {
+            if (parent > 0) {
+                tempElement = Data[(--parent)];
+            }
+            else {
+                n--;
+                if (n == 0) return;
+                tempElement = Data[n];
+                Data[n] = Data[0];
+            }
+            index = parent;
+            child = index * 2 + 1;
+            while (child < n) {
+                if ((child + 1 < n) && (cmpFunc(Data[(child + 1)], Data[child], Context) < 0))
+                    child++;
+
+                if (cmpFunc(Data[child], tempElement, Context) < 0)
+                {
+                    Data[index] = Data[child];
+                    index = child;
+                    child = index * 2 + 1;
+                }
+                else {
+                    break;
+                }
+            }
+            Data[index] = tempElement;
+        }
+    }
+}
+
+
 bool Array32::Grow(unsigned int newSize)
 {
     newSize = ((newSize | 0x7F) + 1) & 0x7FFFFFFF;
@@ -101,5 +172,17 @@ bool Array32::Get(unsigned int index, int & value)
 {
     CHECK(index < Count, false, "Invalid index - should be between [0 and %d)", Count);
     value = *(int*)(Data + Count);
+    return true;
+}
+bool Array32::Sort(int(*compare)(int elem1, int elem2, void* Context), bool ascendent, void * Context)
+{
+    CHECK(compare, false, "Expecting a valid (non-null) compare function !");
+    __HeapSortContext<int>((int*)Data, compare, this->Count, ascendent, Context);
+    return true;
+}
+bool Array32::Sort(int(*compare)(unsigned int elem1, unsigned int elem2, void* Context), bool ascendent, void * Context)
+{
+    CHECK(compare, false, "Expecting a valid (non-null) compare function !");
+    __HeapSortContext<unsigned int>(Data, compare, this->Count, ascendent, Context);
     return true;
 }

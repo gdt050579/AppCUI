@@ -140,6 +140,61 @@ bool AppCUI::Utils::String::EndsWith(const char *sir1, const char *sir2, bool ig
         return ((*p2) == 0) && ((*p1) == 0);
     }
 }
+bool AppCUI::Utils::String::Contains(const char *sir, const char *textToFind, bool ignoreCase)
+{
+    CHECK((sir != nullptr) && (textToFind != nullptr), false, "Invalid parameters (both 'sir' and 'textToFind' must not be null)");
+    const unsigned char *p_sir = (const unsigned char *)sir;
+    const unsigned char *p_find = (const unsigned char *)textToFind;
+    const unsigned char *ps;
+    const unsigned char *pf;
+    unsigned char char_to_find = *(p_find);
+    if (ignoreCase)
+        char_to_find = __lower_case_table__[*p_find];
+    while (*p_sir)
+    {
+        if ((*p_sir) == char_to_find)
+        {
+            ps = p_sir;
+            pf = p_find;
+            if (ignoreCase) {
+                for (; (*pf) && (*ps) && (__lower_case_table__[*ps] == __lower_case_table__ [*pf]); pf++, ps++);
+            }
+            else {
+                for (; (*pf) && (*ps) && ((*ps) == (*pf)); pf++, ps++);
+            }
+            if (!(*pf))
+                return true;
+        }
+        p_sir++;
+    }
+    return false;
+}
+int  AppCUI::Utils::String::Compare(const char *sir1, const char * sir2, bool ignoreCase)
+{
+    VALIDATE_STRINGS_TO_COMPARE;
+    if (ignoreCase)
+    {
+        while ((*p1) && (*p2) && ((__lower_case_table__[*p1]) == (__lower_case_table__[*p2]))) {
+            p1++;
+            p2++;
+        }
+        if (__lower_case_table__[*p1] < __lower_case_table__[*p2])
+            return -1;
+        if (__lower_case_table__[*p1] > __lower_case_table__[*p2])
+            return 1;
+        return 0;
+    } else {
+        while ((*p1) && (*p2) && ((*p1) == (*p2))) {
+            p1++;
+            p2++;
+        }
+        if ((*p1) < (*p2))
+            return -1;
+        if ((*p1) > (*p2))
+            return 1;
+        return 0;
+    }
+}
 
 //--------------------------------------------------- CONSTRUCTORI OBIECT ----------------------------------------------------------------
 AppCUI::Utils::String::String(void)
@@ -514,6 +569,14 @@ bool AppCUI::Utils::String::StartsWith(const AppCUI::Utils::String &text, bool i
 {
     return String::StartsWith(Text, text.Text, ignoreCase);
 }
+bool AppCUI::Utils::String::Contains(const char *text, bool ignoreCase) const
+{
+    return String::Contains(this->Text, text, ignoreCase);
+}
+bool AppCUI::Utils::String::Contains(const String &ss, bool ignoreCase) const
+{
+    return String::Contains(this->Text, ss.Text, ignoreCase);
+}
 bool AppCUI::Utils::String::EndsWith(const char *ss, bool ignoreCase) const
 {
 	return String::EndsWith(Text,ss,ignoreCase,Size);
@@ -536,6 +599,10 @@ bool AppCUI::Utils::String::Equals(const String& text, bool ignoreCase) const
     if (this->Size != text.Size)
         return false;
     return String::Equals(this->Text, text.Text, ignoreCase);
+}
+int  AppCUI::Utils::String::CompareWith(const char * text, bool ignoreCase) const
+{
+    return String::Compare(this->Text, text, ignoreCase);
 }
 
 char&	    AppCUI::Utils::String::operator[] (int poz)
