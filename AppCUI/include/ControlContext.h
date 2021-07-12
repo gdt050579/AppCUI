@@ -6,8 +6,10 @@
 #include <vector>
 
 using namespace AppCUI;
+using namespace AppCUI::Console;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Utils;
+using namespace AppCUI::Input;
 
 #define GATTR_ENABLE	0x000001
 #define GATTR_VISIBLE	0x000002
@@ -221,6 +223,124 @@ struct CanvasControlContext : public ControlContext
 {
     AppCUI::Console::Canvas     canvas;
     int                         CanvasScrollX, CanvasScrollY;
+};
+
+#define MAX_LISTVIEW_HEADERS			64
+#define MAX_LISTVIEW_HEADER_TEXT        32
+#define MAX_LISTVIEW_SEARCH_STRING      128
+
+struct ListViewItem
+{
+    Utils::String	    SubItem[MAX_LISTVIEW_HEADERS];
+    unsigned int		Flags;
+    unsigned int		XOffset;
+    unsigned int		Height;
+    ColorPair           ItemColor;
+    ItemData			Data;
+    ListViewItem();
+};
+struct ListViewHeader
+{
+    char				Name[MAX_LISTVIEW_HEADER_TEXT];
+    unsigned int		Size;
+    Key::Type			HotKeyCode;
+    unsigned int		Flags;
+    TextAlignament		Align;
+};
+
+class ListViewControlContext : public ControlContext
+{
+public:
+    char				        searchStringData[MAX_LISTVIEW_SEARCH_STRING];
+    char				        statusStringData[20];
+    ListViewHeader		        H[MAX_LISTVIEW_HEADERS];
+    unsigned int		        NrHeaders;
+    std::vector<ListViewItem>	ItemsList;
+    Utils::Array32              ItemsIndexes;
+    Utils::String		        searchString, statusString;
+
+    bool				        searchMode;
+    int					        Px, Py, CurentItemIndex;
+    char				        clipboardSeparator;
+    int					        checkCharacter, uncheckCharacter;
+    int					        selectionColor;
+
+    unsigned int			    sortColumnIndex;
+    unsigned int				columnToResize;
+    bool                        sortAscendent;
+    bool				        resizeColumnMode;
+
+    Handlers::ListViewItemComparer	sortFunction;
+    void*					    sortFunctionContext;
+
+
+    Controls::Control*	        Host;
+
+    ListViewItem*		GetFilteredItem(unsigned int index);
+
+    int					SearchItem(int startPoz, unsigned int colIndex);
+    void				UpdateSearch(int startPoz);
+    void				DrawHeader();
+    void				DrawItem(bool activ, unsigned int index, int y);
+    void				UpdateBars();
+
+    // movement
+    void				UpdateSelection(int start, int end, bool select);
+    void				MoveTo(int newItem);
+    void				ColumnSort(unsigned int columnIndex);
+
+    bool				AddColumn(const char *text, TextAlignament Align, int Size = 10);
+    bool				SetColumn(unsigned int index, const char *text = nullptr, TextAlignament Align = TextAlignament::Left, int Size = -1);
+    bool				DeleteColumn(int index);
+    void				DeleteAllColumns();
+    int					GetNrColumns();
+
+    // itemuri
+    ItemHandle			AddItem(const char *text);
+    bool				SetItemText(ItemHandle item, unsigned int subItem, const char *text);
+    const char*			GetItemText(ItemHandle item, unsigned int subItem);
+    bool				SetItemCheck(ItemHandle item, bool check);
+    bool				SetItemSelect(ItemHandle item, bool select);
+    bool				SetItemColor(ItemHandle item, ColorPair color);
+    bool				SetItemType(ItemHandle item, ListViewItemType type);
+    void				SetClipboardSeparator(char ch);
+    bool				IsItemChecked(ItemHandle item);
+    bool				IsItemSelected(ItemHandle item);
+    void				SetCheckCharacter(int character = 0xFB);
+    void				SetUncheckCharacter(int character = 'x');
+    void				SelectAllItems();
+    void				UnSelectAllItems();
+    void				CheckAllItems();
+    void				UncheckAllItems();
+    unsigned int		GetCheckedItemsCount();
+    void				SetSelectionColor(unsigned int color);
+
+    void				DeleteAllItems();
+    bool				SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
+    bool				SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn);
+
+    bool				SetCurrentIndex(ItemHandle item);
+    int					GetFirstVisibleLine();
+    bool				SetFirstVisibleLine(ItemHandle item);
+    int					GetVisibleItemsCount();
+
+    bool				SetItemData(ItemHandle item, ItemData Data);
+    ItemData*			GetItemData(ItemHandle item);
+    bool				SetItemXOffset(ItemHandle item, unsigned int XOffset);
+    unsigned int		GetItemXOffset(ItemHandle item);
+    bool				SetItemHeight(ItemHandle item, unsigned int Height);
+    unsigned int		GetItemHeight(ItemHandle item);
+
+    void				Paint(bool activ);
+    void				OnMouseReleased(int x, int y, int butonState);
+    void				SetSortColumn(unsigned int colIndex);
+    bool				OnKeyEvent(int KeyCode, char AsciiCode);
+    void				SendMsg(Event::Type eventType);
+    bool				Sort();
+
+    void				FilterItems();
+
+
 };
 
 

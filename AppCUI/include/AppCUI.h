@@ -97,6 +97,9 @@ namespace AppCUI
             bool                 Push(int value);
             bool                 Get(unsigned int index, unsigned int & value);
             bool                 Get(unsigned int index, int & value);
+
+            bool                 Sort(int(*compare)(int elem1, int elem2, void* Context), bool ascendent, void * Context = nullptr);
+            bool                 Sort(int(*compare)(unsigned int elem1, unsigned int elem2, void* Context), bool ascendent, void * Context = nullptr);
         };
         class EXPORT String 
         {
@@ -117,7 +120,8 @@ namespace AppCUI
             static bool         Equals      (const char *sir1, const char *sir2, bool ignoreCase = false);
             static bool		    StartsWith  (const char *sir, const char *text, bool ignoreCase = false);
             static bool		    EndsWith    (const char *sir, const char *text, bool ignoreCase = false, unsigned int sirTextSize = 0xFFFFFFFF, unsigned int textSize = 0xFFFFFFFF);
-
+            static bool         Contains    (const char *sir, const char *textToFind, bool ignoreCase = false);
+            static int          Compare     (const char *sir1, const char * sir2, bool ignoreCase = false);
             // Create string object
             bool			    Create(unsigned int initialAllocatedBuffer = 64);
             bool			    Create(const char* text);
@@ -162,6 +166,9 @@ namespace AppCUI
             bool			    EndsWith(const String &text, bool ignoreCase = false) const;
             bool			    Equals(const char *text, bool ignoreCase = false) const;
             bool			    Equals(const String &ss, bool ignoreCase = false) const;
+            bool			    Contains(const char *text, bool ignoreCase = false) const;
+            bool			    Contains(const String &ss, bool ignoreCase = false) const;
+            int                 CompareWith(const char * text, bool ignoreCase = false) const;
 
             void                ConvertToInternalNewLineFormat();
 
@@ -679,13 +686,20 @@ namespace AppCUI
                 EVENT_TEXT_CHANGED,
                 EVENT_TEXTFIELD_VALIDATE,
                 EVENT_TAB_CHANGED,
+                EVENT_LISTVIEW_CURRENTITEM_CHANGED,
+                EVENT_LISTVIEW_SELECTION_CHANGED,
+                EVENT_LISTVIEW_ITEM_CHECKED,
+                EVENT_LISTVIEW_ITEM_CLICKED,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND,
                 EVENT_CUSTOM,
             };
         }
+        typedef unsigned int ItemHandle;
+        constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
         class EXPORT Control;
         class EXPORT TextField;
+        class EXPORT ListView;
         namespace Handlers
         {
             typedef void(*AfterResizeHandler) (AppCUI::Controls::Control *control, int newWidth, int newHeight, void *Context);
@@ -700,6 +714,7 @@ namespace AppCUI
             typedef void(*MouseReleasedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*SyntaxHighlightHandler) (AppCUI::Controls::Control * control, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
             typedef void(*TextASyntaxHighlightHandler)(const char *ptrLine, unsigned char *ptrColors, unsigned int LineSize, unsigned int ColorVectSize, void *Context);
+            typedef int (*ListViewItemComparer)(AppCUI::Controls::ListView *control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void *Context);
 
         }
 
@@ -1040,6 +1055,106 @@ namespace AppCUI
             void    OnUpdateScrollBars() override;
             Console::Canvas*	GetCanvas();
         };
+    
+        enum class ListViewFlags: unsigned int
+        {
+            NONE            = 0, 
+            NOHEADERS       = 0x000100,
+            HASCHECKBOX     = 0x000200,
+            GRIDLINES       = 0x000400,
+            SORTCOLUMNS     = 0x000800,
+            ITEMSEPARATORS  = 0x001000,
+            HIDECURRENTITEM = 0x002000,
+            ALLOWSELECTION  = 0x004000,
+            SEARCHMODE      = 0x008000,
+        };
+        enum class ListViewItemType: unsigned int
+        {
+            REGULAR                 = 0,
+            HIGHLIGHT               = 1,
+            INACTIVE                = 2,
+            ERROR_INFORMATION       = 3,
+            WARNING_INFORMATION     = 4,
+            COLOR_1                 = 5,
+            COLOR_2                 = 6,
+            COLOR_3                 = 7
+        };
+        union ItemData
+        {
+            void*               Pointer;
+            unsigned int        UInt32Value;
+            unsigned long long  UInt64Value;
+        };
+        class EXPORT ListView : public Control
+        {
+        public:
+            bool			Create(Control *parent, const char * layout, ListViewFlags flags);
+            void			Paint();
+            bool			OnKeyEvent(int KeyCode, char AsciiCode);
+            void			OnMouseReleased(int x, int y, int butonState);
+            void			OnFocus();
+
+            // coloane
+            bool			AddColumn(const char *text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);
+            bool			SetColumnText(unsigned int columnIndex, const char *text);
+            bool			SetColumnAlignament(unsigned int columnIndex, AppCUI::Console::TextAlignament Align);
+            bool			SetColumnWidth(unsigned int columnIndex, unsigned int width);
+            bool			SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
+            bool			SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn);
+            bool			DeleteColumn(unsigned int columnIndex);
+            void			DeleteAllColumns();
+            unsigned int	GetColumnsCount();
+
+            // items add
+            ItemHandle		AddItem(const char *text);
+            ItemHandle		AddItem(const char *text, const char * subItem1);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4, const char * subItem5);
+            
+            // items properties
+            bool			SetItemText(ItemHandle item, unsigned int subItemIndex, const char *text);
+            const char*		GetItemText(ItemHandle item, unsigned int subItemIndex);
+            bool			SetItemCheck(ItemHandle item, bool check);
+            bool			SetItemSelect(ItemHandle item, bool select);
+            bool			SetItemColor(ItemHandle item, AppCUI::Console::ColorPair color);
+            bool			SetItemType(ItemHandle item, ListViewItemType type);
+            bool			IsItemChecked(ItemHandle item);
+            bool			IsItemSelected(ItemHandle item);
+            bool			SetItemData(ItemHandle item, ItemData Data);
+            ItemData*	    GetItemData(ItemHandle item);
+            bool			SetItemXOffset(ItemHandle item, unsigned int XOffset);
+            unsigned int	GetItemXOffset(ItemHandle item);
+            bool			SetItemHeight(ItemHandle item, unsigned int Height);
+            unsigned int	GetItemHeight(ItemHandle item);
+            void			DeleteAllItems();
+            unsigned int	GetItemsCount();
+            ItemHandle		GetCurrentItem();
+            bool			SetCurrentItem(ItemHandle item);
+            void			SelectAllItems();
+            void			UnSelectAllItems();
+            void			CheckAllItems();
+            void			UncheckAllItems();
+            unsigned int	GetCheckedItemsCount();
+
+            // misc
+            void			SetSelectionColor(int color);
+            void			SetClipboardSeparator(char ch);
+            void			SetCheckCharacter(int character = 0xFB);
+            void			SetUncheckCharacter(int character = 'x');
+
+            // sort
+            void			SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void *Context = nullptr);
+            bool			Sort();
+            bool			Sort(unsigned int columnIndex, bool ascendent);
+            bool			Sort(unsigned int columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void *Context = nullptr);
+
+
+            virtual ~ListView();
+        };
+
+
     };
     namespace Dialogs
     {
@@ -1228,5 +1343,8 @@ inline constexpr AppCUI::Controls::TextAreaFlags operator|(AppCUI::Controls::Tex
 {
     return static_cast<AppCUI::Controls::TextAreaFlags>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
-
+inline constexpr unsigned int operator&(unsigned int f1, AppCUI::Controls::ListViewFlags f2)
+{
+    return (static_cast<unsigned int>(f1) & static_cast<unsigned int>(f2));
+}
 #endif
