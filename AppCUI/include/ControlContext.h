@@ -267,6 +267,8 @@ public:
 
     unsigned int			    sortColumnIndex;
     unsigned int				columnToResize;
+    unsigned int                columnHoverOver;
+    unsigned int                columnSeparatorHoverOver;
     bool                        sortAscendent;
     bool				        resizeColumnMode;
 
@@ -282,7 +284,6 @@ public:
     void				UpdateSearch(int startPoz);
     void				DrawHeader(Console::Renderer & renderer);
     void				DrawItem(Console::Renderer & renderer, bool activ, unsigned int index, int y);
-    void				UpdateBars();
 
     // movement
     void				UpdateSelection(int start, int end, bool select);
@@ -333,6 +334,10 @@ public:
 
     void				Paint(Console::Renderer & renderer);
     void				OnMouseReleased(int x, int y, int butonState);
+    bool                MouseToHeader(int x, int y, unsigned int &HeaderIndex, unsigned int &HeaderColumnIndex);
+    void                OnMousePressed(int x, int y, int butonState);
+    bool                OnMouseDrag(int x, int y, int butonState);
+    bool                OnMouseOver(int x, int y);
     void				SetSortColumn(unsigned int colIndex);
     bool				OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode);
     void				SendMsg(Event::Type eventType);

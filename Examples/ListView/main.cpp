@@ -15,7 +15,7 @@ public:
     MyWin()
     {
         this->Create("List View Example", "a:c,w:70,h:20");
-        lv.Create(this, "x:1,y:1,w:66,h:16", ListViewFlags::NONE);
+        lv.Create(this, "x:1,y:1,w:66,h:16", ListViewFlags::SORTCOLUMNS);
         lv.AddColumn("Name", TextAlignament::Left, 15);
         lv.AddColumn("Towm", TextAlignament::Center, 15);
         lv.AddColumn("Income", TextAlignament::Right, 20);

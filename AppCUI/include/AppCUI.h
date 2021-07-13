@@ -1093,6 +1093,10 @@ namespace AppCUI
             void	        Paint(Console::Renderer & renderer) override;
             bool	        OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void			OnMouseReleased(int x, int y, int butonState) override;
+            void	        OnMousePressed(int x, int y, int Button) override;
+            bool	        OnMouseDrag(int x, int y, int Button) override;
+            bool            OnMouseOver(int x, int y) override;
+            bool            OnMouseLeave() override;
             void			OnFocus() override;
             void            OnUpdateScrollBars() override;
 
