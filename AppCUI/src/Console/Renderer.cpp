@@ -433,15 +433,94 @@ bool Renderer::WriteSingleLineText(int x, int y, const char * text, const ColorP
     const unsigned char * e = s + textSize;
     // needs more optimizations
     Character * c = this->OffsetRows[y] + x;
-    while ((s < e) && (x <= Clip.Right))
+    if (NO_TRANSPARENCY(color))
     {
-        if (x >= Clip.Left)
+        while ((s < e) && (x <= Clip.Right))
         {
-            SET_CHARACTER_EX(c, *s, color);
+            if (x >= Clip.Left)
+            {
+                SET_CHARACTER(c, *s, color);
+            }
+            c++; s++; x++;
         }
-        c++;
-        s++;
-        x++;
+    } else {
+        while ((s < e) && (x <= Clip.Right))
+        {
+            if (x >= Clip.Left)
+            {
+                SET_CHARACTER_EX(c, *s, color);
+            }
+            c++;s++;x++;
+        }
+    }
+    return true;
+}
+bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int width, const ColorPair color, TextAlignament align, int textSize)
+{
+    if (width == 0)
+        return false; // nothing to print
+    CHECK(text, false, "Expecting a valid (non-null) text ");
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+
+    if ((y < Clip.Top) || (y > Clip.Bottom))
+        return false;
+    if (x > Clip.Right)
+        return false;
+    if (textSize < 0)
+        textSize = AppCUI::Utils::String::Len(text);
+
+    if (x + width < Clip.Left)
+        return false;
+    const unsigned char * s;
+    const unsigned char * e;
+    switch ((TextAlignament)(((unsigned int)align) & (unsigned int)(TextAlignament::Left|TextAlignament::Right|TextAlignament::Right)))
+    {
+        case TextAlignament::Left:
+            s = (const unsigned char *)text;
+            e = s + MINVALUE((unsigned int)textSize, width);
+            break;
+        case TextAlignament::Right:
+            e = (const unsigned char *)text + ((unsigned int)textSize);
+            s = e - MINVALUE((unsigned int)textSize, width);
+            x += (unsigned int)(s - (const unsigned char *)text);
+            break;
+        case TextAlignament::Center:
+            if ((unsigned int)textSize >= width)
+            {
+                s = (const unsigned char *)text;
+                e = s + MINVALUE((unsigned int)textSize, width);
+            }
+            else {
+                s = (const unsigned char *)text + (((unsigned int)textSize - width) >> 1);
+                e = s + width;
+                x += (((unsigned int)textSize - width) >> 1);
+            }
+            break;
+        default:
+            RETURNERROR(false, "Invalid text align method (it can only be Left,Righ or Center)");
+    }
+    Character * c = this->OffsetRows[y] + x;
+    if (NO_TRANSPARENCY(color))
+    {
+        while ((s < e) && (x <= Clip.Right))
+        {
+            if (x >= Clip.Left)
+            {
+                SET_CHARACTER(c, *s, color);
+            }
+            c++; s++; x++;
+        }
+    }
+    else {
+        while ((s < e) && (x <= Clip.Right))
+        {
+            if (x >= Clip.Left)
+            {
+                SET_CHARACTER_EX(c, *s, color);
+            }
+            c++; s++; x++;
+        }
     }
     return true;
 }
