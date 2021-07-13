@@ -1093,6 +1093,7 @@ namespace AppCUI
             bool	        OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void			OnMouseReleased(int x, int y, int butonState) override;
             void			OnFocus() override;
+            void            OnUpdateScrollBars() override;
 
             // coloane
             bool			AddColumn(const char *text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);
@@ -1286,6 +1287,14 @@ namespace AppCUI
                 Console::ColorPair Bar, Arrows, Position;
             } ScrollBar;
             void SetDarkTheme();
+            struct {
+                struct {                    
+                    Console::ColorPair Border, LineSparators;
+                } Normal, Focused, Inactive, Hover;
+                struct {
+                    Console::ColorPair Text, HotKey, Separator;
+                } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
+            } ListView;
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);
 

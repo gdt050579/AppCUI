@@ -37,7 +37,39 @@ ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
 
 void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
 {
+    auto * defaultCol = &this->Cfg->ListView.ColumnNormal;
+    if (!(this->Flags & GATTR_ENABLE))
+        defaultCol = &this->Cfg->ListView.ColumnInactive;
+    auto * lvCol = defaultCol;
 
+
+    renderer.DrawHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
+
+    int		x = 1 - Px;
+    int		c1, c2;
+    ColorPair columnBarColor;
+
+
+    for (unsigned int tr = 0; tr<NrHeaders; tr++)
+    {
+        if (this->Focused)
+        {
+            if (tr == sortColumnIndex)
+                lvCol = &this->Cfg->ListView.ColumnSort;
+            else
+                lvCol = defaultCol;
+        }
+        renderer.WriteSingleLineText(x, 1, H[tr].Name, lvCol->Text);
+        x += H[tr].Size;
+        if ((this->Focused) && (tr == sortColumnIndex))
+            renderer.WriteSpecialCharacter(x - 1, 1, this->sortAscendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
+            	
+        if ((this->Focused) && (resizeColumnMode) && (tr == columnToResize))
+            renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, Cfg->ListView.ColumnHover.Separator);
+        else
+            renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
+        x++;
+    }
 }
 void ListViewControlContext::DrawItem(Console::Renderer & renderer,bool activ, unsigned int index, int y)
 {
@@ -49,8 +81,22 @@ void ListViewControlContext::UpdateBars()
 }
 void ListViewControlContext::Paint(Console::Renderer & renderer)
 {
-    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, DefaultColorPair, false);
+    int y = 0;
+    auto * lvCol = &this->Cfg->ListView.Normal;
+    if (!(this->Flags & GATTR_ENABLE))
+        lvCol = &this->Cfg->ListView.Inactive;
+    else if (this->Focused)
+        lvCol = &this->Cfg->ListView.Focused;
+    else if (this->MouseIsOver)
+        lvCol = &this->Cfg->ListView.Hover;
+
+    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, false);
     renderer.SetClipMargins(1, 1, 1, 1);
+    if ((Flags & ListViewFlags::NOHEADERS) == 0) 
+    { 
+    	DrawHeader(renderer); 
+    	y++; 
+    }
 }
 // coloane	
 bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, int Size)
@@ -646,7 +692,7 @@ void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
 			MoveTo(y + Py);
 	}
 }
-// sortare
+// sort
 void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 {    
     if (colIndex >= NrHeaders)
@@ -817,8 +863,8 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
     Members->Layout.MinWidth = 5;
     Members->Layout.MinHeight = 3;
 	CHECK(Init(parent, "", layout, false), false, "Failed to create list view !");	
-	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)flags;
-	
+	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (unsigned int)flags;
+    Members->ScrollBars.LeftMargin = 25;
     // allocate items
     CHECK(Members->ItemsIndexes.Create(32), false, "Fail to allocate indexes");
     Members->ItemsList.reserve(32);
@@ -854,6 +900,16 @@ void		ListView::Paint(Console::Renderer & renderer)
 bool		ListView::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {
 	return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
+}
+void        ListView::OnUpdateScrollBars()
+{
+    CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
+    //GDT: must be precomputed (cached)
+    unsigned int sum = 0;
+    for (unsigned int tr = 0; tr < Members->NrHeaders; tr++)
+        sum += Members->H[tr].Size + 1;
+    UpdateHScrollBar(Members->Px, sum);
+    
 }
 
 bool		ListView::AddColumn(const char *text, TextAlignament Align, unsigned int Size)

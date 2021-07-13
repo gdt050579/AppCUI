@@ -129,4 +129,27 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ScrollBar.Arrows = ColorPair{ Color::White, Color::Teal };
     this->ScrollBar.Bar = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
+
+    this->ListView.Normal.Border = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Normal.LineSparators = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.Inactive.LineSparators = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.Hover.Border = ColorPair{ Color::Yellow, Color::Transparent };
+    this->ListView.Hover.LineSparators = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Focused.Border = ColorPair{ Color::White, Color::Transparent };
+    this->ListView.Focused.LineSparators = ColorPair{ Color::Silver, Color::Transparent };
+
+    this->ListView.ColumnNormal.Text = ColorPair{ Color::Silver, Color::Magenta };
+    this->ListView.ColumnNormal.HotKey = ColorPair{ Color::Yellow, Color::Transparent };
+    this->ListView.ColumnNormal.Separator = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.ColumnInactive.Text = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.ColumnInactive.HotKey = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.ColumnInactive.Separator = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.ColumnHover.Text = ColorPair{ Color::Yellow, Color::Pink };
+    this->ListView.ColumnHover.HotKey = ColorPair{ Color::Yellow, Color::Pink };
+    this->ListView.ColumnHover.Separator = ColorPair{ Color::Yellow, Color::Pink };
+    this->ListView.ColumnSort.Text = ColorPair{ Color::White, Color::Pink };
+    this->ListView.ColumnSort.HotKey = ColorPair{ Color::Yellow, Color::Pink };
+    this->ListView.ColumnSort.Separator = ColorPair{ Color::Gray, Color::Pink };
+
 }
