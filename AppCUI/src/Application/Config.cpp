@@ -149,7 +149,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.ColumnHover.HotKey = ColorPair{ Color::Yellow, Color::Pink };
     this->ListView.ColumnHover.Separator = ColorPair{ Color::Yellow, Color::Pink };
     this->ListView.ColumnSort.Text = ColorPair{ Color::White, Color::Pink };
-    this->ListView.ColumnSort.HotKey = ColorPair{ Color::Yellow, Color::Pink };
+    this->ListView.ColumnSort.HotKey = ColorPair{ Color::Black, Color::Pink };
     this->ListView.ColumnSort.Separator = ColorPair{ Color::Gray, Color::Pink };
 
 }

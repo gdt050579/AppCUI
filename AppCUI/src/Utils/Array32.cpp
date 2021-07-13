@@ -16,7 +16,8 @@ void __HeapSortContext(T *Data, int(*cmpFunc)(T elem1, T elem2, void* Context), 
     T		        tempElement;
     unsigned int	n = nrElements, parent = nrElements / 2, index, child;
 
-
+    if ((nrElements <= 0) || (Data==nullptr))
+        return; // nothing to sort
     if (ascendent)
     {
         for (;;) {
@@ -182,7 +183,7 @@ bool Array32::Sort(int(*compare)(int elem1, int elem2, void* Context), bool asce
 }
 bool Array32::Sort(int(*compare)(unsigned int elem1, unsigned int elem2, void* Context), bool ascendent, void * Context)
 {
-    CHECK(compare, false, "Expecting a valid (non-null) compare function !");
+    CHECK(compare, false, "Expecting a valid (non-null) compare function !");    
     __HeapSortContext<unsigned int>(Data, compare, this->Count, ascendent, Context);
     return true;
 }

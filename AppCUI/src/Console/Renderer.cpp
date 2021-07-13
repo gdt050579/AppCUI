@@ -474,7 +474,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int
         return false;
     const unsigned char * s;
     const unsigned char * e;
-    switch ((TextAlignament)(((unsigned int)align) & (unsigned int)(TextAlignament::Left|TextAlignament::Right|TextAlignament::Right)))
+    switch ((TextAlignament)(((unsigned int)align) & (unsigned int)(TextAlignament::Left|TextAlignament::Right|TextAlignament::Center)))
     {
         case TextAlignament::Left:
             s = (const unsigned char *)text;
@@ -483,19 +483,14 @@ bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int
         case TextAlignament::Right:
             e = (const unsigned char *)text + ((unsigned int)textSize);
             s = e - MINVALUE((unsigned int)textSize, width);
-            x += (unsigned int)(s - (const unsigned char *)text);
+            x += width;
+            x -= MINVALUE((unsigned int)textSize, width);
             break;
         case TextAlignament::Center:
-            if ((unsigned int)textSize >= width)
-            {
-                s = (const unsigned char *)text;
-                e = s + MINVALUE((unsigned int)textSize, width);
-            }
-            else {
-                s = (const unsigned char *)text + (((unsigned int)textSize - width) >> 1);
-                e = s + width;
-                x += (((unsigned int)textSize - width) >> 1);
-            }
+            s = (const unsigned char *)text;
+            e = s + MINVALUE((unsigned int)textSize, width);
+            if ((unsigned int)textSize < width)
+                x += ((width - (unsigned int)textSize) >> 1);
             break;
         default:
             RETURNERROR(false, "Invalid text align method (it can only be Left,Righ or Center)");

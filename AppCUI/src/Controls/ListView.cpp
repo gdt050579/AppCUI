@@ -10,6 +10,8 @@ using namespace AppCUI::Input;
 #define COLUMN_DONT_COPY				1
 #define COLUMN_DONT_FILTER				2
 #define INVALID_COLUMN_INDEX            0xFFFFFFFF
+#define MINIM_COLUMN_WIDTH              3
+#define MAXIM_COLUMN_WIDTH              256
 
 
 #define PREPARE_LISTVIEW_ITEM(index,returnValue) \
@@ -49,18 +51,20 @@ void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
     int		c1, c2;
     ColorPair columnBarColor;
 
-
-    for (unsigned int tr = 0; tr<NrHeaders; tr++)
+    ListViewHeader * header = this->H;
+    for (unsigned int tr = 0; tr<NrHeaders; tr++, header++)
     {
         if (this->Focused)
         {
-            if (tr == sortColumnIndex)
+            if (tr == sortColumnIndex) {
                 lvCol = &this->Cfg->ListView.ColumnSort;
+                renderer.DrawHorizontalLine(x, 1, header->Size, ' ', lvCol->Text); // highlight the column
+            }
             else
                 lvCol = defaultCol;
         }
-        renderer.WriteSingleLineText(x, 1, H[tr].Name, lvCol->Text);
-        x += H[tr].Size;
+        renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Size - 2, lvCol->Text, header->Align);
+        x += header->Size;
         if ((this->Focused) && (tr == sortColumnIndex))
             renderer.WriteSpecialCharacter(x - 1, 1, this->sortAscendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
             	
@@ -144,8 +148,8 @@ bool ListViewControlContext::SetColumn(unsigned int index, const char *text, Tex
 	H[index].Align = Align;
     if (Size > 0)
     {
-        if (Size < 3) Size = 3;
-        if (Size > 256) Size = 256;
+        if (Size < MINIM_COLUMN_WIDTH) Size = MINIM_COLUMN_WIDTH;
+        if (Size > MAXIM_COLUMN_WIDTH) Size = MAXIM_COLUMN_WIDTH;
         H[index].Size = Size;
     }
 	return true;
@@ -468,10 +472,10 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
                     columnToResize = NrHeaders - 1;
 				return true;
 			case Key::Left: 
-				H[columnToResize].Size = MAXVALUE(H[columnToResize].Size-1, 2);
+				H[columnToResize].Size = MAXVALUE(H[columnToResize].Size-1, MINIM_COLUMN_WIDTH);
 				return true;
 			case Key::Right: 
-				H[columnToResize].Size = MINVALUE(H[columnToResize].Size+1, 256);
+				H[columnToResize].Size = MINVALUE(H[columnToResize].Size+1, MAXIM_COLUMN_WIDTH);
 				return true;
 		};
 		if ((AsciiCode>0) || (keyCode>0))
