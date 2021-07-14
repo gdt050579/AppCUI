@@ -43,7 +43,7 @@ bool ListViewHeader::SetName(const char * text)
     {
         if ((*text) == '&')
         {
-            char hotKey = *text + 1;
+            char hotKey = *(text + 1);
             if ((hotKey >= 'a') && (hotKey <= 'z'))
             {
                 this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'a')));
@@ -131,7 +131,10 @@ void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
             else
                 lvCol = defaultCol;
         }
-        renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, header->Align, header->NameLength);
+        if (header->HotKeyOffset == NO_HOTKEY_FOR_COLUMN)
+            renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, header->Align, header->NameLength);
+        else
+            renderer.WriteSingleLineTextWithHotKey(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, lvCol->HotKey, header->HotKeyOffset, header->Align, header->NameLength);
         x += header->Width;
         if ((this->Focused) && (tr == sortColumnIndex))
             renderer.WriteSpecialCharacter(x - 1, 1, this->sortAscendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);

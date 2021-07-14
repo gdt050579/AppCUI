@@ -538,28 +538,33 @@ bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, un
         return false;
     const unsigned char * s;
     const unsigned char * e;
+    int hotKeyX;
     switch ((TextAlignament)(((unsigned int)align) & (unsigned int)(TextAlignament::Left | TextAlignament::Right | TextAlignament::Center)))
     {
     case TextAlignament::Left:
         s = (const unsigned char *)text;
         e = s + MINVALUE((unsigned int)textSize, width);
+        hotKeyX = x + hotKeyOffset;
         break;
     case TextAlignament::Right:
         e = (const unsigned char *)text + ((unsigned int)textSize);
         s = e - MINVALUE((unsigned int)textSize, width);
         x += width;
         x -= MINVALUE((unsigned int)textSize, width);
+        hotKeyX = x + hotKeyOffset - (int)(s- (const unsigned char *)text);
         break;
     case TextAlignament::Center:
         s = (const unsigned char *)text;
         e = s + MINVALUE((unsigned int)textSize, width);
         if ((unsigned int)textSize < width)
             x += ((width - (unsigned int)textSize) >> 1);
+        hotKeyX = x + hotKeyOffset;
         break;
     default:
         RETURNERROR(false, "Invalid text align method (it can only be Left,Righ or Center)");
     }
-    int hotKeyX = x + hotKeyOffset;
+     
+
     Character * c = this->OffsetRows[y] + x;
     if (NO_TRANSPARENCY(color))
     {
