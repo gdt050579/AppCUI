@@ -611,6 +611,7 @@ namespace AppCUI
             bool    WriteSingleLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
             bool    WriteSingleLineText(int x, int y, const char * text, unsigned int width, const ColorPair color, TextAlignament align = TextAlignament::Left, int textSize = -1);
             bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
+            bool    WriteSingleLineTextWithHotKey(int x, int y, const char * text, unsigned int width, const ColorPair color, const ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align = TextAlignament::Left, int textSize = -1);
             bool    WriteMultiLineText(int x, int y, const char * text, const ColorPair color, int textSize = -1);
             bool    WriteMultiLineTextWithHotKey(int x, int y, const char * text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
 

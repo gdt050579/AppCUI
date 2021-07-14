@@ -242,10 +242,17 @@ struct ListViewItem
 struct ListViewHeader
 {
     char				Name[MAX_LISTVIEW_HEADER_TEXT];
-    unsigned int		Size;
+    unsigned short		Width;
+    unsigned char       HotKeyOffset;
+    unsigned char       NameLength;
     Key::Type			HotKeyCode;
     unsigned int		Flags;
     TextAlignament		Align;
+
+    void                Reset();
+    bool                SetName(const char * text);
+    bool                SetAlign(TextAlignament align);
+    void                SetWidth(unsigned int width);
 };
 
 class ListViewControlContext : public ControlContext
@@ -290,9 +297,9 @@ public:
     void				MoveTo(int newItem);
     void				ColumnSort(unsigned int columnIndex);
 
-    bool				AddColumn(const char *text, TextAlignament Align, int Size = 10);
-    bool				SetColumn(unsigned int index, const char *text = nullptr, TextAlignament Align = TextAlignament::Left, int Size = -1);
-    bool				DeleteColumn(int index);
+    // columns
+    bool				AddColumn(const char *text, TextAlignament Align, unsigned int width = 10);
+    bool				DeleteColumn(unsigned int index);
     void				DeleteAllColumns();
     int					GetNrColumns();
 

@@ -12,6 +12,7 @@ using namespace AppCUI::Input;
 #define INVALID_COLUMN_INDEX            0xFFFFFFFF
 #define MINIM_COLUMN_WIDTH              3
 #define MAXIM_COLUMN_WIDTH              256
+#define NO_HOTKEY_FOR_COLUMN            0xFF
 
 
 #define PREPARE_LISTVIEW_ITEM(index,returnValue) \
@@ -19,6 +20,70 @@ using namespace AppCUI::Input;
     ListViewItem &i = ItemsList[index];
 
 #define WRAPPER	((ListViewControlContext*)this->Context)
+
+void ListViewHeader::Reset()
+{
+    this->HotKeyCode = Key::None;
+    this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
+    this->Name[0] = 0;
+    this->NameLength = 0;
+    this->Flags = 0;
+    this->Align = TextAlignament::Left;
+    this->Width = 10;
+}
+bool ListViewHeader::SetName(const char * text)
+{
+    CHECK(text, false, "Expecting a valid name for the column (non null)");
+
+    this->HotKeyCode = Key::None;
+    this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
+    char * p = this->Name;
+    char * e = p + MAX_LISTVIEW_HEADER_TEXT - 2;
+    while ((p < e) && (*text))
+    {
+        if ((*text) == '&')
+        {
+            char hotKey = *text + 1;
+            if ((hotKey >= 'a') && (hotKey <= 'z'))
+            {
+                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'a')));
+                this->HotKeyOffset = (unsigned char)(p - this->Name);
+            }
+            if ((hotKey >= 'A') && (hotKey <= 'Z'))
+            {
+                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'A')));
+                this->HotKeyOffset = (unsigned char)(p - this->Name);
+            }
+            if ((hotKey >= '0') && (hotKey <= '9'))
+            {
+                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::N0 + (hotKey - '0')));
+                this->HotKeyOffset = (unsigned char)(p - this->Name);
+            }
+            text++;
+            continue;
+        }
+        *p = *text;
+        p++; text++;
+    }
+    *p = 0;
+    this->NameLength = (unsigned char)(p - this->Name);
+    return true;
+}
+bool ListViewHeader::SetAlign(TextAlignament align)
+{
+    if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
+    {
+        this->Align = align;
+        return true;
+    }
+    RETURNERROR(false, "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or TextAlignament::Center");
+}
+void ListViewHeader::SetWidth(unsigned int width)
+{
+    width = MAXVALUE(width, MINIM_COLUMN_WIDTH);
+    width = MINVALUE(width, MAXIM_COLUMN_WIDTH);
+    this->Width = (unsigned char)width;
+}
 
 ListViewItem::ListViewItem()
 {
@@ -56,18 +121,18 @@ void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
         {
             if (tr == sortColumnIndex) {
                 lvCol = &this->Cfg->ListView.ColumnSort;
-                renderer.DrawHorizontalLineSize(x, 1, header->Size, ' ', lvCol->Text); // highlight the column
+                renderer.DrawHorizontalLineSize(x, 1, header->Width, ' ', lvCol->Text); // highlight the column
             }
             else if (tr == columnHoverOver)
             {
                 lvCol = &this->Cfg->ListView.ColumnHover;
-                renderer.DrawHorizontalLineSize(x, 1, header->Size, ' ', lvCol->Text); // highlight the column
+                renderer.DrawHorizontalLineSize(x, 1, header->Width, ' ', lvCol->Text); // highlight the column
             }
             else
                 lvCol = defaultCol;
         }
-        renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Size - 2, lvCol->Text, header->Align);
-        x += header->Size;
+        renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, header->Align, header->NameLength);
+        x += header->Width;
         if ((this->Focused) && (tr == sortColumnIndex))
             renderer.WriteSpecialCharacter(x - 1, 1, this->sortAscendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
             	
@@ -107,67 +172,25 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
     }
 }
 // coloane	
-bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, int Size)
+bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, unsigned int width)
 {
 	CHECK(text != nullptr, false, "");
 	CHECK(NrHeaders < MAX_LISTVIEW_HEADERS, false, "");
-
-	H[NrHeaders].Name[0] = 0;
-    H[NrHeaders].Align = TextAlignament::Left;
-	H[NrHeaders].Size = 10;
-    H[NrHeaders].HotKeyCode = Key::None;
-	H[NrHeaders].Flags = 0;
+    H[NrHeaders].Reset();
+    CHECK(H[NrHeaders].SetName(text), false, "Fail to set header name: %s", text);
+    CHECK(H[NrHeaders].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
+    H[NrHeaders].SetWidth(width);
 	NrHeaders++;
-	return SetColumn(NrHeaders - 1, text, Align, Size);
+    return true;
 }
-bool ListViewControlContext::SetColumn(unsigned int index, const char *text, TextAlignament Align, int Size)
+
+bool ListViewControlContext::DeleteColumn(unsigned int index)
 {
-    CHECK(index < NrHeaders, false, "Invalid column index (%d), should be smaller than %d", index, NrHeaders);
-	if (text != nullptr)
-	{
-		int tr;
-		H[index].HotKeyCode = Key::None;
-		for (tr = 0; (tr<MAX_LISTVIEW_HEADER_TEXT - 1) && (text[tr] != 0); tr++)
-		{
-			H[index].Name[tr] = text[tr];
-			if ((text[tr] == '&') && (text[tr + 1] != 0))
-			{
-				char hotKey = text[tr + 1];
-				if ((hotKey >= 'a') && (hotKey <= 'z'))
-				{
-                    H[index].HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'a')));
-				}
-				if ((hotKey >= 'A') && (hotKey <= 'Z'))
-				{
-					H[index].HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'A')));
-				}
-				if ((hotKey >= '0') && (hotKey <= '9'))
-				{
-					H[index].HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::N0 + (hotKey - '0')));
-				}
-			}
-		}
-		H[index].Name[tr] = 0;
-	}
-	H[index].Align = Align;
-    if (Size > 0)
-    {
-        if (Size < MINIM_COLUMN_WIDTH) Size = MINIM_COLUMN_WIDTH;
-        if (Size > MAXIM_COLUMN_WIDTH) Size = MAXIM_COLUMN_WIDTH;
-        H[index].Size = Size;
-    }
+    CHECK(index < NrHeaders, false, "Invalid column index: %d (should be smaller than %d)", index, NrHeaders);
+	for (unsigned int tr = index; tr<NrHeaders; tr++) 
+		H[tr] = H[tr + 1];
+	NrHeaders--;
 	return true;
-}
-bool ListViewControlContext::DeleteColumn(int index)
-{
-	if ((index >= 0) && (index<NrHeaders))
-	{
-		for (int tr = index; tr<NrHeaders; tr++) 
-			H[tr] = H[tr + 1];
-		NrHeaders--;
-		return true;
-	}
-	return false;
 }
 void ListViewControlContext::DeleteAllColumns()
 {
@@ -469,10 +492,10 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
                     columnToResize = NrHeaders - 1;
 				return true;
 			case Key::Left: 
-				H[columnToResize].Size = MAXVALUE(H[columnToResize].Size-1, MINIM_COLUMN_WIDTH);
+                H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) - 1);
 				return true;
 			case Key::Right: 
-				H[columnToResize].Size = MINVALUE(H[columnToResize].Size+1, MAXIM_COLUMN_WIDTH);
+                H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) + 1);
 				return true;
 		};
 		if ((AsciiCode>0) || (keyCode>0))
@@ -670,9 +693,9 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderInd
     ListViewHeader * header = this->H;
     for (unsigned int tr = 0; tr < NrHeaders; tr++,header++)
     {
-        if ((x >= xx) && (x <= xx + header->Size) && (x > 1) && (x < (this->Layout.Width-2)))
+        if ((x >= xx) && (x <= xx + header->Width) && (x > 1) && (x < (this->Layout.Width-2)))
         {            
-            if (x == (xx + header->Size)) {
+            if (x == (xx + header->Width)) {
                 HeaderColumnIndex = tr;
                 HeaderIndex = INVALID_COLUMN_INDEX;
             } else {
@@ -681,7 +704,7 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderInd
             }
             return true;
         }
-        xx += header->Size;
+        xx += header->Width;
         xx++;
     }
     HeaderColumnIndex = INVALID_COLUMN_INDEX;
@@ -721,13 +744,10 @@ bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
         int xx = 1 - Px;
         ListViewHeader * header = this->H;
         for (unsigned int tr = 0; tr < columnSeparatorHoverOver; tr++, header++)
-            xx += (header->Size+1);
+            xx += (((unsigned int)header->Width)+1);
         // xx = the start of column
-        if (x > xx) {
-            header->Size = (unsigned int)(x - xx);
-            header->Size = MAXVALUE(header->Size, MINIM_COLUMN_WIDTH);
-            header->Size = MINVALUE(header->Size, MAXIM_COLUMN_WIDTH);
-        }
+        if (x > xx)
+            header->SetWidth((unsigned int)(x - xx));
         return true;
     }
     return false;
@@ -970,7 +990,7 @@ void        ListView::OnUpdateScrollBars()
     //GDT: must be precomputed (cached)
     unsigned int sum = 0;
     for (unsigned int tr = 0; tr < Members->NrHeaders; tr++)
-        sum += Members->H[tr].Size + 1;
+        sum += ((unsigned int)(Members->H[tr].Width)) + 1;
     UpdateHScrollBar(Members->Px, sum);
     
 }
@@ -981,18 +1001,18 @@ bool		ListView::AddColumn(const char *text, TextAlignament Align, unsigned int S
 }
 bool		ListView::SetColumnText(unsigned int columnIndex, const char *text)
 {
-	return WRAPPER->SetColumn(columnIndex, text);
+    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->NrHeaders);
+    return WRAPPER->H[columnIndex].SetName(text);
 }
 bool		ListView::SetColumnAlignament(unsigned int columnIndex, TextAlignament Align)
 {
-	return WRAPPER->SetColumn(columnIndex, nullptr,Align);
+    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->NrHeaders);
+    return WRAPPER->H[columnIndex].SetAlign(Align);
 }
 bool		ListView::SetColumnWidth(unsigned int columnIndex, unsigned int width)
 {
-    CHECK(columnIndex < WRAPPER->NrHeaders, false, "");
-    width = MINVALUE(2, width);
-    width = MAXVALUE(256, width);
-    WRAPPER->H[columnIndex].Size = width;
+    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)",columnIndex,WRAPPER->NrHeaders);
+    WRAPPER->H[columnIndex].SetWidth(width);
     return true;
 }
 bool		ListView::SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy)
