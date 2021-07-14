@@ -184,20 +184,28 @@ bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, u
     CHECK(H[NrHeaders].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
     H[NrHeaders].SetWidth(width);
 	NrHeaders++;
+    UpdateColumnsWidth();
     return true;
 }
-
+void ListViewControlContext::UpdateColumnsWidth()
+{
+    this->columnsWidth = 0;
+    for (unsigned int tr = 0; tr < this->NrHeaders; tr++)
+        this->columnsWidth += ((unsigned int)(this->H[tr].Width)) + 1;
+}
 bool ListViewControlContext::DeleteColumn(unsigned int index)
 {
     CHECK(index < NrHeaders, false, "Invalid column index: %d (should be smaller than %d)", index, NrHeaders);
 	for (unsigned int tr = index; tr<NrHeaders; tr++) 
 		H[tr] = H[tr + 1];
 	NrHeaders--;
+    UpdateColumnsWidth();
 	return true;
 }
 void ListViewControlContext::DeleteAllColumns()
 {
 	NrHeaders = 0;
+    UpdateColumnsWidth();
 }
 int  ListViewControlContext::GetNrColumns()
 {
@@ -496,9 +504,11 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 				return true;
 			case Key::Left: 
                 H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) - 1);
+                UpdateColumnsWidth();
 				return true;
 			case Key::Right: 
                 H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) + 1);
+                UpdateColumnsWidth();
 				return true;
 		};
 		if ((AsciiCode>0) || (keyCode>0))
@@ -563,7 +573,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::PageUp: MoveTo(CurentItemIndex - GetVisibleItemsCount()); searchMode = false; return true;
 		case Key::PageDown: MoveTo(CurentItemIndex + GetVisibleItemsCount()); searchMode = false; return true;
 		case Key::Left: if (Px>0) Px--; searchMode = false; return true;
-		case Key::Right: Px++; searchMode = false; return true;
+        case Key::Right: UpdateColumnsWidth(); Px = MINVALUE(Px+1,columnsWidth); searchMode = false; return true;
 		case Key::Home: MoveTo(0); searchMode = false; return true;
 		case Key::End: MoveTo(((int)ItemsIndexes.Len()) - 1); searchMode = false; return true;
 		case Key::Backspace:
@@ -749,8 +759,10 @@ bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
         for (unsigned int tr = 0; tr < columnSeparatorHoverOver; tr++, header++)
             xx += (((unsigned int)header->Width)+1);
         // xx = the start of column
-        if (x > xx)
+        if (x > xx) {
             header->SetWidth((unsigned int)(x - xx));
+            UpdateColumnsWidth();
+        }
         return true;
     }
     return false;
@@ -971,6 +983,7 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
 	Members->clipboardSeparator = '\t';
     Members->checkCharacter = 'v';
 	Members->uncheckCharacter = 'x';
+    Members->columnsWidth = 0;
 	//Members->selectionColor = SC(0, 8);
 	Members->Host = this;
 	Members->searchString.Create(Members->searchStringData, MAX_LISTVIEW_SEARCH_STRING, true);
@@ -990,11 +1003,7 @@ bool		ListView::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 void        ListView::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
-    //GDT: must be precomputed (cached)
-    unsigned int sum = 0;
-    for (unsigned int tr = 0; tr < Members->NrHeaders; tr++)
-        sum += ((unsigned int)(Members->H[tr].Width)) + 1;
-    UpdateHScrollBar(Members->Px, sum);
+    UpdateHScrollBar(Members->Px, Members->columnsWidth);
     
 }
 
@@ -1016,6 +1025,7 @@ bool		ListView::SetColumnWidth(unsigned int columnIndex, unsigned int width)
 {
     CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)",columnIndex,WRAPPER->NrHeaders);
     WRAPPER->H[columnIndex].SetWidth(width);
+    WRAPPER->UpdateColumnsWidth();
     return true;
 }
 bool		ListView::SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy)

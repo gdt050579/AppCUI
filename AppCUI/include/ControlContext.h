@@ -276,6 +276,7 @@ public:
     unsigned int				columnToResize;
     unsigned int                columnHoverOver;
     unsigned int                columnSeparatorHoverOver;
+    unsigned int                columnsWidth;
     bool                        sortAscendent;
     bool				        resizeColumnMode;
 
@@ -298,6 +299,7 @@ public:
     void				ColumnSort(unsigned int columnIndex);
 
     // columns
+    void                UpdateColumnsWidth();
     bool				AddColumn(const char *text, TextAlignament Align, unsigned int width = 10);
     bool				DeleteColumn(unsigned int index);
     void				DeleteAllColumns();
