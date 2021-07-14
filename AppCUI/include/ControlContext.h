@@ -225,13 +225,13 @@ struct CanvasControlContext : public ControlContext
     int                         CanvasScrollX, CanvasScrollY;
 };
 
-#define MAX_LISTVIEW_HEADERS			64
+#define MAX_LISTVIEW_COLUMNS			64
 #define MAX_LISTVIEW_HEADER_TEXT        32
 #define MAX_LISTVIEW_SEARCH_STRING      128
 
 struct ListViewItem
 {
-    Utils::String	    SubItem[MAX_LISTVIEW_HEADERS];
+    Utils::String	    SubItem[MAX_LISTVIEW_COLUMNS];
     unsigned int		Flags;
     unsigned int		XOffset;
     unsigned int		Height;
@@ -239,7 +239,7 @@ struct ListViewItem
     ItemData			Data;
     ListViewItem();
 };
-struct ListViewHeader
+struct ListViewColumn
 {
     char				Name[MAX_LISTVIEW_HEADER_TEXT];
     unsigned short		Width;
@@ -258,30 +258,37 @@ struct ListViewHeader
 class ListViewControlContext : public ControlContext
 {
 public:
+    struct {
+        ListViewColumn		            List[MAX_LISTVIEW_COLUMNS];
+        unsigned int		            Count;
+        unsigned int                    TotalWidth;
+        unsigned int				    ResizeColumnIndex;
+        unsigned int				    HoverColumnIndex;
+        unsigned int                    HoverSeparatorColumnIndex;
+        int                             XOffset;
+        bool				            ResizeModeEnabled;
+    } Columns;
+
+    struct {
+        unsigned int			        ColumnIndex;
+        bool                            Ascendent;
+        Handlers::ListViewItemComparer	CompareCallbak;
+        void*					        CompareCallbakContext;
+    } SortParams;
     char				        searchStringData[MAX_LISTVIEW_SEARCH_STRING];
     char				        statusStringData[20];
-    ListViewHeader		        H[MAX_LISTVIEW_HEADERS];
-    unsigned int		        NrHeaders;
+      
     std::vector<ListViewItem>	ItemsList;
     Utils::Array32              ItemsIndexes;
     Utils::String		        searchString, statusString;
 
     bool				        searchMode;
-    int					        Px, Py, CurentItemIndex;
+    int					        Py, CurentItemIndex;
     char				        clipboardSeparator;
     int					        checkCharacter, uncheckCharacter;
     int					        selectionColor;
 
-    unsigned int			    sortColumnIndex;
-    unsigned int				columnToResize;
-    unsigned int                columnHoverOver;
-    unsigned int                columnSeparatorHoverOver;
-    unsigned int                columnsWidth;
-    bool                        sortAscendent;
-    bool				        resizeColumnMode;
 
-    Handlers::ListViewItemComparer	sortFunction;
-    void*					    sortFunctionContext;
 
 
     Controls::Control*	        Host;
@@ -290,7 +297,7 @@ public:
 
     int					SearchItem(int startPoz, unsigned int colIndex);
     void				UpdateSearch(int startPoz);
-    void				DrawHeader(Console::Renderer & renderer);
+    void				DrawColumn(Console::Renderer & renderer);
     void				DrawItem(Console::Renderer & renderer, bool activ, unsigned int index, int y);
 
     // movement

@@ -21,7 +21,7 @@ using namespace AppCUI::Input;
 
 #define WRAPPER	((ListViewControlContext*)this->Context)
 
-void ListViewHeader::Reset()
+void ListViewColumn::Reset()
 {
     this->HotKeyCode = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -31,7 +31,7 @@ void ListViewHeader::Reset()
     this->Align = TextAlignament::Left;
     this->Width = 10;
 }
-bool ListViewHeader::SetName(const char * text)
+bool ListViewColumn::SetName(const char * text)
 {
     CHECK(text, false, "Expecting a valid name for the column (non null)");
 
@@ -69,7 +69,7 @@ bool ListViewHeader::SetName(const char * text)
     this->NameLength = (unsigned char)(p - this->Name);
     return true;
 }
-bool ListViewHeader::SetAlign(TextAlignament align)
+bool ListViewColumn::SetAlign(TextAlignament align)
 {
     if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
     {
@@ -78,7 +78,7 @@ bool ListViewHeader::SetAlign(TextAlignament align)
     }
     RETURNERROR(false, "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or TextAlignament::Center");
 }
-void ListViewHeader::SetWidth(unsigned int width)
+void ListViewColumn::SetWidth(unsigned int width)
 {
     width = MAXVALUE(width, MINIM_COLUMN_WIDTH);
     width = MINVALUE(width, MAXIM_COLUMN_WIDTH);
@@ -102,7 +102,7 @@ ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
     return &ItemsList[idx];
 }
 
-void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
+void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
 {
     auto * defaultCol = &this->Cfg->ListView.ColumnNormal;
     if (!(this->Flags & GATTR_ENABLE))
@@ -112,36 +112,36 @@ void ListViewControlContext::DrawHeader(Console::Renderer & renderer)
 
     renderer.DrawHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
 
-    int		x = 1 - Px;
+    int		x = 1 - Columns.XOffset;
 
-    ListViewHeader * header = this->H;
-    for (unsigned int tr = 0; tr<NrHeaders; tr++, header++)
+    ListViewColumn * column = this->Columns.List;
+    for (unsigned int tr = 0; tr<Columns.Count; tr++, column++)
     {
         if (this->Focused)
         {
-            if (tr == sortColumnIndex) {
+            if (tr == SortParams.ColumnIndex) {
                 lvCol = &this->Cfg->ListView.ColumnSort;
-                renderer.DrawHorizontalLineSize(x, 1, header->Width, ' ', lvCol->Text); // highlight the column
+                renderer.DrawHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
             }
-            else if (tr == columnHoverOver)
+            else if (tr == Columns.HoverColumnIndex)
             {
                 lvCol = &this->Cfg->ListView.ColumnHover;
-                renderer.DrawHorizontalLineSize(x, 1, header->Width, ' ', lvCol->Text); // highlight the column
+                renderer.DrawHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
             }
             else
                 lvCol = defaultCol;
         }
-        if (header->HotKeyOffset == NO_HOTKEY_FOR_COLUMN)
-            renderer.WriteSingleLineText(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, header->Align, header->NameLength);
+        if (column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN)
+            renderer.WriteSingleLineText(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align, column->NameLength);
         else
-            renderer.WriteSingleLineTextWithHotKey(x + 1, 1, header->Name, header->Width - 2, lvCol->Text, lvCol->HotKey, header->HotKeyOffset, header->Align, header->NameLength);
-        x += header->Width;
-        if ((this->Focused) && (tr == sortColumnIndex))
-            renderer.WriteSpecialCharacter(x - 1, 1, this->sortAscendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
+            renderer.WriteSingleLineTextWithHotKey(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, lvCol->HotKey, column->HotKeyOffset, column->Align, column->NameLength);
+        x += column->Width;
+        if ((this->Focused) && (tr == SortParams.ColumnIndex))
+            renderer.WriteSpecialCharacter(x - 1, 1, this->SortParams.Ascendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
             	
         if (this->Focused)
         {
-            if (((resizeColumnMode) && (tr == columnToResize)) || (tr == columnSeparatorHoverOver))
+            if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) || (tr == Columns.HoverSeparatorColumnIndex))
                 renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, Cfg->ListView.ColumnHover.Separator);
             else
                 renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
@@ -170,7 +170,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
     renderer.SetClipMargins(1, 1, 1, 1);
     if ((Flags & ListViewFlags::HIDE_COLUMNS) == 0) 
     { 
-    	DrawHeader(renderer); 
+        DrawColumn(renderer);
     	y++; 
     }
 }
@@ -178,38 +178,38 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
 bool ListViewControlContext::AddColumn(const char *text, TextAlignament Align, unsigned int width)
 {
 	CHECK(text != nullptr, false, "");
-	CHECK(NrHeaders < MAX_LISTVIEW_HEADERS, false, "");
-    H[NrHeaders].Reset();
-    CHECK(H[NrHeaders].SetName(text), false, "Fail to set header name: %s", text);
-    CHECK(H[NrHeaders].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
-    H[NrHeaders].SetWidth(width);
-	NrHeaders++;
+	CHECK(Columns.Count < MAX_LISTVIEW_COLUMNS, false, "");
+    Columns.List[Columns.Count].Reset();
+    CHECK(Columns.List[Columns.Count].SetName(text), false, "Fail to set column name: %s", text);
+    CHECK(Columns.List[Columns.Count].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
+    Columns.List[Columns.Count].SetWidth(width);
+	Columns.Count++;
     UpdateColumnsWidth();
     return true;
 }
 void ListViewControlContext::UpdateColumnsWidth()
 {
-    this->columnsWidth = 0;
-    for (unsigned int tr = 0; tr < this->NrHeaders; tr++)
-        this->columnsWidth += ((unsigned int)(this->H[tr].Width)) + 1;
+    this->Columns.TotalWidth = 0;
+    for (unsigned int tr = 0; tr < this->Columns.Count; tr++)
+        this->Columns.TotalWidth += ((unsigned int)(this->Columns.List[tr].Width)) + 1;
 }
 bool ListViewControlContext::DeleteColumn(unsigned int index)
 {
-    CHECK(index < NrHeaders, false, "Invalid column index: %d (should be smaller than %d)", index, NrHeaders);
-	for (unsigned int tr = index; tr<NrHeaders; tr++) 
-		H[tr] = H[tr + 1];
-	NrHeaders--;
+    CHECK(index < Columns.Count, false, "Invalid column index: %d (should be smaller than %d)", index, Columns.Count);
+	for (unsigned int tr = index; tr<Columns.Count; tr++) 
+        Columns.List[tr] = Columns.List[tr + 1];
+	Columns.Count--;
     UpdateColumnsWidth();
 	return true;
 }
 void ListViewControlContext::DeleteAllColumns()
 {
-	NrHeaders = 0;
+	Columns.Count = 0;
     UpdateColumnsWidth();
 }
 int  ListViewControlContext::GetNrColumns()
 {
-	return NrHeaders;
+	return Columns.Count;
 }
 
 ItemHandle  ListViewControlContext::AddItem(const char *text)
@@ -223,7 +223,7 @@ ItemHandle  ListViewControlContext::AddItem(const char *text)
 bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem,const char *text)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-    CHECK(subItem < NrHeaders, false, "Invalid column index (%d), should be smaller than %d", subItem, NrHeaders);
+    CHECK(subItem < Columns.Count, false, "Invalid column index (%d), should be smaller than %d", subItem, Columns.Count);
     CHECK(text, false, "Expecting a valid (non-null) text for a subitem value");
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
 	return true;
@@ -231,7 +231,7 @@ bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem,c
 const char* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
-    CHECK(subItem < NrHeaders, nullptr, "Invalid column index (%d), should be smaller than %d", subItem, NrHeaders);
+    CHECK(subItem < Columns.Count, nullptr, "Invalid column index (%d), should be smaller than %d", subItem, Columns.Count);
 	return i.SubItem[subItem].GetText();
 }
 bool ListViewControlContext::SetItemCheck(ItemHandle item, bool check)
@@ -315,20 +315,20 @@ void ListViewControlContext::SetClipboardSeparator(char ch)
 }
 bool ListViewControlContext::SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy)
 {
-    CHECK(columnIndex < NrHeaders, false, "Invalid column index: %d (should be smaller than %d)", columnIndex, NrHeaders);
+    CHECK(columnIndex < Columns.Count, false, "Invalid column index: %d (should be smaller than %d)", columnIndex, Columns.Count);
 	if (allowCopy)
-		H[columnIndex].Flags -= H[columnIndex].Flags & COLUMN_DONT_COPY;
+        Columns.List[columnIndex].Flags -= Columns.List[columnIndex].Flags & COLUMN_DONT_COPY;
 	else
-		H[columnIndex].Flags |= COLUMN_DONT_COPY;
+        Columns.List[columnIndex].Flags |= COLUMN_DONT_COPY;
 	return true;
 }
 bool ListViewControlContext::SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn)
 {
-    CHECK(columnIndex<NrHeaders,false, "Invalid column index (%d), should be smaller than %d", columnIndex, NrHeaders);
+    CHECK(columnIndex<Columns.Count,false, "Invalid column index (%d), should be smaller than %d", columnIndex, Columns.Count);
 	if (allowFilterForThisColumn)
-		H[columnIndex].Flags -= H[columnIndex].Flags & COLUMN_DONT_FILTER;
+        Columns.List[columnIndex].Flags -= Columns.List[columnIndex].Flags & COLUMN_DONT_FILTER;
 	else
-		H[columnIndex].Flags |= COLUMN_DONT_FILTER;
+        Columns.List[columnIndex].Flags |= COLUMN_DONT_FILTER;
 	return true;
 }
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
@@ -411,7 +411,7 @@ void ListViewControlContext::DeleteAllItems()
 {
 	ItemsList.clear();
 	ItemsIndexes.Clear();
-	Px = 0;
+	Columns.XOffset = 0;
 	Py = 0;
 	CurentItemIndex = 0;
 	searchMode = false;
@@ -486,35 +486,35 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 	ListViewItem	*lvi;
 	bool			selected;
 
-	if (resizeColumnMode)
+	if (Columns.ResizeModeEnabled)
 	{
 		searchMode = false;
 		switch (keyCode)
 		{
 			case Key::Ctrl | Key::Right: 
-                columnToResize++;
-				if (columnToResize >= NrHeaders)
-                    columnToResize = 0;
+                Columns.ResizeColumnIndex++;
+				if (Columns.ResizeColumnIndex >= Columns.Count)
+                    Columns.ResizeColumnIndex = 0;
 				return true;
 			case Key::Ctrl | Key::Left: 
-                if (columnToResize>0)
-                    columnToResize--;
+                if (Columns.ResizeColumnIndex>0)
+                    Columns.ResizeColumnIndex--;
                 else 
-                    columnToResize = NrHeaders - 1;
+                    Columns.ResizeColumnIndex = Columns.Count - 1;
 				return true;
 			case Key::Left: 
-                H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) - 1);
+                Columns.List[Columns.ResizeColumnIndex].SetWidth(((unsigned int)Columns.List[Columns.ResizeColumnIndex].Width) - 1);
                 UpdateColumnsWidth();
 				return true;
 			case Key::Right: 
-                H[columnToResize].SetWidth(((unsigned int)H[columnToResize].Width) + 1);
+                Columns.List[Columns.ResizeColumnIndex].SetWidth(((unsigned int)Columns.List[Columns.ResizeColumnIndex].Width) + 1);
                 UpdateColumnsWidth();
 				return true;
 		};
 		if ((AsciiCode>0) || (keyCode>0))
 		{
-			resizeColumnMode = false;
-            columnToResize = INVALID_COLUMN_INDEX;
+			Columns.ResizeModeEnabled = false;
+            Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
 			return true;
 		}
 	}
@@ -572,8 +572,8 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::Down: MoveTo(CurentItemIndex + 1); searchMode = false; return true;
 		case Key::PageUp: MoveTo(CurentItemIndex - GetVisibleItemsCount()); searchMode = false; return true;
 		case Key::PageDown: MoveTo(CurentItemIndex + GetVisibleItemsCount()); searchMode = false; return true;
-		case Key::Left: if (Px>0) Px--; searchMode = false; return true;
-        case Key::Right: UpdateColumnsWidth(); Px = MINVALUE(Px+1,columnsWidth); searchMode = false; return true;
+		case Key::Left: if (Columns.XOffset>0) Columns.XOffset--; searchMode = false; return true;
+        case Key::Right: UpdateColumnsWidth(); Columns.XOffset = MINVALUE(Columns.XOffset+1,(int)Columns.TotalWidth); searchMode = false; return true;
 		case Key::Home: MoveTo(0); searchMode = false; return true;
 		case Key::End: MoveTo(((int)ItemsIndexes.Len()) - 1); searchMode = false; return true;
 		case Key::Backspace:
@@ -641,17 +641,17 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 
 		case Key::Ctrl | Key::Right:
 		case Key::Ctrl | Key::Left: 
-            columnToResize = 0;
-			resizeColumnMode = true; 
+            Columns.ResizeColumnIndex = 0;
+			Columns.ResizeModeEnabled = true; 
 			return true;
 		case Key::Ctrl | Key::C:
 		case Key::Ctrl | Key::Insert:
 			temp.Create(256);
 			if (ItemsIndexes.Len()>0)
 			{
-				for (tr = 0; tr<NrHeaders; tr++)
+				for (tr = 0; tr<Columns.Count; tr++)
 				{
-					if ((H[tr].Flags & COLUMN_DONT_COPY) == 0)
+					if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
 					{
 						temp.Add(GetFilteredItem(CurentItemIndex)->SubItem[tr].GetText());
 						if (clipboardSeparator != 0) temp.AddChar(clipboardSeparator);
@@ -664,9 +664,9 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			temp.Create(4096);
 			for (gr = 0; gr<(int)ItemsIndexes.Len(); gr++)
 			{
-				for (tr = 0; tr<NrHeaders; tr++)
+				for (tr = 0; tr<Columns.Count; tr++)
 				{
-					if ((H[tr].Flags & COLUMN_DONT_COPY) == 0)
+					if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
 					{
 						temp.Add(GetFilteredItem(gr)->SubItem[tr].GetText());
 						if (clipboardSeparator != 0) temp.AddChar(clipboardSeparator);
@@ -680,9 +680,9 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		// caut sort
 		if (searchMode == false)
 		{
-			for (int tr = 0; tr < NrHeaders; tr++)
+			for (unsigned int tr = 0; tr < Columns.Count; tr++)
 			{
-				if (H[tr].HotKeyCode == keyCode)
+				if (Columns.List[tr].HotKeyCode == keyCode)
 				{
 					ColumnSort(tr);
 					return true;
@@ -702,13 +702,13 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 }
 bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderIndex, unsigned int &HeaderColumnIndex)
 {
-    int xx = 1 - Px;
-    ListViewHeader * header = this->H;
-    for (unsigned int tr = 0; tr < NrHeaders; tr++,header++)
+    int xx = 1 - Columns.XOffset;
+    ListViewColumn * column = this->Columns.List;
+    for (unsigned int tr = 0; tr < Columns.Count; tr++,column++)
     {
-        if ((x >= xx) && (x <= xx + header->Width) && (x > 1) && (x < (this->Layout.Width-2)))
+        if ((x >= xx) && (x <= xx + column->Width) && (x > 1) && (x < (this->Layout.Width-2)))
         {            
-            if (x == (xx + header->Width)) {
+            if (x == (xx + column->Width)) {
                 HeaderColumnIndex = tr;
                 HeaderIndex = INVALID_COLUMN_INDEX;
             } else {
@@ -717,7 +717,7 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderInd
             }
             return true;
         }
-        xx += header->Width;
+        xx += column->Width;
         xx++;
     }
     HeaderColumnIndex = INVALID_COLUMN_INDEX;
@@ -726,10 +726,10 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderInd
 }
 void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
 {
-	resizeColumnMode = false;
-	columnToResize = INVALID_COLUMN_INDEX;
-    columnSeparatorHoverOver = INVALID_COLUMN_INDEX;
-    columnHoverOver = INVALID_COLUMN_INDEX;
+	Columns.ResizeModeEnabled = false;
+	Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
+    Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+    Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
 	if (((Flags & ListViewFlags::HIDE_COLUMNS) == 0) && (y == 1))
 	{
         unsigned int hIndex, hColumn;
@@ -752,15 +752,15 @@ void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
 }
 bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
 {
-    if (columnSeparatorHoverOver != INVALID_COLUMN_INDEX)
+    if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
-        int xx = 1 - Px;
-        ListViewHeader * header = this->H;
-        for (unsigned int tr = 0; tr < columnSeparatorHoverOver; tr++, header++)
-            xx += (((unsigned int)header->Width)+1);
+        int xx = 1 - Columns.XOffset;
+        ListViewColumn * column = this->Columns.List;
+        for (unsigned int tr = 0; tr < Columns.HoverSeparatorColumnIndex; tr++, column++)
+            xx += (((unsigned int)column->Width)+1);
         // xx = the start of column
         if (x > xx) {
-            header->SetWidth((unsigned int)(x - xx));
+            column->SetWidth((unsigned int)(x - xx));
             UpdateColumnsWidth();
         }
         return true;
@@ -773,16 +773,16 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
     {
         unsigned int hIndex, hColumn;
         MouseToHeader(x, y, hIndex, hColumn);
-        if ((hIndex != columnHoverOver) && (y == 1) && (Flags & ListViewFlags::SORT_COLUMNS))
+        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) && (Flags & ListViewFlags::SORT_COLUMNS))
         {
-            columnHoverOver = hIndex;
-            columnSeparatorHoverOver = INVALID_COLUMN_INDEX;
+            Columns.HoverColumnIndex = hIndex;
+            Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
             return true;
         }
-        if (hColumn != columnSeparatorHoverOver)
+        if (hColumn != Columns.HoverSeparatorColumnIndex)
         {
-            columnHoverOver = INVALID_COLUMN_INDEX;
-            columnSeparatorHoverOver = hColumn;
+            Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
+            Columns.HoverSeparatorColumnIndex = hColumn;
             return true;
         }
     }
@@ -791,12 +791,12 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
 // sort
 void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 {    
-    if (colIndex >= NrHeaders)
-		this->sortColumnIndex = INVALID_COLUMN_INDEX;
+    if (colIndex >= Columns.Count)
+		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 	else 
-		this->sortColumnIndex = colIndex;
+		this->SortParams.ColumnIndex = colIndex;
 	if ((Flags & ListViewFlags::SORT_COLUMNS) == 0)
-		this->sortColumnIndex = INVALID_COLUMN_INDEX;
+		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 }
 //void ListViewControlContext::SetSortOrder(int direction)
 //{
@@ -812,20 +812,20 @@ void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 //	dest->Color = source->Color;
 //	dest->Data = source->Data;
 //	dest->XOffset = source->XOffset;
-//	for (int tr = 0; tr<NrHeaders; tr++)
+//	for (int tr = 0; tr<Columns.Count; tr++)
 //		dest->SubItem[tr] = source->SubItem[tr];
 //}
 void ListViewControlContext::ColumnSort(unsigned int columnIndex)
 {
 	if ((Flags & ListViewFlags::SORT_COLUMNS) == 0)
 	{ 
-		this->sortColumnIndex = INVALID_COLUMN_INDEX;
+		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 		return; 
 	}
-	if (columnIndex != sortColumnIndex) 
+	if (columnIndex != SortParams.ColumnIndex) 
 		SetSortColumn(columnIndex); 
 	else 
-        sortAscendent = !sortAscendent;
+        SortParams.Ascendent = !SortParams.Ascendent;
 	Sort();
 }
 //----------------------
@@ -833,15 +833,15 @@ void ListViewControlContext::ColumnSort(unsigned int columnIndex)
 int  SortIndexesCompareFunction(unsigned int indx1, unsigned int indx2, void *context)
 {
 	ListViewControlContext *lvcc = (ListViewControlContext*)context;
-	if (lvcc->sortFunction)
+	if (lvcc->SortParams.CompareCallbak)
 	{
-		return lvcc->sortFunction((ListView*)lvcc->Host, indx1, indx2, lvcc->sortColumnIndex, lvcc->sortFunctionContext);
+		return lvcc->SortParams.CompareCallbak((ListView*)lvcc->Host, indx1, indx2, lvcc->SortParams.ColumnIndex, lvcc->SortParams.CompareCallbakContext);
 	}
 	else {
         unsigned int itemsCount = lvcc->ItemsList.size();
-        if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->sortColumnIndex != INVALID_COLUMN_INDEX))
+        if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX))
         {
-            return lvcc->ItemsList[indx1].SubItem[lvcc->sortColumnIndex].CompareWith(lvcc->ItemsList[indx2].SubItem[lvcc->sortColumnIndex].GetText(), true);
+            return lvcc->ItemsList[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(lvcc->ItemsList[indx2].SubItem[lvcc->SortParams.ColumnIndex].GetText(), true);
         }
         else {
             if (indx1 < indx2)
@@ -855,12 +855,12 @@ int  SortIndexesCompareFunction(unsigned int indx1, unsigned int indx2, void *co
 }
 bool ListViewControlContext::Sort()
 {
-	if (sortFunction == nullptr)
+	if (SortParams.CompareCallbak == nullptr)
 	{
 		// sanity check
-		CHECK(sortColumnIndex < NrHeaders, false, "No sort column or custom sort function defined !");
+		CHECK(SortParams.ColumnIndex < Columns.Count, false, "No sort column or custom sort function defined !");
 	}
-	ItemsIndexes.Sort(SortIndexesCompareFunction, sortAscendent, this);
+	ItemsIndexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
 	return true;
 }
 int  ListViewControlContext::SearchItem(int startPoz, unsigned int colIndex)
@@ -897,9 +897,9 @@ void ListViewControlContext::FilterItems()
 	{
 		bool isOK = false;
         ListViewItem& lvi = ItemsList[tr];
-		for (unsigned int gr = 0; gr < NrHeaders; gr++)
+		for (unsigned int gr = 0; gr < Columns.Count; gr++)
 		{
-			if ((H[gr].Flags & COLUMN_DONT_FILTER) != 0)
+			if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
 				continue;
 			if (lvi.SubItem[gr].Contains(this->searchString, true))
 			{
@@ -926,8 +926,8 @@ void ListViewControlContext::UpdateSearch(int startPoz)
 	}
 	else 
 	{
-		if (sortColumnIndex < NrHeaders)
-			cCol = sortColumnIndex;
+		if (SortParams.ColumnIndex < Columns.Count)
+			cCol = SortParams.ColumnIndex;
 
 		if ((index = SearchItem(startPoz, cCol)) >= 0)
 		{
@@ -966,24 +966,24 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
     Members->ItemsList.reserve(32);
     
     // initialize
-	Members->NrHeaders = 0;
-	Members->Px = 0;
+	Members->Columns.Count = 0;
+	Members->Columns.XOffset = 0;
 	Members->Py = 0;
 	Members->CurentItemIndex = 0;
     
-	Members->sortColumnIndex = INVALID_COLUMN_INDEX;
-    Members->columnHoverOver = INVALID_COLUMN_INDEX;
-    Members->columnSeparatorHoverOver = INVALID_COLUMN_INDEX;
-	Members->sortAscendent = true;
-	Members->sortFunction = nullptr;
-	Members->sortFunctionContext = nullptr;
-	Members->resizeColumnMode = false;
+	Members->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
+    Members->Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
+    Members->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+	Members->SortParams.Ascendent = true;
+	Members->SortParams.CompareCallbak = nullptr;
+	Members->SortParams.CompareCallbakContext = nullptr;
+	Members->Columns.ResizeModeEnabled = false;
 	Members->searchMode = false;
-	Members->columnToResize = INVALID_COLUMN_INDEX;
+	Members->Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
 	Members->clipboardSeparator = '\t';
     Members->checkCharacter = 'v';
 	Members->uncheckCharacter = 'x';
-    Members->columnsWidth = 0;
+    Members->Columns.TotalWidth = 0;
 	//Members->selectionColor = SC(0, 8);
 	Members->Host = this;
 	Members->searchString.Create(Members->searchStringData, MAX_LISTVIEW_SEARCH_STRING, true);
@@ -1003,7 +1003,7 @@ bool		ListView::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 void        ListView::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
-    UpdateHScrollBar(Members->Px, Members->columnsWidth);
+    UpdateHScrollBar(Members->Columns.XOffset, Members->Columns.TotalWidth);
     
 }
 
@@ -1013,18 +1013,18 @@ bool		ListView::AddColumn(const char *text, TextAlignament Align, unsigned int S
 }
 bool		ListView::SetColumnText(unsigned int columnIndex, const char *text)
 {
-    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->NrHeaders);
-    return WRAPPER->H[columnIndex].SetName(text);
+    CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->Columns.Count);
+    return WRAPPER->Columns.List[columnIndex].SetName(text);
 }
 bool		ListView::SetColumnAlignament(unsigned int columnIndex, TextAlignament Align)
 {
-    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->NrHeaders);
-    return WRAPPER->H[columnIndex].SetAlign(Align);
+    CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index:%d (should be smaller than %d)", columnIndex, WRAPPER->Columns.Count);
+    return WRAPPER->Columns.List[columnIndex].SetAlign(Align);
 }
 bool		ListView::SetColumnWidth(unsigned int columnIndex, unsigned int width)
 {
-    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index:%d (should be smaller than %d)",columnIndex,WRAPPER->NrHeaders);
-    WRAPPER->H[columnIndex].SetWidth(width);
+    CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index:%d (should be smaller than %d)",columnIndex,WRAPPER->Columns.Count);
+    WRAPPER->Columns.List[columnIndex].SetWidth(width);
     WRAPPER->UpdateColumnsWidth();
     return true;
 }
@@ -1250,20 +1250,20 @@ bool        ListView::OnMouseOver(int x, int y)
 }
 bool        ListView::OnMouseLeave()
 {
-    WRAPPER->sortColumnIndex = INVALID_COLUMN_INDEX;
-    WRAPPER->columnHoverOver = INVALID_COLUMN_INDEX;
+    WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+    WRAPPER->Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
     return true;
 }
 void		ListView::OnFocus()
 {
-    WRAPPER->sortColumnIndex = INVALID_COLUMN_INDEX;
-    WRAPPER->columnHoverOver = INVALID_COLUMN_INDEX;
+    WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+    WRAPPER->Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
 	WRAPPER->searchMode = false;
 }
 void		ListView::SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void *Context)
 {
-	WRAPPER->sortFunction = fnc;
-	WRAPPER->sortFunctionContext = Context;
+	WRAPPER->SortParams.CompareCallbak = fnc;
+	WRAPPER->SortParams.CompareCallbakContext = Context;
 }
 bool		ListView::Sort()
 {
@@ -1271,9 +1271,9 @@ bool		ListView::Sort()
 }
 bool		ListView::Sort(unsigned int columnIndex, bool ascendent)
 {
-    CHECK(columnIndex < WRAPPER->NrHeaders, false, "Invalid column index (%d). Should be smaller than %d", columnIndex, WRAPPER->NrHeaders);
+    CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index (%d). Should be smaller than %d", columnIndex, WRAPPER->Columns.Count);
     CHECK(WRAPPER->Flags & ListViewFlags::SORT_COLUMNS, false, "Can not sort items (have you set 'ListViewFlags::SORT_COLUMNS' when creating ListView ?)");
-	WRAPPER->sortColumnIndex = columnIndex;
-    WRAPPER->sortAscendent = ascendent;
+	WRAPPER->SortParams.ColumnIndex = columnIndex;
+    WRAPPER->SortParams.Ascendent = ascendent;
 	return WRAPPER->Sort();
 }
