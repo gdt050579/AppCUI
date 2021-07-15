@@ -1093,6 +1093,7 @@ namespace AppCUI
         {
         public:
             bool			Create(Control *parent, const char * layout, ListViewFlags flags);
+            bool            Reserve(unsigned int itemsCount);
             void	        Paint(Console::Renderer & renderer) override;
             bool	        OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void			OnMouseReleased(int x, int y, int butonState) override;
@@ -1121,7 +1122,10 @@ namespace AppCUI
             ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3);
             ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4);
             ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4, const char * subItem5);
-            
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4, const char * subItem5, const char * subItem6);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4, const char * subItem5, const char * subItem6, const char * subItem7);
+            ItemHandle		AddItem(const char *text, const char * subItem1, const char * subItem2, const char * subItem3, const char * subItem4, const char * subItem5, const char * subItem6, const char * subItem7, const char * subItem8);
+
             // items properties
             bool			SetItemText(ItemHandle item, unsigned int subItemIndex, const char *text);
             const char*		GetItemText(ItemHandle item, unsigned int subItemIndex);

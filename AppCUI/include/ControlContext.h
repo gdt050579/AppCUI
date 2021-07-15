@@ -237,6 +237,7 @@ struct ListViewItem
     ColorPair           ItemColor;
     ItemData			Data;
     ListViewItem();
+    ListViewItem(const ListViewItem & obj);
 };
 struct ListViewColumn
 {
