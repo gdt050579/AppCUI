@@ -608,6 +608,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
+            case Key::Insert:
 			case Key::Down | Key::Shift:
 				UpdateSelection(CurentItemIndex, CurentItemIndex + 1, !selected);
 				MoveTo(CurentItemIndex + 1);
@@ -619,7 +620,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 				MoveTo(CurentItemIndex - GetVisibleItemsCount());
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
-				return true;
+				return true;            
 			case Key::PageDown | Key::Shift:
 				UpdateSelection(CurentItemIndex, CurentItemIndex + GetVisibleItemsCount(), !selected);
 				MoveTo(CurentItemIndex + GetVisibleItemsCount());

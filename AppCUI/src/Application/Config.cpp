@@ -161,6 +161,6 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };
     this->ListView.InactiveColor = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.FocusColor = ColorPair{ Color::Black, Color::White };
-    this->ListView.FocusAndSelectedColor = ColorPair{ Color::DarkRed, Color::White };    
+    this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };    
     this->ListView.SelectionColor = ColorPair{ Color::Yellow, Color::Transparent };
 }
