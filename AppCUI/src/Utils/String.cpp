@@ -150,24 +150,35 @@ bool AppCUI::Utils::String::Contains(const char *sir, const char *textToFind, bo
     const unsigned char *ps;
     const unsigned char *pf;
     unsigned char char_to_find = *(p_find);
+
     if (ignoreCase)
-        char_to_find = __lower_case_table__[*p_find];
-    while (*p_sir)
     {
-        if ((*p_sir) == char_to_find)
+        char_to_find = __lower_case_table__[*p_find];
+        while (*p_sir)
         {
-            ps = p_sir;
-            pf = p_find;
-            if (ignoreCase) {
-                for (; (*pf) && (*ps) && (__lower_case_table__[*ps] == __lower_case_table__ [*pf]); pf++, ps++);
+            if (__lower_case_table__[*p_sir] == char_to_find)
+            {
+                ps = p_sir;
+                pf = p_find;
+                for (; (*pf) && (*ps) && (__lower_case_table__[*ps] == __lower_case_table__[*pf]); pf++, ps++);
+                if (!(*pf))
+                    return true;
             }
-            else {
-                for (; (*pf) && (*ps) && ((*ps) == (*pf)); pf++, ps++);
-            }
-            if (!(*pf))
-                return true;
+            p_sir++;
         }
-        p_sir++;
+    } else {
+        while (*p_sir)
+        {
+            if ((*p_sir) == char_to_find)
+            {
+                ps = p_sir;
+                pf = p_find;
+                for (; (*pf) && (*ps) && ((*ps) == (*pf)); pf++, ps++);
+                if (!(*pf))
+                    return true;
+            }
+            p_sir++;
+        }
     }
     return false;
 }
