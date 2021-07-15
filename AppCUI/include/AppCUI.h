@@ -1371,4 +1371,8 @@ inline constexpr unsigned int operator&(unsigned int f1, AppCUI::Controls::ListV
 {
     return (static_cast<unsigned int>(f1) & static_cast<unsigned int>(f2));
 }
+inline constexpr AppCUI::Controls::ListViewFlags operator|(AppCUI::Controls::ListViewFlags f1, AppCUI::Controls::ListViewFlags f2)
+{
+    return static_cast<AppCUI::Controls::ListViewFlags>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+}
 #endif

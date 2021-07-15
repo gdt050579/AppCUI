@@ -176,7 +176,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
             if (item->Flags & ITEM_FLAG_CHECKED)
                 renderer.WriteSpecialCharacter(x, y, SpecialChars::CheckMark, checkCol);
             else
-                renderer.WriteSpecialCharacter(x, y, SpecialChars::CircleEmpty, uncheckCol);
+                renderer.WriteCharacter(x, y, 'x', uncheckCol);
         }
         x += 2;
     }
