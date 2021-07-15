@@ -143,6 +143,8 @@ bool AppCUI::Utils::String::EndsWith(const char *sir1, const char *sir2, bool ig
 bool AppCUI::Utils::String::Contains(const char *sir, const char *textToFind, bool ignoreCase)
 {
     CHECK((sir != nullptr) && (textToFind != nullptr), false, "Invalid parameters (both 'sir' and 'textToFind' must not be null)");
+    if ((*textToFind) == 0)
+        return true; // empty string exists in every strings
     const unsigned char *p_sir = (const unsigned char *)sir;
     const unsigned char *p_find = (const unsigned char *)textToFind;
     const unsigned char *ps;
