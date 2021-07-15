@@ -16,8 +16,8 @@ using namespace AppCUI::Input;
 
 
 #define PREPARE_LISTVIEW_ITEM(index,returnValue) \
-    CHECK(index<ItemsList.size(),returnValue,"Invalid index: %d",index); \
-    ListViewItem &i = ItemsList[index];
+    CHECK(index<Items.List.size(),returnValue,"Invalid index: %d",index); \
+    ListViewItem &i = Items.List[index];
 
 #define WRAPPER	((ListViewControlContext*)this->Context)
 
@@ -97,9 +97,9 @@ ListViewItem::ListViewItem()
 ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
 {
     unsigned int idx;
-    CHECK(ItemsIndexes.Get(index, idx), nullptr, "Fail to get index value for item with ID: %d", index);
-    CHECK(idx < ItemsList.size(), nullptr, "Invalid index (%d)", idx);
-    return &ItemsList[idx];
+    CHECK(Items.Indexes.Get(index, idx), nullptr, "Fail to get index value for item with ID: %d", index);
+    CHECK(idx < Items.List.size(), nullptr, "Invalid index (%d)", idx);
+    return &Items.List[idx];
 }
 
 void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
@@ -237,12 +237,12 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         DrawColumn(renderer);
     	y++; 
     }
-    unsigned int index = this->Py;
-    unsigned int count = this->ItemsIndexes.Len();
+    unsigned int index = this->Items.FirstVisibleIndex;
+    unsigned int count = this->Items.Indexes.Len();
     while ((y < this->Layout.Height) && (index<count))
     {
         ListViewItem * item = GetFilteredItem(index);
-        DrawItem(renderer, item, y, index == this->CurentItemIndex);
+        DrawItem(renderer, item, y, index == this->Items.CurentItemIndex);
         y++;
         index++;
     }
@@ -288,9 +288,9 @@ int  ListViewControlContext::GetNrColumns()
 ItemHandle  ListViewControlContext::AddItem(const char *text)
 {
     CHECK(text, InvalidItemHandle, "Expecting a valid (non-null) text");
-    ItemHandle idx = ItemsList.size();
-    ItemsList.push_back(ListViewItem());
-    ItemsIndexes.Push(idx);
+    ItemHandle idx = Items.List.size();
+    Items.List.push_back(ListViewItem());
+    Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
 	return idx;
 }
@@ -339,16 +339,7 @@ bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
 	i.Flags = (i.Flags & 0xFFFF) | (((unsigned int)type)<<16);
 	return true;
 }
-void ListViewControlContext::SetCheckCharacter(int character)
-{
-	if (character != 0)
-		checkCharacter = character;
-}
-void ListViewControlContext::SetUncheckCharacter(int character)
-{
-	if (character != 0)
-		uncheckCharacter = character;
-}
+
 bool ListViewControlContext::SetItemData(ItemHandle item, ItemData Data)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
@@ -417,16 +408,16 @@ bool ListViewControlContext::IsItemSelected(ItemHandle item)
 }
 void ListViewControlContext::SelectAllItems()
 {
-	UpdateSelection(0, ItemsIndexes.Len(), true);
+	UpdateSelection(0, Items.Indexes.Len(), true);
 }
 void ListViewControlContext::UnSelectAllItems()
 {
-	UpdateSelection(0, ItemsIndexes.Len(), false);
+	UpdateSelection(0, Items.Indexes.Len(), false);
 }
 void ListViewControlContext::CheckAllItems()
 {
-    unsigned int sz = ItemsIndexes.Len();
-    unsigned int *indexes = ItemsIndexes.GetUInt32Array();
+    unsigned int sz = Items.Indexes.Len();
+    unsigned int *indexes = Items.Indexes.GetUInt32Array();
 	if (indexes == nullptr)
 		return;
 	for (unsigned int tr = 0; tr<sz; tr++,indexes++)
@@ -434,8 +425,8 @@ void ListViewControlContext::CheckAllItems()
 }
 void ListViewControlContext::UncheckAllItems()
 {
-	unsigned int sz = ItemsIndexes.Len();
-    unsigned int *indexes = ItemsIndexes.GetUInt32Array();
+	unsigned int sz = Items.Indexes.Len();
+    unsigned int *indexes = Items.Indexes.GetUInt32Array();
 	if (indexes == nullptr)
 		return;
 	for (unsigned int tr = 0; tr<sz; tr++, indexes++)
@@ -444,50 +435,46 @@ void ListViewControlContext::UncheckAllItems()
 unsigned int ListViewControlContext::GetCheckedItemsCount()
 {
 	unsigned int count = 0;
-    unsigned int sz = ItemsIndexes.Len();
-    unsigned int *indexes = ItemsIndexes.GetUInt32Array();
+    unsigned int sz = Items.Indexes.Len();
+    unsigned int *indexes = Items.Indexes.GetUInt32Array();
 	if (indexes == nullptr)
 		return 0;
 	for (unsigned int tr = 0; tr < sz; tr++, indexes++)
 	{
         if ((*indexes) < sz)
         {
-            if ((ItemsList[*indexes].Flags & ITEM_FLAG_CHECKED) != 0)
+            if ((Items.List[*indexes].Flags & ITEM_FLAG_CHECKED) != 0)
                 count++;
         }
 	}
 
 	return count;
 }
-void ListViewControlContext::SetSelectionColor(unsigned int color)
-{
-	selectionColor = color;
-}
 
 bool ListViewControlContext::SetCurrentIndex(ItemHandle item)
 {
-    CHECK((unsigned int)item < ItemsIndexes.Len(), false, "Invalid index: %d (should be smaller than %d)", item, ItemsIndexes.Len());
+    CHECK((unsigned int)item < Items.Indexes.Len(), false, "Invalid index: %d (should be smaller than %d)", item, Items.Indexes.Len());
 	MoveTo((int)item);
 	return true;
 }
 int	 ListViewControlContext::GetFirstVisibleLine()
 {
-	return Py;
+	return Items.FirstVisibleIndex;
 }
 bool ListViewControlContext::SetFirstVisibleLine(ItemHandle item)
 {
 	if (SetCurrentIndex(item) == false)
 		return false;
-	Py = CurentItemIndex;
+	Items.FirstVisibleIndex = Items.CurentItemIndex;
 	return true;
 }
 void ListViewControlContext::DeleteAllItems()
 {
-	ItemsList.clear();
-	ItemsIndexes.Clear();
+	Items.List.clear();
+	Items.Indexes.Clear();
 	Columns.XOffset = 0;
-	Py = 0;
-	CurentItemIndex = 0;
+	Items.FirstVisibleIndex = 0;
+	Items.CurentItemIndex = 0;
 	searchMode = false;
 	searchString.Set("");
 }
@@ -497,8 +484,8 @@ int  ListViewControlContext::GetVisibleItemsCount()
 	int vis = Layout.Height - 3;
 	if ((Flags & ListViewFlags::HIDE_COLUMNS) != 0)
 		vis++;
-	int dim = 0, poz = Py, nrItems = 0;
-	int sz = (int)ItemsIndexes.Len();
+	int dim = 0, poz = Items.FirstVisibleIndex, nrItems = 0;
+	int sz = (int)Items.Indexes.Len();
 	while ((dim<vis) && (poz<sz))
 	{
 		ListViewItem *i = GetFilteredItem(poz);
@@ -514,7 +501,7 @@ int  ListViewControlContext::GetVisibleItemsCount()
 void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 {
 	ListViewItem	*i;
-	int		totalItems = ItemsIndexes.Len();
+	int		totalItems = Items.Indexes.Len();
 
 	while ((start != end) && (start >= 0) && (start<totalItems))
 	{
@@ -533,23 +520,23 @@ void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 }
 void ListViewControlContext::MoveTo(int index)
 {
-	int count = ItemsIndexes.Len();
+	int count = Items.Indexes.Len();
 	if (count <= 0)
 		return;
 	if (index >= count)
 		index = count - 1;
 	if (index<0) 
 		index = 0;
-	if (index == CurentItemIndex) 
+	if (index == Items.CurentItemIndex) 
 		return;
 	int vis = GetVisibleItemsCount();
-	int rel = index - Py;
-	int originalPoz = CurentItemIndex;
-	CurentItemIndex = index;
+	int rel = index - Items.FirstVisibleIndex;
+	int originalPoz = Items.CurentItemIndex;
+	Items.CurentItemIndex = index;
 	if (rel < 0) 
-		Py = index;
+		Items.FirstVisibleIndex = index;
 	if (rel >= vis) 
-		Py = (index - vis) + 1;
+		Items.FirstVisibleIndex = (index - vis) + 1;
 	if (originalPoz != index) 
 		SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
 }
@@ -595,7 +582,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 	else {
 		if (Flags & ListViewFlags::ALLOWSELECTION)
 		{
-			lvi = GetFilteredItem(CurentItemIndex);
+			lvi = GetFilteredItem(Items.CurentItemIndex);
 			if (lvi != nullptr)
 				selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
 			else
@@ -603,39 +590,39 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			switch (keyCode)
 			{
 			case Key::Shift | Key::Up:
-				UpdateSelection(CurentItemIndex, CurentItemIndex - 1, !selected);
-				MoveTo(CurentItemIndex - 1);
+				UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
+				MoveTo(Items.CurentItemIndex - 1);
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
             case Key::Insert:
 			case Key::Down | Key::Shift:
-				UpdateSelection(CurentItemIndex, CurentItemIndex + 1, !selected);
-				MoveTo(CurentItemIndex + 1);
+				UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
+				MoveTo(Items.CurentItemIndex + 1);
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
 			case Key::PageUp | Key::Shift:
-				UpdateSelection(CurentItemIndex, CurentItemIndex - GetVisibleItemsCount(), !selected);
-				MoveTo(CurentItemIndex - GetVisibleItemsCount());
+				UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
+				MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;            
 			case Key::PageDown | Key::Shift:
-				UpdateSelection(CurentItemIndex, CurentItemIndex + GetVisibleItemsCount(), !selected);
-				MoveTo(CurentItemIndex + GetVisibleItemsCount());
+				UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
+				MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
 			case Key::Home | Key::Shift:
-				UpdateSelection(CurentItemIndex, 0, !selected);
+				UpdateSelection(Items.CurentItemIndex, 0, !selected);
 				MoveTo(0);
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
 			case Key::End | Key::Shift:
-				UpdateSelection(CurentItemIndex, ItemsIndexes.Len(), !selected);
-				MoveTo(ItemsIndexes.Len());
+				UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
+				MoveTo(Items.Indexes.Len());
 				searchMode = false;
 				SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
 				return true;
@@ -643,14 +630,14 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		}
 		switch (keyCode)
 		{
-		case Key::Up: MoveTo(CurentItemIndex - 1); searchMode = false; return true;
-		case Key::Down: MoveTo(CurentItemIndex + 1); searchMode = false; return true;
-		case Key::PageUp: MoveTo(CurentItemIndex - GetVisibleItemsCount()); searchMode = false; return true;
-		case Key::PageDown: MoveTo(CurentItemIndex + GetVisibleItemsCount()); searchMode = false; return true;
+		case Key::Up: MoveTo(Items.CurentItemIndex - 1); searchMode = false; return true;
+		case Key::Down: MoveTo(Items.CurentItemIndex + 1); searchMode = false; return true;
+		case Key::PageUp: MoveTo(Items.CurentItemIndex - GetVisibleItemsCount()); searchMode = false; return true;
+		case Key::PageDown: MoveTo(Items.CurentItemIndex + GetVisibleItemsCount()); searchMode = false; return true;
 		case Key::Left: if (Columns.XOffset>0) Columns.XOffset--; searchMode = false; return true;
         case Key::Right: UpdateColumnsWidth(); Columns.XOffset = MINVALUE(Columns.XOffset+1,(int)Columns.TotalWidth); searchMode = false; return true;
 		case Key::Home: MoveTo(0); searchMode = false; return true;
-		case Key::End: MoveTo(((int)ItemsIndexes.Len()) - 1); searchMode = false; return true;
+		case Key::End: MoveTo(((int)Items.Indexes.Len()) - 1); searchMode = false; return true;
 		case Key::Backspace:
 			searchMode = true;
 			if (searchString.Len()>0)
@@ -664,7 +651,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			{
 				if (!(Flags & ListViewFlags::HAS_CHECKBOX))
 					return false;
-				lvi = GetFilteredItem(CurentItemIndex);
+				lvi = GetFilteredItem(Items.CurentItemIndex);
 				if (lvi != nullptr)
 				{
 					if ((lvi->Flags & ITEM_FLAG_CHECKED) != 0)
@@ -682,7 +669,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::Enter | Key::Ctrl:
 			if (searchMode)
 			{
-				UpdateSearch(CurentItemIndex + 1);
+				UpdateSearch(Items.CurentItemIndex + 1);
 				return true; // de vazut daca are send
 			}
 			return false;
@@ -722,13 +709,13 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::Ctrl | Key::C:
 		case Key::Ctrl | Key::Insert:
 			temp.Create(256);
-			if (ItemsIndexes.Len()>0)
+			if (Items.Indexes.Len()>0)
 			{
 				for (tr = 0; tr<Columns.Count; tr++)
 				{
 					if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
 					{
-						temp.Add(GetFilteredItem(CurentItemIndex)->SubItem[tr].GetText());
+						temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr].GetText());
 						if (clipboardSeparator != 0) temp.AddChar(clipboardSeparator);
 					}
 				}
@@ -737,7 +724,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			return true;
 		case Key::Ctrl | Key::Alt | Key::Insert:
 			temp.Create(4096);
-			for (gr = 0; gr<(int)ItemsIndexes.Len(); gr++)
+			for (gr = 0; gr<(int)Items.Indexes.Len(); gr++)
 			{
 				for (tr = 0; tr<Columns.Count; tr++)
 				{
@@ -818,7 +805,7 @@ void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
 		else 
 			y -= 2;
 		if (y<GetVisibleItemsCount()) 
-			MoveTo(y + Py);
+			MoveTo(y + Items.FirstVisibleIndex);
 	}
 }
 void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
@@ -913,10 +900,10 @@ int  SortIndexesCompareFunction(unsigned int indx1, unsigned int indx2, void *co
 		return lvcc->SortParams.CompareCallbak((ListView*)lvcc->Host, indx1, indx2, lvcc->SortParams.ColumnIndex, lvcc->SortParams.CompareCallbakContext);
 	}
 	else {
-        unsigned int itemsCount = lvcc->ItemsList.size();
+        unsigned int itemsCount = lvcc->Items.List.size();
         if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX))
         {
-            return lvcc->ItemsList[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(lvcc->ItemsList[indx2].SubItem[lvcc->SortParams.ColumnIndex].GetText(), true);
+            return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex].GetText(), true);
         }
         else {
             if (indx1 < indx2)
@@ -935,7 +922,7 @@ bool ListViewControlContext::Sort()
 		// sanity check
 		CHECK(SortParams.ColumnIndex < Columns.Count, false, "No sort column or custom sort function defined !");
 	}
-	ItemsIndexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
+	Items.Indexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
 	return true;
 }
 int  ListViewControlContext::SearchItem(int startPoz, unsigned int colIndex)
@@ -943,7 +930,7 @@ int  ListViewControlContext::SearchItem(int startPoz, unsigned int colIndex)
 	unsigned int	originalStartPoz;
 	ListViewItem	*i;
 
-	unsigned int count = ItemsIndexes.Len();
+	unsigned int count = Items.Indexes.Len();
 	if (startPoz >= count) 
 		startPoz = 0;
 	if (count == 0)
@@ -966,12 +953,12 @@ int  ListViewControlContext::SearchItem(int startPoz, unsigned int colIndex)
 }
 void ListViewControlContext::FilterItems()
 {
-	ItemsIndexes.Clear();
-    unsigned int count = ItemsList.size();
+	Items.Indexes.Clear();
+    unsigned int count = Items.List.size();
 	for (unsigned int tr = 0; tr < count; tr++)
 	{
 		bool isOK = false;
-        ListViewItem& lvi = ItemsList[tr];
+        ListViewItem& lvi = Items.List[tr];
 		for (unsigned int gr = 0; gr < Columns.Count; gr++)
 		{
 			if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
@@ -983,10 +970,10 @@ void ListViewControlContext::FilterItems()
 			}
 		}
 		if (isOK)
-			ItemsIndexes.Push(tr);
+			Items.Indexes.Push(tr);
 	}
-	this->Py = 0;
-	this->CurentItemIndex = 0;
+	this->Items.FirstVisibleIndex = 0;
+	this->Items.CurentItemIndex = 0;
 	SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
@@ -1037,14 +1024,14 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
 	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (unsigned int)flags;
     Members->ScrollBars.LeftMargin = 25;
     // allocate items
-    CHECK(Members->ItemsIndexes.Create(32), false, "Fail to allocate indexes");
-    Members->ItemsList.reserve(32);
+    CHECK(Members->Items.Indexes.Create(32), false, "Fail to allocate indexes");
+    Members->Items.List.reserve(32);
     
     // initialize
 	Members->Columns.Count = 0;
 	Members->Columns.XOffset = 0;
-	Members->Py = 0;
-	Members->CurentItemIndex = 0;
+	Members->Items.FirstVisibleIndex = 0;
+	Members->Items.CurentItemIndex = 0;
     
 	Members->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
     Members->Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
@@ -1056,10 +1043,7 @@ bool		ListView::Create(Control *parent, const char * layout, ListViewFlags flags
 	Members->searchMode = false;
 	Members->Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
 	Members->clipboardSeparator = '\t';
-    Members->checkCharacter = 'v';
-	Members->uncheckCharacter = 'x';
     Members->Columns.TotalWidth = 0;
-	//Members->selectionColor = SC(0, 8);
 	Members->Host = this;
 	Members->searchString.Create(Members->searchStringData, MAX_LISTVIEW_SEARCH_STRING, true);
 	Members->statusString.Create(Members->statusStringData, 20, true);
@@ -1079,7 +1063,7 @@ void        ListView::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     UpdateHScrollBar(Members->Columns.XOffset, Members->Columns.TotalWidth);
-    
+    UpdateVScrollBar(Members->Items.CurentItemIndex, Members->Items.Indexes.Len());
 }
 
 bool		ListView::AddColumn(const char *text, TextAlignament Align, unsigned int Size)
@@ -1242,24 +1226,24 @@ void		ListView::DeleteAllItems()
 unsigned int ListView::GetItemsCount()
 {
 	if (Context != nullptr) {
-		return (unsigned int)WRAPPER->ItemsList.size();
+		return (unsigned int)WRAPPER->Items.List.size();
 	}
 	return 0;
 }
 unsigned int ListView::GetCurrentItem()
 {
 	ListViewControlContext * lvcc = ((ListViewControlContext*)this->Context);
-	if (lvcc->CurentItemIndex < 0)
+	if (lvcc->Items.CurentItemIndex < 0)
 		return -1;
-    unsigned int *indexes = lvcc->ItemsIndexes.GetUInt32Array();
-	return indexes[lvcc->CurentItemIndex];
+    unsigned int *indexes = lvcc->Items.Indexes.GetUInt32Array();
+	return indexes[lvcc->Items.CurentItemIndex];
 
 }
 bool		ListView::SetCurrentItem(ItemHandle item)
 {
 	ListViewControlContext * lvcc = ((ListViewControlContext*)this->Context);
-    unsigned int *indexes = lvcc->ItemsIndexes.GetUInt32Array();
-	unsigned int count = lvcc->ItemsIndexes.Len();
+    unsigned int *indexes = lvcc->Items.Indexes.GetUInt32Array();
+	unsigned int count = lvcc->Items.Indexes.Len();
 	if (count <= 0)
 		return false;
 	// caut indexul
@@ -1291,21 +1275,9 @@ unsigned int ListView::GetCheckedItemsCount()
 	return WRAPPER->GetCheckedItemsCount();
 }
 
-void		ListView::SetSelectionColor(int color)
-{
-	WRAPPER->SetSelectionColor(color);
-}
 void		ListView::SetClipboardSeparator(char ch)
 {
 	WRAPPER->SetClipboardSeparator(ch);
-}
-void		ListView::SetCheckCharacter(int character)
-{
-	WRAPPER->SetCheckCharacter(character);
-}
-void		ListView::SetUncheckCharacter(int character)
-{
-	WRAPPER->SetUncheckCharacter(character);
 }
 void		ListView::OnMouseReleased(int x, int y, int butonState)
 {

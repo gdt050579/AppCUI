@@ -1146,10 +1146,7 @@ namespace AppCUI
             unsigned int	GetCheckedItemsCount();
 
             // misc
-            void			SetSelectionColor(int color);
             void			SetClipboardSeparator(char ch);
-            void			SetCheckCharacter(int character = 0xFB);
-            void			SetUncheckCharacter(int character = 'x');
 
             // sort
             void			SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void *Context = nullptr);

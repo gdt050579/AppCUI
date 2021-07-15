@@ -275,21 +275,21 @@ public:
         Handlers::ListViewItemComparer	CompareCallbak;
         void*					        CompareCallbakContext;
     } SortParams;
+
+    struct {
+        std::vector<ListViewItem>	List;
+        Utils::Array32              Indexes;
+        int					        FirstVisibleIndex, CurentItemIndex;
+    } Items;
+
     char				        searchStringData[MAX_LISTVIEW_SEARCH_STRING];
     char				        statusStringData[20];
       
-    std::vector<ListViewItem>	ItemsList;
-    Utils::Array32              ItemsIndexes;
     Utils::String		        searchString, statusString;
 
     bool				        searchMode;
-    int					        Py, CurentItemIndex;
+
     char				        clipboardSeparator;
-    int					        checkCharacter, uncheckCharacter;
-    int					        selectionColor;
-
-
-
 
     Controls::Control*	        Host;
 
@@ -323,14 +323,11 @@ public:
     void				SetClipboardSeparator(char ch);
     bool				IsItemChecked(ItemHandle item);
     bool				IsItemSelected(ItemHandle item);
-    void				SetCheckCharacter(int character = 0xFB);
-    void				SetUncheckCharacter(int character = 'x');
     void				SelectAllItems();
     void				UnSelectAllItems();
     void				CheckAllItems();
     void				UncheckAllItems();
     unsigned int		GetCheckedItemsCount();
-    void				SetSelectionColor(unsigned int color);
 
     void				DeleteAllItems();
     bool				SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
