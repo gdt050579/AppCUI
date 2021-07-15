@@ -359,6 +359,7 @@ namespace AppCUI
             BoxBottomLeftCornerDoubleLine,
             BoxHorizontalDoubleLine,
             BoxVerticalDoubleLine,
+            BoxCrossDoubleLine,
 
             BoxTopLeftCornerSingleLine,
             BoxTopRightCornerSingleLine,
@@ -366,6 +367,7 @@ namespace AppCUI
             BoxBottomLeftCornerSingleLine,
             BoxHorizontalSingleLine,
             BoxVerticalSingleLine,
+            BoxCrossSingleLine,
 
             // arrows
             ArrowUp,

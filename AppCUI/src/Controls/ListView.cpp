@@ -217,6 +217,23 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
+    if (Flags & ListViewFlags::ITEMSEPARATORS)
+    {
+        y++;
+        ColorPair col = this->Cfg->ListView.ColumnNormal.Separator;
+        if (!(this->Flags & GATTR_ENABLE))
+            col = this->Cfg->ListView.ColumnInactive.Separator;
+        renderer.DrawHorizontalLineWithSpecialChar(1, y, Layout.Width - 2, SpecialChars::BoxHorizontalSingleLine, col);
+        // draw crosses
+        x = 1 - Columns.XOffset;
+        ListViewColumn * column = this->Columns.List;
+        for (unsigned int tr = 0; (tr < Columns.Count) && (x < (int)this->Layout.Width); tr++, column++)
+        {
+            x += column->Width;
+            renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
+            x++;
+        }
+    }
 }
 
 void ListViewControlContext::Paint(Console::Renderer & renderer)
@@ -244,6 +261,8 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         ListViewItem * item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == this->Items.CurentItemIndex);
         y++;
+        if (Flags & ListViewFlags::ITEMSEPARATORS)
+            y++;
         index++;
     }
     renderer.ResetClip();
