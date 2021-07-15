@@ -102,6 +102,18 @@ ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
     return &Items.List[idx];
 }
 
+void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Console::Renderer & renderer)
+{
+    int		x = 1 - Columns.XOffset;
+    ListViewColumn * column = this->Columns.List;
+    for (unsigned int tr = 0; (tr < Columns.Count) && (x < (int)this->Layout.Width); tr++, column++)
+    {
+        x += column->Width;
+        if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) || (tr == Columns.HoverSeparatorColumnIndex))
+            renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, Cfg->ListView.ColumnHover.Separator);
+        x++;
+    }
+}
 void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
 {
     auto * defaultCol = &this->Cfg->ListView.ColumnNormal;
@@ -138,16 +150,11 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
         x += column->Width;
         if ((this->Focused) && (tr == SortParams.ColumnIndex))
             renderer.WriteSpecialCharacter(x - 1, 1, this->SortParams.Ascendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
-            	
-        if (this->Focused)
+        
+        if (!(Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS))
         {
-            if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) || (tr == Columns.HoverSeparatorColumnIndex))
-                renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, Cfg->ListView.ColumnHover.Separator);
-            else
-                renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
-        }
-        else
             renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
+        }
         x++;
     }
 }
@@ -217,7 +224,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
-    if (Flags & ListViewFlags::ITEMSEPARATORS)
+    if (Flags & ListViewFlags::ITEM_SEPARATORS)
     {
         y++;
         ColorPair col = this->Cfg->ListView.ColumnNormal.Separator;
@@ -225,13 +232,16 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
             col = this->Cfg->ListView.ColumnInactive.Separator;
         renderer.DrawHorizontalLineWithSpecialChar(1, y, Layout.Width - 2, SpecialChars::BoxHorizontalSingleLine, col);
         // draw crosses
-        x = 1 - Columns.XOffset;
-        ListViewColumn * column = this->Columns.List;
-        for (unsigned int tr = 0; (tr < Columns.Count) && (x < (int)this->Layout.Width); tr++, column++)
+        if (!(Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS))
         {
-            x += column->Width;
-            renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
-            x++;
+            x = 1 - Columns.XOffset;
+            ListViewColumn * column = this->Columns.List;
+            for (unsigned int tr = 0; (tr < Columns.Count) && (x < (int)this->Layout.Width); tr++, column++)
+            {
+                x += column->Width;
+                renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
+                x++;
+            }
         }
     }
 }
@@ -261,10 +271,13 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         ListViewItem * item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == this->Items.CurentItemIndex);
         y++;
-        if (Flags & ListViewFlags::ITEMSEPARATORS)
+        if (Flags & ListViewFlags::ITEM_SEPARATORS)
             y++;
         index++;
     }
+    // columns separators
+    if ((this->Focused) && ((Columns.HoverSeparatorColumnIndex!=INVALID_COLUMN_INDEX) || (Columns.ResizeModeEnabled)))
+        DrawColumnSeparatorsForResizeMode(renderer);
     renderer.ResetClip();
     // filtering
     if ((Focused) && (this->Layout.Width > 20))
@@ -528,7 +541,7 @@ int  ListViewControlContext::GetVisibleItemsCount()
 		ListViewItem *i = GetFilteredItem(poz);
 		if (i)
 			dim += i->Height;
-		if ((Flags & ListViewFlags::ITEMSEPARATORS) != 0)
+		if ((Flags & ListViewFlags::ITEM_SEPARATORS) != 0)
 			dim++;
 		nrItems++;
 		poz++;

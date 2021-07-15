@@ -301,6 +301,7 @@ public:
 
     int					SearchItem(int startPoz, unsigned int colIndex);
     void				UpdateSearch(int startPoz);
+    void                DrawColumnSeparatorsForResizeMode(Console::Renderer & renderer);
     void				DrawColumn(Console::Renderer & renderer);
     void				DrawItem(Console::Renderer & renderer, ListViewItem * item, int y, bool currentItem);
 
