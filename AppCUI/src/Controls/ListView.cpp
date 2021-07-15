@@ -115,7 +115,7 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
     int		x = 1 - Columns.XOffset;
 
     ListViewColumn * column = this->Columns.List;
-    for (unsigned int tr = 0; tr<Columns.Count; tr++, column++)
+    for (unsigned int tr = 0; (tr<Columns.Count) && (x<(int)this->Layout.Width); tr++, column++)
     {
         if (this->Focused)
         {
@@ -151,13 +151,77 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
         x++;
     }
 }
-void ListViewControlContext::DrawItem(Console::Renderer & renderer,bool activ, unsigned int index, int y)
+void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem * item, int y, bool currentItem)
 {
+    int		x = 1 - Columns.XOffset;
+    int     itemStarts;
+    ListViewColumn * column = this->Columns.List;
+    String * subitem = item->SubItem;
+    ColorPair itemCol = Cfg->ListView.Item.Regular;
+    ColorPair checkCol, uncheckCol;
+    if (Flags & GATTR_ENABLE)
+    {
+        checkCol = Cfg->ListView.CheckedSymbol;
+        uncheckCol = Cfg->ListView.UncheckedSymbol;
+    } else {
+        checkCol = uncheckCol = Cfg->ListView.InactiveColor;
+    }
+    // first column
+    int end_first_column = x + ((int)column->Width);
+    x += (int)item->XOffset;
+    if ((Flags & ListViewFlags::HAS_CHECKBOX) != 0) 
+    {
+        if (x < end_first_column)
+        {
+            if (item->Flags & ITEM_FLAG_CHECKED)
+                renderer.WriteSpecialCharacter(x, y, SpecialChars::CheckMark, checkCol);
+            else
+                renderer.WriteSpecialCharacter(x, y, SpecialChars::CircleEmpty, uncheckCol);
+        }
+        x += 2;
+    }
+    itemStarts = x;
+    if (x<end_first_column)
+        renderer.WriteSingleLineText(x, y, subitem->GetText(), end_first_column-x, itemCol, column->Align, subitem->Len());
+
+    // rest of the columns
+    x = end_first_column + 1;
+    subitem++; column++;
+    for (unsigned int tr = 1; (tr < Columns.Count) && (x < (int)this->Layout.Width); tr++, column++)
+    {
+        renderer.WriteSingleLineText(x, y, subitem->GetText(), column->Width, itemCol, column->Align, subitem->Len());
+        x += column->Width;
+        x++;
+        subitem++;
+    }
+    if (Focused)
+    {
+        if (currentItem) {
+            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
+            else
+                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
+            if ((Flags & ListViewFlags::HAS_CHECKBOX) != 0)
+                renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
+        } else {
+            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+        }
+    }
+    else {
+        if (Flags & GATTR_ENABLE)
+        {
+            if (((Flags & ListViewFlags::HIDECURRENTITEM) == 0) && (currentItem))
+                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+        }
+    }
 }
 
 void ListViewControlContext::Paint(Console::Renderer & renderer)
 {
-    int y = 0;
+    int y = 1;
     auto * lvCol = &this->Cfg->ListView.Normal;
     if (!(this->Flags & GATTR_ENABLE))
         lvCol = &this->Cfg->ListView.Inactive;
@@ -172,6 +236,15 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
     { 
         DrawColumn(renderer);
     	y++; 
+    }
+    unsigned int index = this->Py;
+    unsigned int count = this->ItemsIndexes.Len();
+    while ((y < this->Layout.Height) && (index<count))
+    {
+        ListViewItem * item = GetFilteredItem(index);
+        DrawItem(renderer, item, y, index == this->CurentItemIndex);
+        y++;
+        index++;
     }
 }
 // coloane	
@@ -215,8 +288,9 @@ int  ListViewControlContext::GetNrColumns()
 ItemHandle  ListViewControlContext::AddItem(const char *text)
 {
     CHECK(text, InvalidItemHandle, "Expecting a valid (non-null) text");
-    ItemsList.push_back(ListViewItem());
     ItemHandle idx = ItemsList.size();
+    ItemsList.push_back(ListViewItem());
+    ItemsIndexes.Push(idx);
     SetItemText(idx, 0, text);
 	return idx;
 }

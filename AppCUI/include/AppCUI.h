@@ -1292,7 +1292,6 @@ namespace AppCUI
             struct {
                 Console::ColorPair Bar, Arrows, Position;
             } ScrollBar;
-            void SetDarkTheme();
             struct {
                 struct {                    
                     Console::ColorPair Border, LineSparators;
@@ -1300,7 +1299,17 @@ namespace AppCUI
                 struct {
                     Console::ColorPair Text, HotKey, Separator;
                 } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
+                struct {
+                    Console::ColorPair Regular, Highligheted, Inactive, Error, Warning;
+                } Item;
+                Console::ColorPair CheckedSymbol, UncheckedSymbol;
+                Console::ColorPair InactiveColor;
+                Console::ColorPair FocusColor;
+                Console::ColorPair SelectionColor;
+                Console::ColorPair FocusAndSelectedColor;
             } ListView;
+
+            void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);
 

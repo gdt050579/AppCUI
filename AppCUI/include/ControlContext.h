@@ -298,7 +298,7 @@ public:
     int					SearchItem(int startPoz, unsigned int colIndex);
     void				UpdateSearch(int startPoz);
     void				DrawColumn(Console::Renderer & renderer);
-    void				DrawItem(Console::Renderer & renderer, bool activ, unsigned int index, int y);
+    void				DrawItem(Console::Renderer & renderer, ListViewItem * item, int y, bool currentItem);
 
     // movement
     void				UpdateSelection(int start, int end, bool select);
