@@ -1304,6 +1304,7 @@ namespace AppCUI
                 Console::ColorPair FocusColor;
                 Console::ColorPair SelectionColor;
                 Console::ColorPair FocusAndSelectedColor;
+                Console::ColorPair FilterText;
             } ListView;
 
             void SetDarkTheme();

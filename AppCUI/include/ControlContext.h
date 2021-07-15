@@ -227,7 +227,6 @@ struct CanvasControlContext : public ControlContext
 
 #define MAX_LISTVIEW_COLUMNS			64
 #define MAX_LISTVIEW_HEADER_TEXT        32
-#define MAX_LISTVIEW_SEARCH_STRING      128
 
 struct ListViewItem
 {
@@ -282,12 +281,17 @@ public:
         int					        FirstVisibleIndex, CurentItemIndex;
     } Items;
 
-    char				        searchStringData[MAX_LISTVIEW_SEARCH_STRING];
-    char				        statusStringData[20];
-      
-    Utils::String		        searchString, statusString;
+    struct
+    {
+        Utils::String               SearchText;
+        char				        statusStringData[20];
+        bool				        FilterModeEnabled;
+    } Filter;
 
-    bool				        searchMode;
+      
+    Utils::String		        statusString;
+
+    
 
     char				        clipboardSeparator;
 
