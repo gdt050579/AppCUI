@@ -123,7 +123,29 @@ public:
         lv.AddItem("Apple"); lv.AddItem("Pinaple"); lv.AddItem("Pears"); lv.AddItem("Lemons"); lv.AddItem("Oranges");
     }
 };
+class ColumnsExample : public MyDialog
+{
+    ListView lv;
+    Label inf;
+public:
+    ColumnsExample()
+    {
+        this->Create("Columns/Headers Example", "a:c,w:70,h:18");
+        lv.Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::SORTABLE);
+        // columns
+        lv.AddColumn("&Name", TextAlignament::Left, 30);
+        lv.AddColumn("Cl&ass", TextAlignament::Left, 20);
+        lv.AddColumn("&Grade", TextAlignament::Right, 7);
+        // items
+        lv.AddItem("Mike", "Mathematics", "9");
+        lv.AddItem("Laura", "Mathematics", "7");
+        lv.AddItem("John", "Phishics", "8");
+        lv.AddItem("Ana", "Chemestry", "9");
+        lv.AddItem("Willian", "Literature", "6");
 
+        inf.Create(this, "Use Ctrl+Left/Ritgh to select a column and then Left or Right to change its size. You can also hover the mouse over a column separator to resize it.\nClick on each column to sort items based on that column.\nYou can also press Ctrl+N (to sort after the first column), Ctrl+A and Ctrl+G to sort using the next two ones", "x:1,y:1,w:66,h:6");
+    }
+};
 
 class MyWin : public AppCUI::Controls::Window
 {
@@ -134,7 +156,7 @@ class MyWin : public AppCUI::Controls::Window
 public:
     MyWin()
     {
-        this->Create("ListView example config", "x:0,y:0,w:60,h:15");
+        this->Create("ListView example config", "x:0,y:0,w:60,h:20");
         rbCustomizedListView.Create(this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
         p.Create(this,"x:4,y:2,w:56,h:6");
         cbHideColumns.Create(&p, "&Hide columns (item headers)", "x:1,y:0,w:50");
@@ -146,6 +168,8 @@ public:
 
         rbSimpleList.Create(this, "A very simple list with items", "x:1,y:8,w:56", MY_GROUP);
         cbSimpleListCheckboxes.Create(this, "Has checkboxes", "x:5,y:9,w:30");
+
+        rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:10,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
         btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
@@ -187,6 +211,11 @@ public:
         if (rbSimpleList.IsChecked())
         {
             SimpleListExample win(cbSimpleListCheckboxes.IsChecked());
+            win.Show();
+        }
+        if (rbSortAndColumnsFeatures.IsChecked())
+        {
+            ColumnsExample win;
             win.Show();
         }
     }
