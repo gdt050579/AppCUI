@@ -146,12 +146,31 @@ public:
         inf.Create(this, "Use Ctrl+Left/Ritgh to select a column and then Left or Right to change its size. You can also hover the mouse over a column separator to resize it.\nClick on each column to sort items based on that column.\nYou can also press Ctrl+N (to sort after the first column), Ctrl+A and Ctrl+G to sort using the next two ones", "x:1,y:1,w:66,h:6");
     }
 };
+class ListViewWithColors : public MyDialog
+{
+    ListView lv;
+public:
+    ListViewWithColors()
+    {
+        this->Create("ListView with colors", "a:c,w:30,h:14");
+        lv.Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::NONE);
+        lv.AddColumn("Color", TextAlignament::Left, 10);
+        lv.AddColumn("RGB", TextAlignament::Center, 10);
+        ItemHandle handle;
+        handle = lv.AddItem("Red", "FF0000"); lv.SetItemColor(handle, ColorPair{ Color::Red,Color::Transparent });
+        handle = lv.AddItem("Green", "00FF00"); lv.SetItemColor(handle, ColorPair{ Color::Green,Color::Transparent });
+        handle = lv.AddItem("Blue", "0000FF"); lv.SetItemColor(handle, ColorPair{ Color::Blue,Color::Transparent });
+        handle = lv.AddItem("Yellow", "FFFF00"); lv.SetItemColor(handle, ColorPair{ Color::Yellow,Color::Transparent });
+        handle = lv.AddItem("White", "FFFFFF"); lv.SetItemColor(handle, ColorPair{ Color::White,Color::Transparent });
+        handle = lv.AddItem("Gray", "808080"); lv.SetItemColor(handle, ColorPair{ Color::Gray,Color::Transparent });
+    }
+};
 
 class MyWin : public AppCUI::Controls::Window
 {
     Panel p;
     CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort,cbItemSeparators, cbAllowSelection, cbSimpleListCheckboxes;
-    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures;
+    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors;
     Button btnShow;
 public:
     MyWin()
@@ -170,6 +189,7 @@ public:
         cbSimpleListCheckboxes.Create(this, "Has checkboxes", "x:5,y:9,w:30");
 
         rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:10,w:56", MY_GROUP);
+        rbColors.Create(this,"List view with items with different colors", "x:1,y:11,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
         btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
@@ -216,6 +236,11 @@ public:
         if (rbSortAndColumnsFeatures.IsChecked())
         {
             ColumnsExample win;
+            win.Show();
+        }
+        if (rbColors.IsChecked())
+        {
+            ListViewWithColors win;
             win.Show();
         }
     }
