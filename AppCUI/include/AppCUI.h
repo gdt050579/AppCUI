@@ -1072,7 +1072,7 @@ namespace AppCUI
             MULTIPLE_SELECTION_MODE = 0x004000,
             SEARCHMODE              = 0x008000,
         };
-        enum class ListViewItemType: unsigned int
+        enum class ListViewItemType: unsigned short
         {
             REGULAR                 = 0,
             HIGHLIGHT               = 1,

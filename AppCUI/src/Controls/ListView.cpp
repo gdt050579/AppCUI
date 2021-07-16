@@ -88,6 +88,7 @@ void ListViewColumn::SetWidth(unsigned int width)
 ListViewItem::ListViewItem()
 {
     this->Flags = 0;
+    this->Type = ListViewItemType::REGULAR;
     this->ItemColor = DefaultColorPair;
     this->Height = 1;
     this->Data.UInt64Value = 0;
@@ -96,6 +97,7 @@ ListViewItem::ListViewItem()
 ListViewItem::ListViewItem(const ListViewItem & obj)
 {
     this->Flags = obj.Flags;
+    this->Type = obj.Type;
     this->ItemColor = obj.ItemColor;
     this->Height = obj.Height;
     this->Data = obj.Data;
@@ -185,6 +187,20 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
     } else {
         checkCol = uncheckCol = Cfg->ListView.InactiveColor;
     }
+    // select color based on item type
+    switch (item->Type)
+    {
+        case ListViewItemType::REGULAR: itemCol = item->ItemColor; break;
+        case ListViewItemType::HIGHLIGHT: itemCol = Cfg->ListView.Item.Highligheted; break;
+        case ListViewItemType::ERROR_INFORMATION: itemCol = Cfg->ListView.Item.Error; break;
+        case ListViewItemType::WARNING_INFORMATION: itemCol = Cfg->ListView.Item.Warning; break;
+        case ListViewItemType::INACTIVE: itemCol = Cfg->ListView.Item.Inactive; break;
+    default:
+        break;
+    }
+    // disable is not active
+    if (!(Flags & GATTR_ENABLE))
+        itemCol = Cfg->ListView.Item.Inactive;
     // first column
     int end_first_column = x + ((int)column->Width);
     x += (int)item->XOffset;
@@ -351,7 +367,7 @@ ItemHandle  ListViewControlContext::AddItem(const char *text)
 {
     CHECK(text, InvalidItemHandle, "Expecting a valid (non-null) text");
     ItemHandle idx = Items.List.size();
-    Items.List.push_back(ListViewItem());
+    Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
 	return idx;
@@ -391,14 +407,14 @@ bool ListViewControlContext::SetItemSelect(ItemHandle item, bool check)
 bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-	CHECK((i.Flags >> 16) == (unsigned int)ListViewItemType::REGULAR, false, "Item color only applies to regular item. Use SetItemType to change item type !");
+	CHECK(i.Type == ListViewItemType::REGULAR, false, "Item color only applies to regular item. Use SetItemType to change item type !");
 	i.ItemColor = color;
 	return true;
 }
 bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-	i.Flags = (i.Flags & 0xFFFF) | (((unsigned int)type)<<16);
+    i.Type = type;
 	return true;
 }
 

@@ -230,13 +230,15 @@ struct CanvasControlContext : public ControlContext
 
 struct ListViewItem
 {
-    Utils::String	    SubItem[MAX_LISTVIEW_COLUMNS];
-    unsigned int		Flags;
+    Utils::String	    SubItem[MAX_LISTVIEW_COLUMNS];    
+    ListViewItemType    Type;
+    unsigned short		Flags;
     unsigned int		XOffset;
     unsigned int		Height;
     ColorPair           ItemColor;
     ItemData			Data;
     ListViewItem();
+    ListViewItem(const ColorPair col) : ListViewItem() { this->ItemColor = col; }
     ListViewItem(const ListViewItem & obj);
 };
 struct ListViewColumn
