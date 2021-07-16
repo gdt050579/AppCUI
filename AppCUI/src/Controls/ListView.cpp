@@ -157,7 +157,7 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
             else
                 lvCol = defaultCol;
         }
-        if (column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN)
+        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || (Flags & ListViewFlags::SORTABLE)==0)
             renderer.WriteSingleLineText(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align, column->NameLength);
         else
             renderer.WriteSingleLineTextWithHotKey(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, lvCol->HotKey, column->HotKeyOffset, column->Align, column->NameLength);
@@ -910,28 +910,49 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int &HeaderInd
 }
 void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
 {
-	Columns.ResizeModeEnabled = false;
-	Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
+    Columns.ResizeModeEnabled = false;
+    Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
     Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
-	if (((Flags & ListViewFlags::HIDE_COLUMNS) == 0) && (y == 1))
-	{
-        unsigned int hIndex, hColumn;
-        if ((MouseToHeader(x, y, hIndex, hColumn)) && (hIndex != INVALID_COLUMN_INDEX))
-            ColumnSort(hIndex);
-	}
-	else
-	{
-		if ((Flags & ListViewFlags::HIDE_COLUMNS) != 0) 
-			y--; 
-		else 
-			y -= 2;
-		if (y<GetVisibleItemsCount()) 
-			MoveTo(y + Items.FirstVisibleIndex);
-	}
 }
 void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
 {
+    if (((Flags & ListViewFlags::HIDE_COLUMNS) == 0))
+    {
+        unsigned int hIndex, hColumn;
+        if (MouseToHeader(x, y, hIndex, hColumn))
+        {
+            if ((y == 1) && (hIndex != INVALID_COLUMN_INDEX)) {
+                ColumnSort(hIndex);
+                return;
+            }
+            if (hColumn != INVALID_COLUMN_INDEX)
+                return;
+        }
+    }
+    // check is the search bar was pressed
+    if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) && (y == (this->Layout.Height - 1)))
+    {
+        if ((x >= 2) && (x <= 15))
+        {
+            this->Filter.FilterModeEnabled = true;
+            return;
+        }
+    }
+
+    // check if items are pressed
+    if ((Flags & ListViewFlags::HIDE_COLUMNS) != 0)
+        y--;
+    else
+        y -= 2;
+    if (Flags & ListViewFlags::ITEM_SEPARATORS)
+        y = y / 2;
+    
+    if (y < GetVisibleItemsCount())
+    {
+        this->Filter.FilterModeEnabled = false;
+        MoveTo(y + Items.FirstVisibleIndex);
+    }
 
 }
 bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
