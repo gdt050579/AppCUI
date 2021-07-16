@@ -1071,6 +1071,7 @@ namespace AppCUI
             HIDECURRENTITEM         = 0x002000,
             MULTIPLE_SELECTION_MODE = 0x004000,
             SEARCHMODE              = 0x008000,
+            HIDE_SEARCH_BAR         = 0x010000
         };
         enum class ListViewItemType: unsigned short
         {

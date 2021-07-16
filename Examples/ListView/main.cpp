@@ -118,7 +118,7 @@ public:
     SimpleListExample(bool hasCheckboxes)
     {
         this->Create("Simple List Example", "a:c,w:30,h:14");
-        lv.Create(this, "x:1,y:1,w:26,h:10", hasCheckboxes ? (ListViewFlags::HAS_CHECKBOXES|ListViewFlags::HIDE_COLUMNS) : ListViewFlags::HIDE_COLUMNS);
+        lv.Create(this, "x:1,y:1,w:26,h:10", hasCheckboxes ? (ListViewFlags::HAS_CHECKBOXES|ListViewFlags::HIDE_COLUMNS|ListViewFlags::HIDE_SEARCH_BAR) : (ListViewFlags::HIDE_COLUMNS| ListViewFlags::HIDE_SEARCH_BAR));
         lv.AddColumn("", TextAlignament::Left, 30);
         lv.AddItem("Apple"); lv.AddItem("Pinaple"); lv.AddItem("Pears"); lv.AddItem("Lemons"); lv.AddItem("Oranges");
     }
@@ -199,7 +199,8 @@ public:
 class MyWin : public AppCUI::Controls::Window
 {
     Panel p;
-    CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort,cbItemSeparators, cbAllowSelection, cbSimpleListCheckboxes;
+    CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection, cbHideSearchBar;
+    CheckBox cbSimpleListCheckboxes;
     RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree;
     Button btnShow;
 public:
@@ -207,20 +208,21 @@ public:
     {
         this->Create("ListView example config", "x:0,y:0,w:60,h:20");
         rbCustomizedListView.Create(this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
-        p.Create(this,"x:4,y:2,w:56,h:6");
+        p.Create(this,"x:4,y:2,w:56,h:7");
         cbHideColumns.Create(&p, "&Hide columns (item headers)", "x:1,y:0,w:50");
         cbCheckBoxes.Create(&p, "&Checkboxes (each item is checkable)", "x:1,y:1,w:50");
         cbHideColumnSeparators.Create(&p, "Hide column separators (&vertical lines)", "x:1,y:2,w:50");
         cbSort.Create(&p, "&Sortable (columns can be used to sort)", "x:1,y:3,w:50");
         cbItemSeparators.Create(&p, "Add a line after each item (item separators)", "x:1,y:4,w:50");
         cbAllowSelection.Create(&p, "Enable &multiple selections mode", "x:1,y:5,w:50");
+        cbHideSearchBar.Create(&p, "Hide search &bar (disable search)", "x:1,y:6,w:50");
 
-        rbSimpleList.Create(this, "A very simple list with items", "x:1,y:8,w:56", MY_GROUP);
-        cbSimpleListCheckboxes.Create(this, "Has checkboxes", "x:5,y:9,w:30");
+        rbSimpleList.Create(this, "A very simple list with items", "x:1,y:9,w:56", MY_GROUP);
+        cbSimpleListCheckboxes.Create(this, "Has checkboxes", "x:5,y:10,w:30");
 
-        rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:10,w:56", MY_GROUP);
-        rbColors.Create(this,"List view with items with different colors", "x:1,y:11,w:56", MY_GROUP);
-        rbTree.Create(this, "List view with tree-like visualisation", "x:1,y:12,w:56", MY_GROUP);
+        rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:11,w:56", MY_GROUP);
+        rbColors.Create(this,"List view with items with different colors", "x:1,y:12,w:56", MY_GROUP);
+        rbTree.Create(this, "List view with tree-like visualisation", "x:1,y:13,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
         btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
@@ -235,6 +237,7 @@ public:
         cbSort.SetEnabled(rbCustomizedListView.IsChecked());
         cbItemSeparators.SetEnabled(rbCustomizedListView.IsChecked());
         cbAllowSelection.SetEnabled(rbCustomizedListView.IsChecked());
+        cbHideSearchBar.SetEnabled(rbCustomizedListView.IsChecked());
         cbSimpleListCheckboxes.SetEnabled(rbSimpleList.IsChecked());
     }
     void ShowListView()
@@ -253,6 +256,8 @@ public:
             flags = flags | ListViewFlags::ITEM_SEPARATORS;
         if (cbAllowSelection.IsChecked())
             flags = flags | ListViewFlags::MULTIPLE_SELECTION_MODE;
+        if (cbHideSearchBar.IsChecked())
+            flags = flags | ListViewFlags::HIDE_SEARCH_BAR;
 
         if (rbCustomizedListView.IsChecked())
         {

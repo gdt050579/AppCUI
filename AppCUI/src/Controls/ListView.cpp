@@ -308,7 +308,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         DrawColumnSeparatorsForResizeMode(renderer);
     renderer.ResetClip();
     // filtering
-    if ((Focused) && (this->Layout.Width > 20))
+    if ((Focused) && (this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR)==0))
     {
         renderer.DrawHorizontalLine(2, this->Layout.Height - 1, 15, ' ', Cfg->ListView.FilterText);
         unsigned int len = this->Filter.SearchText.Len();
@@ -717,12 +717,14 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::Home: MoveTo(0); Filter.FilterModeEnabled = false; return true;
 		case Key::End: MoveTo(((int)Items.Indexes.Len()) - 1); Filter.FilterModeEnabled = false; return true;
 		case Key::Backspace:
-			Filter.FilterModeEnabled = true;
-			if (Filter.SearchText.Len()>0)
-			{
-				Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
-				UpdateSearch(0);
-			}
+            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+                Filter.FilterModeEnabled = true;
+                if (Filter.SearchText.Len() > 0)
+                {
+                    Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
+                    UpdateSearch(0);
+                }
+            }
 			return true;
 		case Key::Space:
 			if (!Filter.FilterModeEnabled)
@@ -741,11 +743,14 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			}
 			else
 			{
-				Filter.SearchText.AddChar(' '); UpdateSearch(0);
+                if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+                    Filter.SearchText.AddChar(' '); 
+                    UpdateSearch(0);
+                }
 			}
 			return true;
 		case Key::Enter | Key::Ctrl:
-			if (Filter.FilterModeEnabled)
+			if ((Filter.FilterModeEnabled) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0))
 			{
 				UpdateSearch(Items.CurentItemIndex + 1);
 				return true; // de vazut daca are send
@@ -755,28 +760,28 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			SendMsg(Event::EVENT_LISTVIEW_ITEM_CLICKED);
 			return true;
 		case Key::Escape:
-			if (Filter.FilterModeEnabled)
-			{
-				if (Filter.SearchText.Len() > 0)
-				{
-                    Filter.SearchText.Clear();
-					UpdateSearch(0);
-					return true;
-				}
-				else {
-					Filter.FilterModeEnabled = false;
-					return true;
-				}
-			}
-			if ((Flags & ListViewFlags::SEARCHMODE) == 0)
-			{
-				if (Filter.SearchText.Len() > 0)
-				{
-					Filter.SearchText.Clear();
-					UpdateSearch(0);
-					return true;
-				}
-			}
+            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+                if (Filter.FilterModeEnabled)
+                {
+                    if (Filter.SearchText.Len() > 0)
+                    {
+                        Filter.SearchText.Clear();
+                        UpdateSearch(0);
+                    } else {
+                        Filter.FilterModeEnabled = false;
+                    }
+                    return true;
+                }
+                if ((Flags & ListViewFlags::SEARCHMODE) == 0)
+                {
+                    if (Filter.SearchText.Len() > 0)
+                    {
+                        Filter.SearchText.Clear();
+                        UpdateSearch(0);
+                        return true;
+                    }
+                }
+            }
 			return false;
 
 		case Key::Ctrl | Key::Right:
@@ -818,25 +823,28 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 			return true;
 		};
 		// caut sort
-		if (Filter.FilterModeEnabled == false)
-		{
-			for (unsigned int tr = 0; tr < Columns.Count; tr++)
-			{
-				if (Columns.List[tr].HotKeyCode == keyCode)
-				{
-					ColumnSort(tr);
-					return true;
-				}
-			}
-		}
-		// search mode
-		if (AsciiCode>0)
-		{
-			Filter.FilterModeEnabled = true;
-			Filter.SearchText.AddChar(AsciiCode);
-			UpdateSearch(0);
-			return true;
-		}
+        if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) 
+        {
+            if (Filter.FilterModeEnabled == false)
+            {
+                for (unsigned int tr = 0; tr < Columns.Count; tr++)
+                {
+                    if (Columns.List[tr].HotKeyCode == keyCode)
+                    {
+                        ColumnSort(tr);
+                        return true;
+                    }
+                }
+            }
+            // search mode
+            if (AsciiCode > 0)
+            {
+                Filter.FilterModeEnabled = true;
+                Filter.SearchText.AddChar(AsciiCode);
+                UpdateSearch(0);
+                return true;
+            }
+        }
 	}
 	return false;
 }
@@ -938,23 +946,7 @@ void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 	if ((Flags & ListViewFlags::SORTABLE) == 0)
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 }
-//void ListViewControlContext::SetSortOrder(int direction)
-//{
-//	if (direction>0) sortOrder = 1; else sortOrder = -1;
-//}
-//void ListViewControlContext::SetCompareFunction(int(*compareFnc)(ListViewControlContext::Item *i1, ListViewControlContext::Item *i2, int columnIndex))
-//{
-//	itemCompare = compareFnc;
-//}
-//void ListViewControlContext::CopyItem(ListViewItem *dest, ListViewItem *source)
-//{
-//	dest->Flags = source->Flags;
-//	dest->Color = source->Color;
-//	dest->Data = source->Data;
-//	dest->XOffset = source->XOffset;
-//	for (int tr = 0; tr<Columns.Count; tr++)
-//		dest->SubItem[tr] = source->SubItem[tr];
-//}
+
 void ListViewControlContext::ColumnSort(unsigned int columnIndex)
 {
 	if ((Flags & ListViewFlags::SORTABLE) == 0)
