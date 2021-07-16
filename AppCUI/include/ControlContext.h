@@ -287,21 +287,22 @@ public:
     struct
     {
         Utils::String               SearchText;
-        char				        statusStringData[20];
         bool				        FilterModeEnabled;
     } Filter;
-
-      
-    Utils::String		        statusString__;
    
+    struct {
+        char				        Status[20];
+        unsigned int                StatusLength;
+    } Selection;
     char				        clipboardSeparator;
 
     Controls::Control*	        Host;
 
     ListViewItem*		GetFilteredItem(unsigned int index);
 
-    int					SearchItem(int startPoz, unsigned int colIndex);
+    int					SearchItem(unsigned int startPoz, unsigned int colIndex);
     void				UpdateSearch(int startPoz);
+    void                UpdateSelectionInfo();
     void                DrawColumnSeparatorsForResizeMode(Console::Renderer & renderer);
     void				DrawColumn(Console::Renderer & renderer);
     void				DrawItem(Console::Renderer & renderer, ListViewItem * item, int y, bool currentItem);

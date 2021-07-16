@@ -470,7 +470,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const char * text, unsigned int
     if (textSize < 0)
         textSize = AppCUI::Utils::String::Len(text);
 
-    if (x + width < Clip.Left)
+    if (x + (int)width < Clip.Left)
         return false;
     const unsigned char * s;
     const unsigned char * e;
@@ -534,7 +534,7 @@ bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, un
     if (textSize < 0)
         textSize = AppCUI::Utils::String::Len(text);
 
-    if (x + width < Clip.Left)
+    if (x + (int)width < Clip.Left)
         return false;
     const unsigned char * s;
     const unsigned char * e;

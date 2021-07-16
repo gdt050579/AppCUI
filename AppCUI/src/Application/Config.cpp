@@ -164,4 +164,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
     this->ListView.SelectionColor = ColorPair{ Color::Yellow, Color::Transparent };
     this->ListView.FilterText = ColorPair{ Color::White, Color::DarkRed };
+    this->ListView.StatusColor = ColorPair{ Color::Yellow, Color::Transparent };
 }

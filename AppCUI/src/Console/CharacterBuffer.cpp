@@ -244,7 +244,7 @@ bool CharacterBuffer::CopyString(AppCUI::Utils::String & text, unsigned int star
     Character * e = s + (end - start);
     text.Clear();
     while (s < e) {
-        CHECK(text.AddChar(s->Code), false, "Fail to copy character with code: %d to string", s->Code);
+        CHECK(text.AddChar((char)s->Code), false, "Fail to copy character with code: %d to string", s->Code);
         s++;
     }
     return true;
