@@ -564,7 +564,7 @@ bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, un
         RETURNERROR(false, "Invalid text align method (it can only be Left,Righ or Center)");
     }
      
-
+    int startX = x;
     Character * c = this->OffsetRows[y] + x;
     if (NO_TRANSPARENCY(color))
     {
@@ -588,7 +588,7 @@ bool Renderer::WriteSingleLineTextWithHotKey(int x, int y, const char * text, un
         }
     }
     // hotkey
-    if ((hotKeyX >= Clip.Left) && (hotKeyX <= Clip.Right))
+    if ((hotKeyX >= Clip.Left) && (hotKeyX <= Clip.Right) && (hotKeyX>=startX))
     {
         c = this->OffsetRows[y] + hotKeyX;
         SET_CHARACTER_EX(c, -1, hotKeyColor);
