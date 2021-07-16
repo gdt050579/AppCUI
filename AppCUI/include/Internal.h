@@ -136,6 +136,7 @@ namespace AppCUI
             virtual void    OnFlushToScreen() = 0;
             virtual bool    OnUpdateCursor() = 0;
             virtual void    GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) = 0;
+            virtual bool    IsEventAvailable() = 0;
 
 
             AbstractTerminal();

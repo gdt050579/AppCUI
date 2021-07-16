@@ -207,5 +207,14 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
         evnt.eventType = SystemEvents::APP_RESIZED;
         break;
     }
+}
 
+bool Terminal::IsEventAvailable()
+{
+    DWORD			nrread;
+    INPUT_RECORD	ir;
+
+    if (PeekConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE)
+        return false;
+    return (nrread > 0);
 }

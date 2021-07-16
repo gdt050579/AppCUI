@@ -26,6 +26,7 @@ namespace AppCUI
             virtual void                OnFlushToScreen() override;
             virtual bool                OnUpdateCursor() override;
             virtual void                GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
+            virtual bool                IsEventAvailable() override;
             virtual ~Terminal();
         };
     }

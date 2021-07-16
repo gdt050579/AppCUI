@@ -183,7 +183,10 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     }
     refresh();
 }
-
+bool Terminal::IsEventAvailable()
+{
+	NOT_IMPLEMENTED(false);
+}
 void Terminal::uninitInput()
 {
 }
