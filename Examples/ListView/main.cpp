@@ -196,12 +196,43 @@ public:
     }
 };
 
+class SearchAndFilter : public MyDialog
+{
+    ListView lv1,lv2;
+    Panel pn1, pn2;
+    Label lb1, lb2, lb3;
+public:
+    SearchAndFilter()
+    {
+        this->Create("Search/Filter Example", "a:c,w:74,h:20");
+        pn1.Create(this, "Filter", "x:1,y:1,w:34,h:6");
+        lb1.Create(&pn1, "Type a text that will be used to filter all items that contain that text.", "x:0,y:0,w:100%,h:100%");
+        pn2.Create(this, "Search", "x:37,y:1,w:34,h:6");
+        lb2.Create(&pn2, "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that contains that text.", "x:0,y:0,w:100%,h:100%");
+        lv1.Create(this, "x:1,y:7,w:34,h:10", ListViewFlags::NONE);
+        lv2.Create(this, "x:37,y:7,w:34,h:10", ListViewFlags::SEARCHMODE);
+        // columns
+        lv1.AddColumn("&Name", TextAlignament::Left, 30);
+        lv2.AddColumn("&Name", TextAlignament::Left, 30);
+        // items
+        lv1.AddItem("Mike");        lv2.AddItem("Mike");
+        lv1.AddItem("Laura");       lv2.AddItem("Laura");
+        lv1.AddItem("John");        lv2.AddItem("John");
+        lv1.AddItem("Ana");         lv2.AddItem("Ana");
+        lv1.AddItem("Willian");     lv2.AddItem("Willian");
+
+        lb3.Create(this, "Press 'Esc' (when in edit mode) to clear current search pattern", "x:1,y:17,w:72,h:1");
+
+        lv1.SetFocus();
+    }
+};
+
 class MyWin : public AppCUI::Controls::Window
 {
     Panel p;
     CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection, cbHideSearchBar;
     CheckBox cbSimpleListCheckboxes;
-    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree;
+    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree,rbSearch;
     Button btnShow;
 public:
     MyWin()
@@ -223,9 +254,10 @@ public:
         rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:11,w:56", MY_GROUP);
         rbColors.Create(this,"List view with items with different colors", "x:1,y:12,w:56", MY_GROUP);
         rbTree.Create(this, "List view with tree-like visualisation", "x:1,y:13,w:56", MY_GROUP);
+        rbSearch.Create(this, "Search & filter example", "x:1,y:14,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
-        btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
+        btnShow.Create(this, "Show example", "l:19,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
 
         UpdateFeaturesEnableStatus();
     }
@@ -282,6 +314,11 @@ public:
         if (rbTree.IsChecked())
         {
             ListViewWithTreeItems win;
+            win.Show();
+        }
+        if (rbSearch.IsChecked())
+        {
+            SearchAndFilter win;
             win.Show();
         }
     }
