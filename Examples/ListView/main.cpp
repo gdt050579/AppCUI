@@ -166,11 +166,41 @@ public:
     }
 };
 
+class ListViewWithTreeItems : public MyDialog
+{
+    ListView lv;
+public:
+    ListViewWithTreeItems()
+    {
+        this->Create("Simulated Process Tree", "a:c,w:60,h:14");
+        lv.Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::NONE);
+        lv.AddColumn("Application", TextAlignament::Left, 20);
+        lv.AddColumn("PID", TextAlignament::Right, 10);
+        lv.AddColumn("Modules", TextAlignament::Right, 10);
+        ItemHandle handle;
+        handle = lv.AddItem("winnt.exe", "500","10"); lv.SetItemType(handle, ListViewItemType::HIGHLIGHT);
+        handle = lv.AddItem("services.exe", "504", "12"); lv.SetItemType(handle, ListViewItemType::REGULAR); lv.SetItemXOffset(handle, 2);
+        handle = lv.AddItem("svchost.exe", "508", "5"); lv.SetItemType(handle, ListViewItemType::WARNING_INFORMATION); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("svchost.exe", "512", "8"); lv.SetItemType(handle, ListViewItemType::WARNING_INFORMATION); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("svchost.exe", "512", "100"); lv.SetItemType(handle, ListViewItemType::WARNING_INFORMATION); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("lsass.exe", "516", "12"); lv.SetItemType(handle, ListViewItemType::REGULAR); lv.SetItemXOffset(handle, 2);
+        handle = lv.AddItem("winlogon.exe", "520", "10"); lv.SetItemType(handle, ListViewItemType::HIGHLIGHT);
+        handle = lv.AddItem("explorer.exe", "524", "100"); lv.SetItemType(handle, ListViewItemType::HIGHLIGHT);
+        handle = lv.AddItem("chrome.exe", "528", "200"); lv.SetItemType(handle, ListViewItemType::REGULAR); lv.SetItemXOffset(handle, 2);
+        handle = lv.AddItem("chrome.exe", "532", "180"); lv.SetItemType(handle, ListViewItemType::INACTIVE); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("chrome.exe", "536", "180"); lv.SetItemType(handle, ListViewItemType::INACTIVE); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("chrome.exe", "540", "180"); lv.SetItemType(handle, ListViewItemType::INACTIVE); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("chrome.exe", "544", "180"); lv.SetItemType(handle, ListViewItemType::INACTIVE); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("chrome.exe", "548", "180"); lv.SetItemType(handle, ListViewItemType::INACTIVE); lv.SetItemXOffset(handle, 4);
+        handle = lv.AddItem("firefox.exe", "552", "128"); lv.SetItemType(handle, ListViewItemType::REGULAR); lv.SetItemXOffset(handle, 2);
+    }
+};
+
 class MyWin : public AppCUI::Controls::Window
 {
     Panel p;
     CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort,cbItemSeparators, cbAllowSelection, cbSimpleListCheckboxes;
-    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors;
+    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree;
     Button btnShow;
 public:
     MyWin()
@@ -190,6 +220,7 @@ public:
 
         rbSortAndColumnsFeatures.Create(this, "Columns example (sort & resize)", "x:1,y:10,w:56", MY_GROUP);
         rbColors.Create(this,"List view with items with different colors", "x:1,y:11,w:56", MY_GROUP);
+        rbTree.Create(this, "List view with tree-like visualisation", "x:1,y:12,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
         btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
@@ -241,6 +272,11 @@ public:
         if (rbColors.IsChecked())
         {
             ListViewWithColors win;
+            win.Show();
+        }
+        if (rbTree.IsChecked())
+        {
+            ListViewWithTreeItems win;
             win.Show();
         }
     }
