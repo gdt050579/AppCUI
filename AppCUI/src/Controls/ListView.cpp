@@ -188,7 +188,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
     // first column
     int end_first_column = x + ((int)column->Width);
     x += (int)item->XOffset;
-    if ((Flags & ListViewFlags::HAS_CHECKBOX) != 0) 
+    if ((Flags & ListViewFlags::HAS_CHECKBOXES) != 0) 
     {
         if (x < end_first_column)
         {
@@ -216,14 +216,14 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
     if (Focused)
     {
         if (currentItem) {
-            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
             else
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
-            if ((Flags & ListViewFlags::HAS_CHECKBOX) != 0)
+            if ((Flags & ListViewFlags::HAS_CHECKBOXES) != 0)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         } else {
-            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
@@ -232,7 +232,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
         {
             if (((Flags & ListViewFlags::HIDECURRENTITEM) == 0) && (currentItem))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
-            if ((Flags & ListViewFlags::ALLOWSELECTION) && (item->Flags & ITEM_FLAG_SELECTED))
+            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
@@ -642,7 +642,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		}
 	}
 	else {
-		if (Flags & ListViewFlags::ALLOWSELECTION)
+		if (Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)
 		{
 			lvi = GetFilteredItem(Items.CurentItemIndex);
 			if (lvi != nullptr)
@@ -711,7 +711,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
 		case Key::Space:
 			if (!Filter.FilterModeEnabled)
 			{
-				if (!(Flags & ListViewFlags::HAS_CHECKBOX))
+				if (!(Flags & ListViewFlags::HAS_CHECKBOXES))
 					return false;
 				lvi = GetFilteredItem(Items.CurentItemIndex);
 				if (lvi != nullptr)
@@ -897,7 +897,7 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
     {
         unsigned int hIndex, hColumn;
         MouseToHeader(x, y, hIndex, hColumn);
-        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) && (Flags & ListViewFlags::SORT_COLUMNS))
+        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) && (Flags & ListViewFlags::SORTABLE))
         {
             Columns.HoverColumnIndex = hIndex;
             Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
@@ -919,7 +919,7 @@ void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 	else 
 		this->SortParams.ColumnIndex = colIndex;
-	if ((Flags & ListViewFlags::SORT_COLUMNS) == 0)
+	if ((Flags & ListViewFlags::SORTABLE) == 0)
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 }
 //void ListViewControlContext::SetSortOrder(int direction)
@@ -941,7 +941,7 @@ void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 //}
 void ListViewControlContext::ColumnSort(unsigned int columnIndex)
 {
-	if ((Flags & ListViewFlags::SORT_COLUMNS) == 0)
+	if ((Flags & ListViewFlags::SORTABLE) == 0)
 	{ 
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 		return; 
@@ -1429,7 +1429,7 @@ bool		ListView::Sort()
 bool		ListView::Sort(unsigned int columnIndex, bool ascendent)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index (%d). Should be smaller than %d", columnIndex, WRAPPER->Columns.Count);
-    CHECK(WRAPPER->Flags & ListViewFlags::SORT_COLUMNS, false, "Can not sort items (have you set 'ListViewFlags::SORT_COLUMNS' when creating ListView ?)");
+    CHECK(WRAPPER->Flags & ListViewFlags::SORTABLE, false, "Can not sort items (have you set 'ListViewFlags::SORTABLE' when creating ListView ?)");
 	WRAPPER->SortParams.ColumnIndex = columnIndex;
     WRAPPER->SortParams.Ascendent = ascendent;
 	return WRAPPER->Sort();

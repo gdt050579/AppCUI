@@ -68,16 +68,31 @@ US_States us_states[] = {
     {"Wyoming","WY","Cheyenne","Cheyenne","576,851","253,335","1"},
 };
 
+#define SHOW_DEFAULT_EXAMPLE    1000
+#define MY_GROUP                123
 
-class MyWin : public AppCUI::Controls::Window
+class MyDialog : public AppCUI::Controls::Window
+{
+public:
+    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    {
+        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        {
+            this->Exit((int)Dialogs::DialogResult::RESULT_OK);
+            return true;
+        }
+        return false;
+    }
+};
+
+class MyListViewExample : public MyDialog
 {
     ListView lv;
-
 public:
-    MyWin()
+    MyListViewExample(ListViewFlags flags)
     {
         this->Create("List View Example", "a:c,w:70,h:20");
-        lv.Create(this, "x:1,y:1,w:66,h:16", ListViewFlags::ALLOWSELECTION|ListViewFlags::HAS_CHECKBOX);
+        lv.Create(this, "x:1,y:1,w:66,h:16", flags);
         lv.AddColumn("&State", TextAlignament::Left, 15);
         lv.AddColumn("&Abrv", TextAlignament::Center, 4);
         lv.AddColumn("&Capital", TextAlignament::Left, 10);
@@ -94,6 +109,87 @@ public:
         // sort them after the name (first column)
         lv.Sort(0, true);
     }
+};
+
+class SimpleListExample : public MyDialog
+{    
+    ListView lv;
+public:
+    SimpleListExample(bool hasCheckboxes)
+    {
+        this->Create("Simple List Example", "a:c,w:30,h:14");
+        lv.Create(this, "x:1,y:1,w:26,h:10", hasCheckboxes ? (ListViewFlags::HAS_CHECKBOXES|ListViewFlags::HIDE_COLUMNS) : ListViewFlags::HIDE_COLUMNS);
+        lv.AddColumn("", TextAlignament::Left, 30);
+        lv.AddItem("Apple"); lv.AddItem("Pinaple"); lv.AddItem("Pears"); lv.AddItem("Lemons"); lv.AddItem("Oranges");
+    }
+};
+
+
+class MyWin : public AppCUI::Controls::Window
+{
+    Panel p;
+    CheckBox cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort,cbItemSeparators, cbAllowSelection, cbSimpleListCheckboxes;
+    RadioBox rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures;
+    Button btnShow;
+public:
+    MyWin()
+    {
+        this->Create("ListView example config", "x:0,y:0,w:60,h:15");
+        rbCustomizedListView.Create(this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
+        p.Create(this,"x:4,y:2,w:56,h:6");
+        cbHideColumns.Create(&p, "&Hide columns (item headers)", "x:1,y:0,w:50");
+        cbCheckBoxes.Create(&p, "&Checkboxes (each item is checkable)", "x:1,y:1,w:50");
+        cbHideColumnSeparators.Create(&p, "Hide column separators (&vertical lines)", "x:1,y:2,w:50");
+        cbSort.Create(&p, "&Sortable (columns can be used to sort)", "x:1,y:3,w:50");
+        cbItemSeparators.Create(&p, "Add a line after each item (item separators)", "x:1,y:4,w:50");
+        cbAllowSelection.Create(&p, "Enable &multiple selections mode", "x:1,y:5,w:50");
+
+        rbSimpleList.Create(this, "A very simple list with items", "x:1,y:8,w:56", MY_GROUP);
+        cbSimpleListCheckboxes.Create(this, "Has checkboxes", "x:5,y:9,w:30");
+
+        rbCustomizedListView.SetChecked(true);
+        btnShow.Create(this, "Show example", "l:14,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
+
+        UpdateFeaturesEnableStatus();
+    }
+    void UpdateFeaturesEnableStatus()
+    {
+        cbHideColumns.SetEnabled(rbCustomizedListView.IsChecked());
+        cbCheckBoxes.SetEnabled(rbCustomizedListView.IsChecked());
+        cbHideColumnSeparators.SetEnabled(rbCustomizedListView.IsChecked());
+        cbSort.SetEnabled(rbCustomizedListView.IsChecked());
+        cbItemSeparators.SetEnabled(rbCustomizedListView.IsChecked());
+        cbAllowSelection.SetEnabled(rbCustomizedListView.IsChecked());
+        cbSimpleListCheckboxes.SetEnabled(rbSimpleList.IsChecked());
+    }
+    void ShowListView()
+    {
+        ListViewFlags flags = ListViewFlags::NONE;
+
+        if (cbHideColumns.IsChecked())
+            flags = flags | ListViewFlags::HIDE_COLUMNS;
+        if (cbCheckBoxes.IsChecked())
+            flags = flags | ListViewFlags::HAS_CHECKBOXES;
+        if (cbHideColumnSeparators.IsChecked())
+            flags = flags | ListViewFlags::HIDE_COLUMNS_SEPARATORS;
+        if (cbSort.IsChecked())
+            flags = flags | ListViewFlags::SORTABLE;
+        if (cbItemSeparators.IsChecked())
+            flags = flags | ListViewFlags::ITEM_SEPARATORS;
+        if (cbAllowSelection.IsChecked())
+            flags = flags | ListViewFlags::MULTIPLE_SELECTION_MODE;
+
+        if (rbCustomizedListView.IsChecked())
+        {
+            MyListViewExample win(flags);
+            win.Show();
+        }
+        if (rbSimpleList.IsChecked())
+        {
+            SimpleListExample win(cbSimpleListCheckboxes.IsChecked());
+            win.Show();
+        }
+    }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
@@ -101,9 +197,20 @@ public:
             Application::Close();
             return true;
         }
+        if (eventType == Event::EVENT_CHECKED_STATUS_CHANGED)
+        {
+            UpdateFeaturesEnableStatus();
+            return true;
+        }
+        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == SHOW_DEFAULT_EXAMPLE))
+        {
+            ShowListView();
+            return true;
+        }
         return false;
     }
 };
+
 int main()
 {
     Application::Init(Application::Flags::HAS_COMMANDBAR);

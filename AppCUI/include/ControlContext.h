@@ -290,10 +290,8 @@ public:
     } Filter;
 
       
-    Utils::String		        statusString;
-
-    
-
+    Utils::String		        statusString__;
+   
     char				        clipboardSeparator;
 
     Controls::Control*	        Host;

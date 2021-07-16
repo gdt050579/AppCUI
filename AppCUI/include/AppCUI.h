@@ -1064,12 +1064,12 @@ namespace AppCUI
         {
             NONE                    = 0, 
             HIDE_COLUMNS            = 0x000100,
-            HAS_CHECKBOX            = 0x000200,
+            HAS_CHECKBOXES          = 0x000200,
             HIDE_COLUMNS_SEPARATORS = 0x000400,
-            SORT_COLUMNS            = 0x000800,
-            ITEM_SEPARATORS         = 0x001000,
+            SORTABLE                = 0x000800,
+            ITEM_SEPARATORS         = 0x001000,            
             HIDECURRENTITEM         = 0x002000,
-            ALLOWSELECTION          = 0x004000,
+            MULTIPLE_SELECTION_MODE = 0x004000,
             SEARCHMODE              = 0x008000,
         };
         enum class ListViewItemType: unsigned int
