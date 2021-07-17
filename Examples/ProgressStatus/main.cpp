@@ -15,14 +15,14 @@ class MyWin : public AppCUI::Controls::Window
 public:
     MyWin()
     {
-        this->Create("Progress status", "a:c,w:60,h:20");
-        but.Create(this, "&Compute", "x:1,y:3,w:14", BUTTON_COMPUTE);
+        this->Create("Progress status", "a:c,w:60,h:7");
+        but.Create(this, "&Compute", "x:20,y:3,w:20", BUTTON_COMPUTE);
         inf.Create(this, "Pressing 'Compute' button will compute the first 1000 prime numbers", "x:1,y:1,w:56,h:2");
 
     }
     bool IsPrim(unsigned long long value)
     {
-        for (unsigned long long tr = 0; tr < value / 2; tr++)
+        for (unsigned long long tr = 2; tr < value / 2; tr++)
             if ((value % tr) == 0)
                 return false;
         return true;
@@ -32,7 +32,7 @@ public:
         ProgressStatus::Init("Compute first 1000 prime numbers", 1000);
         unsigned long long value = 2;
         unsigned long long count = 0;
-        while (count < 1000)
+        while (count < 100000)
         {
             if (IsPrim(value))
                 count++;
