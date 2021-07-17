@@ -40,6 +40,7 @@ void ProgressStatus_Paint_Panel()
 
     canvas->DarkenScreen();
     canvas->SetAbsoluteClip(PSData.WindowClip);
+    canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
     
 	canvas->FillRectSize(0, 0, PROGRESS_STATUS_PANEL_WIDTH, PROGRESS_STATUS_PANEL_HEIGHT,' ', PSData.App->config.Window.ActiveColor);
@@ -55,7 +56,7 @@ void ProgressStatus_Paint_Status()
 {
     auto canvas = &PSData.App->terminal->ScreenCanvas;
     canvas->SetAbsoluteClip(PSData.WindowClip);
-
+    canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
 
     
     PSData.App->terminal->Update();
