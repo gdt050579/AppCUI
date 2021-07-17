@@ -425,6 +425,11 @@ namespace AppCUI
             Padding     = 0x04
         };
 
+        namespace ProgressStatus
+        {
+            void EXPORT Init(const char * Title, unsigned long long maxValue);
+            bool EXPORT Update(unsigned long long value, const char * text);
+        };
 
         struct Size
         {
