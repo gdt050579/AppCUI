@@ -134,8 +134,8 @@ const char* ComboBox::GetUnsafeItemText(unsigned int index)
 }
 bool ComboBox::GetItemText(unsigned int index,Utils::String &itemText)
 {
-    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, nullptr);
-    CHECK_INDEX(index, nullptr);
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+    CHECK_INDEX(index, false);
     CHECK(itemText.Set(Members->Items[index].Nume), false, "Fail to copy item #%d to string", (int)index);
     return true;
 }
@@ -168,7 +168,7 @@ void ComboBox::DeleteAllItems()
 bool ComboBox::SetCurentItemIndex(unsigned int index)
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-    CHECK_INDEX(index, nullptr);
+    CHECK_INDEX(index, false);
 	ComboBox_MoveTo(this, index);
     return true;
 }
