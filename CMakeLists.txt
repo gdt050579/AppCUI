@@ -16,8 +16,11 @@ else()
     if (DEBUG_BUILD)
         add_compile_options(-g)
         add_compile_options(-W)
-        add_compile_definitions(-fPIC)
     endif()
+endif()
+
+if (UNIX)
+    add_compile_definitions(-fPIC)
 endif()
 
 if (NOT DEBUG_BUILD)
