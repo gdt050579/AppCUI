@@ -1,20 +1,25 @@
 include_directories(include)
 if (MSVC)
-include_directories(include/Windows)
+    include_directories(include/Windows)
 else()
-include_directories(include/Unix)
+    include_directories(include/Unix)
 endif()
 
 # Add libAppCUI
 add_library(AppCUI SHARED)
 
 if (UNIX)
-    set(CURSES_NEED_WIDE "TRUE")
-    set(CURSES_NEED_NCURSES "TRUE")
-    find_package(Curses REQUIRED)
-    target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
-    target_link_libraries(AppCUI ${CURSES_LIBRARIES})
-    add_compile_definitions(NCURSES_WIDECHAR)
+    include(CMakeRC)
+    cmrc_add_resource_library(font resources/CourierNew.ttf)
+
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2TTF REQUIRED)
+    target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
+    if (APPLE)
+        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
+    else()
+        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font stdc++fs)
+    endif()
 endif()
 
 add_subdirectory(src)
