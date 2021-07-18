@@ -427,8 +427,8 @@ namespace AppCUI
 
         namespace ProgressStatus
         {
-            void EXPORT Init(const char * Title, unsigned long long maxValue);
-            bool EXPORT Update(unsigned long long value, const char * text);
+            void EXPORT Init(const char * Title, unsigned long long maxValue = 0);
+            bool EXPORT Update(unsigned long long value, const char * text = nullptr);
         };
 
         struct Size
@@ -1319,7 +1319,11 @@ namespace AppCUI
                 Console::ColorPair FilterText;
                 Console::ColorPair StatusColor;
             } ListView;
+            struct {
+                Console::ColorPair Border, Title, TerminateMessage, Text, Time, Percentage;
+                Console::ColorPair EmptyProgressBar, FullProgressBar;
 
+            } ProgressStatus;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);

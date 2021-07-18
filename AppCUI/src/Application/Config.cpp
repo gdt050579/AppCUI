@@ -165,4 +165,13 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.SelectionColor = ColorPair{ Color::Yellow, Color::Transparent };
     this->ListView.FilterText = ColorPair{ Color::White, Color::DarkRed };
     this->ListView.StatusColor = ColorPair{ Color::Yellow, Color::Transparent };
+
+    this->ProgressStatus.Border = ColorPair{ Color::White, Color::DarkBlue };
+    this->ProgressStatus.Title = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->ProgressStatus.Text = ColorPair{ Color::Silver, Color::DarkBlue };
+    this->ProgressStatus.TerminateMessage = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->ProgressStatus.EmptyProgressBar = ColorPair{ Color::White, Color::Black };
+    this->ProgressStatus.FullProgressBar = ColorPair{ Color::White, Color::Teal };
+    this->ProgressStatus.Time = ColorPair{ Color::Aqua, Color::DarkBlue };
+    this->ProgressStatus.Percentage = ColorPair{ Color::Yellow, Color::DarkBlue };
 }

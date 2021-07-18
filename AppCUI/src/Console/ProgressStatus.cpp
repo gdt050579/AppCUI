@@ -5,11 +5,12 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Internal;
 using namespace std::chrono;
 
-#define MAX_PROGRESS_STATUS_TITLE		16
-#define MAX_PROGRESS_STATUS_TEXT		32
-#define PROGRESS_STATUS_PANEL_WIDTH		40
-#define MAX_PROGRESS_TIME_TEXT			50
-#define PROGRESS_STATUS_PANEL_HEIGHT	8
+#define MAX_PROGRESS_STATUS_TITLE		        36
+#define MAX_PROGRESS_STATUS_TEXT		        52
+#define PROGRESS_STATUS_PANEL_WIDTH		        60
+#define MAX_PROGRESS_TIME_TEXT			        50
+#define PROGRESS_STATUS_PANEL_HEIGHT	        8
+#define MIN_SECONDS_BEFORE_SHOWING_PROGRESS     2
 
 // remove MessageBox definition that comes with Windows.h header
 #ifdef MessageBox
@@ -22,8 +23,8 @@ struct ProgressStatusData
 	char				                Text[MAX_PROGRESS_STATUS_TEXT];
 	unsigned long long	                MaxValue;
 	bool				                Showed;
-    time_point<steady_clock>            LastTime;
-	unsigned long long	                Ellapsed,LastEllapsed;
+    time_point<steady_clock>            StartTime;
+    unsigned long long	                Ellapsed,LastEllapsed;
 	Clip				                WindowClip;
     Application                         *App;
 	char				                progressString[5];
@@ -33,6 +34,7 @@ struct ProgressStatusData
 };
 
 static ProgressStatusData PSData = { 0 };
+bool progress_inited = false;
 
 void ProgressStatus_Paint_Panel()
 {
@@ -43,10 +45,10 @@ void ProgressStatus_Paint_Panel()
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
     
-	canvas->FillRectSize(0, 0, PROGRESS_STATUS_PANEL_WIDTH, PROGRESS_STATUS_PANEL_HEIGHT,' ', PSData.App->config.Window.ActiveColor);
-	canvas->DrawRectSize(0, 0, PROGRESS_STATUS_PANEL_WIDTH , PROGRESS_STATUS_PANEL_HEIGHT, PSData.App->config.Window.ActiveColor, false);
-    canvas->WriteSingleLineText(5, 0, PSData.Title, PROGRESS_STATUS_PANEL_WIDTH - 10, DefaultColorPair, TextAlignament::Center);
-    canvas->WriteSingleLineText(10, 6, "Hit 'ESC' to cancel", DefaultColorPair, 19);
+    canvas->Clear(' ', PSData.App->config.ProgressStatus.Border);
+	canvas->DrawRectSize(0, 0, PROGRESS_STATUS_PANEL_WIDTH , PROGRESS_STATUS_PANEL_HEIGHT, PSData.App->config.ProgressStatus.Border, false);
+    canvas->WriteSingleLineText(5, 0, PSData.Title, PROGRESS_STATUS_PANEL_WIDTH - 10, PSData.App->config.ProgressStatus.Title, TextAlignament::Center);
+    canvas->WriteSingleLineText(20, 6, "Hit 'ESC' to cancel", PSData.App->config.ProgressStatus.TerminateMessage, 19);
 	
 	PSData.Showed = true;
     PSData.App->terminal->Update();
@@ -58,6 +60,19 @@ void ProgressStatus_Paint_Status()
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
 
+    canvas->DrawHorizontalLine(2, 3, PROGRESS_STATUS_PANEL_WIDTH - 3, ' ', PSData.App->config.ProgressStatus.EmptyProgressBar);
+    canvas->WriteSingleLineText(2, 2, PSData.Text, PSData.App->config.ProgressStatus.Text);
+    
+    if (PSData.MaxValue > 0) 
+    {
+        canvas->WriteSingleLineText(PROGRESS_STATUS_PANEL_WIDTH - 6, 2, PSData.progressString, PSData.App->config.ProgressStatus.Percentage, 4);
+        canvas->DrawHorizontalLine(2, 3, ((PSData.Progress * (PROGRESS_STATUS_PANEL_WIDTH - 4)) / 100) + 1, ' ', PSData.App->config.ProgressStatus.FullProgressBar);
+        canvas->WriteSingleLineText(2, 4, "ETA:", PSData.App->config.ProgressStatus.Text, 4);
+    }
+    else {
+        canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.ProgressStatus.Text, 9);
+    }
+    canvas->WriteSingleLineText((PROGRESS_STATUS_PANEL_WIDTH - 2) - PSData.timeStringSize, 4, PSData.timeString, PSData.App->config.ProgressStatus.Time, PSData.timeStringSize);
     
     PSData.App->terminal->Update();
 }
@@ -69,7 +84,6 @@ void ProgressStatus_ComputeTime(unsigned long long time)
 		PSData.timeStringSize = 0;
 		return;
 	}
-	time = time / 1000; 
 	unsigned int days = (unsigned int)(time / (24 * 60 * 60));
 	time = time % (24 * 60 * 60);
 	unsigned int hours = (unsigned int)(time / (60 * 60));
@@ -118,9 +132,9 @@ void ProgressStatus::Init(const char * Title, unsigned long long maxValue)
 	PSData.progressString[4] = 0;
 	PSData.Progress = 0;
 	PSData.Ellapsed = 0;
-	PSData.LastEllapsed = 0;
+    PSData.LastEllapsed = 0;
 	PSData.timeString[0] = 0;
-	if (Title != nullptr)
+	if (Title)
 	{
 		int sz = MINVALUE(Utils::String::Len(Title), MAX_PROGRESS_STATUS_TITLE - 3);
 		Utils::String::Set(&PSData.Title[1], Title, MAX_PROGRESS_STATUS_TITLE, sz);
@@ -129,16 +143,18 @@ void ProgressStatus::Init(const char * Title, unsigned long long maxValue)
 		PSData.Title[sz + 2] = 0;
 	}
     PSData.App->RepaintStatus = REPAINT_STATUS_ALL; // once the progress is over, all screen will be re-drawn
-    PSData.LastTime = std::chrono::steady_clock::now();
+    PSData.StartTime = std::chrono::steady_clock::now();
+    progress_inited = true;
 }
 bool ProgressStatus::Update(unsigned long long value, const char * text)
 {
+    CHECK(progress_inited, true, "Progress status was not initialized ! Have you called ProgressStatus::Init(...) before calling ProgressStatus::Update(...) ?");
 	unsigned int newProgress;
 	bool showStatus = false;
 	if (PSData.MaxValue > 0)
 	{		
 		if (value < PSData.MaxValue)
-			newProgress = (unsigned int)((value * 100) / PSData.MaxValue);
+			newProgress = (unsigned int)((value * (unsigned long long)100) / PSData.MaxValue);
 		else 
 			newProgress = 100;
 		if (newProgress != PSData.Progress)
@@ -185,36 +201,36 @@ bool ProgressStatus::Update(unsigned long long value, const char * text)
 			showStatus = true;
 		(*p) = 0;
 	}
-    auto currenTime = std::chrono::steady_clock::now();
-    PSData.Ellapsed += std::chrono::duration_cast<std::chrono::milliseconds>(currenTime - PSData.LastTime).count();
-	PSData.LastTime = currenTime;
-	if ((PSData.Ellapsed - PSData.LastEllapsed) >= 1000)
+    PSData.Ellapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - PSData.StartTime).count();
+	if (PSData.Ellapsed >= MIN_SECONDS_BEFORE_SHOWING_PROGRESS)
 	{
-		if (PSData.MaxValue > 0)
-		{
-			if (PSData.Progress == 0)
-				ProgressStatus_ComputeTime(0);
-			else
-				ProgressStatus_ComputeTime((((unsigned long long)(100 - PSData.Progress))*PSData.Ellapsed) / ((unsigned long long)PSData.Progress));
-		}
-		else
-			ProgressStatus_ComputeTime(PSData.Ellapsed);
-		showStatus = true;
-		PSData.LastEllapsed = PSData.Ellapsed;
+        if (PSData.LastEllapsed != PSData.Ellapsed)
+        {
+            // only compute time if it's different from the previous display (meaning once per second)
+            if (PSData.MaxValue > 0)
+            {
+                if (PSData.Progress == 0)
+                    ProgressStatus_ComputeTime(0);
+                else
+                    ProgressStatus_ComputeTime((((unsigned long long)(100 - PSData.Progress))*PSData.Ellapsed) / ((unsigned long long)PSData.Progress));
+            }
+            else
+                ProgressStatus_ComputeTime(PSData.Ellapsed);
+            showStatus = true;
+            PSData.LastEllapsed = PSData.Ellapsed;
+        }
+        if (PSData.Showed == false)
+        {
+            ProgressStatus_Paint_Panel();
+            ProgressStatus_Paint_Status();
+        } else {
+            // update screen if (message or progress have changed or at least one second has passed from the previous screen update)
+            if (showStatus)
+                ProgressStatus_Paint_Status();
+        }
 	}
 	
-	if (PSData.Showed == false)
-	{
-		if (PSData.Ellapsed >= 1000)
-		{
-			ProgressStatus_Paint_Panel();
-			ProgressStatus_Paint_Status();
-		}
-	}
-	else {
-		if (showStatus)
-			ProgressStatus_Paint_Status();
-	}
+
 	if (PSData.App->terminal->IsEventAvailable())
 	{
         AppCUI::Internal::SystemEvents::Event evnt;
@@ -233,8 +249,11 @@ bool ProgressStatus::Update(unsigned long long value, const char * text)
 		}
 		if (requestQuit)
 		{
-			if (AppCUI::Dialogs::MessageBox::ShowOkCancel("Terminate","Terminate current task ?") == AppCUI::Dialogs::DialogResult::RESULT_OK)
-				return true;
+            if (AppCUI::Dialogs::MessageBox::ShowOkCancel("Terminate", "Terminate current task ?") == AppCUI::Dialogs::DialogResult::RESULT_OK)
+            {
+                progress_inited = false; // loop has ended
+                return true;
+            }
 			// repaint
 			ProgressStatus_Paint_Panel();
 		}

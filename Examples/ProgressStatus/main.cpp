@@ -6,42 +6,86 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 
 
-#define BUTTON_COMPUTE     5678
+#define BUTTON_COMPUTE_ODD     5678
+#define BUTTON_COMPUTE_PRIME   5679
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Button but;
-    Label inf;
+    Button but_odd, but_prime;
+    Label inf_odd, inf_prime;
 public:
     MyWin()
     {
-        this->Create("Progress status", "a:c,w:60,h:7");
-        but.Create(this, "&Compute", "x:20,y:3,w:20", BUTTON_COMPUTE);
-        inf.Create(this, "Pressing 'Compute' button will compute the first 1000 prime numbers", "x:1,y:1,w:56,h:2");
+        this->Create("Progress status", "a:c,w:70,h:9");
+        but_odd.Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
+        inf_odd.Create(this, "Compute how many odd numbers are between\n1 and 100.000 in a verry inneficient way ...", "x:1,y:1,w:50,h:2");
+
+        but_prime.Create(this, "Compute", "r:1,t:4,w:14", BUTTON_COMPUTE_PRIME);
+        inf_prime.Create(this, "Compute the 10000 prime number using a slow method\n(check if there are no divisors)", "x:1,y:4,w:50,h:2");
 
     }
-    bool IsPrim(unsigned long long value)
+    bool IsPrime(unsigned long long value)
     {
         for (unsigned long long tr = 2; tr < value / 2; tr++)
             if ((value % tr) == 0)
                 return false;
         return true;
     }
-    void Compute()
+    bool IsOdd(unsigned long long value)
     {
-        ProgressStatus::Init("Compute first 1000 prime numbers", 1000);
-        unsigned long long value = 2;
-        unsigned long long count = 0;
-        while (count < 100000)
+        // very slow check to pass some time (instead of checking module % 2 we will convert to binary and check if the last bit is 0)
+        unsigned int bits[64];
+        for (unsigned int tr = 0; tr < 64; tr++)
         {
-            if (IsPrim(value))
-                count++;
-            value++;
-            if (ProgressStatus::Update(count, "computing ..."))
-                break;
+            bits[tr] = value & 1;
+            value = value >> 1;
+        }
+        return bits[0] == 0;
+    }
+    void Compute_odd()
+    {
+        Utils::LocalString<128> tmp;
+        unsigned long long value = 1;
+        unsigned long long count = 0;
 
+        // in this case we know the maximum value (100.000) so we can use it to initialize the progress status
+        ProgressStatus::Init("Compute", 100000);
+
+        while (value < 100000)
+        {
+            if (IsOdd(value)) {
+                tmp.Format("Found so far %d odd numbers", (unsigned int)count);
+                count++;
+            }
+            value++;
+            // if progress status Update method returns true, then 'Escape' has been hit and we stop the search
+            if (ProgressStatus::Update(value, tmp.GetText()))
+                break;
         }
     }
+
+    void Compute_prime()
+    {
+        Utils::LocalString<128> tmp;
+        unsigned long long value = 1;
+        unsigned long long count = 0;
+
+        // in this case we don't know what is the range (so we will not provide one)
+        ProgressStatus::Init("Compute");
+
+        while (count < 10000)
+        {
+            if (IsPrime(value)) {
+                tmp.Format("Found %d prime numbers (now testing value: %d)", (unsigned int)count, (unsigned int)value);
+                count++;
+            }
+            value++;
+            // if progress status Update method returns true, then 'Escape' has been hit and we stop the search
+            if (ProgressStatus::Update(count, tmp.GetText()))
+                break;
+        }
+    }
+
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
@@ -53,7 +97,8 @@ public:
         {
             switch (controlID)
             {
-                case BUTTON_COMPUTE: Compute(); break;
+                case BUTTON_COMPUTE_ODD: Compute_odd(); break;
+                case BUTTON_COMPUTE_PRIME: Compute_prime(); break;
             }
             return true;
         }
