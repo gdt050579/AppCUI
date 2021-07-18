@@ -15,8 +15,11 @@ if (UNIX)
     find_package(SDL2 REQUIRED)
     find_package(SDL2TTF REQUIRED)
     target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
-    target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
-
+    if (APPLE)
+        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
+    else()
+        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} lstdc++fs)
+    endif()
 endif()
 
 add_subdirectory(src)
