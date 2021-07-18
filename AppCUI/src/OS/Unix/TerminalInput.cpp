@@ -86,17 +86,17 @@ void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
         evt.asciiCode = code;
     }
 
-    if (keyModifiers & SDL_Keymod::KMOD_ALT)
+    if (keyModifiers & KMOD_ALT)
     {
         evt.keyCode |= Key::Alt;
         evt.asciiCode = 0;
     }
-    else if (keyModifiers & SDL_Keymod::KMOD_CTRL)
+    else if (keyModifiers & KMOD_CTRL)
     {
         evt.keyCode |= Key::Ctrl;
         evt.asciiCode = 0;
     }
-    else if (keyModifiers & SDL_Keymod::KMOD_SHIFT)
+    else if (keyModifiers & KMOD_SHIFT)
     {
         evt.keyCode |= Key::Shift;
         evt.asciiCode = toupper(code);
