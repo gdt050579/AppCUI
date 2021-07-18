@@ -9,10 +9,14 @@ endif()
 add_library(AppCUI SHARED)
 
 if (UNIX)
+    include(CmakeRC)
+    cmrc_add_resource_library(font resources/CourierNew.ttf)
+
     find_package(SDL2 REQUIRED)
     find_package(SDL2TTF REQUIRED)
     target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
-    target_link_libraries(AppCUI ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
+    target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
+
 endif()
 
 add_subdirectory(src)
@@ -22,6 +26,8 @@ target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 if (DEBUG_BUILD)
     set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
 endif()
+
+
 
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 

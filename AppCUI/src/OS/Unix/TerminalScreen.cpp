@@ -1,11 +1,17 @@
 #include <string>
+#include <filesystem>
+#include <fstream>
 
 #include "os.h"
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include "cmrc/cmrc.hpp"
+
+CMRC_DECLARE(font);
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
+namespace fs = std::filesystem;
 
 constexpr size_t NR_COLORS = 16;
 constexpr SDL_Color COLOR_BLACK = SDL_Color{0, 0, 0};
@@ -49,7 +55,16 @@ bool Terminal::initScreen()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
     TTF_Init();
-    font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Courier New.ttf", 16);
+    auto fs = cmrc::font::get_filesystem();
+    const std::string fontName = "CourierNew.ttf";
+    auto fontResource = fs.open("resources/" + fontName);
+
+    const std::string fontNameFS = std::string("AppCUI_") + fontName;
+    fs::path tempFolderPath = fs::temp_directory_path();
+    fs::path fontFilePath = tempFolderPath / fontNameFS;
+    std::ofstream fontFile(fontFilePath, std::ios::binary);
+    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
+    font = TTF_OpenFont(fontFilePath.c_str(), 16);
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);

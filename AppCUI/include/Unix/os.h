@@ -2,6 +2,9 @@
 #define __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
 
 #include <map>
+#include <memory>
+#include <iterator>
+
 #include "Internal.h"
 #include "Color.h"
 #include "SDL.h"
@@ -23,9 +26,9 @@ namespace AppCUI
             ;
             AppCUI::Input::Key::Type shiftState;
 
-            SDL_Window *window;
-            SDL_Renderer *renderer;
-            TTF_Font *font;
+            SDL_Window* window;
+            SDL_Renderer* renderer;
+            TTF_Font* font;
 
         public:
             virtual bool OnInit() override;
