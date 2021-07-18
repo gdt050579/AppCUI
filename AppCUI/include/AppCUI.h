@@ -699,6 +699,8 @@ namespace AppCUI
                 EVENT_LISTVIEW_SELECTION_CHANGED,
                 EVENT_LISTVIEW_ITEM_CHECKED,
                 EVENT_LISTVIEW_ITEM_CLICKED,
+                EVENT_COMBOBOX_SELECTED_ITEM_CHANGED,
+                EVENT_COMBO_CLOSED,
                 EVENT_TERMINATE_APPLICATION,
                 EVENT_COMMAND,
                 EVENT_CUSTOM,
@@ -1170,6 +1172,33 @@ namespace AppCUI
             virtual ~ListView();
         };
 
+        class EXPORT ComboBox : public Control
+        {
+        public:
+            const char*		GetUnsafeItemText(unsigned int index);
+            bool            GetItemText(unsigned int index, Utils::String &itemText);
+            const char*		GetUnsafeCurrentItem();
+            bool            GetCurrentItemtext(Utils::String &itemText);
+            ItemData	    GetCurrentItemUserData();
+
+            bool			Create(Control *parent, const char * layout, const char* items = nullptr, char itemsSeparator = ',');
+            unsigned int	GetItemsCount();
+            int				GetCurrentItemIndex();
+            ItemData	    GetItemUserData(unsigned int index);
+            bool			SetItemUserData(unsigned int index, ItemData userData);
+            bool			SetCurentItemIndex(unsigned int index);
+            void			SetNoIndexSelected();
+            bool			AddItem(const char* text, ItemData usedData = { 0 });
+            void			DeleteAllItems();
+
+            void			OnAfterResize(int newWidth, int newHeight) override;
+            bool			OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            void			OnHotKey() override;
+            void			OnMouseReleased(int x, int y, int butonState) override;
+            void			Paint(Console::Renderer & renderer) override;
+
+            virtual ~ComboBox();
+        };
 
     };
     namespace Dialogs
@@ -1322,8 +1351,13 @@ namespace AppCUI
             struct {
                 Console::ColorPair Border, Title, TerminateMessage, Text, Time, Percentage;
                 Console::ColorPair EmptyProgressBar, FullProgressBar;
-
             } ProgressStatus;
+            struct
+            {
+                struct {
+                    Console::ColorPair Text, Button;
+                } Focus, Normal, Inactive, Hover;
+            } ComboBox;
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);

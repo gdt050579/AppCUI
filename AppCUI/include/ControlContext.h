@@ -365,8 +365,23 @@ public:
 
     void				FilterItems();
 
-
 };
+
+#define COMBOBOX_ITEM_SIZE		48
+
+struct COMBO_ITEM_INFO
+{
+    char	                    Nume[COMBOBOX_ITEM_SIZE];
+    AppCUI::Controls::ItemData	Data;
+};
+class ComboBoxControlContext : public ControlContext
+{
+public:
+
+    std::vector<COMBO_ITEM_INFO>	Items;
+    int						        CurentItem, ky, VisibleItems;
+};
+
 
 
 #define CREATE_CONTROL_CONTEXT(object,name,retValue)		ControlContext * name = (ControlContext*)((object)->Context); if (name == nullptr) return retValue;

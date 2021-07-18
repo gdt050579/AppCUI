@@ -1,7 +1,8 @@
 target_sources(AppCUI PRIVATE
 	Button.cpp 
 	CanvasViewer.cpp
-	CheckBox.cpp 
+	CheckBox.cpp
+	ComboBox.cpp 
 	Control.cpp 
 	Label.cpp 
 	ListView.cpp

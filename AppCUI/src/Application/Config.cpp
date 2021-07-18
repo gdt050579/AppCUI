@@ -174,4 +174,13 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ProgressStatus.FullProgressBar = ColorPair{ Color::White, Color::Teal };
     this->ProgressStatus.Time = ColorPair{ Color::Aqua, Color::DarkBlue };
     this->ProgressStatus.Percentage = ColorPair{ Color::Yellow, Color::DarkBlue };
+
+    this->ComboBox.Focus.Text = ColorPair{ Color::Black, Color::White };
+    this->ComboBox.Focus.Button = ColorPair{ Color::DarkRed, Color::White };
+    this->ComboBox.Normal.Text = ColorPair{ Color::Black, Color::Silver };
+    this->ComboBox.Normal.Button = ColorPair{ Color::DarkRed, Color::Silver };
+    this->ComboBox.Inactive.Text = ColorPair{ Color::Gray, Color::Transparent };
+    this->ComboBox.Inactive.Button = ColorPair{ Color::Gray, Color::Transparent };
+    this->ComboBox.Hover.Text = ColorPair{ Color::Black, Color::Yellow };
+    this->ComboBox.Hover.Button = ColorPair{ Color::DarkRed, Color::Yellow };
 }
