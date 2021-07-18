@@ -19,10 +19,6 @@ else()
     endif()
 endif()
 
-if (UNIX)
-    add_compile_definitions(-fPIC)
-endif()
-
 if (NOT DEBUG_BUILD)
     if (MSVC)
         #add_compile_options(-O2)
