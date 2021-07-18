@@ -9,18 +9,10 @@ endif()
 add_library(AppCUI SHARED)
 
 if (UNIX)
-    set(CURSES_NEED_WIDE "TRUE")
-    set(CURSES_NEED_NCURSES "TRUE")
-    find_package(Curses REQUIRED)
-    target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
-    target_link_libraries(AppCUI ${CURSES_LIBRARIES})
-    add_compile_definitions(NCURSES_WIDECHAR)
-
     find_package(SDL2 REQUIRED)
     find_package(SDL2TTF REQUIRED)
     target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
     target_link_libraries(AppCUI ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
-
 endif()
 
 add_subdirectory(src)
