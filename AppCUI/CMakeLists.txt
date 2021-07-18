@@ -18,7 +18,7 @@ if (UNIX)
     if (APPLE)
         target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
     else()
-        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font lstdc++fs)
+        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font stdc++fs)
     endif()
 endif()
 
