@@ -79,7 +79,7 @@ bool Terminal::initScreen()
         SDL_WINDOWPOS_CENTERED,
         width,
         height,
-        SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_RESIZABLE);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);

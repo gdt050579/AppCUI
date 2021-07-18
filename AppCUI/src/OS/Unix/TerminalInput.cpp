@@ -75,15 +75,17 @@ void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
     evt.eventType = SystemEvents::KEY_PRESSED;
 
     const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
-    const SDL_Scancode code = eSdl.key.keysym.scancode;
+    const SDL_Scancode virtualKey = eSdl.key.keysym.scancode;
+    const SDL_Keycode keyCode = eSdl.key.keysym.sym;
 
-    if (KeyTranslation.count(code))
+    if (KeyTranslation.count(virtualKey))
     {
-        evt.keyCode = KeyTranslation[code];
+        evt.keyCode = KeyTranslation[virtualKey];
     }
-    if (code >= 32 && code <= 127)
+
+    if (keyCode >= 32 && keyCode <= 127)
     {
-        evt.asciiCode = code;
+        evt.asciiCode = keyCode;
     }
 
     if (keyModifiers & KMOD_ALT)
@@ -91,15 +93,15 @@ void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
         evt.keyCode |= Key::Alt;
         evt.asciiCode = 0;
     }
-    else if (keyModifiers & KMOD_CTRL)
+    if (keyModifiers & KMOD_CTRL)
     {
         evt.keyCode |= Key::Ctrl;
         evt.asciiCode = 0;
     }
-    else if (keyModifiers & KMOD_SHIFT)
+    if (keyModifiers & KMOD_SHIFT)
     {
         evt.keyCode |= Key::Shift;
-        evt.asciiCode = toupper(code);
+        evt.asciiCode = toupper(evt.asciiCode);
     }
 }
 
@@ -125,7 +127,6 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     case SDL_MOUSEBUTTONDOWN:
         handleMouse(evnt, e);
         break;
-    case SDL_KEYUP:
     case SDL_KEYDOWN:
         handleKey(evnt, e);
         break;
