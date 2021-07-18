@@ -1175,15 +1175,17 @@ namespace AppCUI
         class EXPORT ComboBox : public Control
         {
         public:
+            static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
+
             const char*		GetUnsafeItemText(unsigned int index);
             bool            GetItemText(unsigned int index, Utils::String &itemText);
-            const char*		GetUnsafeCurrentItem();
+            const char*		GetUnsafeCurrentItemText();
             bool            GetCurrentItemtext(Utils::String &itemText);
             ItemData	    GetCurrentItemUserData();
 
             bool			Create(Control *parent, const char * layout, const char* items = nullptr, char itemsSeparator = ',');
             unsigned int	GetItemsCount();
-            int				GetCurrentItemIndex();
+            unsigned int	GetCurrentItemIndex();
             ItemData	    GetItemUserData(unsigned int index);
             bool			SetItemUserData(unsigned int index, ItemData userData);
             bool			SetCurentItemIndex(unsigned int index);
@@ -1194,6 +1196,8 @@ namespace AppCUI
             void			OnAfterResize(int newWidth, int newHeight) override;
             bool			OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void			OnHotKey() override;
+            bool            OnMouseLeave() override;
+            bool            OnMouseEnter() override;
             void			OnMouseReleased(int x, int y, int butonState) override;
             void			Paint(Console::Renderer & renderer) override;
 
