@@ -48,7 +48,6 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 bool Terminal::initScreen()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-
     TTF_Init();
     font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Courier New.ttf", 16);
 
