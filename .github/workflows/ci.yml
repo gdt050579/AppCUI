@@ -25,11 +25,11 @@ jobs:
     runs-on: [macos-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: Install updated ncurses
-      run: brew install ncurses
+    - name: Install sdl
+      run: brew install sdl2
+      run: brew install sdl2_ttf
     - name: Configure CMake
-      # macos runner brew will install ncurses to /usr/local/Cellar, provide that path to cmake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=/usr/local/Cellar/ncurses/6.2
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -39,6 +39,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install SDL2
       run: sudo apt-get install libsdl2-dev -y
+      run: sudo apt-get install libsdl2-ttf-dev -y
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
@@ -58,6 +59,7 @@ jobs:
       run: chmod +x ./.github/workflows/run_valgrind.sh
     - name: Install SDL2
       run: sudo apt-get install libsdl2-dev -y
+      run: sudo apt-get install libsdl2-ttf-dev -y
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
