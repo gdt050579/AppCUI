@@ -9,7 +9,7 @@ endif()
 add_library(AppCUI SHARED)
 
 if (UNIX)
-    include(CmakeRC)
+    include(CMakeRC)
     cmrc_add_resource_library(font resources/CourierNew.ttf)
 
     find_package(SDL2 REQUIRED)
