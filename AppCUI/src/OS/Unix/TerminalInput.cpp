@@ -110,7 +110,8 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     evnt.asciiCode = 0;
 
     SDL_Event e;
-    if (!SDL_PollEvent(&e))
+    // wait 30 ms max for the next event
+    if (!SDL_WaitEventTimeout(&e, 30))
     {
         return;
     }

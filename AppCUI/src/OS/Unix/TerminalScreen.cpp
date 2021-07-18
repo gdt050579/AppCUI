@@ -84,8 +84,8 @@ bool Terminal::initScreen()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    size_t consoleWidth = width / charWidth;
-    size_t consoleHeight = height / charHeight;
+    const size_t consoleWidth = width / charWidth;
+    const size_t consoleHeight = height / charHeight;
     CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false,
           "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
     CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false,
@@ -124,8 +124,8 @@ void Terminal::OnFlushToScreen()
             Message_rect.w = charWidth;
             Message_rect.h = charHeight;
             SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-            SDL_FreeSurface(surfaceMessage);
             SDL_DestroyTexture(Message);
+            SDL_FreeSurface(surfaceMessage);
         }
     }
 
