@@ -56,6 +56,8 @@ jobs:
       run: sudo apt install valgrind -y
     - name: Setup test script
       run: chmod +x ./.github/workflows/run_valgrind.sh
+    - name: Install SDL2
+      run: sudo apt-get install libsdl2-dev -y
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
