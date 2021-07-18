@@ -11,6 +11,7 @@ using namespace AppCUI::Input;
 #define COMMAND_ID_NUMPAD               4
 #define COMMAND_ID_ENTER                5
 #define COMMAND_ID_ALT                  6
+#define COMMAND_ID_ALT_CTRL             7
 
 class MyWin : public AppCUI::Controls::Window
 {
@@ -29,6 +30,7 @@ public:
         cmd.SetCommand(Key::N1, "Numpad or digit", COMMAND_ID_NUMPAD);
         cmd.SetCommand(Key::Enter, "Enter", COMMAND_ID_ENTER);
         cmd.SetCommand(Key::Alt|Key::A, "Alt Mod Letter", COMMAND_ID_ALT);
+        cmd.SetCommand(Key::Alt|Key::Ctrl|Key::F1, "Alt+Ctrl Mod F1", COMMAND_ID_ALT_CTRL);
         return true;
     }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
@@ -48,6 +50,7 @@ public:
                 case COMMAND_ID_NUMPAD: l1.SetText("Numpad pressed!"); break;
                 case COMMAND_ID_ENTER: l1.SetText("Enter pressed!"); break;
                 case COMMAND_ID_ALT: l1.SetText("Alt modifier!"); break;
+                case COMMAND_ID_ALT_CTRL: l1.SetText("Alt+Ctrl+F1 modifier!"); break;
             }
         }
         return false;
