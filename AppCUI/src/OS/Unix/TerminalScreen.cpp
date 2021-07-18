@@ -1,73 +1,147 @@
 #include <string>
+#include <filesystem>
+#include <fstream>
 
 #include "os.h"
-#include "ncurses.h"
-#include "Color.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
+#include "cmrc/cmrc.hpp"
+
+CMRC_DECLARE(font);
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
+namespace fs = std::filesystem;
 
+constexpr size_t NR_COLORS = 16;
+// https://devblogs.microsoft.com/commandline/updating-the-windows-console-colors/
+// something from the old scheme, something from the new scheme
+constexpr SDL_Color COLOR_BLACK = SDL_Color{0, 0, 0};
+constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0,0,128};
+constexpr SDL_Color COLOR_DARKGREEN = SDL_Color{19, 161, 14};
+constexpr SDL_Color COLOR_DARKCYAN = SDL_Color{58, 150, 221};
+constexpr SDL_Color COLOR_DARKRED = SDL_Color{197, 15, 31};
+constexpr SDL_Color COLOR_MAGENTA = SDL_Color{136, 23, 152};
+constexpr SDL_Color COLOR_DARKYELLOW = SDL_Color{193, 156, 0};
+constexpr SDL_Color COLOR_DARKWHITE = SDL_Color{204, 204, 204};
+constexpr SDL_Color COLOR_BRIGHTBLACK = SDL_Color{118, 118, 118};
+constexpr SDL_Color COLOR_BRIGHTBLUE = SDL_Color{59, 120, 255};
+constexpr SDL_Color COLOR_BRIGHTGREEN = SDL_Color{22, 198, 12};
+constexpr SDL_Color COLOR_BRIGHTCYAN = SDL_Color{97, 214, 214};
+constexpr SDL_Color COLOR_BRIGHTRED = SDL_Color{231, 72, 86};
+constexpr SDL_Color COLOR_BRIGHTMAGENT = SDL_Color{180, 0, 158};
+constexpr SDL_Color COLOR_BRIGHTYELLOW = SDL_Color{249, 241, 165};
+constexpr SDL_Color COLOR_WHITE = SDL_Color{242, 242, 242};
 
-const static size_t MAX_TTY_COL = 65535;
-const static size_t MAX_TTY_ROW = 65535;
+constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
+    /* Black */ COLOR_BLACK,
+    /* DarkBlue */ COLOR_DARKBLUE,
+    /* DarkGreen */ COLOR_DARKGREEN,
+    /* Teal */ COLOR_DARKCYAN,
+    /* DarkRed */ COLOR_DARKRED,
+    /* Magenta */ COLOR_MAGENTA,
+    /* Olive */ COLOR_DARKYELLOW,
+    /* Silver */ COLOR_DARKWHITE,
 
+    /* GRAY */ COLOR_BRIGHTBLACK,
+    /* Blue */ COLOR_BRIGHTBLUE,
+    /* Green */ COLOR_BRIGHTGREEN,
+    /* Aqua */ COLOR_BRIGHTCYAN,
+    /* Red */ COLOR_BRIGHTRED,
+    /* Pink */ COLOR_BRIGHTMAGENT,
+    /* Yellow */ COLOR_BRIGHTYELLOW,
+    /* White */ COLOR_WHITE,
+};
 
 bool Terminal::initScreen()
 {
-    setlocale(LC_ALL, "");
-    initscr();
-    cbreak();
-    noecho();
-    clear();
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    TTF_Init();
+    auto fs = cmrc::font::get_filesystem();
+    const std::string fontName = "CourierNew.ttf";
+    auto fontResource = fs.open("resources/" + fontName);
 
-    colors.Init();
+    const std::string fontNameFS = std::string("AppCUI_") + fontName;
+    fs::path tempFolderPath = fs::temp_directory_path();
+    fs::path fontFilePath = tempFolderPath / fontNameFS;
+    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
+    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
+    font = TTF_OpenFont(fontFilePath.c_str(), 16);
 
-    size_t width = 0;
-    size_t height = 0;
-    getmaxyx(stdscr, height, width);
-    CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
-    // create canvases
-    CHECK(ScreenCanvas.Create(width, height), false, "Fail to create an internal canvas of %d x %d size", width, height);
-    CHECK(OriginalScreenCanvas.Create(width, height), false, "Fail to create the original screen canvas of %d x %d size", width, height);
-    
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    const size_t width = DM.w / 2;
+    const size_t height = DM.h / 2;
+
+    window = SDL_CreateWindow(
+        "AppCUI",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width,
+        height,
+        SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_RESIZABLE);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    const size_t consoleWidth = width / charWidth;
+    const size_t consoleHeight = height / charHeight;
+    CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false,
+          "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
+    CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false,
+          "Fail to create the original screen canvas of %d x %d size", consoleWidth, consoleHeight);
     return true;
 }
 
+// A very basic flush to screen
+// It will draw each character as a separate texture
+// Optimizations would be welcome, like drawing an entire string of text with the same colors
 void Terminal::OnFlushToScreen()
 {
-    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    SDL_RenderClear(renderer);
+
+    AppCUI::Console::Character *charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const size_t width = ScreenCanvas.GetWidth();
     const size_t height = ScreenCanvas.GetHeight();
+
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
-            const AppCUI::Console::Character ch = charsBuffer[y * width + x];
-            cchar_t t = {0, {ch.Code, 0}};
-            colors.SetColor(ch.Color.Forenground, ch.Color.Background);
-            mvadd_wch(y, x, &t);
-            colors.UnsetColor(ch.Color.Forenground, ch.Color.Background);
+            AppCUI::Console::Character ch = charsBuffer[y * width + x];
+            const Uint16 text[] = {ch.Code, 0};
+
+            const int cuiFG = static_cast<int>(ch.Color.Forenground);
+            const int cuiBG = static_cast<int>(ch.Color.Background);
+            const SDL_Color &fg = appcuiColorToSDLColor[cuiFG];
+            const SDL_Color &bg = appcuiColorToSDLColor[cuiBG];
+            SDL_Surface *surfaceMessage = TTF_RenderUNICODE_Shaded(font, text, fg, bg);
+            SDL_Texture *Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+            SDL_Rect Message_rect;
+            Message_rect.x = charWidth * x;
+            Message_rect.y = charHeight * y;
+            Message_rect.w = charWidth;
+            Message_rect.h = charHeight;
+            SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+            SDL_DestroyTexture(Message);
+            SDL_FreeSurface(surfaceMessage);
         }
     }
-    refresh();
+
+    SDL_RenderPresent(renderer);
 }
 
 bool Terminal::OnUpdateCursor()
 {
-    if (ScreenCanvas.GetCursorVisibility())
-    {
-        curs_set(1);
-        move(ScreenCanvas.GetCursorY(), ScreenCanvas.GetCursorX());
-    }
-    else
-    {
-        curs_set(0);
-    }
-    refresh();
+    // Currently no cursor for sdl
     return true;
 }
 
 void Terminal::uninitScreen()
 {
-    endwin();
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }

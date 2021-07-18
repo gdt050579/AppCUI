@@ -1,5 +1,5 @@
 #!/bin/bash
-timeout 5s valgrind --leak-check=full --error-exitcode=1 -v ./bin/tester
+timeout 5s valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 -v ./bin/tester
 exitcode=$?
 echo "the error code is: $exitcode"
 if (( $exitcode == 1 )); then

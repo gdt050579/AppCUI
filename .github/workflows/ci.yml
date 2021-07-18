@@ -25,11 +25,12 @@ jobs:
     runs-on: [macos-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: Install updated ncurses
-      run: brew install ncurses
+    - name: Install sdl
+      run: brew install sdl2
+    - name: Install sdl2_ttf
+      run: brew install sdl2_ttf
     - name: Configure CMake
-      # macos runner brew will install ncurses to /usr/local/Cellar, provide that path to cmake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=/usr/local/Cellar/ncurses/6.2
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -37,26 +38,36 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
+    - name: Install SDL2
+      run: sudo apt-get install libsdl2-dev -y
+    - name: Install SDL2ttf
+      run: sudo apt-get install libsdl2-ttf-dev -y
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-  valgrind-test:
-    # this could probably use the results of build-ubuntu
-    # but I don't know how to do that yet
-    runs-on: [ubuntu-latest]
-    env:
-      TERM: xterm-256color
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install valgrind
-      run: sudo apt install valgrind -y
-    - name: Setup test script
-      run: chmod +x ./.github/workflows/run_valgrind.sh
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-    - name: Run under valgrind
-      run: ./.github/workflows/run_valgrind.sh
+  
+  # Currently turned off because of the SDL implicit memory leaks
+  # Maybe one day we can remove SDL leaks to get actually useful output out of it
+  # valgrind-test:
+  #   # this could probably use the results of build-ubuntu
+  #   # but I don't know how to do that yet
+  #   runs-on: [ubuntu-latest]
+  #   env:
+  #     TERM: xterm-256color
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Install valgrind
+  #     run: sudo apt install valgrind -y
+  #   - name: Setup test script
+  #     run: chmod +x ./.github/workflows/run_valgrind.sh
+  #   - name: Install SDL2
+  #     run: sudo apt-get install libsdl2-dev -y
+  #   - name: Install SDL2ttf
+  #     run: sudo apt-get install libsdl2-ttf-dev -y
+  #   - name: Configure CMake
+  #     run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+  #   - name: Build
+  #     run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+  #   - name: Run under valgrind
+  #     run: ./.github/workflows/run_valgrind.sh
