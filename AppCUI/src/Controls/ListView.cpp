@@ -381,7 +381,7 @@ int  ListViewControlContext::GetNrColumns()
 ItemHandle  ListViewControlContext::AddItem(const char *text)
 {
     CHECK(text, InvalidItemHandle, "Expecting a valid (non-null) text");
-    ItemHandle idx = Items.List.size();
+    ItemHandle idx = (unsigned int)Items.List.size();
     Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
@@ -595,7 +595,7 @@ int  ListViewControlContext::GetVisibleItemsCount()
 void ListViewControlContext::UpdateSelectionInfo()
 {
     unsigned int count = 0;
-    unsigned int size = this->Items.List.size();
+    unsigned int size = (unsigned int)this->Items.List.size();
     for (unsigned int tr = 0; tr < size; tr++)
     {
         if (this->Items.List[tr].Flags & ITEM_FLAG_SELECTED)
@@ -1027,7 +1027,7 @@ int  SortIndexesCompareFunction(unsigned int indx1, unsigned int indx2, void *co
 		return lvcc->SortParams.CompareCallbak((ListView*)lvcc->Host, indx1, indx2, lvcc->SortParams.ColumnIndex, lvcc->SortParams.CompareCallbakContext);
 	}
 	else {
-        unsigned int itemsCount = lvcc->Items.List.size();
+        unsigned int itemsCount = (unsigned int)lvcc->Items.List.size();
         if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX))
         {
             return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex].GetText(), true);
@@ -1081,10 +1081,10 @@ int  ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colI
 void ListViewControlContext::FilterItems()
 {
 	Items.Indexes.Clear();
-    unsigned int count = Items.List.size();
+    unsigned int count = (unsigned int)Items.List.size();
     if (this->Filter.SearchText.Len()==0)
     {
-        Items.Indexes.Reserve(Items.List.size());
+        Items.Indexes.Reserve((unsigned int)Items.List.size());
         for (unsigned int tr = 0; tr < count; tr++)
             Items.Indexes.Push(tr);            
     } else {
