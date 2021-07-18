@@ -1,8 +1,8 @@
 include_directories(include)
 if (MSVC)
-include_directories(include/Windows)
+    include_directories(include/Windows)
 else()
-include_directories(include/Unix)
+    include_directories(include/Unix)
 endif()
 
 # Add libAppCUI
@@ -15,6 +15,12 @@ if (UNIX)
     target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
     target_link_libraries(AppCUI ${CURSES_LIBRARIES})
     add_compile_definitions(NCURSES_WIDECHAR)
+
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2TTF REQUIRED)
+    target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
+    target_link_libraries(AppCUI ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
+
 endif()
 
 add_subdirectory(src)
@@ -24,8 +30,6 @@ target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 if (DEBUG_BUILD)
     set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
 endif()
-
-
 
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 

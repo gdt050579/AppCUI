@@ -1,73 +1,131 @@
 #include <string>
 
 #include "os.h"
-#include "ncurses.h"
-#include "Color.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
+constexpr size_t NR_COLORS = 16;
+constexpr SDL_Color COLOR_BLACK = SDL_Color{0, 0, 0};
+constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0, 0, 128};
+constexpr SDL_Color COLOR_DARKGREEN = SDL_Color{0, 128, 0};
+constexpr SDL_Color COLOR_TEAL = SDL_Color{0, 128, 128};
+constexpr SDL_Color COLOR_DARKRED = SDL_Color{128, 0, 0};
+constexpr SDL_Color COLOR_MAGENTA = SDL_Color{128, 0, 128};
+constexpr SDL_Color COLOR_OLIVE = SDL_Color{128, 128, 0};
+constexpr SDL_Color COLOR_SILVER = SDL_Color{128, 128, 128};
+constexpr SDL_Color COLOR_GRAY = SDL_Color{128, 128, 128};
+constexpr SDL_Color COLOR_BLUE = SDL_Color{0, 0, 255};
+constexpr SDL_Color COLOR_GREEN = SDL_Color{0, 255, 0};
+constexpr SDL_Color COLOR_AQUA = SDL_Color{0, 255, 255};
+constexpr SDL_Color COLOR_RED = SDL_Color{255, 0, 0};
+constexpr SDL_Color COLOR_PINK = SDL_Color{255, 0, 255};
+constexpr SDL_Color COLOR_YELLOW = SDL_Color{255, 255, 0};
+constexpr SDL_Color COLOR_WHITE = SDL_Color{255, 255, 255};
 
-const static size_t MAX_TTY_COL = 65535;
-const static size_t MAX_TTY_ROW = 65535;
+constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
+    /* Black */     COLOR_BLACK,
+    /* DarkBlue */  COLOR_DARKBLUE,
+    /* DarkGreen */ COLOR_DARKGREEN,
+    /* Teal */      COLOR_TEAL,
+    /* DarkRed */   COLOR_DARKRED,
+    /* Magenta */   COLOR_MAGENTA,
+    /* Olive */     COLOR_OLIVE,
+    /* Silver */    COLOR_SILVER,
 
+    /* GRAY */      COLOR_GRAY,
+    /* Blue */      COLOR_BLUE,
+    /* Green */     COLOR_GREEN,
+    /* Aqua */      COLOR_AQUA,
+    /* Red */       COLOR_RED,
+    /* Pink */      COLOR_PINK,
+    /* Yellow */    COLOR_YELLOW,
+    /* White */     COLOR_WHITE,
+};
 
 bool Terminal::initScreen()
 {
-    setlocale(LC_ALL, "");
-    initscr();
-    cbreak();
-    noecho();
-    clear();
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    colors.Init();
+    TTF_Init();
+    font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Courier New.ttf", 16);
 
-    size_t width = 0;
-    size_t height = 0;
-    getmaxyx(stdscr, height, width);
-    CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
-    // create canvases
-    CHECK(ScreenCanvas.Create(width, height), false, "Fail to create an internal canvas of %d x %d size", width, height);
-    CHECK(OriginalScreenCanvas.Create(width, height), false, "Fail to create the original screen canvas of %d x %d size", width, height);
-    
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    const size_t width = DM.w / 2;
+    const size_t height = DM.h / 2;
+
+    window = SDL_CreateWindow(
+        "AppCUI",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width,
+        height,
+        SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_RESIZABLE);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    size_t consoleWidth = width / charWidth;
+    size_t consoleHeight = height / charHeight;
+    CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false, 
+        "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
+    CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false, 
+        "Fail to create the original screen canvas of %d x %d size", consoleWidth, consoleHeight);
     return true;
 }
 
+// A very basic flush to screen
+// It will draw each character as a separate texture
+// Optimizations would be welcome, like drawing an entire string of text with the same colors
 void Terminal::OnFlushToScreen()
 {
-    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    SDL_RenderClear(renderer);
+
+    AppCUI::Console::Character *charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const size_t width = ScreenCanvas.GetWidth();
     const size_t height = ScreenCanvas.GetHeight();
+
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
-            const AppCUI::Console::Character ch = charsBuffer[y * width + x];
-            cchar_t t = {0, {ch.Code, 0}};
-            colors.SetColor(ch.Color.Forenground, ch.Color.Background);
-            mvadd_wch(y, x, &t);
-            colors.UnsetColor(ch.Color.Forenground, ch.Color.Background);
+            AppCUI::Console::Character ch = charsBuffer[y * width + x];
+            const Uint16 text[] = {ch.Code, 0};
+
+            const int cuiFG = static_cast<int>(ch.Color.Forenground);
+            const int cuiBG = static_cast<int>(ch.Color.Background);
+            const SDL_Color& fg = appcuiColorToSDLColor[cuiFG];
+            const SDL_Color& bg = appcuiColorToSDLColor[cuiBG];
+            SDL_Surface *surfaceMessage = TTF_RenderUNICODE_Shaded(font, text, fg, bg);
+            SDL_Texture *Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+            SDL_Rect Message_rect;
+            Message_rect.x = charWidth * x;
+            Message_rect.y = charHeight * y;
+            Message_rect.w = charWidth;
+            Message_rect.h = charHeight;
+            SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+            SDL_FreeSurface(surfaceMessage);
+            SDL_DestroyTexture(Message);
         }
     }
-    refresh();
+
+    SDL_RenderPresent(renderer);
 }
 
 bool Terminal::OnUpdateCursor()
 {
-    if (ScreenCanvas.GetCursorVisibility())
-    {
-        curs_set(1);
-        move(ScreenCanvas.GetCursorY(), ScreenCanvas.GetCursorX());
-    }
-    else
-    {
-        curs_set(0);
-    }
-    refresh();
+    // Currently no cursor for sdl
     return true;
 }
 
 void Terminal::uninitScreen()
 {
-    endwin();
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }

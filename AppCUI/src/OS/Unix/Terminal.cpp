@@ -9,7 +9,9 @@ using namespace AppCUI::Input;
 
 bool Terminal::OnInit()
 {
-    return initScreen() && initInput();
+    if (!initScreen()) return false;
+    if (!initInput()) return false;
+    return true;
 }
 
 void Terminal::OnUninit()
