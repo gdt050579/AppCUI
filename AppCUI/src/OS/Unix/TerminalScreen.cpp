@@ -62,7 +62,7 @@ bool Terminal::initScreen()
     const std::string fontNameFS = std::string("AppCUI_") + fontName;
     fs::path tempFolderPath = fs::temp_directory_path();
     fs::path fontFilePath = tempFolderPath / fontNameFS;
-    std::ofstream fontFile(fontFilePath, std::ios::binary);
+    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
     std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
     font = TTF_OpenFont(fontFilePath.c_str(), 16);
 
