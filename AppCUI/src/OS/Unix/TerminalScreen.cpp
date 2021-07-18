@@ -14,41 +14,43 @@ using namespace AppCUI::Input;
 namespace fs = std::filesystem;
 
 constexpr size_t NR_COLORS = 16;
+// https://devblogs.microsoft.com/commandline/updating-the-windows-console-colors/
+// something from the old scheme, something from the new scheme
 constexpr SDL_Color COLOR_BLACK = SDL_Color{0, 0, 0};
-constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0, 0, 128};
-constexpr SDL_Color COLOR_DARKGREEN = SDL_Color{0, 128, 0};
-constexpr SDL_Color COLOR_TEAL = SDL_Color{0, 128, 128};
-constexpr SDL_Color COLOR_DARKRED = SDL_Color{128, 0, 0};
-constexpr SDL_Color COLOR_MAGENTA = SDL_Color{128, 0, 128};
-constexpr SDL_Color COLOR_OLIVE = SDL_Color{128, 128, 0};
-constexpr SDL_Color COLOR_SILVER = SDL_Color{128, 128, 128};
-constexpr SDL_Color COLOR_GRAY = SDL_Color{128, 128, 128};
-constexpr SDL_Color COLOR_BLUE = SDL_Color{0, 0, 255};
-constexpr SDL_Color COLOR_GREEN = SDL_Color{0, 255, 0};
-constexpr SDL_Color COLOR_AQUA = SDL_Color{0, 255, 255};
-constexpr SDL_Color COLOR_RED = SDL_Color{255, 0, 0};
-constexpr SDL_Color COLOR_PINK = SDL_Color{255, 0, 255};
-constexpr SDL_Color COLOR_YELLOW = SDL_Color{255, 255, 0};
-constexpr SDL_Color COLOR_WHITE = SDL_Color{255, 255, 255};
+constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0,0,128};
+constexpr SDL_Color COLOR_DARKGREEN = SDL_Color{19, 161, 14};
+constexpr SDL_Color COLOR_DARKCYAN = SDL_Color{58, 150, 221};
+constexpr SDL_Color COLOR_DARKRED = SDL_Color{197, 15, 31};
+constexpr SDL_Color COLOR_MAGENTA = SDL_Color{136, 23, 152};
+constexpr SDL_Color COLOR_DARKYELLOW = SDL_Color{193, 156, 0};
+constexpr SDL_Color COLOR_DARKWHITE = SDL_Color{204, 204, 204};
+constexpr SDL_Color COLOR_BRIGHTBLACK = SDL_Color{118, 118, 118};
+constexpr SDL_Color COLOR_BRIGHTBLUE = SDL_Color{59, 120, 255};
+constexpr SDL_Color COLOR_BRIGHTGREEN = SDL_Color{22, 198, 12};
+constexpr SDL_Color COLOR_BRIGHTCYAN = SDL_Color{97, 214, 214};
+constexpr SDL_Color COLOR_BRIGHTRED = SDL_Color{231, 72, 86};
+constexpr SDL_Color COLOR_BRIGHTMAGENT = SDL_Color{180, 0, 158};
+constexpr SDL_Color COLOR_BRIGHTYELLOW = SDL_Color{249, 241, 165};
+constexpr SDL_Color COLOR_WHITE = SDL_Color{242, 242, 242};
 
 constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
-    /* Black */     COLOR_BLACK,
-    /* DarkBlue */  COLOR_DARKBLUE,
+    /* Black */ COLOR_BLACK,
+    /* DarkBlue */ COLOR_DARKBLUE,
     /* DarkGreen */ COLOR_DARKGREEN,
-    /* Teal */      COLOR_TEAL,
-    /* DarkRed */   COLOR_DARKRED,
-    /* Magenta */   COLOR_MAGENTA,
-    /* Olive */     COLOR_OLIVE,
-    /* Silver */    COLOR_SILVER,
+    /* Teal */ COLOR_DARKCYAN,
+    /* DarkRed */ COLOR_DARKRED,
+    /* Magenta */ COLOR_MAGENTA,
+    /* Olive */ COLOR_DARKYELLOW,
+    /* Silver */ COLOR_DARKWHITE,
 
-    /* GRAY */      COLOR_GRAY,
-    /* Blue */      COLOR_BLUE,
-    /* Green */     COLOR_GREEN,
-    /* Aqua */      COLOR_AQUA,
-    /* Red */       COLOR_RED,
-    /* Pink */      COLOR_PINK,
-    /* Yellow */    COLOR_YELLOW,
-    /* White */     COLOR_WHITE,
+    /* GRAY */ COLOR_BRIGHTBLACK,
+    /* Blue */ COLOR_BRIGHTBLUE,
+    /* Green */ COLOR_BRIGHTGREEN,
+    /* Aqua */ COLOR_BRIGHTCYAN,
+    /* Red */ COLOR_BRIGHTRED,
+    /* Pink */ COLOR_BRIGHTMAGENT,
+    /* Yellow */ COLOR_BRIGHTYELLOW,
+    /* White */ COLOR_WHITE,
 };
 
 bool Terminal::initScreen()
@@ -84,10 +86,10 @@ bool Terminal::initScreen()
 
     size_t consoleWidth = width / charWidth;
     size_t consoleHeight = height / charHeight;
-    CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false, 
-        "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
-    CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false, 
-        "Fail to create the original screen canvas of %d x %d size", consoleWidth, consoleHeight);
+    CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false,
+          "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
+    CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false,
+          "Fail to create the original screen canvas of %d x %d size", consoleWidth, consoleHeight);
     return true;
 }
 
@@ -111,8 +113,8 @@ void Terminal::OnFlushToScreen()
 
             const int cuiFG = static_cast<int>(ch.Color.Forenground);
             const int cuiBG = static_cast<int>(ch.Color.Background);
-            const SDL_Color& fg = appcuiColorToSDLColor[cuiFG];
-            const SDL_Color& bg = appcuiColorToSDLColor[cuiBG];
+            const SDL_Color &fg = appcuiColorToSDLColor[cuiFG];
+            const SDL_Color &bg = appcuiColorToSDLColor[cuiBG];
             SDL_Surface *surfaceMessage = TTF_RenderUNICODE_Shaded(font, text, fg, bg);
             SDL_Texture *Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
