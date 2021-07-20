@@ -1,6 +1,9 @@
 #ifndef __APPCUI_MAIN_HEADER__
 #define __APPCUI_MAIN_HEADER__
 
+#include <string>
+#include <string_view>
+
 #ifdef BUILD_AS_DYNAMIC_LIB
 #   ifdef BUILD_FOR_WINDOWS
 #       define EXPORT __declspec(dllexport)
@@ -794,9 +797,11 @@ namespace AppCUI
             void            PackView();
 
             // Text
-            bool			SetText(const char * text, bool updateHotKey = false);
-            bool			SetText(AppCUI::Utils::String *text, bool updateHotKey = false);
-            bool			SetText(AppCUI::Utils::String &text, bool updateHotKey = false);
+            bool			SetText(const char * text, bool updateHotKey = false, int textLen = -1);
+            bool			SetText(const std::string &text, bool updateHotKey = false);
+            bool			SetText(const std::string_view &text, bool updateHotKey = false);
+            bool			SetText(const AppCUI::Utils::String &text, bool updateHotKey = false);
+
             
             // Scroll bars
             void            UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);

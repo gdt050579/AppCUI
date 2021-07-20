@@ -900,54 +900,36 @@ void AppCUI::Controls::Control::RecomputeLayout()
 
     AppCUI::Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const char * text, bool updateHotKey)
+bool AppCUI::Controls::Control::SetText(const char * text, bool updateHotKey, int textLen)
 {
 	if (OnBeforeSetText(text) == false)
 		return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text,CTRLC->HotKeyOffset) == false)
+        if (CTRLC->Text.SetWithHotKey(text,CTRLC->HotKeyOffset, NoColorPair, textLen) == false)
             return false;
     } else {
-        if (CTRLC->Text.Set(text) == false)
+        if (CTRLC->Text.Set(text, NoColorPair, textLen) == false)
             return false;
     }
 	OnAfterSetText(text);
 	return true;
 }
-bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String *text, bool updateHotKey)
+bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String &text, bool updateHotKey)
 {
-	if (text == nullptr)
-		return false;
-	if (OnBeforeSetText(text->GetText()) == false)
-		return false;
-
-    if (updateHotKey)
-    {
-        if (CTRLC->Text.SetWithHotKey(text->GetText(),CTRLC->HotKeyOffset,NoColorPair,text->Len()) == false)
-            return false;
-    } else {
-        if (CTRLC->Text.Set(text->GetText(), NoColorPair, text->Len()) == false)
-            return false;
-    }
-
-	OnAfterSetText(text->GetText());
-	return true;
+    return SetText(text.GetText(), updateHotKey, (int)text.Len());
 }
-bool AppCUI::Controls::Control::SetText(AppCUI::Utils::String &text, bool updateHotKey)
+bool AppCUI::Controls::Control::SetText(const std::string &text, bool updateHotKey)
 {
-	if (OnBeforeSetText(text.GetText()) == false)
-		return false;
-    if (updateHotKey)
-    {
-        if (CTRLC->Text.SetWithHotKey(text.GetText(),CTRLC->HotKeyOffset, NoColorPair,text.Len()) == false)
-            return false;
-    } else {
-        if (CTRLC->Text.Set(text.GetText(), NoColorPair, text.Len()) == false)
-            return false;
+    return SetText(text.c_str(), updateHotKey, (int)text.length());
+}
+bool AppCUI::Controls::Control::SetText(const std::string_view &text, bool updateHotKey)
+{
+    LocalString<256> temp;
+    for (auto c : text) {
+        CHECK(temp.AddChar(c), false, "Fail to add char to string buffer");
     }
-	OnAfterSetText(text.GetText());
-	return true;
+    return SetText(temp.GetText(), updateHotKey, (int)temp.Len());
 }
 void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
 {
