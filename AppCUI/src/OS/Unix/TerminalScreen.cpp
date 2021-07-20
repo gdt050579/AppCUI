@@ -1,6 +1,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <array>
 
 #include "os.h"
 #include "SDL.h"

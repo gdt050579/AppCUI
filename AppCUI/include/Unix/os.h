@@ -6,7 +6,6 @@
 #include <iterator>
 
 #include "Internal.h"
-#include "Color.h"
 #include "SDL.h"
 #include "SDL_ttf.h"
 
