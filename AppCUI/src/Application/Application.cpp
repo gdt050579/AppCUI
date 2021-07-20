@@ -109,15 +109,25 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
             else
             {
                 ctrl->OnLoseFocus();
+                if (ctrl == app->ExpandedControl)
+                    app->PackControl(false);
             }
         }
         Members->Focused = focused;
     }
+    // put the other clip
+    if (ctrl == app->ExpandedControl)
+    {
+        app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ExpandedViewClip);
+        app->terminal->ScreenCanvas.SetTranslate(Members->ExpandedViewClip.ScreenPosition.X, Members->ExpandedViewClip.ScreenPosition.Y);
+    }
+    
     // draw current control
     if (Members->Handlers.OnPaintHandler != nullptr)
         Members->Handlers.OnPaintHandler(ctrl, Members->Handlers.OnPaintHandlerContext);
     else
         ctrl->Paint(renderer);
+
     if ((Members->Focused) && (Members->Flags & (GATTR_VSCROLL | GATTR_HSCROLL)))
     {
         renderer.ResetClip(); // make sure that the entire surface is available
@@ -139,15 +149,23 @@ void PaintControl(AppCUI::Controls::Control *ctrl, AppCUI::Console::Renderer & r
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
         PaintControl(Members->Controls[idx], renderer, true);
     }
-
 }
 void ComputeControlLayout(AppCUI::Console::Clip &parentClip, Control *ctrl)
 {
     if (ctrl == nullptr)
         return;
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
-    // calculez clip-ul meu
+    // compute the clip
     Members->ScreenClip.Set(parentClip, Members->Layout.X, Members->Layout.Y, Members->Layout.Width, Members->Layout.Height);
+    // compute the expanded clip if neccesary
+    if (ctrl == app->ExpandedControl) {
+        if ((Members->Flags & GATTR_EXPANDED) == 0)
+        {
+            Members->ExpandedViewClip = Members->ScreenClip;
+            ctrl->OnExpandView(Members->ExpandedViewClip);
+            Members->Flags |= GATTR_EXPANDED;
+        }        
+    }
     // calculez clip-ul client
     AppCUI::Console::Clip client;
     client.Set(parentClip, Members->Layout.X + Members->Margins.Left, Members->Layout.Y + Members->Margins.Top, Members->Layout.Width - (Members->Margins.Right+Members->Margins.Left), Members->Layout.Height - (Members->Margins.Bottom+Members->Margins.Top));
@@ -232,6 +250,7 @@ AppCUI::Internal::Application::Application()
     this->Inited = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl = nullptr;
+    this->ExpandedControl = nullptr;
     this->ModalControlsCount = 0;
     this->Handler = nullptr;
     this->LoopStatus = LOOP_STATUS_NORMAL;
@@ -481,6 +500,31 @@ void AppCUI::Internal::Application::OnMouseWheel()
 {
     if (MouseLockedObject != MOUSE_LOCKED_OBJECT_NONE)
         return;
+}
+void AppCUI::Internal::Application::PackControl(bool redraw)
+{
+    if (!this->ExpandedControl)
+        return;
+    CREATE_CONTROL_CONTEXT(this->ExpandedControl, Members, );
+    this->ExpandedControl->OnPackView();
+    Members->Flags -= (Members->Flags & GATTR_EXPANDED);
+    this->ExpandedControl = nullptr;
+    if (redraw)
+        this->RepaintStatus = REPAINT_STATUS_ALL;
+}
+bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control * ctrl)
+{
+    CHECK(ctrl, false, "Expecting a valid (non-null) control !");
+    if (this->ExpandedControl != nullptr)
+        PackControl(false);
+    CREATE_CONTROL_CONTEXT(ctrl, Members, false);
+    this->ExpandedControl = ctrl;
+    // remove GATTR_EXPANDED flag if exists
+    Members->Flags -= (Members->Flags & GATTR_EXPANDED);
+    // compute current positions
+    ComputePositions();    
+    this->RepaintStatus = REPAINT_STATUS_DRAW;
+    return true;
 }
 void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key::Type ShiftState)
 {

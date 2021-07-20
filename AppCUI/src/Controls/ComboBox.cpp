@@ -20,27 +20,30 @@ bool ComboBox_AddItem(ComboBox *control, const char *itemName, int itemSize = -1
     Members->Items.push_back(item);
 	return true;
 }
-void ComboBox_MoveTo(ComboBox *control,int newPoz)
+void ComboBox_MoveTo(ComboBox *control,unsigned int newPoz)
 {
 	CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, );
-	int old = Members->CurentItem;
-    int itemsCount = Members->Items.size();
-	if (itemsCount == 0) return;
-	if (newPoz<0) newPoz = 0;
-	if (newPoz> itemsCount - 1) newPoz = itemsCount - 1;
+	unsigned int old = Members->CurentItemIndex;
+    unsigned int itemsCount = Members->Items.size();
+	if (itemsCount == 0) 
+        return;
+	if ((itemsCount>0) && (newPoz > itemsCount - 1))
+        newPoz = itemsCount - 1;
 	
-	while (Members->CurentItem != newPoz)
+	while (Members->CurentItemIndex != newPoz)
 	{
-		if (Members->CurentItem>newPoz) Members->CurentItem--;
-		if (Members->CurentItem<newPoz) Members->CurentItem++;
-		if (Members->CurentItem<Members->ky) Members->ky = Members->CurentItem;
-		if (Members->CurentItem >= Members->ky + Members->VisibleItems)
+		if (Members->CurentItemIndex>newPoz) 
+            Members->CurentItemIndex--;
+		if (Members->CurentItemIndex<newPoz) 
+            Members->CurentItemIndex++;
+		if (Members->CurentItemIndex<Members->FirstVisibleItem) 
+            Members->FirstVisibleItem = Members->CurentItemIndex;
+		if (Members->CurentItemIndex >= Members->FirstVisibleItem + Members->VisibleItems)
 		{
-			Members->ky = Members->CurentItem - Members->VisibleItems + 1;
-			if (Members->ky<0) Members->ky = 0;
+			Members->FirstVisibleItem = (Members->CurentItemIndex - Members->VisibleItems) + 1;
 		}
 	}
-	if (old != Members->CurentItem)
+	if (old != Members->CurentItemIndex)
 		control->RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
 }
 //====================================================================================================
@@ -90,9 +93,9 @@ bool ComboBox::Create(Control *parent, const char * layout, const char* items, c
 			CHECK(ComboBox_AddItem(this, &items[start], tr - start), false, "");
 		}
 	}
-	Members->VisibleItems = 4;
-	Members->CurentItem = ComboBox::NO_ITEM_SELECTED;
-	Members->ky = 0;
+	Members->VisibleItems = 1;
+	Members->CurentItemIndex = ComboBox::NO_ITEM_SELECTED;
+	Members->FirstVisibleItem = 0;
 	return true;
 }
 unsigned int ComboBox::GetItemsCount()
@@ -103,22 +106,22 @@ unsigned int ComboBox::GetItemsCount()
 const char* ComboBox::GetUnsafeCurrentItemText()
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, nullptr);
-    return GetUnsafeItemText(Members->CurentItem);
+    return GetUnsafeItemText(Members->CurentItemIndex);
 }
 bool        ComboBox::GetCurrentItemtext(Utils::String &itemText)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-    return GetItemText(Members->CurentItem, itemText);
+    return GetItemText(Members->CurentItemIndex, itemText);
 }
 unsigned int ComboBox::GetCurrentItemIndex()
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, ComboBox::NO_ITEM_SELECTED);
-	return Members->CurentItem;
+	return Members->CurentItemIndex;
 }
 ItemData	ComboBox::GetCurrentItemUserData()
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, null_combobox_item);
-    return GetItemUserData(Members->CurentItem);
+    return GetItemUserData(Members->CurentItemIndex);
 }
 ItemData	ComboBox::GetItemUserData(unsigned int index)
 {    
@@ -151,10 +154,10 @@ bool ComboBox::AddItem(const char *ss, ItemData userData)
 	CHECK(ss != nullptr, false, "");
 	CHECK(ComboBox_AddItem(this, ss, -1, userData), false, "");
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-	if ((Members->CurentItem<0) && (Members->Items.size()>0)) 
+	if ((Members->CurentItemIndex<0) && (Members->Items.size()>0)) 
 	{ 
-		Members->CurentItem = 0; 
-		Members->ky = 0;
+		Members->CurentItemIndex = 0; 
+		Members->FirstVisibleItem = 0;
 	}
 	return true;
 }
@@ -162,8 +165,8 @@ void ComboBox::DeleteAllItems()
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     Members->Items.clear();
-	Members->CurentItem = ComboBox::NO_ITEM_SELECTED;
-    Members->ky = 0;
+	Members->CurentItemIndex = ComboBox::NO_ITEM_SELECTED;
+    Members->FirstVisibleItem = 0;
 }
 bool ComboBox::SetCurentItemIndex(unsigned int index)
 {
@@ -175,24 +178,27 @@ bool ComboBox::SetCurentItemIndex(unsigned int index)
 void ComboBox::SetNoIndexSelected()
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
-	Members->CurentItem = ComboBox::NO_ITEM_SELECTED;
-	Members->ky = 0;
+	Members->CurentItemIndex = ComboBox::NO_ITEM_SELECTED;
+	Members->FirstVisibleItem = 0;
 	RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
 }
-void ComboBox::OnAfterResize(int newWidth,int newHeight)
-{
-	//CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
-}
+
 bool ComboBox::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
 	switch (keyCode)
 	{
 		case Key::Up: 
-			ComboBox_MoveTo(this,((int)Members->CurentItem) - 1); 
+            if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Items.size() > 0))
+                Members->CurentItemIndex = 0;
+            else if (Members->CurentItemIndex>0)
+                ComboBox_MoveTo(this, Members->CurentItemIndex - 1);
 			return true;
 		case Key::Down:
-			ComboBox_MoveTo(this, ((int)Members->CurentItem) + 1);
+            if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Items.size() > 0))
+                Members->CurentItemIndex = 0;
+            else if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
+			    ComboBox_MoveTo(this, Members->CurentItemIndex + 1);
 			return true;
 		case Key::Home: 
 			ComboBox_MoveTo(this, 0);
@@ -208,12 +214,37 @@ bool ComboBox::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
 	}
 	return false;
 }
+void            ComboBox::OnExpandView(AppCUI::Console::Clip & expandedClip)
+{
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
+    AppCUI::Console::Size appSize;
+    Members->VisibleItems = 4;
+    if ((Application::GetApplicationSize(appSize)) && (expandedClip.ClipRect.Y>=0))
+    {
+        if (appSize.Height > (unsigned int)(expandedClip.ClipRect.Y + 3))
+            Members->VisibleItems = (appSize.Height - (unsigned int)(expandedClip.ClipRect.Y + 3));
+    }
+    if (Members->VisibleItems > Members->Items.size())
+        Members->VisibleItems = (unsigned int)Members->Items.size();
+    expandedClip.ClipRect.Height += Members->VisibleItems + 2;
+    Members->ExpandedHeight = Members->VisibleItems + 2;
+}
+void            ComboBox::OnPackView()
+{
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
+    Members->VisibleItems = 1;
+    if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
+        Members->FirstVisibleItem = Members->CurentItemIndex;
+}
 void ComboBox::OnHotKey()
 {
 	SetChecked(!IsChecked());
-	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
-	if (!IsChecked())
+    if (IsChecked())
+        this->ExpandView();
+    else {
+        this->PackView();
         RaiseEvent(Event::EVENT_COMBO_CLOSED);
+    }
 }
 void ComboBox::OnMouseReleased(int x, int y,  int butonState)
 {
@@ -221,9 +252,9 @@ void ComboBox::OnMouseReleased(int x, int y,  int butonState)
 
 	if (y == 0)
 		OnHotKey();
-	if ((y>1) && (y<2 + Members->VisibleItems))
+	if ((y>1) && (y<(int)(2 + Members->VisibleItems)))
 	{
-		ComboBox_MoveTo(this, Members->ky + y - 2);//MenuIsVisible=false;
+		ComboBox_MoveTo(this, Members->FirstVisibleItem + y - 2);//MenuIsVisible=false;
 		RaiseEvent(Event::EVENT_COMBO_CLOSED);
 	}
 }
@@ -247,6 +278,17 @@ void ComboBox::Paint(Console::Renderer & renderer)
     renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button, 3);
     renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc->Button);
 
+    if (Members->Flags & GATTR_EXPANDED)
+    {
+        renderer.FillRect(0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
+        renderer.DrawRect(0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, Members->Cfg->ComboBox.Focus.Text, false);
+        for (unsigned int tr = 0; tr < Members->VisibleItems; tr++)
+        {
+            renderer.WriteSingleLineText(2, tr + 2, GetUnsafeItemText(tr + Members->FirstVisibleItem), Members->Layout.Width - 2, Members->Cfg->ComboBox.Focus.Text, TextAlignament::Left);
+            if ((tr + Members->FirstVisibleItem) == Members->CurentItemIndex)
+                renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
+        }
+    }
 }
 bool    ComboBox::OnMouseLeave()
 {

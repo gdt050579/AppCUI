@@ -13,4 +13,5 @@ target_sources(AppCUI PRIVATE
 	TextField.cpp
 	TextArea.cpp
 	UserControl.cpp
+	Menu.cpp
 	Window.cpp)

@@ -1,4 +1,5 @@
 #include "ControlContext.h"
+#include "Internal.h"
 #include <string.h>
 #include <cstring>
 
@@ -1136,6 +1137,13 @@ bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control *ct
 {
 	return (ctrl != nullptr);
 }
+void AppCUI::Controls::Control::OnExpandView(AppCUI::Console::Clip & expandedClip)
+{
+
+}
+void AppCUI::Controls::Control::OnPackView()
+{
+}
 void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control *ctrl)
 {
 	// daca e primul - setez si tab-ul
@@ -1211,4 +1219,12 @@ void AppCUI::Controls::Control::SetMouseHandler(Handlers::MousePressedHandler mo
 {
 	SetMousePressedHandler(mousePressedHandler, objContext);
 	SetMouseReleasedHandler(mouseReleasedHandler, objContext);
+}
+void AppCUI::Controls::Control::ExpandView()
+{
+    AppCUI::Application::GetApplication()->ExpandControl(this);
+}
+void AppCUI::Controls::Control::PackView()
+{
+    AppCUI::Application::GetApplication()->PackControl(true);
 }

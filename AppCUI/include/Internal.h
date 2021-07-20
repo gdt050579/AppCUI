@@ -169,6 +169,7 @@ namespace AppCUI
             AppCUI::Controls::Control *             ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
             AppCUI::Controls::Control *             MouseLockedControl;
             AppCUI::Controls::Control *             MouseOverControl;
+            AppCUI::Controls::Control *             ExpandedControl;
             unsigned int			                ModalControlsCount;            
             int						                LoopStatus;
             unsigned int			                RepaintStatus;
@@ -188,6 +189,10 @@ namespace AppCUI
             void	OnMouseWheel();
             void	SendCommand(int command);
             void	Terminate();
+
+            // Pack/Expand
+            void    PackControl(bool redraw);
+            bool    ExpandControl(AppCUI::Controls::Control * ctrl);
 
             //Common implementations
             bool    Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);

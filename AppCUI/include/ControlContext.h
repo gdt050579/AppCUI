@@ -17,6 +17,7 @@ using namespace AppCUI::Input;
 #define GATTR_TABSTOP	0x000008
 #define GATTR_VSCROLL   0x000010
 #define GATTR_HSCROLL   0x000020
+#define GATTR_EXPANDED  0x000040
 
 
 
@@ -24,7 +25,7 @@ struct ControlContext
 {
 
 public:
-	AppCUI::Console::Clip			        ScreenClip;
+	AppCUI::Console::Clip			        ScreenClip,ExpandedViewClip;
     struct 
     {
         struct
@@ -379,7 +380,7 @@ class ComboBoxControlContext : public ControlContext
 public:
 
     std::vector<COMBO_ITEM_INFO>	Items;
-    int						        CurentItem, ky, VisibleItems;
+    unsigned int                    ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems;
 };
 
 

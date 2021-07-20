@@ -786,9 +786,12 @@ namespace AppCUI
             // Events
             void			RaiseEvent(Event::Type eventType);
             void			RaiseEvent(Event::Type eventType, int ID);
-            // focus
+            
+            // focus & expact/pack view
             bool			SetFocus();
             void			SetControlID(int newID);
+            void            ExpandView();
+            void            PackView();
 
             // Text
             bool			SetText(const char * text, bool updateHotKey = false);
@@ -841,6 +844,9 @@ namespace AppCUI
             virtual void	OnAfterAddControl(Control *ctrl);
             virtual bool	OnBeforeSetText(const char * text);
             virtual void	OnAfterSetText(const char * text);
+
+            virtual void    OnExpandView(AppCUI::Console::Clip & expandedClip);
+            virtual void    OnPackView();
 
             virtual ~Control();
 
@@ -1193,14 +1199,14 @@ namespace AppCUI
             bool			AddItem(const char* text, ItemData usedData = { 0 });
             void			DeleteAllItems();
 
-            void			OnAfterResize(int newWidth, int newHeight) override;
             bool			OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
             void			OnHotKey() override;
             bool            OnMouseLeave() override;
             bool            OnMouseEnter() override;
             void			OnMouseReleased(int x, int y, int butonState) override;
             void			Paint(Console::Renderer & renderer) override;
-
+            void            OnExpandView(AppCUI::Console::Clip & expandedClip) override;
+            void            OnPackView() override;
             virtual ~ComboBox();
         };
 
@@ -1361,6 +1367,7 @@ namespace AppCUI
                 struct {
                     Console::ColorPair Text, Button;
                 } Focus, Normal, Inactive, Hover;
+                Console::ColorPair Selection;
             } ComboBox;
             void SetDarkTheme();
         };
