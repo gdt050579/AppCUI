@@ -1,6 +1,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <array>
 
 #include "os.h"
 #include "SDL.h"
@@ -53,43 +54,71 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
     /* White */ COLOR_WHITE,
 };
 
+/*
+    AppCUI window is a 2D table of characters
+    So the width and the height in pixels of the window
+    are not the same as the appcui window height and width
+*/
+
+// We have an embedded compiled resource that we inserted during build
+// Let's extract this resource, drop it into some temporary location and load it as a font
+//
+// After the font is successfully loaded, let's see how wide and high are the characters,
+// that will be our cell width and cell height.
+bool Terminal::initFont()
+{
+    TTF_Init();
+
+    // Load font resource
+    auto fs = cmrc::font::get_filesystem();
+    auto fontResource = fs.open("resources/" + fontName);
+
+    // Drop font to disk
+    const std::string fontNameFS = std::string("AppCUI_") + fontName;
+    const fs::path fontFilePath = fs::temp_directory_path() / fontNameFS;
+    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
+    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
+
+    // Load font file as TTF
+    this->font = TTF_OpenFont(fontFilePath.c_str(), fontSize);
+    CHECK(font, false, "Failed to init font");
+
+    int fontCharWidth = 0;
+    int fontCharHeight = 0;
+    // Hopefully we're using a fixed size font so all the chars are the same
+    TTF_SizeText(font, "A", &fontCharWidth, &fontCharHeight);
+    this->charWidth = static_cast<size_t>(fontCharWidth);
+    this->charHeight = static_cast<size_t>(fontCharHeight);
+    return true;
+}
+
 bool Terminal::initScreen()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    TTF_Init();
-    auto fs = cmrc::font::get_filesystem();
-    const std::string fontName = "CourierNew.ttf";
-    auto fontResource = fs.open("resources/" + fontName);
-
-    const std::string fontNameFS = std::string("AppCUI_") + fontName;
-    fs::path tempFolderPath = fs::temp_directory_path();
-    fs::path fontFilePath = tempFolderPath / fontNameFS;
-    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
-    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
-    font = TTF_OpenFont(fontFilePath.c_str(), 16);
+    CHECK(initFont(), false, "Unable to init font");
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
-    const size_t width = DM.w / 2;
-    const size_t height = DM.h / 2;
+    const size_t pixelWidth = DM.w / 2;
+    const size_t pixelHeight = DM.h / 2;
+    const size_t widthInChars = pixelWidth / charWidth;
+    const size_t heightInChars = pixelHeight / charHeight; 
 
     window = SDL_CreateWindow(
         "AppCUI",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        width,
-        height,
+        pixelWidth,
+        pixelHeight,
         SDL_WINDOW_RESIZABLE);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    const size_t consoleWidth = width / charWidth;
-    const size_t consoleHeight = height / charHeight;
-    CHECK(ScreenCanvas.Create(consoleWidth, consoleHeight), false,
-          "Fail to create an internal canvas of %d x %d size", consoleWidth, consoleHeight);
-    CHECK(OriginalScreenCanvas.Create(consoleWidth, consoleHeight), false,
-          "Fail to create the original screen canvas of %d x %d size", consoleWidth, consoleHeight);
+    CHECK(ScreenCanvas.Create(widthInChars, heightInChars), false,
+          "Fail to create an internal canvas of %d x %d size", widthInChars, heightInChars);
+    CHECK(OriginalScreenCanvas.Create(widthInChars, heightInChars), false,
+          "Fail to create the original screen canvas of %d x %d size", widthInChars, heightInChars);
     return true;
 }
 
@@ -123,7 +152,7 @@ void Terminal::OnFlushToScreen()
             Message_rect.y = charHeight * y;
             Message_rect.w = charWidth;
             Message_rect.h = charHeight;
-            SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+            SDL_RenderCopy(renderer, Message, nullptr, &Message_rect);
             SDL_DestroyTexture(Message);
             SDL_FreeSurface(surfaceMessage);
         }

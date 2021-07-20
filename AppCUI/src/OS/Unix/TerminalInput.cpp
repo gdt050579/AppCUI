@@ -132,8 +132,8 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         break;
     case SDL_WINDOWEVENT_RESIZED:
         evnt.eventType = SystemEvents::APP_RESIZED;
-        evnt.newWidth = e.window.data1;
-        evnt.newHeight = e.window.data2;
+        evnt.newWidth = e.window.data1 / charWidth;
+        evnt.newHeight = e.window.data2 / charHeight;
         break;
     default:
         break;

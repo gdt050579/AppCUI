@@ -4,9 +4,9 @@
 #include <map>
 #include <memory>
 #include <iterator>
+#include <string>
 
 #include "Internal.h"
-#include "Color.h"
 #include "SDL.h"
 #include "SDL_ttf.h"
 
@@ -14,9 +14,8 @@ namespace AppCUI
 {
     namespace Internal
     {
-        // Width and height of the character cell where the font is drawn
-        constexpr size_t charWidth = 10;
-        constexpr size_t charHeight = 20;
+        constexpr static size_t fontSize = 15;
+        const static std::string fontName = "CourierNew.ttf";
 
         class Terminal : public AbstractTerminal
         {
@@ -29,6 +28,8 @@ namespace AppCUI
             SDL_Window* window;
             SDL_Renderer* renderer;
             TTF_Font* font;
+            size_t charWidth;
+            size_t charHeight;
 
         public:
             virtual bool OnInit() override;
@@ -42,6 +43,8 @@ namespace AppCUI
         private:
             bool initScreen();
             bool initInput();
+
+            bool initFont();
 
             void uninitScreen();
             void uninitInput();
