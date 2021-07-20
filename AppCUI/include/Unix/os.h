@@ -23,7 +23,7 @@ namespace AppCUI
             std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
             std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation
             ;
-            AppCUI::Input::Key shiftState;
+            AppCUI::Input::Key oldShiftState;
 
             SDL_Window* window;
             SDL_Renderer* renderer;
@@ -50,7 +50,8 @@ namespace AppCUI
             void uninitInput();
 
             void handleMouse(SystemEvents::Event& evt, const SDL_Event& eSdl);
-            void handleKey(SystemEvents::Event &evt, const SDL_Event& eSdl);
+            void handleKeyUp(SystemEvents::Event &evt, const SDL_Event& eSdl);
+            void handleKeyDown(SystemEvents::Event &evt, const SDL_Event& eSdl);
         };
     }
 }

@@ -11,9 +11,27 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
+static Key getShiftState(const SDL_Keymod keyModifiers)
+{
+    Key currentShiftState = Key::None;
+    if (keyModifiers & KMOD_ALT)
+    {
+        currentShiftState |= Key::Alt;
+    }
+    if (keyModifiers & KMOD_CTRL)
+    {
+        currentShiftState |= Key::Ctrl;
+    }
+    if (keyModifiers & KMOD_SHIFT)
+    {
+        currentShiftState |= Key::Shift;
+    }
+    return currentShiftState;
+}
+
 bool Terminal::initInput()
 {
-    shiftState = Key::None;
+    oldShiftState = Key::None;
 
     for (size_t i = 0; i < 26; i++)
     {
@@ -72,7 +90,19 @@ void Terminal::handleMouse(SystemEvents::Event &evt, const SDL_Event &eSdl)
     }
 }
 
-void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
+void Terminal::handleKeyUp(SystemEvents::Event &evt, const SDL_Event &eSdl)
+{
+    const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
+    auto currentShiftState = getShiftState(keyModifiers);
+    if (currentShiftState != oldShiftState)
+    {
+        evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+        evt.keyCode = currentShiftState;
+    }
+    oldShiftState = currentShiftState;
+}
+
+void Terminal::handleKeyDown(SystemEvents::Event &evt, const SDL_Event &eSdl)
 {
     evt.eventType = SystemEvents::KEY_PRESSED;
 
@@ -90,30 +120,30 @@ void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
         evt.asciiCode = keyCode;
     }
 
-    Key currentShiftState = Key::None;
-    if (keyModifiers & KMOD_ALT)
+    auto currentShiftState = getShiftState(keyModifiers);
+
+    if (keyModifiers & (KMOD_ALT|KMOD_CTRL))
     {
-        currentShiftState |= Key::Alt;
-        evt.asciiCode = 0;
-    }
-    if (keyModifiers & KMOD_CTRL)
-    {
-        currentShiftState |= Key::Ctrl;
         evt.asciiCode = 0;
     }
     if (keyModifiers & KMOD_SHIFT)
     {
-        currentShiftState |= Key::Shift;
-        evt.asciiCode = toupper(evt.asciiCode);
+        if (islower(evt.asciiCode))
+        {
+            evt.asciiCode = toupper(evt.asciiCode);
+        }
     }
 
-    if (currentShiftState != shiftState)
+    if (evt.keyCode == Key::None) 
     {
-        evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+        if (currentShiftState != oldShiftState)
+        {
+            evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+        }
     }
 
     evt.keyCode |= currentShiftState;
-    shiftState = currentShiftState;
+    oldShiftState = currentShiftState;
 }
 
 void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
@@ -140,7 +170,10 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
         handleMouse(evnt, e);
         break;
     case SDL_KEYDOWN:
-        handleKey(evnt, e);
+        handleKeyDown(evnt, e);
+        break;
+    case SDL_KEYUP:
+        handleKeyUp(evnt, e);
         break;
     case SDL_WINDOWEVENT_RESIZED:
         evnt.eventType = SystemEvents::APP_RESIZED;
