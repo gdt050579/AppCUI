@@ -172,6 +172,8 @@ bool ComboBox::SetCurentItemIndex(unsigned int index)
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     CHECK_INDEX(index, false);
+    if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Items.size() > 0))
+        Members->CurentItemIndex = 0;
 	ComboBox_MoveTo(this, index);
     return true;
 }
@@ -254,6 +256,8 @@ void ComboBox::OnMouseReleased(int x, int y,  int butonState)
 		OnHotKey();
 	if ((y>1) && (y<(int)(2 + Members->VisibleItems)))
 	{
+        if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Items.size() > 0))
+            Members->CurentItemIndex = 0;
 		ComboBox_MoveTo(this, Members->FirstVisibleItem + y - 2);//MenuIsVisible=false;
 		RaiseEvent(Event::EVENT_COMBO_CLOSED);
 	}

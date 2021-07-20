@@ -173,7 +173,7 @@ void ComputeControlLayout(AppCUI::Console::Clip &parentClip, Control *ctrl)
     for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
         ComputeControlLayout(client, Members->Controls[tr]);
 }
-AppCUI::Controls::Control *CoordinatesToControl(AppCUI::Controls::Control *ctrl, int x, int y)
+AppCUI::Controls::Control *RecursiveCoordinatesToControl(AppCUI::Controls::Control *ctrl, int x, int y)
 {
     if (ctrl == nullptr)
         return nullptr;
@@ -182,7 +182,7 @@ AppCUI::Controls::Control *CoordinatesToControl(AppCUI::Controls::Control *ctrl,
         return nullptr;
     if (Members->ScreenClip.Visible == false)
         return nullptr;
-    if ((x < Members->ScreenClip.ClipRect.X) || (y < Members->ScreenClip.ClipRect.Y) || 
+    if ((x < Members->ScreenClip.ClipRect.X) || (y < Members->ScreenClip.ClipRect.Y) ||
         (x >= (Members->ScreenClip.ClipRect.X + Members->ScreenClip.ClipRect.Width)) ||
         (y >= (Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height)))
         return nullptr;
@@ -194,7 +194,7 @@ AppCUI::Controls::Control *CoordinatesToControl(AppCUI::Controls::Control *ctrl,
             idx = 0;
         for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
         {
-            Control *res = CoordinatesToControl(Members->Controls[idx], x, y);
+            Control *res = RecursiveCoordinatesToControl(Members->Controls[idx], x, y);
             if (res != nullptr)
                 return res;
             idx++;
@@ -205,6 +205,21 @@ AppCUI::Controls::Control *CoordinatesToControl(AppCUI::Controls::Control *ctrl,
     // daca nu e ok pe nici un copil sau nu am copii - atunci ma returnez pe mine
     return ctrl;
 }
+
+AppCUI::Controls::Control *CoordinatesToControl(AppCUI::Controls::Control *ctrl, int x, int y)
+{
+    if (app->ExpandedControl)
+    {
+        CREATE_CONTROL_CONTEXT(app->ExpandedControl, Members, nullptr);
+        if ((x >= Members->ExpandedViewClip.ClipRect.X) &&
+            (y >= Members->ExpandedViewClip.ClipRect.Y) &&
+            (x < (Members->ExpandedViewClip.ClipRect.X + Members->ExpandedViewClip.ClipRect.Width)) &&
+            (y < (Members->ExpandedViewClip.ClipRect.Y + Members->ExpandedViewClip.ClipRect.Height)))
+            return app->ExpandedControl;
+    }
+    return  RecursiveCoordinatesToControl(ctrl, x, y);
+}
+
 AppCUI::Controls::Control *GetFocusedControl(AppCUI::Controls::Control *ctrl)
 {
     if (ctrl == nullptr)
