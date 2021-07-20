@@ -13,6 +13,8 @@ using namespace AppCUI::Input;
 
 bool Terminal::initInput()
 {
+    shiftState = Key::None;
+
     for (size_t i = 0; i < 26; i++)
     {
         KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key>(((unsigned int)Key::A) + i);
@@ -88,21 +90,30 @@ void Terminal::handleKey(SystemEvents::Event &evt, const SDL_Event &eSdl)
         evt.asciiCode = keyCode;
     }
 
+    Key currentShiftState = Key::None;
     if (keyModifiers & KMOD_ALT)
     {
-        evt.keyCode |= Key::Alt;
+        currentShiftState |= Key::Alt;
         evt.asciiCode = 0;
     }
     if (keyModifiers & KMOD_CTRL)
     {
-        evt.keyCode |= Key::Ctrl;
+        currentShiftState |= Key::Ctrl;
         evt.asciiCode = 0;
     }
     if (keyModifiers & KMOD_SHIFT)
     {
-        evt.keyCode |= Key::Shift;
+        currentShiftState |= Key::Shift;
         evt.asciiCode = toupper(evt.asciiCode);
     }
+
+    if (currentShiftState != shiftState)
+    {
+        evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+    }
+
+    evt.keyCode |= currentShiftState;
+    shiftState = currentShiftState;
 }
 
 void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
@@ -117,6 +128,7 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     {
         return;
     }
+
     switch (e.type)
     {
     case SDL_QUIT:
