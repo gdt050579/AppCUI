@@ -15,18 +15,18 @@ bool Terminal::initInput()
 {
     for (size_t i = 0; i < 26; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key::Type>(Key::A + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key::Type>(((unsigned int)Key::A) + i);
     }
 
     for (size_t i = 0; i < 10; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key::Type>(Key::N0 + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key::Type>(((unsigned int)Key::N0) + i);
     }
 
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_F1 + i)] = static_cast<Key::Type>(Key::F1 + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_F1 + i)] = static_cast<Key::Type>(((unsigned int)Key::F1) + i);
     }
 
     KeyTranslation[SDL_SCANCODE_RETURN] = Key::Enter;
