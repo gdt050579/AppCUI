@@ -37,7 +37,7 @@ void CommandBarController::Clear()
 		for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
 		{
             CommandBarField *b = &Fields[tr][0];
-            CommandBarField *e = b + Key::Count;
+            CommandBarField *e = b + (unsigned int)Key::Count;
 			while (b < e) {
 				b->Version = 0;
 				b++;
@@ -52,15 +52,15 @@ void CommandBarController::Clear()
 	}
 	RecomputeScreenPos = true;
 }
-bool CommandBarController::Set(AppCUI::Input::Key::Type keyCode, const char* Name, int Command)
+bool CommandBarController::Set(AppCUI::Input::Key keyCode, const char* Name, int Command)
 {
 	CHECK(Name != nullptr, false, "Accelator name should not be nullptr !");
 	CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
-	CHECK(keyCode > 0, false, "Key code should be bigger than 0");
-	unsigned int index = (keyCode & 0xFF);
-	unsigned int shift = (keyCode >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-	CHECK(index < AppCUI::Input::Key::Count, false, "Invalid key code !");
-	CHECK((shift>=0) && (shift < MAX_COMMANDBAR_SHIFTSTATES), false, "Invalid shift combination !");
+	CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
+	unsigned int index = (((unsigned int)keyCode) & 0xFF);
+	unsigned int shift = ((unsigned int)keyCode) >> ((unsigned int)AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+	CHECK(index < (unsigned int)AppCUI::Input::Key::Count, false, "Invalid key code !");
+	CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, false, "Invalid shift combination !");
 	
     CommandBarField *b = &Fields[shift][index];
 	b->Command = Command;
@@ -99,7 +99,7 @@ void CommandBarController::Paint(AppCUI::Console::Renderer & renderer)
     if (ShiftStatus.Size > 0)
         renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus.Name, Cfg->CommandBar.ShiftKeysColor, ShiftStatus.Size);
 
-	unsigned int shift = CurrentShiftKey >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS;
+	unsigned int shift = ((unsigned int)CurrentShiftKey) >> ((unsigned int)AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
 	if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
 		return;
 	if (HasKeys[shift] == false)
@@ -146,7 +146,7 @@ void CommandBarController::ComputeScreenPos()
 		if ((*hasKeys) == false)
 			continue;
 		CommandBarField *bf = &Fields[tr][0];
-		CommandBarField *ef = bf + Key::Count;
+		CommandBarField *ef = bf + (unsigned int)Key::Count;
 		CommandBarFieldIndex *current = &VisibleFields[tr][0];
 		int* ic = &IndexesCount[tr];
 		*ic = 0;
@@ -171,7 +171,7 @@ void CommandBarController::ComputeScreenPos()
     this->PressedField = nullptr;
 	RecomputeScreenPos = false;
 }
-bool CommandBarController::SetShiftKey(AppCUI::Input::Key::Type keyCode)
+bool CommandBarController::SetShiftKey(AppCUI::Input::Key keyCode)
 {
 	if (keyCode != CurrentShiftKey)
 	{
@@ -188,7 +188,7 @@ CommandBarField*	CommandBarController::MousePositionToField(int x, int y)
         return nullptr;
 	if (RecomputeScreenPos)
 		ComputeScreenPos();
-	unsigned int shift = CurrentShiftKey >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS;
+	unsigned int shift = ((unsigned int)CurrentShiftKey) >> ((unsigned int)AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
 	CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, nullptr, "");
 	if (HasKeys[shift] == false)
 		return nullptr;
@@ -264,12 +264,12 @@ bool CommandBarController::OnMouseUp(int & command)
     command = -1;
     return false;
 }
-int  CommandBarController::GetCommandForKey(AppCUI::Input::Key::Type keyCode)
+int  CommandBarController::GetCommandForKey(AppCUI::Input::Key keyCode)
 {
-	unsigned int index = (keyCode & 0xFF);
-	unsigned int shift = (keyCode >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-	CHECK(index < AppCUI::Input::Key::Count, -1, "Invalid key code !");
-	CHECK((shift >= 0) && (shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
+	unsigned int index = (((unsigned int)keyCode) & 0xFF);
+	unsigned int shift = (((unsigned int)keyCode) >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+	CHECK(index < (unsigned int)AppCUI::Input::Key::Count, -1, "Invalid key code !");
+	CHECK((shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
 	CommandBarField *b = &Fields[shift][index];
 	// verific daca e setat
 	if (b->Version != CurrentVersion)

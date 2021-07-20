@@ -132,7 +132,7 @@ void Splitter::Paint(Console::Renderer & renderer)
         renderer.DrawHorizontalLineWithSpecialChar(0, poz, Members->Layout.Width - 1, SpecialChars::BoxHorizontalSingleLine, col);
     }
 }
-bool Splitter::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
 	if ((Members->Flags & GATTR_VERTICAL)!=0)

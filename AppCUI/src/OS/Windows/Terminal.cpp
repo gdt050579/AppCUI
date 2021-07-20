@@ -71,11 +71,11 @@ bool Terminal::OnInit()
     for (unsigned int tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
         this->KeyTranslationMatrix[tr] = AppCUI::Input::Key::None;
     for (unsigned int tr = 0; tr < 12; tr++)
-        this->KeyTranslationMatrix[VK_F1 + tr] = static_cast<AppCUI::Input::Key::Type>(AppCUI::Input::Key::F1 + tr);
+        this->KeyTranslationMatrix[VK_F1 + tr] = static_cast<AppCUI::Input::Key>(((unsigned int)AppCUI::Input::Key::F1) + tr);
     for (unsigned int tr = 'A'; tr <= 'Z'; tr++)
-        this->KeyTranslationMatrix[tr] = static_cast<AppCUI::Input::Key::Type>(AppCUI::Input::Key::A + (tr - 'A'));
+        this->KeyTranslationMatrix[tr] = static_cast<AppCUI::Input::Key>(((unsigned int)AppCUI::Input::Key::A) + (tr - 'A'));
     for (unsigned int tr = '0'; tr <= '9'; tr++)
-        this->KeyTranslationMatrix[tr] = static_cast<AppCUI::Input::Key::Type>(AppCUI::Input::Key::N0 + (tr - '0'));
+        this->KeyTranslationMatrix[tr] = static_cast<AppCUI::Input::Key>(((unsigned int)AppCUI::Input::Key::N0) + (tr - '0'));
 
     this->KeyTranslationMatrix[VK_RETURN] = AppCUI::Input::Key::Enter;
     this->KeyTranslationMatrix[VK_ESCAPE] = AppCUI::Input::Key::Escape;
@@ -138,7 +138,7 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
 {
     DWORD			            nrread;
     INPUT_RECORD	            ir;
-    AppCUI::Input::Key::Type    eventShiftState;
+    AppCUI::Input::Key    eventShiftState;
 
     evnt.eventType = SystemEvents::NONE;
     if ((ReadConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
@@ -165,7 +165,7 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt)
             eventShiftState |= AppCUI::Input::Key::Ctrl;
 
         // if ALT or CTRL are pressed, clear the ascii code
-        if ((eventShiftState & (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl)) != 0)
+        if ((((unsigned int)eventShiftState) & ((unsigned int)(AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl))) != 0)
             evnt.asciiCode = 0;
 
         if (evnt.keyCode == AppCUI::Input::Key::None)

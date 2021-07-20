@@ -57,7 +57,7 @@ void AppCUI::Controls::CheckBox::OnHotKey()
 	SetChecked(!IsChecked());
 	RaiseEvent(Event::EVENT_CHECKED_STATUS_CHANGED);
 }
-bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode)
+bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
 {
 	if (KeyCode == Key::Space)
 	{

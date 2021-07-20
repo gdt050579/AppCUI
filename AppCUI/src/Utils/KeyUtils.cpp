@@ -32,16 +32,16 @@ static __KeyAndSize__ _Key_Name_Padded[] = {
     {" 0 ",3},{" 1 ",3},{" 2 ",3},{" 3 ",3},{" 4 ",3},{" 5 ",3},{" 6 ",3},{" 7 ",3},{" 8 ",3},{" 9 ",3},
 };
 
-const char*	                AppCUI::Utils::KeyUtils::GetKeyName(AppCUI::Input::Key::Type keyCode)
+const char*	                AppCUI::Utils::KeyUtils::GetKeyName(AppCUI::Input::Key keyCode)
 {
-	unsigned int keyIndex = keyCode & 0xFF;
+	unsigned int keyIndex = ((unsigned int)keyCode) & 0xFF;
 	if ((keyIndex >= (sizeof(_Key_Name) / sizeof(const char*))))
 		return nullptr;
 	return _Key_Name[keyIndex];
 }
-const char*	                AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize)
+const char*	                AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::Input::Key keyCode, unsigned int * nameSize)
 {
-    unsigned int keyIndex = keyCode & 0xFF;
+    unsigned int keyIndex = ((unsigned int)keyCode) & 0xFF;
     if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(__KeyAndSize__))))
         return nullptr;
     __KeyAndSize__ * kas = _Key_Name_Padded + keyIndex;
@@ -49,9 +49,9 @@ const char*	                AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::In
         (*nameSize) = kas->NameSize;
     return kas->Name;
 }
-const char*	                AppCUI::Utils::KeyUtils::GetKeyModifierName(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize)
+const char*	                AppCUI::Utils::KeyUtils::GetKeyModifierName(AppCUI::Input::Key keyCode, unsigned int * nameSize)
 {
-    unsigned int keyIndex = (keyCode >> KEY_SHIFT_BITS) & 0x7;
+    unsigned int keyIndex = (((unsigned int)keyCode) >> KEY_SHIFT_BITS) & 0x7;
 	if (keyIndex >7)
 		return nullptr;
     __KeyAndSize__ * kas = _Key_Modifiers + keyIndex;
@@ -59,7 +59,7 @@ const char*	                AppCUI::Utils::KeyUtils::GetKeyModifierName(AppCUI::
         (*nameSize) = kas->NameSize;
     return kas->Name;
 }
-bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key::Type keyCode, char* text, int maxTextSize)
+bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize)
 {
 	CHECK(text != nullptr, false, "");
 	AppCUI::Utils::String s;
@@ -67,13 +67,13 @@ bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key::Type
 	CHECK(ToString(keyCode,s), false, "");
 	return true;
 }
-bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String *text)
+bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String *text)
 {
 	CHECK(text != nullptr, false, "");
 	CHECK(ToString(keyCode,*text), false, "");
 	return true;
 }
-bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String &text)
+bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String &text)
 {
 	const char * m = GetKeyModifierName(keyCode);
 	const char * k = GetKeyName(keyCode);
@@ -83,7 +83,7 @@ bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key::Type
 	CHECK(text.Add(k), false, "");
 	return true;
 }
-AppCUI::Input::Key::Type     AppCUI::Utils::KeyUtils::FromString(const char * key)
+AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(const char * key)
 {
 	unsigned int code = 0;
 	unsigned int modifier = 0;
@@ -122,14 +122,14 @@ AppCUI::Input::Key::Type     AppCUI::Utils::KeyUtils::FromString(const char * ke
 	}
 	if (code == 0)
 		return AppCUI::Input::Key::None;
-    return (AppCUI::Input::Key::Type)((modifier << KEY_SHIFT_BITS) | code);
+    return (AppCUI::Input::Key)((modifier << KEY_SHIFT_BITS) | code);
 }
-AppCUI::Input::Key::Type     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String *text)
+AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String *text)
 {
 	CHECK(text != nullptr, AppCUI::Input::Key::None, "Invalid (nullptr) key code string representation !");
 	return FromString(text->GetText());
 }
-AppCUI::Input::Key::Type     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String &text)
+AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String &text)
 {
 	return FromString(text.GetText());
 }

@@ -329,7 +329,7 @@ void AppCUI::Internal::Application::ComputePositions()
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
-void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key::Type KeyCode, int AsciiCode)
+void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, int AsciiCode)
 {
     Control *ctrl = nullptr;
 
@@ -526,7 +526,7 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control * ct
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
 }
-void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key::Type ShiftState)
+void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key ShiftState)
 {
     if (this->CommandBarObject.SetShiftKey(ShiftState))
         RepaintStatus |= REPAINT_STATUS_DRAW;

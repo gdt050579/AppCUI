@@ -64,7 +64,7 @@ namespace AppCUI
                 int                     mouseX, mouseY;
                 unsigned int            newWidth, newHeight;
                 unsigned int            mouseButtonState;
-                AppCUI::Input::Key::Type keyCode;
+                AppCUI::Input::Key keyCode;
                 char                    asciiCode;
             };
         }
@@ -72,7 +72,7 @@ namespace AppCUI
         struct CommandBarField
         {
             int				         Command, StartScreenPos, EndScreenPos;
-            AppCUI::Input::Key::Type KeyCode;
+            AppCUI::Input::Key KeyCode;
             int                      NameWidth;
             char			         Name[MAX_COMMANDBAR_FIELD_NAME];
             int                      KeyNameWidth;
@@ -100,7 +100,7 @@ namespace AppCUI
             } ShiftStatus;
             
             AppCUI::Application::Config	*   Cfg;
-            AppCUI::Input::Key::Type        CurrentShiftKey;
+            AppCUI::Input::Key        CurrentShiftKey;
             int						        LastCommand;
             CommandBarField*	            PressedField;
             CommandBarField*	            HoveredField;
@@ -116,12 +116,12 @@ namespace AppCUI
             void	    Paint(AppCUI::Console::Renderer & renderer);
             void	    Clear();
             void        SetDesktopSize(unsigned int width, unsigned int height);
-            bool	    Set(AppCUI::Input::Key::Type keyCode, const char* Name, int Command);
-            bool	    SetShiftKey(AppCUI::Input::Key::Type keyCode);
+            bool	    Set(AppCUI::Input::Key keyCode, const char* Name, int Command);
+            bool	    SetShiftKey(AppCUI::Input::Key keyCode);
             bool        OnMouseOver(int x, int y, bool & repaint);
             bool        OnMouseDown();
             bool        OnMouseUp(int & command);            
-            int		    GetCommandForKey(AppCUI::Input::Key::Type keyCode);
+            int		    GetCommandForKey(AppCUI::Input::Key keyCode);
             inline bool IsVisible() const { return Visible; }
         };
 
@@ -153,7 +153,7 @@ namespace AppCUI
         public:
             bool    Create(unsigned int width, unsigned int height);
             void    Paint(AppCUI::Console::Renderer & renderer) override;
-            bool    OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool    OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         };
         struct Application
         {
@@ -181,8 +181,8 @@ namespace AppCUI
             
             void    Destroy();
             void	ComputePositions();
-            void	ProcessKeyPress(AppCUI::Input::Key::Type keyCode, int AsciiCode);
-            void	ProcessShiftState(AppCUI::Input::Key::Type ShiftState);
+            void	ProcessKeyPress(AppCUI::Input::Key keyCode, int AsciiCode);
+            void	ProcessShiftState(AppCUI::Input::Key ShiftState);
             void	OnMouseDown(int x, int y, int buttonState);
             void	OnMouseUp(int x, int y, int buttonState);
             void	OnMouseMove(int x, int y, int buttonState);

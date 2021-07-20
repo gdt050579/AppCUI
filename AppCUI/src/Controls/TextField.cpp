@@ -227,7 +227,7 @@ void TextField::ClearSelection()
     Members->Modified = true;
 }
 
-bool TextField::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
 	

@@ -54,7 +54,7 @@ public:
     } ScrollBars;
 	int										ControlID;
 	int										GroupID;
-    AppCUI::Input::Key::Type                HotKey;
+    AppCUI::Input::Key                HotKey;
     unsigned int                            HotKeyOffset;
 	unsigned int							Flags, ControlsCount, CurrentControlIndex;
 	AppCUI::Controls::Control				**Controls;
@@ -197,7 +197,7 @@ public:
 
     void	SetToolTip(char *ss);
     void	Paint(Console::Renderer & renderer);
-    bool	OnKeyEvent(int KeyCode, char AsciiCode);
+    bool	OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode);
     void	OnAfterResize();
     void	AnalyzeCurrentText();
     void	SetSelection(unsigned int start, unsigned int end);
@@ -248,7 +248,7 @@ struct ListViewColumn
     unsigned short		Width;
     unsigned char       HotKeyOffset;
     unsigned char       NameLength;
-    Key::Type			HotKeyCode;
+    Key			HotKeyCode;
     unsigned int		Flags;
     TextAlignament		Align;
 
@@ -360,7 +360,7 @@ public:
     bool                OnMouseDrag(int x, int y, int butonState);
     bool                OnMouseOver(int x, int y);
     void				SetSortColumn(unsigned int colIndex);
-    bool				OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode);
+    bool				OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
     void				SendMsg(Event eventType);
     bool				Sort();
 

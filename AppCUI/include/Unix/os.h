@@ -20,10 +20,10 @@ namespace AppCUI
         class Terminal : public AbstractTerminal
         {
         private:
-            std::map<SDL_Scancode, AppCUI::Input::Key::Type> KeyTranslation;
-            std::map<SDL_Scancode, AppCUI::Input::Key::Type> AsciiTranslation
+            std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
+            std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation
             ;
-            AppCUI::Input::Key::Type shiftState;
+            AppCUI::Input::Key shiftState;
 
             SDL_Window* window;
             SDL_Renderer* renderer;

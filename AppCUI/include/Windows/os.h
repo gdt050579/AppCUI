@@ -15,8 +15,8 @@ namespace AppCUI
             DWORD                       stdMode;
             CHAR_INFO*                  ConsoleBuffer;
             unsigned int                ConsoleBufferCount;
-            AppCUI::Input::Key::Type    KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
-            AppCUI::Input::Key::Type    shiftState;
+            AppCUI::Input::Key    KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
+            AppCUI::Input::Key    shiftState;
 
             bool                        ResizeConsoleBuffer(unsigned int width, unsigned int height);
         public:

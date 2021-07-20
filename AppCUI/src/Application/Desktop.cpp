@@ -21,7 +21,7 @@ void DesktopControl::Paint(AppCUI::Console::Renderer & renderer)
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);
 }
-bool DesktopControl::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool DesktopControl::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
     if (keyCode == Key::Escape)
     {

@@ -64,7 +64,7 @@ void CanvasViewer::OnUpdateScrollBars()
     UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth());
 }
 
-bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode) {
+bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode) {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
 
     switch (KeyCode) {

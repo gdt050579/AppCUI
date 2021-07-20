@@ -54,22 +54,21 @@ namespace AppCUI
     };
     namespace Input
     {
-        namespace Key
+        enum class Key : unsigned int
         {
-            enum Type : unsigned int
-            {
-                None = 0,
-                F1 = 1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
-                Enter, Escape, Insert, Delete, Backspace, Tab,
-                Left, Up, Down, Right, PageUp, PageDown, Home, End, Space,
-                A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-                N0, N1, N2, N3, N4, N5, N6, N7, N8, N9,
-                Count, // must be the last
-                Alt = 0x1000,
-                Ctrl = 0x2000,
-                Shift = 0x4000
-            };
-        }
+            None = 0,
+            F1 = 1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+            Enter, Escape, Insert, Delete, Backspace, Tab,
+            Left, Up, Down, Right, PageUp, PageDown, Home, End, Space,
+            A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+            N0, N1, N2, N3, N4, N5, N6, N7, N8, N9,
+            Count, // must be the last
+
+            // Modifier flas
+            Alt = 0x1000,
+            Ctrl = 0x2000,
+            Shift = 0x4000
+        };
     };
     namespace Utils
     {
@@ -203,15 +202,15 @@ namespace AppCUI
             enum { KEY_SHIFT_MASK = 0x7000, KEY_SHIFT_BITS = 12, KEY_CODE_MASK = 0xFF };
 
             // Returns the name of the Key without modifiers
-            static const char*	            GetKeyName(AppCUI::Input::Key::Type keyCode);
-            static const char*	            GetKeyNamePadded(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize = nullptr);
-            static const char*	            GetKeyModifierName(AppCUI::Input::Key::Type keyCode, unsigned int * nameSize = nullptr);
-            static bool			            ToString(AppCUI::Input::Key::Type keyCode, char* text, int maxTextSize);
-            static bool			            ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String *text);
-            static bool			            ToString(AppCUI::Input::Key::Type keyCode, AppCUI::Utils::String &text);
-            static AppCUI::Input::Key::Type	FromString(const char * stringRepresentation);
-            static AppCUI::Input::Key::Type	FromString(AppCUI::Utils::String *text);
-            static AppCUI::Input::Key::Type	FromString(AppCUI::Utils::String &text);
+            static const char*	            GetKeyName(AppCUI::Input::Key keyCode);
+            static const char*	            GetKeyNamePadded(AppCUI::Input::Key keyCode, unsigned int * nameSize = nullptr);
+            static const char*	            GetKeyModifierName(AppCUI::Input::Key keyCode, unsigned int * nameSize = nullptr);
+            static bool			            ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
+            static bool			            ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String *text);
+            static bool			            ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String &text);
+            static AppCUI::Input::Key	FromString(const char * stringRepresentation);
+            static AppCUI::Input::Key	FromString(AppCUI::Utils::String *text);
+            static AppCUI::Input::Key	FromString(AppCUI::Utils::String &text);
         };
     };
     namespace OS
@@ -717,7 +716,7 @@ namespace AppCUI
             typedef bool(*BeforeResizeHandler) (AppCUI::Controls::Control *control, int newWidth, int newHeight, void *Context);
             typedef void(*AfterMoveHandler) (AppCUI::Controls::Control *control, int newX, int newY, void *Context);
             typedef bool(*UpdateCommandBarHandler)(AppCUI::Controls::Control *control, void* Context);
-            typedef bool(*KeyEventHandler)(AppCUI::Controls::Control *control, int KeyCode, int AsciiCode, void *Context);
+            typedef bool(*KeyEventHandler)(AppCUI::Controls::Control *control, AppCUI::Input::Key KeyCode, int AsciiCode, void *Context);
             typedef void(*PaintHandler)(AppCUI::Controls::Control *control, void *Context);
             typedef void(*OnFocusHandler)(AppCUI::Controls::Control *control, void *Context);
             typedef bool(*EventHandler)(AppCUI::Controls::Control *control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void *Context);
@@ -763,7 +762,7 @@ namespace AppCUI
 
             // hot key
             bool			SetHotKey(char hotKey);
-            Input::Key::Type GetHotKey();
+            Input::Key GetHotKey();
             void			ClearHotKey();
 
             // status
@@ -822,7 +821,7 @@ namespace AppCUI
             virtual void	Paint(Console::Renderer & renderer);
 
             // Evenimente
-            virtual bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode);
+            virtual bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
             virtual void	OnHotKey();
             virtual void	OnFocus();
             virtual void	OnLoseFocus();
@@ -885,7 +884,7 @@ namespace AppCUI
             bool	OnBeforeResize(int newWidth, int newHeight) override;
             void	OnAfterResize(int newWidth, int newHeight) override;
             bool	CenterScreen();
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             bool	Exit(int dialogResult);
             bool	IsWindowInResizeMode();
 
@@ -905,7 +904,7 @@ namespace AppCUI
             void	OnMouseReleased(int x, int y, int Button) override;
             bool	OnMouseDrag(int x, int y, int Button) override;
             void	Paint(Console::Renderer & renderer) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void	OnHotKey() override;
             bool    OnMouseEnter() override;
             bool    OnMouseLeave() override;
@@ -916,7 +915,7 @@ namespace AppCUI
             bool	Create(Control *parent, const char * text, const char * layout, int controlID = 0);
             void	OnMouseReleased(int x, int y, int Button) override;
             void	Paint(Console::Renderer & renderer) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void	OnHotKey() override;
             bool    OnMouseEnter() override;
             bool    OnMouseLeave() override;
@@ -927,7 +926,7 @@ namespace AppCUI
             bool	Create(Control *parent, const char * text, const char * layout, int groupID, int controlID = 0);
             void	OnMouseReleased(int x, int y, int Button) override;
             void	Paint(Console::Renderer & renderer) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void	OnHotKey() override;
             bool    OnMouseEnter() override;
             bool    OnMouseLeave() override;
@@ -937,7 +936,7 @@ namespace AppCUI
         public:
             bool	Create(Control *parent, const char * layout, bool vertical);
             void	Paint(Console::Renderer & renderer) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             bool	SetSecondPanelSize(int newSize);
             bool	HideSecondPanel();
             bool	MaximizeSecondPanel();
@@ -972,7 +971,7 @@ namespace AppCUI
         {
         public:
             bool	Create(Control *parent, const char * text, const char * layout, TextFieldFlags::Type flags = TextFieldFlags::NONE, Handlers::SyntaxHighlightHandler handler = nullptr, void* Context = nullptr);
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void	OnAfterSetText(const char *text) override;
             void	Paint(Console::Renderer & renderer) override;
             void	OnFocus() override;
@@ -1000,7 +999,7 @@ namespace AppCUI
         public:
             bool		Create(Control *parent, const char * text,  const char * layout, TextAreaFlags flags = TextAreaFlags::NONE, Handlers::SyntaxHighlightHandler handler = nullptr, void* handlerContext = nullptr);
             void	    Paint(Console::Renderer & renderer) override;
-            bool	    OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	    OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void        OnUpdateScrollBars() override;
             void		OnFocus() override;
             void		OnAfterResize(int newWidth, int newHeight) override;
@@ -1043,7 +1042,7 @@ namespace AppCUI
             void	OnMouseReleased(int x, int y, int buttonState) override;
             bool    OnMouseLeave() override;
             bool    OnMouseOver(int x, int y) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void	OnAfterAddControl(Control *ctrl) override;
             void	Paint(Console::Renderer & renderer) override;
             Control* GetCurrentTab();
@@ -1068,7 +1067,7 @@ namespace AppCUI
             bool	Create(Control* parent, const char * layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags::Type flags = ViewerFlags::NONE);
             bool	Create(Control* parent, const char * title, const char * layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags::Type flags = ViewerFlags::NONE);
             void	Paint(Console::Renderer & renderer) override;
-            bool	OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             bool    OnMouseLeave() override;
             bool    OnMouseEnter() override;
             void    OnUpdateScrollBars() override;
@@ -1111,7 +1110,7 @@ namespace AppCUI
             bool			Create(Control *parent, const char * layout, ListViewFlags flags);
             bool            Reserve(unsigned int itemsCount);
             void	        Paint(Console::Renderer & renderer) override;
-            bool	        OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool	        OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void			OnMouseReleased(int x, int y, int butonState) override;
             void	        OnMousePressed(int x, int y, int Button) override;
             bool	        OnMouseDrag(int x, int y, int Button) override;
@@ -1201,7 +1200,7 @@ namespace AppCUI
             bool			AddItem(const char* text, ItemData usedData = { 0 });
             void			DeleteAllItems();
 
-            bool			OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode) override;
+            bool			OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
             void			OnHotKey() override;
             bool            OnMouseLeave() override;
             bool            OnMouseEnter() override;
@@ -1276,7 +1275,7 @@ namespace AppCUI
         public:
             CommandBar();
             void  Init(void* controller);
-            bool  SetCommand(AppCUI::Input::Key::Type keyCode, const char* Name, int CommandID);
+            bool  SetCommand(AppCUI::Input::Key keyCode, const char* Name, int CommandID);
         };
 
         struct Config
@@ -1393,13 +1392,13 @@ inline constexpr AppCUI::Application::Flags::Type operator|(AppCUI::Application:
 {
     return static_cast<AppCUI::Application::Flags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 } 
-inline constexpr AppCUI::Input::Key::Type operator|(AppCUI::Input::Key::Type f1, AppCUI::Input::Key::Type f2)
+inline constexpr AppCUI::Input::Key operator|(AppCUI::Input::Key f1, AppCUI::Input::Key f2)
 {
-    return static_cast<AppCUI::Input::Key::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+    return static_cast<AppCUI::Input::Key>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
-inline constexpr void operator|=(AppCUI::Input::Key::Type & f1, AppCUI::Input::Key::Type f2)
+inline constexpr void operator|=(AppCUI::Input::Key & f1, AppCUI::Input::Key f2)
 {
-    f1 = static_cast<AppCUI::Input::Key::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
+    f1 = static_cast<AppCUI::Input::Key>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
 }
 inline constexpr AppCUI::Controls::WindowFlags::Type operator|(AppCUI::Controls::WindowFlags::Type f1, AppCUI::Controls::WindowFlags::Type f2)
 {

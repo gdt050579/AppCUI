@@ -965,12 +965,12 @@ bool AppCUI::Controls::Control::SetHotKey(char hotKey)
 	CHECK((((hotKey >= 'a') && (hotKey <= 'z')) || ((hotKey >= '0') && (hotKey <= '9'))), false, "Invalid hot key - accepted values are ['A'-'Z'] and ['0'-'9']");
 	if ((hotKey >= 'a') && (hotKey <= 'z'))
 	{
-		CTRLC->HotKey = (Key::Type)(Key::Alt | ((unsigned int)Key::A + (hotKey - 'a')));
+		CTRLC->HotKey = (Key)(((unsigned int)Key::Alt) | ((unsigned int)Key::A + (hotKey - 'a')));
 		return true;
 	}
 	if ((hotKey >= '0') && (hotKey <= '9'))
 	{
-		CTRLC->HotKey = (Key::Type)(Key::Alt | ((unsigned int)Key::N0 + (hotKey - '0')));
+		CTRLC->HotKey = (Key)(((unsigned int)Key::Alt) | ((unsigned int)Key::N0 + (hotKey - '0')));
 		return true;
 	}
     return false;
@@ -987,7 +987,7 @@ bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bot
     CTRLC->Margins.Bottom = bottom;
 	return true;
 }
-AppCUI::Input::Key::Type	 AppCUI::Controls::Control::GetHotKey()
+AppCUI::Input::Key	 AppCUI::Controls::Control::GetHotKey()
 {
 	return CTRLC->HotKey;
 }
@@ -1062,7 +1062,7 @@ bool AppCUI::Controls::Control::IsInitialized()
 	return CTRLC->Inited;
 }
 // Evenimente
-bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	return false;
 }

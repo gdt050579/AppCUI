@@ -91,7 +91,7 @@ Control* FindNextControl(Control *parent, bool forward, bool startFromCurrentOne
 		return parent;
 	return nullptr;
 }
-bool ProcessHotKey(Control *ctrl,int KeyCode)
+bool ProcessHotKey(Control *ctrl,AppCUI::Input::Key KeyCode)
 {
 	if (ctrl == nullptr)
 		return false;
@@ -401,7 +401,7 @@ void Window::OnAfterResize(int newWidth, int newHeight)
         UpdateWindowsButtonsPoz(Members);
     }
 }
-bool Window::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode)
+bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
 {
 	Control* tmp;
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
@@ -423,7 +423,7 @@ bool Window::OnKeyEvent(AppCUI::Input::Key::Type KeyCode, char AsciiCode)
 		RaiseEvent(Event::EVENT_WINDOW_ACCEPT);
 		return true;
 	}
-	if ((KeyCode & (Key::Shift | Key::Alt | Key::Ctrl)) == Key::Alt)
+	if ((((unsigned int)KeyCode) & (unsigned int)(Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int)Key::Alt))
 	{
 		return ProcessHotKey(this, KeyCode);
 	}

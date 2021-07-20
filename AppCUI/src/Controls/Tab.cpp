@@ -398,7 +398,7 @@ void Tab::OnMouseReleased(int x, int y, int butonState)
     if (Members->HoveredTabIndex >= 0)
         SetCurrentTabPage((unsigned int)Members->HoveredTabIndex);
 }
-bool Tab::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {	
 	switch (keyCode)
 	{

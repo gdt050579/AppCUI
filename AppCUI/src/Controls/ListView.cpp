@@ -46,17 +46,17 @@ bool ListViewColumn::SetName(const char * text)
             char hotKey = *(text + 1);
             if ((hotKey >= 'a') && (hotKey <= 'z'))
             {
-                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'a')));
+                this->HotKeyCode = (Key)(((unsigned int)Key::Ctrl) | ((unsigned int)Key::A + (hotKey - 'a')));
                 this->HotKeyOffset = (unsigned char)(p - this->Name);
             }
             if ((hotKey >= 'A') && (hotKey <= 'Z'))
             {
-                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::A + (hotKey - 'A')));
+                this->HotKeyCode = (Key)(((unsigned int)Key::Ctrl) | ((unsigned int)Key::A + (hotKey - 'A')));
                 this->HotKeyOffset = (unsigned char)(p - this->Name);
             }
             if ((hotKey >= '0') && (hotKey <= '9'))
             {
-                this->HotKeyCode = (Key::Type)(Key::Ctrl | ((unsigned int)Key::N0 + (hotKey - '0')));
+                this->HotKeyCode = (Key)(((unsigned int)Key::Ctrl) | ((unsigned int)Key::N0 + (hotKey - '0')));
                 this->HotKeyOffset = (unsigned char)(p - this->Name);
             }
             text++;
@@ -655,7 +655,7 @@ void ListViewControlContext::MoveTo(int index)
 	if (originalPoz != index) 
 		SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
 }
-bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	Utils::String	temp;
 	ListViewItem	*lvi;
@@ -686,12 +686,12 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char A
                 UpdateColumnsWidth();
 				return true;
 		};
-		if ((AsciiCode>0) || (keyCode>0))
-		{
-			Columns.ResizeModeEnabled = false;
+        if ((AsciiCode > 0) || (keyCode != Key::None))
+        {
+            Columns.ResizeModeEnabled = false;
             Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
-			return true;
-		}
+            return true;
+        }
 	}
 	else {
 		if (Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)
@@ -1190,7 +1190,7 @@ void		ListView::Paint(Console::Renderer & renderer)
 	CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
 	Members->Paint(renderer);
 }
-bool		ListView::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool		ListView::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
 }

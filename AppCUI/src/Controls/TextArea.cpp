@@ -596,7 +596,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
 }
 
-bool TextAreaControlContext::OnKeyEvent(int KeyCode, char AsciiCode)
+bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
 {
 	switch (KeyCode)
 	{
@@ -713,7 +713,7 @@ void		TextArea::Paint(Console::Renderer & renderer)
 	CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
 	Members->Paint(renderer);
 }
-bool		TextArea::OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode)
+bool		TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
 	return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
 }
