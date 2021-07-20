@@ -85,8 +85,8 @@ namespace AppCUI
         };
         class CommandBarController
         {
-            CommandBarField	        Fields[MAX_COMMANDBAR_FIELD_NAME][AppCUI::Input::Key::Count];
-            CommandBarFieldIndex    VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][AppCUI::Input::Key::Count];
+            CommandBarField	        Fields[MAX_COMMANDBAR_FIELD_NAME][(unsigned int)AppCUI::Input::Key::Count];
+            CommandBarFieldIndex    VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int)AppCUI::Input::Key::Count];
             int					    IndexesCount[MAX_COMMANDBAR_SHIFTSTATES];
             bool			        HasKeys[MAX_COMMANDBAR_SHIFTSTATES];
 
@@ -100,7 +100,7 @@ namespace AppCUI
             } ShiftStatus;
             
             AppCUI::Application::Config	*   Cfg;
-            AppCUI::Input::Key        CurrentShiftKey;
+            AppCUI::Input::Key              CurrentShiftKey;
             int						        LastCommand;
             CommandBarField*	            PressedField;
             CommandBarField*	            HoveredField;
