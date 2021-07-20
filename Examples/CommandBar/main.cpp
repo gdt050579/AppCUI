@@ -28,9 +28,9 @@ public:
         cmd.SetCommand(Key::F2, "Print a number", COMMAND_ID_PRINT_A_NUMBER);
         cmd.SetCommand(Key::Alt | Key::F1, "Clear text", COMMAND_ID_CLEAR_TEXT);
         cmd.SetCommand(Key::N1, "Numpad or digit", COMMAND_ID_NUMPAD);
-        cmd.SetCommand(Key::Enter, "Enter", COMMAND_ID_ENTER);
+        cmd.SetCommand(Key::Enter, "Some action", COMMAND_ID_ENTER);
         cmd.SetCommand(Key::Alt|Key::A, "Alt Mod Letter", COMMAND_ID_ALT);
-        cmd.SetCommand(Key::Alt|Key::Ctrl|Key::F1, "Alt+Ctrl Mod F1", COMMAND_ID_ALT_CTRL);
+        cmd.SetCommand(Key::Alt|Key::Ctrl|Key::F1, "Alt+Ctrl command pressed", COMMAND_ID_ALT_CTRL);
         return true;
     }
     bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
