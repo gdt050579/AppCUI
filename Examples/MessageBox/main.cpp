@@ -24,7 +24,7 @@ public:
         b4.Create(this, "Ask a &Yes/No/Cancel question", "x:1,y:7,w:36", BUTTON_ID_SHOW_YNC_QUESTION);
         b5.Create(this, "Show a &warning !", "x:1,y:9,w:36", BUTTON_ID_SHOW_WARNING);
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

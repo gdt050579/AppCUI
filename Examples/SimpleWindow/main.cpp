@@ -14,7 +14,7 @@ public:
         l1.Create(this, "This is a simple Window example that creates a 40x20 fixed window that  will close if you click on the [X]  button from the bottom-top corner.", 
                         "x:1,y:1,w:36,h:5");
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

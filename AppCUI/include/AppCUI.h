@@ -687,28 +687,25 @@ namespace AppCUI
     };
     namespace Controls
     {
-        namespace Event
+        enum class Event : unsigned int
         {
-            enum Type: unsigned int
-            {
-                EVENT_WINDOW_CLOSE,
-                EVENT_WINDOW_ACCEPT,
-                EVENT_BUTTON_CLICKED,
-                EVENT_CHECKED_STATUS_CHANGED,
-                EVENT_TEXT_CHANGED,
-                EVENT_TEXTFIELD_VALIDATE,
-                EVENT_TAB_CHANGED,
-                EVENT_LISTVIEW_CURRENTITEM_CHANGED,
-                EVENT_LISTVIEW_SELECTION_CHANGED,
-                EVENT_LISTVIEW_ITEM_CHECKED,
-                EVENT_LISTVIEW_ITEM_CLICKED,
-                EVENT_COMBOBOX_SELECTED_ITEM_CHANGED,
-                EVENT_COMBO_CLOSED,
-                EVENT_TERMINATE_APPLICATION,
-                EVENT_COMMAND,
-                EVENT_CUSTOM,
-            };
-        }
+            EVENT_WINDOW_CLOSE,
+            EVENT_WINDOW_ACCEPT,
+            EVENT_BUTTON_CLICKED,
+            EVENT_CHECKED_STATUS_CHANGED,
+            EVENT_TEXT_CHANGED,
+            EVENT_TEXTFIELD_VALIDATE,
+            EVENT_TAB_CHANGED,
+            EVENT_LISTVIEW_CURRENTITEM_CHANGED,
+            EVENT_LISTVIEW_SELECTION_CHANGED,
+            EVENT_LISTVIEW_ITEM_CHECKED,
+            EVENT_LISTVIEW_ITEM_CLICKED,
+            EVENT_COMBOBOX_SELECTED_ITEM_CHANGED,
+            EVENT_COMBO_CLOSED,
+            EVENT_TERMINATE_APPLICATION,
+            EVENT_COMMAND,
+            EVENT_CUSTOM,
+        };
         typedef unsigned int ItemHandle;
         constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
         class EXPORT Control;
@@ -723,7 +720,7 @@ namespace AppCUI
             typedef bool(*KeyEventHandler)(AppCUI::Controls::Control *control, int KeyCode, int AsciiCode, void *Context);
             typedef void(*PaintHandler)(AppCUI::Controls::Control *control, void *Context);
             typedef void(*OnFocusHandler)(AppCUI::Controls::Control *control, void *Context);
-            typedef bool(*EventHandler)(AppCUI::Controls::Control *control, const void* sender, AppCUI::Controls::Event::Type eventType, int controlID, void *Context);
+            typedef bool(*EventHandler)(AppCUI::Controls::Control *control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void *Context);
             typedef void(*MousePressedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*MouseReleasedHandler) (AppCUI::Controls::Control *control, int x, int y, int buttonState, void *Context);
             typedef void(*SyntaxHighlightHandler) (AppCUI::Controls::Control * control, AppCUI::Console::Character* characters, unsigned int charactersCount, void* Context);
@@ -787,8 +784,8 @@ namespace AppCUI
             bool			GetChildIndex(Control *control, unsigned int &index);
 
             // Events
-            void			RaiseEvent(Event::Type eventType);
-            void			RaiseEvent(Event::Type eventType, int ID);
+            void			RaiseEvent(Event eventType);
+            void			RaiseEvent(Event eventType, int ID);
             
             // focus & expact/pack view
             bool			SetFocus();
@@ -839,7 +836,7 @@ namespace AppCUI
             virtual bool    OnMouseLeave();
 
             virtual void	OnMouseWheel(int direction);
-            virtual bool	OnEvent(const void* sender, Event::Type eventType, int controlID);
+            virtual bool	OnEvent(const void* sender, Event eventType, int controlID);
             virtual bool	OnUpdateCommandBar(AppCUI::Application::CommandBar & commandBar);
             virtual void    OnUpdateScrollBars();
 
@@ -1376,7 +1373,7 @@ namespace AppCUI
             } ComboBox;
             void SetDarkTheme();
         };
-        typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID);
+        typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event eventType, int controlID);
 
         EXPORT Config*      GetAppConfig();
         EXPORT bool         Init(Application::Flags::Type flags = Application::Flags::NONE, EventHandler eventCallback = nullptr);
@@ -1386,7 +1383,7 @@ namespace AppCUI
         EXPORT bool         GetDesktopSize(AppCUI::Console::Size & size);
         EXPORT void         Repaint();
         EXPORT void         RecomputeControlsLayout();
-        EXPORT void         RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
+        EXPORT void         RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event eventType, int controlID);
         EXPORT void         Close();
     };
 }

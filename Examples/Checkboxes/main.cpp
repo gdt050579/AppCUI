@@ -22,7 +22,7 @@ public:
                   A_CHECKBOX_ID);
         c3_info.Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

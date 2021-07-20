@@ -7,7 +7,7 @@ using namespace AppCUI::Dialogs;
 #define MSGBOX_BUTTONS_OK_CANCEL		2
 #define MSGBOX_BUTTONS_YES_NO_CANCEL	3
 
-bool MessageBoxWindowEventHandler(Control *control, const void* sender, AppCUI::Controls::Event::Type eventType, int controlID,void * Context)
+bool MessageBoxWindowEventHandler(Control *control, const void* sender, AppCUI::Controls::Event eventType, int controlID,void * Context)
 {
 	switch (eventType)
 	{

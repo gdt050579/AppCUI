@@ -202,7 +202,7 @@ public:
     void	AnalyzeCurrentText();
     void	SetSelection(unsigned int start, unsigned int end);
     void	SetTabCharacter(char tabCharacter);
-    void	SendMsg(Event::Type eventType);
+    void	SendMsg(Event eventType);
 };
 
 struct TabControlContext : public ControlContext
@@ -361,7 +361,7 @@ public:
     bool                OnMouseOver(int x, int y);
     void				SetSortColumn(unsigned int colIndex);
     bool				OnKeyEvent(AppCUI::Input::Key::Type keyCode, char AsciiCode);
-    void				SendMsg(Event::Type eventType);
+    void				SendMsg(Event eventType);
     bool				Sort();
 
     void				FilterItems();

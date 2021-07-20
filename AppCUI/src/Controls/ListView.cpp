@@ -1136,7 +1136,7 @@ void ListViewControlContext::UpdateSearch(int startPoz)
 		}
 	}
 }
-void ListViewControlContext::SendMsg(Event::Type eventType)
+void ListViewControlContext::SendMsg(Event eventType)
 {
 	Host->RaiseEvent(eventType);
 }

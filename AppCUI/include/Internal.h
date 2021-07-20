@@ -199,7 +199,7 @@ namespace AppCUI
             bool    Uninit();
             bool    ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
             void    Paint();
-            void    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID);
+            void    RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event eventType, int controlID);
         };
     }
     namespace Application

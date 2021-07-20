@@ -50,7 +50,7 @@ public:
         t5.Create(this, "Capital Letters and numbers (12345)", "x:19,y:11,w:48", TextFieldFlags::SYNTAX_HIGHLIGHTING, HighlightNumberAndCapitalLetters);
         t5.SetHotKey('H');
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

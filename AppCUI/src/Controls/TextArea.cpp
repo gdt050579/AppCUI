@@ -663,7 +663,7 @@ void TextAreaControlContext::SetReadOnly(bool value)
 	else
 		this->Flags -= ((this->Flags) & (unsigned int)TextAreaFlags::READONLY);
 }
-void TextAreaControlContext::SendMsg(Event::Type eventType)
+void TextAreaControlContext::SendMsg(Event eventType)
 {
 	Host->RaiseEvent(eventType);
 }

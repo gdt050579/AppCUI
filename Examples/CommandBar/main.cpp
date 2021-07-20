@@ -33,7 +33,7 @@ public:
         cmd.SetCommand(Key::Alt|Key::Ctrl|Key::F1, "Alt+Ctrl command pressed", COMMAND_ID_ALT_CTRL);
         return true;
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

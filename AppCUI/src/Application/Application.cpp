@@ -72,7 +72,7 @@ void AppCUI::Application::Repaint()
 {
     app->Paint();
 }
-void AppCUI::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID)
+void AppCUI::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event eventType, int controlID)
 {
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
@@ -645,7 +645,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
 }
-void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event::Type eventType, int controlID)
+void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control *control, AppCUI::Controls::Control *sourceControl, AppCUI::Controls::Event eventType, int controlID)
 {
     while (control != nullptr)
     {

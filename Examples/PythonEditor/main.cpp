@@ -142,7 +142,7 @@ public:
         this->Create("Python Editor", "a:c,w:40,h:20", WindowFlags::SIZEABLE);
         editor.Create(this, python_code, "x:0,y:0,w:100%,h:100%", TextAreaFlags::SHOW_LINE_NUMBERS|TextAreaFlags::SCROLLBARS|TextAreaFlags::SYNTAX_HIGHLIGHTING, PythonHighligh);
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

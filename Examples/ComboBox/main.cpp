@@ -21,7 +21,7 @@ public:
         inf3.Create(this, "Select a fruit", "x:1,y:7,w:15");
         cb3.Create(this, "x:18,y:7,w:30", "Apple,Orange,Pinaple");
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

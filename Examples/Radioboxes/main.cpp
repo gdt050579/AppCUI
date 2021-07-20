@@ -23,7 +23,7 @@ public:
         r5.Create(this, "Option &2", "x:30,y:2,w:15", RADIO_GROUP_ID_2);
         r6.Create(this, "&3rd option with\nmultiple lines", "x:30,y:3,w:20,h:2", RADIO_GROUP_ID_2);
     }
-    bool OnEvent(const void* sender, Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

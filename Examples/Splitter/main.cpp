@@ -33,7 +33,7 @@ public:
 
         b1.Create(&pbottom, "&Press me", "l:1,b:0,w:90%,h:2", 100);
     }
-    bool OnEvent(const void* sender, AppCUI::Controls::Event::Type eventType, int controlID) override
+    bool OnEvent(const void* sender, AppCUI::Controls::Event eventType, int controlID) override
     {
         if (eventType == AppCUI::Controls::Event::EVENT_WINDOW_CLOSE)
         {
