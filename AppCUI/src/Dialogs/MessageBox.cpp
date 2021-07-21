@@ -23,7 +23,7 @@ bool MessageBoxWindowEventHandler(Control *control, const void* sender, AppCUI::
     return false;
 }
 
-bool CreateMessageBoxWindow(const char* title, const char * content, WindowFlags::Type flags, int buttonsType, int *result)
+bool CreateMessageBoxWindow(const char* title, const char * content, WindowFlags flags, int buttonsType, int *result)
 {
 	Label		lbInfo;
 	Button		btnOK, btnCancel, btnYes, btnNo;

@@ -113,13 +113,13 @@ bool ProcessHotKey(Control *ctrl,AppCUI::Input::Key KeyCode)
 }
 void UpdateWindowsButtonsPoz(WindowControlContext *wcc)
 {
-    if (!(wcc->Flags & WindowFlags::NOCLOSEBUTTON))
+    if ((wcc->Flags & WindowFlags::NOCLOSEBUTTON)!= WindowFlags::NOCLOSEBUTTON)
     {
         wcc->rCloseButton.Y = 0;
         wcc->rCloseButton.Left = wcc->Layout.Width - 4;
         wcc->rCloseButton.Right = wcc->Layout.Width - 2;
     }
-    if (wcc->Flags & WindowFlags::SIZEABLE) {
+    if ((wcc->Flags & WindowFlags::SIZEABLE)== WindowFlags::SIZEABLE){
         wcc->rMaximizeButton.Y = 0;
         wcc->rMaximizeButton.Left = 1;
         wcc->rMaximizeButton.Right = 3;
@@ -133,7 +133,7 @@ Window::~Window()
 {
 	DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-bool Window::Create(const char* text, const char * layout, WindowFlags::Type Flags)
+bool Window::Create(const char* text, const char * layout, WindowFlags Flags)
 {
 	CONTROL_INIT_CONTEXT(WindowControlContext);
 	CHECK(Init(nullptr, text, layout, false), false, "Failed to create window !");
@@ -149,11 +149,11 @@ bool Window::Create(const char* text, const char * layout, WindowFlags::Type Fla
 	Members->DialogResult = -1;
     Members->winButtonState = WINBUTTON_STATE_NONE;
     UpdateWindowsButtonsPoz(Members);
-    if (Flags & WindowFlags::CENTERED)
+    if ((Flags & WindowFlags::CENTERED)== WindowFlags::CENTERED)
     {
         CHECK(CenterScreen(), false, "Fail to center window to screen !");
     }
-    if (Flags & WindowFlags::MAXIMIZED)
+    if ((Flags & WindowFlags::MAXIMIZED)== WindowFlags::MAXIMIZED)
     {
         CHECK(MaximizeRestore(), false, "Fail to maximize window !");
     }
@@ -166,11 +166,11 @@ void Window::Paint(Console::Renderer & renderer)
     ColorPair colorTitle, colorWindow, colorWindowButton, c1,c2;
     bool doubleLine;
 
-    if ((Members->Flags & WindowFlags::WARNINGBOX) != 0)
+    if ((Members->Flags & WindowFlags::WARNINGBOX) != WindowFlags::NONE)
         wcfg = &Members->Cfg->DialogWarning;
-    else if ((Members->Flags & WindowFlags::ERRORBOX) != 0)
+    else if ((Members->Flags & WindowFlags::ERRORBOX) != WindowFlags::NONE)
         wcfg = &Members->Cfg->DialogError;
-    else if ((Members->Flags & WindowFlags::NOTIFYBOX) != 0)
+    else if ((Members->Flags & WindowFlags::NOTIFYBOX) != WindowFlags::NONE)
         wcfg = &Members->Cfg->DialogNotify;
 
     if (Members->Focused)
@@ -200,7 +200,7 @@ void Window::Paint(Console::Renderer & renderer)
         renderer.WriteCharacterBuffer(Members->Layout.Width/2, 0, Members->Layout.Width - 10, Members->Text, colorTitle, TextAlignament::Center | TextAlignament::Padding);
     }
     // close button
-    if (!(Members->Flags & WindowFlags::NOCLOSEBUTTON))
+    if ((Members->Flags & WindowFlags::NOCLOSEBUTTON)== WindowFlags::NONE)
     {
         switch (Members->winButtonState)
         {
@@ -212,7 +212,7 @@ void Window::Paint(Console::Renderer & renderer)
         renderer.WriteCharacter(Members->rCloseButton.Left + 1, Members->rCloseButton.Y, 'x', c2);
     }
     // maximize button
-    if (Members->Flags & WindowFlags::SIZEABLE)
+    if ((Members->Flags & WindowFlags::SIZEABLE)!= WindowFlags::NONE)
     {
         switch (Members->winButtonState)
         {
@@ -275,12 +275,12 @@ void Window::OnMousePressed(int x, int y, int butonState)
 {
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
 	Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
-    if ((!(Members->Flags & WindowFlags::NOCLOSEBUTTON)) && (Members->rCloseButton.Contains(x, y)))
+    if (((Members->Flags & WindowFlags::NOCLOSEBUTTON)== WindowFlags::NONE) && (Members->rCloseButton.Contains(x, y)))
     {
         Members->winButtonState = WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE;
         return;
     }
-    if (Members->Flags & WindowFlags::SIZEABLE)  
+    if ((Members->Flags & WindowFlags::SIZEABLE)!= WindowFlags::NONE)
     {
         if (Members->rMaximizeButton.Contains(x, y))
         {
@@ -300,7 +300,7 @@ void Window::OnMousePressed(int x, int y, int butonState)
 	//	if (Members->fnMousePressedHandler(this, x, y, butonState,Members->fnMouseHandlerContext))
 	//		return;
 	//}
-    if (!(Members->Flags & WindowFlags::FIXED))
+    if ((Members->Flags & WindowFlags::FIXED)== WindowFlags::NONE)
     {
         Members->dragStatus = WINDOW_DRAG_STATUS_MOVE;
         Members->dragOffsetX = x;
@@ -349,14 +349,14 @@ bool Window::OnMouseDrag(int x, int y,  int butonState)
 bool Window::OnMouseOver(int x, int y)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    if ((!(Members->Flags & WindowFlags::NOCLOSEBUTTON)) && (Members->rCloseButton.Contains(x, y)))
+    if (((Members->Flags & WindowFlags::NOCLOSEBUTTON)== WindowFlags::NONE) && (Members->rCloseButton.Contains(x, y)))
     {
         if (Members->winButtonState == WINBUTTON_STATE_CLOSE)
             return false; // suntem deja pe buton
         Members->winButtonState = WINBUTTON_STATE_CLOSE;
         return true;
     }
-    if (Members->Flags & WindowFlags::SIZEABLE)
+    if ((Members->Flags & WindowFlags::SIZEABLE)!= WindowFlags::NONE)
     {
         if (Members->rMaximizeButton.Contains(x, y))
         {
@@ -389,7 +389,7 @@ bool Window::OnMouseLeave()
 bool Window::OnBeforeResize(int newWidth,int newHeight)
 {
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-	if ((Members->Flags & WindowFlags::SIZEABLE) == 0)
+	if ((Members->Flags & WindowFlags::SIZEABLE) == WindowFlags::NONE)
 		return false;
 	return (newWidth >= Members->MinWidth) && (newWidth <= Members->MaxWidth) && (newHeight >= Members->MinHeight) && (newHeight <= Members->MaxHeight);
 }

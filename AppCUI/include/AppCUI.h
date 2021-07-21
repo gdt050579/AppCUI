@@ -862,25 +862,22 @@ namespace AppCUI
 
         };
 
-        namespace WindowFlags
+        enum class WindowFlags : unsigned int
         {
-            enum Type : unsigned int
-            {
-                NONE = 0,
-                SIZEABLE = 0x000100,
-                NOTIFYBOX = 0x000200,
-                ERRORBOX = 0x000400,
-                WARNINGBOX = 0x000800,
-                NOCLOSEBUTTON = 0x001000,
-                FIXED = 0x004000,
-                CENTERED = 0x008000,
-                MAXIMIZED = 0x010000
-            };
-        }
+            NONE            = 0,
+            SIZEABLE        = 0x000100,
+            NOTIFYBOX       = 0x000200,
+            ERRORBOX        = 0x000400,
+            WARNINGBOX      = 0x000800,
+            NOCLOSEBUTTON   = 0x001000,
+            FIXED           = 0x004000,
+            CENTERED        = 0x008000,
+            MAXIMIZED       = 0x010000
+        };
         class EXPORT Window : public Control 
         {
         public:
-            bool	Create(const char* text, const char * layout, WindowFlags::Type windowsFlags = WindowFlags::NONE);
+            bool	Create(const char* text, const char * layout, WindowFlags windowsFlags = WindowFlags::NONE);
             void	Paint(Console::Renderer & renderer) override;
             void	OnMousePressed(int x, int y, int Button) override;
             void	OnMouseReleased(int x, int y, int Button) override;
@@ -1394,7 +1391,6 @@ namespace AppCUI
 
 // inline OR operator for flags
 ADD_FLAG_OPERATORS(AppCUI::Application::Flags::Type, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags::Type, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags::Type, unsigned int)
 
 
@@ -1404,6 +1400,7 @@ ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
 
