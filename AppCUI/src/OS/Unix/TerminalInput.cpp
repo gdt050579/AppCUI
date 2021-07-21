@@ -1,13 +1,5 @@
 #include "os.h"
 
-// See docs/TERMINAL.md
-
-/*
-    Some of the keys are not yet supported.
-    KeyTranslation is used for low hanging fruit Key command translation.
-    Advanced commands that fill more than event.keyCode are processed separately
-*/
-
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
