@@ -88,9 +88,9 @@ int TabControlContext::MousePositionToPanel(int x, int y)
 }
 void TabControlContext::PaintTopPanelTab(Console::Renderer & renderer)
 {
-    if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
+    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if (this->Flags & TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
         renderer.DrawHorizontalLineSize(0,0,this->Layout.Width,' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
                                       WriteCharacterBufferFlags::SINGLE_LINE |
@@ -135,9 +135,9 @@ void TabControlContext::PaintTopPanelTab(Console::Renderer & renderer)
 void TabControlContext::PaintBottomPanelTab(Console::Renderer & renderer)
 {
     int y_poz = this->Layout.Height - 1;
-    if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
+    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND)!= TabFlags::TRANSPARENT_BACKGROUND)
         renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if (this->Flags & TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
         renderer.DrawHorizontalLineSize(0, y_poz, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
         WriteCharacterBufferFlags::SINGLE_LINE |
@@ -181,9 +181,9 @@ void TabControlContext::PaintBottomPanelTab(Console::Renderer & renderer)
 }
 void TabControlContext::PaintLeftPanelTab(Console::Renderer & renderer)
 {
-    if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
+    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.FillRectSize(this->TabTitleSize, 0, this->Layout.Width - this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.PageColor);
-    if (this->Flags & TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
         renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
     
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
@@ -219,7 +219,7 @@ void TabControlContext::PaintLeftPanelTab(Console::Renderer & renderer)
 }
 void TabControlContext::PaintListPanelTab(Console::Renderer & renderer)
 {
-    if (!(this->Flags & TabFlags::TRANSPARENT_BACKGROUND))
+    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.Clear(' ', this->Cfg->Tab.PageColor);
 
     WriteCharacterBufferParams params(WriteCharacterBufferFlags::OVERWRITE_COLORS |
@@ -282,7 +282,7 @@ bool TabPage::OnBeforeResize(int newWidth,int newHeight)
 {
 	return true;
 }
-bool Tab::Create(Control *parent, const char * layout, TabFlags::Type flags, unsigned int tabPageSize)
+bool Tab::Create(Control *parent, const char * layout, TabFlags flags, unsigned int tabPageSize)
 {
     CHECK(tabPageSize >= 10, false, "Tab page title size should be bigger than 10");
     CHECK(tabPageSize < 1000, false, "Tab page title size should be smaller than 1000");
@@ -320,7 +320,8 @@ bool Tab::SetCurrentTabPage(unsigned int index)
 			Members->Controls[tr]->SetVisible(false);
 		}
 	}
-    if (Members->Flags & TabFlags::LIST) {
+    if ((Members->Flags & TabFlags::LIST)==TabFlags::LIST) 
+    {
         Members->UpdateMargins();
         AppCUI::Application::RecomputeControlsLayout();
     }

@@ -1019,18 +1019,15 @@ namespace AppCUI
             virtual ~TextArea();
         };
 
-        namespace TabFlags
+        enum class TabFlags: unsigned int
         {
-            enum Type : unsigned int
-            {
-                TOP_TABS                = 0x000000, // default mode
-                BOTTOM_TABS             = 0x000100,
-                LEFT_TABS               = 0x000200,
-                LIST                    = 0x000300,
-                TRANSPARENT_BACKGROUND  = 0x001000,
-                HAS_TABBAR              = 0x002000,
-            };
-        }
+            TOP_TABS                = 0x000000, // default mode
+            BOTTOM_TABS             = 0x000100,
+            LEFT_TABS               = 0x000200,
+            LIST                    = 0x000300,
+            TRANSPARENT_BACKGROUND  = 0x001000,
+            HAS_TABBAR              = 0x002000,
+        };
         class EXPORT TabPage : public Control
         {
         public:
@@ -1040,7 +1037,7 @@ namespace AppCUI
         class EXPORT Tab : public Control
         {
         public:
-            bool	Create(Control *parent, const char * layout, TabFlags::Type flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
+            bool	Create(Control *parent, const char * layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
             bool	SetCurrentTabPage(unsigned int index);
             bool	SetTabPageTitleSize(unsigned int newSize);
             bool	SetTabPageName(unsigned int index, const char* name);
@@ -1399,13 +1396,14 @@ namespace AppCUI
 ADD_FLAG_OPERATORS(AppCUI::Application::Flags::Type, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags::Type, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags::Type, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags::Type, unsigned int)
+
 
 // converted to enum_class
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
+ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
 

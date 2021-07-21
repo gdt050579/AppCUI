@@ -23,7 +23,7 @@ class TabExampleWin : public AppCUI::Controls::Window
     Label inf;
     Button btnClose;
 public:
-    TabExampleWin(TabFlags::Type flags)
+    TabExampleWin(TabFlags flags)
     {
         Utils::LocalString<256> temp;
         temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
@@ -90,7 +90,7 @@ public:
     }
     void ShowTabControl()
     {
-        TabFlags::Type flags;
+        TabFlags flags;
         if (tabTop.IsChecked())
             flags = TabFlags::TOP_TABS;
         if (tabBottom.IsChecked())
