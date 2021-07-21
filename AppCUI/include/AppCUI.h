@@ -338,20 +338,17 @@ namespace AppCUI
             Transparent = 0x10,
         };
 
-        namespace Alignament
+        enum class Alignament : unsigned int
         {
-            enum Type : unsigned int
-            {
-                TopLeft = 0,
-                Top,
-                TopRight,
-                Right,
-                BottomRight,
-                Bottom,
-                BottomLeft,
-                Left,
-                Center
-            };
+            TopLeft = 0,
+            Top,
+            TopRight,
+            Right,
+            BottomRight,
+            Bottom,
+            BottomLeft,
+            Left,
+            Center
         };
         enum class SpecialChars : unsigned int
         {
@@ -482,7 +479,7 @@ namespace AppCUI
             int X, Y, Width, Height;
         public:
             Rect() : X(0), Y(0), Width(0), Height(0) { }
-            bool                 Create(int x, int y, int width, int height, Alignament::Type align);
+            bool                 Create(int x, int y, int width, int height, Alignament align);
             void                 Create(int left, int top, int right, int bottom);
             inline bool          Contains(int x, int y) const { return (x >= this->X) && (y >= this->Y) && (x < (this->X + this->Width)) && (y < (this->Y + this->Height)); }
             inline int           GetCenterX() const { return X + (Width >> 1); }

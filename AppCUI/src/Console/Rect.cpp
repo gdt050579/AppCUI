@@ -2,7 +2,7 @@
 
 using namespace AppCUI::Console;
 
-bool Rect::Create(int x, int y, int width, int height, Alignament::Type align)
+bool Rect::Create(int x, int y, int width, int height, Alignament align)
 {
     CHECK( (width >= 0) && (height >= 0), false, "Invalid width and height (negative values)");    
     switch (align)

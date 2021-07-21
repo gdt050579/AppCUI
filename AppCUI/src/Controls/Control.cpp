@@ -66,7 +66,7 @@ struct LayoutInformation
     int                 x, y;
     int                 width, height;
     int                 a_left, a_top, a_right, a_bottom;
-    Alignament::Type    anchor;
+    Alignament          anchor;
 };
 struct LayoutMetricData
 {
@@ -145,7 +145,7 @@ unsigned char __char_types__[256] = { CHAR_TYPE_EOS,CHAR_TYPE_OTHER,CHAR_TYPE_OT
 // <xxx> (Arrow left, 3 character, Arrow right)
 #define MINIM_SCORLL_BAR_LENGTH                     5
 
-bool HashToAlignament(unsigned int hash, Alignament::Type & result)
+bool HashToAlignament(unsigned int hash, Alignament & result)
 {
     switch (hash)
     {
