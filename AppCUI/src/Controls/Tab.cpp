@@ -289,7 +289,7 @@ bool Tab::Create(Control *parent, const char * layout, TabFlags::Type flags, uns
 	CONTROL_INIT_CONTEXT(TabControlContext);
 	CHECK(Init(parent, "", layout, false), false, "Unable to create tab control !");
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
-	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
+	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)flags;
     Members->TabTitleSize = tabPageSize;
     // margin set
     Members->currentTab = nullptr;

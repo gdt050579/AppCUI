@@ -157,7 +157,7 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
             else
                 lvCol = defaultCol;
         }
-        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || (Flags & ListViewFlags::SORTABLE)==0)
+        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || ((Flags & ListViewFlags::SORTABLE)==ListViewFlags::NONE))
             renderer.WriteSingleLineText(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align, column->NameLength);
         else
             renderer.WriteSingleLineTextWithHotKey(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, lvCol->HotKey, column->HotKeyOffset, column->Align, column->NameLength);
@@ -165,7 +165,7 @@ void ListViewControlContext::DrawColumn(Console::Renderer & renderer)
         if ((this->Focused) && (tr == SortParams.ColumnIndex))
             renderer.WriteSpecialCharacter(x - 1, 1, this->SortParams.Ascendent?SpecialChars::TriangleUp:SpecialChars::TriangleDown, lvCol->HotKey);
         
-        if (!(Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS))
+        if ((Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS)== ListViewFlags::NONE)
         {
             renderer.DrawVerticalLineWithSpecialChar(x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
         }
@@ -204,7 +204,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
     // first column
     int end_first_column = x + ((int)column->Width);
     x += (int)item->XOffset;
-    if ((Flags & ListViewFlags::HAS_CHECKBOXES) != 0) 
+    if ((Flags & ListViewFlags::HAS_CHECKBOXES) != ListViewFlags::NONE) 
     {
         if (x < end_first_column)
         {
@@ -232,27 +232,27 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
     if (Focused)
     {
         if (currentItem) {
-            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
+            if (((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
             else
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
-            if ((Flags & ListViewFlags::HAS_CHECKBOXES) != 0)
+            if ((Flags & ListViewFlags::HAS_CHECKBOXES) != ListViewFlags::NONE)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         } else {
-            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
+            if (((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
     else {
         if (Flags & GATTR_ENABLE)
         {
-            if (((Flags & ListViewFlags::HIDECURRENTITEM) == 0) && (currentItem))
+            if (((Flags & ListViewFlags::HIDECURRENTITEM) == ListViewFlags::NONE) && (currentItem))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
-            if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) && (item->Flags & ITEM_FLAG_SELECTED))
+            if (((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE) && (item->Flags & ITEM_FLAG_SELECTED))
                 renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
-    if (Flags & ListViewFlags::ITEM_SEPARATORS)
+    if ((Flags & ListViewFlags::ITEM_SEPARATORS)!= ListViewFlags::NONE)
     {
         y++;
         ColorPair col = this->Cfg->ListView.ColumnNormal.Separator;
@@ -260,7 +260,7 @@ void ListViewControlContext::DrawItem(Console::Renderer & renderer, ListViewItem
             col = this->Cfg->ListView.ColumnInactive.Separator;
         renderer.DrawHorizontalLineWithSpecialChar(1, y, Layout.Width - 2, SpecialChars::BoxHorizontalSingleLine, col);
         // draw crosses
-        if (!(Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS))
+        if ((Flags & ListViewFlags::HIDE_COLUMNS_SEPARATORS) == ListViewFlags::NONE)
         {
             x = 1 - Columns.XOffset;
             ListViewColumn * column = this->Columns.List;
@@ -287,7 +287,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
 
     renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, false);
     renderer.SetClipMargins(1, 1, 1, 1);
-    if ((Flags & ListViewFlags::HIDE_COLUMNS) == 0) 
+    if ((Flags & ListViewFlags::HIDE_COLUMNS) == ListViewFlags::NONE)
     { 
         DrawColumn(renderer);
     	y++; 
@@ -299,7 +299,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         ListViewItem * item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == this->Items.CurentItemIndex);
         y++;
-        if (Flags & ListViewFlags::ITEM_SEPARATORS)
+        if ((Flags & ListViewFlags::ITEM_SEPARATORS)!= ListViewFlags::NONE)
             y++;
         index++;
     }
@@ -315,7 +315,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
         renderer.ResetClip();
 
         // search bar
-        if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0))
+        if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE))
         {
             renderer.DrawHorizontalLine(x_ofs, yPoz, 15, ' ', Cfg->ListView.FilterText);
             unsigned int len = this->Filter.SearchText.Len();
@@ -334,7 +334,7 @@ void ListViewControlContext::Paint(Console::Renderer & renderer)
             x_ofs = 17;
         }
         // status information
-        if (this->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)
+        if ((this->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE)
         {
             renderer.WriteSingleLineText(x_ofs, yPoz, this->Selection.Status, Cfg->ListView.StatusColor, this->Selection.StatusLength);
         }
@@ -576,7 +576,7 @@ void ListViewControlContext::DeleteAllItems()
 int  ListViewControlContext::GetVisibleItemsCount()
 {
 	int vis = Layout.Height - 3;
-	if ((Flags & ListViewFlags::HIDE_COLUMNS) != 0)
+	if ((Flags & ListViewFlags::HIDE_COLUMNS) != ListViewFlags::NONE)
 		vis++;
 	int dim = 0, poz = Items.FirstVisibleIndex, nrItems = 0;
 	int sz = (int)Items.Indexes.Len();
@@ -585,7 +585,7 @@ int  ListViewControlContext::GetVisibleItemsCount()
 		ListViewItem *i = GetFilteredItem(poz);
 		if (i)
 			dim += i->Height;
-		if ((Flags & ListViewFlags::ITEM_SEPARATORS) != 0)
+		if ((Flags & ListViewFlags::ITEM_SEPARATORS) != ListViewFlags::NONE)
 			dim++;
 		nrItems++;
 		poz++;
@@ -694,7 +694,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
         }
 	}
 	else {
-		if (Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)
+		if ((Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE)
 		{
 			lvi = GetFilteredItem(Items.CurentItemIndex);
 			if (lvi != nullptr)
@@ -753,7 +753,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
 		case Key::Home: MoveTo(0); Filter.FilterModeEnabled = false; return true;
 		case Key::End: MoveTo(((int)Items.Indexes.Len()) - 1); Filter.FilterModeEnabled = false; return true;
 		case Key::Backspace:
-            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE) {
                 Filter.FilterModeEnabled = true;
                 if (Filter.SearchText.Len() > 0)
                 {
@@ -765,7 +765,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
 		case Key::Space:
 			if (!Filter.FilterModeEnabled)
 			{
-				if (!(Flags & ListViewFlags::HAS_CHECKBOXES))
+				if ((Flags & ListViewFlags::HAS_CHECKBOXES) == ListViewFlags::NONE)
 					return false;
 				lvi = GetFilteredItem(Items.CurentItemIndex);
 				if (lvi != nullptr)
@@ -779,14 +779,14 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
 			}
 			else
 			{
-                if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+                if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE) {
                     Filter.SearchText.AddChar(' '); 
                     UpdateSearch(0);
                 }
 			}
 			return true;
 		case Key::Enter | Key::Ctrl:
-			if ((Filter.FilterModeEnabled) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0))
+			if ((Filter.FilterModeEnabled) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE))
 			{
 				UpdateSearch(Items.CurentItemIndex + 1);
 				return true; // de vazut daca are send
@@ -796,7 +796,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
 			SendMsg(Event::EVENT_LISTVIEW_ITEM_CLICKED);
 			return true;
 		case Key::Escape:
-            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) {
+            if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE) {
                 if (Filter.FilterModeEnabled)
                 {
                     if (Filter.SearchText.Len() > 0)
@@ -808,7 +808,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
                     }
                     return true;
                 }
-                if ((Flags & ListViewFlags::SEARCHMODE) == 0)
+                if ((Flags & ListViewFlags::SEARCHMODE) == ListViewFlags::NONE)
                 {
                     if (Filter.SearchText.Len() > 0)
                     {
@@ -859,7 +859,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
 			return true;
 		};
 		// caut sort
-        if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) 
+        if ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE)
         {
             if (Filter.FilterModeEnabled == false)
             {
@@ -917,7 +917,7 @@ void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
 }
 void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
 {
-    if (((Flags & ListViewFlags::HIDE_COLUMNS) == 0))
+    if (((Flags & ListViewFlags::HIDE_COLUMNS) == ListViewFlags::NONE))
     {
         unsigned int hIndex, hColumn;
         if (MouseToHeader(x, y, hIndex, hColumn))
@@ -931,7 +931,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
         }
     }
     // check is the search bar was pressed
-    if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0) && (y == (this->Layout.Height - 1)))
+    if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE) && (y == (this->Layout.Height - 1)))
     {
         if ((x >= 2) && (x <= 15))
         {
@@ -941,11 +941,11 @@ void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
     }
 
     // check if items are pressed
-    if ((Flags & ListViewFlags::HIDE_COLUMNS) != 0)
+    if ((Flags & ListViewFlags::HIDE_COLUMNS) != ListViewFlags::NONE)
         y--;
     else
         y -= 2;
-    if (Flags & ListViewFlags::ITEM_SEPARATORS)
+    if ((Flags & ListViewFlags::ITEM_SEPARATORS) != ListViewFlags::NONE)
         y = y / 2;
     
     if (y < GetVisibleItemsCount())
@@ -974,11 +974,11 @@ bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
 }
 bool ListViewControlContext::OnMouseOver(int x, int y)
 {
-    if ((Flags & ListViewFlags::HIDE_COLUMNS) == 0)
+    if ((Flags & ListViewFlags::HIDE_COLUMNS) == ListViewFlags::NONE)
     {
         unsigned int hIndex, hColumn;
         MouseToHeader(x, y, hIndex, hColumn);
-        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) && (Flags & ListViewFlags::SORTABLE))
+        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) && ((Flags & ListViewFlags::SORTABLE)!= ListViewFlags::NONE))
         {
             Columns.HoverColumnIndex = hIndex;
             Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
@@ -1000,13 +1000,13 @@ void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 	else 
 		this->SortParams.ColumnIndex = colIndex;
-	if ((Flags & ListViewFlags::SORTABLE) == 0)
+	if ((Flags & ListViewFlags::SORTABLE) == ListViewFlags::NONE)
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 }
 
 void ListViewControlContext::ColumnSort(unsigned int columnIndex)
 {
-	if ((Flags & ListViewFlags::SORTABLE) == 0)
+	if ((Flags & ListViewFlags::SORTABLE) == ListViewFlags::NONE)
 	{ 
 		this->SortParams.ColumnIndex = INVALID_COLUMN_INDEX;
 		return; 
@@ -1116,7 +1116,7 @@ void ListViewControlContext::UpdateSearch(int startPoz)
 	int	cCol = 0;
 
 	// daca fac filtrare
-	if ((Flags & ListViewFlags::SEARCHMODE) == 0)
+	if ((Flags & ListViewFlags::SEARCHMODE) == ListViewFlags::NONE)
 	{
 		FilterItems();
 	}
@@ -1199,9 +1199,9 @@ void        ListView::OnUpdateScrollBars()
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     // compute XOfsset
     unsigned int left_margin = 2;
-    if ((Members->Flags & ListViewFlags::HIDE_SEARCH_BAR) == 0)
+    if ((Members->Flags & ListViewFlags::HIDE_SEARCH_BAR) == ListViewFlags::NONE)
         left_margin = 17;
-    if ((Members->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE))
+    if ((Members->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE) != ListViewFlags::NONE)
         left_margin += (Members->Selection.StatusLength + 1);
 
     Members->ScrollBars.LeftMargin = left_margin;
@@ -1490,7 +1490,7 @@ void		ListView::OnFocus()
     WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     WRAPPER->Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
 	WRAPPER->Filter.FilterModeEnabled = false;
-    if (WRAPPER->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)
+    if ((WRAPPER->Flags & ListViewFlags::MULTIPLE_SELECTION_MODE)!= ListViewFlags::NONE)
         WRAPPER->UpdateSelectionInfo();
 }
 void		ListView::SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void *Context)
@@ -1505,7 +1505,7 @@ bool		ListView::Sort()
 bool		ListView::Sort(unsigned int columnIndex, bool ascendent)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count, false, "Invalid column index (%d). Should be smaller than %d", columnIndex, WRAPPER->Columns.Count);
-    CHECK(WRAPPER->Flags & ListViewFlags::SORTABLE, false, "Can not sort items (have you set 'ListViewFlags::SORTABLE' when creating ListView ?)");
+    CHECK((WRAPPER->Flags & ListViewFlags::SORTABLE)!= ListViewFlags::NONE, false, "Can not sort items (have you set 'ListViewFlags::SORTABLE' when creating ListView ?)");
 	WRAPPER->SortParams.ColumnIndex = columnIndex;
     WRAPPER->SortParams.Ascendent = ascendent;
 	return WRAPPER->Sort();

@@ -139,7 +139,7 @@ bool Window::Create(const char* text, const char * layout, WindowFlags::Type Fla
 	CHECK(Init(nullptr, text, layout, false), false, "Failed to create window !");
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
 	CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | Flags;
+	Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int)Flags;
 	Members->MinWidth = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, title, OneSpaceRightPadding, close button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
 	Members->MinHeight = 3;
 	Members->MaxWidth = 100000;
