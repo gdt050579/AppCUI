@@ -3081,7 +3081,7 @@ public:
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
-            this->Exit((int)Dialogs::DialogResult::RESULT_OK);
+            this->Exit((int)Dialogs::Result::RESULT_OK);
             return true;
         }
         return false;

@@ -1209,7 +1209,7 @@ namespace AppCUI
     };
     namespace Dialogs
     {
-        enum class DialogResult : int
+        enum class Result : int
         {
             RESULT_NONE = 0,
             RESULT_OK = 1,
@@ -1221,11 +1221,11 @@ namespace AppCUI
         {
             MessageBox() = delete;
         public:
-            static void                 ShowError(const char * title, const char * message);
-            static void                 ShowNotification(const char *title, const char *message);
-            static void                 ShowWarning(const char *title, const char *message);
-            static DialogResult         ShowOkCancel(const char *title, const char *message);
-            static DialogResult         ShowYesNoCancel(const char *title, const char *message);
+            static void           ShowError(const char * title, const char * message);
+            static void           ShowNotification(const char *title, const char *message);
+            static void           ShowWarning(const char *title, const char *message);
+            static Result         ShowOkCancel(const char *title, const char *message);
+            static Result         ShowYesNoCancel(const char *title, const char *message);
         };
 
     }
