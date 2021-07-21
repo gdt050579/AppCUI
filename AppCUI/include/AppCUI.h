@@ -1407,56 +1407,6 @@ ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 
-//inline constexpr AppCUI::Application::Flags::Type operator|(AppCUI::Application::Flags::Type f1, AppCUI::Application::Flags::Type f2)
-//{
-//    return static_cast<AppCUI::Application::Flags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//} 
-//inline constexpr AppCUI::Input::Key operator|(AppCUI::Input::Key f1, AppCUI::Input::Key f2)
-//{
-//    return static_cast<AppCUI::Input::Key>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr void operator|=(AppCUI::Input::Key & f1, AppCUI::Input::Key f2)
-//{
-//    f1 = static_cast<AppCUI::Input::Key>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Controls::WindowFlags::Type operator|(AppCUI::Controls::WindowFlags::Type f1, AppCUI::Controls::WindowFlags::Type f2)
-//{
-//    return static_cast<AppCUI::Controls::WindowFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Console::WriteCharacterBufferFlags::Type operator|(AppCUI::Console::WriteCharacterBufferFlags::Type f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
-//{
-//    return static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Console::TextAlignament operator| (AppCUI::Console::TextAlignament f1, AppCUI::Console::TextAlignament f2)
-//{
-//    return static_cast<AppCUI::Console::TextAlignament>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Console::TextAlignament operator& (AppCUI::Console::TextAlignament f1, AppCUI::Console::TextAlignament f2)
-//{
-//    return static_cast<AppCUI::Console::TextAlignament>(static_cast<unsigned int>(f1) & static_cast<unsigned int>(f2));
-//}
-//inline constexpr void operator|=(AppCUI::Console::WriteCharacterBufferFlags::Type & f1, AppCUI::Console::WriteCharacterBufferFlags::Type f2)
-//{
-//    f1 = static_cast<AppCUI::Console::WriteCharacterBufferFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Controls::TabFlags::Type operator|(AppCUI::Controls::TabFlags::Type f1, AppCUI::Controls::TabFlags::Type f2)
-//{
-//    return static_cast<AppCUI::Controls::TabFlags::Type>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Controls::TextAreaFlags operator|(AppCUI::Controls::TextAreaFlags f1, AppCUI::Controls::TextAreaFlags f2)
-//{
-//    return static_cast<AppCUI::Controls::TextAreaFlags>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-//inline constexpr unsigned int operator&(unsigned int f1, AppCUI::Controls::ListViewFlags f2)
-//{
-//    return (static_cast<unsigned int>(f1) & static_cast<unsigned int>(f2));
-//}
-//inline constexpr AppCUI::Controls::ListViewFlags operator|(AppCUI::Controls::ListViewFlags f1, AppCUI::Controls::ListViewFlags f2)
-//{
-//    return static_cast<AppCUI::Controls::ListViewFlags>(static_cast<unsigned int>(f1) | static_cast<unsigned int>(f2));
-//}
-
-
 #undef ADD_FLAG_OPERATORS
 
 #endif
