@@ -1204,7 +1204,8 @@ namespace AppCUI
             void			OnHotKey() override;
             bool            OnMouseLeave() override;
             bool            OnMouseEnter() override;
-            void			OnMouseReleased(int x, int y, int butonState) override;
+            bool            OnMouseOver(int x, int y) override;
+            void			OnMousePressed(int x, int y, int butonState) override;
             void			Paint(Console::Renderer & renderer) override;
             void            OnExpandView(AppCUI::Console::Clip & expandedClip) override;
             void            OnPackView() override;
@@ -1368,8 +1369,9 @@ namespace AppCUI
                 struct {
                     Console::ColorPair Text, Button;
                 } Focus, Normal, Inactive, Hover;
-                Console::ColorPair Selection;
+                Console::ColorPair Selection, HoverOveItem;
             } ComboBox;
+
             void SetDarkTheme();
         };
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event eventType, int controlID);

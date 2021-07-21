@@ -184,4 +184,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ComboBox.Hover.Text = ColorPair{ Color::Black, Color::Yellow };
     this->ComboBox.Hover.Button = ColorPair{ Color::DarkRed, Color::Yellow };
     this->ComboBox.Selection = ColorPair{ Color::White, Color::DarkBlue };
+    this->ComboBox.HoverOveItem = ColorPair{ Color::DarkRed, Color::Silver };
 }

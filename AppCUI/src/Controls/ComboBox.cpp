@@ -221,6 +221,7 @@ void            ComboBox::OnExpandView(AppCUI::Console::Clip & expandedClip)
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     AppCUI::Console::Size appSize;
     Members->VisibleItems = 4;
+    Members->HoveredIndexItem = ComboBox::NO_ITEM_SELECTED;
     if ((Application::GetApplicationSize(appSize)) && (expandedClip.ClipRect.Y>=0))
     {
         if (appSize.Height > (unsigned int)(expandedClip.ClipRect.Y + 3))
@@ -235,6 +236,7 @@ void            ComboBox::OnPackView()
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     Members->VisibleItems = 1;
+    Members->HoveredIndexItem = ComboBox::NO_ITEM_SELECTED;
     if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
         Members->FirstVisibleItem = Members->CurentItemIndex;
 }
@@ -248,7 +250,7 @@ void ComboBox::OnHotKey()
         RaiseEvent(Event::EVENT_COMBO_CLOSED);
     }
 }
-void ComboBox::OnMouseReleased(int x, int y,  int butonState)
+void ComboBox::OnMousePressed(int x, int y,  int butonState)
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 
@@ -262,7 +264,35 @@ void ComboBox::OnMouseReleased(int x, int y,  int butonState)
 		RaiseEvent(Event::EVENT_COMBO_CLOSED);
 	}
 }
-
+bool    ComboBox::OnMouseOver(int x, int y)
+{
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+    if ((y > 1) && (y < (int)(2 + Members->VisibleItems)))
+    {
+        unsigned int newIndex = ((unsigned int)(y - 2)) + Members->FirstVisibleItem;
+        if (newIndex != Members->HoveredIndexItem)
+        {
+            Members->HoveredIndexItem = newIndex;
+            return true; // repaint required
+        }
+    }
+    else {
+        if (ComboBox::NO_ITEM_SELECTED != Members->HoveredIndexItem)
+        {
+            Members->HoveredIndexItem = ComboBox::NO_ITEM_SELECTED;
+            return true; // repaint required
+        }
+    }
+    return false;
+}
+bool    ComboBox::OnMouseLeave()
+{
+    return true;
+}
+bool    ComboBox::OnMouseEnter()
+{
+    return true;
+}
 void ComboBox::Paint(Console::Renderer & renderer)
 {
 	CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
@@ -291,14 +321,9 @@ void ComboBox::Paint(Console::Renderer & renderer)
             renderer.WriteSingleLineText(2, tr + 2, GetUnsafeItemText(tr + Members->FirstVisibleItem), Members->Layout.Width - 2, Members->Cfg->ComboBox.Focus.Text, TextAlignament::Left);
             if ((tr + Members->FirstVisibleItem) == Members->CurentItemIndex)
                 renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
+            else if ((tr + Members->FirstVisibleItem) == Members->HoveredIndexItem)
+                renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
         }
     }
 }
-bool    ComboBox::OnMouseLeave()
-{
-    return true;
-}
-bool    ComboBox::OnMouseEnter()
-{
-    return true;
-}
+

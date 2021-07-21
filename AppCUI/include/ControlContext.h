@@ -380,7 +380,7 @@ class ComboBoxControlContext : public ControlContext
 public:
 
     std::vector<COMBO_ITEM_INFO>	Items;
-    unsigned int                    ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems;
+    unsigned int                    ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems, HoveredIndexItem;
 };
 
 
