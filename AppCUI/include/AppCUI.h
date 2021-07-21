@@ -414,20 +414,17 @@ namespace AppCUI
             // always last
             Count
         };
-        namespace WriteCharacterBufferFlags
+        enum class WriteCharacterBufferFlags: unsigned int
         {
-            enum Type : unsigned int
-            {
-                NONE                = 0,
-                SINGLE_LINE         = 0x0000001,
-                MULTIPLE_LINES      = 0x0000002,
-                OVERWRITE_COLORS    = 0x0000004,
-                WRAP_TO_WIDTH       = 0x0000008,
-                HIGHLIGHT_HOTKEY    = 0x0000010,
-                BUFFER_RANGE        = 0x0000020,
-                PROCESS_NEW_LINE    = 0x0000040,
-            };
-        }
+            NONE                = 0,
+            SINGLE_LINE         = 0x0000001,
+            MULTIPLE_LINES      = 0x0000002,
+            OVERWRITE_COLORS    = 0x0000004,
+            WRAP_TO_WIDTH       = 0x0000008,
+            HIGHLIGHT_HOTKEY    = 0x0000010,
+            BUFFER_RANGE        = 0x0000020,
+            PROCESS_NEW_LINE    = 0x0000040,
+        };
         enum class TextAlignament : unsigned int
         {
             Left        = 0x00,
@@ -476,14 +473,14 @@ namespace AppCUI
 
         struct WriteCharacterBufferParams
         {
-            WriteCharacterBufferFlags::Type Flags;
+            WriteCharacterBufferFlags Flags;
             ColorPair    Color;
             ColorPair    HotKeyColor;
             unsigned int HotKeyPosition;
             unsigned int Start, End;
             unsigned int Width;
             WriteCharacterBufferParams(): Flags(WriteCharacterBufferFlags::NONE) { }
-            WriteCharacterBufferParams(WriteCharacterBufferFlags::Type _flg) : Flags(_flg) { }
+            WriteCharacterBufferParams(WriteCharacterBufferFlags _flg) : Flags(_flg) { }
         };
         
         class EXPORT Rect
@@ -1391,16 +1388,16 @@ namespace AppCUI
 
 // inline OR operator for flags
 ADD_FLAG_OPERATORS(AppCUI::Application::Flags::Type, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags::Type, unsigned int)
-
 
 // converted to enum_class
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
+ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
+
 
 #undef ADD_FLAG_OPERATORS
 

@@ -726,14 +726,14 @@ bool Renderer::_WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Cons
     }
     if ((Clip.Right + 1 - x) <= (int)(end - start))
         end = start + (unsigned int)(Clip.Right + 1 - x);
-    if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
+    if ((params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)!=WriteCharacterBufferFlags::NONE)
     {
         if ((end - start) > params.Width)
             end = start + params.Width;
     }
     const AppCUI::Console::Character * ch = cb.GetBuffer() + start;
     Character * p = this->OffsetRows[y] + x;
-    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    if ((params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)!= WriteCharacterBufferFlags::NONE)
     {
         unsigned int position = start;
         if (NO_TRANSPARENCY(params.Color))
@@ -751,7 +751,7 @@ bool Renderer::_WriteCharacterBuffer_SingleLine(int x, int y, const AppCUI::Cons
                 p++; ch++; position++;
             }
         }
-        if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
+        if ((params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)!= WriteCharacterBufferFlags::NONE)
         {
             if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= start))
             {
@@ -785,7 +785,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const App
     unsigned int rel_ofs = params.Width;
     int original_x = x;
     //GDT: not efficient - further improvements can be done
-    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    if ((params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)!= WriteCharacterBufferFlags::NONE)
     {
         unsigned int orig_start = start;
         while (start < end)
@@ -803,7 +803,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_WithWidth(int x, int y, const App
                 p = this->OffsetRows[y] + x;
             }
         }
-        if (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)
+        if ((params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY)!= WriteCharacterBufferFlags::NONE)
         {
             if ((params.HotKeyPosition < end) && (params.HotKeyPosition >= orig_start))
             {
@@ -840,7 +840,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, cons
     if ((params.Width == 0) || (end == start))
         return true; // nothing to draw
     unsigned int w;
-    if (params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)
+    if ((params.Flags & WriteCharacterBufferFlags::WRAP_TO_WIDTH)!= WriteCharacterBufferFlags::NONE)
         w = params.Width;
     else
         w = 0xFFFFFFFF;
@@ -849,9 +849,9 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(int x, int y, cons
     Character * hotkey = nullptr;
     unsigned int rel_ofs = w;
     int original_x = x;
-    bool has_hotkey = (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY) != 0;
+    bool has_hotkey = (params.Flags & WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY) != WriteCharacterBufferFlags::NONE;
     //GDT: not efficient - further improvements can be done
-    if (params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)
+    if ((params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS)!= WriteCharacterBufferFlags::NONE)
     {
         unsigned int orig_start = start;
         while (start < end)
@@ -911,7 +911,7 @@ bool Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::Charact
 
     unsigned int start = 0;
     unsigned int end = cb.Len();
-    if (params.Flags & WriteCharacterBufferFlags::BUFFER_RANGE)
+    if ((params.Flags & WriteCharacterBufferFlags::BUFFER_RANGE)!= WriteCharacterBufferFlags::NONE)
     {
         CHECK(params.Start < end, false, "Start param (%d) should be smaller than buffer range: %d", params.Start, end);
         start = params.Start;
@@ -922,16 +922,16 @@ bool Renderer::WriteCharacterBuffer(int x, int y, const AppCUI::Console::Charact
     if (end <= start)
         return true; // Nothing to draw
     // single line
-    if (params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)
+    if ((params.Flags & WriteCharacterBufferFlags::SINGLE_LINE)!= WriteCharacterBufferFlags::NONE)
         return _WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
 
     // multi line
-    if (params.Flags & WriteCharacterBufferFlags::MULTIPLE_LINES)
+    if ((params.Flags & WriteCharacterBufferFlags::MULTIPLE_LINES)!= WriteCharacterBufferFlags::NONE)
     {
         // if new line will not be process and there is no width limit, than its like a single line
-        if (!(params.Flags & (WriteCharacterBufferFlags::WRAP_TO_WIDTH | WriteCharacterBufferFlags::PROCESS_NEW_LINE)))
+        if ((params.Flags & (WriteCharacterBufferFlags::WRAP_TO_WIDTH | WriteCharacterBufferFlags::PROCESS_NEW_LINE))==WriteCharacterBufferFlags::NONE)
             return _WriteCharacterBuffer_SingleLine(x, y, cb, params, start, end);
-        if (params.Flags & WriteCharacterBufferFlags::PROCESS_NEW_LINE)
+        if ((params.Flags & WriteCharacterBufferFlags::PROCESS_NEW_LINE)!= WriteCharacterBufferFlags::NONE)
             return _WriteCharacterBuffer_MultiLine_ProcessNewLine(x, y, cb, params, start, end);
         else
             // implies that WriteCharacterBufferFlags::WRAP_TO_WIDTH is set
