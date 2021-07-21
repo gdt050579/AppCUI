@@ -133,7 +133,7 @@ public:
 };
 int main()
 {
-    Application::Init(Application::Flags::HAS_COMMANDBAR);
+    Application::Init(Application::InitializationFlags::HAS_COMMANDBAR);
     Application::AddWindow(new TicTacToeWin());
     Application::Run();
     return 0;

@@ -1258,14 +1258,11 @@ namespace AppCUI
     }
     namespace Application
     {
-        namespace Flags
+        enum class InitializationFlags : unsigned int
         {
-            enum Type : unsigned int
-            {
-                NONE            = 0,
-                HAS_COMMANDBAR  = 0x00000001,
-            };
-        }
+            NONE            = 0,
+            HAS_COMMANDBAR  = 0x00000001,
+        };
 
         class EXPORT CommandBar
         {
@@ -1374,7 +1371,7 @@ namespace AppCUI
         typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event eventType, int controlID);
 
         EXPORT Config*      GetAppConfig();
-        EXPORT bool         Init(Application::Flags::Type flags = Application::Flags::NONE, EventHandler eventCallback = nullptr);
+        EXPORT bool         Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE, EventHandler eventCallback = nullptr);
         EXPORT bool         Run();
         EXPORT bool         AddWindow(AppCUI::Controls::Window * wnd);
         EXPORT bool         GetApplicationSize(AppCUI::Console::Size & size);
@@ -1386,10 +1383,8 @@ namespace AppCUI
     };
 }
 
-// inline OR operator for flags
-ADD_FLAG_OPERATORS(AppCUI::Application::Flags::Type, unsigned int)
-
-// converted to enum_class
+// inline operations for enum classes
+ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);

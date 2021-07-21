@@ -195,7 +195,7 @@ namespace AppCUI
             bool    ExpandControl(AppCUI::Controls::Control * ctrl);
 
             //Common implementations
-            bool    Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler);
+            bool    Init(AppCUI::Application::InitializationFlags flags, AppCUI::Application::EventHandler handler);
             bool    Uninit();
             bool    ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
             void    Paint();

@@ -70,7 +70,7 @@ public:
 };
 int main()
 {
-    Application::Init(Application::Flags::HAS_COMMANDBAR);
+    Application::Init(Application::InitializationFlags::HAS_COMMANDBAR);
     Application::AddWindow(new MyWin());
     Application::Run();
     Application::Close();

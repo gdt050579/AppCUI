@@ -7,7 +7,7 @@ using namespace AppCUI;
 
 AppCUI::Internal::Application*   app = nullptr;
 
-bool AppCUI::Application::Init(Application::Flags::Type flags, EventHandler eventCallback)
+bool AppCUI::Application::Init(Application::InitializationFlags flags, EventHandler eventCallback)
 {
     CHECK(app == nullptr, false, "Application has already been initialized !");
     app = new AppCUI::Internal::Application();
@@ -290,14 +290,14 @@ void AppCUI::Internal::Application::Destroy()
     this->RepaintStatus = REPAINT_STATUS_ALL;
     this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
 }
-bool AppCUI::Internal::Application::Init(AppCUI::Application::Flags::Type flags, AppCUI::Application::EventHandler handler)
+bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, AppCUI::Application::EventHandler handler)
 {
     LOG_INFO("Starting AppCUI ...");
     CHECK(!this->Inited, false, "Application has already been initialized !");
     CHECK((this->terminal = new AppCUI::Internal::Terminal()), false, "Fail to allocate a terminal object !");
     CHECK(this->terminal->Init(), false, "Fail to initialize OS-Specific terminal !");
     this->config.SetDarkTheme();    
-    this->CommandBarObject.Init(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config, (flags & AppCUI::Application::Flags::HAS_COMMANDBAR)!=0);
+    this->CommandBarObject.Init(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config, (flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR)!= AppCUI::Application::InitializationFlags::NONE);
     this->CommandBarWrapper.Init(&this->CommandBarObject);
     LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
     
