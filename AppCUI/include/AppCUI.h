@@ -41,13 +41,13 @@
 #endif
 
 #define ADD_FLAG_OPERATORS(type,basic_type)  \
-    inline constexpr type operator|(type f1, type f2) { return static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2)); } \
-    inline constexpr type operator&(type f1, type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
-    inline constexpr basic_type operator|(basic_type f1, type f2) { return static_cast<basic_type>(f1) | static_cast<basic_type>(f2); } \
-    inline constexpr basic_type operator|(type f1, basic_type f2) { return static_cast<basic_type>(f1) | static_cast<basic_type>(f2); } \
-    inline constexpr type operator&(basic_type f1, type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
-    inline constexpr type operator&(type f1, basic_type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
-    inline constexpr type operator|=(type &f1, type f2) { return f1 = static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2)); }
+    inline constexpr type operator|(const type f1, const type f2) { return static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2)); } \
+    inline constexpr type operator&(const type f1, const type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
+    inline constexpr basic_type operator|(const basic_type f1, const type f2) { return static_cast<basic_type>(f1) | static_cast<basic_type>(f2); } \
+    inline constexpr basic_type operator|(const type f1, const basic_type f2) { return static_cast<basic_type>(f1) | static_cast<basic_type>(f2); } \
+    inline constexpr type operator&(const basic_type f1, const type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
+    inline constexpr type operator&(const type f1, const basic_type f2) { return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2)); } \
+    inline constexpr type operator|=(type &f1, const type f2) { return f1 = static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2)); }
 
 
 
