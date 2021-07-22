@@ -143,6 +143,13 @@ namespace AppCUI
             Terminal,
             Windows
         };
+        enum class TerminalSize : unsigned int
+        {
+            Default = 0,
+            CustomSize,
+            Maximized,
+            FullScreen
+        };
         enum class CharacterSize : unsigned int
         {
             Default = 0,
@@ -157,7 +164,7 @@ namespace AppCUI
             unsigned int    Width, Height;
             TerminalType    FrontEnd;
             CharacterSize   CharSize;
-            bool            Maximized;
+            TerminalSize    TermSize;
             bool            FixedSize;
 
             bool BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int Width, unsigned int Height);

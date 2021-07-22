@@ -309,13 +309,30 @@ bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::Initia
     }
 
     // terminal size
-    CHECK(width > 0, false, "Application width (if specified) has to be bigger than 0");
-    CHECK(height > 0, false, "Application height (if specified) has to be bigger than 0");
-    this->Width = width;
-    this->Height = height;
+    if ((flags & AppCUI::Application::InitializationFlags::MAXIMIZED) != AppCUI::Application::InitializationFlags::NONE)
+    {
+        this->TermSize = TerminalSize::Maximized;
+        this->Width = this->Height = 0;
+    }
+    else if ((flags & AppCUI::Application::InitializationFlags::FULLSCREEN) != AppCUI::Application::InitializationFlags::NONE)
+    {
+        this->TermSize = TerminalSize::FullScreen;
+        this->Width = this->Height = 0;
+    }
+    else if ((width==CURRENT_CONSOLE_WIDTH) && (height==CURRENT_CONSOLE_HEIGHT))
+    {
+        this->TermSize = TerminalSize::Default;
+        this->Width = this->Height = 0;
+    }
+    else {
+        CHECK(width > 0, false, "Application width (if specified) has to be bigger than 0");
+        CHECK(height > 0, false, "Application height (if specified) has to be bigger than 0");
+        this->Width = width;
+        this->Height = height;
+        this->TermSize = TerminalSize::CustomSize;
+    }
 
     // other flags
-    this->Maximized = ((flags & AppCUI::Application::InitializationFlags::MAXIMIZED) != AppCUI::Application::InitializationFlags::NONE);
     this->FixedSize = ((flags & AppCUI::Application::InitializationFlags::FIXED_SIZE) != AppCUI::Application::InitializationFlags::NONE);
 
     // all good

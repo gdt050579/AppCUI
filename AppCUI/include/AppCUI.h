@@ -1279,7 +1279,8 @@ namespace AppCUI
             HAS_COMMANDBAR      = 0x00010000,
             HAS_MENU            = 0x00020000,
             MAXIMIZED           = 0x00040000,
-            FIXED_SIZE          = 0x00080000,
+            FULLSCREEN          = 0x00080000,
+            FIXED_SIZE          = 0x00100000,
         };
 
         class EXPORT CommandBar
