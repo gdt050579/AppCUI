@@ -14,9 +14,9 @@ AbstractTerminal::~AbstractTerminal()
 {
 }
 
-bool AbstractTerminal::Init()
+bool AbstractTerminal::Init(const InitializationData& initData)
 {
-    return OnInit();
+    return this->OnInit(initData);
 }
 void AbstractTerminal::Uninit()
 {    

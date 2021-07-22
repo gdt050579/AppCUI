@@ -128,29 +128,6 @@ namespace AppCUI
             inline bool IsVisible() const { return Visible; }
         };
 
-        struct AbstractTerminal
-        {            
-            unsigned int                LastCursorX, LastCursorY;
-            AppCUI::Console::Canvas     OriginalScreenCanvas, ScreenCanvas;
-            bool                        Inited,LastCursorVisibility;
-
-            virtual bool    OnInit() = 0;
-            virtual void    OnUninit() = 0;
-            virtual void    OnFlushToScreen() = 0;
-            virtual bool    OnUpdateCursor() = 0;
-            virtual void    GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) = 0;
-            virtual bool    IsEventAvailable() = 0;
-
-
-            AbstractTerminal();
-            virtual ~AbstractTerminal();
-
-            bool    Init();
-            void    Uninit();            
-            void    Update();
-            
-        };
-
         class DesktopControl: public AppCUI::Controls::Control 
         {
         public:
@@ -158,6 +135,60 @@ namespace AppCUI
             void    Paint(AppCUI::Console::Renderer & renderer) override;
             bool    OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         };
+
+        enum class TerminalType : unsigned int
+        {
+            Default = 0,
+            SDL,
+            Terminal,
+            Windows
+        };
+        enum class CharacterSize : unsigned int
+        {
+            Default = 0,
+            Small,
+            Normal,
+            Large,
+            Huge
+        };
+
+        struct InitializationData
+        {
+            unsigned int    Width, Height;
+            TerminalType    FrontEnd;
+            CharacterSize   CharSize;
+            bool            Maximized;
+            bool            FixedSize;
+
+            bool BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int Width, unsigned int Height);
+        };
+
+        class AbstractTerminal
+        {
+        protected:
+            AbstractTerminal();
+
+        public:
+            unsigned int                LastCursorX, LastCursorY;
+            AppCUI::Console::Canvas     OriginalScreenCanvas, ScreenCanvas;
+            bool                        Inited, LastCursorVisibility;
+
+            virtual bool    OnInit(const InitializationData& initData) = 0;
+            virtual void    OnUninit() = 0;
+            virtual void    OnFlushToScreen() = 0;
+            virtual bool    OnUpdateCursor() = 0;
+            virtual void    GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) = 0;
+            virtual bool    IsEventAvailable() = 0;
+
+            virtual ~AbstractTerminal();
+
+            bool    Init(const InitializationData& initData);
+            void    Uninit();
+            void    Update();
+
+            static AbstractTerminal* Create(const InitializationData& initData);
+        };
+
         struct Application
         {
             AppCUI::Application::Config             config;

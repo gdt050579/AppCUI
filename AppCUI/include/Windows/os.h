@@ -7,7 +7,7 @@ namespace AppCUI
 {
     namespace Internal
     {
-        class Terminal : public AbstractTerminal
+        class WindowsTerminal : public AbstractTerminal
         {
             HANDLE			            hstdOut;
             HANDLE			            hstdIn;
@@ -15,19 +15,19 @@ namespace AppCUI
             DWORD                       stdMode;
             CHAR_INFO*                  ConsoleBuffer;
             unsigned int                ConsoleBufferCount;
-            AppCUI::Input::Key    KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
-            AppCUI::Input::Key    shiftState;
+            AppCUI::Input::Key          KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
+            AppCUI::Input::Key          shiftState;
 
             bool                        ResizeConsoleBuffer(unsigned int width, unsigned int height);
         public:
-            Terminal();
-            virtual bool                OnInit() override;
+            WindowsTerminal();
+            virtual bool                OnInit(const InitializationData & initData) override;
             virtual void                OnUninit() override;
             virtual void                OnFlushToScreen() override;
             virtual bool                OnUpdateCursor() override;
             virtual void                GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
             virtual bool                IsEventAvailable() override;
-            virtual ~Terminal();
+            virtual ~WindowsTerminal();
         };
     }
 }

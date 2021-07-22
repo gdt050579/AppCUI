@@ -263,6 +263,65 @@ void UpdateCommandBar(AppCUI::Controls::Control *obj)
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 
+bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
+{
+    // front end
+    AppCUI::Application::InitializationFlags frontEnd = flags & 0xFF;
+    switch (frontEnd)
+    {
+        case AppCUI::Application::InitializationFlags::FRONTEND_DEFAULT:
+            this->FrontEnd = TerminalType::Default;
+            break;
+        case AppCUI::Application::InitializationFlags::FRONTEND_SDL:
+            this->FrontEnd = TerminalType::SDL;
+            break;
+        case AppCUI::Application::InitializationFlags::FRONTEND_TERMINAL:
+            this->FrontEnd = TerminalType::Terminal;
+            break;
+        case AppCUI::Application::InitializationFlags::FRONTEND_WINDOWS:
+            this->FrontEnd = TerminalType::Windows;
+            break;
+        default:
+            RETURNERROR(false, "Unknwon/Unsuported front end type (%d)", (unsigned int)frontEnd);
+    }
+
+    // character size
+    AppCUI::Application::InitializationFlags characterSize = flags & 0xFF00;
+    switch (characterSize)
+    {
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_DEFAULT:
+            this->CharSize = CharacterSize::Default;
+            break;
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_SMALL:
+            this->CharSize = CharacterSize::Small;
+            break;
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_NORMAL:
+            this->CharSize = CharacterSize::Normal;
+            break;
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_LARGE:
+            this->CharSize = CharacterSize::Large;
+            break;
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_HUGE:
+            this->CharSize = CharacterSize::Huge;
+            break;
+        default:
+            RETURNERROR(false, "Unknwon size of a character (value=%d)", (unsigned int)characterSize);
+    }
+
+    // terminal size
+    CHECK(width > 0, false, "Application width (if specified) has to be bigger than 0");
+    CHECK(height > 0, false, "Application height (if specified) has to be bigger than 0");
+    this->Width = width;
+    this->Height = height;
+
+    // other flags
+    this->Maximized = ((flags & AppCUI::Application::InitializationFlags::MAXIMIZED) != AppCUI::Application::InitializationFlags::NONE);
+    this->FixedSize = ((flags & AppCUI::Application::InitializationFlags::FIXED_SIZE) != AppCUI::Application::InitializationFlags::NONE);
+
+    // all good
+    return true;
+}
+
 AppCUI::Internal::Application::Application()
 {
     this->terminal = nullptr;
@@ -296,13 +355,13 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
 {
     LOG_INFO("Starting AppCUI ...");
     CHECK(!this->Inited, false, "Application has already been initialized !");
-    CHECK(width > 0, false, "Application width (if specified) has to be bigger than 0");
-    CHECK(height > 0, false, "Application height (if specified) has to be bigger than 0");
-    
-    
-    
-    CHECK((this->terminal = new AppCUI::Internal::Terminal()), false, "Fail to allocate a terminal object !");
-    CHECK(this->terminal->Init(), false, "Fail to initialize OS-Specific terminal !");
+
+    // create the frontend
+    AppCUI::Internal::InitializationData initData;
+    CHECK(initData.BuildFrom(flags, width, height), false, "Fail to create AppCUI initialization data !");        
+    CHECK((this->terminal = AbstractTerminal::Create(initData)), false, "Fail to allocate a terminal object !");
+
+    // configur other objects and settings
     this->config.SetDarkTheme();    
     this->CommandBarObject.Init(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config, (flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR)!= AppCUI::Application::InitializationFlags::NONE);
     this->CommandBarWrapper.Init(&this->CommandBarObject);
