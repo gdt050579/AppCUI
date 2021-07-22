@@ -15,7 +15,7 @@ AbstractTerminal* AbstractTerminal::Create(const InitializationData & initData)
         default:
             RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int)initData.FrontEnd);
     }
-    CHECK(term, false, "Fail to allocate memory for a terminal !");
+    CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
     if (term->Init(initData) == false)
     {
         delete term;
