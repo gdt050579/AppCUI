@@ -40,7 +40,7 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
         return Create(width, height, fillCharacter, color);
     CHECK(width > 0, false, "Width must be greater than 0.");
     CHECK(height > 0, false, "Height must be greater than 0.");
-    if ((width == this->Width) && (height = this->Height))
+    if ((width == this->Width) && (height == this->Height))
         return true; // nothing to resize
     Character * tmp = new Character[width*height];
     CHECK(tmp, false, "Fail to allocate %d x %d characters", width, height);
@@ -96,6 +96,7 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     this->OffsetRows = ofs_tmp;
     this->Width = width;
     this->Height = height;
+    //LOG_INFO("Resize screen canvas to %dx%d", this->Width, this->Height);
     this->Reset();
     return true;
 }

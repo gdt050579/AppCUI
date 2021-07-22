@@ -172,6 +172,7 @@ void WindowsTerminal::OnFlushToScreen()
     COORD winSize = { (SHORT)w, (SHORT)h };
     SMALL_RECT sr = { 0,0,winSize.X, winSize.Y };
     // copy the entire buffer
+    //LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
     AppCUI::Console::Character * c = this->ScreenCanvas.GetCharactersBuffer();
     AppCUI::Console::Character * e = c + (w*h);
     CHAR_INFO* d = this->ConsoleBuffer;
