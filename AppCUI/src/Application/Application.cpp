@@ -674,6 +674,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control *ctrl)
             case SystemEvents::APP_RESIZED:
                 if (((evnt.newWidth != this->terminal->ScreenCanvas.GetWidth()) || (evnt.newHeight != this->terminal->ScreenCanvas.GetHeight())) && (evnt.newWidth>0) && (evnt.newHeight>0))
                 {
+                    LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
                     this->terminal->ScreenCanvas.Resize(evnt.newWidth,evnt.newHeight);
                     this->Desktop.Resize(evnt.newWidth, evnt.newHeight);
                     this->CommandBarObject.SetDesktopSize(evnt.newWidth, evnt.newHeight);
