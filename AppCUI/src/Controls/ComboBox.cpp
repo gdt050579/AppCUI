@@ -24,7 +24,7 @@ void ComboBox_MoveTo(ComboBox *control,unsigned int newPoz)
 {
 	CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, );
 	unsigned int old = Members->CurentItemIndex;
-    unsigned int itemsCount = Members->Items.size();
+    unsigned int itemsCount = (unsigned int)Members->Items.size();
 	if (itemsCount == 0) 
         return;
 	if ((itemsCount>0) && (newPoz > itemsCount - 1))
