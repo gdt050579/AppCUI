@@ -19,6 +19,7 @@ namespace AppCUI
             AppCUI::Input::Key          shiftState;
 
             bool                        ResizeConsoleBuffer(unsigned int width, unsigned int height);
+            bool                        CopyOriginalScreenBuffer(unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY);
         public:
             WindowsTerminal();
             virtual bool                OnInit(const InitializationData & initData) override;

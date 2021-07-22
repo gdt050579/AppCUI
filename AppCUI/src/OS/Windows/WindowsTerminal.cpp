@@ -28,6 +28,42 @@ bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int heigh
     this->ConsoleBufferCount = newCount;
     return true;
 }
+bool WindowsTerminal::CopyOriginalScreenBuffer(unsigned int width, unsigned int height,unsigned int mouseX, unsigned int mouseY)
+{
+    CHECK(this->OriginalScreenCanvas.Create(width, height), false, "Fail to create the original screen canvas of %d x %d size", width, height);
+    SMALL_RECT BufRect = { 0, 0, (SHORT)(width - 1), (SHORT)(height - 1) };
+
+    // allocate memory for a console buffer
+    CHAR_INFO* temp = new CHAR_INFO[width*height];
+    CHECK(temp, false, "Fail to allocate %dx%d buffer to store the original screem buffer !", width, height);
+
+    // make a copy of the original screem buffer into the canvas
+    while (true)
+    {
+        CHECKBK(ReadConsoleOutput(this->hstdOut, temp, { (SHORT)width,(SHORT)height }, { 0,0 }, &BufRect), "Unable to make a copy of the initial screen buffer !");
+        CHAR_INFO * p = temp;
+        for (unsigned int y = 0; y < (unsigned int)height; y++)
+        {
+            for (unsigned int x = 0; x < (unsigned int)width; x++, p++)
+            {
+                this->OriginalScreenCanvas.WriteCharacter(x, y, p->Char.UnicodeChar, AppCUI::Console::ColorPair{ static_cast<AppCUI::Console::Color>(p->Attributes & 0x0F),static_cast<AppCUI::Console::Color>((p->Attributes & 0xF0) >> 4) });
+            }
+        }
+        delete[]temp;
+        temp = nullptr;
+        // copy current cursor position
+        CONSOLE_CURSOR_INFO cInfo;
+        CHECKBK(GetConsoleCursorInfo(this->hstdOut, &cInfo), "Unable to read console cursor informations !");
+        if (cInfo.bVisible)
+            this->OriginalScreenCanvas.HideCursor();
+        else
+            this->OriginalScreenCanvas.SetCursor(mouseX, mouseY);
+
+        return true;
+    }
+    delete[]temp;
+    return false;
+}
 bool WindowsTerminal::OnInit(const InitializationData & initData)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -40,32 +76,30 @@ bool WindowsTerminal::OnInit(const InitializationData & initData)
     CHECK(csbi.dwSize.X > 0, false, "Received invalid screen width from the system --> exiting");
     CHECK(csbi.dwSize.Y > 0, false, "Received invalid screen height from the system --> exiting");
 
-    // create canvases
-    CHECK(this->ScreenCanvas.Create(csbi.dwSize.X, csbi.dwSize.Y), false, "Fail to create an internal canvas of %d x %d size", csbi.dwSize.X, csbi.dwSize.Y);
-    CHECK(this->OriginalScreenCanvas.Create(csbi.dwSize.X, csbi.dwSize.Y), false, "Fail to create the original screen canvas of %d x %d size", csbi.dwSize.X, csbi.dwSize.Y);
-    
-    // create temporary rendering buffer
-    CHECK(ResizeConsoleBuffer(csbi.dwSize.X, csbi.dwSize.Y), false, "Fail to create console buffer");
-    SMALL_RECT BufRect = { 0, 0, (SHORT)(csbi.dwSize.X - 1), (SHORT)(csbi.dwSize.Y - 1) };
+    // copy original screen buffer information
+    CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y), false, "Fail to copy original screen buffer");
 
-    // make a copy of the original screem buffer into the canvas
-    CHECK(ReadConsoleOutput(this->hstdOut, this->ConsoleBuffer, csbi.dwSize, { 0,0 }, &BufRect), false, "Unable to make a copy of the initial screen buffer !");
-    CHAR_INFO * p = this->ConsoleBuffer;
-    for (unsigned int y = 0; y < (unsigned int)csbi.dwSize.Y; y++)
+    unsigned int terminalWidth = csbi.dwSize.X;
+    unsigned int teminalHeight = csbi.dwSize.Y;
+    // check if maximized
+    if (initData.Maximized)
     {
-        for (unsigned int x = 0; x < (unsigned int)csbi.dwSize.X; x++,p++)
-        {
-            this->OriginalScreenCanvas.WriteCharacter(x, y, p->Char.UnicodeChar, AppCUI::Console::ColorPair{static_cast<AppCUI::Console::Color>(p->Attributes & 0x0F),static_cast<AppCUI::Console::Color>((p->Attributes & 0xF0)>>4)});
-        }
+        CHECK(::ShowWindow(GetConsoleWindow(), SW_MAXIMIZE), false, "Fail to maximize the console !");
+        CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
+        terminalWidth = csbi.dwSize.X;
+        teminalHeight = csbi.dwSize.Y;
+        CHECK(terminalWidth > 0, false, "Something went wrong with 'SetConsoleDisplayMode' API ==> resulted width is 0 !");
+        CHECK(teminalHeight > 0, false, "Something went wrong with 'SetConsoleDisplayMode' API ==> resulted height is 0 !");        
     }
 
-    // copy current cursor position
-    CONSOLE_CURSOR_INFO cInfo;
-    CHECK(GetConsoleCursorInfo(this->hstdOut, &cInfo), false, "Unable to read console cursor informations !");
-    if (cInfo.bVisible)
-        this->OriginalScreenCanvas.HideCursor();
-    else
-        this->OriginalScreenCanvas.SetCursor(csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y);
+
+    // create canvases
+    CHECK(this->ScreenCanvas.Create(terminalWidth, teminalHeight), false, "Fail to create an internal canvas of %d x %d size", terminalWidth, teminalHeight);
+    
+    // create temporary rendering buffer
+    CHECK(ResizeConsoleBuffer(terminalWidth, teminalHeight), false, "Fail to create console buffer");
+
+
 
     // Build the key translation matrix [could be improved with a static vector]
     for (unsigned int tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
