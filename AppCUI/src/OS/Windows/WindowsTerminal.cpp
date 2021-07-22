@@ -266,9 +266,15 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evn
         }
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
-        evnt.newWidth = ir.Event.WindowBufferSizeEvent.dwSize.X;
-        evnt.newHeight = ir.Event.WindowBufferSizeEvent.dwSize.Y;
-        evnt.eventType = SystemEvents::APP_RESIZED;
+        if (ResizeConsoleBuffer(ir.Event.WindowBufferSizeEvent.dwSize.X, ir.Event.WindowBufferSizeEvent.dwSize.Y))
+        {
+            evnt.newWidth = ir.Event.WindowBufferSizeEvent.dwSize.X;
+            evnt.newHeight = ir.Event.WindowBufferSizeEvent.dwSize.Y;
+            evnt.eventType = SystemEvents::APP_RESIZED;
+        }
+        else {
+            LOG_ERROR("Internal error - fail to resize console buffer to %dx%d", ir.Event.WindowBufferSizeEvent.dwSize.X, ir.Event.WindowBufferSizeEvent.dwSize.Y);
+        }
         break;
     }
 }
