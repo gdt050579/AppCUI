@@ -7,12 +7,16 @@ using namespace AppCUI;
 
 AppCUI::Internal::Application*   app = nullptr;
 
-bool AppCUI::Application::Init(Application::InitializationFlags flags, EventHandler eventCallback)
+bool AppCUI::Application::Init(Application::InitializationFlags flags)
+{
+    return AppCUI::Application::Init(CURRENT_CONSOLE_WIDTH, CURRENT_CONSOLE_HEIGHT, flags);
+}
+bool AppCUI::Application::Init(unsigned int width, unsigned int height, Application::InitializationFlags flags)
 {
     CHECK(app == nullptr, false, "Application has already been initialized !");
     app = new AppCUI::Internal::Application();
     CHECK(app, false, "Fail to allocate space for application object !");
-    if (app->Init(flags, eventCallback))
+    if (app->Init(flags, width, height))
         return true;
     delete app;
     app = nullptr;
@@ -267,7 +271,6 @@ AppCUI::Internal::Application::Application()
     this->MouseOverControl = nullptr;
     this->ExpandedControl = nullptr;
     this->ModalControlsCount = 0;
-    this->Handler = nullptr;
     this->LoopStatus = LOOP_STATUS_NORMAL;
     this->RepaintStatus = REPAINT_STATUS_ALL;
     this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
@@ -285,15 +288,19 @@ void AppCUI::Internal::Application::Destroy()
     this->MouseLockedControl = nullptr;
     this->MouseOverControl = nullptr;
     this->ModalControlsCount = 0;
-    this->Handler = nullptr;
     this->LoopStatus = LOOP_STATUS_NORMAL;
     this->RepaintStatus = REPAINT_STATUS_ALL;
     this->MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
 }
-bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, AppCUI::Application::EventHandler handler)
+bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     LOG_INFO("Starting AppCUI ...");
     CHECK(!this->Inited, false, "Application has already been initialized !");
+    CHECK(width > 0, false, "Application width (if specified) has to be bigger than 0");
+    CHECK(height > 0, false, "Application height (if specified) has to be bigger than 0");
+    
+    
+    
     CHECK((this->terminal = new AppCUI::Internal::Terminal()), false, "Fail to allocate a terminal object !");
     CHECK(this->terminal->Init(), false, "Fail to initialize OS-Specific terminal !");
     this->config.SetDarkTheme();    
@@ -308,7 +315,6 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
     MouseLockedControl = nullptr;
     MouseOverControl = nullptr;
     ModalControlsCount = 0;
-    Handler = handler;
     
     this->Inited = true;
     LOG_INFO("AppCUI initialized succesifully");
@@ -681,9 +687,6 @@ void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control *contro
         }
         control = control->GetParent();
     }
-    // daca am ajuns aici - verific daca nu am si un handler
-    if (Handler != nullptr)
-        Handler(sourceControl, eventType, controlID);
 }
 void AppCUI::Internal::Application::Terminate()
 {

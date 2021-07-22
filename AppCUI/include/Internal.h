@@ -24,6 +24,9 @@
 #define MAX_COMMANDBAR_FIELD_NAME		    24
 #define MAX_COMMANDBAR_SHIFTSTATES		    8
 
+#define CURRENT_CONSOLE_WIDTH               0xFFFFFFFF
+#define CURRENT_CONSOLE_HEIGHT              0xFFFFFFFF
+
 #define NEW_LINE_CODE                       10
 
 #define SET_CHARACTER_EX(ptrCharInfo,value,color) {\
@@ -64,7 +67,7 @@ namespace AppCUI
                 int                     mouseX, mouseY;
                 unsigned int            newWidth, newHeight;
                 unsigned int            mouseButtonState;
-                AppCUI::Input::Key keyCode;
+                AppCUI::Input::Key      keyCode;
                 char                    asciiCode;
             };
         }
@@ -161,8 +164,6 @@ namespace AppCUI
             AppCUI::Internal::AbstractTerminal*     terminal;
             bool                                    Inited;
             
-
-
             DesktopControl			                Desktop;
             CommandBarController	                CommandBarObject;
             AppCUI::Application::CommandBar         CommandBarWrapper;
@@ -174,7 +175,6 @@ namespace AppCUI
             int						                LoopStatus;
             unsigned int			                RepaintStatus;
             int						                MouseLockedObject;
-            AppCUI::Application::EventHandler	    Handler;
 
             Application();
             ~Application();
@@ -195,7 +195,7 @@ namespace AppCUI
             bool    ExpandControl(AppCUI::Controls::Control * ctrl);
 
             //Common implementations
-            bool    Init(AppCUI::Application::InitializationFlags flags, AppCUI::Application::EventHandler handler);
+            bool    Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height);
             bool    Uninit();
             bool    ExecuteEventLoop(AppCUI::Controls::Control *control = nullptr);
             void    Paint();

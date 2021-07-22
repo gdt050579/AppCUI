@@ -1260,8 +1260,24 @@ namespace AppCUI
     {
         enum class InitializationFlags : unsigned int
         {
-            NONE            = 0,
-            HAS_COMMANDBAR  = 0x00000001,
+            NONE                = 0,
+            
+            // possible backends
+            BACKEDN_DEFAULT     = 0,
+            BACKEND_SDL         = 1,
+            BACKEND_XTERM       = 2,
+
+            // character size
+            CHAR_SIZE_SMALL     = 0x00000100,
+            CHAR_SIZE_REGULAR   = 0x00000200,
+            CHAR_SIZE_LARGE     = 0x00000300,
+            CHAR_SIZE_HUGE      = 0x00000400,
+
+            // generic options
+            HAS_COMMANDBAR      = 0x00010000,
+            HAS_MENU            = 0x00020000,
+            MAXIMIZED           = 0x00040000,
+            FIXED_SIZE          = 0x00080000,
         };
 
         class EXPORT CommandBar
@@ -1368,10 +1384,10 @@ namespace AppCUI
 
             void SetDarkTheme();
         };
-        typedef             void(*EventHandler)(const void* sender, AppCUI::Controls::Event eventType, int controlID);
 
         EXPORT Config*      GetAppConfig();
-        EXPORT bool         Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE, EventHandler eventCallback = nullptr);
+        EXPORT bool         Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+        EXPORT bool         Init(unsigned int width, unsigned int height, Application::InitializationFlags flags = Application::InitializationFlags::NONE);
         EXPORT bool         Run();
         EXPORT bool         AddWindow(AppCUI::Controls::Window * wnd);
         EXPORT bool         GetApplicationSize(AppCUI::Console::Size & size);
