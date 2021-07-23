@@ -153,6 +153,7 @@ namespace AppCUI
         enum class CharacterSize : unsigned int
         {
             Default = 0,
+            Tiny,
             Small,
             Normal,
             Large,

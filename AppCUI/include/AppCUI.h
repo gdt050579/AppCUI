@@ -1270,10 +1270,11 @@ namespace AppCUI
 
             // character size
             CHAR_SIZE_DEFAULT   = 0,
-            CHAR_SIZE_SMALL     = 0x00000100,
-            CHAR_SIZE_NORMAL    = 0x00000200,
-            CHAR_SIZE_LARGE     = 0x00000300,
-            CHAR_SIZE_HUGE      = 0x00000400,
+            CHAR_SIZE_TINY      = 0x00000100,
+            CHAR_SIZE_SMALL     = 0x00000200,
+            CHAR_SIZE_NORMAL    = 0x00000300,
+            CHAR_SIZE_LARGE     = 0x00000400,
+            CHAR_SIZE_HUGE      = 0x00000500,
 
             // generic options
             HAS_COMMANDBAR      = 0x00010000,

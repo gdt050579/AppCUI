@@ -292,6 +292,9 @@ bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::Initia
         case AppCUI::Application::InitializationFlags::CHAR_SIZE_DEFAULT:
             this->CharSize = CharacterSize::Default;
             break;
+        case AppCUI::Application::InitializationFlags::CHAR_SIZE_TINY:
+            this->CharSize = CharacterSize::Tiny;
+            break;
         case AppCUI::Application::InitializationFlags::CHAR_SIZE_SMALL:
             this->CharSize = CharacterSize::Small;
             break;
