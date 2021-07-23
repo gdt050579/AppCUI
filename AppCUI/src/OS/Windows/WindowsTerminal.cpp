@@ -113,6 +113,31 @@ bool WindowsTerminal::ComputeTerminalSize(const InitializationData & initData, u
     
     return true;
 }
+bool WindowsTerminal::ComputeCharacterSize(const InitializationData & initData)
+{
+    if (initData.CharSize == CharacterSize::Default)
+        return true; // leave the settings as they are
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+    cfi.FontWeight = FW_NORMAL;
+    cfi.dwFontSize.X = 0;
+    cfi.nFont = 0;
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FaceName[0] = 'C'; cfi.FaceName[1] = 'o'; cfi.FaceName[2] = 'n'; cfi.FaceName[3] = 's';
+    cfi.FaceName[4] = 'o'; cfi.FaceName[5] = 'a'; cfi.FaceName[6] = 'a'; cfi.FaceName[7] = 's';
+    cfi.FaceName[9] = 0;
+    switch (initData.CharSize)
+    {
+        case CharacterSize::Tiny:   cfi.dwFontSize.Y = 8; break;
+        case CharacterSize::Small:  cfi.dwFontSize.Y = 14; break;
+        case CharacterSize::Normal: cfi.dwFontSize.Y = 18; break;
+        case CharacterSize::Large:  cfi.dwFontSize.Y = 24; break;
+        case CharacterSize::Huge:   cfi.dwFontSize.Y = 36; break;
+        default: RETURNERROR(false, "Invalid/unknwon value for character size: %d", (unsigned int)initData.CharSize);
+    }
+    CHECK(SetCurrentConsoleFontEx(this->hstdOut, FALSE, &cfi), false, "Fail to set character size (Error = 0x%08X)", GetLastError());
+    return true;
+}
 void WindowsTerminal::BuildKeyTranslationMatrix()
 {
     // Build the key translation matrix [could be improved with a static vector]
@@ -157,6 +182,9 @@ bool WindowsTerminal::OnInit(const InitializationData & initData)
 
     // copy original screen buffer information
     CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y), false, "Fail to copy original screen buffer");
+
+    // update character size
+    CHECK(ComputeCharacterSize(initData), false, "Fail to change character size");
 
     // computer terminal size
     unsigned int terminalWidth = 0;  
