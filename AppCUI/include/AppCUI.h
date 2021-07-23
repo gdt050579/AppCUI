@@ -1390,7 +1390,11 @@ namespace AppCUI
         };
 
         EXPORT Config*      GetAppConfig();
+        //[[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized properly")]]
+        [[nodiscard]]
         EXPORT bool         Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+        //[[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized properly")]]
+        [[nodiscard]]
         EXPORT bool         Init(unsigned int width, unsigned int height, Application::InitializationFlags flags = Application::InitializationFlags::NONE);
         EXPORT bool         Run();
         EXPORT bool         AddWindow(AppCUI::Controls::Window * wnd);

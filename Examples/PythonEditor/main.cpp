@@ -154,7 +154,8 @@ public:
 };
 int main()
 {
-    Application::Init();
+    if (!Application::Init())
+        return 1;
     Application::AddWindow(new PythonEditorWin());
     Application::Run();
     return 0;

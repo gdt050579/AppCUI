@@ -27,7 +27,8 @@ public:
 int main()
 {
     Log::ToFile("TerminalSettings.log");
-    Application::Init(50,20,InitializationFlags::CHAR_SIZE_LARGE);
+    if (!Application::Init(50, 20, InitializationFlags::CHAR_SIZE_LARGE))
+        return 1;
     Application::AddWindow(new SimpleWin());
     Application::Run();
     return 0;

@@ -108,7 +108,8 @@ public:
 
 int main()
 {
-    Application::Init();
+    if (!Application::Init())
+        return 1;
     Application::AddWindow(new MyWin());
     Application::Run();
     return 0;
