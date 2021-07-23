@@ -20,6 +20,8 @@ namespace AppCUI
 
             bool                        ResizeConsoleBuffer(unsigned int width, unsigned int height);
             bool                        CopyOriginalScreenBuffer(unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY);
+            void                        BuildKeyTranslationMatrix();
+            bool                        ComputeTerminalSize(const InitializationData & initData, unsigned int currentWidth, unsigned int currentHeigh, unsigned int & resultedWidth, unsigned int & resultedHeight);
         public:
             WindowsTerminal();
             virtual bool                OnInit(const InitializationData & initData) override;
