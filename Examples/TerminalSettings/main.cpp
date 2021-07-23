@@ -10,8 +10,8 @@ class SimpleWin : public AppCUI::Controls::Window
 public:
     SimpleWin()
     {
-        this->Create("Test", "a:c,w:40,h:10");
-        l1.Create(this, "This is a simple Window example that creates a 40x20 fixed window that  will close if you click on the [X]  button from the bottom-top corner.",
+        this->Create("Test", "a:c,w:40,h:8");
+        l1.Create(this, "This is a simple Terminal example\nthat creates a 40x8 fixed window on\na 50x20 terminal with different\ncharacter sizes.",
             "x:1,y:1,w:36,h:5");
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
@@ -26,7 +26,8 @@ public:
 };
 int main()
 {
-    Application::Init();
+    Log::ToFile("TerminalSettings.log");
+    Application::Init(50,20,InitializationFlags::CHAR_SIZE_LARGE);
     Application::AddWindow(new SimpleWin());
     Application::Run();
     return 0;
