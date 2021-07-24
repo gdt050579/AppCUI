@@ -21,7 +21,7 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool SDLTerminal::initInput()
+bool SDLTerminal::initInput(const InitializationData & initData)
 {
     oldShiftState = Key::None;
 

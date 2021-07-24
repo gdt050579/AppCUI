@@ -14,7 +14,6 @@ namespace AppCUI
 {
     namespace Internal
     {
-        constexpr static size_t fontSize = 15;
         const static std::string fontName = "CourierNew.ttf";
 
         class SDLTerminal : public AbstractTerminal
@@ -39,10 +38,10 @@ namespace AppCUI
             virtual bool IsEventAvailable() override;
 
         private:
-            bool initScreen();
-            bool initInput();
+            bool initScreen(const InitializationData & initData);
+            bool initInput(const InitializationData & initData);
 
-            bool initFont();
+            bool initFont(const InitializationData & initData);
 
             void uninitScreen();
             void uninitInput();

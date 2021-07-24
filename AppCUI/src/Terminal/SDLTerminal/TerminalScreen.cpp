@@ -18,7 +18,7 @@ constexpr size_t NR_COLORS = 16;
 // https://devblogs.microsoft.com/commandline/updating-the-windows-console-colors/
 // something from the old scheme, something from the new scheme
 constexpr SDL_Color COLOR_BLACK = SDL_Color{0, 0, 0};
-constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0,0,128};
+constexpr SDL_Color COLOR_DARKBLUE = SDL_Color{0, 0, 128};
 constexpr SDL_Color COLOR_DARKGREEN = SDL_Color{19, 161, 14};
 constexpr SDL_Color COLOR_DARKCYAN = SDL_Color{58, 150, 221};
 constexpr SDL_Color COLOR_DARKRED = SDL_Color{197, 15, 31};
@@ -65,8 +65,30 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 //
 // After the font is successfully loaded, let's see how wide and high are the characters,
 // that will be our cell width and cell height.
-bool SDLTerminal::initFont()
+bool SDLTerminal::initFont(const InitializationData & initData)
 {
+    size_t fontSize = 0;
+    switch (initData.CharSize)
+    {
+        case CharacterSize::Tiny:
+            fontSize = 10;
+            break;
+        case CharacterSize::Small:
+            fontSize = 13;
+            break;
+        case CharacterSize::Default:
+        case CharacterSize::Normal:
+            fontSize = 15;
+            break;
+        case CharacterSize::Large:
+            fontSize = 18;
+            break;
+        case CharacterSize::Huge:
+            fontSize = 20;
+            break;
+        default:
+            break;
+    }
     TTF_Init();
 
     // Load font resource
@@ -92,29 +114,55 @@ bool SDLTerminal::initFont()
     return true;
 }
 
-bool SDLTerminal::initScreen()
+bool SDLTerminal::initScreen(const InitializationData &initData)
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    CHECK(initFont(), false, "Unable to init font");
+    CHECK(initFont(initData), false, "Unable to init font");
 
+    // Default size is half the screen
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
-    const size_t pixelWidth = DM.w / 2;
-    const size_t pixelHeight = DM.h / 2;
-    const size_t widthInChars = pixelWidth / charWidth;
-    const size_t heightInChars = pixelHeight / charHeight; 
+    size_t pixelWidth = DM.w / 2;
+    size_t pixelHeight = DM.h / 2;
 
+    Uint32 windowFlags = 0;
+    if (!initData.FixedSize)
+    {
+        windowFlags |= SDL_WindowFlags::SDL_WINDOW_RESIZABLE;
+    }
+    switch (initData.TermSize)
+    {
+    case TerminalSize::FullScreen:
+        windowFlags |= SDL_WindowFlags::SDL_WINDOW_FULLSCREEN;
+        pixelWidth = DM.w;
+        pixelHeight = DM.h;
+        break;
+    case TerminalSize::Maximized:
+        windowFlags |= SDL_WindowFlags::SDL_WINDOW_MAXIMIZED;
+        pixelWidth = DM.w;
+        pixelHeight = DM.h;
+        break;
+    case TerminalSize::CustomSize:
+        pixelWidth = charWidth * initData.Width;
+        pixelHeight = charWidth * initData.Height;
+        break;
+    default:
+        break;
+    }
+    
     window = SDL_CreateWindow(
         "AppCUI",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         pixelWidth,
         pixelHeight,
-        SDL_WINDOW_RESIZABLE);
+        windowFlags);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
+    const size_t widthInChars = pixelWidth / charWidth;
+    const size_t heightInChars = pixelHeight / charHeight;
     CHECK(ScreenCanvas.Create(widthInChars, heightInChars), false,
           "Fail to create an internal canvas of %d x %d size", widthInChars, heightInChars);
     CHECK(OriginalScreenCanvas.Create(widthInChars, heightInChars), false,

@@ -8,8 +8,8 @@ using namespace AppCUI::Input;
 
 bool SDLTerminal::OnInit(const InitializationData& initData)
 {
-    if (!initScreen()) return false;
-    if (!initInput()) return false;
+    if (!initScreen(initData)) return false;
+    if (!initInput(initData)) return false;
     return true;
 }
 
