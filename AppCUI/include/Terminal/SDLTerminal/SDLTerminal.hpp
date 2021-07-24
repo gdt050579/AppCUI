@@ -21,8 +21,7 @@ namespace AppCUI
         {
         private:
             std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
-            std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation
-            ;
+            std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation;
             AppCUI::Input::Key oldShiftState;
 
             SDL_Window* window;
@@ -32,13 +31,12 @@ namespace AppCUI
             size_t charHeight;
 
         public:
-            virtual bool OnInit(const InitializationData& initData) override;
+            virtual bool OnInit(const InitializationData & initData) override;
             virtual void OnUninit() override;
             virtual void OnFlushToScreen() override;
             virtual bool OnUpdateCursor() override;
             virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
             virtual bool IsEventAvailable() override;
-
 
         private:
             bool initScreen();

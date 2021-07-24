@@ -1,5 +1,1 @@
-if (MSVC)
-    target_sources(AppCUI PRIVATE Terminal.cpp TerminalInput.cpp TerminalScreen.cpp)
-else()
-    target_sources(AppCUI PRIVATE Terminal.cpp TerminalInput.cpp TerminalScreen.cpp Clipboard.cpp)
-endif()
+target_sources(AppCUI PRIVATE Terminal.cpp TerminalInput.cpp TerminalScreen.cpp)

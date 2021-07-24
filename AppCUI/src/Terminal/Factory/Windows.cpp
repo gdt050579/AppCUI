@@ -1,6 +1,10 @@
 #include "Terminal/TerminalFactory.hpp"
 #include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
+
+#ifdef HAVE_SDL
 #include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#endif 
+
 #include <string.h>
 
 using namespace AppCUI::Internal;
@@ -14,8 +18,6 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         case TerminalType::Windows:
             term = std::make_unique<WindowsTerminal>();
             break;
-        //case TerminalType::SDL:
-        //    term = std::make_unique<SDLTerminal>();
         default:
             RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int)initData.FrontEnd);
     }

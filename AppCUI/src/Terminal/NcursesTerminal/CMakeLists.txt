@@ -1,0 +1,1 @@
+target_sources(AppCUI PRIVATE Color.cpp NcursesTerminal.cpp)
