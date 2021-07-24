@@ -83,11 +83,40 @@ FIND_PATH(SDL2TTF_INCLUDE_DIR SDL_ttf.h
 	PATHS ${SDL2TTF_SEARCH_PATHS}
 )
 
+set(_SDL2TTF_PATH_SUFFIXES SDL2)
+if(WIN32)
+	# Precompiled libraries for MSVC are in x86/x64 subdirectories
+	if(MSVC)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(_SDL2TTF_LIBRARY_PATH_SUFFIX lib/x64)
+		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(_SDL2TTF_LIBRARY_PATH_SUFFIX lib/x86)
+		endif()
+
+	# Both includes and libraries for MinGW are in some directory deep
+	# inside. There's also a CMake config file but it has HARDCODED path
+	# to /opt/local/i686-w64-mingw32, which doesn't make ANY SENSE,
+	# especially on Windows.
+	elseif(MINGW)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(_SDL2TTF_LIBRARY_PATH_SUFFIX x86_64-w64-mingw32/lib)
+			set(_SDL2TTF_RUNTIME_PATH_SUFFIX x86_64-w64-mingw32/bin)
+			list(APPEND _SDL2TTF_PATH_SUFFIXES x86_64-w64-mingw32/include/SDL2)
+		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(_SDL2TTF_LIBRARY_PATH_SUFFIX i686-w64-mingw32/lib)
+			set(_SDL2TTF_RUNTIME_PATH_SUFFIX i686-w64-mingw32/lib)
+			list(APPEND _SDL2TTF_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
+		endif()
+	else()
+		message(FATAL_ERROR "Unsupported compiler")
+	endif()
+endif()
+
 FIND_LIBRARY(SDL2TTF_LIBRARY_TEMP
 	NAMES SDL2_ttf
 	HINTS
 	$ENV{SDL2TTFDIR}
-	PATH_SUFFIXES lib64 lib
+	PATH_SUFFIXES lib64 lib ${_SDL2TTF_LIBRARY_PATH_SUFFIX}
 	PATHS ${SDL2TTF_SEARCH_PATHS}
 )
 

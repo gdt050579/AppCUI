@@ -1,0 +1,1 @@
+target_sources(AppCUI PRIVATE Terminal.cpp TerminalInput.cpp TerminalScreen.cpp)

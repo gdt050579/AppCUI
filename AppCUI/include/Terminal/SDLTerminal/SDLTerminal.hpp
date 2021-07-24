@@ -1,5 +1,5 @@
-#ifndef __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
-#define __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
+#ifndef _SDL_TERMINAL_INCLUDED_
+#define _SDL_TERMINAL_INCLUDED_
 
 #include <map>
 #include <memory>
@@ -14,15 +14,13 @@ namespace AppCUI
 {
     namespace Internal
     {
-        constexpr static size_t fontSize = 16;
         const static std::string fontName = "CourierNew.ttf";
 
-        class Terminal : public AbstractTerminal
+        class SDLTerminal : public AbstractTerminal
         {
         private:
             std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
-            std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation
-            ;
+            std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation;
             AppCUI::Input::Key oldShiftState;
 
             SDL_Window* window;
@@ -32,19 +30,18 @@ namespace AppCUI
             size_t charHeight;
 
         public:
-            virtual bool OnInit() override;
+            virtual bool OnInit(const InitializationData & initData) override;
             virtual void OnUninit() override;
             virtual void OnFlushToScreen() override;
             virtual bool OnUpdateCursor() override;
             virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
             virtual bool IsEventAvailable() override;
 
-
         private:
-            bool initScreen();
-            bool initInput();
+            bool initScreen(const InitializationData & initData);
+            bool initInput(const InitializationData & initData);
 
-            bool initFont();
+            bool initFont(const InitializationData & initData);
 
             void uninitScreen();
             void uninitInput();
@@ -56,4 +53,4 @@ namespace AppCUI
     }
 }
 
-#endif
+#endif // _SDL_TERMINAL_INCLUDED_

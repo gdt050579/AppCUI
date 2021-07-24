@@ -1,4 +1,4 @@
-#include "os.h"
+#include "Terminal/SDLTerminal/SDLTerminal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
@@ -21,7 +21,7 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool Terminal::initInput()
+bool SDLTerminal::initInput(const InitializationData & initData)
 {
     oldShiftState = Key::None;
 
@@ -60,7 +60,7 @@ bool Terminal::initInput()
     return true;
 }
 
-void Terminal::handleMouse(SystemEvents::Event &evt, const SDL_Event &eSdl)
+void SDLTerminal::handleMouse(SystemEvents::Event &evt, const SDL_Event &eSdl)
 {
     if (eSdl.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -82,7 +82,7 @@ void Terminal::handleMouse(SystemEvents::Event &evt, const SDL_Event &eSdl)
     }
 }
 
-void Terminal::handleKeyUp(SystemEvents::Event &evt, const SDL_Event &eSdl)
+void SDLTerminal::handleKeyUp(SystemEvents::Event &evt, const SDL_Event &eSdl)
 {
     const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
     auto currentShiftState = getShiftState(keyModifiers);
@@ -94,7 +94,7 @@ void Terminal::handleKeyUp(SystemEvents::Event &evt, const SDL_Event &eSdl)
     oldShiftState = currentShiftState;
 }
 
-void Terminal::handleKeyDown(SystemEvents::Event &evt, const SDL_Event &eSdl)
+void SDLTerminal::handleKeyDown(SystemEvents::Event &evt, const SDL_Event &eSdl)
 {
     evt.eventType = SystemEvents::KEY_PRESSED;
 
@@ -138,7 +138,7 @@ void Terminal::handleKeyDown(SystemEvents::Event &evt, const SDL_Event &eSdl)
     oldShiftState = currentShiftState;
 }
 
-void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
+void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
 {
     evnt.eventType = SystemEvents::NONE;
     evnt.keyCode = Key::None;
@@ -177,11 +177,11 @@ void Terminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
     }
 }
 
-bool Terminal::IsEventAvailable()
+bool SDLTerminal::IsEventAvailable()
 {
 	NOT_IMPLEMENTED(false);
 }
 
-void Terminal::uninitInput()
+void SDLTerminal::uninitInput()
 {
 }
