@@ -6,7 +6,7 @@
 #include <iterator>
 #include <string>
 
-#include "Internal.h"
+#include "Internal.hpp"
 #include "SDL.h"
 #include "SDL_ttf.h"
 

@@ -1,5 +1,5 @@
 #include <array>
-#include "Internal.h"
+#include "Internal.hpp"
 
 /*
     AppCUI uses 16 colors, 16 for background and 16 for foreground.
