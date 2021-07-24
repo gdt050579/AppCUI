@@ -4,12 +4,12 @@ using namespace AppCUI::Internal;
 
 #ifdef HAVE_SDL
 #include "Terminal/SDLTerminal/SDLTerminal.hpp"
-std::unique_ptr<AbstractTerminal> default_terminal()
+std::unique_ptr<AbstractTerminal> sdl_terminal()
 {
     return std::make_unique<SDLTerminal>();
 }
 #else
-std::unique_ptr<AbstractTerminal> default_terminal()
+std::unique_ptr<AbstractTerminal> sdl_terminal()
 {
     RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2", (unsigned int)initData.FrontEnd);
 }
@@ -35,8 +35,14 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
     switch (initData.FrontEnd)
     {
     case TerminalType::Default:
+        term = sdl_terminal();
+        if (!term)
+        {
+            term = curses_terminal();
+        }
+        break;
     case TerminalType::SDL:
-        term = default_terminal();
+        term = sdl_terminal();
         break;
     case TerminalType::Terminal:
         term = curses_terminal();
