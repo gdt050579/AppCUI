@@ -57,6 +57,7 @@ namespace AppCUI
             virtual bool OnUpdateCursor() override;
             virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event & evnt) override;
             virtual bool IsEventAvailable() override;
+            virtual void RestoreOriginalConsoleSettings() override;
             
         private:
             bool initScreen();

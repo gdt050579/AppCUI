@@ -1,4 +1,3 @@
-#include "Internal.h"
 #include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
 #include <string.h>
 
@@ -202,6 +201,9 @@ bool WindowsTerminal::OnInit(const InitializationData & initData)
     BuildKeyTranslationMatrix();
 
     return true;
+}
+void WindowsTerminal::RestoreOriginalConsoleSettings()
+{    
 }
 void WindowsTerminal::OnUninit()
 {

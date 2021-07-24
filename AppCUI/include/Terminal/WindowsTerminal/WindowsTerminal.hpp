@@ -26,6 +26,7 @@ namespace AppCUI
         public:
             WindowsTerminal();
             virtual bool                OnInit(const InitializationData & initData) override;
+            virtual void                RestoreOriginalConsoleSettings() override;
             virtual void                OnUninit() override;
             virtual void                OnFlushToScreen() override;
             virtual bool                OnUpdateCursor() override;

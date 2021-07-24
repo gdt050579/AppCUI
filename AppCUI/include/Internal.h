@@ -183,6 +183,7 @@ namespace AppCUI
             bool                        Inited, LastCursorVisibility;
 
             virtual bool    OnInit(const InitializationData& initData) = 0;
+            virtual void    RestoreOriginalConsoleSettings() = 0;
             virtual void    OnUninit() = 0;
             virtual void    OnFlushToScreen() = 0;
             virtual bool    OnUpdateCursor() = 0;

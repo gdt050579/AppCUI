@@ -20,6 +20,8 @@ bool AbstractTerminal::Init(const InitializationData& initData)
 }
 void AbstractTerminal::Uninit()
 {    
+    // restore the original screen settings before AppCUI was initialized
+    this->RestoreOriginalConsoleSettings();
     // clear up current buffer
     this->ScreenCanvas.ClearEntireSurface(' ', ColorPair{ Color::Silver, Color::Black });
     // copy the original buffer

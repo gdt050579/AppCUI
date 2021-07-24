@@ -244,6 +244,9 @@ bool NcursesTerminal::OnUpdateCursor()
     refresh();
     return true;
 }
+void NcursesTerminal::RestoreOriginalConsoleSettings()
+{    
+}
 
 void NcursesTerminal::uninitScreen()
 {

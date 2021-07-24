@@ -208,6 +208,9 @@ void SDLTerminal::OnFlushToScreen()
 
     SDL_RenderPresent(renderer);
 }
+void SDLTerminal::RestoreOriginalConsoleSettings()
+{    
+}
 
 bool SDLTerminal::OnUpdateCursor()
 {
