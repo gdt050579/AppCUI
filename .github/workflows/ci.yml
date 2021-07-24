@@ -17,7 +17,7 @@ jobs:
     env:
       SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip"
       SDL2_TTF_URL: "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip"
-      SDL2_PATH: "C:\SDL"
+      SDL2_PATH: "C:\\SDL"
     steps:
     - uses: actions/checkout@v2
     - name: Install requests
