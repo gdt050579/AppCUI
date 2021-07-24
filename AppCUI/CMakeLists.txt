@@ -1,8 +1,6 @@
 include_directories(include)
-include_directories(include/Terminal/SDLTerminal)
 if (MSVC)
     include_directories(include/Windows)
-    include_directories(include/Terminal/WindowsTerminal)
 elseif (UNIX)
     include_directories(include/Unix)
 endif()
