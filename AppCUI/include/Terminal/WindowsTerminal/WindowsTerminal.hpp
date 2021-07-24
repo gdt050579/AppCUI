@@ -1,7 +1,7 @@
-#ifndef __OS_SPECIFIC_IMPLEMENTATION_FOR_WINDOWS__
-#define __OS_SPECIFIC_IMPLEMENTATION_FOR_WINDOWS__
+#ifndef _WINDOWS_TERMINAL_INCLUDED_
+#define _WINDOWS_TERMINAL_INCLUDED_
 
-#include "../Internal.h"
+#include "Internal.h"
 
 namespace AppCUI
 {
@@ -37,4 +37,4 @@ namespace AppCUI
 }
 
 
-#endif
+#endif // _WINDOWS_TERMINAL_INCLUDED_

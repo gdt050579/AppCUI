@@ -1,16 +1,17 @@
-#include "os.h"
+#include "Terminal/TerminalFactory.hpp"
+#include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
 #include <string.h>
 
 using namespace AppCUI::Internal;
 
-AbstractTerminal* AbstractTerminal::Create(const InitializationData & initData)
+std::unique_ptr<AbstractTerminal> GetTerminal(const InitializationData & initData)
 {
     AbstractTerminal * term = nullptr;
     switch (initData.FrontEnd)
     {
         case TerminalType::Default:
         case TerminalType::Windows:
-            term = new WindowsTerminal();
+            term = std::make_shared<WindowsTerminal>();
             break;
         default:
             RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int)initData.FrontEnd);
@@ -18,7 +19,6 @@ AbstractTerminal* AbstractTerminal::Create(const InitializationData & initData)
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
     if (term->Init(initData) == false)
     {
-        delete term;
         RETURNERROR(nullptr, "Fail to initialize the terminal !");
     }
     return term;

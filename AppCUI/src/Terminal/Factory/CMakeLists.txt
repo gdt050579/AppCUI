@@ -1,0 +1,5 @@
+if (MSVC)
+    target_sources(AppCUI PRIVATE Windows.cpp)
+elseif (UNIX)
+    target_sources(AppCUI PRIVATE Unix.cpp)
+endif()

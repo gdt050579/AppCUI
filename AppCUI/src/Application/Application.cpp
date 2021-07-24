@@ -1,6 +1,6 @@
 #include "AppCUI.h"
 #include "Internal.h"
-#include "os.h"
+#include "Terminal/TerminalFactory.hpp"
 #include "ControlContext.h"
 
 using namespace AppCUI;
@@ -360,9 +360,6 @@ AppCUI::Internal::Application::~Application()
 }
 void AppCUI::Internal::Application::Destroy()
 {
-    if (this->terminal)
-        delete this->terminal;
-    this->terminal = nullptr;
     this->Inited = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl = nullptr;
@@ -379,7 +376,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
     // create the frontend
     AppCUI::Internal::InitializationData initData;
     CHECK(initData.BuildFrom(flags, width, height), false, "Fail to create AppCUI initialization data !");        
-    CHECK((this->terminal = AbstractTerminal::Create(initData)), false, "Fail to allocate a terminal object !");
+    CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
 
     // configur other objects and settings
     this->config.SetDarkTheme();    
@@ -776,8 +773,6 @@ bool AppCUI::Internal::Application::Uninit()
 {
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
     this->terminal->Uninit();
-    delete this->terminal;
-    this->terminal = nullptr;
     this->Inited = false;
     return true;
 }

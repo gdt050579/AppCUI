@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE File.cpp FileSystem.cpp Terminal.cpp TerminalScreen.cpp TerminalInput.cpp Clipboard.cpp)
+target_sources(AppCUI PRIVATE File.cpp FileSystem.cpp)

@@ -1,5 +1,5 @@
-#ifndef __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
-#define __OS_SPECIFIC_IMPLEMENTATION_FOR_UNIX__
+#ifndef _SDL_TERMINAL_INCLUDED_
+#define _SDL_TERMINAL_INCLUDED_
 
 #include <map>
 #include <memory>
@@ -17,7 +17,7 @@ namespace AppCUI
         constexpr static size_t fontSize = 16;
         const static std::string fontName = "CourierNew.ttf";
 
-        class Terminal : public AbstractTerminal
+        class SDLTerminal : public AbstractTerminal
         {
         private:
             std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
@@ -32,7 +32,7 @@ namespace AppCUI
             size_t charHeight;
 
         public:
-            virtual bool OnInit() override;
+            virtual bool OnInit(const InitializationData& initData) override;
             virtual void OnUninit() override;
             virtual void OnFlushToScreen() override;
             virtual bool OnUpdateCursor() override;
@@ -56,4 +56,4 @@ namespace AppCUI
     }
 }
 
-#endif
+#endif // _SDL_TERMINAL_INCLUDED_

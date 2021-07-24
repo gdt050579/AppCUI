@@ -3,7 +3,7 @@
 #include <fstream>
 #include <array>
 
-#include "os.h"
+#include "Terminal/SDLTerminal/SDLTerminal.hpp"
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "cmrc/cmrc.hpp"
@@ -65,7 +65,7 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 //
 // After the font is successfully loaded, let's see how wide and high are the characters,
 // that will be our cell width and cell height.
-bool Terminal::initFont()
+bool SDLTerminal::initFont()
 {
     TTF_Init();
 
@@ -92,7 +92,7 @@ bool Terminal::initFont()
     return true;
 }
 
-bool Terminal::initScreen()
+bool SDLTerminal::initScreen()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
     CHECK(initFont(), false, "Unable to init font");
@@ -125,7 +125,7 @@ bool Terminal::initScreen()
 // A very basic flush to screen
 // It will draw each character as a separate texture
 // Optimizations would be welcome, like drawing an entire string of text with the same colors
-void Terminal::OnFlushToScreen()
+void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
 
@@ -161,13 +161,13 @@ void Terminal::OnFlushToScreen()
     SDL_RenderPresent(renderer);
 }
 
-bool Terminal::OnUpdateCursor()
+bool SDLTerminal::OnUpdateCursor()
 {
     // Currently no cursor for sdl
     return true;
 }
 
-void Terminal::uninitScreen()
+void SDLTerminal::uninitScreen()
 {
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);

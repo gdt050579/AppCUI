@@ -194,13 +194,12 @@ namespace AppCUI
             void    Uninit();
             void    Update();
 
-            static AbstractTerminal* Create(const InitializationData& initData);
         };
 
         struct Application
         {
             AppCUI::Application::Config             config;
-            AppCUI::Internal::AbstractTerminal*     terminal;
+            std::unique_ptr<AbstractTerminal>       terminal;
             bool                                    Inited;
             
             DesktopControl			                Desktop;
