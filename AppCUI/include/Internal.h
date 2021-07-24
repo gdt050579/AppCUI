@@ -3,6 +3,7 @@
 
 #include "AppCUI.h"
 #include "OSDefinitions.h"
+#include <memory>
 
 #define REPAINT_STATUS_COMPUTE_POSITION		1
 #define REPAINT_STATUS_DRAW					2
