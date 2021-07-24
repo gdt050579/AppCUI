@@ -14,10 +14,16 @@ env:
 jobs:
   build-win:
     runs-on: [windows-latest]
+    env:
+      SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip"
+      SDL2_TTF_URL: "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip"
+      SDL2_PATH: "C:\\SDL"
     steps:
     - uses: actions/checkout@v2
+    - name: Install SDL2
+      run: python win_sdl2.py
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="C:\\SDL"
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
