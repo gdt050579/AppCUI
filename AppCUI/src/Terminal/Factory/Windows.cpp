@@ -1,11 +1,6 @@
+#include <string.h>
 #include "Terminal/TerminalFactory.hpp"
 #include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
-
-#ifdef HAVE_SDL
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
-#endif 
-
-#include <string.h>
 
 using namespace AppCUI::Internal;
 
