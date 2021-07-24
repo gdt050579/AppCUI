@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "Internal.hpp"
 #include "SDL.h"
 using namespace AppCUI::OS;
 
