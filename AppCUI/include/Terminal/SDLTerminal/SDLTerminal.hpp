@@ -14,7 +14,7 @@ namespace AppCUI
 {
     namespace Internal
     {
-        constexpr static size_t fontSize = 16;
+        constexpr static size_t fontSize = 15;
         const static std::string fontName = "CourierNew.ttf";
 
         class SDLTerminal : public AbstractTerminal
