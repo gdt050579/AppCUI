@@ -6,7 +6,7 @@ using namespace AppCUI::Internal;
 
 std::unique_ptr<AbstractTerminal> GetTerminal(const InitializationData & initData)
 {
-    AbstractTerminal * term = nullptr;
+    std::unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.FrontEnd)
     {
         case TerminalType::Default:
