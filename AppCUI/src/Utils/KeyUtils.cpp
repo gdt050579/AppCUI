@@ -1,4 +1,4 @@
-#include "AppCUI.h"
+#include "AppCUI.hpp"
 
 struct __KeyAndSize__ {
     const char * Name;

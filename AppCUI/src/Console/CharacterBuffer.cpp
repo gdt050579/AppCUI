@@ -1,5 +1,5 @@
-#include "AppCUI.h"
-#include "Internal.h"
+#include "AppCUI.hpp"
+#include "Internal.hpp"
 #include <string.h>
 
 using namespace AppCUI::Console;

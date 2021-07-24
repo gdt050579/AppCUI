@@ -1,4 +1,4 @@
-#include "AppCUI.h"
+#include "AppCUI.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;

@@ -1,7 +1,7 @@
 #ifndef __APPCUI_INTERNAL_HEADER__
 #define __APPCUI_INTERNAL_HEADER__
 
-#include "AppCUI.h"
+#include "AppCUI.hpp"
 #include "OSDefinitions.h"
 #include <memory>
 

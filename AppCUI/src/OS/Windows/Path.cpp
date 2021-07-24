@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "Internal.hpp"
 
 using namespace AppCUI::OS::FileSystem;
 

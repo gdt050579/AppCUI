@@ -1,5 +1,5 @@
-#include "ControlContext.h"
-#include "Internal.h"
+#include "ControlContext.hpp"
+#include "Internal.hpp"
 #include <string.h>
 #include <cstring>
 

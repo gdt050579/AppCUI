@@ -1,6 +1,6 @@
 #ifndef _TERMINAL_FACTORY_INCLUDED_
 #define _TERMINAL_FACTORY_INCLUDED_
-#include "Internal.h"
+#include "Internal.hpp"
 #include <memory>
 
 namespace AppCUI

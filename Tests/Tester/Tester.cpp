@@ -1,5 +1,5 @@
 #include <iostream>
-#include "AppCUI.h"
+#include "AppCUI.hpp"
 
 using namespace AppCUI;
 using namespace AppCUI::Application;

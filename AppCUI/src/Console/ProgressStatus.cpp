@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "Internal.hpp"
 #include <chrono>
 
 using namespace AppCUI::Console;

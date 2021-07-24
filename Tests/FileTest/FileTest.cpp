@@ -1,4 +1,4 @@
-#include "AppCUI.h"
+#include "AppCUI.hpp"
 #include <stdio.h>
 
 using namespace AppCUI;

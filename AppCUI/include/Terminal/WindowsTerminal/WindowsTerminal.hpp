@@ -1,7 +1,7 @@
 #ifndef _WINDOWS_TERMINAL_INCLUDED_
 #define _WINDOWS_TERMINAL_INCLUDED_
 
-#include "Internal.h"
+#include "Internal.hpp"
 
 namespace AppCUI
 {
