@@ -4,28 +4,16 @@ using namespace AppCUI::Internal;
 
 #ifdef HAVE_SDL
 #include "Terminal/SDLTerminal/SDLTerminal.hpp"
-std::unique_ptr<AbstractTerminal> sdl_terminal()
-{
-    return std::make_unique<SDLTerminal>();
-}
+constexpr bool have_sdl = true;
 #else
-std::unique_ptr<AbstractTerminal> sdl_terminal()
-{
-    RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2", (unsigned int)initData.FrontEnd);
-}
+constexpr bool have_sdl = false;
 #endif
 
 #ifdef HAVE_CURSES
 #include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
-std::unique_ptr<AbstractTerminal> curses_terminal()
-{
-    return std::make_unique<NcursesTerminal>();
-}
-#else 
-std::unique_ptr<AbstractTerminal> curses_terminal()
-{
-    RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses", (unsigned int)initData.FrontEnd);
-}
+constexpr bool have_curses = true;
+#else
+constexpr bool have_curses = false;
 #endif
 
 std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData &initData)
@@ -35,22 +23,43 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
     switch (initData.FrontEnd)
     {
     case TerminalType::Default:
-        term = sdl_terminal();
-        if (!term)
+        if (have_sdl)
         {
-            term = curses_terminal();
+            term = std::make_unique<SDLTerminal>();
+        }
+        if (!term && have_curses)
+        {
+            term = std::make_unique<NcursesTerminal>();
         }
         break;
     case TerminalType::SDL:
-        term = sdl_terminal();
+        if (have_sdl)
+        {
+            term = std::make_unique<SDLTerminal>();
+        }
+        else
+        {
+            RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2",
+                        (unsigned int)initData.FrontEnd);
+        }
         break;
     case TerminalType::Terminal:
-        term = curses_terminal();
+        if (have_curses)
+        {
+            term = std::make_unique<NcursesTerminal>();
+        }
+        else
+        {
+            RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses",
+                        (unsigned int)initData.FrontEnd);
+        }
         break;
     default:
         RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (unsigned int)initData.FrontEnd);
     }
-    CHECK(term, nullptr, "No terminal available or fail to allocate memory for a terminal !");
+
+    CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
+
     if (term->Init(initData) == false)
     {
         RETURNERROR(nullptr, "Fail to initialize the terminal !");
