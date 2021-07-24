@@ -14,8 +14,8 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         case TerminalType::Windows:
             term = std::make_unique<WindowsTerminal>();
             break;
-        case TerminalType::SDL:
-            term = std::make_unique<SDLTerminal>();
+        //case TerminalType::SDL:
+        //    term = std::make_unique<SDLTerminal>();
         default:
             RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int)initData.FrontEnd);
     }
