@@ -8,18 +8,21 @@ endif()
 # Add libAppCUI
 add_library(AppCUI SHARED)
 
-if (UNIX)
-    include(CMakeRC)
-    cmrc_add_resource_library(font resources/CourierNew.ttf)
+# Add font used by SDL 
+include(CMakeRC)
+cmrc_add_resource_library(font resources/CourierNew.ttf)
 
-    find_package(SDL2 REQUIRED)
-    find_package(SDL2TTF REQUIRED)
-    target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
-    if (APPLE)
-        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font)
-    else()
-        target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} font stdc++fs)
-    endif()
+# Add SDL
+include(FindSDL2)
+include(FindSDL2TTF)
+find_package(SDL2 REQUIRED)
+find_package(SDL2TTF REQUIRED)
+
+target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
+if (UNIX AND NOT APPLE)
+    target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} font stdc++fs)
+else()
+    target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} font)
 endif()
 
 add_subdirectory(src)

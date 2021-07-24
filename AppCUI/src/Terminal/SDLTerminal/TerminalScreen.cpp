@@ -80,7 +80,7 @@ bool SDLTerminal::initFont()
     std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
 
     // Load font file as TTF
-    this->font = TTF_OpenFont(fontFilePath.c_str(), fontSize);
+    this->font = TTF_OpenFont(fontFilePath.string().c_str(), fontSize);
     CHECK(font, false, "Failed to init font");
 
     int fontCharWidth = 0;
