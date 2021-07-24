@@ -1,5 +1,5 @@
-add_subdirectory(SDLTerminal)
 add_subdirectory(Factory)
+add_subdirectory(SDLTerminal)
 if (MSVC)
     add_subdirectory(WindowsTerminal)
 endif()

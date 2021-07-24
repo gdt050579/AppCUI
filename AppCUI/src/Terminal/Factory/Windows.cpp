@@ -11,7 +11,7 @@ std::unique_ptr<AbstractTerminal> GetTerminal(const InitializationData & initDat
     {
         case TerminalType::Default:
         case TerminalType::Windows:
-            term = std::make_shared<WindowsTerminal>();
+            term = std::make_unique<WindowsTerminal>();
             break;
         default:
             RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int)initData.FrontEnd);
