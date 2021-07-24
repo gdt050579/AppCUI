@@ -64,7 +64,7 @@ endif()
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 
 # for VS to see them
-file(GLOB_RECURSE APP_CUI_HEADERS include/*.h)
+file(GLOB_RECURSE APP_CUI_HEADERS include/*.hpp)
 target_sources(AppCUI PRIVATE ${APP_CUI_HEADERS})
 get_target_property(APP_CUI_SOURCES AppCUI SOURCES)
 source_group(TREE ${CMAKE_SOURCE_DIR}/AppCUI FILES ${APP_CUI_SOURCES} ${APP_CUI_HEADERS})

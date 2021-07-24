@@ -2,7 +2,7 @@
 #define __APPCUI_INTERNAL_HEADER__
 
 #include "AppCUI.hpp"
-#include "OSDefinitions.h"
+#include "OSDefinitions.hpp"
 #include <memory>
 
 #define REPAINT_STATUS_COMPUTE_POSITION		1
