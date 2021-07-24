@@ -1,18 +1,19 @@
 #include <string>
-
-#include "os.h"
+#include "Terminal/SDLTerminal/SDLTerminal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
-bool Terminal::OnInit()
+
+
+bool SDLTerminal::OnInit(const InitializationData& initData)
 {
     if (!initScreen()) return false;
     if (!initInput()) return false;
     return true;
 }
 
-void Terminal::OnUninit()
+void SDLTerminal::OnUninit()
 {
     uninitInput();
     uninitScreen();

@@ -3,6 +3,7 @@
 
 #include "AppCUI.h"
 #include "OSDefinitions.h"
+#include <memory>
 
 #define REPAINT_STATUS_COMPUTE_POSITION		1
 #define REPAINT_STATUS_DRAW					2
@@ -194,13 +195,12 @@ namespace AppCUI
             void    Uninit();
             void    Update();
 
-            static AbstractTerminal* Create(const InitializationData& initData);
         };
 
         struct Application
         {
             AppCUI::Application::Config             config;
-            AppCUI::Internal::AbstractTerminal*     terminal;
+            std::unique_ptr<AbstractTerminal>       terminal;
             bool                                    Inited;
             
             DesktopControl			                Desktop;
