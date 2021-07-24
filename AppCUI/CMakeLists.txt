@@ -18,10 +18,6 @@ include(FindSDL2TTF)
 find_package(SDL2 REQUIRED)
 find_package(SDL2TTF REQUIRED)
 
-if (MSVC)
-    install(FILES ${SDL2_DLL_RELEASE} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-endif() 
-
 target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
 if (UNIX AND NOT APPLE)
     target_link_libraries(AppCUI PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} font stdc++fs)
