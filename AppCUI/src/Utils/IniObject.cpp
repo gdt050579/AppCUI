@@ -7,8 +7,15 @@ using namespace AppCUI::Utils;
 
 using BuffPtr = const unsigned char*;
 
-#define WRAPPER                         ((AppCUI::Ini::Parser*)Data)
-#define VALIDATE_INITED(returnValue)     CHECK(Data,returnValue,"Parser object has not been created. Have you called one of the Crete... methods first ?");
+#define WRAPPER                             ((AppCUI::Ini::Parser*)Data)
+#define PREPARE_KEYVALUE_ENTRY(returnValue) \
+    CHECK(Data,returnValue,"Section key does not exists (unable to get key-value datat!)"); \
+    AppCUI::Ini::KeyValueEntry* entry = ((AppCUI::Ini::KeyValueEntry*)Data); \
+    auto value = entry->Keys.find(__compute_hash__(name)); \
+    CHECK(value!=entry->Keys.cend(),returnValue,"Unable to find key !");
+
+
+#define VALIDATE_INITED(returnValue)        CHECK(Data,returnValue,"Parser object has not been created. Have you called one of the Crete... methods first ?");
 
 // we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
 // bitmask is required to fasten some parse operations
@@ -126,10 +133,14 @@ void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
     BuffPtr p_start = current;
     while ((current < end) && (!(__char_type__[*current] & CHAR_TYPE_COMMENT_OR_NL)))
         current++;
-    // remove the ending spaces
-    wordEnds = current - 1;
-    while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
-        wordEnds--;
+    if (current < end) 
+    {
+        // remove the ending spaces
+        wordEnds = current - 1;
+        while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
+            wordEnds--;
+        wordEnds++;
+    }
 }
 bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
 {
@@ -307,7 +318,32 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 }
 
 
-
+const char* IniSection::GetValue(std::string_view name)
+{
+    PREPARE_KEYVALUE_ENTRY(nullptr);
+    return value->second.GetText();
+}
+bool        IniSection::CopyStringValue(std::string_view name,Utils::String& result) const
+{
+    PREPARE_KEYVALUE_ENTRY(false);
+    CHECK(result.Set(value->second), false, "Fail to copy string %s", value->second.GetText());
+    return true;
+}
+bool        IniSection::CopyBoolValue(std::string_view name, bool& result) const
+{
+    PREPARE_KEYVALUE_ENTRY(false);
+    if ((value->second.Equals("true", true)) || (value->second.Equals("yes", true)))
+    {
+        result = true;
+        return true;
+    }
+    if ((value->second.Equals("false", true)) || (value->second.Equals("no", true)))
+    {
+        result = false;
+        return true;
+    }
+    RETURNERROR(false, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'");
+}
 
 IniObject::IniObject() {
     Data = nullptr;

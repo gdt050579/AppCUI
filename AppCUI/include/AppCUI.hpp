@@ -231,6 +231,11 @@ namespace AppCUI
         public:
             IniSection(): Data(nullptr) {}
             IniSection(void* data) : Data(data) {};
+            inline bool Exists() const { return Data != nullptr; }
+            const char* GetValue(std::string_view name);
+
+            bool        CopyStringValue(std::string_view name, Utils::String& value) const;
+            bool        CopyBoolValue(std::string_view name, bool & value) const;
         };
         class EXPORT IniObject
         {
