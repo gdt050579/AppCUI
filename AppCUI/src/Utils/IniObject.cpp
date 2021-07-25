@@ -67,6 +67,19 @@ namespace AppCUI
         };
     };
 }
+
+unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
+{
+    // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+    unsigned long long hash = 0xcbf29ce484222325ULL;
+    while (p_start < p_end)
+    {
+        hash = hash ^ (*p_start);
+        hash = hash * 0x00000100000001B3ULL;
+    }
+    return hash;
+}
+
 void AppCUI::Ini::Parser::SkipSpaces()
 {
     while ((current < end) && (__char_type__[*current]==CHAR_TYPE_SPACE))
