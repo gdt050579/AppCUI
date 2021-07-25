@@ -5,17 +5,22 @@
 using BuffPtr = const unsigned char*;
 
 
+// we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
+// bitmask is required to fasten some parse operations
+
 #define CHAR_TYPE_OTHER             0
 #define CHAR_TYPE_SPACE             1
 #define CHAR_TYPE_STRING            2
-#define CHAR_TYPE_COMMENT           3
-#define CHAR_TYPE_EQ                4
-#define CHAR_TYPE_SECTION_START     5
-#define CHAR_TYPE_SECTION_END       6
-#define CHAR_TYPE_COMMA             7
-#define CHAR_TYPE_NEW_LINE          8
+#define CHAR_TYPE_EQ                3
+#define CHAR_TYPE_SECTION_START     4
+#define CHAR_TYPE_SECTION_END       5
+#define CHAR_TYPE_COMMA             6
+// max value is 0x0F
 
 // bitflags
+#define CHAR_TYPE_COMMENT           0x10
+#define CHAR_TYPE_NEW_LINE          0x20
+#define CHAR_TYPE_COMMENT_OR_NL     0x30
 #define CHAR_TYPE_WORD              0x40
 #define CHAR_TYPE_NUMBER            0x80
 #define CHAR_TYPE_WORD_OR_NUMBER    0xC0
@@ -50,6 +55,8 @@ namespace AppCUI
             inline void SkipNewLine();
             inline void SkipWord();
             inline void SkipCurrentLine();
+            inline bool SkipString(bool &multiLineFormat);
+            inline void SkipSingleLineWord(BuffPtr& wordEnds);
 
             void SetError(const char* message) { }
             bool AddSection(BuffPtr nameStart, BuffPtr nameEnd);
@@ -79,6 +86,52 @@ void AppCUI::Ini::Parser::SkipCurrentLine()
 {
     while ((current < end) && (__char_type__[*current] != CHAR_TYPE_NEW_LINE))
         current++;
+}
+void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
+{
+    // asume it starts with a valid character (not a space)
+    // we'll have to parse until we find a comment or a new line
+    // skip spaces from the end (word will be trimmed)
+    BuffPtr p_start = current;
+    while ((current < end) && (!(__char_type__[*current] & CHAR_TYPE_COMMENT_OR_NL)))
+        current++;
+    // remove the ending spaces
+    wordEnds = current - 1;
+    while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
+        wordEnds--;
+}
+bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
+{
+    // asume that current character is either ' or "
+    unsigned char currentChar = *current;
+    if ((current + 2) < end)
+        multiLineFormat = ((current[1] == currentChar) && (current[2] == currentChar));
+    else
+        multiLineFormat = false;
+    
+    if (multiLineFormat)
+    {
+        current+=3;
+        BuffPtr s_end = end - 2;
+        while (current < s_end)
+        {
+            if (((*current) == currentChar) && (current[1] == current[2]) && (current[0] == current[1]))
+            {
+                current += 3;
+                return true;
+            }
+            current++;
+        }
+        SetError("Premaure end of a multi-line string");
+        return false;
+    }
+    else {
+        current++;
+        while ((current < end) && ((*current)!=currentChar) && (__char_type__[*current] != CHAR_TYPE_NEW_LINE))
+            current++;
+        PARSER_CHECK((current < end) && ((*current)==currentChar), false, "Premature end of a string !");
+        return true;
+    }    
 }
 bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
 {
@@ -129,7 +182,23 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
 }
 bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
 {
-    NOT_IMPLEMENTED(false);
+    SkipSpaces();
+    PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
+    switch (__char_type__[*current])
+    {
+        case CHAR_TYPE_STRING:
+            state = ParseState::ExpectingKeyOrSection;
+            break;
+        case CHAR_TYPE_WORD:
+        case CHAR_TYPE_NUMBER:
+        case CHAR_TYPE_OTHER:
+            state = ParseState::ExpectingKeyOrSection;
+            break;
+        default:
+            SetError("Expecting a value (a string, a number, etc)");
+            RETURNERROR(false, "Expecting a value (a string, a number, etc)");
+    }
+    return true;
 }
 bool AppCUI::Ini::Parser::Parse()
 {
