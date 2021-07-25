@@ -152,6 +152,20 @@ bool Log::ToStdErr()
     return true;
 }
 
+void _write_to_stdout_callback_(const AppCUI::Log::Message& msg)
+{
+    LocalString<2048> tmpString;
+    if (_LogMessage_to_String_(msg, tmpString, true, true))
+    {
+        std::cout << tmpString.GetText();
+    }
+}
+bool Log::ToStdOut()
+{
+    fnMessageLogCallbak = _write_to_stdout_callback_;
+    return true;
+}
+
 // only available for internal usage
 void Log::Unit()
 {

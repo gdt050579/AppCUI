@@ -1279,6 +1279,7 @@ namespace AppCUI
         bool EXPORT ToFile(const char * fileName);
         bool EXPORT ToOutputDebugString();
         bool EXPORT ToStdErr();
+        bool EXPORT ToStdOut();
     }
     namespace Application
     {
