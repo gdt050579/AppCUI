@@ -224,6 +224,29 @@ namespace AppCUI
             static AppCUI::Input::Key	FromString(AppCUI::Utils::String *text);
             static AppCUI::Input::Key	FromString(AppCUI::Utils::String &text);
         };
+
+        class EXPORT IniSection
+        {
+            void* Data;
+        public:
+            IniSection();
+            ~IniSection();
+        };
+        class EXPORT IniObject
+        {
+            void* Data;
+        public:
+            IniObject();
+            ~IniObject();
+
+            bool        CreateFromString(const char* text);
+            bool        CreateFromFile(const char * fileName);
+            bool        Create();
+
+            bool        HasSection(const char* name);
+            IniSection  GetSection(const char* name);
+            
+        };
     };
     namespace OS
     {

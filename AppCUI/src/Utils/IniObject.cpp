@@ -1,6 +1,9 @@
 #include "AppCUI.hpp"
 #include "Internal.hpp"
-#include <map>
+#include <unordered_map>
+
+
+using namespace AppCUI::Utils;
 
 using BuffPtr = const unsigned char*;
 
@@ -40,9 +43,9 @@ namespace AppCUI
             ExpectingEQ,
             ExpectingValue
         };
-        class Key
+        struct KeyValueEntry
         {
-            //std::map<std::string_view,std::variant<> // to analye !!!
+            std::unordered_map<unsigned long long, AppCUI::Utils::String> Keys;
         };
         class Parser
         {
@@ -50,6 +53,11 @@ namespace AppCUI
             BuffPtr     end;
             BuffPtr     current;
             ParseState  state;
+
+            std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::KeyValueEntry>> Sections;
+            KeyValueEntry       DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
+            KeyValueEntry*      CurrentSection;
+            unsigned long long  CurrentKeyHash;
 
             inline void SkipSpaces();
             inline void SkipNewLine();
@@ -60,6 +68,7 @@ namespace AppCUI
 
             void SetError(const char* message) { }
             bool AddSection(BuffPtr nameStart, BuffPtr nameEnd);
+            bool AddValue(BuffPtr valueStart, BuffPtr valueEnd);
             bool ParseState_ExpectingKeyOrSection();
             bool ParseState_ExpectingEQ();
             bool ParseState_ExpectingValue();
@@ -148,7 +157,8 @@ bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
 }
 bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
 {
-    BuffPtr nameStart, nameEnd;
+    BuffPtr             nameStart, nameEnd;
+    
     while (current < end)
     {
         switch (__char_type__[*current])
@@ -175,6 +185,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
                 nameEnd = current;
                 SkipSpaces();
                 // all good - store the key to be added after
+                CurrentKeyHash = __compute_hash__(nameStart, nameEnd);
                 state = ParseState::ExpectingEQ;
                 return false;
             default:
@@ -195,16 +206,30 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
 }
 bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
 {
+    bool    multiLineString;
+    BuffPtr valueStart,valueEnd;
     SkipSpaces();
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
     switch (__char_type__[*current])
     {
         case CHAR_TYPE_STRING:
+            valueStart = current;
+            CHECK(SkipString(multiLineString), false, "Fail parsing a string buffer !");
+            if (multiLineString)
+            {
+                CHECK(AddValue(valueStart + 3, current - 3), false, "Fail to add multi-line string");
+            } else {
+                CHECK(AddValue(valueStart + 1, current - 1), false, "Fail to add single-line string");
+            }
+            // all good
             state = ParseState::ExpectingKeyOrSection;
             break;
         case CHAR_TYPE_WORD:
         case CHAR_TYPE_NUMBER:
-        case CHAR_TYPE_OTHER:
+        case CHAR_TYPE_OTHER:            
+            valueStart = current;
+            SkipSingleLineWord(valueEnd);
+            CHECK(AddValue(valueStart, valueEnd), false, "Fail to add word value");
             state = ParseState::ExpectingKeyOrSection;
             break;
         default:
@@ -218,6 +243,9 @@ bool AppCUI::Ini::Parser::Parse()
     // sanity check
     CHECK(start, false, "Expecting a valid value for internal 'start' pointer");
     CHECK(start<end, false, "Expecting a valid value for internal 'end' pointer");
+    // reset
+    CurrentSection = &this->DefaultSection;
+    CurrentKeyHash = 0;
     current = start;
     while (current < end)
     {
@@ -240,6 +268,60 @@ bool AppCUI::Ini::Parser::Parse()
     return true;
 }
 bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
+{    
+    unsigned long long hash = __compute_hash__(nameStart, nameEnd);
+    CurrentSection = Sections[hash].get();
+    return true;
+}
+bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
+{
+    CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
+    CHECK(CurrentSection->Keys[this->CurrentKeyHash].Set((const char *)valueStart, (unsigned int)(valueEnd - valueStart)), false, "Fail to add key-value pair");
+    return true;
+}
+
+
+IniSection::IniSection()
+{
+    Data = nullptr;
+}
+IniSection::~IniSection()
+{
+    // don't have to deallocate anything --> Data is just a temporary pointer
+    Data = nullptr;
+}
+
+
+
+IniObject::IniObject() {
+    Data = nullptr;
+}
+IniObject::~IniObject()
+{
+    if (Data)
+        delete ((AppCUI::Ini::Parser*)Data);
+    Data = nullptr;
+}
+
+bool        IniObject::CreateFromString(const char* text)
 {
     NOT_IMPLEMENTED(false);
+}
+bool        IniObject::CreateFromFile(const char* fileName)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool        IniObject::Create()
+{
+    NOT_IMPLEMENTED(false);
+}
+
+bool        IniObject::HasSection(const char* name)
+{
+    NOT_IMPLEMENTED(false);
+}
+IniSection  IniObject::GetSection(const char* name)
+{
+    IniSection empty;
+    NOT_IMPLEMENTED(empty);
 }
