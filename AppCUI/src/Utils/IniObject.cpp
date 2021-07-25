@@ -89,6 +89,7 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
     {
         hash = hash ^ (__lower_case_table_for_hashing__[*p_start]);
         hash = hash * 0x00000100000001B3ULL;
+        p_start++;
     }
     return hash;
 }
@@ -160,6 +161,7 @@ bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
         while ((current < end) && ((*current)!=currentChar) && (__char_type__[*current] != CHAR_TYPE_NEW_LINE))
             current++;
         PARSER_CHECK((current < end) && ((*current)==currentChar), false, "Premature end of a string !");
+        current++;
         return true;
     }    
 }
@@ -185,6 +187,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
                 SkipSpaces();
                 PARSER_CHECK(current < end, false, "Premature end of INI section!");
                 PARSER_CHECK(__char_type__[*current] == CHAR_TYPE_SECTION_END, false, "Expecting a section delimiter ']'");
+                current++;
                 // all good - we have a section name ==> add-it to the map
                 return AddSection(nameStart, nameEnd);
             case CHAR_TYPE_WORD:
@@ -195,7 +198,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
                 // all good - store the key to be added after
                 CurrentKeyHash = __compute_hash__(nameStart, nameEnd);
                 state = ParseState::ExpectingEQ;
-                return false;
+                return true;
             default:
                 SetError("Expecting either a section '[...]' or a key !");
                 RETURNERROR(false, "Expecting either a section '[...]' or a key !");
@@ -263,6 +266,7 @@ bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
     start = bufferStart;
     end = bufferEnd;
     current = start;
+    state = AppCUI::Ini::ParseState::ExpectingKeyOrSection;
     while (current < end)
     {
         switch (state)
@@ -286,7 +290,13 @@ bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 {    
     unsigned long long hash = __compute_hash__(nameStart, nameEnd);
-    CurrentSection = Sections[hash].get();
+    auto &sect = Sections[hash];
+    if (sect.get() == nullptr)
+    {
+        sect.reset(new KeyValueEntry());
+    }
+    CurrentSection = sect.get();
+    CHECK(CurrentSection, false, "Fail to allocate a section");
     return true;
 }
 bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
@@ -315,7 +325,7 @@ bool        IniObject::Init()
         Data = new AppCUI::Ini::Parser();
         CHECK(Data, false, "Fail to allocate memory for object parser !");
     }
-    return false;
+    return true;
 }
 bool        IniObject::CreateFromString(std::string_view text)
 {
@@ -355,5 +365,9 @@ IniSection  IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
-
+unsigned int IniObject::GetSectionsCount()
+{
+    VALIDATE_INITED(0);
+    return (unsigned int)WRAPPER->Sections.size();
+}
 #undef WRAPPER 

@@ -240,12 +240,13 @@ namespace AppCUI
             IniObject();
             ~IniObject();
 
-            bool        CreateFromString(std::string_view text);
-            bool        CreateFromFile(const char * fileName);
-            bool        Create();
+            bool            CreateFromString(std::string_view text);
+            bool            CreateFromFile(const char * fileName);
+            bool            Create();
 
-            bool        HasSection(std::string_view name);
-            IniSection  GetSection(std::string_view name);
+            bool            HasSection(std::string_view name);
+            IniSection      GetSection(std::string_view name);
+            unsigned int    GetSectionsCount();
             
         };
     };
