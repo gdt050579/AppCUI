@@ -229,22 +229,23 @@ namespace AppCUI
         {
             void* Data;
         public:
-            IniSection();
-            ~IniSection();
+            IniSection(): Data(nullptr) {}
+            IniSection(void* data) : Data(data) {};
         };
         class EXPORT IniObject
         {
             void* Data;
+            bool        Init();
         public:
             IniObject();
             ~IniObject();
 
-            bool        CreateFromString(const char* text);
+            bool        CreateFromString(std::string_view text);
             bool        CreateFromFile(const char * fileName);
             bool        Create();
 
-            bool        HasSection(const char* name);
-            IniSection  GetSection(const char* name);
+            bool        HasSection(std::string_view name);
+            IniSection  GetSection(std::string_view name);
             
         };
     };

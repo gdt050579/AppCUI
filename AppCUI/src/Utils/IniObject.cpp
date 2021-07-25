@@ -7,6 +7,8 @@ using namespace AppCUI::Utils;
 
 using BuffPtr = const unsigned char*;
 
+#define WRAPPER                         ((AppCUI::Ini::Parser*)Data)
+#define VALIDATE_INITED(returnValue)     CHECK(Data,returnValue,"Parser object has not been created. Have you called one of the Crete... methods first ?");
 
 // we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
 // bitmask is required to fasten some parse operations
@@ -47,7 +49,7 @@ namespace AppCUI
         {
             std::unordered_map<unsigned long long, AppCUI::Utils::String> Keys;
         };
-        class Parser
+        struct Parser
         {
             BuffPtr     start;
             BuffPtr     end;
@@ -72,7 +74,9 @@ namespace AppCUI
             bool ParseState_ExpectingKeyOrSection();
             bool ParseState_ExpectingEQ();
             bool ParseState_ExpectingValue();
-            bool Parse();
+
+            bool Parse(BuffPtr bufferStart, BuffPtr bufferEnd);
+            void Clear();
         };
     };
 }
@@ -87,6 +91,10 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
         hash = hash * 0x00000100000001B3ULL;
     }
     return hash;
+}
+unsigned long long __compute_hash__(std::string_view text)
+{
+    return __compute_hash__((BuffPtr)text.data(), ((BuffPtr)text.data()) + text.length());
 }
 
 void AppCUI::Ini::Parser::SkipSpaces()
@@ -238,14 +246,22 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
     }
     return true;
 }
-bool AppCUI::Ini::Parser::Parse()
+void AppCUI::Ini::Parser::Clear()
 {
+    this->Sections.clear();
+    this->DefaultSection.Keys.clear();
+    this->CurrentSection = &this->DefaultSection;
+    this->CurrentKeyHash = 0;
+}
+bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
+{
+    Clear();
     // sanity check
-    CHECK(start, false, "Expecting a valid value for internal 'start' pointer");
-    CHECK(start<end, false, "Expecting a valid value for internal 'end' pointer");
+    CHECK(bufferStart, false, "Expecting a valid value for internal 'bufferStart' pointer");
+    CHECK(bufferStart <= bufferEnd, false, "Expecting a valid value for internal 'bufferEnd' pointer");
     // reset
-    CurrentSection = &this->DefaultSection;
-    CurrentKeyHash = 0;
+    start = bufferStart;
+    end = bufferEnd;
     current = start;
     while (current < end)
     {
@@ -281,16 +297,6 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 }
 
 
-IniSection::IniSection()
-{
-    Data = nullptr;
-}
-IniSection::~IniSection()
-{
-    // don't have to deallocate anything --> Data is just a temporary pointer
-    Data = nullptr;
-}
-
 
 
 IniObject::IniObject() {
@@ -302,10 +308,23 @@ IniObject::~IniObject()
         delete ((AppCUI::Ini::Parser*)Data);
     Data = nullptr;
 }
-
-bool        IniObject::CreateFromString(const char* text)
+bool        IniObject::Init()
 {
-    NOT_IMPLEMENTED(false);
+    if (Data == nullptr)
+    {
+        Data = new AppCUI::Ini::Parser();
+        CHECK(Data, false, "Fail to allocate memory for object parser !");
+    }
+    return false;
+}
+bool        IniObject::CreateFromString(std::string_view text)
+{
+    CHECK(text.data(), false, "Expecting a valid (non-null) string !");
+    CHECK(Init(), false, "Fail to initialize parser object !");
+    BuffPtr start = (BuffPtr)text.data();
+    BuffPtr end = start + text.length();
+    CHECK(WRAPPER->Parse(start, end), false, "Fail to parser buffer !");
+    return true;
 }
 bool        IniObject::CreateFromFile(const char* fileName)
 {
@@ -313,15 +332,28 @@ bool        IniObject::CreateFromFile(const char* fileName)
 }
 bool        IniObject::Create()
 {
-    NOT_IMPLEMENTED(false);
+    CHECK(Init(), false, "Fail to initialize parser object !");
+    WRAPPER->Clear();
+    return true;
 }
 
-bool        IniObject::HasSection(const char* name)
+bool        IniObject::HasSection(std::string_view name)
 {
-    NOT_IMPLEMENTED(false);
+    VALIDATE_INITED(false);
+    // null-strings or empty strings refer to the Default section that always exists
+    if ((name.data() == nullptr) || (name.length() == 0))
+        return true;
+    return WRAPPER->Sections.contains(__compute_hash__(name));
 }
-IniSection  IniObject::GetSection(const char* name)
+IniSection  IniObject::GetSection(std::string_view name)
 {
-    IniSection empty;
-    NOT_IMPLEMENTED(empty);
+    VALIDATE_INITED(IniSection());
+    if ((name.data() == nullptr) || (name.length() == 0))
+        return IniSection(&(WRAPPER->DefaultSection));
+    auto result = WRAPPER->Sections.find(__compute_hash__(name));
+    if (result == WRAPPER->Sections.cend())
+        return IniSection();
+    return IniSection(result->second.get());
 }
+
+#undef WRAPPER 
