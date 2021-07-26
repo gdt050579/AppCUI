@@ -2,6 +2,7 @@
 
 using namespace AppCUI;
 using namespace AppCUI::Utils;
+using namespace AppCUI::Input;
 
 const char* ini_string = R"INI(
 #first section
@@ -31,15 +32,13 @@ int main()
     LOG_INFO("Section 'BlaBlabla' status: %d", ini.GetSection("BlaBlaBla").Exists());
     LOG_INFO("Section 'Values' status: %d", ini.GetSection("Values").Exists());
     LOG_INFO("Section 'Strings' status: %d", ini.GetSection("Strings").Exists());
-    LOG_INFO("String value for 'Path' is [%s]", ini.GetSection("strinGs").GetValue("path").value());
-    LOG_INFO("String value for 'SimpleString' is [%s]", ini.GetSection("strinGs").GetValue("SimpleString").value());
-    LOG_INFO("String value for 'Boolean.value' is [%s]", ini.GetSection("vaLUeS").GetValue("boolean.value").value());
-    LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").GetKeyboardShortcut("Shortcut").value());
-
-    bool res;
-    if (ini.GetSection("values").CopyBoolValue("Boolean.value", res))
-    {
-        LOG_INFO("The value of 'Boolean.value' is %d", res);
-    }
+    LOG_INFO("Section 'Strings' hasi its name: %s", ini.GetSection("strINGS").GetName());
+    LOG_INFO("String value for 'Path' is [%s]", ini.GetSection("strinGs").Get<const char *>("path").value());
+    LOG_INFO("String value for 'SimpleString' is [%s]", ini.GetSection("strinGs").Get<const char*>("SimpleString").value());
+    LOG_INFO("String value for 'Boolean.value' is [%s] (normal)", ini.GetSection("vaLUeS").Get<const char*>("boolean.value").value());
+    LOG_INFO("String value for 'Boolean.value' is [%d] (from template)", ini.GetSection("vaLUeS").Get<bool>("boolean.value").value());
+    LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").Get<Key>("Shortcut").value());
+    Key k = ini.GetSection("Strings").Get("Shortcut2", Key::None);
+    LOG_INFO("Unexingting key: %d", k);
     return 0;
 }

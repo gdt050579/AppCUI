@@ -65,6 +65,10 @@ namespace AppCUI
         struct Config;
         class CommandBar;
     };
+    namespace Console
+    {
+        struct Size;
+    };
     namespace Input
     {
         enum class Key : unsigned int
@@ -230,14 +234,26 @@ namespace AppCUI
         public:
             IniSection(): Data(nullptr) {}
             IniSection(void* data) : Data(data) {};
-            inline bool Exists() const { return Data != nullptr; }
             
-            std::optional<const char*>  GetValue(std::string_view keyName);
-            std::optional<Input::Key>   GetKeyboardShortcut(std::string_view keyName);
-            std::optional<bool>         GetBool(std::string_view keyName);
+            inline bool                 Exists() const { return Data != nullptr; }
+            const char*                 GetName() const;            
 
-            bool        CopyStringValue(std::string_view keyName, Utils::String& value) const;
-            bool        CopyBoolValue(std::string_view keyName, bool & value) const;
+            // Getter with optional return value
+            template <typename T> inline std::optional<T>       Get(std::string_view keyName) { return std::nullopt; }
+            template <> std::optional<Input::Key>               Get<Input::Key>(std::string_view keyName);
+            template <> std::optional<bool>                     Get<bool>(std::string_view keyName);
+            template <> std::optional<const char *>             Get<const char *>(std::string_view keyName);
+            template <> std::optional<AppCUI::Console::Size>    Get<AppCUI::Console::Size>(std::string_view keyName);
+            template <> std::optional<unsigned int>             Get<unsigned int>(std::string_view keyName);
+            template <> std::optional<int>                      Get<int>(std::string_view keyName);
+            template <> std::optional<unsigned long long>       Get<unsigned long long>(std::string_view keyName);
+            template <> std::optional<long long>                Get<long long>(std::string_view keyName);
+            template <> std::optional<float>                    Get<float>(std::string_view keyName);
+            template <> std::optional<double>                   Get<double>(std::string_view keyName);
+
+            // Getter with default return value
+            template <typename T> inline T                      Get(std::string_view keyName, const T& defaultValue) { auto res = Get<T>(keyName); return res.has_value() ? res.value() : defaultValue; }
+
         };
         class EXPORT IniObject
         {

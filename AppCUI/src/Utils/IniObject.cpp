@@ -11,8 +11,8 @@ using BuffPtr = const unsigned char*;
 #define WRAPPER                             ((AppCUI::Ini::Parser*)Data)
 #define PREPARE_KEYVALUE_ENTRY(returnValue) \
     CHECK(Data,returnValue,"Section key does not exists (unable to get key-value datat!)"); \
-    AppCUI::Ini::KeyValueEntry* entry = ((AppCUI::Ini::KeyValueEntry*)Data); \
-    auto value = entry->Keys.find(__compute_hash__(name)); \
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*)Data); \
+    auto value = entry->Keys.find(__compute_hash__(keyName)); \
     CHECK(value!=entry->Keys.cend(),returnValue,"Unable to find key !");
 
 
@@ -53,8 +53,9 @@ namespace AppCUI
             ExpectingEQ,
             ExpectingValue
         };
-        struct KeyValueEntry
+        struct Section
         {
+            AppCUI::Utils::String                                         Name;
             std::unordered_map<unsigned long long, AppCUI::Utils::String> Keys;
         };
         struct Parser
@@ -64,9 +65,9 @@ namespace AppCUI
             BuffPtr     current;
             ParseState  state;
 
-            std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::KeyValueEntry>> Sections;
-            KeyValueEntry       DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
-            KeyValueEntry*      CurrentSection;
+            std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::Section>> Sections;
+            Section       DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
+            Section*      CurrentSection;
             unsigned long long  CurrentKeyHash;
 
             inline void SkipSpaces();
@@ -305,10 +306,14 @@ bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
     auto &sect = Sections[hash];
     if (sect.get() == nullptr)
     {
-        sect.reset(new KeyValueEntry());
+        sect.reset(new Section());
     }
     CurrentSection = sect.get();
     CHECK(CurrentSection, false, "Fail to allocate a section");
+    if (CurrentSection->Name.Len() == 0)
+    {
+        CHECK(CurrentSection->Name.Set((const char*)nameStart, (unsigned int)(nameEnd - nameStart)), false, "Fail to allocate section name");
+    }
     return true;
 }
 bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
@@ -317,17 +322,12 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
     CHECK(CurrentSection->Keys[this->CurrentKeyHash].Set((const char *)valueStart, (unsigned int)(valueEnd - valueStart)), false, "Fail to add key-value pair");
     return true;
 }
-
-
-std::optional<const char *> IniSection::GetValue(std::string_view name)
+const char* IniSection::GetName() const
 {
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    const char* p = value->second.GetText();
-    if (p == nullptr)
-        return std::nullopt;
-    return p;
+    CHECK(this->Data, nullptr, "");
+    return ((AppCUI::Ini::Section*)Data)->Name.GetText();
 }
-std::optional<Key>     IniSection::GetKeyboardShortcut(std::string_view name)
+template <> std::optional<AppCUI::Input::Key>    IniSection::Get<AppCUI::Input::Key>(std::string_view keyName)
 {
     PREPARE_KEYVALUE_ENTRY(std::nullopt);
     Key k = KeyUtils::FromString(value->second);
@@ -335,7 +335,7 @@ std::optional<Key>     IniSection::GetKeyboardShortcut(std::string_view name)
         return std::nullopt;
     return k;
 }
-std::optional<bool>     IniSection::GetBool(std::string_view name)
+template <> std::optional<bool>                  IniSection::Get<bool>(std::string_view keyName)
 {
     PREPARE_KEYVALUE_ENTRY(std::nullopt);
     if ((value->second.Equals("true", true)) || (value->second.Equals("yes", true)))
@@ -344,27 +344,43 @@ std::optional<bool>     IniSection::GetBool(std::string_view name)
         return false;
     RETURNERROR(std::nullopt, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-bool        IniSection::CopyStringValue(std::string_view name,Utils::String& result) const
+template <> std::optional<const char*>           IniSection::Get<const char*>(std::string_view keyName)
 {
-    PREPARE_KEYVALUE_ENTRY(false);
-    CHECK(result.Set(value->second), false, "Fail to copy string %s", value->second.GetText());
-    return true;
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    const char* p = value->second.GetText();
+    if (p == nullptr)
+        return std::nullopt;
+    return p;
 }
-bool        IniSection::CopyBoolValue(std::string_view name, bool& result) const
+template <> std::optional<AppCUI::Console::Size> IniSection::Get<AppCUI::Console::Size>(std::string_view keyName)
 {
-    PREPARE_KEYVALUE_ENTRY(false);
-    if ((value->second.Equals("true", true)) || (value->second.Equals("yes", true)))
-    {
-        result = true;
-        return true;
-    }
-    if ((value->second.Equals("false", true)) || (value->second.Equals("no", true)))
-    {
-        result = false;
-        return true;
-    }
-    RETURNERROR(false, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'");
+    NOT_IMPLEMENTED(std::nullopt);
 }
+template <> std::optional<unsigned int>          IniSection::Get<unsigned int>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+template <> std::optional<int>                   IniSection::Get<int>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+template <> std::optional<unsigned long long>    IniSection::Get<unsigned long long>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+template <> std::optional<long long>             IniSection::Get<long long>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+template <> std::optional<float>                 IniSection::Get<float>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+template <> std::optional<double>                IniSection::Get<double>(std::string_view keyName)
+{
+    NOT_IMPLEMENTED(std::nullopt);
+}
+
 
 IniObject::IniObject() {
     Data = nullptr;
