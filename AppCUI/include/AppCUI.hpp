@@ -205,6 +205,36 @@ namespace AppCUI
             
         };
         
+        enum class NumberParseFlags: unsigned int
+        {
+            None        = 0,
+            BaseAuto    = 0,
+            Base10      = 0x00000001,
+            Base8       = 0x00000002,
+            Base16      = 0x00000003,
+            Base2       = 0x00000004,
+            TrimSpaces  = 0x00000010,
+        };
+        class EXPORT Number
+        {
+            Number() = delete;
+        public:
+
+            template <typename T>
+            static inline std::optional<T> To(std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int *size = nullptr ) { return std::nullopt; }
+
+            template <> static std::optional<unsigned long long>    To<unsigned long long>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<unsigned int>          To<unsigned int>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<unsigned short>        To<unsigned short>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<unsigned char>         To<unsigned char>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+
+            template <> static std::optional<char>                  To<char>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<short>                 To<short>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<int>                   To<int>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            template <> static std::optional<long long>             To<long long>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+
+        };
+
         template <int size>
         class LocalString : public String
         {
@@ -1463,6 +1493,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
 
 #undef ADD_FLAG_OPERATORS
