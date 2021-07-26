@@ -4,6 +4,7 @@
 
 
 using namespace AppCUI::Utils;
+using namespace AppCUI::Input;
 
 using BuffPtr = const unsigned char*;
 
@@ -322,6 +323,11 @@ const char* IniSection::GetValue(std::string_view name)
 {
     PREPARE_KEYVALUE_ENTRY(nullptr);
     return value->second.GetText();
+}
+Key         IniSection::GetKeyboardShortcut(std::string_view name)
+{
+    PREPARE_KEYVALUE_ENTRY(Key::None);
+    return KeyUtils::FromString(value->second);
 }
 bool        IniSection::CopyStringValue(std::string_view name,Utils::String& result) const
 {

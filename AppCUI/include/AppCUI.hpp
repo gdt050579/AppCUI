@@ -218,11 +218,9 @@ namespace AppCUI
             static const char*	            GetKeyNamePadded(AppCUI::Input::Key keyCode, unsigned int * nameSize = nullptr);
             static const char*	            GetKeyModifierName(AppCUI::Input::Key keyCode, unsigned int * nameSize = nullptr);
             static bool			            ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
-            static bool			            ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String *text);
             static bool			            ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String &text);
-            static AppCUI::Input::Key	FromString(const char * stringRepresentation);
-            static AppCUI::Input::Key	FromString(AppCUI::Utils::String *text);
-            static AppCUI::Input::Key	FromString(AppCUI::Utils::String &text);
+            static AppCUI::Input::Key	    FromString(const char * stringRepresentation);
+            static AppCUI::Input::Key	    FromString(AppCUI::Utils::String &text);
         };
 
         class EXPORT IniSection
@@ -232,10 +230,12 @@ namespace AppCUI
             IniSection(): Data(nullptr) {}
             IniSection(void* data) : Data(data) {};
             inline bool Exists() const { return Data != nullptr; }
-            const char* GetValue(std::string_view name);
+            
+            const char* GetValue(std::string_view keyName);
+            Input::Key  GetKeyboardShortcut(std::string_view keyName);
 
-            bool        CopyStringValue(std::string_view name, Utils::String& value) const;
-            bool        CopyBoolValue(std::string_view name, bool & value) const;
+            bool        CopyStringValue(std::string_view keyName, Utils::String& value) const;
+            bool        CopyBoolValue(std::string_view keyName, bool & value) const;
         };
         class EXPORT IniObject
         {

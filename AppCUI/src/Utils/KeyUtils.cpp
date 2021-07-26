@@ -67,12 +67,6 @@ bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCo
 	CHECK(ToString(keyCode,s), false, "");
 	return true;
 }
-bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String *text)
-{
-	CHECK(text != nullptr, false, "");
-	CHECK(ToString(keyCode,*text), false, "");
-	return true;
-}
 bool		                AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String &text)
 {
 	const char * m = GetKeyModifierName(keyCode);
@@ -123,11 +117,6 @@ AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(const char * key)
 	if (code == 0)
 		return AppCUI::Input::Key::None;
     return (AppCUI::Input::Key)((modifier << KEY_SHIFT_BITS) | code);
-}
-AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String *text)
-{
-	CHECK(text != nullptr, AppCUI::Input::Key::None, "Invalid (nullptr) key code string representation !");
-	return FromString(text->GetText());
 }
 AppCUI::Input::Key     AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String &text)
 {
