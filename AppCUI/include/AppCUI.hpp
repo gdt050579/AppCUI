@@ -3,6 +3,7 @@
 
 #include <string>
 #include <string_view>
+#include <optional>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #   ifdef BUILD_FOR_WINDOWS
@@ -231,8 +232,9 @@ namespace AppCUI
             IniSection(void* data) : Data(data) {};
             inline bool Exists() const { return Data != nullptr; }
             
-            const char* GetValue(std::string_view keyName);
-            Input::Key  GetKeyboardShortcut(std::string_view keyName);
+            std::optional<const char*>  GetValue(std::string_view keyName);
+            std::optional<Input::Key>   GetKeyboardShortcut(std::string_view keyName);
+            std::optional<bool>         GetBool(std::string_view keyName);
 
             bool        CopyStringValue(std::string_view keyName, Utils::String& value) const;
             bool        CopyBoolValue(std::string_view keyName, bool & value) const;

@@ -31,10 +31,10 @@ int main()
     LOG_INFO("Section 'BlaBlabla' status: %d", ini.GetSection("BlaBlaBla").Exists());
     LOG_INFO("Section 'Values' status: %d", ini.GetSection("Values").Exists());
     LOG_INFO("Section 'Strings' status: %d", ini.GetSection("Strings").Exists());
-    LOG_INFO("String value for 'Path' is [%s]", ini.GetSection("strinGs").GetValue("path"));
-    LOG_INFO("String value for 'SimpleString' is [%s]", ini.GetSection("strinGs").GetValue("SimpleString"));
-    LOG_INFO("String value for 'Boolean.value' is [%s]", ini.GetSection("vaLUeS").GetValue("boolean.value"));
-    LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").GetKeyboardShortcut("Shortcut"));
+    LOG_INFO("String value for 'Path' is [%s]", ini.GetSection("strinGs").GetValue("path").value());
+    LOG_INFO("String value for 'SimpleString' is [%s]", ini.GetSection("strinGs").GetValue("SimpleString").value());
+    LOG_INFO("String value for 'Boolean.value' is [%s]", ini.GetSection("vaLUeS").GetValue("boolean.value").value());
+    LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").GetKeyboardShortcut("Shortcut").value());
 
     bool res;
     if (ini.GetSection("values").CopyBoolValue("Boolean.value", res))

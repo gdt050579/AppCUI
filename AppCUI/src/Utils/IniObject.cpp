@@ -319,15 +319,30 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 }
 
 
-const char* IniSection::GetValue(std::string_view name)
+std::optional<const char *> IniSection::GetValue(std::string_view name)
 {
-    PREPARE_KEYVALUE_ENTRY(nullptr);
-    return value->second.GetText();
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    const char* p = value->second.GetText();
+    if (p == nullptr)
+        return std::nullopt;
+    return p;
 }
-Key         IniSection::GetKeyboardShortcut(std::string_view name)
+std::optional<Key>     IniSection::GetKeyboardShortcut(std::string_view name)
 {
-    PREPARE_KEYVALUE_ENTRY(Key::None);
-    return KeyUtils::FromString(value->second);
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    Key k = KeyUtils::FromString(value->second);
+    if (k == Key::None)
+        return std::nullopt;
+    return k;
+}
+std::optional<bool>     IniSection::GetBool(std::string_view name)
+{
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    if ((value->second.Equals("true", true)) || (value->second.Equals("yes", true)))
+        return true;
+    if ((value->second.Equals("false", true)) || (value->second.Equals("no", true)))
+        return false;
+    RETURNERROR(std::nullopt, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
 bool        IniSection::CopyStringValue(std::string_view name,Utils::String& result) const
 {
