@@ -358,19 +358,23 @@ template <> std::optional<AppCUI::Console::Size> IniSection::Get<AppCUI::Console
 }
 template <> std::optional<unsigned int>          IniSection::Get<unsigned int>(std::string_view keyName)
 {
-    NOT_IMPLEMENTED(std::nullopt);
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    return Number::To<unsigned int>(std::string_view(value->second.GetText(), value->second.Len()));
 }
 template <> std::optional<int>                   IniSection::Get<int>(std::string_view keyName)
 {
-    NOT_IMPLEMENTED(std::nullopt);
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    return Number::To<int>(std::string_view(value->second.GetText(), value->second.Len()));
 }
 template <> std::optional<unsigned long long>    IniSection::Get<unsigned long long>(std::string_view keyName)
 {
-    NOT_IMPLEMENTED(std::nullopt);
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    return Number::To<unsigned long long>(std::string_view(value->second.GetText(), value->second.Len()));
 }
 template <> std::optional<long long>             IniSection::Get<long long>(std::string_view keyName)
 {
-    NOT_IMPLEMENTED(std::nullopt);
+    PREPARE_KEYVALUE_ENTRY(std::nullopt);
+    return Number::To<long long>(std::string_view(value->second.GetText(), value->second.Len()));
 }
 template <> std::optional<float>                 IniSection::Get<float>(std::string_view keyName)
 {
