@@ -4,7 +4,7 @@ using namespace AppCUI;
 using namespace AppCUI::Utils;
 
 const char* ini_string = R"INI(
-#fist section
+#first section
 [Values]
 Boolean.value = true
 Number = 100
@@ -18,6 +18,7 @@ MultiLineString = """
     This is a multi line string
     Example
 """
+Shortcut = Ctrl+Alt+F5
 
 )INI";
 
@@ -33,6 +34,7 @@ int main()
     LOG_INFO("String value for 'Path' is [%s]", ini.GetSection("strinGs").GetValue("path"));
     LOG_INFO("String value for 'SimpleString' is [%s]", ini.GetSection("strinGs").GetValue("SimpleString"));
     LOG_INFO("String value for 'Boolean.value' is [%s]", ini.GetSection("vaLUeS").GetValue("boolean.value"));
+    LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").GetKeyboardShortcut("Shortcut"));
 
     bool res;
     if (ini.GetSection("values").CopyBoolValue("Boolean.value", res))
