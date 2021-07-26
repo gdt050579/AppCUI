@@ -13,14 +13,8 @@ unsigned char __base_translation__[256] = { 255,255,255,255,255,255,255,255,255,
 #define VALIDATE_END_OF_STREAM CHECK(start < end, false, "Invalid string buffer (start should be smaller then end)");
 
 #define PARSE_NUMBER \
-    const unsigned char * start = (const unsigned char *)text.data(); \
-    CHECK(start, std::nullopt, "Expecting a non-null string to convert to number !"); \
-    const  unsigned char* end = start + text.size(); \
-    CHECK(start < end, std::nullopt, "Expecting a non-empty string to convert to number !"); \
     _parse_number_result_ res; \
-    res.ParseFlags = flags; \
-    res.Size = size; \
-    CHECK(_parse_number_string_buffer_(start, end, res), false, "Fail to parse string for a number !"); 
+    CHECK(ParseNumber(res, text, flags, size), std::nullopt, "");
 
 struct _parse_number_result_
 {
@@ -117,6 +111,19 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
         return true;
     }
     return (start == end);
+}
+
+constexpr inline bool ParseNumber(_parse_number_result_ &res, std::string_view text, NumberParseFlags flags, unsigned int* size)
+{
+    const unsigned char * start = (const unsigned char *)text.data();
+    CHECK(start, false, "Expecting a non-null string to convert to number !");
+    const  unsigned char* end = start + text.size();
+    CHECK(start < end, false, "Expecting a non-empty string to convert to number !");
+    
+    res.ParseFlags = flags;
+    res.Size = size;
+    CHECK(_parse_number_string_buffer_(start, end, res), false, "Fail to parse string for a number !"); 
+    return true;
 }
 
 template <> std::optional<unsigned long long>   Number::To<unsigned long long>(std::string_view text, NumberParseFlags flags, unsigned int* size)
