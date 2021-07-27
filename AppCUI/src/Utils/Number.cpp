@@ -126,34 +126,34 @@ constexpr inline bool ParseNumber(_parse_number_result_ &res, std::string_view t
     return true;
 }
 
-template <> std::optional<unsigned long long>   Number::To<unsigned long long>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned long long>   Number::ToUInt64  (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an unsigned long long value");
     return res.Value;
 }
-template <> std::optional<unsigned int>         Number::To<unsigned int>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned int>         Number::ToUInt32  (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an unsigned int value");
     CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an unsigned int variable");
     return (unsigned int)(res.Value);
 }
-template <> std::optional<unsigned short>       Number::To<unsigned short>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned short>       Number::ToUInt16  (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an unsigned short value");
     CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an unsigned short variable");
     return (unsigned short)(res.Value);
 }
-template <> std::optional<unsigned char>        Number::To<unsigned char>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned char>        Number::ToUInt8   (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an unsigned char value");
     CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an unsigned char variable");
     return (unsigned char)(res.Value);
 }
-template <> std::optional<char>                 Number::To<char>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<char>                 Number::ToInt8    (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a char value");
@@ -166,7 +166,7 @@ template <> std::optional<char>                 Number::To<char>(std::string_vie
         return (char)(res.Value);
     }
 }
-template <> std::optional<short>                Number::To<short>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<short>                Number::ToInt16   (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a short value");
@@ -180,7 +180,7 @@ template <> std::optional<short>                Number::To<short>(std::string_vi
         return (short)(res.Value);
     }
 }
-template <> std::optional<int>                  Number::To<int>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<int>                  Number::ToInt32   (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an int value");
@@ -194,7 +194,7 @@ template <> std::optional<int>                  Number::To<int>(std::string_view
         return (int)(res.Value);
     }
 }
-template <> std::optional<long long>            Number::To<long long>(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<long long>            Number::ToInt64   (std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a long long value");

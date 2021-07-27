@@ -215,23 +215,17 @@ namespace AppCUI
             Base2       = 0x00000004,
             TrimSpaces  = 0x00000010,
         };
-        class EXPORT Number
+        namespace Number
         {
-            Number() = delete;
-        public:
+            EXPORT std::optional<unsigned long long>    ToUInt64 (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<unsigned int>          ToUInt32 (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<unsigned short>        ToUInt16 (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<unsigned char>         ToUInt8  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
-            template <typename T>
-            static inline std::optional<T> To(std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int *size = nullptr ) { return std::nullopt; }
-
-            template <> static std::optional<unsigned long long>    To<unsigned long long>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<unsigned int>          To<unsigned int>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<unsigned short>        To<unsigned short>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<unsigned char>         To<unsigned char>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-
-            template <> static std::optional<char>                  To<char>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<short>                 To<short>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<int>                   To<int>(std::string_view text, NumberParseFlags flags, unsigned int* size);
-            template <> static std::optional<long long>             To<long long>(std::string_view text, NumberParseFlags flags, unsigned int* size);
+            EXPORT std::optional<long long>             ToInt64  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<int>                   ToInt32  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<short>                 ToInt16  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<char>                  ToInt8   (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
         };
 

@@ -50,7 +50,7 @@ int main()
     Key k = ini.GetSection("Strings").Get("Shortcut2", Key::None);
     LOG_INFO("Unexingting key: %d", k);
 
-    unsigned int value = Utils::Number::To<unsigned int>("12345678").value();
-    int x = Utils::Number::To<int>("-1").value();
+    unsigned int value = Utils::Number::ToUInt32("12345678").value();
+    int x = Utils::Number::ToInt32("-1").value();
     return 0;
 }
