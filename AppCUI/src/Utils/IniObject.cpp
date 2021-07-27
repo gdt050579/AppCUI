@@ -9,12 +9,10 @@ using namespace AppCUI::Input;
 using BuffPtr = const unsigned char*;
 
 #define WRAPPER                             ((AppCUI::Ini::Parser*)Data)
-#define PREPARE_KEYVALUE_ENTRY(returnValue) \
-    CHECK(Data,returnValue,"Section key does not exists (unable to get key-value datat!)"); \
-    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*)Data); \
-    auto value = entry->Keys.find(__compute_hash__(keyName)); \
-    CHECK(value!=entry->Keys.cend(),returnValue,"Unable to find key !");
 
+#define VALIDATE_VALUE(returnValue)  \
+    CHECK(Data,returnValue,"Invalid value object (null)"); \
+    AppCUI::Ini::Value* value = (AppCUI::Ini::Value*)this->Data;
 
 #define VALIDATE_INITED(returnValue)        CHECK(Data,returnValue,"Parser object has not been created. Have you called one of the Crete... methods first ?");
 
@@ -53,10 +51,15 @@ namespace AppCUI
             ExpectingEQ,
             ExpectingValue
         };
+        struct Value
+        {
+            AppCUI::Utils::String  KeyName;
+            AppCUI::Utils::String  KeyValue;
+        };
         struct Section
         {
-            AppCUI::Utils::String                                         Name;
-            std::unordered_map<unsigned long long, AppCUI::Utils::String> Keys;
+            AppCUI::Utils::String                         Name;
+            std::unordered_map<unsigned long long, Value> Keys;
         };
         struct Parser
         {
@@ -68,7 +71,9 @@ namespace AppCUI
             std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::Section>> Sections;
             Section       DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
             Section*      CurrentSection;
-            unsigned long long  CurrentKeyHash;
+            unsigned long long      CurrentKeyHash;
+            BuffPtr                 CurrentKeyNamePtr;
+            unsigned int            CurrentKeyNameLen;
 
             inline void SkipSpaces();
             inline void SkipNewLine();
@@ -210,6 +215,8 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
                 SkipSpaces();
                 // all good - store the key to be added after
                 CurrentKeyHash = __compute_hash__(nameStart, nameEnd);
+                CurrentKeyNamePtr = nameStart;
+                CurrentKeyNameLen = (unsigned int)(nameEnd - nameStart);
                 state = ParseState::ExpectingEQ;
                 return true;
             default:
@@ -268,6 +275,8 @@ void AppCUI::Ini::Parser::Clear()
     this->DefaultSection.Keys.clear();
     this->CurrentSection = &this->DefaultSection;
     this->CurrentKeyHash = 0;
+    this->CurrentKeyNamePtr = nullptr;
+    this->CurrentKeyNameLen = 0;
 }
 bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 {
@@ -319,73 +328,149 @@ bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 {
     CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
-    CHECK(CurrentSection->Keys[this->CurrentKeyHash].Set((const char *)valueStart, (unsigned int)(valueEnd - valueStart)), false, "Fail to add key-value pair");
+    auto& value = CurrentSection->Keys[this->CurrentKeyHash];
+    CHECK(value.KeyValue.Set((const char *)valueStart, (unsigned int)(valueEnd - valueStart)), false, "Fail to add key-value pair (value)");
+    CHECK(value.KeyName.Set((const char*)CurrentKeyNamePtr, CurrentKeyNameLen), false, "Fail to add key-value pair (name)");
+    CurrentKeyNamePtr = nullptr;
+    CurrentKeyNameLen = 0;
     return true;
 }
+
+//============================================================================= INI Section ===
 const char* IniSection::GetName() const
 {
     CHECK(this->Data, nullptr, "");
     return ((AppCUI::Ini::Section*)Data)->Name.GetText();
 }
-template <> std::optional<AppCUI::Input::Key>    IniSection::Get<AppCUI::Input::Key>(std::string_view keyName)
+IniValue    IniSection::GetValue(std::string_view keyName)
 {
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    Key k = KeyUtils::FromString(value->second);
+    CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*)Data);
+    auto value = entry->Keys.find(__compute_hash__(keyName));
+    CHECK(value != entry->Keys.cend(), IniValue(), "Unable to find key !");
+    // all good -> value exists
+    return IniValue(&value->second);
+}
+
+//============================================================================= INI Value ===
+std::optional<unsigned long long>   IniValue::AsUInt64()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToUInt64(std::string(value->KeyValue.GetText(),value->KeyValue.Len()));
+}
+std::optional<long long>            IniValue::AsInt64()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToInt64(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+}
+std::optional<unsigned int>         IniValue::AsUInt32()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToUInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+}
+std::optional<int>                  IniValue::AsInt32()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+}
+std::optional<bool>                 IniValue::AsBool()
+{
+    VALIDATE_VALUE(std::nullopt);
+    unsigned int len = value->KeyValue.Len();
+    switch (len)
+    {
+        case 1:
+            if ((*(value->KeyValue.GetText())) == '1')
+                return true;
+            if ((*(value->KeyValue.GetText())) == '0')
+                return false;
+            break;
+        case 2:
+            if (value->KeyValue.Equals("on", true))
+                return true;
+            if (value->KeyValue.Equals("no", true))
+                return false;
+            break;
+        case 3:
+            if (value->KeyValue.Equals("yes", true))
+                return true;
+            if (value->KeyValue.Equals("off", true))
+                return false;
+            break;
+        case 4:
+            if (value->KeyValue.Equals("true", true))
+                return true;
+            break;
+        case 5:
+            if (value->KeyValue.Equals("false", true))
+                return false;
+            break;
+        default:
+            break;
+    }
+    RETURNERROR(std::nullopt, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+}
+std::optional<AppCUI::Input::Key>   IniValue::AsKey()
+{
+    VALIDATE_VALUE(std::nullopt);
+    Key k = KeyUtils::FromString(value->KeyValue);
     if (k == Key::None)
         return std::nullopt;
     return k;
 }
-template <> std::optional<bool>                  IniSection::Get<bool>(std::string_view keyName)
+std::optional<const char*>          IniValue::AsString()
 {
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    if ((value->second.Equals("true", true)) || (value->second.Equals("yes", true)))
-        return true;
-    if ((value->second.Equals("false", true)) || (value->second.Equals("no", true)))
-        return false;
-    RETURNERROR(std::nullopt, "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+    VALIDATE_VALUE(std::nullopt);
+    return value->KeyValue.GetText();
 }
-template <> std::optional<const char*>           IniSection::Get<const char*>(std::string_view keyName)
+std::optional<std::string_view>     IniValue::AsStringView()
 {
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    const char* p = value->second.GetText();
-    if (p == nullptr)
-        return std::nullopt;
-    return p;
-}
-template <> std::optional<AppCUI::Console::Size> IniSection::Get<AppCUI::Console::Size>(std::string_view keyName)
-{
-    NOT_IMPLEMENTED(std::nullopt);
-}
-template <> std::optional<unsigned int>          IniSection::Get<unsigned int>(std::string_view keyName)
-{
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    return Number::ToUInt32(std::string_view(value->second.GetText(), value->second.Len()));
-}
-template <> std::optional<int>                   IniSection::Get<int>(std::string_view keyName)
-{
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    return Number::ToInt32(std::string_view(value->second.GetText(), value->second.Len()));
-}
-template <> std::optional<unsigned long long>    IniSection::Get<unsigned long long>(std::string_view keyName)
-{
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    return Number::ToUInt64(std::string_view(value->second.GetText(), value->second.Len()));
-}
-template <> std::optional<long long>             IniSection::Get<long long>(std::string_view keyName)
-{
-    PREPARE_KEYVALUE_ENTRY(std::nullopt);
-    return Number::ToInt64(std::string_view(value->second.GetText(), value->second.Len()));
-}
-template <> std::optional<float>                 IniSection::Get<float>(std::string_view keyName)
-{
-    NOT_IMPLEMENTED(std::nullopt);
-}
-template <> std::optional<double>                IniSection::Get<double>(std::string_view keyName)
-{
-    NOT_IMPLEMENTED(std::nullopt);
+    VALIDATE_VALUE(std::nullopt);
+    return std::string_view(value->KeyValue.GetText(),value->KeyValue.Len());
 }
 
+unsigned long long                  IniValue::ToUInt64  (unsigned long long defaultValue)
+{
+    auto result = this->AsUInt64();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+unsigned int                        IniValue::ToUInt32  (unsigned int defaultValue)
+{
+    auto result = this->AsUInt32();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+long long                           IniValue::ToInt64   (long long defaultValue)
+{
+    auto result = this->AsInt64();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+int                                 IniValue::ToInt32   (int defaultValue)
+{
+    auto result = this->AsInt32();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+bool                                IniValue::ToBool    (bool defaultValue)
+{
+    auto result = this->AsBool();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+AppCUI::Input::Key                  IniValue::ToKey     (AppCUI::Input::Key defaultValue)
+{
+    auto result = this->AsKey();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+const char *                        IniValue::ToString  (const char* defaultValue)
+{
+    VALIDATE_VALUE(defaultValue);
+    return value->KeyValue.GetText();
+}
+std::string_view                    IniValue::ToStringView  (std::string_view defaultValue)
+{
+    auto result = this->AsStringView();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
 
+//============================================================================= INI Object ===
 IniObject::IniObject() {
     Data = nullptr;
 }

@@ -252,6 +252,31 @@ namespace AppCUI
             static AppCUI::Input::Key	    FromString(AppCUI::Utils::String &text);
         };
 
+        class EXPORT IniValue
+        {
+            void* Data;
+        public:
+            IniValue() : Data(nullptr) {}
+            IniValue(void* data) : Data(data) {};
+
+            std::optional<unsigned long long>   AsUInt64();
+            std::optional<long long>            AsInt64();
+            std::optional<unsigned int>         AsUInt32();
+            std::optional<int>                  AsInt32();
+            std::optional<bool>                 AsBool();
+            std::optional<AppCUI::Input::Key>   AsKey();
+            std::optional<const char*>          AsString();
+            std::optional<std::string_view>     AsStringView();
+
+            unsigned long long                  ToUInt64(unsigned long long defaultValue = 0);
+            unsigned int                        ToUInt32(unsigned int defaultValue = 0);
+            long long                           ToInt64(long long defaultValue = -1);
+            int                                 ToInt32(int defaultValue = -1);
+            bool                                ToBool(bool defaultValue = false);
+            AppCUI::Input::Key                  ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None);
+            const char*                         ToString(const char * defaultValue = nullptr);
+            std::string_view                    ToStringView(std::string_view defaultValue = nullptr);
+        };
         class EXPORT IniSection
         {
             void* Data;
@@ -259,30 +284,14 @@ namespace AppCUI
             IniSection(): Data(nullptr) {}
             IniSection(void* data) : Data(data) {};
             
-            inline bool                 Exists() const { return Data != nullptr; }
-            const char*                 GetName() const;            
-
-            // Getter with optional return value
-            template <typename T> inline std::optional<T>       Get(std::string_view keyName) { return std::nullopt; }
-            template <> std::optional<Input::Key>               Get<Input::Key>(std::string_view keyName);
-            template <> std::optional<bool>                     Get<bool>(std::string_view keyName);
-            template <> std::optional<const char *>             Get<const char *>(std::string_view keyName);
-            template <> std::optional<AppCUI::Console::Size>    Get<AppCUI::Console::Size>(std::string_view keyName);
-            template <> std::optional<unsigned int>             Get<unsigned int>(std::string_view keyName);
-            template <> std::optional<int>                      Get<int>(std::string_view keyName);
-            template <> std::optional<unsigned long long>       Get<unsigned long long>(std::string_view keyName);
-            template <> std::optional<long long>                Get<long long>(std::string_view keyName);
-            template <> std::optional<float>                    Get<float>(std::string_view keyName);
-            template <> std::optional<double>                   Get<double>(std::string_view keyName);
-
-            // Getter with default return value
-            template <typename T> inline T                      Get(std::string_view keyName, const T& defaultValue) { auto res = Get<T>(keyName); return res.has_value() ? res.value() : defaultValue; }
-
+            inline bool     Exists() const { return Data != nullptr; }
+            const char*     GetName() const;            
+            IniValue        GetValue(std::string_view keyName);
         };
         class EXPORT IniObject
         {
             void* Data;
-            bool        Init();
+            bool            Init();
         public:
             IniObject();
             ~IniObject();
