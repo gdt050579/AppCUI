@@ -48,7 +48,9 @@ int main()
     LOG_INFO("String value for 'Boolean.value' is [%d] (from template)", ini.GetSection("vaLUeS").GetValue("boolean.value").AsBool().value());
     LOG_INFO("Key value for 'Shortcut' is [%d]", ini.GetSection("Strings").GetValue("Shortcut").AsKey().value());
     Key k = ini.GetSection("Strings").GetValue("Shortcut2").ToKey();
-    LOG_INFO("Unexingting key: %d", k);
+    LOG_INFO("Unexisting key: %d", k);
+    Key k2 = ini.GetValue("Strings/Shortcut").ToKey();
+    LOG_INFO("Shortcut = %d", k2);
 
     unsigned int value = Utils::Number::ToUInt32("12345678").value();
     int x = Utils::Number::ToInt32("-1").value();

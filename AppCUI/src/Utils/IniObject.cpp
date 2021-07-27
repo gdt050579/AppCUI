@@ -527,6 +527,40 @@ IniSection  IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
+IniValue  IniObject::GetValue(std::string_view valuePath)
+{
+    // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
+    VALIDATE_INITED(IniValue());
+    const unsigned char* start = (const unsigned char *)valuePath.data();
+    CHECK(start, IniValue(), "Invalid value path (expecting a non-null object)");
+    const unsigned char* end = start + valuePath.size();
+    CHECK(start < end, IniValue(), "Invalid value path (expecting a non-empty object)");
+    const unsigned char* p = start;
+    while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
+        p++;
+    if (p >= end)
+    {
+        // no section was provided --> using the default one
+        auto value = WRAPPER->DefaultSection.Keys.find(__compute_hash__(start,end));
+        CHECK(value != WRAPPER->DefaultSection.Keys.cend(), IniValue(), "Unable to find key for default section!");
+        // all good -> value exists
+        return IniValue(&value->second);
+    }
+    else {
+        // we have both a section and a value name
+        auto result = WRAPPER->Sections.find(__compute_hash__(start,p));
+        if (result == WRAPPER->Sections.cend())
+            return IniValue();
+        AppCUI::Ini::Section* sect = result->second.get();
+        CHECK(sect, IniValue(), "Invalid section (null)");
+        p++;
+        CHECK(p < end, IniValue(), "Missing value from path !");
+        auto value = sect->Keys.find(__compute_hash__(p, end));
+        CHECK(value != sect->Keys.cend(), IniValue(), "Unable to find key for section: %s",sect->Name.GetText());
+        // all good -> value exists
+        return IniValue(&value->second);
+    }
+}
 unsigned int IniObject::GetSectionsCount()
 {
     VALIDATE_INITED(0);
