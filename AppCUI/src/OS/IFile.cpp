@@ -62,14 +62,16 @@ bool IFile::Write(const void* buffer, unsigned int bufferSize, unsigned int & by
 }
 
 // static functions
-std::unique_ptr<char[]> IFile::ReadContentToBuffer()
+std::unique_ptr<char[]> IFile::ReadContentToBuffer(unsigned int & bufferSize)
 {
+    bufferSize = 0;
     CHECK(SetCurrentPos(0), nullptr, "Fail to position the current pointer to the start of the file");
     unsigned long long file_size = this->GetSize();
     CHECK(file_size > 0, nullptr, "Empty file !");
     CHECK(file_size < 0xFFFFFF, nullptr, "File size exceed 4G size");
     auto buf = std::make_unique<char[]>(file_size);
     CHECK(this->Read(buf.get(), (unsigned int)file_size), nullptr, "Fail to read %d bytes from the file", (unsigned int)file_size);
+    bufferSize = (unsigned int)file_size;
     return buf;
 }
 

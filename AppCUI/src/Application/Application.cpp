@@ -4,12 +4,88 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI;
+using namespace AppCUI::Utils;
 
 AppCUI::Internal::Application*   app = nullptr;
 
 bool AppCUI::Application::Init(Application::InitializationFlags flags)
 {
     return AppCUI::Application::Init(CURRENT_CONSOLE_WIDTH, CURRENT_CONSOLE_HEIGHT, flags);
+}
+bool AppCUI::Application::Init(const char* iniFile)
+{
+    CHECK(app == nullptr, false, "Application has already been initialized !");
+    AppCUI::Utils::IniObject ini;
+    if (ini.CreateFromFile(iniFile)==false)
+    {
+        LOG_WARNING("Fail to load ini file: %s ==> using default configuration", iniFile);
+        return AppCUI::Application::Init(Application::InitializationFlags::NONE);
+    }
+    // ini file is created --> let's load the section
+    auto AppCUISection = ini.GetSection("appcui");
+    if (AppCUISection.Exists() == false)
+    {
+        LOG_WARNING("Section [AppCUI] was not found in %s ==> using the default configuration", iniFile);
+        return AppCUI::Application::Init(Application::InitializationFlags::NONE);
+    }
+    // we have the section ==> lets build up some parameters
+    auto frontend = AppCUISection.GetValue("frontend").ToString();
+    auto terminalSize = AppCUISection.GetValue("size");
+    auto charSize = AppCUISection.GetValue("charactersize").ToString();
+    bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
+    // analize values
+    Application::InitializationFlags flags = Application::InitializationFlags::NONE;
+    
+    // frontend
+    if (frontend) 
+    {
+        if (String::Equals(frontend, "default", true))
+            flags |= Application::InitializationFlags::FRONTEND_DEFAULT;
+        else if (String::Equals(frontend, "SDL", true))
+            flags |= Application::InitializationFlags::FRONTEND_SDL;
+        else if (String::Equals(frontend, "terminal", true))
+            flags |= Application::InitializationFlags::FRONTEND_TERMINAL;
+        else if (String::Equals(frontend, "windows", true))
+            flags |= Application::InitializationFlags::FRONTEND_WINDOWS;
+    }
+
+    // character size
+    if (charSize)
+    {
+        if (String::Equals(frontend, "default", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_DEFAULT;
+        else if (String::Equals(frontend, "tiny", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_TINY;
+        else if (String::Equals(frontend, "small", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_SMALL;
+        else if (String::Equals(frontend, "normal", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_NORMAL;
+        else if (String::Equals(frontend, "large", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_LARGE;
+        else if (String::Equals(frontend, "huge", true))
+            flags |= Application::InitializationFlags::CHAR_SIZE_HUGE;
+    }
+
+    // terminal size
+    unsigned int terminalWidth = CURRENT_CONSOLE_WIDTH;
+    unsigned int terminalHeight = CURRENT_CONSOLE_HEIGHT;    
+    const char* s_terminalSize = terminalSize.ToString();
+    if (s_terminalSize)
+    {
+        if (String::Equals(frontend, "fullscreen", true))
+            flags |= Application::InitializationFlags::FULLSCREEN;
+        else if (String::Equals(frontend, "maximized", true))
+            flags |= Application::InitializationFlags::MAXIMIZED;
+    } else {
+        auto termSize = terminalSize.AsSize();
+        if (termSize.has_value())
+        {
+            terminalWidth = termSize->Width;
+            terminalHeight = termSize->Height;
+        }
+    }
+    // all good ==> initialize :)
+    return Application::Init(terminalWidth, terminalHeight, flags);
 }
 bool AppCUI::Application::Init(unsigned int width, unsigned int height, Application::InitializationFlags flags)
 {

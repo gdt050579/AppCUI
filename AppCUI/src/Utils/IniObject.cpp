@@ -548,7 +548,16 @@ bool         IniObject::CreateFromString(std::string_view text)
 }
 bool         IniObject::CreateFromFile(const char* fileName)
 {
-    NOT_IMPLEMENTED(false);
+    CHECK(fileName, false, "Expecting a valid (non-null) ini file !");
+    
+    AppCUI::OS::File f;
+    unsigned int     bufferSize;
+    CHECK(f.OpenRead(fileName), false, "Fail to open file: %s", fileName);
+    auto buf = f.ReadContentToBuffer(bufferSize);
+    f.Close();
+    CHECK(buf.get(), false, "Unable to read content of ini file: %s", fileName);
+    CHECK(bufferSize, false, "Empty INI file");
+    return CreateFromString(std::string_view(buf.get(), bufferSize));
 }
 bool         IniObject::Create()
 {

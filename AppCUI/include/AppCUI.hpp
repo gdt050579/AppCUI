@@ -362,7 +362,7 @@ namespace AppCUI
             bool                        Write(const void* buffer, unsigned int bufferSize);
             bool                        Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
             bool                        Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
-            std::unique_ptr<char[]>     ReadContentToBuffer();
+            std::unique_ptr<char[]>     ReadContentToBuffer(unsigned int & bufferSize);
         };
 
         class EXPORT File : public IFile
@@ -1488,6 +1488,10 @@ namespace AppCUI
         EXPORT bool         Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
         [[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized properly")]]
         EXPORT bool         Init(unsigned int width, unsigned int height, Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+        [[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized properly")]]
+        EXPORT bool         Init(const char * iniFile);
+
+        
         EXPORT bool         Run();
         EXPORT bool         AddWindow(AppCUI::Controls::Window * wnd);
         EXPORT bool         GetApplicationSize(AppCUI::Console::Size & size);
