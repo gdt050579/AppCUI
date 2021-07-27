@@ -14,6 +14,7 @@ HexNumber = 0x1234
 Binary = 0b1111 ; 15 decimal
 Octal = 0777
 Float = -15.3
+ScreenSize = 120 x 30
 
 [Strings]
 Path = C:\Program Files\My Objects\test.txt
@@ -51,6 +52,8 @@ int main()
     LOG_INFO("Unexisting key: %d", k);
     Key k2 = ini.GetValue("Strings/Shortcut").ToKey();
     LOG_INFO("Shortcut = %d", k2);
+    AppCUI::Console::Size sz = ini.GetValue("Values/ScreenSize").ToSize();
+    LOG_INFO("Size is %dx%d", sz.Width, sz.Height);
 
     unsigned int value = Utils::Number::ToUInt32("12345678").value();
     int x = Utils::Number::ToInt32("-1").value();

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <unordered_map>
 
-
+using namespace AppCUI;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
@@ -428,6 +428,29 @@ std::optional<std::string_view>     IniValue::AsStringView()
     VALIDATE_VALUE(std::nullopt);
     return std::string_view(value->KeyValue.GetText(),value->KeyValue.Len());
 }
+std::optional<Console::Size>        IniValue::AsSize()
+{
+    VALIDATE_VALUE(std::nullopt);
+    const char* start = value->KeyValue.GetText();
+    const char* end = start + value->KeyValue.Len();
+    CHECK(start, std::nullopt, "Expecting a non-null value for size");
+    CHECK(value->KeyValue.Len() >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
+    unsigned int sz = 0;
+    auto p_width = Number::ToUInt16(std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
+    CHECK(p_width.has_value(), std::nullopt, "Expecting a valid format for size - eithed 'width x height' or 'width , height'");
+    unsigned int width = p_width.value();
+    start += sz;
+    CHECK(start < end, std::nullopt, "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
+    CHECK((*start == 'x') || (*start == 'X') || (*start == ','), std::nullopt, "Invalid format for size --> expcting either a 'x' or ',' after the width");
+    start++;
+    CHECK(start < end, std::nullopt, "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
+    auto p_height = Number::ToUInt16(std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
+    CHECK(p_height.has_value(), std::nullopt, "Expecting a valid format for size - eithed 'width x height' or 'width , height' -> height value is invalid");
+    unsigned int height = p_height.value();
+    CHECK(width > 0, std::nullopt, "Width must be bigger than 0");
+    CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
+    return AppCUI::Console::Size(width, height);
+}
 
 unsigned long long                  IniValue::ToUInt64  (unsigned long long defaultValue)
 {
@@ -469,7 +492,11 @@ std::string_view                    IniValue::ToStringView  (std::string_view de
     auto result = this->AsStringView();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-
+AppCUI::Console::Size               IniValue::ToSize(AppCUI::Console::Size defaultValue)
+{
+    auto result = this->AsSize();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
 //============================================================================= INI Object ===
 IniObject::IniObject() {
     Data = nullptr;

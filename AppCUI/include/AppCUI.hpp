@@ -67,7 +67,20 @@ namespace AppCUI
     };
     namespace Console
     {
-        struct Size;
+        struct Size
+        {
+            unsigned int Width, Height;
+            inline Size() : Width(0), Height(0) { }
+            inline Size(unsigned int width, unsigned int height) : Width(width), Height(height) { }
+            inline void Set(unsigned int width, unsigned int height) { Width = width; Height = height; }
+        };
+        struct Point
+        {
+            int X, Y;
+            inline Point() : X(0), Y(0) {}
+            inline Point(int x, int y) : X(x), Y(y) { }
+            inline void Set(int x, int y) { X = x; Y = y; }
+        };
     };
     namespace Input
     {
@@ -267,6 +280,7 @@ namespace AppCUI
             std::optional<AppCUI::Input::Key>   AsKey();
             std::optional<const char*>          AsString();
             std::optional<std::string_view>     AsStringView();
+            std::optional<Console::Size>        AsSize();
 
             unsigned long long                  ToUInt64(unsigned long long defaultValue = 0);
             unsigned int                        ToUInt32(unsigned int defaultValue = 0);
@@ -276,6 +290,7 @@ namespace AppCUI
             AppCUI::Input::Key                  ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None);
             const char*                         ToString(const char * defaultValue = nullptr);
             std::string_view                    ToStringView(std::string_view defaultValue = std::string_view{});
+            AppCUI::Console::Size               ToSize(AppCUI::Console::Size defaultValue = AppCUI::Console::Size());
         };
         class EXPORT IniSection
         {
@@ -521,20 +536,7 @@ namespace AppCUI
             bool EXPORT Update(unsigned long long value, const char * text = nullptr);
         };
 
-        struct Size
-        {
-            unsigned int Width, Height;
-            inline Size() : Width(0), Height(0) { }
-            inline Size(unsigned int width, unsigned int height) : Width(width), Height(height) { }
-            inline void Set(unsigned int width, unsigned int height) { Width = width; Height = height; }
-        };
-        struct Point
-        {
-            int X, Y;
-            inline Point(): X(0), Y(0) {} 
-            inline Point(int x, int y) : X(x), Y(y) { }
-            inline void Set(int x, int y) { X = x; Y = y; }
-        };
+
         struct ColorPair
         {
             Color Forenground;
