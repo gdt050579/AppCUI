@@ -275,7 +275,7 @@ namespace AppCUI
             bool                                ToBool(bool defaultValue = false);
             AppCUI::Input::Key                  ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None);
             const char*                         ToString(const char * defaultValue = nullptr);
-            std::string_view                    ToStringView(std::string_view defaultValue = nullptr);
+            std::string_view                    ToStringView(std::string_view defaultValue = std::string_view{});
         };
         class EXPORT IniSection
         {
