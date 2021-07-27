@@ -60,8 +60,6 @@ bool IFile::Write(const void* buffer, unsigned int bufferSize, unsigned int & by
 {
     return this->WriteBuffer(buffer, bufferSize, bytesWritten);
 }
-
-// static functions
 std::unique_ptr<char[]> IFile::ReadContentToBuffer(unsigned int & bufferSize)
 {
     bufferSize = 0;
@@ -74,4 +72,11 @@ std::unique_ptr<char[]> IFile::ReadContentToBuffer(unsigned int & bufferSize)
     bufferSize = (unsigned int)file_size;
     return buf;
 }
-
+bool IFile::Write(std::string_view text)
+{
+    return Write(reinterpret_cast<const void*>(text.data()), text.length());
+}
+bool IFile::Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten)
+{
+    return Write(offset, reinterpret_cast<const void*>(text.data()), text.length(), bytesWritten);
+}
