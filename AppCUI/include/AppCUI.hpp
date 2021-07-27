@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <optional>
+#include <memory>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #   ifdef BUILD_FOR_WINDOWS
@@ -361,6 +362,7 @@ namespace AppCUI
             bool                        Write(const void* buffer, unsigned int bufferSize);
             bool                        Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int & bytesRead);
             bool                        Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int & bytesWritten);
+            std::unique_ptr<char[]>     ReadContentToBuffer();
         };
 
         class EXPORT File : public IFile
