@@ -113,11 +113,11 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     return (start == end);
 }
 
-constexpr inline bool ParseNumber(_parse_number_result_ &res, std::string_view text, NumberParseFlags flags, unsigned int* size)
+inline bool ParseNumber(_parse_number_result_ &res, std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
-    const unsigned char * start = (const unsigned char *)text.data();
+    const unsigned char * start = reinterpret_cast<const unsigned char *>(text.data());
     CHECK(start, false, "Expecting a non-null string to convert to number !");
-    const  unsigned char* end = start + text.size();
+    const unsigned char* end = start + text.size();
     CHECK(start < end, false, "Expecting a non-empty string to convert to number !");
     
     res.ParseFlags = flags;
