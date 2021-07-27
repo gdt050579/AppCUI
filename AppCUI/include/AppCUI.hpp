@@ -240,6 +240,9 @@ namespace AppCUI
             EXPORT std::optional<short>                 ToInt16  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
             EXPORT std::optional<char>                  ToInt8   (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
+            EXPORT std::optional<float>                 ToFloat  (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+            EXPORT std::optional<double>                ToDouble (std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+
         };
 
         template <int size>
@@ -281,6 +284,8 @@ namespace AppCUI
             std::optional<const char*>          AsString();
             std::optional<std::string_view>     AsStringView();
             std::optional<Console::Size>        AsSize();
+            std::optional<float>                AsFloat();
+            std::optional<double>               AsDouble();
 
             unsigned long long                  ToUInt64(unsigned long long defaultValue = 0);
             unsigned int                        ToUInt32(unsigned int defaultValue = 0);
@@ -291,6 +296,8 @@ namespace AppCUI
             const char*                         ToString(const char * defaultValue = nullptr);
             std::string_view                    ToStringView(std::string_view defaultValue = std::string_view{});
             AppCUI::Console::Size               ToSize(AppCUI::Console::Size defaultValue = AppCUI::Console::Size());
+            float                               ToFloat(float defaultValue = 0.0f);
+            double                              ToDouble(double defaultValue = 0.0);
         };
         class EXPORT IniSection
         {

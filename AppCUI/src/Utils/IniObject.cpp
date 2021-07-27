@@ -451,38 +451,48 @@ std::optional<Console::Size>        IniValue::AsSize()
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
     return AppCUI::Console::Size(width, height);
 }
+std::optional<float>                IniValue::AsFloat()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToFloat(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+}
+std::optional<double>               IniValue::AsDouble()
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToDouble(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+}
 
-unsigned long long                  IniValue::ToUInt64  (unsigned long long defaultValue)
+unsigned long long                  IniValue::ToUInt64      (unsigned long long defaultValue)
 {
     auto result = this->AsUInt64();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-unsigned int                        IniValue::ToUInt32  (unsigned int defaultValue)
+unsigned int                        IniValue::ToUInt32      (unsigned int defaultValue)
 {
     auto result = this->AsUInt32();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-long long                           IniValue::ToInt64   (long long defaultValue)
+long long                           IniValue::ToInt64       (long long defaultValue)
 {
     auto result = this->AsInt64();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-int                                 IniValue::ToInt32   (int defaultValue)
+int                                 IniValue::ToInt32       (int defaultValue)
 {
     auto result = this->AsInt32();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-bool                                IniValue::ToBool    (bool defaultValue)
+bool                                IniValue::ToBool        (bool defaultValue)
 {
     auto result = this->AsBool();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-AppCUI::Input::Key                  IniValue::ToKey     (AppCUI::Input::Key defaultValue)
+AppCUI::Input::Key                  IniValue::ToKey         (AppCUI::Input::Key defaultValue)
 {
     auto result = this->AsKey();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-const char *                        IniValue::ToString  (const char* defaultValue)
+const char *                        IniValue::ToString      (const char* defaultValue)
 {
     VALIDATE_VALUE(defaultValue);
     return value->KeyValue.GetText();
@@ -492,11 +502,22 @@ std::string_view                    IniValue::ToStringView  (std::string_view de
     auto result = this->AsStringView();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
-AppCUI::Console::Size               IniValue::ToSize(AppCUI::Console::Size defaultValue)
+AppCUI::Console::Size               IniValue::ToSize        (AppCUI::Console::Size defaultValue)
 {
     auto result = this->AsSize();
     if (result.has_value()) return result.value(); else return defaultValue;
 }
+float                               IniValue::ToFloat       (float defaultValue)
+{
+    auto result = this->AsFloat();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+double                              IniValue::ToDouble      (double defaultValue)
+{
+    auto result = this->AsDouble();
+    if (result.has_value()) return result.value(); else return defaultValue;
+}
+
 //============================================================================= INI Object ===
 IniObject::IniObject() {
     Data = nullptr;
@@ -507,7 +528,7 @@ IniObject::~IniObject()
         delete ((AppCUI::Ini::Parser*)Data);
     Data = nullptr;
 }
-bool        IniObject::Init()
+bool         IniObject::Init()
 {
     if (Data == nullptr)
     {
@@ -516,7 +537,7 @@ bool        IniObject::Init()
     }
     return true;
 }
-bool        IniObject::CreateFromString(std::string_view text)
+bool         IniObject::CreateFromString(std::string_view text)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) string !");
     CHECK(Init(), false, "Fail to initialize parser object !");
@@ -525,18 +546,18 @@ bool        IniObject::CreateFromString(std::string_view text)
     CHECK(WRAPPER->Parse(start, end), false, "Fail to parser buffer !");
     return true;
 }
-bool        IniObject::CreateFromFile(const char* fileName)
+bool         IniObject::CreateFromFile(const char* fileName)
 {
     NOT_IMPLEMENTED(false);
 }
-bool        IniObject::Create()
+bool         IniObject::Create()
 {
     CHECK(Init(), false, "Fail to initialize parser object !");
     WRAPPER->Clear();
     return true;
 }
 
-bool        IniObject::HasSection(std::string_view name)
+bool         IniObject::HasSection(std::string_view name)
 {
     VALIDATE_INITED(false);
     // null-strings or empty strings refer to the Default section that always exists
@@ -544,7 +565,7 @@ bool        IniObject::HasSection(std::string_view name)
         return true;
     return WRAPPER->Sections.contains(__compute_hash__(name));
 }
-IniSection  IniObject::GetSection(std::string_view name)
+IniSection   IniObject::GetSection(std::string_view name)
 {
     VALIDATE_INITED(IniSection());
     if ((name.data() == nullptr) || (name.length() == 0))
@@ -554,7 +575,7 @@ IniSection  IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
-IniValue  IniObject::GetValue(std::string_view valuePath)
+IniValue     IniObject::GetValue(std::string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(IniValue());
@@ -593,4 +614,5 @@ unsigned int IniObject::GetSectionsCount()
     VALIDATE_INITED(0);
     return (unsigned int)WRAPPER->Sections.size();
 }
+
 #undef WRAPPER 

@@ -19,7 +19,7 @@ unsigned char __base_translation__[256] = { 255,255,255,255,255,255,255,255,255,
 struct _parse_number_result_
 {
     unsigned long long  Value;
-    unsigned long long  SecondValue;
+    long double         SecondValue;
     unsigned int        Flags;
     unsigned int        Base;
     unsigned int*       Size;
@@ -35,7 +35,7 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     res.Flags = 0;
     if ((*start) == '+') { start++; }
     else if ((*start) == '-') {
-        res.Flags = NUMBER_FLAG_NEGATIVE;
+        res.Flags |= NUMBER_FLAG_NEGATIVE;
         start++;
     }
     SKIP_SPACES;
@@ -88,7 +88,10 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     // check next character
     if ((*start) == '.')
     {
+        start++;
         res.SecondValue = 0;
+        unsigned long long devide = 1;
+        unsigned long long s_value = 0;
         res.Flags |= NUMBER_FLAG_SECOND;
         // consider only base 10
         while (start < end)
@@ -96,11 +99,14 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
             charValue = __base_translation__[*start];
             if (charValue >= 10)
                 break;
-            newValue = (res.SecondValue * 10) + (unsigned long long)charValue;
-            CHECK(newValue > res.SecondValue, false, "Integer overflow (2)!");
-            res.SecondValue = newValue;
+            newValue = (s_value * 10) + (unsigned long long)charValue;
+            CHECK(newValue > s_value, false, "Integer overflow (2)!");
+            s_value = newValue;
+            devide *= 10;
+            CHECK(devide < 100000000ULL, false, "");
             start++;
         }
+        res.SecondValue = ((long double)s_value) / ((long double)devide);
         if (start >= end)
             return true;
     }
@@ -207,4 +213,24 @@ std::optional<long long>            Number::ToInt64   (std::string_view text, Nu
         CHECK(res.Value <= ((unsigned long long)((1ULL << 63) - 1)), std::nullopt, "Value can not be stored in a long long variable");
         return (long long)(res.Value);
     }
+}
+std::optional<float>                Number::ToFloat   (std::string_view text, NumberParseFlags flags, unsigned int* size)
+{
+    PARSE_NUMBER;
+    float f = (float)res.Value;
+    if (res.Flags & NUMBER_FLAG_SECOND)
+        f += (float)res.SecondValue;
+    if (res.Flags & NUMBER_FLAG_NEGATIVE)
+        f = -f;
+    return f;
+}
+std::optional<double>               Number::ToDouble  (std::string_view text, NumberParseFlags flags, unsigned int* size)
+{
+    PARSE_NUMBER;
+    double f = (double)res.Value;
+    if (res.Flags & NUMBER_FLAG_SECOND)
+        f += (double)res.SecondValue;
+    if (res.Flags & NUMBER_FLAG_NEGATIVE)
+        f = -f;
+    return f;
 }
