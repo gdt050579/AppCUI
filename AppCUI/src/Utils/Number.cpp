@@ -28,6 +28,7 @@ struct _parse_number_result_
 
 bool _parse_number_string_buffer_(const unsigned char* start, const unsigned char* end, _parse_number_result_& res)
 {
+    const unsigned char* original_start = start;
     SKIP_SPACES;
     VALIDATE_END_OF_STREAM;
     
@@ -113,7 +114,7 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     SKIP_SPACES;
     if (res.Size)
     {
-        *res.Size = (unsigned int)(end - start);
+        *res.Size = (unsigned int)(start - original_start);
         return true;
     }
     return (start == end);

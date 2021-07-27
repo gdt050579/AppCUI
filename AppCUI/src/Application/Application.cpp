@@ -14,6 +14,7 @@ bool AppCUI::Application::Init(Application::InitializationFlags flags)
 }
 bool AppCUI::Application::Init(const char* iniFile)
 {
+    LOG_INFO("Initializing AppCUI using: %s", iniFile);
     CHECK(app == nullptr, false, "Application has already been initialized !");
     AppCUI::Utils::IniObject ini;
     if (ini.CreateFromFile(iniFile)==false)
@@ -52,17 +53,17 @@ bool AppCUI::Application::Init(const char* iniFile)
     // character size
     if (charSize)
     {
-        if (String::Equals(frontend, "default", true))
+        if (String::Equals(charSize, "default", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_DEFAULT;
-        else if (String::Equals(frontend, "tiny", true))
+        else if (String::Equals(charSize, "tiny", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_TINY;
-        else if (String::Equals(frontend, "small", true))
+        else if (String::Equals(charSize, "small", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_SMALL;
-        else if (String::Equals(frontend, "normal", true))
+        else if (String::Equals(charSize, "normal", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_NORMAL;
-        else if (String::Equals(frontend, "large", true))
+        else if (String::Equals(charSize, "large", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_LARGE;
-        else if (String::Equals(frontend, "huge", true))
+        else if (String::Equals(charSize, "huge", true))
             flags |= Application::InitializationFlags::CHAR_SIZE_HUGE;
     }
 
@@ -72,16 +73,17 @@ bool AppCUI::Application::Init(const char* iniFile)
     const char* s_terminalSize = terminalSize.ToString();
     if (s_terminalSize)
     {
-        if (String::Equals(frontend, "fullscreen", true))
+        if (String::Equals(s_terminalSize, "fullscreen", true))
             flags |= Application::InitializationFlags::FULLSCREEN;
-        else if (String::Equals(frontend, "maximized", true))
+        else if (String::Equals(s_terminalSize, "maximized", true))
             flags |= Application::InitializationFlags::MAXIMIZED;
-    } else {
-        auto termSize = terminalSize.AsSize();
-        if (termSize.has_value())
-        {
-            terminalWidth = termSize->Width;
-            terminalHeight = termSize->Height;
+        else {
+            auto termSize = terminalSize.AsSize();
+            if (termSize.has_value())
+            {
+                terminalWidth = termSize->Width;
+                terminalHeight = termSize->Height;
+            }
         }
     }
     // all good ==> initialize :)
@@ -447,6 +449,8 @@ void AppCUI::Internal::Application::Destroy()
 bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     LOG_INFO("Starting AppCUI ...");
+    LOG_INFO("Flags           = %08X", (unsigned int)flags);
+    LOG_INFO("Requested Size  = %d x %d", width, height);
     CHECK(!this->Inited, false, "Application has already been initialized !");
 
     // create the frontend
