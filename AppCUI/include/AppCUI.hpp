@@ -444,8 +444,15 @@ namespace AppCUI
                 DriveX,
                 DriveY,
                 DriveZ,
-
-                Count // must be the laste
+            };
+            constexpr std::initializer_list<SpecialFolder> AllSpecialFolders = 
+            { 
+                            SpecialFolder::Home, SpecialFolder::Desktop, SpecialFolder::UserFolder,
+                            SpecialFolder::DriveA, SpecialFolder::DriveB, SpecialFolder::DriveC, SpecialFolder::DriveD, SpecialFolder::DriveE, SpecialFolder::DriveF,
+                            SpecialFolder::DriveG, SpecialFolder::DriveH, SpecialFolder::DriveI, SpecialFolder::DriveJ, SpecialFolder::DriveK, SpecialFolder::DriveL,
+                            SpecialFolder::DriveM, SpecialFolder::DriveN, SpecialFolder::DriveO, SpecialFolder::DriveP, SpecialFolder::DriveQ, SpecialFolder::DriveR,
+                            SpecialFolder::DriveS, SpecialFolder::DriveT, SpecialFolder::DriveU, SpecialFolder::DriveV, SpecialFolder::DriveW, SpecialFolder::DriveX,
+                            SpecialFolder::DriveY, SpecialFolder::DriveZ, 
             };
             namespace Path
             {

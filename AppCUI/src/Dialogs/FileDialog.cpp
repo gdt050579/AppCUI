@@ -227,6 +227,12 @@ int FileDialogClass::Show(bool open, const char *fileName, const char *ext, cons
 	comboDrive.Create(&wnd, "x:8,y:1,w:14");
 	comboDrive.SetHotKey('D');
 	// populate combo box with special folders and available drivers
+	for (auto specialFolderID : AppCUI::OS::FileSystem::AllSpecialFolders)
+	{
+		// check if that special folder exists and populate the comboBox with it
+	}
+
+
 	comboDrive.SetCurentItemIndex(0);	
 	files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::NONE);
 	files.AddColumn("&N&ame", TextAlignament::Left, 53);
