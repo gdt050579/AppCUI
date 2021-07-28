@@ -931,6 +931,10 @@ bool AppCUI::Controls::Control::SetText(const std::string_view &text, bool updat
     }
     return SetText(temp.GetText(), updateHotKey, (int)temp.Len());
 }
+bool AppCUI::Controls::Control::GetText(AppCUI::Utils::String& text)
+{
+    NOT_IMPLEMENTED(false);
+}
 void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
 {
     if (value > maxValue)

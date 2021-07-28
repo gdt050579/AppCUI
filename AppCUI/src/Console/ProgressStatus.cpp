@@ -249,7 +249,7 @@ bool ProgressStatus::Update(unsigned long long value, const char * text)
 		}
 		if (requestQuit)
 		{
-            if (AppCUI::Dialogs::MessageBox::ShowOkCancel("Terminate", "Terminate current task ?") == AppCUI::Dialogs::Result::RESULT_OK)
+            if (AppCUI::Dialogs::MessageBox::ShowOkCancel("Terminate", "Terminate current task ?") == AppCUI::Dialogs::Result::Ok)
             {
                 progress_inited = false; // loop has ended
                 return true;

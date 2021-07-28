@@ -413,6 +413,40 @@ namespace AppCUI
 
         namespace FileSystem
         {
+            enum class SpecialFolder : unsigned int
+            {
+                Home = 0,
+                Desktop,
+                UserFolder,
+                DriveA,
+                DriveB,
+                DriveC,
+                DriveD,
+                DriveE,
+                DriveF,
+                DriveG,
+                DriveH,
+                DriveI,
+                DriveJ,
+                DriveK,
+                DriveL,
+                DriveM,
+                DriveN,
+                DriveO,
+                DriveP,
+                DriveQ,
+                DriveR,
+                DriveS,
+                DriveT,
+                DriveU,
+                DriveV,
+                DriveW,
+                DriveX,
+                DriveY,
+                DriveZ,
+
+                Count // must be the laste
+            };
             namespace Path
             {
                 EXPORT bool		Join(AppCUI::Utils::String& path, const char * name);
@@ -899,7 +933,7 @@ namespace AppCUI
             bool			SetText(const std::string &text, bool updateHotKey = false);
             bool			SetText(const std::string_view &text, bool updateHotKey = false);
             bool			SetText(const AppCUI::Utils::String &text, bool updateHotKey = false);
-
+            bool            GetText(AppCUI::Utils::String& text);
             
             // Scroll bars
             void            UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
@@ -1196,6 +1230,8 @@ namespace AppCUI
             void*               Pointer;
             unsigned int        UInt32Value;
             unsigned long long  UInt64Value;
+            ItemData(): Pointer(nullptr) {}
+            ItemData(unsigned long long value): UInt64Value(value) {}
         };
         class EXPORT ListView : public Control
         {
@@ -1310,11 +1346,11 @@ namespace AppCUI
     {
         enum class Result : int
         {
-            RESULT_NONE = 0,
-            RESULT_OK = 1,
-            RESULT_CANCEL = 2,
-            RESULT_YES = 3,
-            RESULT_NO = 4,
+            None    = 0,
+            Ok      = 1,
+            Cancel  = 2,
+            Yes     = 3,
+            No      = 4,
         };
         class EXPORT MessageBox
         {
@@ -1325,6 +1361,13 @@ namespace AppCUI
             static void           ShowWarning(const char *title, const char *message);
             static Result         ShowOkCancel(const char *title, const char *message);
             static Result         ShowYesNoCancel(const char *title, const char *message);
+        };
+        class EXPORT FileDialog
+        {
+            FileDialog() = delete;
+        public:
+            static const char*    ShowSaveFileWindow(const char* fileName, const char* mask, const char* path);
+            static const char*    ShowOpenFileWindow(const char* fileName, const char* mask, const char* path);
         };
 
     }
