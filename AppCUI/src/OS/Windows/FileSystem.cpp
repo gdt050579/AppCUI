@@ -11,6 +11,11 @@ using namespace AppCUI::OS;
 #endif
 
 
+bool __Get_Special_Folder__(FileSystem::SpecialFolder id)
+{
+	NOT_IMPLEMENTED(false);
+}
+
 // Enumerate files & folders
 bool		FileSystem::EnumerateFiles(AppCUI::Utils::String &path, bool recursive, EnumerateFilesCallback callback, void *Context, bool callFolderCallbackAfterProcessingAllOfItsFiles)
 {
@@ -134,3 +139,64 @@ bool		FileSystem::DeleteFile(const char *name, bool failIfFileIsMissing)
 
 }
 
+bool         FileSystem::GetSpecialFolderName(SpecialFolder id, AppCUI::Utils::String& name)
+{
+	UINT type;
+	switch (id)
+	{
+		case SpecialFolder::DriveA:
+		case SpecialFolder::DriveB:
+		case SpecialFolder::DriveC:
+		case SpecialFolder::DriveD:
+		case SpecialFolder::DriveE:
+		case SpecialFolder::DriveF:
+		case SpecialFolder::DriveG:
+		case SpecialFolder::DriveH:
+		case SpecialFolder::DriveI:
+		case SpecialFolder::DriveJ:
+		case SpecialFolder::DriveK:
+		case SpecialFolder::DriveL:
+		case SpecialFolder::DriveM:
+		case SpecialFolder::DriveN:
+		case SpecialFolder::DriveO:
+		case SpecialFolder::DriveP:
+		case SpecialFolder::DriveQ:
+		case SpecialFolder::DriveR:
+		case SpecialFolder::DriveS:
+		case SpecialFolder::DriveT:
+		case SpecialFolder::DriveU:
+		case SpecialFolder::DriveV:
+		case SpecialFolder::DriveW:
+		case SpecialFolder::DriveX:
+		case SpecialFolder::DriveY:
+		case SpecialFolder::DriveZ:
+			CHECK(name.SetFormat("%c:\\", (((char)id)-(char)SpecialFolder::DriveA) + 'A'), false, "Fail to create special folder name !");
+			type = GetDriveTypeA(name.GetText());
+			switch (type)
+			{
+				case DRIVE_CDROM:
+					CHECK(name.Add(" (CD-ROM)"), false, "Fail to add type to special folder name !");
+					return true;
+				case DRIVE_FIXED:
+					CHECK(name.Add(" (Local)"), false, "Fail to add type to special folder name !");
+					return true;
+				case DRIVE_REMOVABLE:
+					CHECK(name.Add(" (Removable)"), false, "Fail to add type to special folder name !");
+					return true;
+				case DRIVE_RAMDISK:
+					CHECK(name.Add(" (Ram-Drive)"), false, "Fail to add type to special folder name !");
+					return true;
+				case DRIVE_REMOTE:
+					CHECK(name.Add(" (Remote)"), false, "Fail to add type to special folder name !");
+					return true;
+			}
+			return false; // drive is unknown
+		case SpecialFolder::Desktop:
+			CHECK(name.Set("Desktop"), false, "Fail to create Desktop string !");
+			return true;
+		case SpecialFolder::Home:
+			CHECK(name.Set("Home"), false, "Fail to create Ho,e string !");
+			return true;
+	}
+	RETURNERROR(false, "Unknwon special folder ID: %d", (unsigned int)id);
+}

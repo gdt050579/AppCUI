@@ -37,4 +37,8 @@ bool		FileSystem::DeleteFile(const char *name, bool failIfFileIsMissing)
 {
 	NOT_IMPLEMENTED(false);
 }
+bool         FileSystem::GetSpecialFolderName(SpecialFolder id, AppCUI::Utils::String& name)
+{
+	NOT_IMPLEMENTED(false);
+}
 

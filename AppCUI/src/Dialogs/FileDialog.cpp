@@ -58,7 +58,6 @@ bool FileDialogClass_Callback_EnumerateFiles(const char *fullPath, const char* N
 
 	return true;
 }
-//AppCUI::Controls::ListView *control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void *Context
 int	FileDialog_ListViewItemComparer(ListView *control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void *Context)
 {
 	unsigned long long v1 = control->GetItemData(item1)->UInt64Value;
@@ -145,7 +144,7 @@ void FileDialogClass::Validate()
 }
 void FileDialogClass::UpdateCurrentFolder()
 {
-	int x = (int)(comboDrive.GetCurrentItemUserData().UInt32Value);	
+	FileSystem::SpecialFolder id = (FileSystem::SpecialFolder)(comboDrive.GetCurrentItemUserData().UInt32Value);	
 	// update lbPath with the name of the selected special folder
 }
 void FileDialogClass::UpdateFileList()
@@ -220,16 +219,19 @@ int FileDialogClass::Show(bool open, const char *fileName, const char *ext, cons
 		wnd.Create("Open", "w:78,h:23,a:c");
 	else
 		wnd.Create("Save", "w:78,h:23,a:c");
-	wnd.CenterScreen();
 	wnd.SetEventHandler(FileDialog_EventHandler, this);
 	lbPath.Create(&wnd, "", "x:24,y:1,w:52");
 	lbDrive.Create(&wnd, "&D&rive", "x:2,y:1,w:8");
 	comboDrive.Create(&wnd, "x:8,y:1,w:14");
 	comboDrive.SetHotKey('D');
 	// populate combo box with special folders and available drivers
+	LocalString<32> tempStr;
 	for (auto specialFolderID : AppCUI::OS::FileSystem::AllSpecialFolders)
 	{
-		// check if that special folder exists and populate the comboBox with it
+		if (OS::FileSystem::GetSpecialFolderName(specialFolderID, tempStr))
+		{
+			comboDrive.AddItem(tempStr.GetText(), ItemData{ (unsigned int)specialFolderID });
+		}
 	}
 
 

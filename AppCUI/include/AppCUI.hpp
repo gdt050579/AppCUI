@@ -417,7 +417,6 @@ namespace AppCUI
             {
                 Home = 0,
                 Desktop,
-                UserFolder,
                 DriveA,
                 DriveB,
                 DriveC,
@@ -447,7 +446,7 @@ namespace AppCUI
             };
             constexpr std::initializer_list<SpecialFolder> AllSpecialFolders = 
             { 
-                            SpecialFolder::Home, SpecialFolder::Desktop, SpecialFolder::UserFolder,
+                            SpecialFolder::Home, SpecialFolder::Desktop, 
                             SpecialFolder::DriveA, SpecialFolder::DriveB, SpecialFolder::DriveC, SpecialFolder::DriveD, SpecialFolder::DriveE, SpecialFolder::DriveF,
                             SpecialFolder::DriveG, SpecialFolder::DriveH, SpecialFolder::DriveI, SpecialFolder::DriveJ, SpecialFolder::DriveK, SpecialFolder::DriveL,
                             SpecialFolder::DriveM, SpecialFolder::DriveN, SpecialFolder::DriveO, SpecialFolder::DriveP, SpecialFolder::DriveQ, SpecialFolder::DriveR,
@@ -467,6 +466,8 @@ namespace AppCUI
             EXPORT bool			GetCurrentDir(AppCUI::Utils::String &path);
             EXPORT bool			CreateFolder(const char *name);
             EXPORT bool			DeleteFile(const char *name, bool failIfFileIsMissing = false);
+
+            EXPORT bool         GetSpecialFolderName(SpecialFolder id, AppCUI::Utils::String& name);
 
             EXPORT bool         DeleteEmptyFoler(const char * name);
             EXPORT bool			DeleteFolder(AppCUI::Utils::String &name, bool failIfFileIsMissing = false, DeleteFileCallback callback = nullptr, void *Context = nullptr);
