@@ -4,7 +4,7 @@ using namespace AppCUI::OS::FileSystem;
 
 // temporary solution until we decide what to do with filesystem
 
-bool Path::IsRootPath(const char *path)
+bool Path::IsRootPath(const char* path)
 {
     CHECK(path != nullptr, false, "");
     int count = 0;
@@ -16,7 +16,7 @@ bool Path::IsRootPath(const char *path)
     }
     return (count <= 1);
 }
-bool Path::CopyDirectoryName(const char * path, AppCUI::Utils::String& result)
+bool Path::CopyDirectoryName(const char* path, AppCUI::Utils::String& result)
 {
     unsigned int poz = -1;
     CHECK(path, false, "Expecting a valid (non-null) path !");
@@ -27,12 +27,13 @@ bool Path::CopyDirectoryName(const char * path, AppCUI::Utils::String& result)
     {
         CHECK(result.Set(""), false, "No folder present !");
     }
-    else {
+    else
+    {
         CHECK(result.Set(path, poz + 1), false, "Fail to copy folder");
     }
     return true;
 }
-bool Path::Join(AppCUI::Utils::String& path, const char * name)
+bool Path::Join(AppCUI::Utils::String& path, const char* name)
 {
     if (!path.EndsWith("/"))
     {

@@ -6,8 +6,8 @@ using namespace AppCUI::Controls;
 
 class MyWin : public AppCUI::Controls::Window
 {
-public:
-    MyWin(const char * name, const char * layout)
+  public:
+    MyWin(const char* name, const char* layout)
     {
         this->Create(name, layout, WindowFlags::SIZEABLE);
     }

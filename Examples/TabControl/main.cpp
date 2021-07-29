@@ -6,10 +6,9 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
 
-#define CLOSE_BUTTON_ID     123456
-#define SHOW_TAB_BUTTON_ID  654321
-#define TAB_MODE_GROUP      101
-
+#define CLOSE_BUTTON_ID    123456
+#define SHOW_TAB_BUTTON_ID 654321
+#define TAB_MODE_GROUP     101
 
 class TabExampleWin : public AppCUI::Controls::Window
 {
@@ -22,7 +21,8 @@ class TabExampleWin : public AppCUI::Controls::Window
     Panel p_inf;
     Label inf;
     Button btnClose;
-public:
+
+  public:
     TabExampleWin(TabFlags flags)
     {
         Utils::LocalString<256> temp;
@@ -40,7 +40,7 @@ public:
         r1.Create(&pg1, "Option &1", "x:1,y:1,w:20", 100);
         r2.Create(&pg1, "Option &2", "x:1,y:2,w:20", 100);
         r3.Create(&pg1, "Option &3", "x:1,y:3,w:20", 100);
-        
+
         // second page
         pg2.Create(&tb, "&CheckBox");
         c1.Create(&pg2, "Enable flag &1", "x:1,y:1,w:20");
@@ -53,7 +53,6 @@ public:
         tx1.Create(&pg3, "some text ...", "x:17,y:1,w:20,h:5");
 
         tb.SetCurrentTabPage(0);
-
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
@@ -72,15 +71,16 @@ class MyWin : public AppCUI::Controls::Window
     RadioBox tabTop, tabBottom, tabLeft, tabList;
     CheckBox cbTransparent, cbTabBar;
     Button btnShow;
-public:
+
+  public:
     MyWin()
     {
         this->Create("Tab example config", "a:c,w:50,h:15");
         p.Create(this, "Tab mode", "x:1,y:1,w:46,h:6");
-        tabTop.Create   (&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
+        tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
-        tabLeft.Create  (&p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);
-        tabList.Create  (&p, "Lis&ts", "x:1,y:3,w:40", TAB_MODE_GROUP);
+        tabLeft.Create(&p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);
+        tabList.Create(&p, "Lis&ts", "x:1,y:3,w:40", TAB_MODE_GROUP);
         tabTop.SetChecked(true);
 
         cbTransparent.Create(this, "Transparent background for tab pages", "x:1,y:8,w:46");

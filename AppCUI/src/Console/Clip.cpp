@@ -2,11 +2,11 @@
 
 using namespace AppCUI::Console;
 
-Clip::Clip() 
+Clip::Clip()
 {
-	Reset();
+    Reset();
 }
-Clip::Clip(const Clip &parent, int x, int y, int width, int height)
+Clip::Clip(const Clip& parent, int x, int y, int width, int height)
 {
     Set(parent, x, y, width, height);
 }
@@ -18,7 +18,7 @@ void Clip::Reset()
 {
     ScreenPosition.X = ScreenPosition.Y = 0;
     ClipRect.Width = ClipRect.Height = ClipRect.X = ClipRect.Y = 0;
-	Visible = false;
+    Visible                                                    = false;
 }
 void Clip::Set(int x, int y, int width, int height)
 {
@@ -26,28 +26,31 @@ void Clip::Set(int x, int y, int width, int height)
     this->ScreenPosition.Y = y;
     if (x >= 0)
         this->ClipRect.X = x;
-    else {
+    else
+    {
         this->ClipRect.X = 0;
         width += x;
     }
     if (y >= 0)
         this->ClipRect.Y = y;
-    else {
+    else
+    {
         this->ClipRect.Y = 0;
         height += y;
     }
     if ((width > 0) && (height > 0))
     {
-        this->ClipRect.Width = width;
+        this->ClipRect.Width  = width;
         this->ClipRect.Height = height;
-        this->Visible = true;
+        this->Visible         = true;
     }
-    else {
+    else
+    {
         this->ClipRect.Width = this->ClipRect.Height = 0;
-        this->Visible = false;
+        this->Visible                                = false;
     }
 }
-void Clip::Set(const Clip &parent, int x, int y, int width, int height)
+void Clip::Set(const Clip& parent, int x, int y, int width, int height)
 {
     this->ScreenPosition.X = parent.ScreenPosition.X + x;
     this->ScreenPosition.Y = parent.ScreenPosition.Y + y;
@@ -60,7 +63,8 @@ void Clip::Set(const Clip &parent, int x, int y, int width, int height)
     {
         this->ClipRect.X = this->ScreenPosition.X;
     }
-    else {
+    else
+    {
         this->ClipRect.X = parent.ClipRect.X;
         width -= (parent.ClipRect.X - this->ScreenPosition.X);
     }
@@ -68,7 +72,8 @@ void Clip::Set(const Clip &parent, int x, int y, int width, int height)
     {
         this->ClipRect.Y = this->ScreenPosition.Y;
     }
-    else {
+    else
+    {
         this->ClipRect.Y = parent.ClipRect.Y;
         height -= (parent.ClipRect.Y - this->ScreenPosition.Y);
     }
@@ -78,19 +83,19 @@ void Clip::Set(const Clip &parent, int x, int y, int width, int height)
         int tmp = parent.ClipRect.X + parent.ClipRect.Width;
         if ((this->ClipRect.X + width) > tmp)
             width = tmp - this->ClipRect.X;
-        
+
         tmp = parent.ClipRect.Y + parent.ClipRect.Height;
         if ((this->ClipRect.Y + height) > tmp)
             height = tmp - this->ClipRect.Y;
         if ((width > 0) && (height > 0))
         {
-            this->ClipRect.Width = width;
+            this->ClipRect.Width  = width;
             this->ClipRect.Height = height;
-            this->Visible = true;
+            this->Visible         = true;
             return;
         }
     }
     // invalid clip
     this->ClipRect.Width = this->ClipRect.Height = 0;
-    this->Visible = false;
+    this->Visible                                = false;
 }

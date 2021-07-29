@@ -9,16 +9,19 @@ bool Clipboard::Clear()
     CloseClipboard();
     return true;
 }
-bool Clipboard::SetText(const char *text, unsigned int textSize)
+bool Clipboard::SetText(const char* text, unsigned int textSize)
 {
-	CHECK(text != nullptr, false, "Text should be different than nullptr !");
+    CHECK(text != nullptr, false, "Text should be different than nullptr !");
     if (textSize == 0xFFFFFFFF)
         textSize = Utils::String::Len(text);
     textSize++; // last NULL character
 
     HANDLE hMem;
-    CHECK((hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, textSize)), false, "Fail to allocate %d bytes in data memory to copy a string", textSize);
-    char *temp = (char *)GlobalLock(hMem);
+    CHECK((hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, textSize)),
+          false,
+          "Fail to allocate %d bytes in data memory to copy a string",
+          textSize);
+    char* temp = (char*) GlobalLock(hMem);
     if (temp)
     {
         memcpy(temp, text, textSize - 1);
@@ -39,17 +42,17 @@ bool Clipboard::SetText(const char *text, unsigned int textSize)
     CloseClipboard();
     return false;
 }
-bool Clipboard::SetText(const AppCUI::Utils::String &text)
+bool Clipboard::SetText(const AppCUI::Utils::String& text)
 {
-	return SetText(text.GetText(), text.Len());
+    return SetText(text.GetText(), text.Len());
 }
 
-bool Clipboard::GetText(AppCUI::Utils::String &text)
-{	
-    CHECK(OpenClipboard(nullptr), false, "Fail to open clipboard object !");    
+bool Clipboard::GetText(AppCUI::Utils::String& text)
+{
+    CHECK(OpenClipboard(nullptr), false, "Fail to open clipboard object !");
     while (true)
     {
-        const char *temp = (const char *)GetClipboardData(CF_TEXT);
+        const char* temp = (const char*) GetClipboardData(CF_TEXT);
         CHECKBK(temp, "Invalid object received from clipboard data (null)");
         CHECKBK(text.Set(temp), "Fail to copy text into String buffer !");
         CloseClipboard();

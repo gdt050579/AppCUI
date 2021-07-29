@@ -4,14 +4,15 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-#define RADIO_GROUP_ID_1   10 // any positive number will do as long as
-#define RADIO_GROUP_ID_2   22 // every group has differnt IDs
+#define RADIO_GROUP_ID_1 10 // any positive number will do as long as
+#define RADIO_GROUP_ID_2 22 // every group has differnt IDs
 
 class MyWin : public AppCUI::Controls::Window
 {
     RadioBox r1, r2, r3;
     RadioBox r4, r5, r6;
-public:
+
+  public:
     MyWin()
     {
         this->Create("Radiobox example", "a:c,w:60,h:8");

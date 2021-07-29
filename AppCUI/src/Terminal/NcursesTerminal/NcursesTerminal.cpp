@@ -9,7 +9,6 @@ using namespace AppCUI::Input;
 
 constexpr int KEY_DELETE = 0x7F;
 
-
 bool NcursesTerminal::OnInit(const InitializationData& initData)
 {
     return initScreen() && initInput();
@@ -48,47 +47,45 @@ bool NcursesTerminal::initInput()
     {
         // F(x) + shift => F(12) + x
         // If we press F1 + shift => it generates F13
-        KeyTranslationMatrix[KEY_F(i+1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
-        KeyTranslationMatrix[KEY_F(i+13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
+        KeyTranslationMatrix[KEY_F(i + 1)]  = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
+        KeyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
     }
 
     KeyTranslationMatrix[KEY_ENTER] = Key::Enter;
-    KeyTranslationMatrix[13] = Key::Enter;
-    KeyTranslationMatrix[10] = Key::Enter;
+    KeyTranslationMatrix[13]        = Key::Enter;
+    KeyTranslationMatrix[10]        = Key::Enter;
 
     KeyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
-    KeyTranslationMatrix[0x7F] = Key::Backspace;
+    KeyTranslationMatrix[0x7F]          = Key::Backspace;
 
-    
-    KeyTranslationMatrix[KEY_UP] = Key::Up;
+    KeyTranslationMatrix[KEY_UP]    = Key::Up;
     KeyTranslationMatrix[KEY_RIGHT] = Key::Right;
-    KeyTranslationMatrix[KEY_DOWN] = Key::Down;
-    KeyTranslationMatrix[KEY_LEFT] = Key::Left;
+    KeyTranslationMatrix[KEY_DOWN]  = Key::Down;
+    KeyTranslationMatrix[KEY_LEFT]  = Key::Left;
 
     KeyTranslationMatrix[KEY_PPAGE] = Key::PageUp;
     KeyTranslationMatrix[KEY_NPAGE] = Key::PageDown;
 
     KeyTranslationMatrix[KEY_HOME] = Key::Home;
-    KeyTranslationMatrix[KEY_END] = Key::End;
+    KeyTranslationMatrix[KEY_END]  = Key::End;
 
     // KeyTranslationMatrix[] = Key::Tab;
-    //KeyTranslationMatrix[KEY_ESCAPE] ? 
-    //KeyTranslationMatrix[KEY_INSERT] ? 
+    // KeyTranslationMatrix[KEY_ESCAPE] ?
+    // KeyTranslationMatrix[KEY_INSERT] ?
     // KeyTranslationMatrix[KEY_DELETE] = Key::Delete;
     return true;
 }
 
-
-void NcursesTerminal::handleMouse(SystemEvents::Event &evt, const int c)
+void NcursesTerminal::handleMouse(SystemEvents::Event& evt, const int c)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)
     {
-        evt.mouseX = mouseEvent.x;
-        evt.mouseY = mouseEvent.y;
-        const auto &state = mouseEvent.bstate;
-        
-        if (state & BUTTON1_PRESSED) 
+        evt.mouseX        = mouseEvent.x;
+        evt.mouseY        = mouseEvent.y;
+        const auto& state = mouseEvent.bstate;
+
+        if (state & BUTTON1_PRESSED)
         {
             evt.eventType = SystemEvents::MOUSE_DOWN;
         }
@@ -96,14 +93,14 @@ void NcursesTerminal::handleMouse(SystemEvents::Event &evt, const int c)
         {
             evt.eventType = SystemEvents::MOUSE_UP;
         }
-        else if (state & REPORT_MOUSE_POSITION) 
+        else if (state & REPORT_MOUSE_POSITION)
         {
             evt.eventType = SystemEvents::MOUSE_MOVE;
         }
-    }   
+    }
 }
 
-void NcursesTerminal::handleKey(SystemEvents::Event &evt, const int c)
+void NcursesTerminal::handleKey(SystemEvents::Event& evt, const int c)
 {
     // debugChar(0, c, "key");
     evt.eventType = SystemEvents::KEY_PRESSED;
@@ -128,37 +125,36 @@ void NcursesTerminal::handleKey(SystemEvents::Event &evt, const int c)
         {
             evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
         }
-        else if (c == ' ') 
+        else if (c == ' ')
         {
             evt.keyCode |= Key::Space;
         }
         return;
     }
-    else 
+    else
     {
-        //debugChar(0, c, "unsupported key: ");
+        // debugChar(0, c, "unsupported key: ");
         evt.eventType = SystemEvents::NONE;
         return;
     }
 }
 
-
-void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt)
+void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
 {
     evnt.eventType = SystemEvents::NONE;
-    evnt.keyCode = Key::None;
+    evnt.keyCode   = Key::None;
     evnt.asciiCode = 0;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;
-    readFD.fd = STDIN_FILENO;
+    readFD.fd     = STDIN_FILENO;
     readFD.events = POLLIN | POLLERR;
     // poll for 30 milliseconds
     poll(&readFD, 1, 30);
 
     int c = getch();
-    if (c == ERR) 
+    if (c == ERR)
     {
-        return;    
+        return;
     }
     else if (c == KEY_MOUSE)
     {
@@ -167,7 +163,7 @@ void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt
     }
     else if (c == KEY_RESIZE)
     {
-        // one day, but this day is not today 
+        // one day, but this day is not today
         // evnt.eventType = SystemEvents::APP_RESIZED;
         return;
     }
@@ -180,7 +176,7 @@ void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event &evnt
 }
 bool NcursesTerminal::IsEventAvailable()
 {
-	NOT_IMPLEMENTED(false);
+    NOT_IMPLEMENTED(false);
 }
 void NcursesTerminal::uninitInput()
 {
@@ -188,7 +184,6 @@ void NcursesTerminal::uninitInput()
 
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
-
 
 bool NcursesTerminal::initScreen()
 {
@@ -200,28 +195,36 @@ bool NcursesTerminal::initScreen()
 
     colors.Init();
 
-    size_t width = 0;
+    size_t width  = 0;
     size_t height = 0;
     getmaxyx(stdscr, height, width);
     CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
     // create canvases
-    CHECK(ScreenCanvas.Create(width, height), false, "Fail to create an internal canvas of %d x %d size", width, height);
-    CHECK(OriginalScreenCanvas.Create(width, height), false, "Fail to create the original screen canvas of %d x %d size", width, height);
-    
+    CHECK(ScreenCanvas.Create(width, height),
+          false,
+          "Fail to create an internal canvas of %d x %d size",
+          width,
+          height);
+    CHECK(OriginalScreenCanvas.Create(width, height),
+          false,
+          "Fail to create the original screen canvas of %d x %d size",
+          width,
+          height);
+
     return true;
 }
 
 void NcursesTerminal::OnFlushToScreen()
 {
     AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width = ScreenCanvas.GetWidth();
-    const size_t height = ScreenCanvas.GetHeight();
+    const size_t width                      = ScreenCanvas.GetWidth();
+    const size_t height                     = ScreenCanvas.GetHeight();
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
             const AppCUI::Console::Character ch = charsBuffer[y * width + x];
-            cchar_t t = {0, {ch.Code, 0}};
+            cchar_t t                           = { 0, { ch.Code, 0 } };
             colors.SetColor(ch.Color.Forenground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Forenground, ch.Color.Background);
@@ -245,7 +248,7 @@ bool NcursesTerminal::OnUpdateCursor()
     return true;
 }
 void NcursesTerminal::RestoreOriginalConsoleSettings()
-{    
+{
 }
 
 void NcursesTerminal::uninitScreen()

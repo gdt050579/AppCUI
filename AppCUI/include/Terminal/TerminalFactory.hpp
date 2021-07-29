@@ -5,10 +5,10 @@
 
 namespace AppCUI
 {
-    namespace Internal
-    {
-        std::unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData);
-    }
+namespace Internal
+{
+    std::unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData);
 }
+} // namespace AppCUI
 
 #endif // _TERMINAL_FACTORY_INCLUDED_

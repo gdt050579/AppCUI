@@ -12,10 +12,11 @@ class MyWin : public AppCUI::Controls::Window
     Panel pleft, pright, pbottom;
     Splitter s;
     Splitter s2;
-public:
-    MyWin() 
+
+  public:
+    MyWin()
     {
-        this->Create("Splitter example", "a:c,w:60,h:10",  WindowFlags::SIZEABLE);
+        this->Create("Splitter example", "a:c,w:60,h:10", WindowFlags::SIZEABLE);
         s2.Create(this, "x:0,y:0,w:100%,h:100%", false);
         s.Create(&s2, "x:0,y:0,w:100%,h:100%", true);
         s2.SetSecondPanelSize(2);

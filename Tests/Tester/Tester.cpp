@@ -6,7 +6,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
 #ifdef BUILD_FOR_WINDOWS
-#include "Windows.h"
+#    include "Windows.h"
 #endif // BUILD_FOR_WINDOWS
 
 class MyWin : public AppCUI::Controls::Window
@@ -18,10 +18,11 @@ class MyWin : public AppCUI::Controls::Window
     Panel pleft, pright, pbottom;
     Splitter s;
     Splitter s2;
-public:
-    MyWin() 
+
+  public:
+    MyWin()
     {
-        this->Create("Test", "a:c,w:50%,h:50%",  WindowFlags::SIZEABLE);
+        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::SIZEABLE);
         s2.Create(this, "x:0,y:0,w:100%,h:100%", false);
         s.Create(&s2, "x:0,y:0,w:100%,h:100%", true);
         pleft.Create(&s, "x:0,y:0,w:100%,h:100%");
@@ -49,19 +50,19 @@ public:
         }
         return false;
     }
-    bool OnUpdateCommandBar(CommandBar & cmdBar) override
+    bool OnUpdateCommandBar(CommandBar& cmdBar) override
     {
         cmdBar.SetCommand(Input::Key::F1, "Run", 100);
         cmdBar.SetCommand(Input::Key::F2, "Debug", 100);
-        cmdBar.SetCommand(Input::Key::F3|Input::Key::Alt, "Run as admin", 100);
+        cmdBar.SetCommand(Input::Key::F3 | Input::Key::Alt, "Run as admin", 100);
         return true;
     }
-
 };
 class MyWin2 : public AppCUI::Controls::Window
 {
     TextField tx1;
-public:
+
+  public:
     MyWin2()
     {
         this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::NONE);
