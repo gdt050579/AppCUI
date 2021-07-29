@@ -221,7 +221,7 @@ int FileDialogClass::Show(bool open, const char *fileName, const char *ext, cons
 		wnd.Create("Save", "w:78,h:23,a:c");
 	wnd.SetEventHandler(FileDialog_EventHandler, this);
 	lbPath.Create(&wnd, "", "x:24,y:1,w:52");
-	lbDrive.Create(&wnd, "&D&rive", "x:2,y:1,w:8");
+	lbDrive.Create(&wnd, "&Drive", "x:2,y:1,w:8");
 	comboDrive.Create(&wnd, "x:8,y:1,w:14");
 	comboDrive.SetHotKey('D');
 	// populate combo box with special folders and available drivers
@@ -236,19 +236,19 @@ int FileDialogClass::Show(bool open, const char *fileName, const char *ext, cons
 
 
 	comboDrive.SetCurentItemIndex(0);	
-	files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::NONE);
-	files.AddColumn("&N&ame", TextAlignament::Left, 53);
-	files.AddColumn("&S&ize", TextAlignament::Right, 16);
+	files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::SORTABLE);
+	files.AddColumn("&Name", TextAlignament::Left, 53);
+	files.AddColumn("&Size", TextAlignament::Right, 16);
 	files.SetItemCompareFunction(FileDialog_ListViewItemComparer, this);
 
-	lbName.Create(&wnd,"File &N&ame","x:2,y:17,w:10");
+	lbName.Create(&wnd,"File &Name","x:2,y:17,w:10");
 	txName.Create(&wnd, fileName, "x:13,y:17,w:47"); txName.SetHotKey('N');
-	lbExt.Create(&wnd, "File &M&ask", "x:2,y:19,w:10");
+	lbExt.Create(&wnd, "File &Mask", "x:2,y:19,w:10");
 	txExt.Create(&wnd, ext, "x:13,y:19,w:47", TextFieldFlags::PROCESS_ENTER); txExt.SetHotKey('M');
 
 
-	btnOK.Create(&wnd,"&O&k","x:62,y:17,w:13",(int)Dialogs::Result::Ok);
-	btnCancel.Create(&wnd,"&C&ancel","x:62,y:19,h:13", (int)Dialogs::Result::Cancel);
+	btnOK.Create(&wnd,"&Ok","x:62,y:17,w:13",(int)Dialogs::Result::Ok);
+	btnCancel.Create(&wnd,"&Cancel","x:62,y:19,w:13", (int)Dialogs::Result::Cancel);
 	if ((_path == nullptr) || (Utils::String::Len(_path) == 0))
 		UpdateCurrentFolder();
 	else
