@@ -415,43 +415,13 @@ namespace AppCUI
         {
             enum class SpecialFolder : unsigned int
             {
-                Home = 0,
-                Desktop,
-                DriveA,
-                DriveB,
-                DriveC,
-                DriveD,
-                DriveE,
-                DriveF,
-                DriveG,
-                DriveH,
-                DriveI,
-                DriveJ,
-                DriveK,
-                DriveL,
-                DriveM,
-                DriveN,
-                DriveO,
-                DriveP,
-                DriveQ,
-                DriveR,
-                DriveS,
-                DriveT,
-                DriveU,
-                DriveV,
-                DriveW,
-                DriveX,
-                DriveY,
-                DriveZ,
+#define SPECIAL_FOLDER(name) name,
+#include "Special.def"
             };
             constexpr std::initializer_list<SpecialFolder> AllSpecialFolders = 
             { 
-                            SpecialFolder::Home, SpecialFolder::Desktop, 
-                            SpecialFolder::DriveA, SpecialFolder::DriveB, SpecialFolder::DriveC, SpecialFolder::DriveD, SpecialFolder::DriveE, SpecialFolder::DriveF,
-                            SpecialFolder::DriveG, SpecialFolder::DriveH, SpecialFolder::DriveI, SpecialFolder::DriveJ, SpecialFolder::DriveK, SpecialFolder::DriveL,
-                            SpecialFolder::DriveM, SpecialFolder::DriveN, SpecialFolder::DriveO, SpecialFolder::DriveP, SpecialFolder::DriveQ, SpecialFolder::DriveR,
-                            SpecialFolder::DriveS, SpecialFolder::DriveT, SpecialFolder::DriveU, SpecialFolder::DriveV, SpecialFolder::DriveW, SpecialFolder::DriveX,
-                            SpecialFolder::DriveY, SpecialFolder::DriveZ, 
+#define SPECIAL_FOLDER(name) SpecialFolder::name,
+#include "Special.def"
             };
             namespace Path
             {
