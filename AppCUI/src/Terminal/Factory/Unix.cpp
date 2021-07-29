@@ -3,20 +3,20 @@
 using namespace AppCUI::Internal;
 
 #ifdef HAVE_SDL
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#    include "Terminal/SDLTerminal/SDLTerminal.hpp"
 constexpr bool have_sdl = true;
 #else
 constexpr bool have_sdl = false;
 #endif
 
 #ifdef HAVE_CURSES
-#include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
+#    include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
 constexpr bool have_curses = true;
 #else
 constexpr bool have_curses = false;
 #endif
 
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData &initData)
+std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
 {
     std::unique_ptr<AbstractTerminal> term = nullptr;
 
@@ -39,8 +39,10 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         }
         else
         {
-            RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2",
-                        (unsigned int)initData.FrontEnd);
+            RETURNERROR(
+                  nullptr,
+                  "Unsuported terminal type for UNIX OS (%d): Please install SDL2",
+                  (unsigned int) initData.FrontEnd);
         }
         break;
     case TerminalType::Terminal:
@@ -50,12 +52,14 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         }
         else
         {
-            RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses",
-                        (unsigned int)initData.FrontEnd);
+            RETURNERROR(
+                  nullptr,
+                  "Unsuported terminal type for UNIX OS (%d): Please install ncurses",
+                  (unsigned int) initData.FrontEnd);
         }
         break;
     default:
-        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (unsigned int)initData.FrontEnd);
+        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (unsigned int) initData.FrontEnd);
     }
 
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");

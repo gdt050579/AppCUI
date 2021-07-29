@@ -5,24 +5,29 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 
-
-#define BUTTON_COMPUTE_ODD     5678
-#define BUTTON_COMPUTE_PRIME   5679
+#define BUTTON_COMPUTE_ODD   5678
+#define BUTTON_COMPUTE_PRIME 5679
 
 class MyWin : public AppCUI::Controls::Window
 {
     Button but_odd, but_prime;
     Label inf_odd, inf_prime;
-public:
+
+  public:
     MyWin()
     {
         this->Create("Progress status", "a:c,w:70,h:9");
         but_odd.Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
-        inf_odd.Create(this, "Compute how many odd numbers are between\n1 and 100.000 in a verry inneficient way ...", "x:1,y:1,w:50,h:2");
+        inf_odd.Create(
+              this,
+              "Compute how many odd numbers are between\n1 and 100.000 in a verry inneficient way ...",
+              "x:1,y:1,w:50,h:2");
 
         but_prime.Create(this, "Compute", "r:1,t:4,w:14", BUTTON_COMPUTE_PRIME);
-        inf_prime.Create(this, "Compute the 10000 prime number using a slow method\n(check if there are no divisors)", "x:1,y:4,w:50,h:2");
-
+        inf_prime.Create(
+              this,
+              "Compute the 10000 prime number using a slow method\n(check if there are no divisors)",
+              "x:1,y:4,w:50,h:2");
     }
     bool IsPrime(unsigned long long value)
     {
@@ -33,12 +38,13 @@ public:
     }
     bool IsOdd(unsigned long long value)
     {
-        // very slow check to pass some time (instead of checking module % 2 we will convert to binary and check if the last bit is 0)
+        // very slow check to pass some time (instead of checking module % 2 we will convert to binary and check if the
+        // last bit is 0)
         unsigned int bits[64];
         for (unsigned int tr = 0; tr < 64; tr++)
         {
             bits[tr] = value & 1;
-            value = value >> 1;
+            value    = value >> 1;
         }
         return bits[0] == 0;
     }
@@ -53,8 +59,9 @@ public:
 
         while (value < 100000)
         {
-            if (IsOdd(value)) {
-                tmp.Format("Found so far %d odd numbers", (unsigned int)count);
+            if (IsOdd(value))
+            {
+                tmp.Format("Found so far %d odd numbers", (unsigned int) count);
                 count++;
             }
             value++;
@@ -75,8 +82,10 @@ public:
 
         while (count < 10000)
         {
-            if (IsPrime(value)) {
-                tmp.Format("Found %d prime numbers (now testing value: %d)", (unsigned int)count, (unsigned int)value);
+            if (IsPrime(value))
+            {
+                tmp.Format(
+                      "Found %d prime numbers (now testing value: %d)", (unsigned int) count, (unsigned int) value);
                 count++;
             }
             value++;
@@ -97,8 +106,12 @@ public:
         {
             switch (controlID)
             {
-                case BUTTON_COMPUTE_ODD: Compute_odd(); break;
-                case BUTTON_COMPUTE_PRIME: Compute_prime(); break;
+            case BUTTON_COMPUTE_ODD:
+                Compute_odd();
+                break;
+            case BUTTON_COMPUTE_PRIME:
+                Compute_prime();
+                break;
             }
             return true;
         }

@@ -14,7 +14,8 @@ using namespace AppCUI::Dialogs;
 class MyWin : public AppCUI::Controls::Window
 {
     Button b1, b2, b3, b4, b5;
-public:
+
+  public:
     MyWin()
     {
         this->Create("Message box example", "a:c,w:40,h:13");
@@ -35,11 +36,21 @@ public:
         {
             switch (controlID)
             {
-            case BUTTON_ID_SHOW_ERROR: MessageBox::ShowError("Error", "This is an error message example !"); break;
-            case BUTTON_ID_SHOW_NOTIFICATION: MessageBox::ShowNotification("Notification", "This is a notification message example !"); break;
-            case BUTTON_ID_SHOW_QUESTION: MessageBox::ShowOkCancel("Question", "Are you ok with this ?"); break;
-            case BUTTON_ID_SHOW_YNC_QUESTION: MessageBox::ShowYesNoCancel("Question", "Are you ok with this ?"); break;
-            case BUTTON_ID_SHOW_WARNING: MessageBox::ShowWarning("Warning", "This is a warning message example !"); break;
+            case BUTTON_ID_SHOW_ERROR:
+                MessageBox::ShowError("Error", "This is an error message example !");
+                break;
+            case BUTTON_ID_SHOW_NOTIFICATION:
+                MessageBox::ShowNotification("Notification", "This is a notification message example !");
+                break;
+            case BUTTON_ID_SHOW_QUESTION:
+                MessageBox::ShowOkCancel("Question", "Are you ok with this ?");
+                break;
+            case BUTTON_ID_SHOW_YNC_QUESTION:
+                MessageBox::ShowYesNoCancel("Question", "Are you ok with this ?");
+                break;
+            case BUTTON_ID_SHOW_WARNING:
+                MessageBox::ShowWarning("Warning", "This is a warning message example !");
+                break;
             }
             return true;
         }

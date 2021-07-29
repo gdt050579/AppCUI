@@ -8,22 +8,12 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
 
-const char * AppCuiLogo[15] = {
-    "............................",
-    "..XXXXX}..XXXXXX}..XXXXXX}..",
-    ".XX{--XX}.XX{--XX}.XX{--XX}.",
-    ".XXXXXXX|.XXXXXX{].XXXXXX{].",
-    ".XX{--XX|.XX{---]..XX{---]..",
-    ".XX|..XX|.XX|......XX|......",
-    ".[-]..[-].[-]......[-]......",
-    "............................",
-    "....XXXXX}..XX}...XX}.XX}...",
-    "...XX{--XX}.XX|...XX|.XX|...",
-    "...XX|..[-].XX|...XX|.XX|...",
-    "...XX|..XX}.XX|...XX|.XX|...",
-    "...[XXXXX{].[XXXXXX{].XX|...",
-    "....[----]...[-----]..[-]...",
-    "............................",
+const char* AppCuiLogo[15] = {
+    "............................", "..XXXXX}..XXXXXX}..XXXXXX}..", ".XX{--XX}.XX{--XX}.XX{--XX}.",
+    ".XXXXXXX|.XXXXXX{].XXXXXX{].", ".XX{--XX|.XX{---]..XX{---]..", ".XX|..XX|.XX|......XX|......",
+    ".[-]..[-].[-]......[-]......", "............................", "....XXXXX}..XX}...XX}.XX}...",
+    "...XX{--XX}.XX|...XX|.XX|...", "...XX|..[-].XX|...XX|.XX|...", "...XX|..XX}.XX|...XX|.XX|...",
+    "...[XXXXX{].[XXXXXX{].XX|...", "....[----]...[-----]..[-]...", "............................",
 };
 
 class LogoWin : public AppCUI::Controls::Window
@@ -32,9 +22,10 @@ class LogoWin : public AppCUI::Controls::Window
     Splitter sp;
     Panel pn;
 
-    void CreateImage(Canvas * c)
+    void CreateImage(Canvas* c)
     {
-        if (!c) return;
+        if (!c)
+            return;
         for (int y = 0; y < 15; y++)
         {
             for (int x = 0; AppCuiLogo[y][x]; x++)
@@ -43,32 +34,55 @@ class LogoWin : public AppCUI::Controls::Window
                 ColorPair col;
                 switch (AppCuiLogo[y][x])
                 {
-                    case 'X': sc = SpecialChars::Block100; 
-                            if (y<7)
-                                col = ColorPair{ Color::Aqua,Color::Black };  
-                            else if (y<11)
-                                col = ColorPair{ Color::Green,Color::Black };
-                            else
-                                col = ColorPair{ Color::DarkGreen,Color::Black };
-                            break;
-                    case '.': sc = SpecialChars::Block75; col = ColorPair{ Color::DarkBlue,Color::Gray }; break;
-                    case '|': sc = SpecialChars::BoxVerticalSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
-                    case '-': sc = SpecialChars::BoxHorizontalSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
-                    case '{': sc = SpecialChars::BoxTopLeftCornerSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
-                    case '}': sc = SpecialChars::BoxTopRightCornerSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
-                    case '[': sc = SpecialChars::BoxBottomLeftCornerSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
-                    case ']': sc = SpecialChars::BoxBottomRightCornerSingleLine; col = ColorPair{ Color::DarkRed,Color::Black }; break;
+                case 'X':
+                    sc = SpecialChars::Block100;
+                    if (y < 7)
+                        col = ColorPair{ Color::Aqua, Color::Black };
+                    else if (y < 11)
+                        col = ColorPair{ Color::Green, Color::Black };
+                    else
+                        col = ColorPair{ Color::DarkGreen, Color::Black };
+                    break;
+                case '.':
+                    sc  = SpecialChars::Block75;
+                    col = ColorPair{ Color::DarkBlue, Color::Gray };
+                    break;
+                case '|':
+                    sc  = SpecialChars::BoxVerticalSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
+                case '-':
+                    sc  = SpecialChars::BoxHorizontalSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
+                case '{':
+                    sc  = SpecialChars::BoxTopLeftCornerSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
+                case '}':
+                    sc  = SpecialChars::BoxTopRightCornerSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
+                case '[':
+                    sc  = SpecialChars::BoxBottomLeftCornerSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
+                case ']':
+                    sc  = SpecialChars::BoxBottomRightCornerSingleLine;
+                    col = ColorPair{ Color::DarkRed, Color::Black };
+                    break;
                 }
                 c->WriteSpecialCharacter(x, y, sc, col);
             }
         }
     }
-public:
+
+  public:
     LogoWin()
     {
         this->Create("Canvas example", "a:c,w:80,h:22");
         sp.Create(this, "x:0,y:0,w:100%,h:100%", true);
-        viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%",28,15);
+        viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 
         pn.Create(&sp, "x:0,y:0,w:100%,h:100%");
         viewInactive.Create(&pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);

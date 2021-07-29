@@ -6,9 +6,9 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
 
-void HighlightNumberAndCapitalLetters(Control * tx, Console::Character * chars, unsigned int charsCount, void* Context)
+void HighlightNumberAndCapitalLetters(Control* tx, Console::Character* chars, unsigned int charsCount, void* Context)
 {
-    Console::Character * end = chars + charsCount;
+    Console::Character* end = chars + charsCount;
     while (chars < end)
     {
         if ((chars->Code >= '0') && (chars->Code <= '9'))
@@ -26,7 +26,7 @@ class MyWin : public AppCUI::Controls::Window
     Label l1, l2, l3, l4, l5;
     TextField t1, t2, t3, t4, t5;
 
-public:
+  public:
     MyWin()
     {
         this->Create("Text Field Example", "a:c,w:70,h:20");
@@ -47,7 +47,12 @@ public:
         t4.SetHotKey('M');
 
         l5.Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
-        t5.Create(this, "Capital Letters and numbers (12345)", "x:19,y:11,w:48", TextFieldFlags::SYNTAX_HIGHLIGHTING, HighlightNumberAndCapitalLetters);
+        t5.Create(
+              this,
+              "Capital Letters and numbers (12345)",
+              "x:19,y:11,w:48",
+              TextFieldFlags::SYNTAX_HIGHLIGHTING,
+              HighlightNumberAndCapitalLetters);
         t5.SetHotKey('H');
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override

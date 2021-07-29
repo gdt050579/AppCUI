@@ -6,9 +6,9 @@ using namespace AppCUI::Console;
 AbstractTerminal::AbstractTerminal()
 {
     this->LastCursorVisibility = false;
-    this->LastCursorX = 0xFFFFFFFF;
-    this->LastCursorY = 0xFFFFFFFF;
-    this->Inited = false;
+    this->LastCursorX          = 0xFFFFFFFF;
+    this->LastCursorY          = 0xFFFFFFFF;
+    this->Inited               = false;
 }
 AbstractTerminal::~AbstractTerminal()
 {
@@ -19,7 +19,7 @@ bool AbstractTerminal::Init(const InitializationData& initData)
     return this->OnInit(initData);
 }
 void AbstractTerminal::Uninit()
-{    
+{
     // restore the original screen settings before AppCUI was initialized
     this->RestoreOriginalConsoleSettings();
     // clear up current buffer
@@ -41,7 +41,7 @@ void AbstractTerminal::Uninit()
 void AbstractTerminal::Update()
 {
     this->OnFlushToScreen();
-    
+
     if ((this->ScreenCanvas.GetCursorVisibility() != this->LastCursorVisibility) ||
         (this->ScreenCanvas.GetCursorX() != this->LastCursorX) ||
         (this->ScreenCanvas.GetCursorY() != this->LastCursorY))
@@ -49,11 +49,9 @@ void AbstractTerminal::Update()
         if (this->OnUpdateCursor())
         {
             // update last cursor information
-            this->LastCursorX = this->ScreenCanvas.GetCursorX();
-            this->LastCursorY = this->ScreenCanvas.GetCursorY();
+            this->LastCursorX          = this->ScreenCanvas.GetCursorX();
+            this->LastCursorY          = this->ScreenCanvas.GetCursorY();
             this->LastCursorVisibility = this->ScreenCanvas.GetCursorVisibility();
         }
     }
 }
-
-

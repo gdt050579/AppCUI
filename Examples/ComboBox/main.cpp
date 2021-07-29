@@ -4,12 +4,12 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-
 class MyWin : public AppCUI::Controls::Window
 {
     ComboBox cb1, cb2, cb3;
     Label inf, col, inf2, inf3;
-public:
+
+  public:
     MyWin()
     {
         this->Create("ComboBox example", "a:c,w:60,h:11");

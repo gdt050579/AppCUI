@@ -7,39 +7,44 @@
 using namespace AppCUI;
 using namespace AppCUI::Utils;
 
-#define CRITICAL_ERROR_STACK_BUFFER_SIZE	0x10000
-#define EXIT_IF_ERROR(condition) if (!(condition)) return false;
-#define CHECK_INTERNAL_CONDITION(condition,errorDescription) \
-    if (!(condition)) { \
-    String::Set(Text, errorDescription, CRITICAL_ERROR_STACK_BUFFER_SIZE); \
-    msg.Type = Severity::InternalError; \
-    break; \
-}
+#define CRITICAL_ERROR_STACK_BUFFER_SIZE 0x10000
+#define EXIT_IF_ERROR(condition)                                                                                       \
+    if (!(condition))                                                                                                  \
+        return false;
+#define CHECK_INTERNAL_CONDITION(condition, errorDescription)                                                          \
+    if (!(condition))                                                                                                  \
+    {                                                                                                                  \
+        String::Set(Text, errorDescription, CRITICAL_ERROR_STACK_BUFFER_SIZE);                                         \
+        msg.Type = Severity::InternalError;                                                                            \
+        break;                                                                                                         \
+    }
 
-void (*fnMessageLogCallbak)     (const Log::Message& msg)   = nullptr;
-AppCUI::OS::File* logFile = nullptr;
+void (*fnMessageLogCallbak)(const Log::Message& msg) = nullptr;
+AppCUI::OS::File* logFile                            = nullptr;
 
-const char * _severity_type_names_[4] = {
-    "[Information] ",
-    "[  Warning  ] ",
-    "[   Eror    ] ",
-    "[InternalErr] "
-};
+const char* _severity_type_names_[4] = { "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] " };
 
-bool _LogMessage_to_String_(const Log::Message& msg, String &str, bool multiLine, bool addNewLineTerminator)
+bool _LogMessage_to_String_(const Log::Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
 {
-    EXIT_IF_ERROR(str.Set(_severity_type_names_[(unsigned int)msg.Type]));
+    EXIT_IF_ERROR(str.Set(_severity_type_names_[(unsigned int) msg.Type]));
     EXIT_IF_ERROR(str.Add(msg.Content));
     if (msg.Type != Log::Severity::Information)
     {
-        if (multiLine) 
+        if (multiLine)
         {
             EXIT_IF_ERROR(str.AddFormat("\n              => File        : %s", msg.FileName));
             EXIT_IF_ERROR(str.AddFormat("\n              => Function    : %s", msg.Function));
             EXIT_IF_ERROR(str.AddFormat("\n              => Line number : %d", msg.LineNumber));
             EXIT_IF_ERROR(str.AddFormat("\n              => Condition   : %s", msg.Condition));
-        } else {
-            EXIT_IF_ERROR(str.AddFormat(" => File:%s , Function:%s , Line:%d, Condition:%s", msg.FileName, msg.Function,msg.LineNumber,msg.Condition ));
+        }
+        else
+        {
+            EXIT_IF_ERROR(str.AddFormat(
+                  " => File:%s , Function:%s , Line:%d, Condition:%s",
+                  msg.FileName,
+                  msg.Function,
+                  msg.LineNumber,
+                  msg.Condition));
         }
     }
     if (addNewLineTerminator)
@@ -49,22 +54,29 @@ bool _LogMessage_to_String_(const Log::Message& msg, String &str, bool multiLine
     return true;
 }
 
-void Log::Report(Log::Severity severity, const char* fileName,const char *function, const char *condition, int line, const char *format, ...)
+void Log::Report(
+      Log::Severity severity,
+      const char* fileName,
+      const char* function,
+      const char* condition,
+      int line,
+      const char* format,
+      ...)
 {
-	va_list 		args;
-	int     		len,len2;
-	char			Text[CRITICAL_ERROR_STACK_BUFFER_SIZE];
-    Log::Message    msg;
+    va_list args;
+    int len, len2;
+    char Text[CRITICAL_ERROR_STACK_BUFFER_SIZE];
+    Log::Message msg;
 
-	if (fnMessageLogCallbak == nullptr)
-		return;
+    if (fnMessageLogCallbak == nullptr)
+        return;
     // fill up Message structure
-    msg.Type = severity;
-    msg.Condition = condition;
-    msg.FileName = fileName;
-    msg.Function = function;
+    msg.Type       = severity;
+    msg.Condition  = condition;
+    msg.FileName   = fileName;
+    msg.Function   = function;
     msg.LineNumber = line;
-    msg.Content = Text;
+    msg.Content    = Text;
 
     // fill up the content
     while (true)
@@ -73,8 +85,10 @@ void Log::Report(Log::Severity severity, const char* fileName,const char *functi
         va_start(args, format);
         len = vsnprintf(nullptr, 0, format, args);
         va_end(args);
-        CHECK_INTERNAL_CONDITION(len>=0, "'vsnprinf' has returned an invalid value !");
-        CHECK_INTERNAL_CONDITION(len < CRITICAL_ERROR_STACK_BUFFER_SIZE - 2, "Formatting buffer size is too large (max accepted is 0x10000 bytes)");
+        CHECK_INTERNAL_CONDITION(len >= 0, "'vsnprinf' has returned an invalid value !");
+        CHECK_INTERNAL_CONDITION(
+              len < CRITICAL_ERROR_STACK_BUFFER_SIZE - 2,
+              "Formatting buffer size is too large (max accepted is 0x10000 bytes)");
         va_start(args, format);
         len2 = vsnprintf(Text, CRITICAL_ERROR_STACK_BUFFER_SIZE - 2, format, args);
         va_end(args);
@@ -85,15 +99,12 @@ void Log::Report(Log::Severity severity, const char* fileName,const char *functi
     fnMessageLogCallbak(msg);
 }
 
-
-
-void Log::SetLogCallback(void(*callback)(const Message &))
+void Log::SetLogCallback(void (*callback)(const Message&))
 {
     fnMessageLogCallbak = callback;
 }
 
-
-void _write_to_file_callback_(const AppCUI::Log::Message & msg)
+void _write_to_file_callback_(const AppCUI::Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if ((_LogMessage_to_String_(msg, tmpString, true, true)) && (logFile))
@@ -101,12 +112,12 @@ void _write_to_file_callback_(const AppCUI::Log::Message & msg)
         logFile->Write(tmpString.GetText(), tmpString.Len());
     }
 }
-bool Log::ToFile(const char * fileName)
+bool Log::ToFile(const char* fileName)
 {
     if (logFile == nullptr)
     {
         if ((logFile = new AppCUI::OS::File()) == nullptr)
-            return false; // fail to allocate memory for File object        
+            return false; // fail to allocate memory for File object
     }
     if (logFile->Create(fileName, true) == false)
     {
@@ -120,7 +131,7 @@ bool Log::ToFile(const char * fileName)
 }
 
 #ifdef OutputDebugString
-void _write_to_OutDebugString_(const AppCUI::Log::Message & msg)
+void _write_to_OutDebugString_(const AppCUI::Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, false, true))
@@ -138,7 +149,7 @@ bool Log::ToOutputDebugString()
     return false; // not on Windows
 }
 
-void _write_to_stderr_callback_(const AppCUI::Log::Message & msg)
+void _write_to_stderr_callback_(const AppCUI::Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, true, true))
