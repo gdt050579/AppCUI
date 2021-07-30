@@ -6,7 +6,7 @@ using namespace AppCUI::Internal;
 #    include "Terminal/SDLTerminal/SDLTerminal.hpp"
 constexpr bool have_sdl = true;
 #else
-constexpr bool have_sdl = false;
+constexpr bool have_sdl    = false;
 #endif
 
 #ifdef HAVE_CURSES
@@ -23,15 +23,6 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
     switch (initData.FrontEnd)
     {
     case TerminalType::Default:
-        if (have_sdl)
-        {
-            term = std::make_unique<SDLTerminal>();
-        }
-        if (!term && have_curses)
-        {
-            term = std::make_unique<NcursesTerminal>();
-        }
-        break;
     case TerminalType::SDL:
         if (have_sdl)
         {
