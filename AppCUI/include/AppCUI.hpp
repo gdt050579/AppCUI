@@ -5,6 +5,7 @@
 #include <string_view>
 #include <optional>
 #include <memory>
+#include <filesystem>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #    ifdef BUILD_FOR_WINDOWS

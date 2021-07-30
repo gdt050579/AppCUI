@@ -8,9 +8,8 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
 static AppCUI::Utils::String __tmpFDString;
-class FileDialogClass
+struct FileDialogClass
 {
-  public:
     Controls::Window wnd;
     Controls::Label lbPath, lbDrive, lbName, lbExt;
     Controls::ComboBox comboDrive;
@@ -28,40 +27,31 @@ class FileDialogClass
     void OnClickedOnItem();
     void OnCurrentItemChanged();
 };
-bool FileDialogClass_Callback_EnumerateFiles(
-      const char* fullPath, const char* Name, unsigned long long size, bool Folder, void* Context)
+
+void ConvertSizeToString(unsigned long long size, char result[32])
 {
-    if ((fullPath == nullptr) || (Name == nullptr))
-        return true;
-    FileDialogClass* dlg = (FileDialogClass*) Context;
-    // check if path matches the regular expression provided
-    if (!Folder)
+    result[31] = 0;
+    int poz    = 30;
+    int cnt    = 0;
+    do
     {
-        // Utils::String s;
-        // s.Create(Name);
-        // if (s.MatchSimple(dlg->txExt.GetText(), true) == false)
-        //	return true;
-    }
-
-    LocalString<64> s;
-    if (Folder)
-        s.Set("Folder");
-    else
-        s.SetFormat("%lld", size);
-    int itemID = dlg->files.AddItem(Name, s.GetText());
-    if (Folder)
+        result[poz--] = (size % 10) + '0';
+        cnt++;
+        size = size / 10;
+        if ((cnt == 3) && (poz > 0) && (size>0))
+        {
+            result[poz--] = ',';
+            cnt           = 0;
+        }
+        
+    } while ((size > 0) && (poz > 0));
+    while (poz >= 0)
     {
-        dlg->files.SetItemColor(itemID, ColorPair{ Color::White, Color::Transparent });
-        dlg->files.SetItemData(itemID, ItemData{ 1 });
+        result[poz--] = ' ';
     }
-    else
-    {
-        dlg->files.SetItemColor(itemID, ColorPair{ Color::Gray, Color::Transparent });
-        dlg->files.SetItemData(itemID, ItemData{ 2 });
-    }
-
-    return true;
 }
+
+
 int FileDialog_ListViewItemComparer(
       ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
 {
@@ -154,18 +144,38 @@ void FileDialogClass::UpdateCurrentFolder()
 {
     FileSystem::SpecialFolder id = (FileSystem::SpecialFolder)(comboDrive.GetCurrentItemUserData().UInt32Value);
     // update lbPath with the name of the selected special folder
+
 }
 void FileDialogClass::UpdateFileList()
 {
-    if (lbPath.GetText(__tmpFDString) == false)
-        return;
+    //if (lbPath.GetText(__tmpFDString) == false)
+    //    return;
     files.DeleteAllItems();
-    if (FileSystem::Path::IsRootPath(__tmpFDString) == false)
+    //if (FileSystem::Path::IsRootPath(__tmpFDString) == false)
+    //{
+    //    files.AddItem("..", "UP-DIR");
+    //    files.SetItemData(0, 0);
+    //}
+    char size[32];
+    ItemHandle itemHandle;
+    for (const auto& fileEntry : std::filesystem::directory_iterator("E:\\Temp-docs"))
     {
-        files.AddItem("..", "UP-DIR");
-        files.SetItemData(0, 0);
+        if (fileEntry.is_directory())
+            Utils::String::Set(size, "Folder", 32, 6);
+        else
+            ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+        itemHandle = this->files.AddItem((const char *)fileEntry.path().filename().u8string().c_str(), size);
+        if (fileEntry.is_directory())
+        {
+            this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
+            this->files.SetItemData(itemHandle, ItemData{ 1 });
+        }
+        else
+        {
+            this->files.SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
+            this->files.SetItemData(itemHandle, ItemData{ 2 });
+        }       
     }
-    FileSystem::EnumerateFiles(__tmpFDString, false, FileDialogClass_Callback_EnumerateFiles, this);
     files.Sort();
 }
 bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID)
