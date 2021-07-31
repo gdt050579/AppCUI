@@ -7,7 +7,7 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
-static AppCUI::Utils::String __tmpFDString;
+
 struct FileDialogClass
 {
     Controls::Window wnd;
@@ -110,14 +110,14 @@ void FileDialogClass::OnCurrentItemChanged()
 }
 void FileDialogClass::Validate()
 {
-    LocalString<256> name;
+    LocalString<256> name, pth;
     if ((txName.GetText(name) == false) || (name.Len() == 0))
         return;
-    if (lbPath.GetText(__tmpFDString) == false)
+    if (lbPath.GetText(pth) == false)
         return;
-    if (OS::FileSystem::Path::Join(__tmpFDString, name.GetText()) == false)
-        return;
-    bool exists = FileSystem::FileExists(__tmpFDString);
+    std::filesystem::path result = pth.GetText();
+    result /= name.GetText();
+    bool exists = std::filesystem::exists(result);
     if (openDialog)
     {
         if (exists == false)
@@ -295,15 +295,15 @@ const char* FileDialog::ShowSaveFileWindow(const char* fileName, const char* mas
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, mask, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return __tmpFDString.GetText();
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return __tmpFDString.GetText();
     return nullptr;
 }
 const char* FileDialog::ShowOpenFileWindow(const char* fileName, const char* mask, const char* path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, mask, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return __tmpFDString.GetText();
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return __tmpFDString.GetText();
     return nullptr;
 }
