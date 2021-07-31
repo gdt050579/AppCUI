@@ -40,7 +40,7 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("IniInitialization.log");
-    if (AppCUI::OS::FileSystem::FileExists("IniInitialization.ini") == false)
+    if (std::filesystem::exists("IniInitialization.ini") == false)
     {
         LOG_INFO("IniInitialization.ini is missing (a new one will be created)");
         AppCUI::OS::File f;
