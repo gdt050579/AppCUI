@@ -16,6 +16,7 @@ struct FileDialogClass
     Controls::ListView files;
     Controls::TextField txName, txExt;
     Controls::Button btnOK, btnCancel;
+    std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
     const char* defaultFileName;
     bool openDialog;
 
@@ -140,8 +141,10 @@ void FileDialogClass::Validate()
 }
 void FileDialogClass::UpdateCurrentFolder()
 {
-    FileSystem::SpecialFolder id = (FileSystem::SpecialFolder)(comboDrive.GetCurrentItemUserData().UInt32Value);
+    unsigned int idx = comboDrive.GetCurrentItemUserData().UInt32Value;
     // update lbPath with the name of the selected special folder
+    lbPath.SetText((const char *)specialFolders[idx].second.u8string().c_str());
+    UpdateFileList();
 
 }
 void FileDialogClass::UpdateFileList()
@@ -257,13 +260,10 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
     comboDrive.Create(&wnd, "x:8,y:1,w:14");
     comboDrive.SetHotKey('D');
     // populate combo box with special folders and available drivers
-    LocalString<32> tempStr;
-    for (auto specialFolderID : AppCUI::OS::FileSystem::AllSpecialFolders)
+    AppCUI::OS::GetSpecialFolders(this->specialFolders);
+    for (unsigned int index = 0; index < this->specialFolders.size();index++)
     {
-        if (OS::FileSystem::GetSpecialFolderName(specialFolderID, tempStr))
-        {            
-            comboDrive.AddItem(tempStr.GetText(), ItemData{ (unsigned int) specialFolderID });
-        }
+        comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
     }
 
     comboDrive.SetCurentItemIndex(0);
