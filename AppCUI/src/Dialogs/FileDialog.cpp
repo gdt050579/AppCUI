@@ -60,8 +60,8 @@ int FileDialog_ListViewItemComparer(ListView* control, ItemHandle item1, ItemHan
         return -1;
     if (v1 > v2)
         return 1;
-    const char* s1 = control->GetItemText(item1, 0);
-    const char* s2 = control->GetItemText(item2, 0);
+    const char* s1 = control->GetItemText(item1, columnIndex);
+    const char* s2 = control->GetItemText(item2, columnIndex);
     return Utils::String::Compare(s1, s2, true);
 }
 bool FileDialog_EventHandler(
@@ -75,24 +75,23 @@ void FileDialogClass::OnClickedOnItem()
     if (index < 0)
         return;
     unsigned int value = (int) files.GetItemData(index)->UInt32Value;
-    if (lbPath.GetText(__tmpFDString) == false)
+    LocalString<256> s;
+    if (lbPath.GetText(s) == false)
         return;
+    std::filesystem::path p = s.GetText();
     if (value == 0)
     {
-        // if (__tmpFDString.PathRemoveLast())
-        {
-            // lbPath.SetText(__tmpFDString.GetText());
-            UpdateFileList();
-        }
+        //GDT: reanalize
+        lbPath.SetText((const char *)p.parent_path().u8string().c_str());
+        UpdateFileList();
         return;
     }
     if (value == 1)
     {
-        if (OS::FileSystem::Path::Join(__tmpFDString, files.GetItemText(index, 0)))
-        {
-            lbPath.SetText(__tmpFDString.GetText());
-            UpdateFileList();
-        }
+        p /= files.GetItemText(index, 0);
+        // GDT: reanalize
+        lbPath.SetText((const char*) p.u8string().c_str());
+        UpdateFileList();
         return;
     }
     if (value == 2)
@@ -149,6 +148,7 @@ void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
     LocalString<256> s_p; 
+    LocalString<128> s_time;
     if (lbPath.GetText(s_p))
     {
         std::filesystem::path p = s_p.GetText();
@@ -168,7 +168,11 @@ void FileDialogClass::UpdateFileList()
                 else
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
 
-                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size);
+                // review - partically corect --> need to find a proper time representation
+                s_time.Format("%lld", (long long)fileEntry.last_write_time().time_since_epoch().count());
+                
+                // review !!!! ==> should not be const char * ==> should be path!
+                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, s_time.GetText());
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
