@@ -150,8 +150,7 @@ void FileDialogClass::UpdateCurrentFolder()
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    LocalString<256> s_p; 
-    LocalString<128> s_time;
+    LocalString<256> s_p;     
     if (lbPath.GetText(s_p))
     {
         std::filesystem::path p = s_p.GetText();
@@ -161,6 +160,7 @@ void FileDialogClass::UpdateFileList()
             files.SetItemData(0, 0);
         }
         char size[32];
+        char time_rep[64];
         ItemHandle itemHandle;
         try
         {
@@ -172,10 +172,12 @@ void FileDialogClass::UpdateFileList()
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
 
                 // review - partically corect --> need to find a proper time representation
-                s_time.Format("%lld", (long long)fileEntry.last_write_time().time_since_epoch().count());
+                auto t_c = std::chrono::system_clock::to_time_t(
+                      std::chrono::clock_cast<std::chrono::system_clock>(fileEntry.last_write_time()));
+                std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&t_c));
                 
                 // review !!!! ==> should not be const char * ==> should be path!
-                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, s_time.GetText());
+                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, time_rep);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
@@ -197,47 +199,34 @@ void FileDialogClass::UpdateFileList()
 }
 bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID)
 {
-    if (eventType == Event::EVENT_BUTTON_CLICKED)
+    switch (eventType)
     {
-        if (controlID == (int) Dialogs::Result::Ok)
-        {
+        case Event::EVENT_BUTTON_CLICKED:
+            if (controlID == (int) Dialogs::Result::Ok)
+                Validate();
+            else
+                wnd.Exit(controlID);
+            return true;
+        case Event::EVENT_WINDOW_CLOSE:
+            wnd.Exit((int) Dialogs::Result::Cancel);
+            return true;
+        case Event::EVENT_WINDOW_ACCEPT:
             Validate();
             return true;
-        }
-        wnd.Exit(controlID);
-        return true;
-    }
-    if (eventType == Event::EVENT_WINDOW_CLOSE)
-    {
-        wnd.Exit((int) Dialogs::Result::Cancel);
-        return true;
-    }
-    if (eventType == Event::EVENT_WINDOW_ACCEPT)
-    {
-        Validate();
-        return true;
-    }
-    if (eventType == Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED)
-    {
-        UpdateCurrentFolder();
-        UpdateFileList();
-        return true;
-    }
-    if (eventType == Event::EVENT_TEXTFIELD_VALIDATE)
-    {
-        UpdateFileList();
-        files.SetFocus();
-        return true;
-    }
-    if (eventType == Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED)
-    {
-        OnCurrentItemChanged();
-        return true;
-    }
-    if (eventType == Event::EVENT_LISTVIEW_ITEM_CLICKED)
-    {
-        OnClickedOnItem();
-        return true;
+        case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
+            UpdateCurrentFolder();
+            UpdateFileList();
+            return true;
+        case Event::EVENT_TEXTFIELD_VALIDATE:
+            UpdateFileList();
+            files.SetFocus();
+            return true;
+        case Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED:
+            OnCurrentItemChanged();
+            return true;
+        case Event::EVENT_LISTVIEW_ITEM_CLICKED:
+            OnClickedOnItem();
+            return true;
     }
     return true;
 }
@@ -255,10 +244,10 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
     else
         wnd.Create("Save", "w:78,h:23,a:c");
     wnd.SetEventHandler(FileDialog_EventHandler, this);
-    lbPath.Create(&wnd, "", "x:24,y:1,w:52");
-    lbDrive.Create(&wnd, "&Drive", "x:2,y:1,w:8");
-    comboDrive.Create(&wnd, "x:8,y:1,w:14");
-    comboDrive.SetHotKey('D');
+    lbPath.Create(&wnd, "", "x:2,y:2,w:63");
+    lbDrive.Create(&wnd, "&Location", "x:2,y:1,w:8");
+    comboDrive.Create(&wnd, "x:12,y:1,w:61");
+    comboDrive.SetHotKey('L');
     // populate combo box with special folders and available drivers
     AppCUI::OS::GetSpecialFolders(this->specialFolders);
     for (unsigned int index = 0; index < this->specialFolders.size();index++)
@@ -268,9 +257,9 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
 
     comboDrive.SetCurentItemIndex(0);
     files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::SORTABLE);
-    files.AddColumn("&Name", TextAlignament::Left, 41);
+    files.AddColumn("&Name", TextAlignament::Left, 31);
     files.AddColumn("&Size", TextAlignament::Right, 16);
-    files.AddColumn("&Modified", TextAlignament::Right, 10);
+    files.AddColumn("&Modified", TextAlignament::Center, 20);
     files.SetItemCompareFunction(FileDialog_ListViewItemComparer, this);
 
     lbName.Create(&wnd, "File &Name", "x:2,y:17,w:10");
