@@ -52,8 +52,7 @@ void ConvertSizeToString(unsigned long long size, char result[32])
 }
 
 
-int FileDialog_ListViewItemComparer(
-      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
+int FileDialog_ListViewItemComparer(ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
 {
     unsigned long long v1 = control->GetItemData(item1)->UInt64Value;
     unsigned long long v2 = control->GetItemData(item2)->UInt64Value;
@@ -148,35 +147,46 @@ void FileDialogClass::UpdateCurrentFolder()
 }
 void FileDialogClass::UpdateFileList()
 {
-    //if (lbPath.GetText(__tmpFDString) == false)
-    //    return;
     files.DeleteAllItems();
-    //if (FileSystem::Path::IsRootPath(__tmpFDString) == false)
-    //{
-    //    files.AddItem("..", "UP-DIR");
-    //    files.SetItemData(0, 0);
-    //}
-    char size[32];
-    ItemHandle itemHandle;
-    for (const auto& fileEntry : std::filesystem::directory_iterator("E:\\Temp-docs"))
+    LocalString<256> s_p; 
+    if (lbPath.GetText(s_p))
     {
-        if (fileEntry.is_directory())
-            Utils::String::Set(size, "Folder", 32, 6);
-        else
-            ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
-        itemHandle = this->files.AddItem((const char *)fileEntry.path().filename().u8string().c_str(), size);
-        if (fileEntry.is_directory())
+        std::filesystem::path p = s_p.GetText();
+        if (p != p.root_directory())
         {
-            this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-            this->files.SetItemData(itemHandle, ItemData{ 1 });
+            files.AddItem("..", "UP-DIR");
+            files.SetItemData(0, 0);
         }
-        else
+        char size[32];
+        ItemHandle itemHandle;
+        try
         {
-            this->files.SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
-            this->files.SetItemData(itemHandle, ItemData{ 2 });
-        }       
+            for (const auto& fileEntry : std::filesystem::directory_iterator(p))
+            {
+                if (fileEntry.is_directory())
+                    Utils::String::Set(size, "Folder", 32, 6);
+                else
+                    ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+
+                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size);
+                if (fileEntry.is_directory())
+                {
+                    this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
+                    this->files.SetItemData(itemHandle, ItemData{ 1 });
+                }
+                else
+                {
+                    this->files.SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
+                    this->files.SetItemData(itemHandle, ItemData{ 2 });
+                }
+            }
+        }
+        catch (...)
+        {
+            // for the moment skip
+        }
+        files.Sort();
     }
-    files.Sort();
 }
 bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID)
 {
@@ -247,15 +257,16 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
     for (auto specialFolderID : AppCUI::OS::FileSystem::AllSpecialFolders)
     {
         if (OS::FileSystem::GetSpecialFolderName(specialFolderID, tempStr))
-        {
+        {            
             comboDrive.AddItem(tempStr.GetText(), ItemData{ (unsigned int) specialFolderID });
         }
     }
 
     comboDrive.SetCurentItemIndex(0);
     files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::SORTABLE);
-    files.AddColumn("&Name", TextAlignament::Left, 53);
+    files.AddColumn("&Name", TextAlignament::Left, 41);
     files.AddColumn("&Size", TextAlignament::Right, 16);
+    files.AddColumn("&Modified", TextAlignament::Right, 10);
     files.SetItemCompareFunction(FileDialog_ListViewItemComparer, this);
 
     lbName.Create(&wnd, "File &Name", "x:2,y:17,w:10");

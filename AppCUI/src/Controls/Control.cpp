@@ -1046,7 +1046,16 @@ bool AppCUI::Controls::Control::SetText(const std::string_view& text, bool updat
 }
 bool AppCUI::Controls::Control::GetText(AppCUI::Utils::String& text)
 {
-    NOT_IMPLEMENTED(false);
+    // temporary implementation
+    auto buf = CTRLC->Text.GetBuffer();
+    unsigned int size = CTRLC->Text.Len();
+    while (size > 0)
+    {
+        CHECK(text.AddChar(buf->Code), false, "Fail to add character !");
+        buf++;
+        size--;
+    }
+    return true;
 }
 void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
 {
