@@ -152,7 +152,7 @@ void FileDialogClass::UpdateFileList()
     if (lbPath.GetText(s_p))
     {
         std::filesystem::path p = s_p.GetText();
-        if (p != p.root_directory())
+        if (p != p.root_path())
         {
             files.AddItem("..", "UP-DIR");
             files.SetItemData(0, 0);
