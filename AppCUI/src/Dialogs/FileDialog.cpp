@@ -19,13 +19,17 @@ using namespace AppCUI::Dialogs;
 // to say we have full support
 std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 {
-#ifdef BUILD_FOR_WINDOWS
+#if BUILD_FOR_WINDOWS
     auto lastTime = entry.last_write_time();
     return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
-#else
+#elif BUILD_FOR_OSX
     struct stat attr;
     stat(entry.path().string().c_str(), &attr);
     return attr.st_mtimespec.tv_sec;
+#elif BUILD_FOR_UNIX
+    struct stat attr;
+    stat(entry.path().string().c_str(), &attr);
+    return attr.st_mtime.tv_sec;
 #endif
 }
 
