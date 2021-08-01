@@ -7,16 +7,25 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
-// The reason this function is split between compilers is that C++20 is not fully
-// rolled on all of them.
-// https://developercommunity.visualstudio.com/t/stdfilesystemfile-time-type-does-not-allow-easy-co/251213
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+#    include <sys/stat.h>
+#endif
+
+// Currently not all compilers support clock_cast (including gcc)
+// AppleClang supports std::chrono::file_clock::to_time_t, but gcc or VS doesn't
+// Have this frankenstein's monster while the compilers update
+//
+// Normally, we should be able to convert using clock_cast or a to_time_t kind of function
+// to say we have full support
 std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 {
 #ifdef BUILD_FOR_WINDOWS
     auto lastTime = entry.last_write_time();
     return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
 #else
-    return std::chrono::file_clock::to_time_t(entry.last_write_time());
+    struct stat attr;
+    stat(entry.path().string().c_str(), &attr);
+    return attr.st_mtimespec.tv_sec;
 #endif
 }
 
