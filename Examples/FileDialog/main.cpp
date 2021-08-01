@@ -31,7 +31,7 @@ class MyWin : public AppCUI::Controls::Window
             switch (controlID)
             {
             case BUTTON_ID_SHOW_SAVE:
-                FileDialog::ShowOpenFileWindow("", "*.*", "E:\\");
+                FileDialog::ShowOpenFileWindow("", "*.*", ".");
                 break;
             case BUTTON_ID_SHOW_OPEN:
                 break;
