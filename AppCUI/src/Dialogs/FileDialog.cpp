@@ -33,7 +33,7 @@ std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 #elif BUILD_FOR_UNIX
     struct stat attr;
     stat(entry.path().string().c_str(), &attr);
-    return attr.st_mtime.tv_sec;
+    return attr.st_mtime;
 #endif
 }
 
