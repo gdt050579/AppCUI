@@ -899,16 +899,14 @@ namespace Console
             return Buffer;
         }
 
-        //bool Add(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
-        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
-        //bool Set(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
-        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
+        bool Add(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
+        bool Set(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
         bool SetWithNewLines(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
         bool SetWithHotKey(
-              const char* text,
+              const std::string_view text,
               unsigned int& hotKeyCharacterPosition,
               const ColorPair color = NoColorPair,
-              unsigned int textSize = 0xFFFFFFFF);
+              bool isUTF8Format     = true);
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(

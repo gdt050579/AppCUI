@@ -4,6 +4,12 @@
 
 using namespace AppCUI::Console;
 
+struct UnicodeChar
+{
+    unsigned short Value;
+    unsigned int Length;
+};
+
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
     if ((requiredSpace) > (Allocated & 0x7FFFFFFF))                                                                    \
     {                                                                                                                  \
@@ -15,6 +21,42 @@ using namespace AppCUI::Console;
     {                                                                                                                  \
         textSize = AppCUI::Utils::String::Len(text);                                                                   \
     }
+
+bool UTF8_to_Unicode(const unsigned char* p, const unsigned char* end, UnicodeChar& result)
+{
+    // unicode encoding
+    if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
+    {
+        CHECK(p + 1 < end, false, "Invalid unicode sequence (missing one extra character after 110xxxx)");
+        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (110xxxx should be followed by 10xxxxxx)");
+        result.Value = (((unsigned short) ((*p) & 0x1F)) << 6) | ((unsigned short) ((*(p + 1)) & 63));
+        result.Length = 2;
+        return true;
+    }
+    if (((*p) >> 4) == 14) // binary encoding 1110xxxx, followed by 2 bytes with 10xxxxxx
+    {
+        CHECK(p + 2 < end, false, "Invalid unicode sequence (missing two extra characters after 1110xxxx)");
+        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (1110xxxx should be followed by 10xxxxxx)");
+        CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
+        result.Value = (((unsigned short) ((*p) & 0x0F)) << 12) | (((unsigned short) ((*(p + 1)) & 63)) << 6) |
+                       ((unsigned short) ((*(p + 2)) & 63));
+        result.Length = 3;
+        return true;
+    }
+    if (((*p) >> 3) == 30) // binary encoding 11110xxx, followed by 3 bytes with 10xxxxxx
+    {
+        CHECK(p + 3 < end, false, "Invalid unicode sequence (missing two extra characters after 11110xxx)");
+        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (11110xxx should be followed by 10xxxxxx)");
+        CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
+        CHECK((p[3] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
+        result.Value = (((unsigned short) ((*p) & 7)) << 18) | (((unsigned short) ((*(p + 1)) & 63)) << 12) |
+                       (((unsigned short) ((*(p + 2)) & 63)) << 6) | ((unsigned short) ((*(p + 3)) & 63));
+        result.Length = 4;
+        return true;
+    }
+    // invalid 16 bytes encoding
+    RETURNERROR(false, "Invalid UTF-8 encoding ");
+}
 
 CharacterBuffer::CharacterBuffer()
 {
@@ -49,81 +91,132 @@ bool CharacterBuffer::Grow(unsigned int newSize)
     Allocated = newSize;
     return true;
 }
-bool CharacterBuffer::Add(const std::string_view text, const ColorPair color)
+bool CharacterBuffer::Add(const std::string_view text, const ColorPair color, bool isUTF8Format)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) text");
     VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
-    Character* ch          = this->Buffer + this->Count;
-    const unsigned char* p = (const unsigned char*) text.data();
-    this->Count += text.size();
-    auto textSize = text.size();
-    while (textSize > 0)
+    Character* ch              = this->Buffer + this->Count;
+    const unsigned char* p     = (const unsigned char*) text.data();
+    const unsigned char* p_end = p + text.size();
+    auto textSize              = text.size();
+    UnicodeChar uc;
+    if (isUTF8Format)
     {
-        ch->Color = color;
-        ch->Code  = *p;
-        ch++;
-        p++;
-        textSize--;
+        Character* ch_start = ch;
+        // UTF-8 format - use conversion from https://en.wikipedia.org/wiki/UTF-8
+        while (textSize > 0)
+        {
+            ch->Color = color;
+            if ((*p) < 0x80)
+            {
+                ch->Code = *p;
+                p++;
+                ch++;
+                textSize--;
+            }
+            else
+            {
+                // unicode encoding 
+                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+                ch->Code = uc.Value;
+                textSize -= uc.Length;
+                p += uc.Length;
+                ch++;
+            }
+        }
+        // adjust size
+        this->Count += (ch - ch_start);
+    }
+    else
+    {
+        this->Count += text.size();
+        // ASCII-Z format
+        while (textSize > 0)
+        {
+            ch->Color = color;
+            ch->Code  = *p;
+            ch++;
+            p++;
+            textSize--;
+        }
     }
     return true;
 }
-//bool CharacterBuffer::Add(const char* text, const ColorPair color, unsigned int textSize)
-//{
-//    CHECK(text, false, "Expecting a valid (non-null) text");
-//    COMPUTE_TEXT_SIZE(text, textSize);
-//    VALIDATE_ALLOCATED_SPACE(textSize + this->Count, false);
-//    Character* ch          = this->Buffer + this->Count;
-//    const unsigned char* p = (const unsigned char*) text;
-//    this->Count += textSize;
-//    while (textSize > 0)
-//    {
-//        ch->Color = color;
-//        ch->Code  = *p;
-//        ch++;
-//        p++;
-//        textSize--;
-//    }
-//    return true;
-//}
-//bool CharacterBuffer::Set(const char* text, const ColorPair color, unsigned int textSize)
-//{
-//    this->Count = 0;
-//    return Add(text, color, textSize);
-//}
-bool CharacterBuffer::Set(const std::string_view text, const ColorPair color)
+
+bool CharacterBuffer::Set(const std::string_view text, const ColorPair color, bool isUTF8Format)
 {
     this->Count = 0;
-    return Add(text, color);
+    return Add(text, color, isUTF8Format);
 }
-bool CharacterBuffer::SetWithHotKey(
-      const char* text, unsigned int& hotKeyCharacterPosition, const ColorPair color, unsigned int textSize)
+bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color, bool isUTF8Format)
 {
     hotKeyCharacterPosition = 0xFFFFFFFF;
-    CHECK(text, false, "Expecting a valid (non-null) text");
-    COMPUTE_TEXT_SIZE(text, textSize);
-    VALIDATE_ALLOCATED_SPACE(textSize, false);
-    Character* ch          = this->Buffer;
-    const unsigned char* p = (const unsigned char*) text;
-    while (textSize > 0)
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
+    Character* ch              = this->Buffer;
+    const unsigned char* p     = (const unsigned char*) text.data();
+    const unsigned char* p_end = p + text.size();
+    auto textSize              = text.size();
+    UnicodeChar uc;
+
+    if (isUTF8Format)
     {
-        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
+        while (textSize > 0)
         {
-            char tmp = p[1] | 0x20;
-            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
+            if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
             {
-                hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text);
+                char tmp = p[1] | 0x20;
+                if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
+                {
+                    hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
+                    p++;
+                    textSize--;
+                    continue;
+                }
+            }
+            ch->Color = color;
+            if ((*p) < 0x80)
+            {
+                ch->Code = *p;
                 p++;
+                ch++;
                 textSize--;
-                continue;
+            }
+            else
+            {
+                // unicode encoding
+                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+                ch->Code = uc.Value;
+                textSize -= uc.Length;
+                p += uc.Length;
+                ch++;
             }
         }
-        ch->Color = color;
-        ch->Code  = *p;
-        ch++;
-        p++;
-        textSize--;
+        this->Count = (unsigned int) (ch - this->Buffer);
     }
-    this->Count = (unsigned int) (ch - this->Buffer);
+    else
+    {
+        while (textSize > 0)
+        {
+            if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
+            {
+                char tmp = p[1] | 0x20;
+                if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
+                {
+                    hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
+                    p++;
+                    textSize--;
+                    continue;
+                }
+            }
+            ch->Color = color;
+            ch->Code  = *p;
+            ch++;
+            p++;
+            textSize--;
+        }
+        this->Count = (unsigned int) (ch - this->Buffer);
+    }
     return true;
 }
 bool CharacterBuffer::SetWithNewLines(const char* text, const ColorPair color, unsigned int textSize)

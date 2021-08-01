@@ -739,8 +739,6 @@ bool AppCUI::Controls::Control::Init(Control* parent, const char* text, const ch
     CHECK(CTRLC->UpdateLayoutFormat(layout), false, "Invalid format !");
     CHECK(CTRLC->RecomputeLayout(parent), false, "Unable to recompute layout !");
 
-    CTRLC->Text.Set(text);
-
     if (computeHotKey)
     {
         if (CTRLC->Text.SetWithHotKey(text, CTRLC->HotKeyOffset))
