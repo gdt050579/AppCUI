@@ -7,6 +7,18 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
+// The reason this function is split between compilers is that C++20 is not fully
+// rolled on all of them.
+// https://developercommunity.visualstudio.com/t/stdfilesystemfile-time-type-does-not-allow-easy-co/251213
+std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
+{
+#ifdef BUILD_FOR_WINDOWS
+    auto lastTime = entry.last_write_time();
+    return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
+#else
+    return std::chrono::file_clock::to_time_t(entry.last_write_time());
+#endif
+}
 
 struct FileDialogClass
 {
@@ -39,12 +51,12 @@ void ConvertSizeToString(unsigned long long size, char result[32])
         result[poz--] = (size % 10) + '0';
         cnt++;
         size = size / 10;
-        if ((cnt == 3) && (poz > 0) && (size>0))
+        if ((cnt == 3) && (poz > 0) && (size > 0))
         {
             result[poz--] = ',';
             cnt           = 0;
         }
-        
+
     } while ((size > 0) && (poz > 0));
     while (poz >= 0)
     {
@@ -52,8 +64,8 @@ void ConvertSizeToString(unsigned long long size, char result[32])
     }
 }
 
-
-int FileDialog_ListViewItemComparer(ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
+int FileDialog_ListViewItemComparer(
+      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
 {
     unsigned long long v1 = control->GetItemData(item1)->UInt64Value;
     unsigned long long v2 = control->GetItemData(item2)->UInt64Value;
@@ -82,8 +94,8 @@ void FileDialogClass::OnClickedOnItem()
     std::filesystem::path p = s.GetText();
     if (value == 0)
     {
-        //GDT: reanalize
-        lbPath.SetText((const char *)p.parent_path().u8string().c_str());
+        // GDT: reanalize
+        lbPath.SetText((const char*) p.parent_path().u8string().c_str());
         UpdateFileList();
         return;
     }
@@ -143,14 +155,13 @@ void FileDialogClass::UpdateCurrentFolder()
 {
     unsigned int idx = comboDrive.GetCurrentItemUserData().UInt32Value;
     // update lbPath with the name of the selected special folder
-    lbPath.SetText((const char *)specialFolders[idx].second.u8string().c_str());
+    lbPath.SetText((const char*) specialFolders[idx].second.u8string().c_str());
     UpdateFileList();
-
 }
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    LocalString<256> s_p;     
+    LocalString<256> s_p;
     if (lbPath.GetText(s_p))
     {
         std::filesystem::path p = s_p.GetText();
@@ -171,14 +182,11 @@ void FileDialogClass::UpdateFileList()
                 else
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
 
-                // review - partically corect --> need to find a proper time representation
-                auto t_c = std::chrono::system_clock::to_time_t(
-                      std::chrono::clock_cast<std::chrono::system_clock>(fileEntry.last_write_time()));
+                auto lastModifiedTime = getLastModifiedTime(fileEntry);
+                std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
 
-                std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&t_c));
-                
-                // review !!!! ==> should not be const char * ==> should be path!
-                itemHandle = this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, time_rep);
+                itemHandle =
+                      this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, time_rep);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
@@ -202,32 +210,32 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
 {
     switch (eventType)
     {
-        case Event::EVENT_BUTTON_CLICKED:
-            if (controlID == (int) Dialogs::Result::Ok)
-                Validate();
-            else
-                wnd.Exit(controlID);
-            return true;
-        case Event::EVENT_WINDOW_CLOSE:
-            wnd.Exit((int) Dialogs::Result::Cancel);
-            return true;
-        case Event::EVENT_WINDOW_ACCEPT:
+    case Event::EVENT_BUTTON_CLICKED:
+        if (controlID == (int) Dialogs::Result::Ok)
             Validate();
-            return true;
-        case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
-            UpdateCurrentFolder();
-            UpdateFileList();
-            return true;
-        case Event::EVENT_TEXTFIELD_VALIDATE:
-            UpdateFileList();
-            files.SetFocus();
-            return true;
-        case Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED:
-            OnCurrentItemChanged();
-            return true;
-        case Event::EVENT_LISTVIEW_ITEM_CLICKED:
-            OnClickedOnItem();
-            return true;
+        else
+            wnd.Exit(controlID);
+        return true;
+    case Event::EVENT_WINDOW_CLOSE:
+        wnd.Exit((int) Dialogs::Result::Cancel);
+        return true;
+    case Event::EVENT_WINDOW_ACCEPT:
+        Validate();
+        return true;
+    case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
+        UpdateCurrentFolder();
+        UpdateFileList();
+        return true;
+    case Event::EVENT_TEXTFIELD_VALIDATE:
+        UpdateFileList();
+        files.SetFocus();
+        return true;
+    case Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED:
+        OnCurrentItemChanged();
+        return true;
+    case Event::EVENT_LISTVIEW_ITEM_CLICKED:
+        OnClickedOnItem();
+        return true;
     }
     return true;
 }
@@ -251,7 +259,7 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
     comboDrive.SetHotKey('L');
     // populate combo box with special folders and available drivers
     AppCUI::OS::GetSpecialFolders(this->specialFolders);
-    for (unsigned int index = 0; index < this->specialFolders.size();index++)
+    for (unsigned int index = 0; index < this->specialFolders.size(); index++)
     {
         comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
     }
@@ -285,7 +293,7 @@ const char* FileDialog::ShowSaveFileWindow(const char* fileName, const char* mas
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, mask, path);
-    //if (res == (int) Dialogs::Result::Ok)
+    // if (res == (int) Dialogs::Result::Ok)
     //    return __tmpFDString.GetText();
     return nullptr;
 }
@@ -293,7 +301,7 @@ const char* FileDialog::ShowOpenFileWindow(const char* fileName, const char* mas
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, mask, path);
-    //if (res == (int) Dialogs::Result::Ok)
+    // if (res == (int) Dialogs::Result::Ok)
     //    return __tmpFDString.GetText();
     return nullptr;
 }
