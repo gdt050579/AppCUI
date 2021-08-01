@@ -49,14 +49,14 @@ bool CharacterBuffer::Grow(unsigned int newSize)
     Allocated = newSize;
     return true;
 }
-bool CharacterBuffer::Add(const char* text, const ColorPair color, unsigned int textSize)
+bool CharacterBuffer::Add(const std::string_view text, const ColorPair color)
 {
-    CHECK(text, false, "Expecting a valid (non-null) text");
-    COMPUTE_TEXT_SIZE(text, textSize);
-    VALIDATE_ALLOCATED_SPACE(textSize + this->Count, false);
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
     Character* ch          = this->Buffer + this->Count;
-    const unsigned char* p = (const unsigned char*) text;
-    this->Count += textSize;
+    const unsigned char* p = (const unsigned char*) text.data();
+    this->Count += text.size();
+    auto textSize = text.size();
     while (textSize > 0)
     {
         ch->Color = color;
@@ -67,10 +67,33 @@ bool CharacterBuffer::Add(const char* text, const ColorPair color, unsigned int 
     }
     return true;
 }
-bool CharacterBuffer::Set(const char* text, const ColorPair color, unsigned int textSize)
+//bool CharacterBuffer::Add(const char* text, const ColorPair color, unsigned int textSize)
+//{
+//    CHECK(text, false, "Expecting a valid (non-null) text");
+//    COMPUTE_TEXT_SIZE(text, textSize);
+//    VALIDATE_ALLOCATED_SPACE(textSize + this->Count, false);
+//    Character* ch          = this->Buffer + this->Count;
+//    const unsigned char* p = (const unsigned char*) text;
+//    this->Count += textSize;
+//    while (textSize > 0)
+//    {
+//        ch->Color = color;
+//        ch->Code  = *p;
+//        ch++;
+//        p++;
+//        textSize--;
+//    }
+//    return true;
+//}
+//bool CharacterBuffer::Set(const char* text, const ColorPair color, unsigned int textSize)
+//{
+//    this->Count = 0;
+//    return Add(text, color, textSize);
+//}
+bool CharacterBuffer::Set(const std::string_view text, const ColorPair color)
 {
     this->Count = 0;
-    return Add(text, color, textSize);
+    return Add(text, color);
 }
 bool CharacterBuffer::SetWithHotKey(
       const char* text, unsigned int& hotKeyCharacterPosition, const ColorPair color, unsigned int textSize)

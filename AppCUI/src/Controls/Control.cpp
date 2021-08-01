@@ -1010,40 +1010,40 @@ void AppCUI::Controls::Control::RecomputeLayout()
 
     AppCUI::Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const char* text, bool updateHotKey, int textLen)
+bool AppCUI::Controls::Control::SetText(const std::string_view text, bool updateHotKey)
 {
-    if (OnBeforeSetText(text) == false)
+    if (OnBeforeSetText(text.data()) == false)
         return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text, CTRLC->HotKeyOffset, NoColorPair, textLen) == false)
+        if (CTRLC->Text.SetWithHotKey(text.data(), CTRLC->HotKeyOffset, NoColorPair, text.size()) == false)
             return false;
     }
     else
     {
-        if (CTRLC->Text.Set(text, NoColorPair, textLen) == false)
+        if (CTRLC->Text.Set(text, NoColorPair) == false)
             return false;
     }
-    OnAfterSetText(text);
+    OnAfterSetText(text.data());
     return true;
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool updateHotKey)
 {
-    return SetText(text.GetText(), updateHotKey, (int) text.Len());
+    return SetText(std::string_view(text.GetText(),text.Len()), updateHotKey);
 }
-bool AppCUI::Controls::Control::SetText(const std::string& text, bool updateHotKey)
-{
-    return SetText(text.c_str(), updateHotKey, (int) text.length());
-}
-bool AppCUI::Controls::Control::SetText(const std::string_view& text, bool updateHotKey)
-{
-    LocalString<256> temp;
-    for (auto c : text)
-    {
-        CHECK(temp.AddChar(c), false, "Fail to add char to string buffer");
-    }
-    return SetText(temp.GetText(), updateHotKey, (int) temp.Len());
-}
+//bool AppCUI::Controls::Control::SetText(const std::string& text, bool updateHotKey)
+//{
+//    return SetText(text.c_str(), updateHotKey, (int) text.length());
+//}
+//bool AppCUI::Controls::Control::SetText(const std::string_view& text, bool updateHotKey)
+//{
+//    LocalString<256> temp;
+//    for (auto c : text)
+//    {
+//        CHECK(temp.AddChar(c), false, "Fail to add char to string buffer");
+//    }
+//    return SetText(temp.GetText(), updateHotKey, (int) temp.Len());
+//}
 bool AppCUI::Controls::Control::GetText(AppCUI::Utils::String& text)
 {
     // temporary implementation

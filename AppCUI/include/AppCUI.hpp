@@ -899,8 +899,10 @@ namespace Console
             return Buffer;
         }
 
-        bool Add(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
-        bool Set(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+        //bool Add(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
+        //bool Set(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
         bool SetWithNewLines(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
         bool SetWithHotKey(
               const char* text,
@@ -1284,9 +1286,9 @@ namespace Controls
         void PackView();
 
         // Text
-        bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
-        bool SetText(const std::string& text, bool updateHotKey = false);
-        bool SetText(const std::string_view& text, bool updateHotKey = false);
+        //bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
+        //bool SetText(const std::string& text, bool updateHotKey = false);
+        bool SetText(const std::string_view text, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
         bool GetText(AppCUI::Utils::String& text);
 
