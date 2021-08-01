@@ -236,6 +236,21 @@ void ComboBox::OnExpandView(AppCUI::Console::Clip& expandedClip)
         Members->VisibleItems = (unsigned int) Members->Items.size();
     expandedClip.ClipRect.Height += Members->VisibleItems + 2;
     Members->ExpandedHeight = Members->VisibleItems + 2;
+    // compute best FirstVisibleItem
+    if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
+    {
+        if ((Members->VisibleItems / 2) <= Members->CurentItemIndex)
+            Members->FirstVisibleItem = Members->CurentItemIndex - (Members->VisibleItems / 2);
+        else
+            Members->FirstVisibleItem = 0;
+        if ((Members->FirstVisibleItem + Members->VisibleItems)>=Members->Items.size())
+        {
+            if (Members->VisibleItems < Members->Items.size())
+                Members->FirstVisibleItem = Members->Items.size() - Members->VisibleItems;
+            else
+                Members->FirstVisibleItem = 0;
+        }
+    }
 }
 void ComboBox::OnPackView()
 {
