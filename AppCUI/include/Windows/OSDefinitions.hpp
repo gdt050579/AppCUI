@@ -2,6 +2,7 @@
 #define _OS_DEFINITIONS_AND_INCLUDES_
 
 #include <windows.h>
+#include <Shlobj.h>
 
 #define CHARACTER_INFORMATION CHAR_INFO
 #define SET_CHARACTER_VALUE(ptrCharInfo, value)                                                                        \

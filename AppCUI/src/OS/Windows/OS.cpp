@@ -2,11 +2,24 @@
 
 using namespace AppCUI::OS;
 
+using SpecialFolderList = std::vector<std::pair<std::string, std::filesystem::path>>;
 
-
-void AppCUI::OS::GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists)
+void AddSpecialFolder(REFKNOWNFOLDERID specialFolerID, const char * name, SpecialFolderList& specialFolderList)
 {
-    specialFolderLists.clear();
+    LPWSTR resultPath = nullptr;
+    HRESULT hr;
+    hr = SHGetKnownFolderPath(specialFolerID, KF_FLAG_CREATE, NULL, &resultPath);
+    if (SUCCEEDED(hr))
+    {
+        specialFolderList.push_back({ name, resultPath });
+    }
+    if (resultPath)
+        CoTaskMemFree(resultPath);
+}
+
+void AppCUI::OS::GetSpecialFolders(SpecialFolderList& specialFolderList)
+{
+    specialFolderList.clear();
     char drivePath[4] = "_:\\";
     std::string name;
     for (char drv = 'A'; drv <='Z';drv++)
@@ -34,6 +47,18 @@ void AppCUI::OS::GetSpecialFolders(std::vector<std::pair<std::string, std::files
         default:
             continue;
         }
-        specialFolderLists.push_back({ name, drivePath });
+        specialFolderList.push_back({ name, drivePath });
     }
+    // special folers
+    AddSpecialFolder(FOLDERID_Desktop, "Desktop", specialFolderList);
+    AddSpecialFolder(FOLDERID_Documents, "Documents", specialFolderList);
+    AddSpecialFolder(FOLDERID_LocalDocuments, "Local Documents", specialFolderList);
+    AddSpecialFolder(FOLDERID_Downloads, "Downloads", specialFolderList);
+    AddSpecialFolder(FOLDERID_LocalDownloads, "Local Downloads", specialFolderList);
+    AddSpecialFolder(FOLDERID_Music, "Music", specialFolderList);
+    AddSpecialFolder(FOLDERID_LocalMusic, "Local Music", specialFolderList);
+    AddSpecialFolder(FOLDERID_Pictures, "Pictures", specialFolderList);
+    AddSpecialFolder(FOLDERID_LocalPictures, "Local Pictures", specialFolderList);
+    AddSpecialFolder(FOLDERID_Videos, "Videos", specialFolderList);
+    AddSpecialFolder(FOLDERID_LocalVideos, "Local Videos", specialFolderList);
 }

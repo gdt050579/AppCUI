@@ -174,6 +174,7 @@ void FileDialogClass::UpdateFileList()
                 // review - partically corect --> need to find a proper time representation
                 auto t_c = std::chrono::system_clock::to_time_t(
                       std::chrono::clock_cast<std::chrono::system_clock>(fileEntry.last_write_time()));
+
                 std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&t_c));
                 
                 // review !!!! ==> should not be const char * ==> should be path!
