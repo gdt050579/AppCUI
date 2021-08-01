@@ -260,15 +260,13 @@ void ComboBox::OnMousePressed(int x, int y, int butonState)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 
-    if (y == 0)
-        OnHotKey();
     if ((y > 1) && (y < (int) (2 + Members->VisibleItems)))
     {
         if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Items.size() > 0))
             Members->CurentItemIndex = 0;
         ComboBox_MoveTo(this, Members->FirstVisibleItem + y - 2); // MenuIsVisible=false;
-        RaiseEvent(Event::EVENT_COMBO_CLOSED);
     }
+    OnHotKey();
 }
 bool ComboBox::OnMouseOver(int x, int y)
 {
@@ -276,6 +274,9 @@ bool ComboBox::OnMouseOver(int x, int y)
     if ((y > 1) && (y < (int) (2 + Members->VisibleItems)))
     {
         unsigned int newIndex = ((unsigned int) (y - 2)) + Members->FirstVisibleItem;
+        if (newIndex >= Members->Items.size())
+            newIndex = ComboBox::NO_ITEM_SELECTED;
+            
         if (newIndex != Members->HoveredIndexItem)
         {
             Members->HoveredIndexItem = newIndex;
