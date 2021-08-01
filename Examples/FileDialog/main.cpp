@@ -31,7 +31,7 @@ class MyWin : public AppCUI::Controls::Window
             switch (controlID)
             {
             case BUTTON_ID_SHOW_SAVE:
-                FileDialog::ShowOpenFileWindow("", "Text Files:txt,Binaries:exe", ".");
+                FileDialog::ShowOpenFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
                 break;
             case BUTTON_ID_SHOW_OPEN:
                 break;

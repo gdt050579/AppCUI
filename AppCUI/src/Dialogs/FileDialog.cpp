@@ -4,6 +4,7 @@
 
 #define ALL_FILES_INDEX 0xFFFFFFFF
 
+
 using namespace AppCUI;
 using namespace AppCUI::OS;
 using namespace AppCUI::Utils;
@@ -48,6 +49,7 @@ struct FileDialogClass
     Controls::Button btnOK, btnCancel;
     std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
     std::vector<std::set<unsigned int>> extensions;
+    std::set<unsigned int>* extFilter;
     const char* defaultFileName;
     bool openDialog;
 
@@ -55,6 +57,7 @@ struct FileDialogClass
 
     int Show(bool open, const char* fileName, std::string_view extensionFilter, const char* _path);
     void UpdateCurrentFolder();
+    void UpdateCurrentExtensionFilter();
     void UpdateFileList();
     bool OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID);
     void Validate();
@@ -141,6 +144,7 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
     std::set<unsigned int> tempSet;
     const char* p = start;
     const char* n;
+    const char* end_array;
     while (p<end)
     {
         p = SkipSpaces(p, end);
@@ -152,6 +156,27 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
         if ((*p) =='[')
         {
             // we have a list of extensions
+            tempSet.clear();
+            p++;
+            end_array = SkipUntilChar(p, end, ']');
+            CHECK(end_array < end, false, "Premature end of an array list (missing ']' delimiter)");
+
+            // parse the array
+            while (p < end_array)
+            {
+                n = SkipUntilChar(p, end_array, ',');
+                tempSet.insert(__compute_hash__(p, n));
+                p = n + 1;
+            }
+            p = end_array + 1;
+            p = SkipSpaces(p, end); // skip any possible spaces
+            if ((p < end) && ((*p) == ','))
+                p++; // for a comma after the end of the array
+            // add
+            CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
+                  false,
+                  "Fail to add item to combo-box ");
+            this->extensions.push_back(tempSet);
         }
         else
         {
@@ -247,6 +272,19 @@ void FileDialogClass::UpdateCurrentFolder()
     lbPath.SetText((const char*) specialFolders[idx].second.u8string().c_str());
     UpdateFileList();
 }
+void FileDialogClass::UpdateCurrentExtensionFilter()
+{
+    unsigned int idx = comboType.GetCurrentItemUserData().UInt32Value;
+    if (idx == ALL_FILES_INDEX)
+        this->extFilter = nullptr; // no filter
+    else
+    {
+        if (idx < comboType.GetItemsCount())
+            this->extFilter = &this->extensions[idx];
+        else
+            this->extFilter = nullptr; // something went wrong -> disable filtering
+    }
+}
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
@@ -269,7 +307,24 @@ void FileDialogClass::UpdateFileList()
                 if (fileEntry.is_directory())
                     Utils::String::Set(size, "Folder", 32, 6);
                 else
+                {
+                    // check filter first
+                    if (extFilter)
+                    {
+                        // a filter is set - let's check the extention
+                        // GDT: to be redisign --> !!!!
+                        auto ext_u8         = fileEntry.path().extension().u8string();
+                        const char* ext     = (const char*) ext_u8.c_str();
+                        const char* ext_end = ext + ext_u8.size();
+                        if ((ext != nullptr) && ((*ext) == '.'))
+                            ext++;
+                        unsigned int hash = __compute_hash__(ext, ext_end);
+                        if (!extFilter->contains(hash))
+                            continue; // extension is filtered
+                    }
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+                }
+                    
 
                 auto lastModifiedTime = getLastModifiedTime(fileEntry);
                 std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
@@ -312,8 +367,16 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
         Validate();
         return true;
     case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
-        UpdateCurrentFolder();
-        UpdateFileList();
+        if (sender == &comboDrive)
+        {
+            UpdateCurrentFolder();
+            UpdateFileList();
+        }
+        else if (sender == & comboType)
+        {
+            UpdateCurrentExtensionFilter();
+            UpdateFileList();
+        }
         return true;
     case Event::EVENT_TEXTFIELD_VALIDATE:
         UpdateFileList();
@@ -333,7 +396,7 @@ int FileDialogClass::Show(bool open, const char* fileName, std::string_view exte
     if (fileName == nullptr)
         fileName = "";
 
-
+    extFilter       = nullptr;
     defaultFileName = fileName;
     openDialog      = open;
     if (open)
@@ -358,6 +421,7 @@ int FileDialogClass::Show(bool open, const char* fileName, std::string_view exte
     files.AddColumn("&Size", TextAlignament::Right, 16);
     files.AddColumn("&Modified", TextAlignament::Center, 20);
     files.SetItemCompareFunction(FileDialog_ListViewItemComparer, this);
+    files.Sort(0, true); // sort after the first column, ascendent
 
     lbName.Create(&wnd, "File &Name", "x:2,y:17,w:10");
     txName.Create(&wnd, fileName, "x:13,y:17,w:47");
@@ -375,7 +439,8 @@ int FileDialogClass::Show(bool open, const char* fileName, std::string_view exte
 
     this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
     this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
-
+    this->comboType.SetCurentItemIndex(0);
+    UpdateCurrentExtensionFilter();
     UpdateFileList();
     txName.SetFocus();
     return wnd.Show();
