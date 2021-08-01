@@ -1,8 +1,7 @@
-#include <string>
-#include <poll.h>
-#include "ncurses.h"
-
 #include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
+#include "ncurses.h"
+#include <poll.h>
+#include <string>
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
@@ -11,7 +10,13 @@ constexpr int KEY_DELETE = 0x7F;
 
 bool NcursesTerminal::OnInit(const InitializationData& initData)
 {
-    return initScreen() && initInput();
+    mode = TerminalMode::TerminalNormal;
+
+    if (!initScreen())
+        return false;
+    if (!initInput())
+        return false;
+    return true;
 }
 
 void NcursesTerminal::OnUninit()
@@ -37,42 +42,41 @@ bool NcursesTerminal::initInput()
     mouseinterval(0);
     raw();
     nonl();
-
-    for (size_t tr = 0; tr < KEY_TRANSLATION_MATRIX_SIZE; tr++)
-    {
-        this->KeyTranslationMatrix[tr] = Key::None;
-    }
+    set_escdelay(0);
 
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
+        keyTranslationMatrixNormal[KEY_F(i + 1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
+
         // If we press F1 + shift => it generates F13
-        KeyTranslationMatrix[KEY_F(i + 1)]  = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
-        KeyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
+        keyTranslationMatrixNormal[KEY_F(i + 13)] =
+              static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
     }
 
-    KeyTranslationMatrix[KEY_ENTER] = Key::Enter;
-    KeyTranslationMatrix[13]        = Key::Enter;
-    KeyTranslationMatrix[10]        = Key::Enter;
+    keyTranslationMatrixNormal[KEY_ENTER] = Key::Enter;
+    keyTranslationMatrixNormal[13]        = Key::Enter;
+    keyTranslationMatrixNormal[10]        = Key::Enter;
 
-    KeyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
-    KeyTranslationMatrix[0x7F]          = Key::Backspace;
+    keyTranslationMatrixNormal[KEY_UP]    = Key::Up;
+    keyTranslationMatrixNormal[KEY_RIGHT] = Key::Right;
+    keyTranslationMatrixNormal[KEY_DOWN]  = Key::Down;
+    keyTranslationMatrixNormal[KEY_LEFT]  = Key::Left;
+    keyTranslationMatrixNormal[KEY_PPAGE] = Key::PageUp;
+    keyTranslationMatrixNormal[KEY_NPAGE] = Key::PageDown;
+    keyTranslationMatrixNormal[KEY_HOME]  = Key::Home;
+    keyTranslationMatrixNormal[KEY_END]   = Key::End;
+    keyTranslationMatrixNormal['t']       = Key::Tab;
 
-    KeyTranslationMatrix[KEY_UP]    = Key::Up;
-    KeyTranslationMatrix[KEY_RIGHT] = Key::Right;
-    KeyTranslationMatrix[KEY_DOWN]  = Key::Down;
-    KeyTranslationMatrix[KEY_LEFT]  = Key::Left;
+    keyTranslationMatrixNormal[KEY_BACKSPACE] = Key::Backspace;
+    keyTranslationMatrixNormal[0x7F]          = Key::Backspace;
+    keyTranslationMatrixNormal[0x1B]          = Key::Escape;
 
-    KeyTranslationMatrix[KEY_PPAGE] = Key::PageUp;
-    KeyTranslationMatrix[KEY_NPAGE] = Key::PageDown;
+    // keyTranslationMatrixNormal[] = Key::Tab;
+    // keyTranslationMatrixNormal[KEY_ESCAPE] ?
+    // keyTranslationMatrixNormal[KEY_INSERT] ?
+    // keyTranslationMatrixNormal[KEY_DELETE] = Key::Delete;
 
-    KeyTranslationMatrix[KEY_HOME] = Key::Home;
-    KeyTranslationMatrix[KEY_END]  = Key::End;
-
-    // KeyTranslationMatrix[] = Key::Tab;
-    // KeyTranslationMatrix[KEY_ESCAPE] ?
-    // KeyTranslationMatrix[KEY_INSERT] ?
-    // KeyTranslationMatrix[KEY_DELETE] = Key::Delete;
     return true;
 }
 
@@ -104,38 +108,64 @@ void NcursesTerminal::handleKey(SystemEvents::Event& evt, const int c)
 {
     // debugChar(0, c, "key");
     evt.eventType = SystemEvents::KEY_PRESSED;
-
-    if (c < KEY_TRANSLATION_MATRIX_SIZE && KeyTranslationMatrix[c] != Key::None)
+    if (mode == TerminalMode::TerminalNormal)
     {
-        evt.keyCode = KeyTranslationMatrix[c];
-        return;
+        if (c == 'i')
+        {
+            mode          = TerminalMode::TerminalInsert;
+            evt.eventType = SystemEvents::REDRAW;
+            return;
+        }
+        else if (keyTranslationMatrixNormal.find(c) != keyTranslationMatrixNormal.end())
+        {
+            evt.keyCode = keyTranslationMatrixNormal[c];
+            return;
+        }
+        else
+        {
+            evt.eventType = SystemEvents::NONE;
+            return;
+        }
     }
-    else if ((c >= 32) && (c <= 127))
+    else if (mode == TerminalMode::TerminalInsert)
     {
-        evt.asciiCode = c;
-        if (islower(c))
+        if (c == '\x1B') // ESC
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+            mode          = TerminalMode::TerminalNormal;
+            evt.eventType = SystemEvents::REDRAW;
+            return;
         }
-        else if (isupper(c))
+        else if (keyTranslationMatrixNormal.find(c) != keyTranslationMatrixNormal.end())
         {
-            evt.keyCode |= Key::Shift | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+            evt.keyCode = keyTranslationMatrixNormal[c];
+            return;
         }
-        else if (isdigit(c))
+        else if ((c >= 32) && (c <= 127))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+            evt.asciiCode = c;
+            if (islower(c))
+            {
+                evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+            }
+            else if (isupper(c))
+            {
+                evt.keyCode |= Key::Shift | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+            }
+            else if (isdigit(c))
+            {
+                evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+            }
+            else if (c == ' ')
+            {
+                evt.keyCode |= Key::Space;
+            }
+            return;
         }
-        else if (c == ' ')
+        else
         {
-            evt.keyCode |= Key::Space;
+            evt.eventType = SystemEvents::NONE;
+            return;
         }
-        return;
-    }
-    else
-    {
-        // debugChar(0, c, "unsupported key: ");
-        evt.eventType = SystemEvents::NONE;
-        return;
     }
 }
 
@@ -224,12 +254,22 @@ void NcursesTerminal::OnFlushToScreen()
         for (size_t x = 0; x < width; x++)
         {
             const AppCUI::Console::Character ch = charsBuffer[y * width + x];
-            cchar_t t                           = { 0, { ch.Code, 0 } };
+
+            cchar_t t = { 0, { ch.Code, 0 } };
             colors.SetColor(ch.Color.Forenground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Forenground, ch.Color.Background);
         }
     }
+    if (mode == TerminalMode::TerminalInsert)
+    {
+        colors.SetColor(Console::Color::White, Console::Color::Green);
+        mvaddch(height - 1, width - 3, ' ');
+        mvaddch(height - 1, width - 2, 'I');
+        mvaddch(height - 1, width - 1, ' ');
+        colors.UnsetColor(Console::Color::White, Console::Color::Green);
+    }
+    move(LastCursorY, LastCursorX);
     refresh();
 }
 

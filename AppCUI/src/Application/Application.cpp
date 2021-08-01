@@ -1,7 +1,7 @@
 #include "AppCUI.hpp"
+#include "ControlContext.hpp"
 #include "Internal.hpp"
 #include "Terminal/TerminalFactory.hpp"
-#include "ControlContext.hpp"
 
 using namespace AppCUI;
 using namespace AppCUI::Utils;
@@ -837,6 +837,9 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             break;
         case SystemEvents::SHIFT_STATE_CHANGED:
             ProcessShiftState(evnt.keyCode);
+            break;
+        case SystemEvents::REDRAW:
+            this->RepaintStatus = REPAINT_STATUS_ALL;
             break;
         default:
             break;

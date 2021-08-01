@@ -1,5 +1,6 @@
-#include <array>
 #include "Internal.hpp"
+#include <array>
+#include <map>
 
 /*
     AppCUI uses 16 colors, 16 for background and 16 for foreground.
@@ -15,8 +16,9 @@ namespace AppCUI
 {
 namespace Internal
 {
+    using AppColor = AppCUI::Console::Color;
+
     constexpr size_t NR_APPCUI_COLORS = 16;
-    using AppColor                    = AppCUI::Console::Color;
 
     class ColorManager
     {
@@ -40,14 +42,20 @@ namespace Internal
         std::array<int, NR_APPCUI_COLORS * NR_APPCUI_COLORS> pairMapping;
     };
 
-    constexpr size_t KEY_TRANSLATION_MATRIX_SIZE = 65536;
+    enum class TerminalMode : std::size_t
+    {
+        TerminalNormal = 0,
+        TerminalInsert = 1,
+    };
 
     class NcursesTerminal : public AbstractTerminal
     {
       private:
-        std::array<AppCUI::Input::Key, KEY_TRANSLATION_MATRIX_SIZE> KeyTranslationMatrix;
+        std::map<int, Input::Key> keyTranslationMatrixNormal;
+        std::map<int, Input::Key> keyTranslationMatrixInsert;
         AppCUI::Input::Key shiftState;
         ColorManager colors;
+        TerminalMode mode;
 
       public:
         virtual bool OnInit(const InitializationData& initData) override;
