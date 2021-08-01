@@ -1,11 +1,15 @@
 #include "AppCUI.hpp"
 
+#include <set>
+
 using namespace AppCUI;
 using namespace AppCUI::OS;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Console;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
+
+#define ALL_FILES_INDEX 0xFFFFFFFF
 
 // The reason this function is split between compilers is that C++20 is not fully
 // rolled on all of them.
@@ -26,13 +30,17 @@ struct FileDialogClass
     Controls::Label lbPath, lbDrive, lbName, lbExt;
     Controls::ComboBox comboDrive;
     Controls::ListView files;
-    Controls::TextField txName, txExt;
+    Controls::TextField txName;
+    Controls::ComboBox comboType;
     Controls::Button btnOK, btnCancel;
     std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
+    std::vector<std::set<unsigned int>> extensions;
     const char* defaultFileName;
     bool openDialog;
 
-    int Show(bool open, const char* fileName, const char* ext, const char* _path);
+    bool ProcessExtensionFilter(const char* start, const char *end);
+
+    int Show(bool open, const char* fileName, std::string_view extensionFilter, const char* _path);
     void UpdateCurrentFolder();
     void UpdateFileList();
     bool OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID);
@@ -41,6 +49,18 @@ struct FileDialogClass
     void OnCurrentItemChanged();
 };
 
+const char * SkipSpaces(const char * start, const char * end)
+{
+    while ((start < end) && (((*start) == ' ') || ((*start) == '\t')))
+        start++;
+    return start;
+}
+const char* SkipUntilChar(const char* start, const char* end, char ch)
+{
+    while ((start < end) && ((*start) != ch))
+        start++;
+    return start;
+}
 void ConvertSizeToString(unsigned long long size, char result[32])
 {
     result[31] = 0;
@@ -63,7 +83,23 @@ void ConvertSizeToString(unsigned long long size, char result[32])
         result[poz--] = ' ';
     }
 }
-
+unsigned int __compute_hash__(const char * start, const char * end)
+{
+    // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+    unsigned int hash = 0x811c9dc5;
+    const unsigned char* p_start = (const unsigned char*) start;
+    const unsigned char* p_end   = (const unsigned char*) end;
+    while (p_start < p_end)
+    {
+        unsigned int val = *p_start;
+        if ((val >= 'A') && (val <= 'Z'))
+            val |= 32;
+        hash = hash ^ val;
+        hash = hash * 0x01000193;
+        p_start++;
+    }
+    return hash;
+}
 int FileDialog_ListViewItemComparer(
       ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
 {
@@ -82,6 +118,45 @@ bool FileDialog_EventHandler(
 {
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
+bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
+{
+    // format is: <Name>:ext,<Name>:ext, ...
+    //        or: <Name>:[ext1,ext2,ext3],<Name>:ext,....
+    if (start >= end)
+        return true;
+    LocalString<256> temp;
+    std::set<unsigned int> tempSet;
+    const char* p = start;
+    const char* n;
+    while (p<end)
+    {
+        p = SkipSpaces(p, end);
+        n = SkipUntilChar(p, end, ':');
+        CHECK(n > p, false, "Expecting a valid format (name:ext) or (name:[ext1,ext2,...extn]) !");
+        CHECK(temp.Set(p, (unsigned int) (n - p)), false, "Fail to copy name into a string !");
+        p = SkipSpaces(n + 1, end);
+        CHECK(p < end, false, "Premature end of formated string (an extension must follow ':' delimiter)");
+        if ((*p) =='[')
+        {
+            // we have a list of extensions
+        }
+        else
+        {
+            // we have one extension
+            n = SkipUntilChar(p,end,',');
+            CHECK(n > p, false, "Expecting a valid format (name:ext): an extension must have at least one character");
+            // add extension to set
+            CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
+                  false,
+                  "Fail to add item to combo-box ");
+            tempSet.clear();
+            tempSet.insert(__compute_hash__(p,n));
+            this->extensions.push_back(tempSet);
+            p = n + 1;
+        }
+    }
+}
+
 void FileDialogClass::OnClickedOnItem()
 {
     int index = files.GetCurrentItem();
@@ -239,12 +314,11 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
     }
     return true;
 }
-int FileDialogClass::Show(bool open, const char* fileName, const char* ext, const char* _path)
+int FileDialogClass::Show(bool open, const char* fileName, std::string_view extensionFilter, const char* _path)
 {
     if (fileName == nullptr)
         fileName = "";
-    if ((ext == nullptr) || (Utils::String::Len(ext) == 0))
-        ext = "*.*";
+
 
     defaultFileName = fileName;
     openDialog      = open;
@@ -274,9 +348,9 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
     lbName.Create(&wnd, "File &Name", "x:2,y:17,w:10");
     txName.Create(&wnd, fileName, "x:13,y:17,w:47");
     txName.SetHotKey('N');
-    lbExt.Create(&wnd, "File &Mask", "x:2,y:19,w:10");
-    txExt.Create(&wnd, ext, "x:13,y:19,w:47", TextFieldFlags::PROCESS_ENTER);
-    txExt.SetHotKey('M');
+    lbExt.Create(&wnd, "File &Type", "x:2,y:19,w:10");
+    comboType.Create(&wnd, "x:13,y:19,w:47");
+    comboType.SetHotKey('T');
 
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
@@ -284,23 +358,27 @@ int FileDialogClass::Show(bool open, const char* fileName, const char* ext, cons
         UpdateCurrentFolder();
     else
         lbPath.SetText(_path);
+
+    this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
+    this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
+
     UpdateFileList();
     txName.SetFocus();
     return wnd.Show();
 }
 
-const char* FileDialog::ShowSaveFileWindow(const char* fileName, const char* mask, const char* path)
+const char* FileDialog::ShowSaveFileWindow(const char* fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(false, fileName, mask, path);
+    int res = dlg.Show(false, fileName, extensionFilter, path);
     // if (res == (int) Dialogs::Result::Ok)
     //    return __tmpFDString.GetText();
     return nullptr;
 }
-const char* FileDialog::ShowOpenFileWindow(const char* fileName, const char* mask, const char* path)
+const char* FileDialog::ShowOpenFileWindow(const char* fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(true, fileName, mask, path);
+    int res = dlg.Show(true, fileName, extensionFilter, path);
     // if (res == (int) Dialogs::Result::Ok)
     //    return __tmpFDString.GetText();
     return nullptr;
