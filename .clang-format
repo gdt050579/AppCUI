@@ -71,7 +71,7 @@ SpacesInContainerLiterals                     : true
 SpacesInCStyleCastParentheses                 : false
 SpacesInParentheses                           : false
 SpacesInSquareBrackets                        : false
-Standard                                      : Cpp20
+Standard                                      : Cpp11
 TabWidth                                      : 4
 UseTab                                        : Never
 ...
