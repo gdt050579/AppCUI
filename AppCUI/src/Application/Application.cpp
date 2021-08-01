@@ -773,6 +773,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    PackControl(true);
     if (ctrl != nullptr)
     {
         CHECK(ModalControlsCount < MAX_MODAL_CONTROLS_STACK, false, "Too many modal calls !");
@@ -864,6 +865,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         LoopStatus    = LOOP_STATUS_NORMAL;
         RepaintStatus = REPAINT_STATUS_ALL;
     }
+    // pack extended control
+    PackControl(true);
     return true;
 }
 void AppCUI::Internal::Application::SendCommand(int command)
