@@ -901,7 +901,8 @@ namespace Console
 
         bool Add(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
         bool Set(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
-        bool SetWithNewLines(const char* text, const ColorPair color = NoColorPair, unsigned int textSize = 0xFFFFFFFF);
+        bool SetWithNewLines(
+              const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
         bool SetWithHotKey(
               const std::string_view text,
               unsigned int& hotKeyCharacterPosition,

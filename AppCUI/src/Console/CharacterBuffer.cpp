@@ -219,13 +219,16 @@ bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& h
     }
     return true;
 }
-bool CharacterBuffer::SetWithNewLines(const char* text, const ColorPair color, unsigned int textSize)
+bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPair color, bool isUTF8Format)
 {
-    CHECK(text, false, "Expecting a valid (non-null) text");
-    COMPUTE_TEXT_SIZE(text, textSize);
-    VALIDATE_ALLOCATED_SPACE(textSize, false);
-    Character* ch          = this->Buffer;
-    const unsigned char* p = (const unsigned char*) text;
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
+    Character* ch              = this->Buffer;
+    const unsigned char* p     = (const unsigned char*) text.data();
+    const unsigned char* p_end = p + text.size();
+    auto textSize              = text.size();
+    UnicodeChar uc;
+
     while (textSize > 0)
     {
         if ((*p) == '\r')
@@ -258,11 +261,32 @@ bool CharacterBuffer::SetWithNewLines(const char* text, const ColorPair color, u
             }
             continue;
         }
+        
         ch->Color = color;
-        ch->Code  = *p;
+        if (isUTF8Format)
+        {
+            if ((*p) < 0x80)
+            {
+                ch->Code = *p;
+                p++;
+                textSize--;
+            }
+            else
+            {
+                // unicode encoding
+                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+                ch->Code = uc.Value;
+                textSize -= uc.Length;
+                p += uc.Length;
+            }
+        }
+        else
+        {
+            ch->Code  = *p;
+            p++;
+            textSize--;
+        }
         ch++;
-        p++;
-        textSize--;
     }
     this->Count = (unsigned int) (ch - this->Buffer);
     return true;

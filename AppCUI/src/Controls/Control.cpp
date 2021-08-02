@@ -1029,19 +1029,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool 
 {
     return SetText(std::string_view(text.GetText(),text.Len()), updateHotKey);
 }
-//bool AppCUI::Controls::Control::SetText(const std::string& text, bool updateHotKey)
-//{
-//    return SetText(text.c_str(), updateHotKey, (int) text.length());
-//}
-//bool AppCUI::Controls::Control::SetText(const std::string_view& text, bool updateHotKey)
-//{
-//    LocalString<256> temp;
-//    for (auto c : text)
-//    {
-//        CHECK(temp.AddChar(c), false, "Fail to add char to string buffer");
-//    }
-//    return SetText(temp.GetText(), updateHotKey, (int) temp.Len());
-//}
+
 bool AppCUI::Controls::Control::GetText(AppCUI::Utils::String& text)
 {
     // temporary implementation
