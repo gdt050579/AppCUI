@@ -1362,7 +1362,7 @@ namespace Controls
     class EXPORT Window : public Control
     {
       public:
-        bool Create(const char* text, const char* layout, WindowFlags windowsFlags = WindowFlags::NONE);
+        bool Create(std::string_view caption, const char* layout, WindowFlags windowsFlags = WindowFlags::NONE, bool captionIsUTF8 = true);
         void Paint(Console::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
