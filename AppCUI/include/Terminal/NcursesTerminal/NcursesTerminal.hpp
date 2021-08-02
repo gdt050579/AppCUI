@@ -75,6 +75,8 @@ namespace Internal
 
         void handleMouse(SystemEvents::Event& evt, const int c);
         void handleKey(SystemEvents::Event& evt, const int c);
+        void handleKeyNormalMode(SystemEvents::Event& evt, const int c);
+        void handleKeyInsertMode(SystemEvents::Event& evt, const int c);
     };
 } // namespace Internal
 } // namespace AppCUI
