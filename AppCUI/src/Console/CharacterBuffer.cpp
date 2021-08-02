@@ -22,7 +22,7 @@ struct UnicodeChar
         textSize = AppCUI::Utils::String::Len(text);                                                                   \
     }
 
-bool UTF8_to_Unicode(const unsigned char* p, const unsigned char* end, UnicodeChar& result)
+bool UTF8_to_Unicode(const char8_t* p, const char8_t* end, UnicodeChar& result)
 {
     // unicode encoding
     if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
@@ -91,64 +91,105 @@ bool CharacterBuffer::Grow(unsigned int newSize)
     Allocated = newSize;
     return true;
 }
-bool CharacterBuffer::Add(const std::string_view text, const ColorPair color, bool isUTF8Format)
+bool CharacterBuffer::Add(const std::string_view text, const ColorPair color)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) text");
     VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
     Character* ch              = this->Buffer + this->Count;
     const unsigned char* p     = (const unsigned char*) text.data();
-    const unsigned char* p_end = p + text.size();
     auto textSize              = text.size();
-    UnicodeChar uc;
-    if (isUTF8Format)
+
+    this->Count += text.size();
+    // ASCII-Z format
+    while (textSize > 0)
     {
-        Character* ch_start = ch;
-        // UTF-8 format - use conversion from https://en.wikipedia.org/wiki/UTF-8
-        while (textSize > 0)
-        {
-            ch->Color = color;
-            if ((*p) < 0x80)
-            {
-                ch->Code = *p;
-                p++;
-                ch++;
-                textSize--;
-            }
-            else
-            {
-                // unicode encoding 
-                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
-                ch->Code = uc.Value;
-                textSize -= uc.Length;
-                p += uc.Length;
-                ch++;
-            }
-        }
-        // adjust size
-        this->Count += (ch - ch_start);
-    }
-    else
-    {
-        this->Count += text.size();
-        // ASCII-Z format
-        while (textSize > 0)
-        {
-            ch->Color = color;
-            ch->Code  = *p;
-            ch++;
-            p++;
-            textSize--;
-        }
+        ch->Color = color;
+        ch->Code  = *p;
+        ch++;
+        p++;
+        textSize--;
     }
     return true;
 }
+bool CharacterBuffer::Add(const std::u8string_view text, const ColorPair color)
+{
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
+    Character* ch              = this->Buffer + this->Count;
+    const char8_t* p           = (const char8_t*) text.data();
+    const char8_t* p_end       = p + text.size();
+    auto textSize              = text.size();
+    Character* ch_start        = ch;
 
-bool CharacterBuffer::Set(const std::string_view text, const ColorPair color, bool isUTF8Format)
+    UnicodeChar uc;
+
+    while (textSize > 0)
+    {
+        ch->Color = color;
+        if ((*p) < 0x80)
+        {
+            ch->Code = *p;
+            p++;
+            ch++;
+            textSize--;
+        }
+        else
+        {
+            // unicode encoding
+            CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            ch->Code = uc.Value;
+            textSize -= uc.Length;
+            p += uc.Length;
+            ch++;
+        }
+    }
+    // adjust size
+    this->Count += (ch - ch_start);
+
+    return true;
+}
+bool CharacterBuffer::Set(const std::string_view text, const ColorPair color)
 {
     this->Count = 0;
-    return Add(text, color, isUTF8Format);
+    return Add(text, color);
 }
-bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color, bool isUTF8Format)
+bool CharacterBuffer::Set(const std::u8string_view text, const ColorPair color)
+{
+    this->Count = 0;
+    return Add(text, color);
+}
+bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color)
+{
+    hotKeyCharacterPosition = 0xFFFFFFFF;
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
+    Character* ch              = this->Buffer;
+    const unsigned char* p     = (const unsigned char*) text.data();
+    auto textSize              = text.size();
+
+    while (textSize > 0)
+    {
+        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
+        {
+            char tmp = p[1] | 0x20;
+            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
+            {
+                hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
+                p++;
+                textSize--;
+                continue;
+            }
+        }
+        ch->Color = color;
+        ch->Code  = *p;
+        ch++;
+        p++;
+        textSize--;
+    }
+    this->Count = (unsigned int) (ch - this->Buffer);
+    return true;
+}
+bool CharacterBuffer::SetWithHotKey(const std::u8string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color)
 {
     hotKeyCharacterPosition = 0xFFFFFFFF;
     CHECK(text.data(), false, "Expecting a valid (non-null) text");
@@ -159,66 +200,44 @@ bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& h
     auto textSize              = text.size();
     UnicodeChar uc;
 
-    if (isUTF8Format)
+
+    while (textSize > 0)
     {
-        while (textSize > 0)
+        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
         {
-            if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
+            char tmp = p[1] | 0x20;
+            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
             {
-                char tmp = p[1] | 0x20;
-                if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
-                {
-                    hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
-                    p++;
-                    textSize--;
-                    continue;
-                }
-            }
-            ch->Color = color;
-            if ((*p) < 0x80)
-            {
-                ch->Code = *p;
+                hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
                 p++;
-                ch++;
                 textSize--;
-            }
-            else
-            {
-                // unicode encoding
-                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
-                ch->Code = uc.Value;
-                textSize -= uc.Length;
-                p += uc.Length;
-                ch++;
+                continue;
             }
         }
-        this->Count = (unsigned int) (ch - this->Buffer);
-    }
-    else
-    {
-        while (textSize > 0)
+        ch->Color = color;
+        if ((*p) < 0x80)
         {
-            if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
-            {
-                char tmp = p[1] | 0x20;
-                if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
-                {
-                    hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
-                    p++;
-                    textSize--;
-                    continue;
-                }
-            }
-            ch->Color = color;
-            ch->Code  = *p;
-            ch++;
+            ch->Code = *p;
             p++;
+            ch++;
             textSize--;
         }
-        this->Count = (unsigned int) (ch - this->Buffer);
+        else
+        {
+            // unicode encoding
+            // CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            ch->Code = uc.Value;
+            textSize -= uc.Length;
+            p += uc.Length;
+            ch++;
+        }
     }
+    this->Count = (unsigned int) (ch - this->Buffer);
+    
     return true;
 }
+
+
 bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPair color, bool isUTF8Format)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) text");
@@ -274,7 +293,7 @@ bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPa
             else
             {
                 // unicode encoding
-                CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+                //CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
                 ch->Code = uc.Value;
                 textSize -= uc.Length;
                 p += uc.Length;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <filesystem>
 #include <vector>
+#include <variant>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #    ifdef BUILD_FOR_WINDOWS
@@ -899,15 +900,17 @@ namespace Console
             return Buffer;
         }
 
-        bool Add(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
-        bool Set(const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
+        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
+        bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
+        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
+        bool Set(const std::u8string_view text, const ColorPair color = NoColorPair);
+
         bool SetWithNewLines(
               const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
         bool SetWithHotKey(
-              const std::string_view text,
-              unsigned int& hotKeyCharacterPosition,
-              const ColorPair color = NoColorPair,
-              bool isUTF8Format     = true);
+              const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
+        bool SetWithHotKey(
+              const std::u8string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(
@@ -1226,7 +1229,14 @@ namespace Controls
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
-        bool Init(Control* parent, std::string_view caption, const char* layout, bool computeHotKey = false, bool captionIsUTF8 = true);
+
+        bool Init(
+              Control* parent,
+              std::variant <const std::string_view,const std::u8string_view> &caption,
+              const char* layout,
+              bool computeHotKey = false);
+        bool Init(Control* parent, const std::string_view caption, const char* layout, bool computeHotKey = false);
+        bool Init(Control* parent, const std::u8string_view caption, const char* layout, bool computeHotKey = false);
 
       public:
         Control();

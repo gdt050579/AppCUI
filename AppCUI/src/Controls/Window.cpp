@@ -138,7 +138,7 @@ Window::~Window()
 bool Window::Create(std::string_view caption, const char* layout, WindowFlags Flags, bool captionIsUTF8)
 {
     CONTROL_INIT_CONTEXT(WindowControlContext);
-    CHECK(Init(nullptr, caption, layout, false, captionIsUTF8), false, "Failed to create window !");
+    CHECK(Init(nullptr, caption, layout, false), false, "Failed to create window !");
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
