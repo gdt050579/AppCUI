@@ -58,8 +58,16 @@ bool NcursesTerminal::initInput()
     keyTranslationMatrixInsert[KEY_ESCAPE]    = Key::Escape;
     keyTranslationMatrixInsert[KEY_TAB]       = Key::Tab;
 
-    // In normal mode allow only ESC
+    // In normal mode allow only some keys
     keyTranslationMatrixNormal[KEY_ESCAPE] = Key::Escape;
+    keyTranslationMatrixNormal[KEY_UP]     = Key::Up;
+    keyTranslationMatrixNormal[KEY_RIGHT]  = Key::Right;
+    keyTranslationMatrixNormal[KEY_DOWN]   = Key::Down;
+    keyTranslationMatrixNormal[KEY_LEFT]   = Key::Left;
+    keyTranslationMatrixNormal[KEY_PPAGE]  = Key::PageUp;
+    keyTranslationMatrixNormal[KEY_NPAGE]  = Key::PageDown;
+    keyTranslationMatrixNormal[KEY_HOME]   = Key::Home;
+    keyTranslationMatrixNormal[KEY_END]    = Key::End;
 
     mode       = TerminalMode::TerminalNormal;
     shiftState = Key::Ctrl;
