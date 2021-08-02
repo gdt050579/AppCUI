@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Terminal.cpp TerminalInput.cpp TerminalScreen.cpp)
+target_sources(AppCUI PRIVATE SDLTerminal.cpp SDLTerminalInput.cpp SDLTerminalScreen.cpp)

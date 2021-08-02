@@ -12,6 +12,8 @@ using namespace AppCUI::Input;
 #define COMMAND_ID_ENTER             5
 #define COMMAND_ID_ALT               6
 #define COMMAND_ID_ALT_CTRL          7
+#define COMMAND_ID_CTRL_A            8
+#define COMMAND_ID_CTRL_SHIFT_A      9
 
 class MyWin : public AppCUI::Controls::Window
 {
@@ -32,6 +34,8 @@ class MyWin : public AppCUI::Controls::Window
         cmd.SetCommand(Key::Enter, "Some action", COMMAND_ID_ENTER);
         cmd.SetCommand(Key::Alt | Key::A, "Alt Mod Letter", COMMAND_ID_ALT);
         cmd.SetCommand(Key::Alt | Key::Ctrl | Key::F1, "Alt+Ctrl command pressed", COMMAND_ID_ALT_CTRL);
+        cmd.SetCommand(Key::Ctrl | Key::A, "Ctrl+A command!", COMMAND_ID_CTRL_A);
+        cmd.SetCommand(Key::Ctrl | Key::Shift | Key::A, "Ctrl+Shift+A command!", COMMAND_ID_CTRL_SHIFT_A);
         return true;
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
@@ -65,6 +69,12 @@ class MyWin : public AppCUI::Controls::Window
                 break;
             case COMMAND_ID_ALT_CTRL:
                 l1.SetText("Alt+Ctrl+F1 modifier!");
+                break;
+            case COMMAND_ID_CTRL_A:
+                l1.SetText("Ctrl+A modifier");
+                break;
+            case COMMAND_ID_CTRL_SHIFT_A:
+                l1.SetText("Ctrl+Shift+A modifier");
                 break;
             }
         }

@@ -70,7 +70,8 @@ namespace Internal
             APP_CLOSE,
             APP_RESIZED,
             KEY_PRESSED,
-            SHIFT_STATE_CHANGED
+            SHIFT_STATE_CHANGED,
+            REDRAW,
         };
         struct Event
         {
