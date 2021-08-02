@@ -731,9 +731,10 @@ AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(Control* parent, const char* text, const char* layout, bool computeHotKey)
+bool AppCUI::Controls::Control::Init(
+      Control* parent, std::string_view caption, const char* layout, bool computeHotKey, bool captionIsUTF8)
 {
-    CHECK(text != nullptr, false, "text parameter must not be nullptr !");
+    CHECK(caption.data() != nullptr, false, "text parameter must not be nullptr !");
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
     CHECK(CTRLC->UpdateLayoutFormat(layout), false, "Invalid format !");
@@ -741,14 +742,15 @@ bool AppCUI::Controls::Control::Init(Control* parent, const char* text, const ch
 
     if (computeHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text, CTRLC->HotKeyOffset))
+        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair, captionIsUTF8))
         {
-            this->SetHotKey(text[CTRLC->HotKeyOffset + 1]);
+            if (CTRLC->HotKeyOffset != 0xFFFFFFFF)
+                this->SetHotKey(CTRLC->Text.GetBuffer()[CTRLC->HotKeyOffset].Code);
         }
     }
     else
     {
-        CTRLC->Text.Set(text);
+        CTRLC->Text.Set(caption, NoColorPair, captionIsUTF8);
     }
     CTRLC->Inited = true;
     //

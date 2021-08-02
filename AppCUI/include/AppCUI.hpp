@@ -1226,7 +1226,7 @@ namespace Controls
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
-        bool Init(Control* parent, const char* text, const char* layout, bool computeHotKey = false);
+        bool Init(Control* parent, std::string_view caption, const char* layout, bool computeHotKey = false, bool captionIsUTF8 = true);
 
       public:
         Control();
