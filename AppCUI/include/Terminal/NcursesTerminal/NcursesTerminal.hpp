@@ -51,9 +51,7 @@ namespace Internal
     class NcursesTerminal : public AbstractTerminal
     {
       private:
-        std::map<int, Input::Key> keyTranslationMatrixNormal;
-        std::map<int, Input::Key> keyTranslationMatrixInsert;
-        AppCUI::Input::Key shiftState;
+        std::map<int, Input::Key> keyTranslationMatrix;
         ColorManager colors;
         TerminalMode mode;
 

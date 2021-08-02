@@ -35,42 +35,30 @@ bool NcursesTerminal::initInput()
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
-        keyTranslationMatrixInsert[KEY_F(i + 1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
+        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
 
         // If we press F1 + shift => it generates F13
-        keyTranslationMatrixInsert[KEY_F(i + 13)] =
-              static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
+        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
     }
 
-    keyTranslationMatrixInsert[KEY_ENTER]     = Key::Enter;
-    keyTranslationMatrixInsert[13]            = Key::Enter;
-    keyTranslationMatrixInsert[10]            = Key::Enter;
-    keyTranslationMatrixInsert[KEY_UP]        = Key::Up;
-    keyTranslationMatrixInsert[KEY_RIGHT]     = Key::Right;
-    keyTranslationMatrixInsert[KEY_DOWN]      = Key::Down;
-    keyTranslationMatrixInsert[KEY_LEFT]      = Key::Left;
-    keyTranslationMatrixInsert[KEY_PPAGE]     = Key::PageUp;
-    keyTranslationMatrixInsert[KEY_NPAGE]     = Key::PageDown;
-    keyTranslationMatrixInsert[KEY_HOME]      = Key::Home;
-    keyTranslationMatrixInsert[KEY_END]       = Key::End;
-    keyTranslationMatrixInsert[KEY_BACKSPACE] = Key::Backspace;
-    keyTranslationMatrixInsert[KEY_DELETE]    = Key::Backspace;
-    keyTranslationMatrixInsert[KEY_ESCAPE]    = Key::Escape;
-    keyTranslationMatrixInsert[KEY_TAB]       = Key::Tab;
+    keyTranslationMatrix[KEY_ENTER]     = Key::Enter;
+    keyTranslationMatrix[13]            = Key::Enter;
+    keyTranslationMatrix[10]            = Key::Enter;
+    keyTranslationMatrix[KEY_ESCAPE]    = Key::Escape;
+    keyTranslationMatrix[KEY_DELETE]    = Key::Delete;
+    keyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
+    keyTranslationMatrix[KEY_TAB]       = Key::Tab;
+    keyTranslationMatrix[KEY_LEFT]      = Key::Left;
+    keyTranslationMatrix[KEY_UP]        = Key::Up;
+    keyTranslationMatrix[KEY_DOWN]      = Key::Down;
+    keyTranslationMatrix[KEY_RIGHT]     = Key::Right;
+    keyTranslationMatrix[KEY_PPAGE]     = Key::PageUp;
+    keyTranslationMatrix[KEY_NPAGE]     = Key::PageDown;
+    keyTranslationMatrix[KEY_HOME]      = Key::Home;
+    keyTranslationMatrix[KEY_END]       = Key::End;
+    keyTranslationMatrix[KEY_DELETE]    = Key::Backspace;
 
-    // In normal mode allow only some keys
-    keyTranslationMatrixNormal[KEY_ESCAPE] = Key::Escape;
-    keyTranslationMatrixNormal[KEY_UP]     = Key::Up;
-    keyTranslationMatrixNormal[KEY_RIGHT]  = Key::Right;
-    keyTranslationMatrixNormal[KEY_DOWN]   = Key::Down;
-    keyTranslationMatrixNormal[KEY_LEFT]   = Key::Left;
-    keyTranslationMatrixNormal[KEY_PPAGE]  = Key::PageUp;
-    keyTranslationMatrixNormal[KEY_NPAGE]  = Key::PageDown;
-    keyTranslationMatrixNormal[KEY_HOME]   = Key::Home;
-    keyTranslationMatrixNormal[KEY_END]    = Key::End;
-
-    mode       = TerminalMode::TerminalNormal;
-    shiftState = Key::Ctrl;
+    mode = TerminalMode::TerminalNormal;
 
     return true;
 }
@@ -108,9 +96,9 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvents::Event& evt, const int c)
         return;
     }
 
-    if (keyTranslationMatrixNormal.find(c) != keyTranslationMatrixNormal.end())
+    if (keyTranslationMatrix.find(c) != keyTranslationMatrix.end())
     {
-        evt.keyCode = keyTranslationMatrixNormal[c];
+        evt.keyCode = keyTranslationMatrix[c];
         return;
     }
 
@@ -142,9 +130,9 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvents::Event& evt, const int c)
         return;
     }
 
-    if (keyTranslationMatrixInsert.find(c) != keyTranslationMatrixInsert.end())
+    if (keyTranslationMatrix.find(c) != keyTranslationMatrix.end())
     {
-        evt.keyCode = keyTranslationMatrixInsert[c];
+        evt.keyCode = keyTranslationMatrix[c];
         return;
     }
 
