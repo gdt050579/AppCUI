@@ -6,6 +6,7 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Console;
+using namespace AppCUI::Utils;
 
 #define CTRLC ((ControlContext*) Context)
 
@@ -731,20 +732,16 @@ AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(
-      Control* parent,
-      std::variant<const std::string_view, const std::u8string_view>& caption,
-      const char* layout,
-      bool computeHotKey)
+bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption, const char* layout, bool computeHotKey)
 {
-    bool isUTF8 = std::holds_alternative<const std::u8string_view>(caption);
+    bool isUTF8 = std::holds_alternative<std::u8string_view>(caption);
     
     if (isUTF8)
     {
-        CHECK(std::get<const std::u8string_view>(caption).data(), false, "Expecting a valid (non-null) ascii string ");
+        CHECK(std::get<std::u8string_view>(caption).data(), false, "Expecting a valid (non-null) ascii string ");
     }
     else {
-        CHECK(std::get<const std::string_view>(caption).data(), false, "Expecting a valid (non-null) UTF-8 string ");
+        CHECK(std::get<std::string_view>(caption).data(), false, "Expecting a valid (non-null) UTF-8 string ");
     }
 
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
@@ -755,38 +752,14 @@ bool AppCUI::Controls::Control::Init(
     if (computeHotKey)
     {
         CTRLC->HotKeyOffset = 0xFFFFFFFF;
-        if (isUTF8)
-        {
-            CHECK(CTRLC->Text.SetWithHotKey(
-                        std::get<const std::u8string_view>(caption), CTRLC->HotKeyOffset , NoColorPair),
-                  false,
-                  "Fail to set text with UTF8 value");
-        }
-        else
-        {
-            CHECK(CTRLC->Text.SetWithHotKey(
-                        std::get<const std::string_view>(caption), CTRLC->HotKeyOffset, NoColorPair),
-                  false,
-                  "Fail to set text with UTF8 value");
-        }  
+        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset , NoColorPair),false,"Fail to set text with UTF8 value");
 
         if (CTRLC->HotKeyOffset != 0xFFFFFFFF)
             this->SetHotKey(CTRLC->Text.GetBuffer()[CTRLC->HotKeyOffset].Code);
     }
     else
     {
-        if (isUTF8)
-        {
-            CHECK(CTRLC->Text.Set(std::get<const std::u8string_view>(caption), NoColorPair),
-                  false,
-                  "Fail to set text with UTF8 value");
-        }
-        else
-        {
-            CHECK(CTRLC->Text.Set(std::get<const std::string_view>(caption), NoColorPair),
-                  false,
-                  "Fail to set text with UTF8 value");      
-        }            
+        CHECK(CTRLC->Text.Set(caption, NoColorPair), false, "Fail to set text with UTF8 value");
     }
     CTRLC->Inited = true;
     //
@@ -798,16 +771,7 @@ bool AppCUI::Controls::Control::Init(
 
     return true;
 }
-bool AppCUI::Controls::Control::Init(Control* parent, std::string_view caption, const char* layout, bool computeHotKey)
-{
-    std::variant<const std::string_view, const std::u8string_view> tmpCaption = caption;
-    return Init(parent, tmpCaption, layout, computeHotKey);
-}
-bool AppCUI::Controls::Control::Init(Control* parent, std::u8string_view caption, const char* layout, bool computeHotKey)
-{
-    std::variant<const std::string_view, const std::u8string_view> tmpCaption = caption;
-    return Init(parent, tmpCaption, layout, computeHotKey);
-}
+
 bool AppCUI::Controls::Control::AddControl(Control* ctrl)
 {
     CHECK(ctrl != nullptr, false, "Invalid control (nullptr)");
@@ -1056,21 +1020,23 @@ void AppCUI::Controls::Control::RecomputeLayout()
 
     AppCUI::Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const std::string_view text, bool updateHotKey)
+bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey)
 {
-    if (OnBeforeSetText(text.data()) == false)
-        return false;
+    // GDT: need to rethink this callback
+    //if (OnBeforeSetText(text.data()) == false)
+    //    return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(text, CTRLC->HotKeyOffset, NoColorPair) == false)
+        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair) == false)
             return false;
     }
     else
     {
-        if (CTRLC->Text.Set(text, NoColorPair) == false)
+        if (CTRLC->Text.Set(caption, NoColorPair) == false)
             return false;
     }
-    OnAfterSetText(text.data());
+    // GDT: need to rethink this callback
+    //OnAfterSetText(text.data());
     return true;
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool updateHotKey)

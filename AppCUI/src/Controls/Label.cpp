@@ -3,13 +3,13 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 
-bool Label::Create(Control* parent, const char* text, const char* layout)
+bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);
     Members->Layout.MinHeight = 1;
     Members->Layout.MinWidth  = 1;
-    CHECK(Init(parent, text, layout, true), false, "Failed to create label !");
+    CHECK(Init(parent, caption, layout, true), false, "Failed to create label !");
     Members->HotKey = AppCUI::Input::Key::None; // A label can draw a hot key, but does not have an associated one
     Members->Flags  = GATTR_ENABLE | GATTR_VISIBLE;
     return true;

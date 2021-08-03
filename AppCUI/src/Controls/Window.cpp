@@ -135,7 +135,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-bool Window::Create(std::string_view caption, const char* layout, WindowFlags Flags, bool captionIsUTF8)
+bool Window::Create(const AppCUI::Utils::ConstString & caption, const char* layout, WindowFlags Flags)
 {
     CONTROL_INIT_CONTEXT(WindowControlContext);
     CHECK(Init(nullptr, caption, layout, false), false, "Failed to create window !");

@@ -1,4 +1,4 @@
-#include "AppCUI.hpp"
+﻿#include "AppCUI.hpp"
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
@@ -14,7 +14,7 @@ class SimpleWin : public AppCUI::Controls::Window
         this->Create("UNICODE test ", "a:c,w:40,h:15");
         l1.Create(
               this,
-              "Words in German and Franch: \n - Déjà vu, Schön, Groß, Fähig\n"
+              u8"Words in German and Franch: \n - Déjà vu, Schön, Groß, Fähig\n"
               "Words in Russian: \n - Любовь, Кошка, Улыбаться\n"
               "Math symbols: ∑ ∫ ∏\n"
               "Cards: ♠ ♣ ♥ ♦\n"

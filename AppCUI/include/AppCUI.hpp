@@ -126,6 +126,10 @@
 
 namespace AppCUI
 {
+namespace Utils
+{
+    using ConstString = std::variant<std::string_view, std::u8string_view>;
+}
 namespace Application
 {
     struct Config;
@@ -882,8 +886,18 @@ namespace Console
         Character* Buffer;
         unsigned int Count;
         unsigned int Allocated;
-        bool Grow(unsigned int newSize);
 
+        bool Grow(unsigned int newSize);
+        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
+        bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
+        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
+        bool Set(const std::u8string_view text, const ColorPair color = NoColorPair);
+        bool SetWithHotKey(
+              const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
+        bool SetWithHotKey(
+              const std::u8string_view text,
+              unsigned int& hotKeyCharacterPosition,
+              const ColorPair color = NoColorPair);
       public:
         CharacterBuffer();
         ~CharacterBuffer();
@@ -900,17 +914,16 @@ namespace Console
             return Buffer;
         }
 
-        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
-        bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
-        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
-        bool Set(const std::u8string_view text, const ColorPair color = NoColorPair);
+        bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
+        bool Set(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
+        bool SetWithHotKey(
+              const AppCUI::Utils::ConstString& text,
+              unsigned int& hotKeyCharacterPosition,
+              const ColorPair color = NoColorPair);
 
         bool SetWithNewLines(
               const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
-        bool SetWithHotKey(
-              const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
-        bool SetWithHotKey(
-              const std::u8string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
+
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(
@@ -1230,13 +1243,7 @@ namespace Controls
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
 
-        bool Init(
-              Control* parent,
-              std::variant <const std::string_view,const std::u8string_view> &caption,
-              const char* layout,
-              bool computeHotKey = false);
-        bool Init(Control* parent, const std::string_view caption, const char* layout, bool computeHotKey = false);
-        bool Init(Control* parent, const std::u8string_view caption, const char* layout, bool computeHotKey = false);
+        bool Init(Control* parent, const AppCUI::Utils::ConstString & caption, const char* layout, bool computeHotKey = false);
 
       public:
         Control();
@@ -1297,7 +1304,7 @@ namespace Controls
         // Text
         //bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
         //bool SetText(const std::string& text, bool updateHotKey = false);
-        bool SetText(const std::string_view text, bool updateHotKey = false);
+        bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
         bool GetText(AppCUI::Utils::String& text);
 
@@ -1372,7 +1379,7 @@ namespace Controls
     class EXPORT Window : public Control
     {
       public:
-        bool Create(std::string_view caption, const char* layout, WindowFlags windowsFlags = WindowFlags::NONE, bool captionIsUTF8 = true);
+        bool Create(const AppCUI::Utils::ConstString& caption, const char* layout, WindowFlags windowsFlags = WindowFlags::NONE);
         void Paint(Console::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
@@ -1394,7 +1401,7 @@ namespace Controls
     class EXPORT Label : public Control
     {
       public:
-        bool Create(Control* parent, const char* text, const char* layout);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout);
         void Paint(Console::Renderer& renderer) override;
     };
     class EXPORT Button : public Control
