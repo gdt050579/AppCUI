@@ -151,11 +151,6 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
         return;
     }
 
-    if (e.type == SDL_WINDOWEVENT_SIZE_CHANGED)
-    {
-        volatile int j = 0;
-    }
-
     switch (e.type)
     {
     case SDL_QUIT:
@@ -183,7 +178,8 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
             }
             else if (e.window.event == SDL_WINDOWEVENT_CLOSE)
             {
-                evnt.eventType = SystemEvents::APP_CLOSE;
+                e.type = SDL_QUIT;
+                SDL_PushEvent(&e);
             }
         }
         break;
