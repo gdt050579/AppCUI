@@ -1,13 +1,14 @@
 #ifndef __APPCUI_MAIN_HEADER__
 #define __APPCUI_MAIN_HEADER__
 
+#include "Features.hpp"
+#include <filesystem>
+#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <optional>
-#include <memory>
-#include <filesystem>
-#include <vector>
 #include <variant>
+#include <vector>
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #    ifdef BUILD_FOR_WINDOWS
@@ -652,7 +653,7 @@ namespace OS
         void Close() override;
     };
 
-    EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>> & specialFolderLists);
+    EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists);
 
 } // namespace OS
 namespace Console
@@ -900,6 +901,7 @@ namespace Console
               const ColorPair color = NoColorPair);
         bool SetWithNewLines(const std::u8string_view text, const ColorPair color = NoColorPair);
         bool SetWithNewLines(const std::string_view text, const ColorPair color = NoColorPair);
+
       public:
         CharacterBuffer();
         ~CharacterBuffer();
@@ -1244,7 +1246,11 @@ namespace Controls
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
 
-        bool Init(Control* parent, const AppCUI::Utils::ConstString & caption, const char* layout, bool computeHotKey = false);
+        bool Init(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const char* layout,
+              bool computeHotKey = false);
 
       public:
         Control();
@@ -1303,8 +1309,8 @@ namespace Controls
         void PackView();
 
         // Text
-        //bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
-        //bool SetText(const std::string& text, bool updateHotKey = false);
+        // bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
+        // bool SetText(const std::string& text, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
         bool GetText(AppCUI::Utils::String& text);
@@ -1380,7 +1386,10 @@ namespace Controls
     class EXPORT Window : public Control
     {
       public:
-        bool Create(const AppCUI::Utils::ConstString& caption, const char* layout, WindowFlags windowsFlags = WindowFlags::NONE);
+        bool Create(
+              const AppCUI::Utils::ConstString& caption,
+              const char* layout,
+              WindowFlags windowsFlags = WindowFlags::NONE);
         void Paint(Console::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
@@ -1432,7 +1441,12 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int groupID, int controlID = 0);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const char* layout,
+              int groupID,
+              int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -1551,7 +1565,8 @@ namespace Controls
     class EXPORT Tab : public Control
     {
       public:
-        bool Create(Control* parent, const char* layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
+        bool Create(
+              Control* parent, const char* layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const char* name);
@@ -1795,10 +1810,12 @@ namespace Dialogs
 
       public:
         static void ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static void ShowNotification(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowNotification(
+              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static void ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static Result ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static Result ShowYesNoCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static Result ShowYesNoCancel(
+              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
     class EXPORT FileDialog
     {
@@ -2002,17 +2019,18 @@ namespace Application
     };
 
     EXPORT Config* GetAppConfig();
-    [[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized "
-                "properly")]] EXPORT bool
-    Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
-    [[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized "
-                "properly")]] EXPORT bool
-    Init(unsigned int width,
-         unsigned int height,
-         Application::InitializationFlags flags = Application::InitializationFlags::NONE);
-    [[nodiscard("Please check the return of the Init function. If false, AppCUI has not been initialized "
-                "properly")]] EXPORT bool
-    Init(const char* iniFile);
+
+    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
+    EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+
+    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
+    EXPORT bool Init(
+          unsigned int width,
+          unsigned int height,
+          Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+
+    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
+    EXPORT bool Init(const char* iniFile);
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
