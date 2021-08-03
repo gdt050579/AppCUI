@@ -23,6 +23,7 @@ namespace Internal
         AppCUI::Input::Key oldShiftState;
 
         SDL_Window* window;
+        Uint32 windowID;
         SDL_Renderer* renderer;
         TTF_Font* font;
         size_t charWidth;

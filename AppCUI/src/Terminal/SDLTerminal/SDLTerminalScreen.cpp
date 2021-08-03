@@ -151,8 +151,11 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
 
     window = SDL_CreateWindow(
           "AppCUI", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, pixelWidth, pixelHeight, windowFlags);
+    CHECK(window, false, "Failed to initialize SDL Window: %s", SDL_GetError());
+    windowID = SDL_GetWindowID(window);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     const size_t widthInChars  = pixelWidth / charWidth;
@@ -177,9 +180,9 @@ void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
 
-    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width                      = ScreenCanvas.GetWidth();
-    const size_t height                     = ScreenCanvas.GetHeight();
+    const AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    const size_t width                            = ScreenCanvas.GetWidth();
+    const size_t height                           = ScreenCanvas.GetHeight();
 
     for (size_t y = 0; y < height; y++)
     {
