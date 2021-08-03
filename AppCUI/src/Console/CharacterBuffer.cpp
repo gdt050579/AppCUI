@@ -208,7 +208,7 @@ bool CharacterBuffer::SetWithHotKey(const std::u8string_view text, unsigned int&
             char8_t tmp = p[1] | 0x20;
             if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
             {
-                hotKeyCharacterPosition = (unsigned int) (p - (const char8_t*) text.data());
+                hotKeyCharacterPosition = (unsigned int) (ch - this->Buffer);
                 p++;
                 textSize--;
                 continue;

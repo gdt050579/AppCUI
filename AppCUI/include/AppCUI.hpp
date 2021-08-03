@@ -1420,7 +1420,7 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       public:
-        bool Create(Control* parent, const char* text, const char* layout, int controlID = 0);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -1431,7 +1431,7 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       public:
-        bool Create(Control* parent, const char* text, const char* layout, int groupID, int controlID = 0);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int groupID, int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;

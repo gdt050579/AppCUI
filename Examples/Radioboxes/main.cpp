@@ -1,4 +1,4 @@
-#include "AppCUI.hpp"
+﻿#include "AppCUI.hpp"
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
@@ -20,8 +20,8 @@ class MyWin : public AppCUI::Controls::Window
         r2.Create(this, "&UDP connection", "x:1,y:2,w:15", RADIO_GROUP_ID_1);
         r3.Create(this, "&HTTP connection", "x:1,y:3,w:15", RADIO_GROUP_ID_1);
 
-        r4.Create(this, "Option &1", "x:30,y:1,w:15", RADIO_GROUP_ID_2);
-        r5.Create(this, "Option &2", "x:30,y:2,w:15", RADIO_GROUP_ID_2);
+        r4.Create(this, u8"Sum (∑) &1", "x:30,y:1,w:15", RADIO_GROUP_ID_2);
+        r5.Create(this, u8"Math symbol (∫) &2", "x:30,y:2,w:25", RADIO_GROUP_ID_2);
         r6.Create(this, "&3rd option with\nmultiple lines", "x:30,y:3,w:20,h:2", RADIO_GROUP_ID_2);
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
