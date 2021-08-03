@@ -1,12 +1,11 @@
-#include <string>
-#include <filesystem>
-#include <fstream>
-#include <array>
-
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include "Terminal/SDLTerminal/SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
+#include <array>
+#include <filesystem>
+#include <fstream>
+#include <string>
 
 CMRC_DECLARE(font);
 
@@ -71,20 +70,20 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     switch (initData.CharSize)
     {
     case CharacterSize::Tiny:
-        fontSize = 10;
+        fontSize = 12;
         break;
     case CharacterSize::Small:
-        fontSize = 13;
+        fontSize = 16;
         break;
     case CharacterSize::Default:
     case CharacterSize::Normal:
-        fontSize = 15;
-        break;
-    case CharacterSize::Large:
         fontSize = 18;
         break;
-    case CharacterSize::Huge:
+    case CharacterSize::Large:
         fontSize = 20;
+        break;
+    case CharacterSize::Huge:
+        fontSize = 23;
         break;
     default:
         break;
