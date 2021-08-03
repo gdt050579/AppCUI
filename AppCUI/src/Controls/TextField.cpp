@@ -206,7 +206,7 @@ TextField::~TextField()
 }
 bool TextField::Create(
       Control* parent,
-      const char* text,
+      const AppCUI::Utils::ConstString& caption,
       const char* layout,
       TextFieldFlags::Type flags,
       Handlers::SyntaxHighlightHandler handler,
@@ -219,7 +219,7 @@ bool TextField::Create(
     Members->Syntax.Handler   = nullptr;
     Members->Syntax.Context   = nullptr;
 
-    CHECK(Init(parent, text, layout, false), false, "Failed to create text field !");
+    CHECK(Init(parent, caption, layout, false), false, "Failed to create text field !");
 
     Members->Flags    = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->Modified = true;

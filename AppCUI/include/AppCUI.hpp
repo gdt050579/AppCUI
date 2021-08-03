@@ -1482,7 +1482,7 @@ namespace Controls
       public:
         bool Create(
               Control* parent,
-              const char* text,
+              const AppCUI::Utils::ConstString& caption,
               const char* layout,
               TextFieldFlags::Type flags               = TextFieldFlags::NONE,
               Handlers::SyntaxHighlightHandler handler = nullptr,
