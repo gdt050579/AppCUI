@@ -1805,8 +1805,10 @@ namespace Dialogs
         FileDialog() = delete;
 
       public:
-        static const char* ShowSaveFileWindow(const char* fileName, std::string_view extensionFilter, const char* path);
-        static const char* ShowOpenFileWindow(const char* fileName, std::string_view extensionFilter, const char* path);
+        static const char* ShowSaveFileWindow(
+              const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path);
+        static const char* ShowOpenFileWindow(
+              const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path);
     };
 
 } // namespace Dialogs

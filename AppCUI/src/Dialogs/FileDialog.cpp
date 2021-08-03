@@ -50,12 +50,13 @@ struct FileDialogClass
     std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
     std::vector<std::set<unsigned int>> extensions;
     std::set<unsigned int>* extFilter;
-    const char* defaultFileName;
+    //const char* defaultFileName;
     bool openDialog;
 
     bool ProcessExtensionFilter(const char* start, const char *end);
 
-    int Show(bool open, const char* fileName, std::string_view extensionFilter, const char* _path);
+    int Show(
+          bool open, const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
     void UpdateFileList();
@@ -233,7 +234,7 @@ void FileDialogClass::OnCurrentItemChanged()
     if (value == 2)
         txName.SetText(files.GetItemText(index, 0));
     else
-        txName.SetText(defaultFileName);
+        txName.SetText(""); // default value
 }
 void FileDialogClass::Validate()
 {
@@ -391,13 +392,12 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
     }
     return true;
 }
-int FileDialogClass::Show(bool open, const char* fileName, std::string_view extensionFilter, const char* _path)
+int FileDialogClass::Show(
+      bool open, const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* _path)
 {
-    if (fileName == nullptr)
-        fileName = "";
 
     extFilter       = nullptr;
-    defaultFileName = fileName;
+    //defaultFileName = fileName;
     openDialog      = open;
     if (open)
         wnd.Create("Open", "w:78,h:23,a:c");
@@ -446,7 +446,8 @@ int FileDialogClass::Show(bool open, const char* fileName, std::string_view exte
     return wnd.Show();
 }
 
-const char* FileDialog::ShowSaveFileWindow(const char* fileName, std::string_view extensionFilter, const char* path)
+const char* FileDialog::ShowSaveFileWindow(
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, extensionFilter, path);
@@ -454,7 +455,8 @@ const char* FileDialog::ShowSaveFileWindow(const char* fileName, std::string_vie
     //    return __tmpFDString.GetText();
     return nullptr;
 }
-const char* FileDialog::ShowOpenFileWindow(const char* fileName, std::string_view extensionFilter, const char* path)
+const char* FileDialog::ShowOpenFileWindow(
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, extensionFilter, path);
