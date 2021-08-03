@@ -1545,14 +1545,13 @@ namespace Controls
     class EXPORT TabPage : public Control
     {
       public:
-        bool Create(Control* parent, const char* text);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption);
         bool OnBeforeResize(int newWidth, int newHeight);
     };
     class EXPORT Tab : public Control
     {
       public:
-        bool Create(
-              Control* parent, const char* layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
+        bool Create(Control* parent, const char* layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const char* name);

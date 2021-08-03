@@ -286,10 +286,10 @@ bool PreviousTab(Tab* t)
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
 //===================================================================================================================
-bool TabPage::Create(Control* parent, const char* name)
+bool TabPage::Create(Control* parent, const AppCUI::Utils::ConstString& caption)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, name, "x:0,y:0,w:1,h:1", true), false, "Unable to create tab page !");
+    CHECK(Init(parent, caption, "x:0,y:0,w:1,h:1", true), false, "Unable to create tab page !");
     CREATE_CONTROL_CONTEXT(this, Members, false);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     return true;
