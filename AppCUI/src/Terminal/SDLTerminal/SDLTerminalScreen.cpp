@@ -2,6 +2,7 @@
 #include "SDL_ttf.h"
 #include "Terminal/SDLTerminal/SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
+#include <algorithm>
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -70,20 +71,20 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     switch (initData.CharSize)
     {
     case CharacterSize::Tiny:
-        fontSize = 12;
+        fontSize = 9;
         break;
     case CharacterSize::Small:
-        fontSize = 16;
+        fontSize = 12;
         break;
     case CharacterSize::Default:
     case CharacterSize::Normal:
-        fontSize = 18;
+        fontSize = 16;
         break;
     case CharacterSize::Large:
         fontSize = 20;
         break;
     case CharacterSize::Huge:
-        fontSize = 23;
+        fontSize = 25;
         break;
     default:
         break;
@@ -180,32 +181,51 @@ void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
 
-    const AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width                            = ScreenCanvas.GetWidth();
-    const size_t height                           = ScreenCanvas.GetHeight();
+    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    const size_t width                      = ScreenCanvas.GetWidth();
+    const size_t height                     = ScreenCanvas.GetHeight();
 
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
             AppCUI::Console::Character ch = charsBuffer[y * width + x];
-            const Uint16 text[]           = { ch.Code, 0 };
+            const int cuiFG               = static_cast<int>(ch.Color.Forenground);
+            const int cuiBG               = static_cast<int>(ch.Color.Background);
+            const SDL_Color& fg           = appcuiColorToSDLColor[cuiFG];
+            const SDL_Color& bg           = appcuiColorToSDLColor[cuiBG];
+            SDL_Surface* glyphSurface     = TTF_RenderGlyph_Shaded(font, ch.Code, fg, bg);
+            SDL_Texture* glyphTexture     = SDL_CreateTextureFromSurface(renderer, glyphSurface);
 
-            const int cuiFG             = static_cast<int>(ch.Color.Forenground);
-            const int cuiBG             = static_cast<int>(ch.Color.Background);
-            const SDL_Color& fg         = appcuiColorToSDLColor[cuiFG];
-            const SDL_Color& bg         = appcuiColorToSDLColor[cuiBG];
-            SDL_Surface* surfaceMessage = TTF_RenderUNICODE_Shaded(font, text, fg, bg);
-            SDL_Texture* Message        = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+            int fontCharWidth   = 0;
+            int fontCharHeight  = 0;
+            const Uint16 text[] = { ch.Code, 0 };
+            TTF_SizeUNICODE(font, text, &fontCharWidth, &fontCharHeight);
 
-            SDL_Rect Message_rect;
-            Message_rect.x = charWidth * x;
-            Message_rect.y = charHeight * y;
-            Message_rect.w = charWidth;
-            Message_rect.h = charHeight;
-            SDL_RenderCopy(renderer, Message, nullptr, &Message_rect);
-            SDL_DestroyTexture(Message);
-            SDL_FreeSurface(surfaceMessage);
+            SDL_Rect WindowRect;
+            WindowRect.x = charWidth * x;
+            WindowRect.y = charHeight * y;
+            WindowRect.w = charWidth;
+            WindowRect.h = charHeight;
+
+            // If we need a character that is 10 x 18, but this one
+            // seems to have bigger height (for example 10 x 21), then we
+            // don't scale, just crop the lower part of the character, leaving
+            // out the upper part
+            // as if they're all on the same bottom line
+            SDL_Rect CropRect;
+            CropRect.x = 0;
+            CropRect.y = 0;
+            CropRect.w = charWidth;
+            CropRect.h = charHeight;
+            if (fontCharHeight > charHeight)
+            {
+                CropRect.y = fontCharHeight - charHeight;
+            }
+
+            SDL_RenderCopy(renderer, glyphTexture, &CropRect, &WindowRect);
+            SDL_DestroyTexture(glyphTexture);
+            SDL_FreeSurface(glyphSurface);
         }
     }
 
