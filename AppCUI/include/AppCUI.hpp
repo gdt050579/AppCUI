@@ -898,6 +898,8 @@ namespace Console
               const std::u8string_view text,
               unsigned int& hotKeyCharacterPosition,
               const ColorPair color = NoColorPair);
+        bool SetWithNewLines(const std::u8string_view text, const ColorPair color = NoColorPair);
+        bool SetWithNewLines(const std::string_view text, const ColorPair color = NoColorPair);
       public:
         CharacterBuffer();
         ~CharacterBuffer();
@@ -921,8 +923,7 @@ namespace Console
               unsigned int& hotKeyCharacterPosition,
               const ColorPair color = NoColorPair);
 
-        bool SetWithNewLines(
-              const std::string_view text, const ColorPair color = NoColorPair, bool isUTF8Format = true);
+        bool SetWithNewLines(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);

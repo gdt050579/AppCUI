@@ -236,48 +236,13 @@ bool CharacterBuffer::SetWithHotKey(const std::u8string_view text, unsigned int&
     
     return true;
 }
-
-bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPair color)
-{
-    if (std::holds_alternative<std::u8string_view>(text))
-    {
-        return Add(std::get<std::u8string_view>(text), color);
-    }
-    else
-    {
-        return Add(std::get<std::string_view>(text), color);
-    }
-}
-bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPair color)
-{
-    if (std::holds_alternative<std::u8string_view>(text))
-    {
-        return Set(std::get<std::u8string_view>(text), color);
-    }
-    else
-    {
-        return Set(std::get<std::string_view>(text), color);
-    }
-}
-bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsigned int& hotKeyCharacterPosition,const ColorPair color)
-{
-    if (std::holds_alternative<std::u8string_view>(text))
-    {
-        return SetWithHotKey(std::get<std::u8string_view>(text), hotKeyCharacterPosition, color);
-    }
-    else
-    {
-        return SetWithHotKey(std::get<std::string_view>(text), hotKeyCharacterPosition, color);
-    }
-}
-
-bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPair color, bool isUTF8Format)
+bool CharacterBuffer::SetWithNewLines(const std::u8string_view text, const ColorPair color)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) text");
     VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
     Character* ch              = this->Buffer;
-    const unsigned char* p     = (const unsigned char*) text.data();
-    const unsigned char* p_end = p + text.size();
+    const char8_t* p           = text.data();
+    const char8_t* p_end       = p + text.size();
     auto textSize              = text.size();
     UnicodeChar uc;
 
@@ -313,35 +278,126 @@ bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPa
             }
             continue;
         }
-        
+
         ch->Color = color;
-        if (isUTF8Format)
+
+        if ((*p) < 0x80)
         {
-            if ((*p) < 0x80)
-            {
-                ch->Code = *p;
-                p++;
-                textSize--;
-            }
-            else
-            {
-                // unicode encoding
-                //CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
-                ch->Code = uc.Value;
-                textSize -= uc.Length;
-                p += uc.Length;
-            }
-        }
-        else
-        {
-            ch->Code  = *p;
+            ch->Code = *p;
             p++;
             textSize--;
         }
+        else
+        {
+            // unicode encoding
+            CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            ch->Code = uc.Value;
+            textSize -= uc.Length;
+            p += uc.Length;
+        }
+
         ch++;
     }
     this->Count = (unsigned int) (ch - this->Buffer);
     return true;
+}
+bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPair color)
+{
+    CHECK(text.data(), false, "Expecting a valid (non-null) text");
+    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
+    Character* ch              = this->Buffer;
+    const unsigned char* p     = (const unsigned char*) text.data();
+    const unsigned char* p_end = p + text.size();
+    auto textSize              = text.size();
+
+    while (textSize > 0)
+    {
+        if ((*p) == '\r')
+        {
+            ch->Color = color;
+            ch->Code  = NEW_LINE_CODE;
+            p++;
+            ch++;
+            textSize--;
+            if ((textSize > 0) && ((*p) == '\n'))
+            {
+                // skip
+                p++;
+                textSize--;
+            }
+            continue;
+        }
+        if ((*p) == '\n')
+        {
+            ch->Color = color;
+            ch->Code  = NEW_LINE_CODE;
+            p++;
+            ch++;
+            textSize--;
+            if ((textSize > 0) && ((*p) == '\r'))
+            {
+                // skip
+                p++;
+                textSize--;
+            }
+            continue;
+        }
+
+        ch->Color = color;
+        ch->Code = *p;
+        p++;
+        textSize--;        
+        ch++;
+    }
+    this->Count = (unsigned int) (ch - this->Buffer);
+    return true;
+}
+
+
+bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPair color)
+{
+    if (std::holds_alternative<std::u8string_view>(text))
+    {
+        return Add(std::get<std::u8string_view>(text), color);
+    }
+    else
+    {
+        return Add(std::get<std::string_view>(text), color);
+    }
+}
+bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPair color)
+{
+    if (std::holds_alternative<std::u8string_view>(text))
+    {
+        return Set(std::get<std::u8string_view>(text), color);
+    }
+    else
+    {
+        return Set(std::get<std::string_view>(text), color);
+    }
+}
+bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsigned int& hotKeyCharacterPosition,const ColorPair color)
+{
+    if (std::holds_alternative<std::u8string_view>(text))
+    {
+        return SetWithHotKey(std::get<std::u8string_view>(text), hotKeyCharacterPosition, color);
+    }
+    else
+    {
+        return SetWithHotKey(std::get<std::string_view>(text), hotKeyCharacterPosition, color);
+    }
+}
+
+bool CharacterBuffer::SetWithNewLines(const AppCUI::Utils::ConstString& text, const ColorPair color)
+{
+    if (std::holds_alternative<std::u8string_view>(text))
+    {
+        return SetWithNewLines(std::get<std::u8string_view>(text), color);
+    }
+    else
+    {
+        return SetWithNewLines(std::get<std::string_view>(text), color);
+    }
 }
 void CharacterBuffer::Clear()
 {
