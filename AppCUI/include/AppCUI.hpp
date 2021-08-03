@@ -1463,7 +1463,7 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       public:
-        bool Create(Control* parent, const char* text, const char* layout);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout);
         bool Create(Control* parent, const char* layout);
         void Paint(Console::Renderer& renderer) override;
     };
