@@ -1516,7 +1516,7 @@ namespace Controls
       public:
         bool Create(
               Control* parent,
-              const char* text,
+              const AppCUI::Utils::ConstString& caption,
               const char* layout,
               TextAreaFlags flags                      = TextAreaFlags::NONE,
               Handlers::SyntaxHighlightHandler handler = nullptr,

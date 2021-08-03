@@ -759,13 +759,12 @@ TextArea::~TextArea()
 }
 bool TextArea::Create(
       Control* parent,
-      const char* text,
+      const AppCUI::Utils::ConstString& caption,
       const char* layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
 {
-    CHECK(text != nullptr, false, "Text should not be null !");
     CONTROL_INIT_CONTEXT(TextAreaControlContext);
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, false);
     Members->Layout.MinWidth  = 5;
@@ -775,7 +774,7 @@ bool TextArea::Create(
     CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
-    CHECK(Members->Text.SetWithNewLines(text), false, "Fail to set text to internal CharactersBuffers object !");
+    CHECK(Members->Text.SetWithNewLines(caption), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
     // scroll bars
     if ((unsigned int) flags & (unsigned int) TextAreaFlags::SCROLLBARS)
