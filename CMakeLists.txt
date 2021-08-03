@@ -5,8 +5,8 @@ project(appcui VERSION 1.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if (CMAKE_BUILD_TYPE MATCHES DEBUG)
-    set_property(DEBUG_BUILD)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(DEBUG_BUILD 1)
 endif()
 
 if (MSVC)

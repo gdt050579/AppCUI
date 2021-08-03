@@ -107,10 +107,16 @@ bool SDLTerminal::initFont(const InitializationData& initData)
 
     int fontCharWidth  = 0;
     int fontCharHeight = 0;
-    // Hopefully we're using a fixed size font so all the chars are the same
+    // Hopefully we're using a fixed size font so all the char widths are the same
     TTF_SizeText(font, "A", &fontCharWidth, &fontCharHeight);
     this->charWidth  = static_cast<size_t>(fontCharWidth);
     this->charHeight = static_cast<size_t>(fontCharHeight);
+
+    // Check if it has the box drawing characters
+    CHECK(TTF_GlyphIsProvided(font, 0x2550), false, "The provided font doesn't support box chars!");
+
+    // int minx, maxx, miny, maxy, advance;
+    // TTF_GlyphMetrics(font, 0x2550, &minx, &maxx, &miny, &maxy, &advance);
     return true;
 }
 
@@ -180,7 +186,6 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
 void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
-
     AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const size_t width                      = ScreenCanvas.GetWidth();
     const size_t height                     = ScreenCanvas.GetHeight();
