@@ -1590,7 +1590,7 @@ namespace Controls
               ViewerFlags flags = ViewerFlags::NONE);
         bool Create(
               Control* parent,
-              const char* title,
+              const AppCUI::Utils::ConstString& caption,
               const char* layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,

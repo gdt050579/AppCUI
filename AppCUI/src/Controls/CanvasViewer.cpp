@@ -11,7 +11,7 @@ bool CanvasViewer::Create(
 }
 bool CanvasViewer::Create(
       Control* parent,
-      const char* title,
+      const AppCUI::Utils::ConstString& caption,
       const char* layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
@@ -20,7 +20,7 @@ bool CanvasViewer::Create(
     CHECK(canvasWidth > 0, false, "Canvas Width must be greater than 0.");
     CHECK(canvasHeight > 0, false, "Canvas Height must be greater than 0.");
     CONTROL_INIT_CONTEXT(CanvasControlContext);
-    CHECK(Init(parent, title, layout, true), false, "Failed to create Canvas viewer object");
+    CHECK(Init(parent, caption, layout, true), false, "Failed to create Canvas viewer object");
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
