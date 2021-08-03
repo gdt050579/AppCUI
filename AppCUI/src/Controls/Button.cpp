@@ -4,14 +4,14 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 using namespace AppCUI::Input;
 
-bool Button::Create(Control* parent, const char* ss, const char* layout, int controlID)
+bool Button::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);
     Members->Layout.MaxHeight = 2;
     Members->Layout.MinHeight = 2; // Exactly 2 characters
     Members->Layout.MinWidth  = 4;
-    CHECK(Init(parent, ss, layout, true), false, "Unable to create check box !");
+    CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
     Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     Members->Layout.Height = 2;
     SetControlID(controlID);

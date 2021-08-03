@@ -1407,7 +1407,7 @@ namespace Controls
     class EXPORT Button : public Control
     {
       public:
-        bool Create(Control* parent, const char* text, const char* layout, int controlID = 0);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID = 0);
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
         bool OnMouseDrag(int x, int y, int Button) override;
