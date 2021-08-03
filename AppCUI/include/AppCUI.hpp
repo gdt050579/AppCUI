@@ -1794,11 +1794,11 @@ namespace Dialogs
         MessageBox() = delete;
 
       public:
-        static void ShowError(const char* title, const char* message);
-        static void ShowNotification(const char* title, const char* message);
-        static void ShowWarning(const char* title, const char* message);
-        static Result ShowOkCancel(const char* title, const char* message);
-        static Result ShowYesNoCancel(const char* title, const char* message);
+        static void ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowNotification(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static Result ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static Result ShowYesNoCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
     class EXPORT FileDialog
     {
