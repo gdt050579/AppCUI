@@ -1384,7 +1384,7 @@ namespace Controls
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
-              const char* layout,
+              const std::string_view& layout,
               WindowFlags windowsFlags = WindowFlags::NONE);
         void Paint(Console::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
@@ -1407,13 +1407,17 @@ namespace Controls
     class EXPORT Label : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Console::Renderer& renderer) override;
     };
     class EXPORT Button : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID = 0);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              int controlID = 0);
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
         bool OnMouseDrag(int x, int y, int Button) override;
@@ -1426,7 +1430,11 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID = 0);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -1440,7 +1448,7 @@ namespace Controls
         bool Create(
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
-              const char* layout,
+              const std::string_view& layout,
               int groupID,
               int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
@@ -1453,7 +1461,7 @@ namespace Controls
     class EXPORT Splitter : public Control
     {
       public:
-        bool Create(Control* parent, const char* layout, bool vertical);
+        bool Create(Control* parent, const std::string_view& layout, bool vertical);
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool SetSecondPanelSize(int newSize);
@@ -1474,8 +1482,8 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout);
-        bool Create(Control* parent, const char* layout);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        bool Create(Control* parent, const std::string_view& layout);
         void Paint(Console::Renderer& renderer) override;
     };
     namespace TextFieldFlags
@@ -1494,7 +1502,7 @@ namespace Controls
         bool Create(
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
-              const char* layout,
+              const std::string_view& layout,
               TextFieldFlags::Type flags               = TextFieldFlags::NONE,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* Context                            = nullptr);
@@ -1527,7 +1535,7 @@ namespace Controls
         bool Create(
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
-              const char* layout,
+              const std::string_view& layout,
               TextAreaFlags flags                      = TextAreaFlags::NONE,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* handlerContext                     = nullptr);
@@ -1562,7 +1570,10 @@ namespace Controls
     {
       public:
         bool Create(
-              Control* parent, const char* layout, TabFlags flags = TabFlags::TOP_TABS, unsigned int tabPageSize = 16);
+              Control* parent,
+              const std::string_view& layout,
+              TabFlags flags           = TabFlags::TOP_TABS,
+              unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const char* name);
@@ -1581,8 +1592,8 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout);
-        bool Create(Control* parent, const char* layout);
+        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        bool Create(Control* parent, const std::string_view& layout);
     };
     enum class ViewerFlags : unsigned int
     {
@@ -1595,14 +1606,14 @@ namespace Controls
         ~CanvasViewer();
         bool Create(
               Control* parent,
-              const char* layout,
+              const std::string_view& layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags = ViewerFlags::NONE);
         bool Create(
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
-              const char* layout,
+              const std::string_view& layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags = ViewerFlags::NONE);
@@ -1653,7 +1664,7 @@ namespace Controls
     class EXPORT ListView : public Control
     {
       public:
-        bool Create(Control* parent, const char* layout, ListViewFlags flags);
+        bool Create(Control* parent, const std::string_view& layout, ListViewFlags flags);
         bool Reserve(unsigned int itemsCount);
         void Paint(Console::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -1767,7 +1778,8 @@ namespace Controls
         bool GetCurrentItemtext(Utils::String& itemText);
         ItemData GetCurrentItemUserData();
 
-        bool Create(Control* parent, const char* layout, const char* items = nullptr, char itemsSeparator = ',');
+        bool Create(
+              Control* parent, const std::string_view& layout, const char* items = nullptr, char itemsSeparator = ',');
         unsigned int GetItemsCount();
         unsigned int GetCurrentItemIndex();
         ItemData GetItemUserData(unsigned int index);

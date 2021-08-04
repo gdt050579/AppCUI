@@ -207,7 +207,7 @@ TextField::~TextField()
 bool TextField::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
-      const char* layout,
+      const std::string_view& layout,
       TextFieldFlags::Type flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)

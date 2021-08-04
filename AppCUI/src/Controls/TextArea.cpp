@@ -760,7 +760,7 @@ TextArea::~TextArea()
 bool TextArea::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
-      const char* layout,
+      const std::string_view& layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)

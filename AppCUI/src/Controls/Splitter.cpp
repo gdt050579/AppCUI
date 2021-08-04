@@ -63,7 +63,7 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-bool Splitter::Create(Control* parent, const char* layout, bool vertical)
+bool Splitter::Create(Control* parent, const std::string_view& layout, bool vertical)
 {
     CONTROL_INIT_CONTEXT(SplitterControlContext);
     CHECK(Init(parent, "", layout, false), false, "Unable to create splitter !");

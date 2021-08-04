@@ -3,7 +3,7 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 
-bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout)
+bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);

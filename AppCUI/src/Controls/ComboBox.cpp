@@ -56,7 +56,7 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-bool ComboBox::Create(Control* parent, const char* layout, const char* items, char itemsSeparator)
+bool ComboBox::Create(Control* parent, const std::string_view& layout, const char* items, char itemsSeparator)
 {
     CONTROL_INIT_CONTEXT(ComboBoxControlContext);
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);

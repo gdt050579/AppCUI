@@ -298,7 +298,7 @@ bool TabPage::OnBeforeResize(int newWidth, int newHeight)
 {
     return true;
 }
-bool Tab::Create(Control* parent, const char* layout, TabFlags flags, unsigned int tabPageSize)
+bool Tab::Create(Control* parent, const std::string_view& layout, TabFlags flags, unsigned int tabPageSize)
 {
     CHECK(tabPageSize >= 10, false, "Tab page title size should be bigger than 10");
     CHECK(tabPageSize < 1000, false, "Tab page title size should be smaller than 1000");

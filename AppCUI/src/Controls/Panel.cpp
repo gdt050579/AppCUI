@@ -6,7 +6,7 @@ using namespace AppCUI::Input;
 
 #define PANEL_ATTR_BORDER 1024
 
-bool Panel::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout)
+bool Panel::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CHECK(Init(parent, caption, layout, false), false, "Failed to create panel !");
@@ -15,7 +15,7 @@ bool Panel::Create(Control* parent, const AppCUI::Utils::ConstString& caption, c
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
     return true;
 }
-bool Panel::Create(Control* parent, const char* layout)
+bool Panel::Create(Control* parent, const std::string_view& layout)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CHECK(Init(parent, "", layout, false), false, "Failed to create panel !");

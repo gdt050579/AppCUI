@@ -5,14 +5,14 @@ using namespace AppCUI::Console;
 using namespace AppCUI::Input;
 
 bool CanvasViewer::Create(
-      Control* parent, const char* layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
+      Control* parent, const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
 {
     return this->Create(parent, "", layout, canvasWidth, canvasHeight, flags);
 }
 bool CanvasViewer::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
-      const char* layout,
+      const std::string_view& layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
       ViewerFlags flags)

@@ -4,7 +4,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Console;
 using namespace AppCUI::Input;
 
-bool AppCUI::Controls::CheckBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const char* layout, int controlID)
+bool AppCUI::Controls::CheckBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);

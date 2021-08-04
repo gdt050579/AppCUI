@@ -1268,7 +1268,7 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-bool ListView::Create(Control* parent, const char* layout, ListViewFlags flags)
+bool ListView::Create(Control* parent, const std::string_view& layout, ListViewFlags flags)
 {
     CONTROL_INIT_CONTEXT(ListViewControlContext);
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, false);
