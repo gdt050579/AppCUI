@@ -71,14 +71,14 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     switch (initData.CharSize)
     {
     case CharacterSize::Tiny:
-        fontSize = 9;
+        fontSize = 10;
         break;
     case CharacterSize::Small:
         fontSize = 12;
         break;
     case CharacterSize::Default:
     case CharacterSize::Normal:
-        fontSize = 16;
+        fontSize = 18;
         break;
     case CharacterSize::Large:
         fontSize = 20;
