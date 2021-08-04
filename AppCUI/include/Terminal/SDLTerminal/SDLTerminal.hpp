@@ -13,8 +13,6 @@ namespace AppCUI
 {
 namespace Internal
 {
-    const static std::string fontName = "Consolas.ttf";
-
     class SDLTerminal : public AbstractTerminal
     {
       private:

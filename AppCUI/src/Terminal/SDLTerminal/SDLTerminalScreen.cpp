@@ -17,22 +17,22 @@ namespace fs = std::filesystem;
 constexpr size_t NR_COLORS = 16;
 // https://devblogs.microsoft.com/commandline/updating-the-windows-console-colors/
 // something from the old scheme, something from the new scheme
-constexpr SDL_Color COLOR_BLACK        = SDL_Color{ 0, 0, 0 };
-constexpr SDL_Color COLOR_DARKBLUE     = SDL_Color{ 0, 0, 128 };
-constexpr SDL_Color COLOR_DARKGREEN    = SDL_Color{ 19, 161, 14 };
-constexpr SDL_Color COLOR_DARKCYAN     = SDL_Color{ 58, 150, 221 };
-constexpr SDL_Color COLOR_DARKRED      = SDL_Color{ 197, 15, 31 };
-constexpr SDL_Color COLOR_MAGENTA      = SDL_Color{ 136, 23, 152 };
-constexpr SDL_Color COLOR_DARKYELLOW   = SDL_Color{ 193, 156, 0 };
-constexpr SDL_Color COLOR_DARKWHITE    = SDL_Color{ 204, 204, 204 };
-constexpr SDL_Color COLOR_BRIGHTBLACK  = SDL_Color{ 118, 118, 118 };
-constexpr SDL_Color COLOR_BRIGHTBLUE   = SDL_Color{ 59, 120, 255 };
-constexpr SDL_Color COLOR_BRIGHTGREEN  = SDL_Color{ 22, 198, 12 };
-constexpr SDL_Color COLOR_BRIGHTCYAN   = SDL_Color{ 97, 214, 214 };
-constexpr SDL_Color COLOR_BRIGHTRED    = SDL_Color{ 231, 72, 86 };
-constexpr SDL_Color COLOR_BRIGHTMAGENT = SDL_Color{ 180, 0, 158 };
-constexpr SDL_Color COLOR_BRIGHTYELLOW = SDL_Color{ 249, 241, 165 };
-constexpr SDL_Color COLOR_WHITE        = SDL_Color{ 242, 242, 242 };
+constexpr SDL_Color COLOR_BLACK        = SDL_Color{ 0, 0, 0, 255 };
+constexpr SDL_Color COLOR_DARKBLUE     = SDL_Color{ 0, 0, 128, 255 };
+constexpr SDL_Color COLOR_DARKGREEN    = SDL_Color{ 19, 161, 14, 255 };
+constexpr SDL_Color COLOR_DARKCYAN     = SDL_Color{ 58, 150, 221, 255 };
+constexpr SDL_Color COLOR_DARKRED      = SDL_Color{ 197, 15, 31, 255 };
+constexpr SDL_Color COLOR_MAGENTA      = SDL_Color{ 136, 23, 152, 255 };
+constexpr SDL_Color COLOR_DARKYELLOW   = SDL_Color{ 193, 156, 0, 255 };
+constexpr SDL_Color COLOR_DARKWHITE    = SDL_Color{ 204, 204, 204, 255 };
+constexpr SDL_Color COLOR_BRIGHTBLACK  = SDL_Color{ 118, 118, 118, 255 };
+constexpr SDL_Color COLOR_BRIGHTBLUE   = SDL_Color{ 59, 120, 255, 255 };
+constexpr SDL_Color COLOR_BRIGHTGREEN  = SDL_Color{ 22, 198, 12, 255 };
+constexpr SDL_Color COLOR_BRIGHTCYAN   = SDL_Color{ 97, 214, 214, 255 };
+constexpr SDL_Color COLOR_BRIGHTRED    = SDL_Color{ 231, 72, 86, 255 };
+constexpr SDL_Color COLOR_BRIGHTMAGENT = SDL_Color{ 180, 0, 158, 255 };
+constexpr SDL_Color COLOR_BRIGHTYELLOW = SDL_Color{ 249, 241, 165, 255 };
+constexpr SDL_Color COLOR_WHITE        = SDL_Color{ 242, 242, 242, 255 };
 
 constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
     /* Black */ COLOR_BLACK,
@@ -93,11 +93,10 @@ bool SDLTerminal::initFont(const InitializationData& initData)
 
     // Load font resource
     auto fs           = cmrc::font::get_filesystem();
-    auto fontResource = fs.open("resources/" + fontName);
+    auto fontResource = fs.open(FONT_PATH);
 
     // Drop font to disk
-    const std::string fontNameFS = std::string("AppCUI_") + fontName;
-    const fs::path fontFilePath  = fs::temp_directory_path() / fontNameFS;
+    const fs::path fontFilePath = fs::temp_directory_path() / "AppCUI_Font.ttf";
     std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
     std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
 
@@ -185,14 +184,16 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
 // Optimizations would be welcome, like drawing an entire string of text with the same colors
 void SDLTerminal::OnFlushToScreen()
 {
+    // Log::ToFile("log.txt");
+
     SDL_RenderClear(renderer);
     AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width                      = ScreenCanvas.GetWidth();
-    const size_t height                     = ScreenCanvas.GetHeight();
+    const std::size_t width                 = ScreenCanvas.GetWidth();
+    const std::size_t height                = ScreenCanvas.GetHeight();
 
-    for (size_t y = 0; y < height; y++)
+    for (std::size_t y = 0; y < height; y++)
     {
-        for (size_t x = 0; x < width; x++)
+        for (std::size_t x = 0; x < width; x++)
         {
             AppCUI::Console::Character ch = charsBuffer[y * width + x];
             const int cuiFG               = static_cast<int>(ch.Color.Forenground);
@@ -202,16 +203,31 @@ void SDLTerminal::OnFlushToScreen()
             SDL_Surface* glyphSurface     = TTF_RenderGlyph_Shaded(font, ch.Code, fg, bg);
             SDL_Texture* glyphTexture     = SDL_CreateTextureFromSurface(renderer, glyphSurface);
 
-            int fontCharWidth   = 0;
-            int fontCharHeight  = 0;
+            int iFontCharWidth  = 0;
+            int iFontCharHeight = 0;
             const Uint16 text[] = { ch.Code, 0 };
-            TTF_SizeUNICODE(font, text, &fontCharWidth, &fontCharHeight);
+            TTF_SizeUNICODE(font, text, &iFontCharWidth, &iFontCharHeight);
+            const std::size_t fontCharWidth  = static_cast<std::size_t>(iFontCharWidth);
+            const std::size_t fontCharHeight = static_cast<std::size_t>(iFontCharHeight);
 
             SDL_Rect WindowRect;
             WindowRect.x = charWidth * x;
             WindowRect.y = charHeight * y;
             WindowRect.w = charWidth;
             WindowRect.h = charHeight;
+
+            /*
+            Log::Report(
+                  Log::Severity::Information,
+                  "log.txt",
+                  "",
+                  "",
+                  0,
+                  "char: %x, size: %dx%d",
+                  ch.Code,
+                  fontCharWidth,
+                  fontCharHeight);
+            */
 
             // If we need a character that is 10 x 18, but this one
             // seems to have bigger height (for example 10 x 21), then we
