@@ -58,16 +58,50 @@ bool UTF8_to_Unicode(const char8_t* p, const char8_t* end, UnicodeChar& result)
     RETURNERROR(false, "Invalid UTF-8 encoding ");
 }
 
+
 CharacterBuffer::CharacterBuffer()
 {
     Allocated = 0;
     Count     = 0;
     Buffer    = nullptr;
 }
+void CharacterBuffer::MakeACopy(const CharacterBuffer& obj)
+{
+    this->Allocated = obj.Allocated;
+    this->Count     = obj.Count;
+    if (obj.Buffer)
+    {
+        this->Buffer = new Character[obj.Allocated];
+        if (this->Buffer)
+        {
+            memcpy(this->Buffer, obj.Buffer, sizeof(Character) * obj.Count);
+            this->Allocated = obj.Allocated;
+            this->Count     = obj.Count;
+            return;
+        }
+    }
+    this->Allocated = 0;
+    this->Count     = 0;
+    this->Buffer    = nullptr;
+}
+void CharacterBuffer::Swap(CharacterBuffer& obj) noexcept
+{
+    this->Allocated = obj.Allocated;
+    this->Count     = obj.Count;
+    this->Buffer    = obj.Buffer;
+    obj.Allocated   = 0;
+    obj.Count       = 0;
+    obj.Buffer      = nullptr;
+}
+
+
 CharacterBuffer::~CharacterBuffer(void)
 {
     Destroy();
 }
+
+
+
 void CharacterBuffer::Destroy()
 {
     if (Buffer)
@@ -75,7 +109,7 @@ void CharacterBuffer::Destroy()
     Buffer = nullptr;
     Count = Allocated = 0;
 }
-bool CharacterBuffer::Grow(unsigned int newSize)
+bool CharacterBuffer::Grow(size_t newSize)
 {
     newSize = ((newSize | 15) + 1) & 0x7FFFFFFF;
     if (newSize <= (Allocated & 0x7FFFFFFF))
@@ -352,8 +386,27 @@ bool CharacterBuffer::SetWithNewLines(const std::string_view text, const ColorPa
     this->Count = (unsigned int) (ch - this->Buffer);
     return true;
 }
-
-
+int  CharacterBuffer::FindAscii(const std::string_view & text, bool ignoreCase) const
+{
+    const unsigned char* p     = (const unsigned char*) text.data();
+    const unsigned char* p_end = p + text.size();
+    Character* ch              = this->Buffer;
+    Character* ch_end          = this->Buffer + this->Count;
+    CHECK(p, -1, "Expecting a valid (non_null) text !");
+    CHECK(ch, -1, "Invalid buffer (not set)");
+    if (p == p_end)
+        return 0; // am empty string is always found
+    // the actual search
+    //while (ch<ch_end)
+    //{
+    //
+    //}
+    return -1;
+}
+int  CharacterBuffer::FindUTF8(const std::u8string_view& text, bool ignoreCase) const
+{
+    NOT_IMPLEMENTED(-1);
+}
 bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPair color)
 {
     if (std::holds_alternative<std::u8string_view>(text))
@@ -387,7 +440,6 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
         return SetWithHotKey(std::get<std::string_view>(text), hotKeyCharacterPosition, color);
     }
 }
-
 bool CharacterBuffer::SetWithNewLines(const AppCUI::Utils::ConstString& text, const ColorPair color)
 {
     if (std::holds_alternative<std::u8string_view>(text))
@@ -503,8 +555,8 @@ bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, const Color
 }
 void CharacterBuffer::SetColor(const ColorPair color)
 {
-    Character* ch   = this->Buffer;
-    unsigned int sz = this->Count;
+    Character* ch = this->Buffer;
+    size_t sz     = this->Count;
     while (sz)
     {
         ch->Color = color;
@@ -535,4 +587,68 @@ bool CharacterBuffer::CopyString(AppCUI::Utils::String& text, unsigned int start
 bool CharacterBuffer::CopyString(AppCUI::Utils::String& text)
 {
     return CopyString(text, 0, this->Count);
+}
+int  CharacterBuffer::Find(const AppCUI::Utils::ConstString& text, bool ignoreCase) const
+{
+    if (std::holds_alternative<std::u8string_view>(text))
+    {
+        return FindUTF8(std::get<std::u8string_view>(text), ignoreCase);
+    }
+    else
+    {
+        return FindAscii(std::get<std::string_view>(text), ignoreCase);
+    }
+}
+int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const
+{
+    Character* s = this->Buffer;
+    Character* s_end = s + this->Count;
+    Character* d     = obj.Buffer;
+    Character* d_end = d + obj.Count;
+
+    // null check
+    if ((s) && (!d))
+        return 1;
+    if ((!s) && (d))
+        return -1;
+    if ((!s) && (!d))
+        return 0;
+
+
+    if (!ignoreCase)
+    {
+        while ((s<s_end) && (d<d_end))    
+        {
+            if (s->Code < d->Code)
+                return -1;
+            if (s->Code > d->Code)
+                return 1;
+            s++;
+            d++;
+        }
+    }
+    else
+    {
+        char16_t s_c, d_c;
+        while ((s < s_end) && (d < d_end))
+        {
+            s_c = s->Code;
+            d_c = d->Code;
+            if ((s_c >= 'A') && (s_c <= 'Z'))
+                s_c |= 0x20;
+            if ((d_c >= 'A') && (d_c <= 'Z'))
+                d_c |= 0x20;
+            if (s_c < d_c)
+                return -1;
+            if (s_c > d_c)
+                return 1;
+            s++;
+            d++;
+        }  
+    }
+    if ((s == s_end) && (d < d_end))
+        return -1;
+    if ((s < s_end) && (d == d_end))
+        return 1;
+    return 0;
 }

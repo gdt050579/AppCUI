@@ -238,7 +238,7 @@ struct CanvasControlContext : public ControlContext
 
 struct ListViewItem
 {
-    Utils::String SubItem[MAX_LISTVIEW_COLUMNS];
+    CharacterBuffer SubItem[MAX_LISTVIEW_COLUMNS];
     ListViewItemType Type;
     unsigned short Flags;
     unsigned int XOffset;
@@ -251,6 +251,7 @@ struct ListViewItem
         this->ItemColor = col;
     }
     ListViewItem(const ListViewItem& obj);
+    ListViewItem(ListViewItem&& obj) noexcept;
 };
 struct ListViewColumn
 {
@@ -335,9 +336,9 @@ class ListViewControlContext : public ControlContext
     int GetNrColumns();
 
     // itemuri
-    ItemHandle AddItem(const char* text);
-    bool SetItemText(ItemHandle item, unsigned int subItem, const char* text);
-    const char* GetItemText(ItemHandle item, unsigned int subItem);
+    ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
+    bool SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text);
+    AppCUI::Console::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
@@ -415,5 +416,7 @@ class ComboBoxControlContext : public ControlContext
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
+
+
 
 #endif

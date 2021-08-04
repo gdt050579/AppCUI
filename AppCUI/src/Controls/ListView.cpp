@@ -106,7 +106,20 @@ ListViewItem::ListViewItem(const ListViewItem& obj)
     this->XOffset   = obj.XOffset;
     for (unsigned int tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
     {
-        this->SubItem[tr].Set(obj.SubItem[tr]);
+        this->SubItem[tr] = obj.SubItem[tr];
+    }
+}
+ListViewItem::ListViewItem(ListViewItem&& obj) noexcept
+{
+    this->Flags     = obj.Flags;
+    this->Type      = obj.Type;
+    this->ItemColor = obj.ItemColor;
+    this->Height    = obj.Height;
+    this->Data      = obj.Data;
+    this->XOffset   = obj.XOffset;
+    for (unsigned int tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
+    {
+        this->SubItem[tr] = obj.SubItem[tr];
     }
 }
 
@@ -196,10 +209,11 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
 {
     int x = 1 - Columns.XOffset;
     int itemStarts;
-    ListViewColumn* column = this->Columns.List;
-    String* subitem        = item->SubItem;
-    ColorPair itemCol      = Cfg->ListView.Item.Regular;
+    ListViewColumn* column   = this->Columns.List;
+    CharacterBuffer* subitem = item->SubItem;
+    ColorPair itemCol        = Cfg->ListView.Item.Regular;
     ColorPair checkCol, uncheckCol;
+    WriteCharacterBufferParams params;
     if (Flags & GATTR_ENABLE)
     {
         checkCol   = Cfg->ListView.CheckedSymbol;
@@ -233,6 +247,12 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     // disable is not active
     if (!(Flags & GATTR_ENABLE))
         itemCol = Cfg->ListView.Item.Inactive;
+    
+    // prepare params
+    params.Flags = WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::WRAP_TO_WIDTH |
+                   WriteCharacterBufferFlags::OVERWRITE_COLORS;
+    params.Color = itemCol;
+    
     // first column
     int end_first_column = x + ((int) column->Width);
     x += (int) item->XOffset;
@@ -249,8 +269,11 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     }
     itemStarts = x;
     if (x < end_first_column)
-        renderer.WriteSingleLineText(
-              x, y, subitem->GetText(), end_first_column - x, itemCol, column->Align, subitem->Len());
+    {
+        //renderer.WriteSingleLineText( x, y, subitem->GetText(), end_first_column - x, itemCol, column->Align, subitem->Len());
+        params.Width = end_first_column - x;
+        renderer.WriteCharacterBuffer(x, y, *subitem, params);    
+    }
 
     // rest of the columns
     x = end_first_column + 1;
@@ -258,7 +281,9 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     column++;
     for (unsigned int tr = 1; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
-        renderer.WriteSingleLineText(x, y, subitem->GetText(), column->Width, itemCol, column->Align, subitem->Len());
+        //renderer.WriteSingleLineText(x, y, subitem->GetText(), column->Width, itemCol, column->Align, subitem->Len());
+        params.Width = column->Width;
+        renderer.WriteCharacterBuffer(x, y, *subitem, params);  
         x += column->Width;
         x++;
         subitem++;
@@ -421,16 +446,15 @@ int ListViewControlContext::GetNrColumns()
     return Columns.Count;
 }
 
-ItemHandle ListViewControlContext::AddItem(const char* text)
+ItemHandle ListViewControlContext::AddItem(const AppCUI::Utils::ConstString& text)
 {
-    CHECK(text, InvalidItemHandle, "Expecting a valid (non-null) text");
     ItemHandle idx = (unsigned int) Items.List.size();
     Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
     return idx;
 }
-bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const char* text)
+bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     CHECK(subItem < Columns.Count,
@@ -438,11 +462,10 @@ bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, 
           "Invalid column index (%d), should be smaller than %d",
           subItem,
           Columns.Count);
-    CHECK(text, false, "Expecting a valid (non-null) text for a subitem value");
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
     return true;
 }
-const char* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
+AppCUI::Console::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
     CHECK(subItem < Columns.Count,
@@ -450,7 +473,7 @@ const char* ListViewControlContext::GetItemText(ItemHandle item, unsigned int su
           "Invalid column index (%d), should be smaller than %d",
           subItem,
           Columns.Count);
-    return i.SubItem[subItem].GetText();
+    return &i.SubItem[subItem];
 }
 bool ListViewControlContext::SetItemCheck(ItemHandle item, bool check)
 {
@@ -929,37 +952,37 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
             return true;
         case Key::Ctrl | Key::C:
         case Key::Ctrl | Key::Insert:
-            temp.Create(256);
-            if (Items.Indexes.Len() > 0)
-            {
-                for (unsigned int tr = 0; tr < Columns.Count; tr++)
-                {
-                    if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
-                    {
-                        temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr].GetText());
-                        if (clipboardSeparator != 0)
-                            temp.AddChar(clipboardSeparator);
-                    }
-                }
-                AppCUI::OS::Clipboard::SetText(temp);
-            }
+            //temp.Create(256);
+            //if (Items.Indexes.Len() > 0)
+            //{
+            //    for (unsigned int tr = 0; tr < Columns.Count; tr++)
+            //    {
+            //        if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
+            //        {
+            //            temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr].GetText());
+            //            if (clipboardSeparator != 0)
+            //                temp.AddChar(clipboardSeparator);
+            //        }
+            //    }
+            //    AppCUI::OS::Clipboard::SetText(temp);
+            //}
             return true;
         case Key::Ctrl | Key::Alt | Key::Insert:
-            temp.Create(4096);
-            for (unsigned int gr = 0; gr < Items.Indexes.Len(); gr++)
-            {
-                for (unsigned int tr = 0; tr < Columns.Count; tr++)
-                {
-                    if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
-                    {
-                        temp.Add(GetFilteredItem(gr)->SubItem[tr].GetText());
-                        if (clipboardSeparator != 0)
-                            temp.AddChar(clipboardSeparator);
-                    }
-                }
-                temp.Add("\r\n");
-            }
-            AppCUI::OS::Clipboard::SetText(temp);
+            //temp.Create(4096);
+            //for (unsigned int gr = 0; gr < Items.Indexes.Len(); gr++)
+            //{
+            //    for (unsigned int tr = 0; tr < Columns.Count; tr++)
+            //    {
+            //        if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
+            //        {
+            //            temp.Add(GetFilteredItem(gr)->SubItem[tr].GetText());
+            //            if (clipboardSeparator != 0)
+            //                temp.AddChar(clipboardSeparator);
+            //        }
+            //    }
+            //    temp.Add("\r\n");
+            //}
+            //AppCUI::OS::Clipboard::SetText(temp);
             return true;
         };
         // caut sort
@@ -1147,7 +1170,7 @@ int SortIndexesCompareFunction(unsigned int indx1, unsigned int indx2, void* con
         if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX))
         {
             return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(
-                  lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex].GetText(), true);
+                  lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex], true);
         }
         else
         {
@@ -1186,7 +1209,7 @@ int ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colIn
     {
         if ((i = GetFilteredItem(startPoz)) != nullptr)
         {
-            if (i->SubItem[colIndex].Contains(Filter.SearchText, true))
+            if (i->SubItem[colIndex].Contains(Filter.SearchText.GetText(), true))
                 return (int) startPoz;
         }
         startPoz++;
@@ -1216,7 +1239,7 @@ void ListViewControlContext::FilterItems()
             {
                 if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
                     continue;
-                if (lvi.SubItem[gr].Contains(this->Filter.SearchText, true))
+                if (lvi.SubItem[gr].Contains(this->Filter.SearchText.GetText(), true))
                 {
                     isOK = true;
                     break;
@@ -1390,18 +1413,18 @@ unsigned int ListView::GetColumnsCount()
     return WRAPPER->GetNrColumns();
 }
 
-ItemHandle ListView::AddItem(const char* text)
+ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text)
 {
     return WRAPPER->AddItem(text);
 }
-ItemHandle ListView::AddItem(const char* text, const char* subItem1)
+ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1)
 {
     int handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
     CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
     return handle;
 }
-ItemHandle ListView::AddItem(const char* text, const char* subItem1, const char* subItem2)
+ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1409,7 +1432,7 @@ ItemHandle ListView::AddItem(const char* text, const char* subItem1, const char*
     CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
     return handle;
 }
-ItemHandle ListView::AddItem(const char* text, const char* subItem1, const char* subItem2, const char* subItem3)
+ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1419,7 +1442,7 @@ ItemHandle ListView::AddItem(const char* text, const char* subItem1, const char*
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const char* text, const char* subItem1, const char* subItem2, const char* subItem3, const char* subItem4)
+      const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3, const AppCUI::Utils::ConstString& subItem4)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1430,12 +1453,12 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const char* text,
-      const char* subItem1,
-      const char* subItem2,
-      const char* subItem3,
-      const char* subItem4,
-      const char* subItem5)
+      const AppCUI::Utils::ConstString& text,
+      const AppCUI::Utils::ConstString& subItem1,
+      const AppCUI::Utils::ConstString& subItem2,
+      const AppCUI::Utils::ConstString& subItem3,
+      const AppCUI::Utils::ConstString& subItem4,
+      const AppCUI::Utils::ConstString& subItem5)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1447,13 +1470,13 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const char* text,
-      const char* subItem1,
-      const char* subItem2,
-      const char* subItem3,
-      const char* subItem4,
-      const char* subItem5,
-      const char* subItem6)
+      const AppCUI::Utils::ConstString& text,
+      const AppCUI::Utils::ConstString& subItem1,
+      const AppCUI::Utils::ConstString& subItem2,
+      const AppCUI::Utils::ConstString& subItem3,
+      const AppCUI::Utils::ConstString& subItem4,
+      const AppCUI::Utils::ConstString& subItem5,
+      const AppCUI::Utils::ConstString& subItem6)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1466,14 +1489,14 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const char* text,
-      const char* subItem1,
-      const char* subItem2,
-      const char* subItem3,
-      const char* subItem4,
-      const char* subItem5,
-      const char* subItem6,
-      const char* subItem7)
+      const AppCUI::Utils::ConstString& text,
+      const AppCUI::Utils::ConstString& subItem1,
+      const AppCUI::Utils::ConstString& subItem2,
+      const AppCUI::Utils::ConstString& subItem3,
+      const AppCUI::Utils::ConstString& subItem4,
+      const AppCUI::Utils::ConstString& subItem5,
+      const AppCUI::Utils::ConstString& subItem6,
+      const AppCUI::Utils::ConstString& subItem7)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1487,15 +1510,15 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const char* text,
-      const char* subItem1,
-      const char* subItem2,
-      const char* subItem3,
-      const char* subItem4,
-      const char* subItem5,
-      const char* subItem6,
-      const char* subItem7,
-      const char* subItem8)
+      const AppCUI::Utils::ConstString& text,
+      const AppCUI::Utils::ConstString& subItem1,
+      const AppCUI::Utils::ConstString& subItem2,
+      const AppCUI::Utils::ConstString& subItem3,
+      const AppCUI::Utils::ConstString& subItem4,
+      const AppCUI::Utils::ConstString& subItem5,
+      const AppCUI::Utils::ConstString& subItem6,
+      const AppCUI::Utils::ConstString& subItem7,
+      const AppCUI::Utils::ConstString& subItem8)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1510,13 +1533,17 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 
-bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const char* text)
+bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text)
 {
     return WRAPPER->SetItemText(item, subItem, text);
 }
-const char* ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
+const AppCUI::Console::CharacterBuffer& ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
 {
-    return WRAPPER->GetItemText(item, subItemIndex);
+    auto obj = WRAPPER->GetItemText(item, subItemIndex);
+    if (obj)
+        return *obj;
+    else
+        return AppCUI::Console::CharacterBuffer();
 }
 bool ListView::SetItemCheck(ItemHandle item, bool check)
 {

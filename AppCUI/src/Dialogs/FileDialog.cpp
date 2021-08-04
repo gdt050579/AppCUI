@@ -126,9 +126,9 @@ int FileDialog_ListViewItemComparer(
         return -1;
     if (v1 > v2)
         return 1;
-    const char* s1 = control->GetItemText(item1, columnIndex);
-    const char* s2 = control->GetItemText(item2, columnIndex);
-    return Utils::String::Compare(s1, s2, true);
+    auto& s1 = control->GetItemText(item1, columnIndex);
+    auto& s2 = control->GetItemText(item2, columnIndex);
+    return s1.CompareWith(s2, true);
 }
 bool FileDialog_EventHandler(
       Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* Context)
@@ -216,7 +216,7 @@ void FileDialogClass::OnClickedOnItem()
     }
     if (value == 1)
     {
-        p /= files.GetItemText(index, 0);
+        //p /= files.GetItemText(index, 0);
         // GDT: reanalize
         lbPath.SetText((const char*) p.u8string().c_str());
         UpdateFileList();
@@ -231,10 +231,10 @@ void FileDialogClass::OnCurrentItemChanged()
     if (index < 0)
         return;
     unsigned int value = files.GetItemData(index)->UInt32Value;
-    if (value == 2)
-        txName.SetText(files.GetItemText(index, 0));
-    else
-        txName.SetText(""); // default value
+    //if (value == 2)
+    //    txName.SetText(files.GetItemText(index, 0));
+    //else
+    //    txName.SetText(""); // default value
 }
 void FileDialogClass::Validate()
 {

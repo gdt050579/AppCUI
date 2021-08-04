@@ -885,10 +885,12 @@ namespace Console
     class EXPORT CharacterBuffer
     {
         Character* Buffer;
-        unsigned int Count;
-        unsigned int Allocated;
+        size_t Count;
+        size_t Allocated;
 
-        bool Grow(unsigned int newSize);
+        void MakeACopy(const CharacterBuffer&);
+        void Swap(CharacterBuffer&) noexcept;
+        bool Grow(size_t newSize);
         bool Add(const std::string_view text, const ColorPair color = NoColorPair);
         bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
         bool Set(const std::string_view text, const ColorPair color = NoColorPair);
@@ -901,15 +903,24 @@ namespace Console
               const ColorPair color = NoColorPair);
         bool SetWithNewLines(const std::u8string_view text, const ColorPair color = NoColorPair);
         bool SetWithNewLines(const std::string_view text, const ColorPair color = NoColorPair);
-
+        int  FindAscii(const std::string_view& text, bool ignoreCase) const;
+        int  FindUTF8(const std::u8string_view& text, bool ignoreCase) const;
       public:
         CharacterBuffer();
+        inline CharacterBuffer(const CharacterBuffer& obj)
+        {
+            MakeACopy(obj);
+        }
+        inline CharacterBuffer(CharacterBuffer&& obj) noexcept
+        {
+            Swap(obj);
+        }
         ~CharacterBuffer();
 
         void Destroy();
         void Clear();
 
-        inline unsigned int Len() const
+        inline size_t Len() const
         {
             return Count;
         }
@@ -940,6 +951,16 @@ namespace Console
         void SetColor(const ColorPair color);
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
         bool CopyString(Utils::String& text);
+
+        int  Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
+        inline bool Contains(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const
+        {
+            return Find(text, ignoreCase) != -1;
+        }
+        int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+
+        inline CharacterBuffer& operator=(const CharacterBuffer& obj) { MakeACopy(obj); return *this; }
+        inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept { Swap(obj); return *this; }
     };
 
     class EXPORT Image
@@ -1688,50 +1709,50 @@ namespace Controls
         unsigned int GetColumnsCount();
 
         // items add
-        ItemHandle AddItem(const char* text);
-        ItemHandle AddItem(const char* text, const char* subItem1);
-        ItemHandle AddItem(const char* text, const char* subItem1, const char* subItem2);
-        ItemHandle AddItem(const char* text, const char* subItem1, const char* subItem2, const char* subItem3);
+        ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
+        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1);
+        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2);
+        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3);
         ItemHandle AddItem(
-              const char* text, const char* subItem1, const char* subItem2, const char* subItem3, const char* subItem4);
+              const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3, const AppCUI::Utils::ConstString& subItem4);
         ItemHandle AddItem(
-              const char* text,
-              const char* subItem1,
-              const char* subItem2,
-              const char* subItem3,
-              const char* subItem4,
-              const char* subItem5);
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3,
+              const AppCUI::Utils::ConstString& subItem4,
+              const AppCUI::Utils::ConstString& subItem5);
         ItemHandle AddItem(
-              const char* text,
-              const char* subItem1,
-              const char* subItem2,
-              const char* subItem3,
-              const char* subItem4,
-              const char* subItem5,
-              const char* subItem6);
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3,
+              const AppCUI::Utils::ConstString& subItem4,
+              const AppCUI::Utils::ConstString& subItem5,
+              const AppCUI::Utils::ConstString& subItem6);
         ItemHandle AddItem(
-              const char* text,
-              const char* subItem1,
-              const char* subItem2,
-              const char* subItem3,
-              const char* subItem4,
-              const char* subItem5,
-              const char* subItem6,
-              const char* subItem7);
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3,
+              const AppCUI::Utils::ConstString& subItem4,
+              const AppCUI::Utils::ConstString& subItem5,
+              const AppCUI::Utils::ConstString& subItem6,
+              const AppCUI::Utils::ConstString& subItem7);
         ItemHandle AddItem(
-              const char* text,
-              const char* subItem1,
-              const char* subItem2,
-              const char* subItem3,
-              const char* subItem4,
-              const char* subItem5,
-              const char* subItem6,
-              const char* subItem7,
-              const char* subItem8);
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3,
+              const AppCUI::Utils::ConstString& subItem4,
+              const AppCUI::Utils::ConstString& subItem5,
+              const AppCUI::Utils::ConstString& subItem6,
+              const AppCUI::Utils::ConstString& subItem7,
+              const AppCUI::Utils::ConstString& subItem8);
 
         // items properties
-        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const char* text);
-        const char* GetItemText(ItemHandle item, unsigned int subItemIndex);
+        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const AppCUI::Utils::ConstString& text);
+        const AppCUI::Console::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
         bool SetItemCheck(ItemHandle item, bool check);
         bool SetItemSelect(ItemHandle item, bool select);
         bool SetItemColor(ItemHandle item, AppCUI::Console::ColorPair color);
