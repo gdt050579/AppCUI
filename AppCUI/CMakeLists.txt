@@ -18,7 +18,7 @@ if (SDL2_FOUND)
     message("Have SDL2")
     # Add font used by SDL 
     include(CMakeRC)
-    cmrc_add_resource_library(font resources/CourierNew.ttf)
+    cmrc_add_resource_library(font resources/Consolas.ttf)
     target_include_directories(AppCUI PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
     set(FONT_LIB_NAME font)
 else()

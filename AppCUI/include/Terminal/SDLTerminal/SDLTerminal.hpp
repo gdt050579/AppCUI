@@ -1,20 +1,19 @@
 #ifndef _SDL_TERMINAL_INCLUDED_
 #define _SDL_TERMINAL_INCLUDED_
 
-#include <map>
-#include <memory>
-#include <iterator>
-#include <string>
-
 #include "Internal.hpp"
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include <iterator>
+#include <map>
+#include <memory>
+#include <string>
 
 namespace AppCUI
 {
 namespace Internal
 {
-    const static std::string fontName = "CourierNew.ttf";
+    const static std::string fontName = "Consolas.ttf";
 
     class SDLTerminal : public AbstractTerminal
     {
@@ -24,6 +23,7 @@ namespace Internal
         AppCUI::Input::Key oldShiftState;
 
         SDL_Window* window;
+        Uint32 windowID;
         SDL_Renderer* renderer;
         TTF_Font* font;
         size_t charWidth;

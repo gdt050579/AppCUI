@@ -14,7 +14,7 @@ class SimpleWin : public AppCUI::Controls::Window
         this->Create("UNICODE test ", "a:c,w:40,h:15");
         l1.Create(
               this,
-              u8"Words in German and Franch: \n - Déjà vu, Schön, Groß, Fähig\n"
+              u8"Words in German and French: \n - Déjà vu, Schön, Groß, Fähig\n"
               u8"Words in Russian: \n - Любовь, Кошка, Улыбаться\n"
               u8"Math symbols: ∑ ∫ ∏\n"
               u8"Cards: ♠ ♣ ♥ ♦\n"

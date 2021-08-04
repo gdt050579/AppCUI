@@ -151,6 +151,8 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
         return;
     }
 
+    volatile int j = __has_cpp_attribute(nodiscard);
+
     switch (e.type)
     {
     case SDL_QUIT:
@@ -167,10 +169,21 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
     case SDL_KEYUP:
         handleKeyUp(evnt, e);
         break;
-    case SDL_WINDOWEVENT_RESIZED:
-        evnt.eventType = SystemEvents::APP_RESIZED;
-        evnt.newWidth  = e.window.data1 / charWidth;
-        evnt.newHeight = e.window.data2 / charHeight;
+    case SDL_WINDOWEVENT:
+        if (e.window.windowID == windowID)
+        {
+            if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+            {
+                evnt.eventType = SystemEvents::APP_RESIZED;
+                evnt.newWidth  = e.window.data1 / charWidth;
+                evnt.newHeight = e.window.data2 / charHeight;
+            }
+            else if (e.window.event == SDL_WINDOWEVENT_CLOSE)
+            {
+                e.type = SDL_QUIT;
+                SDL_PushEvent(&e);
+            }
+        }
         break;
     default:
         break;
