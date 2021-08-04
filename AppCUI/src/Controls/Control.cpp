@@ -40,15 +40,7 @@ using namespace AppCUI::Utils;
 #define LAYOUT_MODE_LEFT         7
 #define LAYOUT_MODE_CENTER       8
 
-#define SKIP_SPACES                                                                                                    \
-    while (__char_types__[*p] == CHAR_TYPE_SPACE)                                                                      \
-        p++;
-#define UPDATE_STRING_HASH(resultValue)                                                                                \
-    while (__char_types__[*p] == CHAR_TYPE_WORD)                                                                       \
-    {                                                                                                                  \
-        resultValue = ((resultValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*p) & ((unsigned char) (~0x20))))));      \
-        p++;                                                                                                           \
-    }
+
 
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
@@ -331,32 +323,56 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
     }
     return true;
 }
-bool AnalyzeLayout(const char* layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
+inline const unsigned char * SkipSpaces(const unsigned char * start, const unsigned char * end)
+{
+    while ((start<end) && (__char_types__[*start] == CHAR_TYPE_SPACE))
+        start++;
+    return start;
+}
+inline const unsigned char* ComputeValueHash(const unsigned char* start, const unsigned char* end, unsigned int& hashValue)
+{
+    hashValue = 0;
+    while ((start<end) && (__char_types__[*start] == CHAR_TYPE_WORD))
+    {
+        hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
+        start++;
+    }
+    return start;
+}
+bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
     // format: key:value,[key:value],....
-    CHECK(layout, false, "Expecting a valid layout");
-    const unsigned char* p = (const unsigned char*) layout;
+    const unsigned char* p = (const unsigned char*) layout.data();
+    const unsigned char* p_end = p + layout.size();
+    CHECK(p, false, "Expecting a valid (non-null) layout string !");
+
     LayoutKeyValueData lkv;
-    inf.flags = inf.percentagesMask = 0;
-    inf.x = inf.y = 0;
     inf.a_left = inf.a_bottom = inf.a_top = inf.a_right = 0;
     inf.width                                           = 1;
     inf.height                                          = 1;
     inf.anchor                                          = Alignament::TopLeft;
+    inf.x                                               = 0;
+    inf.y                                               = 0;
+    inf.flags                                           = 0;
+    inf.percentagesMask                                 = 0;
+
     int cnt;
-    while (*p)
+
+    p = SkipSpaces(p, p_end); // skip initial spaces
+    while (p<p_end)
     {
-        SKIP_SPACES;
-        lkv.Hash = 0;
-        if (!(*p))
-            break;
+        // compute value name hash
         lkv.HashName = (const char*) p;
-        UPDATE_STRING_HASH(lkv.Hash);
+        p            = ComputeValueHash(p, p_end, lkv.Hash);
         CHECK(lkv.Hash, false, "Invalid hash (expecting a valid key: %s)", p);
-        SKIP_SPACES;
+        p = SkipSpaces(p, p_end);
+        CHECK(p < p_end, false, "Premature end of layout string --> expecting a ':' or '=' after key");
         CHECK(__char_types__[*p] == CHAR_TYPE_EQ, false, "Expecting ':' or '=' character (%s)", p);
         p++;
-        SKIP_SPACES;
+        p      = SkipSpaces(p, p_end);
+        CHECK(p < p_end, false, "Premature end of layout string --> expecting a value after ':' or '=' delimiter");
+
+        // extract value
         lkv.n1 = lkv.n2     = 0;
         lkv.StringValueHash = 0;
         lkv.IsNegative      = false;
@@ -365,24 +381,25 @@ bool AnalyzeLayout(const char* layout, LayoutInformation& inf, AppCUI::Applicati
         {
             lkv.IsNegative = true;
             p++;
+            CHECK(p < p_end, false, "Premature end of layout string --> expecting a value after '-' (minus) declatartor");
         }
         if ((!lkv.IsNegative) && (__char_types__[*p] == CHAR_TYPE_WORD))
         {
-            UPDATE_STRING_HASH(lkv.StringValueHash);
+            p = ComputeValueHash(p, p_end, lkv.StringValueHash);
             CHECK(lkv.StringValueHash, false, "Invalid value hash (expecting a valid key: %s)", p);
         }
         else
         {
-            while (__char_types__[*p] == CHAR_TYPE_NUMBER)
+            while ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
             {
                 lkv.n1 = lkv.n1 * 10 + ((*p) - '0');
                 p++;
             }
-            if ((*p) == '.')
+            if ((p<p_end) && ((*p) == '.'))
             {
                 p++;
                 cnt = 0;
-                while (__char_types__[*p] == CHAR_TYPE_NUMBER)
+                while ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
                 {
                     if (cnt < 2)
                     {
@@ -395,16 +412,16 @@ bool AnalyzeLayout(const char* layout, LayoutInformation& inf, AppCUI::Applicati
                     lkv.n2 *= 10;
             }
         }
-        SKIP_SPACES;
-        if (((*p) != 0) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
+        p = SkipSpaces(p, p_end);
+        if ((p<p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
         {
             lkv.ValueType = *p;
-            while ((*p) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
+            while ((p<p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
                 p++;
         }
-        if (__char_types__[*p] == CHAR_TYPE_SEPARATOR)
+        if ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_SEPARATOR))
             p++;
-        SKIP_SPACES;
+        p = SkipSpaces(p, p_end);
         CHECK(ProcessLayoutKeyValueData(lkv, inf, Cfg), false, "Invalid layout params !");
     }
     return true;
@@ -461,9 +478,8 @@ ControlContext::ControlContext()
     // curat automat
     memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
-bool ControlContext::UpdateLayoutFormat(const char* format)
+bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
-    CHECK(format != nullptr, false, "Expecting a valid (non-null) format !");
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
 
@@ -732,7 +748,7 @@ AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption, const char* layout, bool computeHotKey)
+bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
     bool isUTF8 = std::holds_alternative<std::u8string_view>(caption);
     

@@ -90,7 +90,7 @@ struct ControlContext
 
     ControlContext();
 
-    bool UpdateLayoutFormat(const char* format);
+    bool UpdateLayoutFormat(const std::string_view& format);
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Console::Renderer& renderer);
 };

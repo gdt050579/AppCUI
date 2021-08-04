@@ -1244,7 +1244,7 @@ namespace Controls
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
 
-        bool Init(Control* parent, const AppCUI::Utils::ConstString & caption, const char* layout, bool computeHotKey = false);
+        bool Init(Control* parent, const AppCUI::Utils::ConstString & caption, const std::string_view& layout, bool computeHotKey = false);
 
       public:
         Control();
