@@ -350,21 +350,12 @@ Control* Tab::GetCurrentTab()
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, nullptr);
     return Members->currentTab;
 }
-bool Tab::SetTabPageName(unsigned int index, const char* name)
+bool Tab::SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab index: %d", index);
     CHECK(Members->Controls[index]->SetText(name, true), false, "");
     return true;
-}
-bool Tab::SetTabPageName(unsigned int index, AppCUI::Utils::String* name)
-{
-    CHECK(name != nullptr, false, "Invalid text !");
-    return SetTabPageName(index, name->GetText());
-}
-bool Tab::SetTabPageName(unsigned int index, AppCUI::Utils::String& name)
-{
-    return SetTabPageName(index, name.GetText());
 }
 void Tab::OnAfterResize(int newWidth, int newHeight)
 {

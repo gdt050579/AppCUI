@@ -1597,9 +1597,7 @@ namespace Controls
               unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
-        bool SetTabPageName(unsigned int index, const char* name);
-        bool SetTabPageName(unsigned int index, AppCUI::Utils::String* name);
-        bool SetTabPageName(unsigned int index, AppCUI::Utils::String& name);
+        bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
         void OnMouseReleased(int x, int y, int buttonState) override;
