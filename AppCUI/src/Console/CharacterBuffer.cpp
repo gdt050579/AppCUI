@@ -57,7 +57,15 @@ bool UTF8_to_Unicode(const char8_t* p, const char8_t* end, UnicodeChar& result)
     // invalid 16 bytes encoding
     RETURNERROR(false, "Invalid UTF-8 encoding ");
 }
-
+constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2)
+{
+    // GDT: temporary implementation ==> should be addapted for UNICODE characters as well
+    if ((code1 >= 'A') && (code1 <= 'Z'))
+        code1 |= 0x20;
+    if ((code2 >= 'A') && (code2 <= 'Z'))
+        code2 |= 0x20;
+    return code1 == code2;
+}
 
 CharacterBuffer::CharacterBuffer()
 {
@@ -395,17 +403,93 @@ int  CharacterBuffer::FindAscii(const std::string_view & text, bool ignoreCase) 
     CHECK(p, -1, "Expecting a valid (non_null) text !");
     CHECK(ch, -1, "Invalid buffer (not set)");
     if (p == p_end)
-        return 0; // am empty string is always found
-    // the actual search
-    //while (ch<ch_end)
-    //{
-    //
-    //}
+        return 0; // am empty string is always found at the first position
+    if (text.size() > this->Count)
+        return -1;
+    Character* ch_max_search = ch_end - text.size();
+    // the actual search    
+    if (ignoreCase)
+    {
+        while (ch <= ch_max_search)
+        {
+            const unsigned char* s = p;
+            Character* c           = ch;
+            while ((s < p_end) && (c < ch_end) && (IgnoreCaseEquals(*s,c->Code)))
+            {
+                c++;
+                s++;
+            }
+            if (s >= p_end)
+                return (int)(ch - this->Buffer);
+            ch++;
+        }
+    }
+    else
+    {
+        while (ch <= ch_max_search)
+        {
+            const unsigned char* s = p;
+            Character* c           = ch;
+            while ((s < p_end) && (c < ch_end) && ((*s) == c->Code))
+            {
+                c++;
+                s++;
+            }
+            if (s >= p_end)
+                return (int)(ch - this->Buffer);
+            ch++;
+        }
+    }
     return -1;
 }
 int  CharacterBuffer::FindUTF8(const std::u8string_view& text, bool ignoreCase) const
 {
-    NOT_IMPLEMENTED(-1);
+    const char8_t* p           = (const char8_t*) text.data();
+    const char8_t* p_end       = p + text.size();
+    Character* ch              = this->Buffer;
+    Character* ch_end          = this->Buffer + this->Count;
+    CHECK(p, -1, "Expecting a valid (non_null) text !");
+    CHECK(ch, -1, "Invalid buffer (not set)");
+    if (p == p_end)
+        return 0; // am empty string is always found at the first position
+    if (text.size() > this->Count)
+        return -1;
+    UnicodeChar uc;
+    // the actual search
+    while (ch < ch_end)
+    {
+        const char8_t* s = p;
+        Character* c     = ch;
+        while ((s < p_end) && (c < ch_end))
+        {
+            if ((*s) < 0x80)
+            {
+                uc.Value = *s;
+                uc.Length = 1;
+            }
+            else
+            {
+                if (!UTF8_to_Unicode(s, p_end, uc))
+                    break;
+            }
+            if (ignoreCase)
+            {
+                if (!IgnoreCaseEquals(uc.Value, c->Code))
+                    break;
+            }
+            else
+            {
+                if (uc.Value != c->Code)
+                    break;
+            }
+            c++;
+            s += uc.Length;
+        }
+        if (s >= p_end)
+            return (int) (ch - this->Buffer);
+        ch++;
+    }
+    return -1;
 }
 bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPair color)
 {

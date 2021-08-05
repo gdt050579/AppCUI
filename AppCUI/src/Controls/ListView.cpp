@@ -19,6 +19,8 @@ using namespace AppCUI::Input;
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
+AppCUI::Console::CharacterBuffer _temp_Buffer_;
+
 void ListViewColumn::Reset()
 {
     this->HotKeyCode   = Key::None;
@@ -1193,7 +1195,7 @@ bool ListViewControlContext::Sort()
     Items.Indexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
     return true;
 }
-int ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colIndex)
+int  ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colIndex)
 {
     unsigned int originalStartPoz;
     ListViewItem* i;
@@ -1543,7 +1545,10 @@ const AppCUI::Console::CharacterBuffer& ListView::GetItemText(ItemHandle item, u
     if (obj)
         return *obj;
     else
-        return AppCUI::Console::CharacterBuffer();
+    {
+        _temp_Buffer_.Destroy();
+        return _temp_Buffer_;
+    }
 }
 bool ListView::SetItemCheck(ItemHandle item, bool check)
 {
