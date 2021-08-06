@@ -1696,8 +1696,8 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const char* text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);
-        bool SetColumnText(unsigned int columnIndex, const char* text);
+        bool AddColumn(const AppCUI::Utils::ConstString& text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);
+        bool SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text);
         bool SetColumnAlignament(unsigned int columnIndex, AppCUI::Console::TextAlignament Align);
         bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
         bool SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);

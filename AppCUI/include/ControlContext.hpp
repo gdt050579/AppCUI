@@ -255,16 +255,15 @@ struct ListViewItem
 };
 struct ListViewColumn
 {
-    char Name[MAX_LISTVIEW_HEADER_TEXT];
-    unsigned short Width;
-    unsigned char HotKeyOffset;
-    unsigned char NameLength;
-    Key HotKeyCode;
+    CharacterBuffer Name;
+    unsigned int HotKeyOffset;
     unsigned int Flags;
+    Key HotKeyCode;
+    unsigned short Width;
     TextAlignament Align;
 
     void Reset();
-    bool SetName(const char* text);
+    bool SetName(const AppCUI::Utils::ConstString& text);
     bool SetAlign(TextAlignament align);
     void SetWidth(unsigned int width);
 };
@@ -330,7 +329,7 @@ class ListViewControlContext : public ControlContext
 
     // columns
     void UpdateColumnsWidth();
-    bool AddColumn(const char* text, TextAlignament Align, unsigned int width = 10);
+    bool AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int width = 10);
     bool DeleteColumn(unsigned int index);
     void DeleteAllColumns();
     int GetNrColumns();

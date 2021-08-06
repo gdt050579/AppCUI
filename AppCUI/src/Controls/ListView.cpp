@@ -11,7 +11,7 @@ using namespace AppCUI::Input;
 #define INVALID_COLUMN_INDEX 0xFFFFFFFF
 #define MINIM_COLUMN_WIDTH   3
 #define MAXIM_COLUMN_WIDTH   256
-#define NO_HOTKEY_FOR_COLUMN 0xFF
+#define NO_HOTKEY_FOR_COLUMN 0xFFFFFFFF
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
@@ -25,49 +25,18 @@ void ListViewColumn::Reset()
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
-    this->Name[0]      = 0;
-    this->NameLength   = 0;
     this->Flags        = 0;
     this->Align        = TextAlignament::Left;
     this->Width        = 10;
+    this->Name.Clear();
 }
-bool ListViewColumn::SetName(const char* text)
+bool ListViewColumn::SetName(const AppCUI::Utils::ConstString& text)
 {
-    CHECK(text, false, "Expecting a valid name for the column (non null)");
-
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
-    char* p            = this->Name;
-    char* e            = p + MAX_LISTVIEW_HEADER_TEXT - 2;
-    while ((p < e) && (*text))
-    {
-        if ((*text) == '&')
-        {
-            char hotKey = *(text + 1);
-            if ((hotKey >= 'a') && (hotKey <= 'z'))
-            {
-                this->HotKeyCode   = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::A + (hotKey - 'a')));
-                this->HotKeyOffset = (unsigned char) (p - this->Name);
-            }
-            if ((hotKey >= 'A') && (hotKey <= 'Z'))
-            {
-                this->HotKeyCode   = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::A + (hotKey - 'A')));
-                this->HotKeyOffset = (unsigned char) (p - this->Name);
-            }
-            if ((hotKey >= '0') && (hotKey <= '9'))
-            {
-                this->HotKeyCode   = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::N0 + (hotKey - '0')));
-                this->HotKeyOffset = (unsigned char) (p - this->Name);
-            }
-            text++;
-            continue;
-        }
-        *p = *text;
-        p++;
-        text++;
-    }
-    *p               = 0;
-    this->NameLength = (unsigned char) (p - this->Name);
+
+    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset), false, "Fail to set name to column !");
+
     return true;
 }
 bool ListViewColumn::SetAlign(TextAlignament align)
@@ -178,19 +147,22 @@ void ListViewControlContext::DrawColumn(Console::Renderer& renderer)
         }
         if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) ||
             ((Flags & ListViewFlags::SORTABLE) == ListViewFlags::NONE))
-            renderer.WriteSingleLineText(
-                  x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align, column->NameLength);
+            // renderer.WriteSingleLineText(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align,
+            // column->NameLength);
+            renderer.WriteCharacterBuffer(x + 1, 1, column->Width - 2, column->Name, lvCol->Text, column->Align);
         else
-            renderer.WriteSingleLineTextWithHotKey(
-                  x + 1,
-                  1,
-                  column->Name,
-                  column->Width - 2,
-                  lvCol->Text,
-                  lvCol->HotKey,
-                  column->HotKeyOffset,
-                  column->Align,
-                  column->NameLength);
+            //renderer.WriteSingleLineTextWithHotKey(
+            //      x + 1,
+            //      1,
+            //      column->Name,
+            //      column->Width - 2,
+            //      lvCol->Text,
+            //      lvCol->HotKey,
+            //      column->HotKeyOffset,
+            //      column->Align,
+            //      column->NameLength);
+            renderer.WriteCharacterBuffer(
+                  x + 1, 1, column->Width - 2, column->Name, lvCol->Text, lvCol->HotKey,column->HotKeyOffset, column->Align);
         x += column->Width;
         if ((this->Focused) && (tr == SortParams.ColumnIndex))
             renderer.WriteSpecialCharacter(
@@ -418,9 +390,8 @@ void ListViewControlContext::Paint(Console::Renderer& renderer)
     }
 }
 // coloane
-bool ListViewControlContext::AddColumn(const char* text, TextAlignament Align, unsigned int width)
+bool ListViewControlContext::AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int width)
 {
-    CHECK(text != nullptr, false, "");
     CHECK(Columns.Count < MAX_LISTVIEW_COLUMNS, false, "");
     Columns.List[Columns.Count].Reset();
     CHECK(Columns.List[Columns.Count].SetName(text), false, "Fail to set column name: %s", text);
@@ -1365,11 +1336,11 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
-bool ListView::AddColumn(const char* text, TextAlignament Align, unsigned int Size)
+bool ListView::AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int Size)
 {
     return WRAPPER->AddColumn(text, Align, Size);
 }
-bool ListView::SetColumnText(unsigned int columnIndex, const char* text)
+bool ListView::SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count,
           false,
