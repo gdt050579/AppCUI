@@ -215,7 +215,7 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     CharacterBuffer* subitem = item->SubItem;
     ColorPair itemCol        = Cfg->ListView.Item.Regular;
     ColorPair checkCol, uncheckCol;
-    WriteCharacterBufferParams params;
+    //WriteCharacterBufferParams params;
     if (Flags & GATTR_ENABLE)
     {
         checkCol   = Cfg->ListView.CheckedSymbol;
@@ -251,9 +251,9 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
         itemCol = Cfg->ListView.Item.Inactive;
     
     // prepare params
-    params.Flags = WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::WRAP_TO_WIDTH |
-                   WriteCharacterBufferFlags::OVERWRITE_COLORS;
-    params.Color = itemCol;
+    //params.Flags = WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::WRAP_TO_WIDTH |
+    //               WriteCharacterBufferFlags::OVERWRITE_COLORS;
+    //params.Color = itemCol;
     
     // first column
     int end_first_column = x + ((int) column->Width);
@@ -273,8 +273,9 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     if (x < end_first_column)
     {
         //renderer.WriteSingleLineText( x, y, subitem->GetText(), end_first_column - x, itemCol, column->Align, subitem->Len());
-        params.Width = end_first_column - x;
-        renderer.WriteCharacterBuffer(x, y, *subitem, params);    
+        //params.Width = end_first_column - x;
+        //renderer.WriteCharacterBuffer(x, y, *subitem, params);    
+        renderer.WriteCharacterBuffer(x, y, end_first_column - (x+1), *subitem, itemCol, column->Align);
     }
 
     // rest of the columns
@@ -284,8 +285,14 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     for (unsigned int tr = 1; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
         //renderer.WriteSingleLineText(x, y, subitem->GetText(), column->Width, itemCol, column->Align, subitem->Len());
-        params.Width = column->Width;
-        renderer.WriteCharacterBuffer(x, y, *subitem, params);  
+        //params.Width = column->Width;
+        //renderer.WriteCharacterBuffer(x, y, *subitem, params);
+        if ((column->Align & TextAlignament::Center) == TextAlignament::Center)
+            renderer.WriteCharacterBuffer(x + column->Width/2, y, column->Width, *subitem, itemCol, column->Align);
+        else if ((column->Align & TextAlignament::Right) == TextAlignament::Right)
+            renderer.WriteCharacterBuffer(x + column->Width - 1, y, column->Width, *subitem, itemCol, column->Align);
+        else
+            renderer.WriteCharacterBuffer(x, y, column->Width-1, *subitem, itemCol, column->Align);
         x += column->Width;
         x++;
         subitem++;
