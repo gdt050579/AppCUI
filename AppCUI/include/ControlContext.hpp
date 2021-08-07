@@ -6,7 +6,7 @@
 #include <vector>
 
 using namespace AppCUI;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
@@ -22,7 +22,7 @@ using namespace AppCUI::Input;
 struct ControlContext
 {
   public:
-    AppCUI::Console::Clip ScreenClip, ExpandedViewClip;
+    AppCUI::Graphics::Clip ScreenClip, ExpandedViewClip;
     struct
     {
         struct
@@ -58,7 +58,7 @@ struct ControlContext
     AppCUI::Controls::Control** Controls;
     AppCUI::Controls::Control* Parent;
     AppCUI::Application::Config* Cfg;
-    AppCUI::Console::CharacterBuffer Text;
+    AppCUI::Graphics::CharacterBuffer Text;
     bool Inited, Focused, MouseIsOver;
 
     // Handlers
@@ -92,7 +92,7 @@ struct ControlContext
 
     bool UpdateLayoutFormat(const std::string_view& format);
     bool RecomputeLayout(Control* parent);
-    void PaintScrollbars(Console::Renderer& renderer);
+    void PaintScrollbars(Graphics::Renderer& renderer);
 };
 
 #define WINDOW_DRAG_STATUS_NONE 0
@@ -180,9 +180,9 @@ class TextAreaControlContext : public ControlContext
     void DeleteSelected();
     unsigned int GetLineStart(unsigned int lineIndex);
     bool GetLineRange(unsigned int lineIndex, unsigned int& start, unsigned int& end);
-    void DrawLineNumber(Console::Renderer& renderer, int lineIndex, int pozY, const Console::ColorPair lineNumberColor);
+    void DrawLineNumber(Graphics::Renderer& renderer, int lineIndex, int pozY, const Graphics::ColorPair lineNumberColor);
     void DrawLine(
-          Console::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const Console::ColorPair textColor);
+          Graphics::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const Graphics::ColorPair textColor);
     void DrawToolTip();
 
     void MoveLeft(bool selected);
@@ -204,7 +204,7 @@ class TextAreaControlContext : public ControlContext
     bool IsReadOnly();
 
     void SetToolTip(char* ss);
-    void Paint(Console::Renderer& renderer);
+    void Paint(Graphics::Renderer& renderer);
     bool OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode);
     void OnAfterResize();
     void AnalyzeCurrentText();
@@ -222,14 +222,14 @@ struct TabControlContext : public ControlContext
 
     int MousePositionToPanel(int x, int y);
     void UpdateMargins();
-    void PaintTopPanelTab(Console::Renderer& renderer);
-    void PaintBottomPanelTab(Console::Renderer& renderer);
-    void PaintLeftPanelTab(Console::Renderer& renderer);
-    void PaintListPanelTab(Console::Renderer& renderer);
+    void PaintTopPanelTab(Graphics::Renderer& renderer);
+    void PaintBottomPanelTab(Graphics::Renderer& renderer);
+    void PaintLeftPanelTab(Graphics::Renderer& renderer);
+    void PaintListPanelTab(Graphics::Renderer& renderer);
 };
 struct CanvasControlContext : public ControlContext
 {
-    AppCUI::Console::Canvas canvas;
+    AppCUI::Graphics::Canvas canvas;
     int CanvasScrollX, CanvasScrollY;
 };
 
@@ -318,9 +318,9 @@ class ListViewControlContext : public ControlContext
     int SearchItem(unsigned int startPoz, unsigned int colIndex);
     void UpdateSearch(int startPoz);
     void UpdateSelectionInfo();
-    void DrawColumnSeparatorsForResizeMode(Console::Renderer& renderer);
-    void DrawColumn(Console::Renderer& renderer);
-    void DrawItem(Console::Renderer& renderer, ListViewItem* item, int y, bool currentItem);
+    void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
+    void DrawColumn(Graphics::Renderer& renderer);
+    void DrawItem(Graphics::Renderer& renderer, ListViewItem* item, int y, bool currentItem);
 
     // movement
     void UpdateSelection(int start, int end, bool select);
@@ -337,7 +337,7 @@ class ListViewControlContext : public ControlContext
     // itemuri
     ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
     bool SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text);
-    AppCUI::Console::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
+    AppCUI::Graphics::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
@@ -367,7 +367,7 @@ class ListViewControlContext : public ControlContext
     bool SetItemHeight(ItemHandle item, unsigned int Height);
     unsigned int GetItemHeight(ItemHandle item);
 
-    void Paint(Console::Renderer& renderer);
+    void Paint(Graphics::Renderer& renderer);
     void OnMouseReleased(int x, int y, int butonState);
     bool MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex);
     void OnMousePressed(int x, int y, int butonState);
@@ -383,7 +383,7 @@ class ListViewControlContext : public ControlContext
 
 struct ComboBoxItem
 {
-    AppCUI::Console::CharacterBuffer Text;
+    AppCUI::Graphics::CharacterBuffer Text;
     AppCUI::Controls::ItemData Data;
     ComboBoxItem();
     ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData);

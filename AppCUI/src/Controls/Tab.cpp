@@ -2,7 +2,7 @@
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 #define TAB_DISPLAY_MODE_TOP    0
 #define TAB_DISPLAY_MODE_BOTTOM 1
@@ -87,7 +87,7 @@ int TabControlContext::MousePositionToPanel(int x, int y)
     LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
     return -1;
 }
-void TabControlContext::PaintTopPanelTab(Console::Renderer& renderer)
+void TabControlContext::PaintTopPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
@@ -135,7 +135,7 @@ void TabControlContext::PaintTopPanelTab(Console::Renderer& renderer)
             renderer.WriteCharacterBuffer(poz + 1, 0, cc->Text, params);
     }
 }
-void TabControlContext::PaintBottomPanelTab(Console::Renderer& renderer)
+void TabControlContext::PaintBottomPanelTab(Graphics::Renderer& renderer)
 {
     int y_poz = this->Layout.Height - 1;
     if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
@@ -184,7 +184,7 @@ void TabControlContext::PaintBottomPanelTab(Console::Renderer& renderer)
             renderer.WriteCharacterBuffer(poz + 1, y_poz, cc->Text, params);
     }
 }
-void TabControlContext::PaintLeftPanelTab(Console::Renderer& renderer)
+void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.FillRectSize(
@@ -230,7 +230,7 @@ void TabControlContext::PaintLeftPanelTab(Console::Renderer& renderer)
         renderer.WriteCharacterBuffer(1, tr + 1, cc->Text, params);
     }
 }
-void TabControlContext::PaintListPanelTab(Console::Renderer& renderer)
+void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
         renderer.Clear(' ', this->Cfg->Tab.PageColor);
@@ -425,7 +425,7 @@ bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
         }
     return false;
 }
-void Tab::Paint(Console::Renderer& renderer)
+void Tab::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
 

@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 bool Button::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
@@ -17,7 +17,7 @@ bool Button::Create(Control* parent, const AppCUI::Utils::ConstString& caption, 
     SetControlID(controlID);
     return true;
 }
-void Button::Paint(Console::Renderer& renderer)
+void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 

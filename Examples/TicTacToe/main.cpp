@@ -6,7 +6,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
 
 #define CELL_WITH_X 1
@@ -40,7 +40,7 @@ class TicTacToeTable : public UserControl
         if ((table[y1][x1] == table[y2][x2]) && (table[y1][x1] == table[y3][x3]) && (table[y1][x1] != 0))
             res = table[y1][x1];
     }
-    void DrawX(Console::Renderer& renderer, int x, int y)
+    void DrawX(Graphics::Renderer& renderer, int x, int y)
     {
         int px = x * 5;
         int py = y * 5;
@@ -50,7 +50,7 @@ class TicTacToeTable : public UserControl
             renderer.WriteCharacter(px + 3 - tr, py + tr, '/', ColorPair{ Color::Aqua, Color::Black });
         }
     }
-    void DrawO(Console::Renderer& renderer, int x, int y)
+    void DrawO(Graphics::Renderer& renderer, int x, int y)
     {
         int px = x * 5;
         int py = y * 5;
@@ -59,7 +59,7 @@ class TicTacToeTable : public UserControl
         renderer.WriteSingleLineText(px, py + 2, "|  |", ColorPair{ Color::Red, Color::Black });
         renderer.WriteSingleLineText(px, py + 3, "\\--/", ColorPair{ Color::Red, Color::Black });
     }
-    void Paint(Console::Renderer& renderer) override
+    void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         for (int y = 0; y < 3; y++)

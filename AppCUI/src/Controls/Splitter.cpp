@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define GATTR_VERTICAL    1024
@@ -106,7 +106,7 @@ bool Splitter::MaximizeSecondPanel()
 {
     return SetSecondPanelSize(0xFFFF);
 }
-void Splitter::Paint(Console::Renderer& renderer)
+void Splitter::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
 

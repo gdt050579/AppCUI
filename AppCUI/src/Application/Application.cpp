@@ -114,14 +114,14 @@ bool AppCUI::Application::Run()
     app = nullptr;
     return true;
 }
-bool AppCUI::Application::GetApplicationSize(AppCUI::Console::Size& size)
+bool AppCUI::Application::GetApplicationSize(AppCUI::Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
     size.Width  = app->terminal->ScreenCanvas.GetWidth();
     size.Height = app->terminal->ScreenCanvas.GetHeight();
     return true;
 }
-bool AppCUI::Application::GetDesktopSize(AppCUI::Console::Size& size)
+bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
     size.Width  = app->terminal->ScreenCanvas.GetWidth();
@@ -169,7 +169,7 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
     return app;
 }
 
-void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Console::Renderer& renderer, bool focused)
+void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
     if (ctrl == nullptr)
         return;
@@ -241,7 +241,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Console::Renderer& re
         PaintControl(Members->Controls[idx], renderer, true);
     }
 }
-void ComputeControlLayout(AppCUI::Console::Clip& parentClip, Control* ctrl)
+void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
 {
     if (ctrl == nullptr)
         return;
@@ -260,7 +260,7 @@ void ComputeControlLayout(AppCUI::Console::Clip& parentClip, Control* ctrl)
         }
     }
     // calculez clip-ul client
-    AppCUI::Console::Clip client;
+    AppCUI::Graphics::Clip client;
     client.Set(
           parentClip,
           Members->Layout.X + Members->Margins.Left,
@@ -534,7 +534,7 @@ void AppCUI::Internal::Application::Paint()
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
-    AppCUI::Console::Clip full;
+    AppCUI::Graphics::Clip full;
     full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
     ComputeControlLayout(full, &Desktop);
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)

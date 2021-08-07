@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define ITEM_FLAG_CHECKED    0x0001
@@ -19,7 +19,7 @@ using namespace AppCUI::Input;
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
-AppCUI::Console::CharacterBuffer _temp_Buffer_;
+AppCUI::Graphics::CharacterBuffer _temp_Buffer_;
 
 void ListViewColumn::Reset()
 {
@@ -102,7 +102,7 @@ ListViewItem* ListViewControlContext::GetFilteredItem(unsigned int index)
     return &Items.List[idx];
 }
 
-void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Console::Renderer& renderer)
+void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
 {
     int x                  = 1 - Columns.XOffset;
     ListViewColumn* column = this->Columns.List;
@@ -116,7 +116,7 @@ void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Console::Renderer
         x++;
     }
 }
-void ListViewControlContext::DrawColumn(Console::Renderer& renderer)
+void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 {
     auto* defaultCol = &this->Cfg->ListView.ColumnNormal;
     if (!(this->Flags & GATTR_ENABLE))
@@ -179,7 +179,7 @@ void ListViewControlContext::DrawColumn(Console::Renderer& renderer)
         x++;
     }
 }
-void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem* item, int y, bool currentItem)
+void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem* item, int y, bool currentItem)
 {
     int x = 1 - Columns.XOffset;
     int itemStarts;
@@ -321,7 +321,7 @@ void ListViewControlContext::DrawItem(Console::Renderer& renderer, ListViewItem*
     }
 }
 
-void ListViewControlContext::Paint(Console::Renderer& renderer)
+void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y       = 1;
     auto* lvCol = &this->Cfg->ListView.Normal;
@@ -445,7 +445,7 @@ bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, 
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
     return true;
 }
-AppCUI::Console::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
+AppCUI::Graphics::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
     CHECK(subItem < Columns.Count,
@@ -1309,7 +1309,7 @@ bool ListView::Create(Control* parent, const std::string_view& layout, ListViewF
     // all is good
     return true;
 }
-void ListView::Paint(Console::Renderer& renderer)
+void ListView::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     Members->Paint(renderer);
@@ -1517,7 +1517,7 @@ bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::
 {
     return WRAPPER->SetItemText(item, subItem, text);
 }
-const AppCUI::Console::CharacterBuffer& ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
+const AppCUI::Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
 {
     auto obj = WRAPPER->GetItemText(item, subItemIndex);
     if (obj)

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <string.h>
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 struct UnicodeChar
 {

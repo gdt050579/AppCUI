@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
@@ -15,7 +15,7 @@ bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, c
     return true;
 }
 
-void Label::Paint(Console::Renderer& renderer)
+void Label::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
     WriteCharacterBufferParams params(

@@ -6,7 +6,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 const char* AppCuiLogo[15] = {
     "............................", "..XXXXX}..XXXXXX}..XXXXXX}..", ".XX{--XX}.XX{--XX}.XX{--XX}.",

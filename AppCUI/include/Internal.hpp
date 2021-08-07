@@ -43,7 +43,7 @@
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            if (color != AppCUI::Console::Color::NoColor)                                                              \
+            if (color != AppCUI::Graphics::Color::NoColor)                                                              \
             {                                                                                                          \
                 unsigned int temp_color = color;                                                                       \
                 if (color & 256)                                                                                       \
@@ -132,7 +132,7 @@ namespace Internal
       public:
         void Init(
               unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg, bool visible);
-        void Paint(AppCUI::Console::Renderer& renderer);
+        void Paint(AppCUI::Graphics::Renderer& renderer);
         void Clear();
         void SetDesktopSize(unsigned int width, unsigned int height);
         bool Set(AppCUI::Input::Key keyCode, const char* Name, int Command);
@@ -151,7 +151,7 @@ namespace Internal
     {
       public:
         bool Create(unsigned int width, unsigned int height);
-        void Paint(AppCUI::Console::Renderer& renderer) override;
+        void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
     };
 
@@ -197,7 +197,7 @@ namespace Internal
 
       public:
         unsigned int LastCursorX, LastCursorY;
-        AppCUI::Console::Canvas OriginalScreenCanvas, ScreenCanvas;
+        AppCUI::Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
         bool Inited, LastCursorVisibility;
 
         virtual bool OnInit(const InitializationData& initData)                  = 0;

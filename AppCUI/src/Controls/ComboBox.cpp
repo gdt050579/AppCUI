@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define CHECK_INDEX(idx, returnValue)                                                                                  \
@@ -304,10 +304,10 @@ bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
     }
     return false;
 }
-void ComboBox::OnExpandView(AppCUI::Console::Clip& expandedClip)
+void ComboBox::OnExpandView(AppCUI::Graphics::Clip& expandedClip)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
-    AppCUI::Console::Size appSize;
+    AppCUI::Graphics::Size appSize;
     Members->VisibleItems     = 4;
     Members->HoveredIndexItem = ComboBox::NO_ITEM_SELECTED;
     if ((Application::GetApplicationSize(appSize)) && (expandedClip.ClipRect.Y >= 0))
@@ -399,7 +399,7 @@ bool ComboBox::OnMouseEnter()
 {
     return true;
 }
-void ComboBox::Paint(Console::Renderer& renderer)
+void ComboBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 

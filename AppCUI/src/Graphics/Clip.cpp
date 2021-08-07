@@ -1,6 +1,6 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 Clip::Clip()
 {

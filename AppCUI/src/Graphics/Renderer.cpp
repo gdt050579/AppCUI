@@ -1,9 +1,9 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
-int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Console::SpecialChars::Count] = {
+int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::SpecialChars::Count] = {
     0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
     0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
     0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
@@ -26,20 +26,20 @@ int* SpecialCharacters = nullptr;
         {                                                                                                              \
             ptrCharInfo->Code = (value);                                                                               \
         }                                                                                                              \
-        if (color.Forenground != AppCUI::Console::Color::Transparent)                                                  \
+        if (color.Forenground != AppCUI::Graphics::Color::Transparent)                                                  \
         {                                                                                                              \
             ptrCharInfo->Color.Forenground = color.Forenground;                                                        \
         }                                                                                                              \
-        if (color.Background != AppCUI::Console::Color::Transparent)                                                   \
+        if (color.Background != AppCUI::Graphics::Color::Transparent)                                                   \
         {                                                                                                              \
             ptrCharInfo->Color.Background = color.Background;                                                          \
         }                                                                                                              \
     }
 #define NO_TRANSPARENCY(color)                                                                                         \
-    ((color.Forenground != AppCUI::Console::Color::Transparent) &&                                                     \
-     (color.Background != AppCUI::Console::Color::Transparent))
+    ((color.Forenground != AppCUI::Graphics::Color::Transparent) &&                                                     \
+     (color.Background != AppCUI::Graphics::Color::Transparent))
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 #define TRANSLATE_X_COORDONATE(x) x += this->TranslateX;
 #define TRANSLATE_Y_COORDONATE(y) y += this->TranslateY;
@@ -829,8 +829,8 @@ bool Renderer::WriteMultiLineTextWithHotKey(
 bool Renderer::_WriteCharacterBuffer_SingleLine(
       int x,
       int y,
-      const AppCUI::Console::CharacterBuffer& cb,
-      const AppCUI::Console::WriteCharacterBufferParams& params,
+      const AppCUI::Graphics::CharacterBuffer& cb,
+      const AppCUI::Graphics::WriteCharacterBufferParams& params,
       unsigned int start,
       unsigned int end)
 {
@@ -853,7 +853,7 @@ bool Renderer::_WriteCharacterBuffer_SingleLine(
         if ((end - start) > params.Width)
             end = start + params.Width;
     }
-    const AppCUI::Console::Character* ch = cb.GetBuffer() + start;
+    const AppCUI::Graphics::Character* ch = cb.GetBuffer() + start;
     Character* p                         = this->OffsetRows[y] + x;
     if ((params.Flags & WriteCharacterBufferFlags::OVERWRITE_COLORS) != WriteCharacterBufferFlags::NONE)
     {
@@ -903,8 +903,8 @@ bool Renderer::_WriteCharacterBuffer_SingleLine(
 bool Renderer::_WriteCharacterBuffer_MultiLine_WithWidth(
       int x,
       int y,
-      const AppCUI::Console::CharacterBuffer& cb,
-      const AppCUI::Console::WriteCharacterBufferParams& params,
+      const AppCUI::Graphics::CharacterBuffer& cb,
+      const AppCUI::Graphics::WriteCharacterBufferParams& params,
       unsigned int start,
       unsigned int end)
 {
@@ -916,7 +916,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_WithWidth(
     unsigned int nrLines = (end - start - 1) / params.Width;
     if ((y + (int) nrLines < Clip.Top) || (y > Clip.Bottom))
         return false;
-    const AppCUI::Console::Character* ch = cb.GetBuffer() + start;
+    const AppCUI::Graphics::Character* ch = cb.GetBuffer() + start;
     Character* p                         = this->OffsetRows[y] + x;
     unsigned int rel_ofs                 = params.Width;
     int original_x                       = x;
@@ -985,8 +985,8 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_WithWidth(
 bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(
       int x,
       int y,
-      const AppCUI::Console::CharacterBuffer& cb,
-      const AppCUI::Console::WriteCharacterBufferParams& params,
+      const AppCUI::Graphics::CharacterBuffer& cb,
+      const AppCUI::Graphics::WriteCharacterBufferParams& params,
       unsigned int start,
       unsigned int end)
 {
@@ -1000,7 +1000,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(
         w = params.Width;
     else
         w = 0xFFFFFFFF;
-    const AppCUI::Console::Character* ch = cb.GetBuffer() + start;
+    const AppCUI::Graphics::Character* ch = cb.GetBuffer() + start;
     Character* p                         = this->OffsetRows[y] + x;
     Character* hotkey                    = nullptr;
     unsigned int rel_ofs                 = w;
@@ -1080,8 +1080,8 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(
 bool Renderer::WriteCharacterBuffer(
       int x,
       int y,
-      const AppCUI::Console::CharacterBuffer& cb,
-      const AppCUI::Console::WriteCharacterBufferParams& params)
+      const AppCUI::Graphics::CharacterBuffer& cb,
+      const AppCUI::Graphics::WriteCharacterBufferParams& params)
 {
     CHECK_VISIBLE;
 
@@ -1124,7 +1124,7 @@ bool Renderer::WriteCharacterBuffer(
       int x,
       int y,
       unsigned int width,
-      const AppCUI::Console::CharacterBuffer& cb,
+      const AppCUI::Graphics::CharacterBuffer& cb,
       const ColorPair textColor,
       TextAlignament align)
 {
@@ -1134,7 +1134,7 @@ bool Renderer::WriteCharacterBuffer(
       int x,
       int y,
       unsigned int width,
-      const AppCUI::Console::CharacterBuffer& cb,
+      const AppCUI::Graphics::CharacterBuffer& cb,
       const ColorPair textColor,
       const ColorPair hotKeyColor,
       unsigned int hotKeyOffset,

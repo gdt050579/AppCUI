@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 using namespace AppCUI::OS;
 
@@ -256,7 +256,7 @@ void TextAreaControlContext::DrawToolTip()
 {
 }
 void TextAreaControlContext::DrawLine(
-      Console::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const ColorPair textColor)
+      Graphics::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const ColorPair textColor)
 {
     unsigned int poz, lineStart, lineEnd, tr;
     int pozX, cursorPoz;
@@ -329,7 +329,7 @@ void TextAreaControlContext::DrawLine(
     }
 }
 void TextAreaControlContext::DrawLineNumber(
-      Console::Renderer& renderer, int lineIndex, int pozY, const ColorPair lineNumberColor)
+      Graphics::Renderer& renderer, int lineIndex, int pozY, const ColorPair lineNumberColor)
 {
     char temp[32];
     int poz  = 30;
@@ -350,7 +350,7 @@ void TextAreaControlContext::DrawLineNumber(
 
     renderer.WriteSingleLineText(0, pozY, temp + 28, lineNumberColor, LINE_NUMBERS_WIDTH - 1);
 }
-void TextAreaControlContext::Paint(Console::Renderer& renderer)
+void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
     auto col = &this->Cfg->Text.Normal;
     if ((this->Flags & GATTR_ENABLE) == 0)
@@ -800,7 +800,7 @@ bool TextArea::Create(
     // all is good
     return true;
 }
-void TextArea::Paint(Console::Renderer& renderer)
+void TextArea::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);

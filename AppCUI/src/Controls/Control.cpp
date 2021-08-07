@@ -5,7 +5,7 @@
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Utils;
 
 #define CTRLC ((ControlContext*) Context)
@@ -613,7 +613,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 bool ControlContext::RecomputeLayout(Control* controlParent)
 {
     LayoutMetricData md;
-    AppCUI::Console::Size sz;
+    AppCUI::Graphics::Size sz;
 
     if (controlParent == nullptr)
         controlParent = this->Parent;
@@ -690,7 +690,7 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     }
     return true;
 }
-void ControlContext::PaintScrollbars(Console::Renderer& renderer)
+void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
 {
     int x, y;
     if (ScrollBars.OutsideControl)
@@ -865,12 +865,12 @@ int AppCUI::Controls::Control::GetHeight()
 {
     return CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetSize(AppCUI::Console::Size& size)
+void AppCUI::Controls::Control::GetSize(AppCUI::Graphics::Size& size)
 {
     size.Width  = CTRLC->Layout.Width;
     size.Height = CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetClientSize(AppCUI::Console::Size& size)
+void AppCUI::Controls::Control::GetClientSize(AppCUI::Graphics::Size& size)
 {
     int w = CTRLC->Layout.Width - (CTRLC->Margins.Left + CTRLC->Margins.Right);
     int h = CTRLC->Layout.Height - (CTRLC->Margins.Top + CTRLC->Margins.Bottom);
@@ -1198,7 +1198,7 @@ void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Console::Renderer& renderer)
+void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
 {
 }
 bool AppCUI::Controls::Control::IsInitialized()
@@ -1264,7 +1264,7 @@ bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ct
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnExpandView(AppCUI::Console::Clip& expandedClip)
+void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip& expandedClip)
 {
 }
 void AppCUI::Controls::Control::OnPackView()

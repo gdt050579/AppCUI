@@ -57,8 +57,8 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
                       x,
                       y,
                       p->Char.UnicodeChar,
-                      AppCUI::Console::ColorPair{ static_cast<AppCUI::Console::Color>(p->Attributes & 0x0F),
-                                                  static_cast<AppCUI::Console::Color>((p->Attributes & 0xF0) >> 4) });
+                      AppCUI::Graphics::ColorPair{ static_cast<AppCUI::Graphics::Color>(p->Attributes & 0x0F),
+                                                  static_cast<AppCUI::Graphics::Color>((p->Attributes & 0xF0) >> 4) });
             }
         }
         delete[] temp;
@@ -288,8 +288,8 @@ void WindowsTerminal::OnFlushToScreen()
     SMALL_RECT sr  = { 0, 0, winSize.X, winSize.Y };
     // copy the entire buffer
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
-    AppCUI::Console::Character* c = this->ScreenCanvas.GetCharactersBuffer();
-    AppCUI::Console::Character* e = c + (w * h);
+    AppCUI::Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
+    AppCUI::Graphics::Character* e = c + (w * h);
     CHAR_INFO* d                  = this->ConsoleBuffer;
     while (c < e)
     {

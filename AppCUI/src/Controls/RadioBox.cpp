@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 bool AppCUI::Controls::RadioBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
@@ -16,7 +16,7 @@ bool AppCUI::Controls::RadioBox::Create(Control* parent, const AppCUI::Utils::Co
     SetGroup(groupID);
     return true;
 }
-void AppCUI::Controls::RadioBox::Paint(Console::Renderer& renderer)
+void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 

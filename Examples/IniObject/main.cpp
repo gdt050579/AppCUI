@@ -59,7 +59,7 @@ int main()
     LOG_INFO("Unexisting key: %d", k);
     Key k2 = ini.GetValue("Strings/Shortcut").ToKey();
     LOG_INFO("Shortcut = %d", k2);
-    AppCUI::Console::Size sz = ini.GetValue("Values/ScreenSize").ToSize();
+    AppCUI::Graphics::Size sz = ini.GetValue("Values/ScreenSize").ToSize();
     LOG_INFO("Size is %dx%d", sz.Width, sz.Height);
 
     unsigned int value = Utils::Number::ToUInt32("12345678").value();

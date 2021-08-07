@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define C_WIDTH ((Members->Layout.Width - 2) * Members->Layout.Height)
@@ -339,7 +339,7 @@ void TextField::OnAfterSetText(const char* text)
     TextField_MoveTo(this, 0xFFFF, false);
 }
 
-void TextField::Paint(Console::Renderer& renderer)
+void TextField::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
 

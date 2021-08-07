@@ -136,7 +136,7 @@ namespace Application
     struct Config;
     class CommandBar;
 }; // namespace Application
-namespace Console
+namespace Graphics
 {
     struct Size
     {
@@ -521,7 +521,7 @@ namespace Utils
         std::optional<AppCUI::Input::Key> AsKey();
         std::optional<const char*> AsString();
         std::optional<std::string_view> AsStringView();
-        std::optional<Console::Size> AsSize();
+        std::optional<Graphics::Size> AsSize();
         std::optional<float> AsFloat();
         std::optional<double> AsDouble();
 
@@ -533,7 +533,7 @@ namespace Utils
         AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None);
         const char* ToString(const char* defaultValue = nullptr);
         std::string_view ToStringView(std::string_view defaultValue = std::string_view{});
-        AppCUI::Console::Size ToSize(AppCUI::Console::Size defaultValue = AppCUI::Console::Size());
+        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size());
         float ToFloat(float defaultValue = 0.0f);
         double ToDouble(double defaultValue = 0.0);
     };
@@ -656,7 +656,7 @@ namespace OS
     EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists);
 
 } // namespace OS
-namespace Console
+namespace Graphics
 {
     enum class Color : unsigned char
     {
@@ -1104,20 +1104,20 @@ namespace Console
         bool WriteCharacterBuffer(
               int x,
               int y,
-              const AppCUI::Console::CharacterBuffer& cb,
-              const AppCUI::Console::WriteCharacterBufferParams& params);
+              const AppCUI::Graphics::CharacterBuffer& cb,
+              const AppCUI::Graphics::WriteCharacterBufferParams& params);
         bool WriteCharacterBuffer(
               int x,
               int y,
               unsigned int width,
-              const AppCUI::Console::CharacterBuffer& cb,
+              const AppCUI::Graphics::CharacterBuffer& cb,
               const ColorPair textColor,
               TextAlignament align);
         bool WriteCharacterBuffer(
               int x,
               int y,
               unsigned int width,
-              const AppCUI::Console::CharacterBuffer& cb,
+              const AppCUI::Graphics::CharacterBuffer& cb,
               const ColorPair textColor,
               const ColorPair hotKeyColor,
               unsigned int hotKeyOffset,
@@ -1156,7 +1156,7 @@ namespace Console
               const ColorPair color = DefaultColorPair);
 
         // Clipping & Translate
-        void SetAbsoluteClip(const AppCUI::Console::Clip& clip);
+        void SetAbsoluteClip(const AppCUI::Graphics::Clip& clip);
         void ExtendAbsoluteCliptToRightBottomCorner();
         void ClearClip();
         void SetTranslate(int offX, int offY);
@@ -1245,7 +1245,7 @@ namespace Controls
               AppCUI::Controls::Control* control, int x, int y, int buttonState, void* Context);
         typedef void (*SyntaxHighlightHandler)(
               AppCUI::Controls::Control* control,
-              AppCUI::Console::Character* characters,
+              AppCUI::Graphics::Character* characters,
               unsigned int charactersCount,
               void* Context);
         typedef void (*TextASyntaxHighlightHandler)(
@@ -1287,8 +1287,8 @@ namespace Controls
         int GetY();
         int GetWidth();
         int GetHeight();
-        void GetSize(AppCUI::Console::Size& size);
-        void GetClientSize(AppCUI::Console::Size& size);
+        void GetSize(AppCUI::Graphics::Size& size);
+        void GetClientSize(AppCUI::Graphics::Size& size);
         void MoveTo(int newX, int newY);
         bool Resize(int newWidth, int newHeight);
         void RecomputeLayout();
@@ -1359,7 +1359,7 @@ namespace Controls
               void* Context = nullptr);
 
         // paint
-        virtual void Paint(Console::Renderer& renderer);
+        virtual void Paint(Graphics::Renderer& renderer);
 
         // Evenimente
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
@@ -1387,7 +1387,7 @@ namespace Controls
         virtual bool OnBeforeSetText(const char* text);
         virtual void OnAfterSetText(const char* text);
 
-        virtual void OnExpandView(AppCUI::Console::Clip& expandedClip);
+        virtual void OnExpandView(AppCUI::Graphics::Clip& expandedClip);
         virtual void OnPackView();
 
         virtual ~Control();
@@ -1412,7 +1412,7 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               WindowFlags windowsFlags = WindowFlags::NONE);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
         bool OnMouseDrag(int x, int y, int Button) override;
@@ -1434,7 +1434,7 @@ namespace Controls
     {
       public:
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
     };
     class EXPORT Button : public Control
     {
@@ -1447,7 +1447,7 @@ namespace Controls
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;
         bool OnMouseDrag(int x, int y, int Button) override;
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
@@ -1462,7 +1462,7 @@ namespace Controls
               const std::string_view& layout,
               int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
@@ -1478,7 +1478,7 @@ namespace Controls
               int groupID,
               int controlID = 0);
         void OnMouseReleased(int x, int y, int Button) override;
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
@@ -1488,7 +1488,7 @@ namespace Controls
     {
       public:
         bool Create(Control* parent, const std::string_view& layout, bool vertical);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool SetSecondPanelSize(int newSize);
         bool HideSecondPanel();
@@ -1510,7 +1510,7 @@ namespace Controls
       public:
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         bool Create(Control* parent, const std::string_view& layout);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
     };
     namespace TextFieldFlags
     {
@@ -1534,7 +1534,7 @@ namespace Controls
               void* Context                            = nullptr);
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnAfterSetText(const char* text) override;
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -1565,7 +1565,7 @@ namespace Controls
               TextAreaFlags flags                      = TextAreaFlags::NONE,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* handlerContext                     = nullptr);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
@@ -1610,7 +1610,7 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnAfterAddControl(Control* ctrl) override;
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         Control* GetCurrentTab();
     };
     class EXPORT UserControl : public Control
@@ -1641,12 +1641,12 @@ namespace Controls
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags = ViewerFlags::NONE);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         void OnUpdateScrollBars() override;
-        Console::Canvas* GetCanvas();
+        Graphics::Canvas* GetCanvas();
     };
 
     enum class ListViewFlags : unsigned int
@@ -1690,7 +1690,7 @@ namespace Controls
       public:
         bool Create(Control* parent, const std::string_view& layout, ListViewFlags flags);
         bool Reserve(unsigned int itemsCount);
-        void Paint(Console::Renderer& renderer) override;
+        void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnMouseReleased(int x, int y, int butonState) override;
         void OnMousePressed(int x, int y, int Button) override;
@@ -1701,9 +1701,9 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const AppCUI::Utils::ConstString& text, AppCUI::Console::TextAlignament Align, unsigned int Size = 10);
+        bool AddColumn(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::TextAlignament Align, unsigned int Size = 10);
         bool SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text);
-        bool SetColumnAlignament(unsigned int columnIndex, AppCUI::Console::TextAlignament Align);
+        bool SetColumnAlignament(unsigned int columnIndex, AppCUI::Graphics::TextAlignament Align);
         bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
         bool SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
         bool SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn);
@@ -1755,10 +1755,10 @@ namespace Controls
 
         // items properties
         bool SetItemText(ItemHandle item, unsigned int subItemIndex, const AppCUI::Utils::ConstString& text);
-        const AppCUI::Console::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
+        const AppCUI::Graphics::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
         bool SetItemCheck(ItemHandle item, bool check);
         bool SetItemSelect(ItemHandle item, bool select);
-        bool SetItemColor(ItemHandle item, AppCUI::Console::ColorPair color);
+        bool SetItemColor(ItemHandle item, AppCUI::Graphics::ColorPair color);
         bool SetItemType(ItemHandle item, ListViewItemType type);
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
@@ -1819,8 +1819,8 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
         void OnMousePressed(int x, int y, int butonState) override;
-        void Paint(Console::Renderer& renderer) override;
-        void OnExpandView(AppCUI::Console::Clip& expandedClip) override;
+        void Paint(Graphics::Renderer& renderer) override;
+        void OnExpandView(AppCUI::Graphics::Clip& expandedClip) override;
         void OnPackView() override;
         virtual ~ComboBox();
     };
@@ -1936,115 +1936,115 @@ namespace Application
         struct
         {
             int DesktopFillCharacterCode;
-            Console::ColorPair Color;
+            Graphics::ColorPair Color;
         } Desktop;
         struct
         {
-            Console::ColorPair BackgroundColor;
-            Console::ColorPair ShiftKeysColor;
+            Graphics::ColorPair BackgroundColor;
+            Graphics::ColorPair ShiftKeysColor;
             struct
             {
-                Console::ColorPair KeyColor;
-                Console::ColorPair NameColor;
+                Graphics::ColorPair KeyColor;
+                Graphics::ColorPair NameColor;
             } Normal, Hover, Pressed;
         } CommandBar;
         struct
         {
-            Console::ColorPair ActiveColor;
-            Console::ColorPair InactiveColor;
-            Console::ColorPair TitleActiveColor;
-            Console::ColorPair TitleInactiveColor;
-            Console::ColorPair ControlButtonColor;
-            Console::ColorPair ControlButtonInactiveColor;
-            Console::ColorPair ControlButtonHoverColor;
-            Console::ColorPair ControlButtonPressedColor;
+            Graphics::ColorPair ActiveColor;
+            Graphics::ColorPair InactiveColor;
+            Graphics::ColorPair TitleActiveColor;
+            Graphics::ColorPair TitleInactiveColor;
+            Graphics::ColorPair ControlButtonColor;
+            Graphics::ColorPair ControlButtonInactiveColor;
+            Graphics::ColorPair ControlButtonHoverColor;
+            Graphics::ColorPair ControlButtonPressedColor;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {
-            Console::ColorPair NormalColor;
-            Console::ColorPair HotKeyColor;
+            Graphics::ColorPair NormalColor;
+            Graphics::ColorPair HotKeyColor;
         } Label;
         struct
         {
             struct
             {
-                Console::ColorPair TextColor, HotKeyColor;
+                Graphics::ColorPair TextColor, HotKeyColor;
             } Normal, Focused, Inactive, Hover;
         } Button;
         struct
         {
             struct
             {
-                Console::ColorPair TextColor, HotKeyColor, StateSymbolColor;
+                Graphics::ColorPair TextColor, HotKeyColor, StateSymbolColor;
             } Normal, Focused, Inactive, Hover;
         } StateControl;
         struct
         {
-            Console::ColorPair NormalColor, ClickColor, HoverColor;
+            Graphics::ColorPair NormalColor, ClickColor, HoverColor;
         } Splitter;
         struct
         {
-            Console::ColorPair NormalColor, TextColor;
+            Graphics::ColorPair NormalColor, TextColor;
         } Panel;
         struct
         {
             struct
             {
-                Console::ColorPair Text, Border, LineNumbers, CurrentLineNumber;
+                Graphics::ColorPair Text, Border, LineNumbers, CurrentLineNumber;
             } Normal, Focus, Inactive, Hover;
-            Console::ColorPair SelectionColor;
+            Graphics::ColorPair SelectionColor;
         } Text;
         struct
         {
-            Console::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
-            Console::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
+            Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
+            Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } Tab;
         struct
         {
             struct
             {
-                Console::ColorPair Border, Text, Hotkey;
+                Graphics::ColorPair Border, Text, Hotkey;
             } Normal, Focused, Inactive, Hover;
-            Console::ColorPair InactiveCanvasColor;
+            Graphics::ColorPair InactiveCanvasColor;
         } View;
         struct
         {
-            Console::ColorPair Bar, Arrows, Position;
+            Graphics::ColorPair Bar, Arrows, Position;
         } ScrollBar;
         struct
         {
             struct
             {
-                Console::ColorPair Border, LineSparators;
+                Graphics::ColorPair Border, LineSparators;
             } Normal, Focused, Inactive, Hover;
             struct
             {
-                Console::ColorPair Text, HotKey, Separator;
+                Graphics::ColorPair Text, HotKey, Separator;
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Console::ColorPair Regular, Highligheted, Inactive, Error, Warning;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning;
             } Item;
-            Console::ColorPair CheckedSymbol, UncheckedSymbol;
-            Console::ColorPair InactiveColor;
-            Console::ColorPair FocusColor;
-            Console::ColorPair SelectionColor;
-            Console::ColorPair FocusAndSelectedColor;
-            Console::ColorPair FilterText;
-            Console::ColorPair StatusColor;
+            Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
+            Graphics::ColorPair InactiveColor;
+            Graphics::ColorPair FocusColor;
+            Graphics::ColorPair SelectionColor;
+            Graphics::ColorPair FocusAndSelectedColor;
+            Graphics::ColorPair FilterText;
+            Graphics::ColorPair StatusColor;
         } ListView;
         struct
         {
-            Console::ColorPair Border, Title, TerminateMessage, Text, Time, Percentage;
-            Console::ColorPair EmptyProgressBar, FullProgressBar;
+            Graphics::ColorPair Border, Title, TerminateMessage, Text, Time, Percentage;
+            Graphics::ColorPair EmptyProgressBar, FullProgressBar;
         } ProgressStatus;
         struct
         {
             struct
             {
-                Console::ColorPair Text, Button;
+                Graphics::ColorPair Text, Button;
             } Focus, Normal, Inactive, Hover;
-            Console::ColorPair Selection, HoverOveItem;
+            Graphics::ColorPair Selection, HoverOveItem;
         } ComboBox;
 
         void SetDarkTheme();
@@ -2066,8 +2066,8 @@ namespace Application
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
-    EXPORT bool GetApplicationSize(AppCUI::Console::Size& size);
-    EXPORT bool GetDesktopSize(AppCUI::Console::Size& size);
+    EXPORT bool GetApplicationSize(AppCUI::Graphics::Size& size);
+    EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);
     EXPORT void Repaint();
     EXPORT void RecomputeControlsLayout();
     EXPORT void RaiseEvent(
@@ -2082,8 +2082,8 @@ namespace Application
 // inline operations for enum classes
 ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Console::WriteCharacterBufferFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Console::TextAlignament, unsigned int);
+ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteCharacterBufferFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)

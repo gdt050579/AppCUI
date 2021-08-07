@@ -1,7 +1,7 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::Internal;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 AbstractTerminal::AbstractTerminal()
 {

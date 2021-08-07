@@ -1,7 +1,7 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 Canvas::Canvas()
 {
@@ -117,7 +117,7 @@ void Canvas::Reset()
     this->ClipHasBeenCopied                                                                 = false;
     this->HideCursor();
 }
-void Canvas::SetAbsoluteClip(const AppCUI::Console::Clip& clip)
+void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
 {
     if (clip.Visible)
     {

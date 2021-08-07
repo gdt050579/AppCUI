@@ -88,7 +88,7 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const char* Name, int
     RecomputeScreenPos       = true;
     return true;
 }
-void CommandBarController::Paint(AppCUI::Console::Renderer& renderer)
+void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     if (!Visible)
         return;

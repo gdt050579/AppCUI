@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define WINBUTTON_STATE_NONE     0
@@ -163,7 +163,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     }
     return true;
 }
-void Window::Paint(Console::Renderer& renderer)
+void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->Window;

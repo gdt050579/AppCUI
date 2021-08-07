@@ -4,7 +4,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 #define CLOSE_BUTTON_ID    123456
 #define SHOW_TAB_BUTTON_ID 654321

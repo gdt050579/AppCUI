@@ -2,7 +2,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Internal;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 bool DesktopControl::Create(unsigned int _width, unsigned int _height)
@@ -18,7 +18,7 @@ bool DesktopControl::Create(unsigned int _width, unsigned int _height)
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     return true;
 }
-void DesktopControl::Paint(AppCUI::Console::Renderer& renderer)
+void DesktopControl::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);

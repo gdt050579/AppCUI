@@ -3,7 +3,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 const char* python_code = R"PYTHON(
 import os;
@@ -41,7 +41,7 @@ print("Total files: "+str(total))
 const char* PythonKeywords[] = { "if",    "else", "while",  "str",  "len",    "for",    "in",
                                  "print", "def",  "return", "from", "import", "global", "local" };
 
-int GetCharacterType(Console::Character* c)
+int GetCharacterType(Graphics::Character* c)
 {
     if (((c->Code >= 'A') && (c->Code <= 'Z')) || ((c->Code >= 'a') && (c->Code <= 'z')))
         return PYTHON_CHAR_TYPE_LETTER;
@@ -57,7 +57,7 @@ int GetCharacterType(Console::Character* c)
         return PYTHON_CHAR_TYPE_OPERATOR;
     return PYTHON_CHAR_TYPE_OTHER;
 }
-bool Equal(Console::Character* start, unsigned int size, const char* text)
+bool Equal(Graphics::Character* start, unsigned int size, const char* text)
 {
     unsigned int tr;
     for (tr = 0; (tr < size) && (*text); tr++, text++, start++)
@@ -67,7 +67,7 @@ bool Equal(Console::Character* start, unsigned int size, const char* text)
     }
     return ((tr == size) && ((*text) == 0));
 }
-bool IsKeyword(Console::Character* start, unsigned int size)
+bool IsKeyword(Graphics::Character* start, unsigned int size)
 {
     for (unsigned int tr = 0; tr < sizeof(PythonKeywords) / sizeof(const char*); tr++)
     {
@@ -76,10 +76,10 @@ bool IsKeyword(Console::Character* start, unsigned int size)
     }
     return false;
 }
-void PythonHighligh(Control* tx, Console::Character* chars, unsigned int charsCount, void* Context)
+void PythonHighligh(Control* tx, Graphics::Character* chars, unsigned int charsCount, void* Context)
 {
-    Console::Character* end   = chars + charsCount;
-    Console::Character* start = nullptr;
+    Graphics::Character* end   = chars + charsCount;
+    Graphics::Character* start = nullptr;
     ColorPair col;
     while (chars < end)
     {

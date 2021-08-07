@@ -3,7 +3,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 #define BUTTON_COMPUTE_ODD   5678
 #define BUTTON_COMPUTE_PRIME 5679

@@ -1,6 +1,6 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 #define COMPUTE_RGB(r, g, b)                                                                                           \
     ((((unsigned int) ((r) &0xFF)) << 16) | (((unsigned int) ((g) &0xFF)) << 8) | ((unsigned int) ((b) &0xFF)))

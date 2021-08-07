@@ -1,6 +1,6 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 bool Rect::Create(int x, int y, int width, int height, Alignament align)
 {

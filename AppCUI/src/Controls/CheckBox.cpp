@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 bool AppCUI::Controls::CheckBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
@@ -15,7 +15,7 @@ bool AppCUI::Controls::CheckBox::Create(Control* parent, const AppCUI::Utils::Co
     SetControlID(controlID);
     return true;
 }
-void AppCUI::Controls::CheckBox::Paint(Console::Renderer& renderer)
+void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 

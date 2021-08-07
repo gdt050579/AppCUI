@@ -1,7 +1,7 @@
 #include "Internal.hpp"
 #include <chrono>
 
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Internal;
 using namespace std::chrono;
 

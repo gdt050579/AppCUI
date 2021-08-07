@@ -16,7 +16,7 @@ namespace AppCUI
 {
 namespace Internal
 {
-    using AppColor = AppCUI::Console::Color;
+    using AppColor = AppCUI::Graphics::Color;
 
     constexpr size_t NR_APPCUI_COLORS = 16;
 

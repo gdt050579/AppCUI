@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 #define PANEL_ATTR_BORDER 1024
@@ -23,7 +23,7 @@ bool Panel::Create(Control* parent, const std::string_view& layout)
     Members->Flags = GATTR_VISIBLE | GATTR_ENABLE;
     return true;
 }
-void Panel::Paint(Console::Renderer& renderer)
+void Panel::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
     renderer.Clear(' ', Members->Cfg->Panel.NormalColor);

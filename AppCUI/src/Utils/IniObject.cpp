@@ -535,7 +535,7 @@ std::optional<std::string_view> IniValue::AsStringView()
     VALIDATE_VALUE(std::nullopt);
     return std::string_view(value->KeyValue.GetText(), value->KeyValue.Len());
 }
-std::optional<Console::Size> IniValue::AsSize()
+std::optional<Graphics::Size> IniValue::AsSize()
 {
     VALIDATE_VALUE(std::nullopt);
     const char* start = value->KeyValue.GetText();
@@ -571,7 +571,7 @@ std::optional<Console::Size> IniValue::AsSize()
     unsigned int height = p_height.value();
     CHECK(width > 0, std::nullopt, "Width must be bigger than 0");
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
-    return AppCUI::Console::Size(width, height);
+    return AppCUI::Graphics::Size(width, height);
 }
 std::optional<float> IniValue::AsFloat()
 {
@@ -645,7 +645,7 @@ std::string_view IniValue::ToStringView(std::string_view defaultValue)
     else
         return defaultValue;
 }
-AppCUI::Console::Size IniValue::ToSize(AppCUI::Console::Size defaultValue)
+AppCUI::Graphics::Size IniValue::ToSize(AppCUI::Graphics::Size defaultValue)
 {
     auto result = this->AsSize();
     if (result.has_value())

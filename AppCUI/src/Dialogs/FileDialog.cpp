@@ -8,7 +8,7 @@
 using namespace AppCUI;
 using namespace AppCUI::OS;
 using namespace AppCUI::Utils;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 

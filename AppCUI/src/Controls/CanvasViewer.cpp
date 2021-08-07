@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 bool CanvasViewer::Create(
@@ -40,7 +40,7 @@ CanvasViewer::~CanvasViewer()
     DELETE_CONTROL_CONTEXT(CanvasControlContext);
 }
 
-void CanvasViewer::Paint(Console::Renderer& renderer)
+void CanvasViewer::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     auto* col = &Members->Cfg->View.Normal;

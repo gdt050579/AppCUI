@@ -1,5 +1,5 @@
 add_subdirectory(Application)
-add_subdirectory(Console)
+add_subdirectory(Graphics)
 add_subdirectory(Controls)
 add_subdirectory(Utils)
 add_subdirectory(OS)
