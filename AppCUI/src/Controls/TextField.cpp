@@ -6,7 +6,7 @@ using namespace AppCUI::Input;
 
 #define C_WIDTH ((Members->Layout.Width - 2) * Members->Layout.Height)
 #define EXIT_IF_READONLY()                                                                                             \
-    if ((Members->Flags & TextFieldFlags::Readonly) != 0)                                                         \
+    if ((Members->Flags & TextFieldFlags::Readonly) != TextFieldFlags::None)                                           \
     {                                                                                                                  \
         return;                                                                                                        \
     };
@@ -16,7 +16,7 @@ using namespace AppCUI::Input;
 void TextField_SendTextChangedEvent(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-    if (Members->Flags & TextFieldFlags::SyntaxHighlighting)
+    if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
     {
         Members->Syntax.Handler(control, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
     }
@@ -208,7 +208,7 @@ bool TextField::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
-      TextFieldFlags::Type flags,
+      TextFieldFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
 {
@@ -226,7 +226,7 @@ bool TextField::Create(
     ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
     TextField_MoveTo(this, 0xFFFF, false);
-    if (Members->Flags & TextFieldFlags::SyntaxHighlighting)
+    if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
@@ -316,7 +316,7 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
         return true;
 
     case Key::Enter:
-        if ((Members->Flags & TextFieldFlags::ProcessEnter) != 0)
+        if ((Members->Flags & TextFieldFlags::ProcessEnter) != TextFieldFlags::None) 
         {
             RaiseEvent(Event::EVENT_TEXTFIELD_VALIDATE);
             return true;
@@ -368,7 +368,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
     {
         if (Members->Modified)
         {
-            if (Members->Flags & TextFieldFlags::SyntaxHighlighting)
+            if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
             {
                 Members->Syntax.Handler(this, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
             }
@@ -383,7 +383,8 @@ void TextField::Paint(Graphics::Renderer& renderer)
         else
         {
             // if no selection is present and no syntax highlighting --> use overwrite colors as it is faster
-            if ((Members->Selection.Start < 0) && ((Members->Flags & TextFieldFlags::SyntaxHighlighting) == 0))
+            if ((Members->Selection.Start < 0) &&
+                ((Members->Flags & TextFieldFlags::SyntaxHighlighting) == TextFieldFlags::None))
                 params.Flags |= WriteCharacterBufferFlags::OVERWRITE_COLORS;
         }
     }

@@ -1511,16 +1511,13 @@ namespace Controls
         bool Create(Control* parent, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
-    namespace TextFieldFlags
+    enum class TextFieldFlags : unsigned int
     {
-        enum Type : unsigned int
-        {
-            None                = 0,
-            ProcessEnter        = 0x000100,
-            Readonly            = 0x000200,
-            SyntaxHighlighting  = 0x000400,
-        };
-    }
+        None               = 0,
+        ProcessEnter       = 0x000100,
+        Readonly           = 0x000200,
+        SyntaxHighlighting = 0x000400,
+    };
     class EXPORT TextField : public Control
     {
       public:
@@ -1528,7 +1525,7 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              TextFieldFlags::Type flags               = TextFieldFlags::None,
+              TextFieldFlags flags                     = TextFieldFlags::None,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* Context                            = nullptr);
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -2087,6 +2084,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS

@@ -64,29 +64,29 @@ bool CreateMessageBoxWindow(
 void MessageBox::ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    CreateMessageBoxWindow(title, message, WindowFlags::ERRORBOX, MSGBOX_BUTTONS_OK, &result);
+    CreateMessageBoxWindow(title, message, WindowFlags::ErrorWindow, MSGBOX_BUTTONS_OK, &result);
 }
 void MessageBox::ShowNotification(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    CreateMessageBoxWindow(title, message, WindowFlags::NOTIFYBOX, MSGBOX_BUTTONS_OK, &result);
+    CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_OK, &result);
 }
 void MessageBox::ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    CreateMessageBoxWindow(title, message, WindowFlags::WARNINGBOX, MSGBOX_BUTTONS_OK, &result);
+    CreateMessageBoxWindow(title, message, WindowFlags::WarningWindow, MSGBOX_BUTTONS_OK, &result);
 }
 Result MessageBox::ShowYesNoCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    if (CreateMessageBoxWindow(title, message, WindowFlags::NOTIFYBOX, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) == false)
+    if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) == false)
         return Result::Cancel;
     return (Result) result;
 }
 Result MessageBox::ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    if (CreateMessageBoxWindow(title, message, WindowFlags::NOTIFYBOX, MSGBOX_BUTTONS_OK_CANCEL, &result) == false)
+    if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_OK_CANCEL, &result) == false)
         return Result::Cancel;
     return (Result) result;
 }
