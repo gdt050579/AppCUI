@@ -4,7 +4,7 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::Internal;
-using namespace AppCUI::Console;
+using namespace AppCUI::Graphics;
 
 constexpr size_t EXTENDED_COLORSET_SIZE = 16;
 constexpr size_t REDUCED_COLORSET_SIZE  = 8;
