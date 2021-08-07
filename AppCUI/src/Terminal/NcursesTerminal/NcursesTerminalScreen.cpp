@@ -36,14 +36,14 @@ bool NcursesTerminal::initScreen()
 
 void NcursesTerminal::OnFlushToScreen()
 {
-    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const size_t width                      = ScreenCanvas.GetWidth();
     const size_t height                     = ScreenCanvas.GetHeight();
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
-            const AppCUI::Console::Character ch = charsBuffer[y * width + x];
+            const AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
 
             cchar_t t = { 0, { ch.Code, 0 } };
             colors.SetColor(ch.Color.Forenground, ch.Color.Background);
@@ -53,19 +53,19 @@ void NcursesTerminal::OnFlushToScreen()
     }
     if (mode == TerminalMode::TerminalInsert)
     {
-        colors.SetColor(Console::Color::White, Console::Color::Green);
+        colors.SetColor(Graphics::Color::White, Graphics::Color::Green);
         mvaddch(height - 1, width - 3, ' ');
         mvaddch(height - 1, width - 2, 'I');
         mvaddch(height - 1, width - 1, ' ');
-        colors.UnsetColor(Console::Color::White, Console::Color::Green);
+        colors.UnsetColor(Graphics::Color::White, Graphics::Color::Green);
     }
     else if (mode == TerminalMode::TerminalNormal)
     {
-        colors.SetColor(Console::Color::White, Console::Color::DarkRed);
+        colors.SetColor(Graphics::Color::White, Graphics::Color::DarkRed);
         mvaddch(height - 1, width - 3, ' ');
         mvaddch(height - 1, width - 2, 'N');
         mvaddch(height - 1, width - 1, ' ');
-        colors.UnsetColor(Console::Color::White, Console::Color::DarkRed);
+        colors.UnsetColor(Graphics::Color::White, Graphics::Color::DarkRed);
     }
     move(LastCursorY, LastCursorX);
     refresh();

@@ -16,7 +16,7 @@ constexpr std::array<Color, NR_APPCUI_COLORS> TrueColors = {
 };
 
 #define COLOR_LIGHT(color) ((color) | (1 << 3))
-// Mapping from AppCUI::Console::Color to ncurses colors
+// Mapping from AppCUI::Graphics::Color to ncurses colors
 constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
     /* Black */ COLOR_BLACK,
     /* DarkBlue */ COLOR_BLUE,
@@ -37,7 +37,7 @@ constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
     /* White */ COLOR_LIGHT(COLOR_WHITE),
 };
 
-// Mapping from AppCUI::Console::Color to ncurses colors but only with 8 base colors
+// Mapping from AppCUI::Graphics::Color to ncurses colors but only with 8 base colors
 constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
     /* Black */ COLOR_BLACK,
     /* DarkBlue */ COLOR_BLUE,
