@@ -1018,14 +1018,14 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int& HeaderInd
     HeaderIndex       = INVALID_COLUMN_INDEX;
     return false;
 }
-void ListViewControlContext::OnMouseReleased(int x, int y, int butonState)
+void ListViewControlContext::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     Columns.ResizeModeEnabled         = false;
     Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
     Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
 }
-void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
+void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     if (((Flags & ListViewFlags::HIDE_COLUMNS) == ListViewFlags::NONE))
     {
@@ -1066,7 +1066,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, int butonState)
         MoveTo(y + Items.FirstVisibleIndex);
     }
 }
-bool ListViewControlContext::OnMouseDrag(int x, int y, int butonState)
+bool ListViewControlContext::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -1639,17 +1639,17 @@ void ListView::SetClipboardSeparator(char ch)
 {
     WRAPPER->SetClipboardSeparator(ch);
 }
-void ListView::OnMouseReleased(int x, int y, int butonState)
+void ListView::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
-    WRAPPER->OnMouseReleased(x, y, butonState);
+    WRAPPER->OnMouseReleased(x, y, button);
 }
-void ListView::OnMousePressed(int x, int y, int butonState)
+void ListView::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
-    WRAPPER->OnMousePressed(x, y, butonState);
+    WRAPPER->OnMousePressed(x, y, button);
 }
-bool ListView::OnMouseDrag(int x, int y, int butonState)
+bool ListView::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
-    return WRAPPER->OnMouseDrag(x, y, butonState);
+    return WRAPPER->OnMouseDrag(x, y, button);
 }
 bool ListView::OnMouseOver(int x, int y)
 {

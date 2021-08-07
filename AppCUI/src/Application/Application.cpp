@@ -584,7 +584,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
             SendCommand(cmd);
     }
 }
-void AppCUI::Internal::Application::OnMouseDown(int x, int y, int buttonState)
+void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {
     if (this->CommandBarObject.OnMouseDown())
     {
@@ -607,11 +607,11 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, int buttonState)
                   MouseLockedControl,
                   x - cc->ScreenClip.ScreenPosition.X,
                   y - cc->ScreenClip.ScreenPosition.Y,
-                  buttonState,
+                  button,
                   cc->Handlers.OnMousePressedHandlerContext);
         else
             MouseLockedControl->OnMousePressed(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, buttonState);
+                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -625,7 +625,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, int buttonState)
     // daca nu e -> curat
     MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
 }
-void AppCUI::Internal::Application::OnMouseUp(int x, int y, int buttonState)
+void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::MouseButton button)
 {
     int commandID;
     switch (MouseLockedObject)
@@ -643,18 +643,18 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, int buttonState)
                   MouseLockedControl,
                   x - cc->ScreenClip.ScreenPosition.X,
                   y - cc->ScreenClip.ScreenPosition.Y,
-                  buttonState,
+                  button,
                   cc->Handlers.OnMouseReleasedHandlerContext);
         else
             MouseLockedControl->OnMouseReleased(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, buttonState);
+                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
         RepaintStatus |= REPAINT_STATUS_DRAW;
         break;
     }
     MouseLockedControl = nullptr;
     MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
 }
-void AppCUI::Internal::Application::OnMouseMove(int x, int y, int buttonState)
+void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::MouseButton button)
 {
     AppCUI::Controls::Control* ctrl;
     bool repaint;
@@ -666,7 +666,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, int buttonState)
         if (MouseLockedControl->OnMouseDrag(
                   x - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.X,
                   y - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.Y,
-                  buttonState))
+                  button))
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
     case MOUSE_LOCKED_OBJECT_NONE:
@@ -824,13 +824,13 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             }
             break;
         case SystemEvents::MOUSE_DOWN:
-            OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButtonState);
+            OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
         case SystemEvents::MOUSE_UP:
-            OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButtonState);
+            OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
         case SystemEvents::MOUSE_MOVE:
-            OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButtonState);
+            OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
         case SystemEvents::KEY_PRESSED:
             ProcessKeyPress(evnt.keyCode, evnt.asciiCode);

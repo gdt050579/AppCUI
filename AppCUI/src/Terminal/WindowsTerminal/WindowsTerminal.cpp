@@ -385,6 +385,13 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
             evnt.eventType = SystemEvents::MOUSE_MOVE;
             return;
         }
+        evnt.mouseButton = AppCUI::Input::MouseButton::None;
+        if (ir.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
+            evnt.mouseButton |= AppCUI::Input::MouseButton::Left;
+        else if (ir.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+            evnt.mouseButton |= AppCUI::Input::MouseButton::Right;
+        else if (ir.Event.MouseEvent.dwButtonState>0)
+            evnt.mouseButton |= AppCUI::Input::MouseButton::Center;
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
         if (ResizeConsoleBuffer(ir.Event.WindowBufferSizeEvent.dwSize.X, ir.Event.WindowBufferSizeEvent.dwSize.Y))

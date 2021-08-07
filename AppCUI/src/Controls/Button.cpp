@@ -109,7 +109,7 @@ bool Button::OnKeyEvent(Key KeyCode, char AsciiCode)
     }
     return false;
 }
-bool Button::OnMouseDrag(int x, int y, int Button)
+bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     if (IsChecked() == false)
         return false;
@@ -120,13 +120,13 @@ bool Button::OnMouseDrag(int x, int y, int Button)
     }
     return false;
 }
-void Button::OnMouseReleased(int x, int y, int butonState)
+void Button::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     SetChecked(false);
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-void Button::OnMousePressed(int x, int y, int butonState)
+void Button::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     SetChecked(true);
 }

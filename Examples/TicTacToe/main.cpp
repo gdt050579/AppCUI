@@ -79,7 +79,7 @@ class TicTacToeTable : public UserControl
         renderer.DrawVerticalLineWithSpecialChar(
               9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
-    void OnMousePressed(int x, int y, int Button) override
+    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
     {
         int cell_x = MINVALUE(x / 5, 2);
         int cell_y = MINVALUE(y / 5, 2);

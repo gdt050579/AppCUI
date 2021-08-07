@@ -244,6 +244,13 @@ namespace Input
         Ctrl  = 0x2000,
         Shift = 0x4000
     };
+    enum class MouseButton: unsigned int
+    {
+        None    = 0,
+        Left    = 0x01,
+        Center  = 0x02,
+        Right   = 0x04
+    };
 };
 namespace Utils
 {
@@ -1240,9 +1247,9 @@ namespace Controls
               int controlID,
               void* Context);
         typedef void (*MousePressedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, int buttonState, void* Context);
+              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
         typedef void (*MouseReleasedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, int buttonState, void* Context);
+              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
         typedef void (*SyntaxHighlightHandler)(
               AppCUI::Controls::Control* control,
               AppCUI::Graphics::Character* characters,
@@ -1361,9 +1368,9 @@ namespace Controls
         virtual void OnFocus();
         virtual void OnLoseFocus();
 
-        virtual void OnMousePressed(int x, int y, int Button);
-        virtual void OnMouseReleased(int x, int y, int Button);
-        virtual bool OnMouseDrag(int x, int y, int Button);
+        virtual void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+        virtual void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button);
+        virtual bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
 
         virtual bool OnMouseEnter();
         virtual bool OnMouseOver(int x, int y);
@@ -1406,9 +1413,9 @@ namespace Controls
               const std::string_view& layout,
               WindowFlags windowsFlags = WindowFlags::None);
         void Paint(Graphics::Renderer& renderer) override;
-        void OnMousePressed(int x, int y, int Button) override;
-        void OnMouseReleased(int x, int y, int Button) override;
-        bool OnMouseDrag(int x, int y, int Button) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         int Show();
@@ -1437,9 +1444,9 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               int controlID = 0);
-        void OnMousePressed(int x, int y, int Button) override;
-        void OnMouseReleased(int x, int y, int Button) override;
-        bool OnMouseDrag(int x, int y, int Button) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
@@ -1454,7 +1461,7 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               int controlID = 0);
-        void OnMouseReleased(int x, int y, int Button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
@@ -1470,7 +1477,7 @@ namespace Controls
               const std::string_view& layout,
               int groupID,
               int controlID = 0);
-        void OnMouseReleased(int x, int y, int Button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnHotKey() override;
@@ -1490,9 +1497,9 @@ namespace Controls
         void OnFocus() override;
         bool OnBeforeAddControl(Control* ctrl) override;
         void OnAfterAddControl(Control* ctrl) override;
-        void OnMousePressed(int x, int y, int Button) override;
-        void OnMouseReleased(int x, int y, int Button) override;
-        bool OnMouseDrag(int x, int y, int Button) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         int GetSplitterPosition();
@@ -1595,7 +1602,7 @@ namespace Controls
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        void OnMouseReleased(int x, int y, int buttonState) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -1682,9 +1689,9 @@ namespace Controls
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
-        void OnMouseReleased(int x, int y, int butonState) override;
-        void OnMousePressed(int x, int y, int Button) override;
-        bool OnMouseDrag(int x, int y, int Button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnFocus() override;
@@ -1808,7 +1815,7 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, int butonState) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(AppCUI::Graphics::Clip& expandedClip) override;
         void OnPackView() override;
@@ -2072,6 +2079,7 @@ namespace Application
 // inline operations for enum classes
 ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
+ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteCharacterBufferFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);

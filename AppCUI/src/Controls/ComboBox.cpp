@@ -354,7 +354,7 @@ void ComboBox::OnHotKey()
         RaiseEvent(Event::EVENT_COMBO_CLOSED);
     }
 }
-void ComboBox::OnMousePressed(int x, int y, int butonState)
+void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 

@@ -368,10 +368,10 @@ class ListViewControlContext : public ControlContext
     unsigned int GetItemHeight(ItemHandle item);
 
     void Paint(Graphics::Renderer& renderer);
-    void OnMouseReleased(int x, int y, int butonState);
+    void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button);
     bool MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex);
-    void OnMousePressed(int x, int y, int butonState);
-    bool OnMouseDrag(int x, int y, int butonState);
+    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+    bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
     bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);

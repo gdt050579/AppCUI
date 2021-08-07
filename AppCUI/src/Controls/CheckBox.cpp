@@ -69,7 +69,7 @@ bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char Asc
     }
     return false;
 }
-void AppCUI::Controls::CheckBox::OnMouseReleased(int x, int y, int butonState)
+void AppCUI::Controls::CheckBox::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();

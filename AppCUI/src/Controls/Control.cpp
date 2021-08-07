@@ -1217,13 +1217,13 @@ void AppCUI::Controls::Control::OnFocus()
 void AppCUI::Controls::Control::OnLoseFocus()
 {
 }
-void AppCUI::Controls::Control::OnMouseReleased(int x, int y, int Button)
+void AppCUI::Controls::Control::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
 }
-void AppCUI::Controls::Control::OnMousePressed(int x, int y, int Button)
+void AppCUI::Controls::Control::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
 }
-bool AppCUI::Controls::Control::OnMouseDrag(int x, int y, int Button)
+bool AppCUI::Controls::Control::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     return false;
 }

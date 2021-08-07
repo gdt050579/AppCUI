@@ -311,7 +311,7 @@ bool Window::CenterScreen()
     UpdateWindowsButtonsPoz(Members);
     return true;
 }
-void Window::OnMousePressed(int x, int y, int butonState)
+void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
@@ -347,7 +347,7 @@ void Window::OnMousePressed(int x, int y, int butonState)
         Members->dragOffsetY = y;
     }
 }
-void Window::OnMouseReleased(int x, int y, int butonState)
+void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
@@ -372,7 +372,7 @@ void Window::OnMouseReleased(int x, int y, int butonState)
     //		return;
     //}
 }
-bool Window::OnMouseDrag(int x, int y, int butonState)
+bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)

@@ -191,17 +191,17 @@ bool Splitter::OnBeforeAddControl(Control* c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, int Button)
+void Splitter::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->DragStatus = SPLITTER_DRAG_STATUS_MOVE;
 }
-void Splitter::OnMouseReleased(int x, int y, int Button)
+void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->DragStatus = SPLITTER_DRAG_STATUS_NONE;
 }
-bool Splitter::OnMouseDrag(int x, int y, int Button)
+bool Splitter::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->DragStatus == SPLITTER_DRAG_STATUS_MOVE)

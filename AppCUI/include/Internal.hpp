@@ -78,7 +78,7 @@ namespace Internal
             SystemEvents::Type eventType;
             int mouseX, mouseY;
             unsigned int newWidth, newHeight;
-            unsigned int mouseButtonState;
+            AppCUI::Input::MouseButton mouseButton;
             AppCUI::Input::Key keyCode;
             char asciiCode;
         };
@@ -240,9 +240,9 @@ namespace Internal
         void ComputePositions();
         void ProcessKeyPress(AppCUI::Input::Key keyCode, int AsciiCode);
         void ProcessShiftState(AppCUI::Input::Key ShiftState);
-        void OnMouseDown(int x, int y, int buttonState);
-        void OnMouseUp(int x, int y, int buttonState);
-        void OnMouseMove(int x, int y, int buttonState);
+        void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
+        void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
+        void OnMouseMove(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseWheel();
         void SendCommand(int command);
         void Terminate();
