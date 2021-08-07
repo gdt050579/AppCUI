@@ -1248,12 +1248,6 @@ namespace Controls
               AppCUI::Graphics::Character* characters,
               unsigned int charactersCount,
               void* Context);
-        typedef void (*TextASyntaxHighlightHandler)(
-              const char* ptrLine,
-              unsigned char* ptrColors,
-              unsigned int LineSize,
-              unsigned int ColorVectSize,
-              void* Context);
         typedef int (*ListViewItemComparer)(
               AppCUI::Controls::ListView* control,
               ItemHandle item1,
