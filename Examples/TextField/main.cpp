@@ -35,7 +35,7 @@ class MyWin : public AppCUI::Controls::Window
         t1.SetHotKey('N');
 
         l2.Create(this, "&Read only", "x:1,y:3,w:15");
-        t2.Create(this, "this text cannnot be changed", "x:19,y:3,w:48", TextFieldFlags::READONLY_TEXT);
+        t2.Create(this, "this text cannnot be changed", "x:19,y:3,w:48", TextFieldFlags::Readonly);
         t2.SetHotKey('R');
 
         l3.Create(this, "Inactive text", "x:1,y:5,w:15");
@@ -51,7 +51,7 @@ class MyWin : public AppCUI::Controls::Window
               this,
               "Capital Letters and numbers (12345)",
               "x:19,y:11,w:48",
-              TextFieldFlags::SYNTAX_HIGHLIGHTING,
+              TextFieldFlags::SyntaxHighlighting,
               HighlightNumberAndCapitalLetters);
         t5.SetHotKey('H');
     }

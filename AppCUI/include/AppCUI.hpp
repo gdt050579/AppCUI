@@ -1515,10 +1515,10 @@ namespace Controls
     {
         enum Type : unsigned int
         {
-            NONE                = 0,
-            PROCESS_ENTER       = 0x000100,
-            READONLY_TEXT       = 0x000200,
-            SYNTAX_HIGHLIGHTING = 0x000400,
+            None                = 0,
+            ProcessEnter        = 0x000100,
+            Readonly            = 0x000200,
+            SyntaxHighlighting  = 0x000400,
         };
     }
     class EXPORT TextField : public Control
@@ -1528,7 +1528,7 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              TextFieldFlags::Type flags               = TextFieldFlags::NONE,
+              TextFieldFlags::Type flags               = TextFieldFlags::None,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* Context                            = nullptr);
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
