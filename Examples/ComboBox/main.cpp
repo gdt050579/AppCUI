@@ -1,4 +1,4 @@
-#include "AppCUI.hpp"
+﻿#include "AppCUI.hpp"
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
@@ -16,8 +16,8 @@ class MyWin : public AppCUI::Controls::Window
         inf.Create(this, "Select a color", "x:1,y:1,w:15");
         col.Create(this, "", "x:1,y:2,w:15");
         cb1.Create(this, "x:18,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
-        inf2.Create(this, "Select a form", "x:1,y:4,w:15");
-        cb2.Create(this, "x:18,y:4,w:30", "Rectangle,Circle,Triangle");
+        inf2.Create(this, "Select a word", "x:1,y:4,w:15");
+        cb2.Create(this, "x:18,y:4,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
         inf3.Create(this, "Select a fruit", "x:1,y:7,w:15");
         cb3.Create(this, "x:18,y:7,w:30", "Apple,Orange,Pinaple");
     }

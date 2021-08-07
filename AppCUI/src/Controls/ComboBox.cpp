@@ -93,11 +93,52 @@ void ComboBox_MoveTo(ComboBox* control, unsigned int newPoz)
         control->RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
 }
 //====================================================================================================
+template <typename T>
+unsigned int ComputeItemsCount(const T* start, size_t len, const T separator)
+{
+    if (start == nullptr)
+        return 0;
+    const T* end       = start + len;
+    unsigned int count = 1; // assume at least one element (if not item separator is found)
+    while (start<end)
+    {
+        if ((*start) == separator)
+            count++;
+        start++;
+    }
+    return count;
+}
+
+template <typename T,typename SV_T>
+bool AddItemsFromList(ComboBox* cbx, const T* p, size_t len, const T separator)
+{    
+    const T* end   = p + len;
+    const T* start = p;
+    for (;p<end; p++)
+    {
+        if ((*p) == separator)
+        {
+            if (start < p)
+            {
+                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start)), false, "");
+            }
+            start = p + 1;
+        }
+    }
+    if (start < p)
+    {
+        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start)), false, "");
+    }
+    return true;
+}
+
+//====================================================================================================
 ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-bool ComboBox::Create(Control* parent, const std::string_view& layout, const char* items, char itemsSeparator)
+bool ComboBox::Create(
+      Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
 {
     CONTROL_INIT_CONTEXT(ComboBoxControlContext);
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
@@ -108,36 +149,38 @@ bool ComboBox::Create(Control* parent, const std::string_view& layout, const cha
 
     Members->Flags                        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     unsigned int initialAllocatedElements = 8;
-    if (items)
-    {
-        unsigned int count = 1; // assume at least one element (if not item separator is found)
-        for (unsigned int tr = 0; items[tr] != 0; tr++)
-        {
-            if (items[tr] == itemsSeparator)
-                count++;
-        }
-        if (count > initialAllocatedElements)
-            initialAllocatedElements = (count | 3) + 1;
-    }
+    unsigned int count                    = 0;
+    
+    if (std::holds_alternative<std::string_view>(text))
+        count = ComputeItemsCount<char>(
+              std::get<std::string_view>(text).data(), std::get<std::string_view>(text).length(), itemsSeparator);
+    else 
+        count = ComputeItemsCount<char8_t>(
+              std::get<std::u8string_view>(text).data(), std::get<std::u8string_view>(text).length(), (char8_t)itemsSeparator);
+    if (count > initialAllocatedElements)
+        initialAllocatedElements = (count | 3) + 1;
+
     Members->Items.reserve(initialAllocatedElements);
-    if (items)
+    if (count>0)
     {
-        unsigned int start = 0, tr;
-        for (tr = 0; items[tr] != 0; tr++)
+        bool result = false;
+        if (std::holds_alternative<std::string_view>(text))
         {
-            if (items[tr] == itemsSeparator)
-            {
-                if (start < tr)
-                {
-                    CHECK(ComboBox_AddItem(this, std::string_view(&items[start], tr - start)), false, "");                    
-                }
-                start = tr + 1;
-            }
+            result = AddItemsFromList<char, std::string_view>(
+                  this,
+                  std::get<std::string_view>(text).data(),
+                  std::get<std::string_view>(text).length(),
+                  itemsSeparator);
         }
-        if (start < tr)
+        else
         {
-            CHECK(ComboBox_AddItem(this, std::string_view(&items[start], tr - start)), false, "");
+            result = AddItemsFromList<char8_t, std::u8string_view>(
+                  this,
+                  std::get<std::u8string_view>(text).data(),
+                  std::get<std::u8string_view>(text).length(),
+                  (char8_t) itemsSeparator);   
         }
+        CHECK(result, false, "Fail to add items to ComboBox !");
     }
     Members->VisibleItems     = 1;
     Members->CurentItemIndex  = ComboBox::NO_ITEM_SELECTED;

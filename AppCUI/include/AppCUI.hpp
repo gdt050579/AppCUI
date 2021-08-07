@@ -1803,7 +1803,7 @@ namespace Controls
         ItemData GetCurrentItemUserData();
 
         bool Create(
-              Control* parent, const std::string_view& layout, const char* items = nullptr, char itemsSeparator = ',');
+              Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text = std::string_view(), char itemsSeparator = ',');
         unsigned int GetItemsCount();
         unsigned int GetCurrentItemIndex();
         ItemData GetItemUserData(unsigned int index);
