@@ -30,7 +30,8 @@ class MyWin : public AppCUI::Controls::Window
         }
         if (eventType == Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED)
         {
-            col.SetText(cb1.GetUnsafeCurrentItemText());
+            // GDT: to rethink
+            //col.SetText(cb1.GetUnsafeCurrentItemText());
         }
         return false;
     }
@@ -38,6 +39,7 @@ class MyWin : public AppCUI::Controls::Window
 
 int main()
 {
+    Log::ToOutputDebugString();
     if (!Application::Init())
         return 1;
     Application::AddWindow(new MyWin());

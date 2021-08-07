@@ -888,8 +888,7 @@ namespace Console
         size_t Count;
         size_t Allocated;
 
-        void MakeACopy(const CharacterBuffer&);
-        void Swap(CharacterBuffer&) noexcept;
+
         bool Grow(size_t newSize);
         bool Add(const std::string_view text, const ColorPair color = NoColorPair);
         bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
@@ -906,13 +905,18 @@ namespace Console
         int  FindAscii(const std::string_view& text, bool ignoreCase) const;
         int  FindUTF8(const std::u8string_view& text, bool ignoreCase) const;
       public:
+        void Swap(CharacterBuffer&) noexcept;
         CharacterBuffer();
         inline CharacterBuffer(const CharacterBuffer& obj)
         {
-            MakeACopy(obj);
+            Buffer = nullptr;
+            Count = Allocated = 0;
+            Set(obj);
         }
         inline CharacterBuffer(CharacterBuffer&& obj) noexcept
         {
+            Buffer = nullptr;
+            Count = Allocated = 0;
             Swap(obj);
         }
         ~CharacterBuffer();
@@ -929,6 +933,7 @@ namespace Console
             return Buffer;
         }
 
+        bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
         bool SetWithHotKey(
@@ -959,7 +964,7 @@ namespace Console
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
 
-        inline CharacterBuffer& operator=(const CharacterBuffer& obj) { MakeACopy(obj); return *this; }
+        inline CharacterBuffer& operator=(const CharacterBuffer& obj) { Set(obj); return *this; }
         inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept { Swap(obj); return *this; }
     };
 
@@ -1791,10 +1796,10 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        const char* GetUnsafeItemText(unsigned int index);
-        bool GetItemText(unsigned int index, Utils::String& itemText);
-        const char* GetUnsafeCurrentItemText();
-        bool GetCurrentItemtext(Utils::String& itemText);
+        //const char* GetUnsafeItemText(unsigned int index);
+        //bool GetItemText(unsigned int index, Utils::String& itemText);
+        //const char* GetUnsafeCurrentItemText();
+        //bool GetCurrentItemtext(Utils::String& itemText);
         ItemData GetCurrentItemUserData();
 
         bool Create(
@@ -1805,7 +1810,7 @@ namespace Controls
         bool SetItemUserData(unsigned int index, ItemData userData);
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const char* text, ItemData usedData = { 0 });
+        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { 0 });
         void DeleteAllItems();
 
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;

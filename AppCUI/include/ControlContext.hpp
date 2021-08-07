@@ -381,17 +381,22 @@ class ListViewControlContext : public ControlContext
     void FilterItems();
 };
 
-#define COMBOBOX_ITEM_SIZE 48
-
-struct COMBO_ITEM_INFO
+struct ComboBoxItem
 {
-    char Nume[COMBOBOX_ITEM_SIZE];
+    AppCUI::Console::CharacterBuffer Text;
     AppCUI::Controls::ItemData Data;
+    ComboBoxItem();
+    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData);
+    ~ComboBoxItem();
+    ComboBoxItem(const ComboBoxItem&);
+    ComboBoxItem(ComboBoxItem&&);
+    ComboBoxItem& operator=(const ComboBoxItem&);
+    ComboBoxItem& operator=(ComboBoxItem&&) noexcept;
 };
 class ComboBoxControlContext : public ControlContext
 {
   public:
-    std::vector<COMBO_ITEM_INFO> Items;
+    std::vector<ComboBoxItem> Items;
     unsigned int ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems, HoveredIndexItem;
 };
 

@@ -69,42 +69,24 @@ constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2)
 
 CharacterBuffer::CharacterBuffer()
 {
+    //LOG_INFO("Default ctor for %p", this);
     Allocated = 0;
     Count     = 0;
     Buffer    = nullptr;
 }
-void CharacterBuffer::MakeACopy(const CharacterBuffer& obj)
-{
-    this->Allocated = obj.Allocated;
-    this->Count     = obj.Count;
-    if (obj.Buffer)
-    {
-        this->Buffer = new Character[obj.Allocated];
-        if (this->Buffer)
-        {
-            memcpy(this->Buffer, obj.Buffer, sizeof(Character) * obj.Count);
-            this->Allocated = obj.Allocated;
-            this->Count     = obj.Count;
-            return;
-        }
-    }
-    this->Allocated = 0;
-    this->Count     = 0;
-    this->Buffer    = nullptr;
-}
+
 void CharacterBuffer::Swap(CharacterBuffer& obj) noexcept
 {
-    this->Allocated = obj.Allocated;
-    this->Count     = obj.Count;
-    this->Buffer    = obj.Buffer;
-    obj.Allocated   = 0;
-    obj.Count       = 0;
-    obj.Buffer      = nullptr;
+    //LOG_INFO("Swap %p with %p", this, &obj);
+    std::swap(this->Buffer, obj.Buffer);
+    std::swap(this->Allocated, obj.Allocated);
+    std::swap(this->Count, obj.Count);
 }
 
 
 CharacterBuffer::~CharacterBuffer(void)
 {
+    //LOG_INFO("DTOR for %p [Buffer=%p,Count=%d,Allocated=%d]", this, Buffer, (int) Count, (int) Allocated);
     Destroy();
 }
 
@@ -112,8 +94,9 @@ CharacterBuffer::~CharacterBuffer(void)
 
 void CharacterBuffer::Destroy()
 {
+    //LOG_INFO("Destroy Character Buffer from (%p) with [Buffer = %p, Count = %d, Allocated = %d]",this, Buffer, (int)Count, (int)Allocated);
     if (Buffer)
-        delete Buffer;
+        delete []Buffer;
     Buffer = nullptr;
     Count = Allocated = 0;
 }
@@ -127,7 +110,7 @@ bool CharacterBuffer::Grow(size_t newSize)
     if (Buffer)
     {
         memcpy(temp, Buffer, sizeof(Character) * this->Count);
-        delete Buffer;
+        delete []Buffer;
     }
     Buffer    = temp;
     Allocated = newSize;
@@ -199,6 +182,17 @@ bool CharacterBuffer::Set(const std::u8string_view text, const ColorPair color)
 {
     this->Count = 0;
     return Add(text, color);
+}
+bool CharacterBuffer::Set(const CharacterBuffer& obj)
+{
+    this->Count = 0; // we overwrite the buffer anyway - don't need to recopy it if the allocated space is too small
+    CHECK(Grow(obj.Count), false, "Fail to allocate %d bytes ", (int) obj.Count);
+    if (obj.Count>0)
+    {
+        memcpy(this->Buffer, obj.Buffer, sizeof(Character) * obj.Count);   
+    }
+    this->Count = obj.Count;
+    return true;
 }
 bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color)
 {
