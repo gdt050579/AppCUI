@@ -187,7 +187,7 @@ void SDLTerminal::OnFlushToScreen()
     // Log::ToFile("log.txt");
 
     SDL_RenderClear(renderer);
-    AppCUI::Console::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const std::size_t width                 = ScreenCanvas.GetWidth();
     const std::size_t height                = ScreenCanvas.GetHeight();
 
@@ -195,7 +195,7 @@ void SDLTerminal::OnFlushToScreen()
     {
         for (std::size_t x = 0; x < width; x++)
         {
-            AppCUI::Console::Character ch = charsBuffer[y * width + x];
+            AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
             const int cuiFG               = static_cast<int>(ch.Color.Forenground);
             const int cuiBG               = static_cast<int>(ch.Color.Background);
             const SDL_Color& fg           = appcuiColorToSDLColor[cuiFG];
