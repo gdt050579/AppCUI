@@ -155,7 +155,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
   public:
     PythonEditorWin()
     {
-        this->Create("Python Editor", "a:c,w:40,h:20", WindowFlags::SIZEABLE);
+        this->Create("Python Editor", "a:c,w:40,h:20", WindowFlags::Sizeable);
         editor.Create(
               this,
               python_code,

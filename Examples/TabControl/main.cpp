@@ -27,7 +27,7 @@ class TabExampleWin : public AppCUI::Controls::Window
     {
         Utils::LocalString<256> temp;
         temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
-        this->Create("Tab Control Example", "a:c,w:60,h:20", WindowFlags::NOCLOSEBUTTON);
+        this->Create("Tab Control Example", "a:c,w:60,h:20", WindowFlags::NoCloseButton);
         // information panel
         p_inf.Create(this, "Informations", "x:1,y:1,w:56,h:5");
         inf.Create(&p_inf, temp.GetText(), "x:0,y:0,w:100%,h:100%");

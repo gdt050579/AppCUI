@@ -22,7 +22,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::SIZEABLE);
+        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::Sizeable);
         s2.Create(this, "x:0,y:0,w:100%,h:100%", false);
         s.Create(&s2, "x:0,y:0,w:100%,h:100%", true);
         pleft.Create(&s, "x:0,y:0,w:100%,h:100%");
@@ -65,7 +65,7 @@ class MyWin2 : public AppCUI::Controls::Window
   public:
     MyWin2()
     {
-        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::NONE);
+        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::None);
         tx1.Create(this, "Salut", "x:1,y:1,w:30,h:3");
     }
 };

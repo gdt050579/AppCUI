@@ -1395,15 +1395,14 @@ namespace Controls
 
     enum class WindowFlags : unsigned int
     {
-        NONE          = 0,
-        SIZEABLE      = 0x000100,
-        NOTIFYBOX     = 0x000200,
-        ERRORBOX      = 0x000400,
-        WARNINGBOX    = 0x000800,
-        NOCLOSEBUTTON = 0x001000,
-        FIXED         = 0x004000,
-        CENTERED      = 0x008000,
-        MAXIMIZED     = 0x010000
+        None          = 0,
+        Sizeable      = 0x000100,
+        NotifyWindow  = 0x000200,
+        ErrorWindow   = 0x000400,
+        WarningWindow = 0x000800,
+        NoCloseButton = 0x001000,
+        FixedPosition = 0x004000,
+        Maximized     = 0x008000
     };
     class EXPORT Window : public Control
     {
@@ -1411,7 +1410,7 @@ namespace Controls
         bool Create(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              WindowFlags windowsFlags = WindowFlags::NONE);
+              WindowFlags windowsFlags = WindowFlags::None);
         void Paint(Graphics::Renderer& renderer) override;
         void OnMousePressed(int x, int y, int Button) override;
         void OnMouseReleased(int x, int y, int Button) override;

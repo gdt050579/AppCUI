@@ -9,7 +9,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin(const char* name, const std::string_view& layout)
     {
-        this->Create(name, layout, WindowFlags::SIZEABLE);
+        this->Create(name, layout, WindowFlags::Sizeable);
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
     {
