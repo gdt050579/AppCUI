@@ -1356,7 +1356,7 @@ namespace Controls
 
         // Text
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
-        bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
+        bool SetText(const AppCUI::Graphics::CharacterBuffer& caption);
         const AppCUI::Graphics::CharacterBuffer& GetText();
 
         // Scroll bars

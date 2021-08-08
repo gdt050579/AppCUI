@@ -1055,9 +1055,16 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
     //OnAfterSetText(text.data());
     return true;
 }
-bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool updateHotKey)
+bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
 {
-    return SetText(std::string_view(text.GetText(),text.Len()), updateHotKey);
+    // GDT: need to rethink this callback
+    // if (OnBeforeSetText(text.data()) == false)
+    //    return false;
+    if (CTRLC->Text.Set(text) == false)
+        return false;
+    // GDT: need to rethink this callback
+    // OnAfterSetText(text.data());
+    return true;
 }
 const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
 {
