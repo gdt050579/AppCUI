@@ -196,7 +196,7 @@ void SDLTerminal::OnFlushToScreen()
         for (std::size_t x = 0; x < width; x++)
         {
             AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
-            const int cuiFG               = static_cast<int>(ch.Color.Forenground);
+            const int cuiFG               = static_cast<int>(ch.Color.Foreground);
             const int cuiBG               = static_cast<int>(ch.Color.Background);
             const SDL_Color& fg           = appcuiColorToSDLColor[cuiFG];
             const SDL_Color& bg           = appcuiColorToSDLColor[cuiBG];

@@ -785,7 +785,7 @@ namespace Graphics
 
     struct ColorPair
     {
-        Color Forenground;
+        Color Foreground;
         Color Background;
     };
     constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };

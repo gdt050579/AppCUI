@@ -26,17 +26,17 @@ int* SpecialCharacters = nullptr;
         {                                                                                                              \
             ptrCharInfo->Code = (value);                                                                               \
         }                                                                                                              \
-        if (color.Forenground != AppCUI::Graphics::Color::Transparent)                                                  \
+        if (color.Foreground != AppCUI::Graphics::Color::Transparent)                                                  \
         {                                                                                                              \
-            ptrCharInfo->Color.Forenground = color.Forenground;                                                        \
+            ptrCharInfo->Color.Foreground = color.Foreground;                                                          \
         }                                                                                                              \
-        if (color.Background != AppCUI::Graphics::Color::Transparent)                                                   \
+        if (color.Background != AppCUI::Graphics::Color::Transparent)                                                  \
         {                                                                                                              \
             ptrCharInfo->Color.Background = color.Background;                                                          \
         }                                                                                                              \
     }
 #define NO_TRANSPARENCY(color)                                                                                         \
-    ((color.Forenground != AppCUI::Graphics::Color::Transparent) &&                                                     \
+    ((color.Foreground != AppCUI::Graphics::Color::Transparent) &&                                                     \
      (color.Background != AppCUI::Graphics::Color::Transparent))
 
 using namespace AppCUI::Graphics;
@@ -134,8 +134,8 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
     tmp.Color = DefaultColorPair;
     if (color.Background != Color::Transparent)
         tmp.Color.Background = color.Background;
-    if (color.Forenground != Color::Transparent)
-        tmp.Color.Forenground = color.Forenground;
+    if (color.Foreground != Color::Transparent)
+        tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
         tmp.Code = (unsigned short) (character & 0xFFFF);
@@ -1233,7 +1233,7 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair ov
 
     canvas_width_memory_size = canvas_width * sizeof(Character);
 
-    if ((overwriteColor.Background == Color::Transparent) && (overwriteColor.Forenground == Color::Transparent))
+    if ((overwriteColor.Background == Color::Transparent) && (overwriteColor.Foreground == Color::Transparent))
     {
         // copy memory
         while (canvas_height > 0)
@@ -1247,7 +1247,7 @@ bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair ov
     else
     {
         // write character by character, changing the color
-        if ((overwriteColor.Background != Color::Transparent) && (overwriteColor.Forenground != Color::Transparent))
+        if ((overwriteColor.Background != Color::Transparent) && (overwriteColor.Foreground != Color::Transparent))
         {
             while (canvas_height > 0)
             {
