@@ -732,7 +732,7 @@ int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) co
 }
 
 
-bool CharacterBuffer::GetText(std::string& output) const 
+bool CharacterBuffer::ToString(std::string& output) const
 {
     CHECK(this->Buffer, false, "");
     const Character* p = this->Buffer;
@@ -748,7 +748,7 @@ bool CharacterBuffer::GetText(std::string& output) const
     }
     return true;
 }
-bool CharacterBuffer::GetText(std::u16string& output) const 
+bool CharacterBuffer::ToString(std::u16string& output) const
 {
     CHECK(this->Buffer, false, "");
     const Character* p = this->Buffer;

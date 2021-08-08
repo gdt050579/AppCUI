@@ -979,21 +979,21 @@ namespace Graphics
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
 
-        bool GetText(std::string& output) const;
-        bool GetText(std::u16string& output) const;
+        bool ToString(std::string& output) const;
+        bool ToString(std::u16string& output) const;
 
         inline CharacterBuffer& operator=(const CharacterBuffer& obj) { Set(obj); return *this; }
         inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept { Swap(obj); return *this; }
         inline operator std::string() const
         {
             std::string temp;
-            GetText(temp);
+            ToString(temp);
             return temp;
         }
         inline operator std::u16string() const
         {
             std::u16string temp;
-            GetText(temp);
+            ToString(temp);
             return temp;
         }
     };
