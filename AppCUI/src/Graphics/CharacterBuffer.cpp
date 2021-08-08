@@ -730,3 +730,34 @@ int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) co
         return 1;
     return 0;
 }
+
+
+bool CharacterBuffer::GetText(std::string& output) const 
+{
+    CHECK(this->Buffer, false, "");
+    const Character* p = this->Buffer;
+    const Character* e = p + this->Count;
+    output.reserve(this->Count);
+    while (p<e)
+    {
+        if (p->Code<256)
+            output.append(1, (char) p->Code);
+        else
+            output.append(1, '?');
+        p++;
+    }
+    return true;
+}
+bool CharacterBuffer::GetText(std::u16string& output) const 
+{
+    CHECK(this->Buffer, false, "");
+    const Character* p = this->Buffer;
+    const Character* e = p + this->Count;
+    output.reserve(this->Count);
+    while (p < e)
+    {
+        output.append(1, p->Code);
+        p++;
+    }
+    return true;
+}

@@ -1060,18 +1060,17 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool 
     return SetText(std::string_view(text.GetText(),text.Len()), updateHotKey);
 }
 
-bool AppCUI::Controls::Control::GetText(AppCUI::Utils::String& text)
+bool AppCUI::Controls::Control::GetText(std::string& output)
 {
-    // temporary implementation
-    auto buf = CTRLC->Text.GetBuffer();
-    unsigned int size = CTRLC->Text.Len();
-    while (size > 0)
-    {
-        CHECK(text.AddChar(buf->Code), false, "Fail to add character !");
-        buf++;
-        size--;
-    }
-    return true;
+    return CTRLC->Text.GetText(output);
+}
+bool AppCUI::Controls::Control::GetText(std::u16string& output)
+{
+    return CTRLC->Text.GetText(output);
+}
+const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
+{
+    return CTRLC->Text;
 }
 void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
 {

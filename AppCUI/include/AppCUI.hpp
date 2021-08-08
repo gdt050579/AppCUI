@@ -979,8 +979,23 @@ namespace Graphics
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
 
+        bool GetText(std::string& output) const;
+        bool GetText(std::u16string& output) const;
+
         inline CharacterBuffer& operator=(const CharacterBuffer& obj) { Set(obj); return *this; }
         inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept { Swap(obj); return *this; }
+        inline operator std::string() const
+        {
+            std::string temp;
+            GetText(temp);
+            return temp;
+        }
+        inline operator std::u16string() const
+        {
+            std::u16string temp;
+            GetText(temp);
+            return temp;
+        }
     };
 
     class EXPORT Image
@@ -1344,7 +1359,9 @@ namespace Controls
         // bool SetText(const std::string& text, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
-        bool GetText(AppCUI::Utils::String& text);
+        bool GetText(std::string & output);
+        bool GetText(std::u16string& output);
+        const AppCUI::Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
         void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);

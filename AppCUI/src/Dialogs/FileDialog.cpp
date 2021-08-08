@@ -203,10 +203,11 @@ void FileDialogClass::OnClickedOnItem()
     if (index < 0)
         return;
     unsigned int value = (int) files.GetItemData(index)->UInt32Value;
-    LocalString<256> s;
+    //LocalString<256> s;
+    std::string s;
     if (lbPath.GetText(s) == false)
         return;
-    std::filesystem::path p = s.GetText();
+    std::filesystem::path p = s;
     if (value == 0)
     {
         // GDT: reanalize
@@ -238,13 +239,13 @@ void FileDialogClass::OnCurrentItemChanged()
 }
 void FileDialogClass::Validate()
 {
-    LocalString<256> name, pth;
-    if ((txName.GetText(name) == false) || (name.Len() == 0))
+    std::string name, pth;
+    if ((txName.GetText(name) == false) || (name.length() == 0))
         return;
     if (lbPath.GetText(pth) == false)
         return;
-    std::filesystem::path result = pth.GetText();
-    result /= name.GetText();
+    std::filesystem::path result = pth;
+    result /= name;
     bool exists = std::filesystem::exists(result);
     if (openDialog)
     {
@@ -289,10 +290,10 @@ void FileDialogClass::UpdateCurrentExtensionFilter()
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    LocalString<256> s_p;
+    std::string s_p;
     if (lbPath.GetText(s_p))
     {
-        std::filesystem::path p = s_p.GetText();
+        std::filesystem::path p = s_p;
         if (p != p.root_path())
         {
             files.AddItem("..", "UP-DIR");
