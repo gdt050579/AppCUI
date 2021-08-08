@@ -205,7 +205,7 @@ void FileDialogClass::OnClickedOnItem()
     unsigned int value = (int) files.GetItemData(index)->UInt32Value;
     //LocalString<256> s;
     std::string s;
-    if (lbPath.GetText(s) == false)
+    if (lbPath.GetText().ToString(s) == false)
         return;
     std::filesystem::path p = s;
     if (value == 0)
@@ -240,9 +240,9 @@ void FileDialogClass::OnCurrentItemChanged()
 void FileDialogClass::Validate()
 {
     std::string name, pth;
-    if ((txName.GetText(name) == false) || (name.length() == 0))
+    if ((txName.GetText().ToString(name) == false) || (name.length() == 0))
         return;
-    if (lbPath.GetText(pth) == false)
+    if (lbPath.GetText().ToString(pth) == false)
         return;
     std::filesystem::path result = pth;
     result /= name;
@@ -291,7 +291,7 @@ void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
     std::string s_p;
-    if (lbPath.GetText(s_p))
+    if (lbPath.GetText().ToString(s_p))
     {
         std::filesystem::path p = s_p;
         if (p != p.root_path())
