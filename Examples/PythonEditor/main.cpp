@@ -160,7 +160,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
               this,
               python_code,
               "x:0,y:0,w:100%,h:100%",
-              TextAreaFlags::SHOW_LINE_NUMBERS | TextAreaFlags::SCROLLBARS | TextAreaFlags::SYNTAX_HIGHLIGHTING,
+              TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
               PythonHighligh);
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override

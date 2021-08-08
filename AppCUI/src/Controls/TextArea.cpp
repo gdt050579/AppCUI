@@ -30,9 +30,9 @@ void TextAreaControlContext::ComputeVisibleLinesAndRows()
     unsigned int extraY = 0;
     unsigned int extraX = 1; // one character has to be left of the cursor (at the end of the line)
 
-    if (Flags & (unsigned int) TextAreaFlags::SHOW_LINE_NUMBERS)
+    if (Flags & (unsigned int) TextAreaFlags::ShowLineNumbers)
         extraX += LINE_NUMBERS_WIDTH;
-    if (Flags & (unsigned int) TextAreaFlags::BORDER)
+    if (Flags & (unsigned int) TextAreaFlags::Border)
     {
         extraX += 2;
         extraY += 2;
@@ -212,7 +212,7 @@ void TextAreaControlContext::UpdateLines()
             lineNumber++;
         }
     } while (c < c_End);
-    if (this->Flags & (unsigned int) TextAreaFlags::SYNTAX_HIGHLIGHTING)
+    if (this->Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting)
     {
         this->Syntax.Handler(this->Host, this->Text.GetBuffer(), this->Text.Len(), this->Syntax.Context);
     }
@@ -281,7 +281,7 @@ void TextAreaControlContext::DrawLine(
     ch_end         = Text.GetBuffer() + Text.Len();
     ch             = Text.GetBuffer() + poz;
     pozX           = ofsX;
-    useHighlighing = (Flags & (unsigned int) TextAreaFlags::SYNTAX_HIGHLIGHTING) != 0;
+    useHighlighing = (Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting) != 0;
     cursorPoz      = -1;
     col            = textColor;
     if (pozX < 4)
@@ -363,13 +363,13 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', col->Text);
     int lm, tm, rm, bm;
     lm = tm = rm = bm = 0;
-    if (Flags & (unsigned int) TextAreaFlags::BORDER)
+    if (Flags & (unsigned int) TextAreaFlags::Border)
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
         lm = tm = rm = bm = 1;
         renderer.SetClipMargins(1, 1, 1, 1);
     }
-    if (Flags & (unsigned int) TextAreaFlags::SHOW_LINE_NUMBERS)
+    if (Flags & (unsigned int) TextAreaFlags::ShowLineNumbers)
     {
         unsigned int lnCount = Lines.Len();
         unsigned int tr      = 0;
@@ -530,7 +530,7 @@ void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
 
 void TextAreaControlContext::AddChar(char ch)
 {
-    if ((Flags & (unsigned int) TextAreaFlags::READONLY) != 0)
+    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
     DeleteSelected();
     if (Text.InsertChar(ch, View.CurrentPosition))
@@ -542,7 +542,7 @@ void TextAreaControlContext::AddChar(char ch)
 }
 void TextAreaControlContext::KeyBack()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::READONLY) != 0)
+    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
     if (Selection.Start != INVALID_SELECTION)
     {
@@ -560,7 +560,7 @@ void TextAreaControlContext::KeyBack()
 }
 void TextAreaControlContext::KeyDelete()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::READONLY) != 0)
+    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
     if (Selection.Start != INVALID_SELECTION)
     {
@@ -605,7 +605,7 @@ void TextAreaControlContext::CopyToClipboard()
 }
 void TextAreaControlContext::PasteFromClipboard()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::READONLY) != 0)
+    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
     LocalString<2048> temp;
     if (Clipboard::GetText(temp) == false)
@@ -690,7 +690,7 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCo
         return true;
 
     case Key::Tab:
-        if (Flags & (unsigned int) TextAreaFlags::PROCESS_TAB)
+        if (Flags && TextAreaFlags::ProcessTabKey)
         {
             AddChar('\t');
             return true;
@@ -738,14 +738,14 @@ void TextAreaControlContext::SetToolTip(char* ss)
 }
 bool TextAreaControlContext::IsReadOnly()
 {
-    return ((Flags & (unsigned int) TextAreaFlags::READONLY) != 0);
+    return ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0);
 }
 void TextAreaControlContext::SetReadOnly(bool value)
 {
     if (value)
-        this->Flags |= (unsigned int) TextAreaFlags::READONLY;
+        this->Flags |= (unsigned int) TextAreaFlags::Readonly;
     else
-        this->Flags -= ((this->Flags) & (unsigned int) TextAreaFlags::READONLY);
+        this->Flags -= ((this->Flags) & (unsigned int) TextAreaFlags::Readonly);
 }
 void TextAreaControlContext::SendMsg(Event eventType)
 {
@@ -777,18 +777,18 @@ bool TextArea::Create(
     CHECK(Members->Text.SetWithNewLines(caption), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
     // scroll bars
-    if ((unsigned int) flags & (unsigned int) TextAreaFlags::SCROLLBARS)
+    if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
     {
         Members->Flags |= GATTR_VSCROLL;
-        Members->ScrollBars.OutsideControl = (((unsigned int) flags & (unsigned int) TextAreaFlags::BORDER) == 0);
+        Members->ScrollBars.OutsideControl = (((unsigned int) flags & (unsigned int) TextAreaFlags::Border) == 0);
     }
-    if (Members->Flags & (unsigned int) TextAreaFlags::SYNTAX_HIGHLIGHTING)
+    if (Members->Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting)
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
         CHECK(handler,
               false,
-              "if 'TextAreaFlags::SYNTAX_HIGHLIGHTING` is set a syntaxt highligh handler must be provided");
+              "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;

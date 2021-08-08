@@ -1551,13 +1551,13 @@ namespace Controls
     };
     enum class TextAreaFlags : unsigned int
     {
-        NONE                = 0x000000,
-        BORDER              = 0x000100,
-        SHOW_LINE_NUMBERS   = 0x000200,
-        PROCESS_TAB         = 0x000400,
-        READONLY            = 0x000800,
-        SCROLLBARS          = 0x001000,
-        SYNTAX_HIGHLIGHTING = 0x002000,
+        None               = 0x000000,
+        Border             = 0x000100,
+        ShowLineNumbers    = 0x000200,
+        ProcessTabKey      = 0x000400,
+        Readonly           = 0x000800,
+        ScrollBars         = 0x001000,
+        SyntaxHighlighting = 0x002000,
     };
 
     class EXPORT TextArea : public Control
@@ -1567,7 +1567,7 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              TextAreaFlags flags                      = TextAreaFlags::NONE,
+              TextAreaFlags flags                      = TextAreaFlags::None,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* handlerContext                     = nullptr);
         void Paint(Graphics::Renderer& renderer) override;
