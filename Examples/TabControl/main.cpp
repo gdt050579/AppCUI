@@ -92,17 +92,17 @@ class MyWin : public AppCUI::Controls::Window
     {
         TabFlags flags;
         if (tabTop.IsChecked())
-            flags = TabFlags::TOP_TABS;
+            flags = TabFlags::TopTabs;
         if (tabBottom.IsChecked())
-            flags = TabFlags::BOTTOM_TABS;
+            flags = TabFlags::BottomTabs;
         if (tabLeft.IsChecked())
-            flags = TabFlags::LEFT_TABS;
+            flags = TabFlags::LeftTabs;
         if (tabList.IsChecked())
-            flags = TabFlags::LIST;
+            flags = TabFlags::ListView;
         if (cbTransparent.IsChecked())
-            flags = flags | TabFlags::TRANSPARENT_BACKGROUND;
+            flags = flags | TabFlags::TransparentBackground;
         if (cbTabBar.IsChecked())
-            flags = flags | TabFlags::HAS_TABBAR;
+            flags = flags | TabFlags::TabsBar;
 
         TabExampleWin tw(flags);
         tw.Show();

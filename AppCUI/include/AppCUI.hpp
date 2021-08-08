@@ -1584,12 +1584,12 @@ namespace Controls
 
     enum class TabFlags : unsigned int
     {
-        TOP_TABS               = 0x000000, // default mode
-        BOTTOM_TABS            = 0x000100,
-        LEFT_TABS              = 0x000200,
-        LIST                   = 0x000300,
-        TRANSPARENT_BACKGROUND = 0x001000,
-        HAS_TABBAR             = 0x002000,
+        TopTabs               = 0x000000, // default mode
+        BottomTabs            = 0x000100,
+        LeftTabs              = 0x000200,
+        ListView              = 0x000300,
+        TransparentBackground = 0x001000,
+        TabsBar               = 0x002000,
     };
     class EXPORT TabPage : public Control
     {
@@ -1603,7 +1603,7 @@ namespace Controls
         bool Create(
               Control* parent,
               const std::string_view& layout,
-              TabFlags flags           = TabFlags::TOP_TABS,
+              TabFlags flags           = TabFlags::TopTabs,
               unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);

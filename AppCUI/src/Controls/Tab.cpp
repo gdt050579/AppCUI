@@ -89,9 +89,9 @@ int TabControlContext::MousePositionToPanel(int x, int y)
 }
 void TabControlContext::PaintTopPanelTab(Graphics::Renderer& renderer)
 {
-    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.DrawHorizontalLineSize(0, 0, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(
           WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
@@ -138,9 +138,9 @@ void TabControlContext::PaintTopPanelTab(Graphics::Renderer& renderer)
 void TabControlContext::PaintBottomPanelTab(Graphics::Renderer& renderer)
 {
     int y_poz = this->Layout.Height - 1;
-    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.DrawHorizontalLineSize(0, y_poz, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
     WriteCharacterBufferParams params(
           WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
@@ -186,7 +186,7 @@ void TabControlContext::PaintBottomPanelTab(Graphics::Renderer& renderer)
 }
 void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 {
-    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.FillRectSize(
               this->TabTitleSize,
               0,
@@ -194,7 +194,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
               this->Layout.Height,
               ' ',
               this->Cfg->Tab.PageColor);
-    if ((this->Flags & TabFlags::HAS_TABBAR) == TabFlags::HAS_TABBAR)
+    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
 
     WriteCharacterBufferParams params(
@@ -232,7 +232,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 }
 void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 {
-    if ((this->Flags & TabFlags::TRANSPARENT_BACKGROUND) != TabFlags::TRANSPARENT_BACKGROUND)
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.Clear(' ', this->Cfg->Tab.PageColor);
 
     WriteCharacterBufferParams params(
@@ -336,7 +336,7 @@ bool Tab::SetCurrentTabPage(unsigned int index)
             Members->Controls[tr]->SetVisible(false);
         }
     }
-    if ((Members->Flags & TabFlags::LIST) == TabFlags::LIST)
+    if (Members->Flags && TabFlags::ListView)
     {
         Members->UpdateMargins();
         AppCUI::Application::RecomputeControlsLayout();
