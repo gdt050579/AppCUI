@@ -1618,8 +1618,8 @@ namespace Controls
     };
     enum class ViewerFlags : unsigned int
     {
-        NONE   = 0,
-        BORDER = 0x000100,
+        None   = 0,
+        Border = 0x000100,
     };
     class EXPORT CanvasViewer : public Control
     {
@@ -1630,14 +1630,14 @@ namespace Controls
               const std::string_view& layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::NONE);
+              ViewerFlags flags = ViewerFlags::None);
         bool Create(
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::NONE);
+              ViewerFlags flags = ViewerFlags::None);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool OnMouseLeave() override;

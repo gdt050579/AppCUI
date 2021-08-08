@@ -85,8 +85,8 @@ class LogoWin : public AppCUI::Controls::Window
         viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 
         pn.Create(&sp, "x:0,y:0,w:100%,h:100%");
-        viewInactive.Create(&pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::BORDER);
-        viewSmall.Create(&pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::BORDER);
+        viewInactive.Create(&pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::Border);
+        viewSmall.Create(&pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::Border);
         viewInactive.SetEnabled(false);
         CreateImage(viewLogo.GetCanvas());
         CreateImage(viewInactive.GetCanvas());

@@ -26,7 +26,7 @@ bool CanvasViewer::Create(
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
     Members->CanvasScrollY             = 0;
-    Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::BORDER)) == 0);
+    Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
     CHECK(Members->canvas.Create(canvasWidth, canvasHeight),
           false,
           "Fail to create a canvas of size %d x %d",
@@ -51,7 +51,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
     else if (Members->MouseIsOver)
         col = &Members->Cfg->View.Hover;
 
-    if (Members->Flags & ((unsigned int) ViewerFlags::BORDER))
+    if (Members->Flags & ((unsigned int) ViewerFlags::Border))
     {
         renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
         if (Members->Layout.Width > 6)
