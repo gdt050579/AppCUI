@@ -1059,15 +1059,6 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::String& text, bool 
 {
     return SetText(std::string_view(text.GetText(),text.Len()), updateHotKey);
 }
-
-bool AppCUI::Controls::Control::GetText(std::string& output)
-{
-    return CTRLC->Text.GetText(output);
-}
-bool AppCUI::Controls::Control::GetText(std::u16string& output)
-{
-    return CTRLC->Text.GetText(output);
-}
 const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
 {
     return CTRLC->Text;

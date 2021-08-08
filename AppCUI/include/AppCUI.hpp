@@ -1355,12 +1355,8 @@ namespace Controls
         void PackView();
 
         // Text
-        // bool SetText(const char* text, bool updateHotKey = false, int textLen = -1);
-        // bool SetText(const std::string& text, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Utils::String& text, bool updateHotKey = false);
-        bool GetText(std::string & output);
-        bool GetText(std::u16string& output);
         const AppCUI::Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
