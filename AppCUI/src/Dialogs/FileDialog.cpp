@@ -416,7 +416,7 @@ int FileDialogClass::Show(
     }
 
     comboDrive.SetCurentItemIndex(0);
-    files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::SORTABLE);
+    files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);
     files.AddColumn("&Size", TextAlignament::Right, 16);
     files.AddColumn("&Modified", TextAlignament::Center, 20);

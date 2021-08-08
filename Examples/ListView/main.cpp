@@ -3133,8 +3133,8 @@ class SimpleListExample : public MyDialog
               this,
               "x:1,y:1,w:26,h:10",
               hasCheckboxes
-                    ? (ListViewFlags::HAS_CHECKBOXES | ListViewFlags::HIDE_COLUMNS | ListViewFlags::HIDE_SEARCH_BAR)
-                    : (ListViewFlags::HIDE_COLUMNS | ListViewFlags::HIDE_SEARCH_BAR));
+                    ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
+                    : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
         lv.AddColumn("", TextAlignament::Left, 30);
         lv.AddItem("Apple");
         lv.AddItem("Pinaple");
@@ -3152,7 +3152,7 @@ class ColumnsExample : public MyDialog
     ColumnsExample()
     {
         this->Create("Columns/Headers Example", "a:c,w:70,h:18");
-        lv.Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::SORTABLE);
+        lv.Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::Sortable);
         // columns
         lv.AddColumn("&Name", TextAlignament::Left, 30);
         lv.AddColumn("Cl&ass", TextAlignament::Left, 20);
@@ -3181,7 +3181,7 @@ class ListViewWithColors : public MyDialog
     ListViewWithColors()
     {
         this->Create("ListView with colors", "a:c,w:30,h:14");
-        lv.Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::NONE);
+        lv.Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::None);
         lv.AddColumn("Color", TextAlignament::Left, 10);
         lv.AddColumn("RGB", TextAlignament::Center, 10);
         ItemHandle handle;
@@ -3208,7 +3208,7 @@ class ListViewWithTreeItems : public MyDialog
     ListViewWithTreeItems()
     {
         this->Create("Simulated Process Tree", "a:c,w:60,h:14");
-        lv.Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::NONE);
+        lv.Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::None);
         lv.AddColumn("Application", TextAlignament::Left, 20);
         lv.AddColumn("PID", TextAlignament::Right, 10);
         lv.AddColumn("Modules", TextAlignament::Right, 10);
@@ -3279,8 +3279,8 @@ class SearchAndFilter : public MyDialog
               "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that "
               "contains that text.",
               "x:0,y:0,w:100%,h:100%");
-        lv1.Create(this, "x:1,y:7,w:34,h:10", ListViewFlags::NONE);
-        lv2.Create(this, "x:37,y:7,w:34,h:10", ListViewFlags::SEARCHMODE);
+        lv1.Create(this, "x:1,y:7,w:34,h:10", ListViewFlags::None);
+        lv2.Create(this, "x:37,y:7,w:34,h:10", ListViewFlags::SearchMode);
         // columns
         lv1.AddColumn("&Name", TextAlignament::Left, 30);
         lv2.AddColumn("&Name", TextAlignament::Left, 30);
@@ -3311,7 +3311,7 @@ class SelectionDemo : public MyDialog
     SelectionDemo()
     {
         this->Create("Selection Example", "a:c,w:70,h:18");
-        lv.Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::MULTIPLE_SELECTION_MODE);
+        lv.Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::AllowMultipleItemsSelection);
         lv.Reserve(3000);
         // columns
         lv.AddColumn("&Word", TextAlignament::Left, 60);
@@ -3380,22 +3380,22 @@ class MyWin : public AppCUI::Controls::Window
     }
     void ShowListView()
     {
-        ListViewFlags flags = ListViewFlags::NONE;
+        ListViewFlags flags = ListViewFlags::None;
 
         if (cbHideColumns.IsChecked())
-            flags = flags | ListViewFlags::HIDE_COLUMNS;
+            flags = flags | ListViewFlags::HideColumns;
         if (cbCheckBoxes.IsChecked())
-            flags = flags | ListViewFlags::HAS_CHECKBOXES;
+            flags = flags | ListViewFlags::CheckBoxes;
         if (cbHideColumnSeparators.IsChecked())
-            flags = flags | ListViewFlags::HIDE_COLUMNS_SEPARATORS;
+            flags = flags | ListViewFlags::HideColumnsSeparator;
         if (cbSort.IsChecked())
-            flags = flags | ListViewFlags::SORTABLE;
+            flags = flags | ListViewFlags::Sortable;
         if (cbItemSeparators.IsChecked())
-            flags = flags | ListViewFlags::ITEM_SEPARATORS;
+            flags = flags | ListViewFlags::ItemSeparators;
         if (cbAllowSelection.IsChecked())
-            flags = flags | ListViewFlags::MULTIPLE_SELECTION_MODE;
+            flags = flags | ListViewFlags::AllowMultipleItemsSelection;
         if (cbHideSearchBar.IsChecked())
-            flags = flags | ListViewFlags::HIDE_SEARCH_BAR;
+            flags = flags | ListViewFlags::HideSearchBar;
 
         if (rbCustomizedListView.IsChecked())
         {

@@ -1656,16 +1656,16 @@ namespace Controls
 
     enum class ListViewFlags : unsigned int
     {
-        NONE                    = 0,
-        HIDE_COLUMNS            = 0x000100,
-        HAS_CHECKBOXES          = 0x000200,
-        HIDE_COLUMNS_SEPARATORS = 0x000400,
-        SORTABLE                = 0x000800,
-        ITEM_SEPARATORS         = 0x001000,
-        HIDECURRENTITEM         = 0x002000,
-        MULTIPLE_SELECTION_MODE = 0x004000,
-        SEARCHMODE              = 0x008000,
-        HIDE_SEARCH_BAR         = 0x010000
+        None                          = 0,
+        HideColumns                   = 0x000100,
+        CheckBoxes                    = 0x000200,
+        HideColumnsSeparator          = 0x000400,
+        Sortable                      = 0x000800,
+        ItemSeparators                = 0x001000,
+        HideCurrentItemWhenNotFocused = 0x002000,
+        AllowMultipleItemsSelection   = 0x004000,
+        SearchMode                    = 0x008000,
+        HideSearchBar                 = 0x010000
     };
     enum class ListViewItemType : unsigned short
     {
@@ -1693,7 +1693,7 @@ namespace Controls
     class EXPORT ListView : public Control
     {
       public:
-        bool Create(Control* parent, const std::string_view& layout, ListViewFlags flags);
+        bool Create(Control* parent, const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
