@@ -12,6 +12,7 @@ using namespace AppCUI::Input;
           (int) Members->Items.size());
 static ItemData null_combobox_item = { 0 };
 
+AppCUI::Graphics::CharacterBuffer __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
 
 ComboBoxItem::ComboBoxItem()
 {
@@ -218,19 +219,21 @@ ItemData ComboBox::GetItemUserData(unsigned int index)
     CHECK_INDEX(index, null_combobox_item);
     return Members->Items[index].Data;
 }
-//const char* ComboBox::GetUnsafeItemText(unsigned int index)
-//{
-//    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, nullptr);
-//    CHECK_INDEX(index, nullptr);
-//    return Members->Items[index].Nume;
-//}
-//bool ComboBox::GetItemText(unsigned int index, Utils::String& itemText)
-//{
-//    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-//    CHECK_INDEX(index, false);
-//    CHECK(itemText.Set(Members->Items[index].Nume), false, "Fail to copy item #%d to string", (int) index);
-//    return true;
-//}
+
+const AppCUI::Graphics::CharacterBuffer& ComboBox::GetCurrentItemText()
+{
+    __temp_comboxitem_reference_object__.Destroy();
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, __temp_comboxitem_reference_object__);
+    CHECK(Members->CurentItemIndex < Members->Items.size(), __temp_comboxitem_reference_object__, "No item selected !");
+    return Members->Items[Members->CurentItemIndex].Text;
+}
+const AppCUI::Graphics::CharacterBuffer& ComboBox::GetItemText(unsigned int index)
+{
+    __temp_comboxitem_reference_object__.Destroy();
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, __temp_comboxitem_reference_object__);
+    CHECK_INDEX(index, __temp_comboxitem_reference_object__);
+    return Members->Items[index].Text;
+}
 bool ComboBox::SetItemUserData(unsigned int index, ItemData userData)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);

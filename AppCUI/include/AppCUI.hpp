@@ -947,6 +947,10 @@ namespace Graphics
         {
             return Buffer;
         }
+        inline bool IsValid() const
+        {
+            return Buffer != nullptr;
+        }
 
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
@@ -1824,7 +1828,9 @@ namespace Controls
               Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text = std::string_view(), char itemsSeparator = ',');
         unsigned int GetItemsCount();
         unsigned int GetCurrentItemIndex();
+        const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();
         ItemData GetItemUserData(unsigned int index);
+        const AppCUI::Graphics::CharacterBuffer& GetItemText(unsigned int index);
         bool SetItemUserData(unsigned int index, ItemData userData);
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();

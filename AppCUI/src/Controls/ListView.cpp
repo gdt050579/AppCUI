@@ -19,7 +19,7 @@ using namespace AppCUI::Input;
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
-AppCUI::Graphics::CharacterBuffer _temp_Buffer_;
+AppCUI::Graphics::CharacterBuffer __temp_listviewitem_reference_object__; // use this as std::option<const T&> is not available yet
 
 void ListViewColumn::Reset()
 {
@@ -1524,8 +1524,8 @@ const AppCUI::Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, 
         return *obj;
     else
     {
-        _temp_Buffer_.Destroy();
-        return _temp_Buffer_;
+        __temp_listviewitem_reference_object__.Destroy();
+        return __temp_listviewitem_reference_object__;
     }
 }
 bool ListView::SetItemCheck(ItemHandle item, bool check)
