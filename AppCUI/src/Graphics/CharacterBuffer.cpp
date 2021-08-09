@@ -738,6 +738,7 @@ bool CharacterBuffer::ToString(std::string& output) const
     const Character* p = this->Buffer;
     const Character* e = p + this->Count;
     output.reserve(this->Count);
+    output = "";
     while (p<e)
     {
         if (p->Code<256)
@@ -754,9 +755,24 @@ bool CharacterBuffer::ToString(std::u16string& output) const
     const Character* p = this->Buffer;
     const Character* e = p + this->Count;
     output.reserve(this->Count);
+    char16_t tmp[1] = { 0 };
+    output          = tmp;
     while (p < e)
     {
         output.append(1, p->Code);
+        p++;
+    }
+    return true;
+}
+bool CharacterBuffer::ToPath(std::filesystem::path& output) const
+{
+    CHECK(this->Buffer, false, "");
+    const Character* p = this->Buffer;
+    const Character* e = p + this->Count;
+    output             = "";
+    while (p < e)
+    {
+        output += p->Code;
         p++;
     }
     return true;

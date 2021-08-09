@@ -203,23 +203,17 @@ void FileDialogClass::OnClickedOnItem()
     if (index < 0)
         return;
     unsigned int value = (int) files.GetItemData(index)->UInt32Value;
-    //LocalString<256> s;
-    std::string s;
-    if (lbPath.GetText().ToString(s) == false)
-        return;
-    std::filesystem::path p = s;
+    std::filesystem::path p = lbPath.GetText();
     if (value == 0)
     {
-        // GDT: reanalize
-        lbPath.SetText((const char*) p.parent_path().u8string().c_str());
+        lbPath.SetText(p.parent_path().u8string());
         UpdateFileList();
         return;
     }
     if (value == 1)
     {
-        //p /= files.GetItemText(index, 0);
-        // GDT: reanalize
-        lbPath.SetText((const char*) p.u8string().c_str());
+        p /= files.GetItemText(index, 0);
+        lbPath.SetText(p.u8string());
         UpdateFileList();
         return;
     }
@@ -232,21 +226,23 @@ void FileDialogClass::OnCurrentItemChanged()
     if (index < 0)
         return;
     unsigned int value = files.GetItemData(index)->UInt32Value;
-    //if (value == 2)
-    //    txName.SetText(files.GetItemText(index, 0));
-    //else
-    //    txName.SetText(""); // default value
+    if (value == 2)
+        txName.SetText(files.GetItemText(index, 0));
+    else
+        txName.SetText(""); // default value
 }
 void FileDialogClass::Validate()
 {
-    std::string name, pth;
-    if ((txName.GetText().ToString(name) == false) || (name.length() == 0))
+    if (txName.GetText().Len() == 0)
         return;
-    if (lbPath.GetText().ToString(pth) == false)
+    if (lbPath.GetText().Len() == 0)
         return;
-    std::filesystem::path result = pth;
-    result /= name;
-    bool exists = std::filesystem::exists(result);
+
+    std::filesystem::path pth;
+    pth = lbPath.GetText();
+    pth /= txName.GetText();
+    
+    bool exists = std::filesystem::exists(pth);
     if (openDialog)
     {
         if (exists == false)
