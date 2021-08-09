@@ -50,7 +50,7 @@ struct FileDialogClass
     std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
     std::vector<std::set<unsigned int>> extensions;
     std::set<unsigned int>* extFilter;
-    //const char* defaultFileName;
+    std::filesystem::path resultedPath;
     bool openDialog;
 
     bool ProcessExtensionFilter(const char* start, const char *end);
@@ -238,10 +238,10 @@ void FileDialogClass::Validate()
     if (lbPath.GetText().Len() == 0)
         return;
 
-    std::filesystem::path pth = lbPath.GetText();
-    pth /= txName.GetText();
+    this->resultedPath = lbPath.GetText();
+    this->resultedPath /= txName.GetText();
     
-    bool exists = std::filesystem::exists(pth);
+    bool exists = std::filesystem::exists(this->resultedPath);
     if (openDialog)
     {
         if (exists == false)
@@ -442,21 +442,21 @@ int FileDialogClass::Show(
     return wnd.Show();
 }
 
-const char* FileDialog::ShowSaveFileWindow(
+std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, extensionFilter, path);
-    // if (res == (int) Dialogs::Result::Ok)
-    //    return __tmpFDString.GetText();
-    return nullptr;
+    if (res == (int) Dialogs::Result::Ok)
+        return dlg.resultedPath;
+    return std::nullopt;
 }
-const char* FileDialog::ShowOpenFileWindow(
+std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, extensionFilter, path);
-    // if (res == (int) Dialogs::Result::Ok)
-    //    return __tmpFDString.GetText();
-    return nullptr;
+    if (res == (int) Dialogs::Result::Ok)
+        return dlg.resultedPath;
+    return std::nullopt;
 }
