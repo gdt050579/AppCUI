@@ -371,27 +371,30 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
     case MOUSE_EVENT:
         evnt.mouseX = ir.Event.MouseEvent.dwMousePosition.X;
         evnt.mouseY = ir.Event.MouseEvent.dwMousePosition.Y;
-
-        if (ir.Event.MouseEvent.dwEventFlags == 0)
-        {
-            if (ir.Event.MouseEvent.dwButtonState)
-                evnt.eventType = SystemEvents::MOUSE_DOWN;
-            else
-                evnt.eventType = SystemEvents::MOUSE_UP;
-            return;
-        }
-        if (ir.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
-        {
-            evnt.eventType = SystemEvents::MOUSE_MOVE;
-            return;
-        }
         evnt.mouseButton = AppCUI::Input::MouseButton::None;
         if (ir.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
             evnt.mouseButton |= AppCUI::Input::MouseButton::Left;
         else if (ir.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
             evnt.mouseButton |= AppCUI::Input::MouseButton::Right;
-        else if (ir.Event.MouseEvent.dwButtonState>0)
+        else if (ir.Event.MouseEvent.dwButtonState > 0)
             evnt.mouseButton |= AppCUI::Input::MouseButton::Center;
+
+        switch (ir.Event.MouseEvent.dwEventFlags)
+        {
+            case 0:
+                if (ir.Event.MouseEvent.dwButtonState)
+                    evnt.eventType = SystemEvents::MOUSE_DOWN;
+                else
+                    evnt.eventType = SystemEvents::MOUSE_UP;
+                return;
+            case DOUBLE_CLICK:
+                evnt.eventType = SystemEvents::MOUSE_DOWN;
+                evnt.mouseButton |= AppCUI::Input::MouseButton::DoubleClicked;
+                break;
+            case MOUSE_MOVED:
+                evnt.eventType = SystemEvents::MOUSE_MOVE;
+                return;
+        }
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
         if (ResizeConsoleBuffer(ir.Event.WindowBufferSizeEvent.dwSize.X, ir.Event.WindowBufferSizeEvent.dwSize.Y))
