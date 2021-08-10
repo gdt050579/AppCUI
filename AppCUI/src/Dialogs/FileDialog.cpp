@@ -309,7 +309,6 @@ void FileDialogClass::UpdateFileList()
                     if (extFilter)
                     {
                         // a filter is set - let's check the extention
-                        // GDT: to be redisign --> !!!!
                         auto ext_u8         = fileEntry.path().extension().u8string();
                         const char* ext     = (const char*) ext_u8.c_str();
                         const char* ext_end = ext + ext_u8.size();
