@@ -485,6 +485,10 @@ bool Window::Exit(int dialogResult)
     AppCUI::Application::GetApplication()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
     return true;
 }
+bool Window::Exit(Dialogs::Result dialogResult)
+{
+    return this->Exit(static_cast<int>(dialogResult));
+}
 int Window::Show()
 {
     CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");

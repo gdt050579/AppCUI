@@ -13,7 +13,7 @@ bool MessageBoxWindowEventHandler(
     switch (eventType)
     {
     case Event::EVENT_WINDOW_CLOSE:
-        ((Window*) control)->Exit((int) Result::Cancel);
+        ((Window*) control)->Exit(Result::Cancel);
         return true;
     case Event::EVENT_BUTTON_CLICKED:
         ((Window*) control)->Exit(controlID);

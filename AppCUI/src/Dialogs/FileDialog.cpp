@@ -260,7 +260,7 @@ void FileDialogClass::Validate()
         }
     }
     // all is ok
-    wnd.Exit((int) Dialogs::Result::Ok);
+    wnd.Exit(Dialogs::Result::Ok);
 }
 void FileDialogClass::UpdateCurrentFolder()
 {
@@ -358,7 +358,7 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
             wnd.Exit(controlID);
         return true;
     case Event::EVENT_WINDOW_CLOSE:
-        wnd.Exit((int) Dialogs::Result::Cancel);
+        wnd.Exit(Dialogs::Result::Cancel);
         return true;
     case Event::EVENT_WINDOW_ACCEPT:
         Validate();

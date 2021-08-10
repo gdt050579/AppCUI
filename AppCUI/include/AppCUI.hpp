@@ -144,6 +144,17 @@ namespace Application
     struct Config;
     class CommandBar;
 }; // namespace Application
+namespace Dialogs
+{
+    enum class Result : int
+    {
+        None   = 0,
+        Ok     = 1,
+        Cancel = 2,
+        Yes    = 3,
+        No     = 4,
+    };
+}
 namespace Graphics
 {
     struct Size
@@ -1458,6 +1469,7 @@ namespace Controls
         bool CenterScreen();
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool Exit(int dialogResult);
+        bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
         virtual ~Window();
@@ -1859,14 +1871,6 @@ namespace Controls
 }; // namespace Controls
 namespace Dialogs
 {
-    enum class Result : int
-    {
-        None   = 0,
-        Ok     = 1,
-        Cancel = 2,
-        Yes    = 3,
-        No     = 4,
-    };
     class EXPORT MessageBox
     {
         MessageBox() = delete;
