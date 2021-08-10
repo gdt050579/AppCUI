@@ -1063,7 +1063,11 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
     if (y < GetVisibleItemsCount())
     {
         this->Filter.FilterModeEnabled = false;
-        MoveTo(y + Items.FirstVisibleIndex);
+        if (((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex) && 
+            ((button & AppCUI::Input::MouseButton::DoubleClicked)!=AppCUI::Input::MouseButton::None))
+            SendMsg(Event::EVENT_LISTVIEW_ITEM_CLICKED);
+        else
+            MoveTo(y + Items.FirstVisibleIndex);
     }
 }
 bool ListViewControlContext::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
