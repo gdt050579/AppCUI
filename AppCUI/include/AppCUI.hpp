@@ -265,10 +265,11 @@ namespace Input
     };
     enum class MouseButton: unsigned int
     {
-        None    = 0,
-        Left    = 0x01,
-        Center  = 0x02,
-        Right   = 0x04
+        None          = 0,
+        Left          = 0x01,
+        Center        = 0x02,
+        Right         = 0x04,
+        DoubleClicked = 0x08,
     };
 };
 namespace Utils
