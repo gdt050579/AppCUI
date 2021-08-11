@@ -1218,7 +1218,7 @@ namespace Graphics
         bool _WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params);
         bool _WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params);
         bool WriteText(const CharacterBuffer& text, const WriteTextParams& params);
-        bool WriteText(const std::string_view& text, const WriteTextParams& params);
+        bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
         // Canvas & Images
         bool DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);

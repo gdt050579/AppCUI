@@ -1453,11 +1453,10 @@ bool Renderer::_WriteText_SingleLine_(const CharacterBuffer& text, const WriteTe
     }
     return true;
 }
-bool Renderer::_WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params)
+template <typename T>
+inline void RenderSingleLineString(
+      const T& text, AppCUI::Graphics::Renderer::DrawTextInfo& dti, const WriteTextParams& params)
 {
-    DrawTextInfo dti;
-    if (_Compute_DrawTextInfo_SingleLine_(params, text.length(), dti) == false)
-        return false;
     auto* ch = text.data() + dti.TextStart;
 
     if (NO_TRANSPARENCY(params.Color))
@@ -1479,22 +1478,37 @@ bool Renderer::_WriteText_SingleLine_(const std::string_view& text, const WriteT
         }
     }
 
-
     if (dti.HotKey)
     {
         SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
     }
-    return true;
 }
+
 bool Renderer::WriteText(const CharacterBuffer& text, const WriteTextParams& params)
 {
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
         return _WriteText_SingleLine_(text, params);
     NOT_IMPLEMENTED(false);
 }
-bool Renderer::WriteText(const std::string_view& text, const WriteTextParams& params)
+bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params)
 {
+    DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
-        return _WriteText_SingleLine_(text, params);
+    {
+        if (std::holds_alternative<std::u8string_view>(text))
+        {
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u8string_view>(text).length(), dti) == false)
+                return false;
+            RenderSingleLineString<std::u8string_view>(std::get<std::u8string_view>(text), dti, params);
+            return true;
+        }
+        if (std::holds_alternative<std::string_view>(text))
+        {
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), dti) == false)
+                return false;
+            RenderSingleLineString<std::string_view>(std::get<std::string_view>(text), dti, params);
+            return true;
+        }
+    }
     NOT_IMPLEMENTED(false);
 }
