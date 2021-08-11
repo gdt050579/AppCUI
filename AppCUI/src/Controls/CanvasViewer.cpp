@@ -64,7 +64,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
                   col->Text,
                   col->Hotkey,
                   Members->HotKeyOffset,
-                  TextAlignament::Left | TextAlignament::Padding);
+                  TextAlignament::Left /*| TextAlignament::Padding*/);
         }
         if (!renderer.SetClipMargins(1, 1, 1, 1))
             return; // clipping is not visible --> no need to try to draw the rest

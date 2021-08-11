@@ -39,7 +39,7 @@ void Panel::Paint(Graphics::Renderer& renderer)
                   Members->Layout.Width - 6,
                   Members->Text,
                   Members->Cfg->Panel.NormalColor,
-                  TextAlignament::Left | TextAlignament::Padding);
+                  TextAlignament::Left /*| TextAlignament::Padding*/);
         }
     }
 }

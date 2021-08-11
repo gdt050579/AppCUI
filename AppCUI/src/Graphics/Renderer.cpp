@@ -1150,7 +1150,8 @@ bool Renderer::WriteCharacterBuffer(
         params.HotKeyColor    = hotKeyColor;
         params.HotKeyPosition = hotKeyOffset;
     }
-    bool hasPadding = ((align & TextAlignament::Padding) == TextAlignament::Padding);
+    //bool hasPadding = ((align & TextAlignament::Padding) == TextAlignament::Padding);
+    bool hasPadding = false;
     if (hasPadding)
     {
         CHECK(width >= 2, false, "width parameter must be bigger than 2 to support padding !");
@@ -1312,4 +1313,188 @@ bool Renderer::ResetClip()
     CHECK(this->ClipHasBeenCopied, false, "Call to 'ResetClip' method wihout calling 'SetClip' first !");
     this->Clip = this->ClipCopy;
     return true;
+}
+
+
+bool Renderer::_Compute_DrawTextInfo_SingleLine_(
+      const WriteTextParams& params, unsigned int charactersCount, DrawTextInfo& output)
+{
+    CHECK_VISIBLE;
+    // check size
+    if (charactersCount == 0)
+        return false; // empty text, nothing to draw
+    // translate coordonates
+    int x = params.X + this->TranslateX;
+    int y = params.Y + this->TranslateY;
+    if ((y < Clip.Top) || (y > Clip.Bottom))
+        return false; // outside clip rect -> exit
+
+    output.TextStart = 0;
+    output.TextEnd   = charactersCount;
+    // check Text alignament
+    switch (params.Align)
+    {
+    case TextAlignament::Left:
+        if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
+        {
+            if (charactersCount>params.Width)
+                output.TextEnd = params.Width;            
+        }
+        break;
+    case TextAlignament::Right:
+        if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
+        {
+            if (params.Width >= charactersCount)
+                x = x + (int) (params.Width - charactersCount); // entire string fits the width
+            else
+                output.TextStart += (charactersCount - params.Width); // x remains the same, move text offset
+            
+        }            
+        else
+            x -= (int) (charactersCount-1);
+        break;
+    case TextAlignament::Center:
+        if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
+        {
+            if (params.Width >= charactersCount)
+                x = x + (int) ((params.Width - charactersCount)/2); // entire string fits the width
+            else
+            {
+                output.TextStart += (charactersCount - params.Width) / 2; // x remains the same, move text
+                output.TextEnd = output.TextStart + params.Width;
+                if (output.TextEnd > charactersCount)
+                    output.TextEnd = charactersCount; // sanity check
+            }
+                
+        }
+        else
+            x -= (int) (charactersCount/2);
+        break;
+    default:
+        RETURNERROR(false, "Unknown text align value: %d", params.Align);
+    }
+    
+    // Check clipping
+    if (x > Clip.Right)
+        return false; // outside the clipping area
+    if (x<Clip.Left)
+    {
+        if ((x + (int) (output.TextEnd - output.TextStart)) < Clip.Left)
+            return false; // outside the clipping area
+        output.TextStart += (unsigned int)(Clip.Left - x);
+        x = Clip.Left;
+    }
+    if ((x + (int) (output.TextEnd - output.TextStart)) > Clip.Right)
+    {
+        output.TextEnd -= (unsigned int) ((x + (int) (output.TextEnd - output.TextStart)) - Clip.Right);
+        if (output.TextEnd <= output.TextStart)
+            return false; // nothing to draw (sanity check)
+    }
+    
+    // compute screen buffer pointers
+    output.Start = this->OffsetRows[y] + x;
+    output.End   = output.Start + (output.TextEnd - output.TextStart);
+    
+    // hotkey
+    if ((params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None)
+    {
+        if ((params.HotKeyPosition >= output.TextStart) && (params.HotKeyPosition < output.TextEnd))
+            output.HotKey = output.Start + (params.HotKeyPosition - output.TextStart);
+        else
+            output.HotKey = nullptr; // not visible
+    }
+    else
+    {
+        output.HotKey = nullptr; // nothing to highlight
+    }
+
+    // all good 
+    return true;
+}
+bool Renderer::_WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params)
+{
+    DrawTextInfo dti;
+    if (_Compute_DrawTextInfo_SingleLine_(params, text.Len(), dti) == false)
+        return false;
+    Character* ch = text.GetBuffer() + dti.TextStart;
+    if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
+    {
+        if (NO_TRANSPARENCY(params.Color))
+        {
+            while (dti.Start < dti.End)
+            {
+                SET_CHARACTER(dti.Start, ch->Code, params.Color);
+                dti.Start++;
+                ch++;
+            }
+        }
+        else
+        {
+            while (dti.Start < dti.End)
+            {
+                SET_CHARACTER_EX(dti.Start, ch->Code, params.Color);
+                dti.Start++;
+                ch++;
+            }
+        }
+    }
+    else
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER_EX(dti.Start, ch->Code, ch->Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+    if (dti.HotKey)
+    {
+        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
+    }
+    return true;
+}
+bool Renderer::_WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params)
+{
+    DrawTextInfo dti;
+    if (_Compute_DrawTextInfo_SingleLine_(params, text.length(), dti) == false)
+        return false;
+    auto* ch = text.data() + dti.TextStart;
+
+    if (NO_TRANSPARENCY(params.Color))
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER(dti.Start, *ch, params.Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+    else
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER_EX(dti.Start, *ch, params.Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+
+
+    if (dti.HotKey)
+    {
+        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
+    }
+    return true;
+}
+bool Renderer::WriteText(const CharacterBuffer& text, const WriteTextParams& params)
+{
+    if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
+        return _WriteText_SingleLine_(text, params);
+    NOT_IMPLEMENTED(false);
+}
+bool Renderer::WriteText(const std::string_view& text, const WriteTextParams& params)
+{
+    if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
+        return _WriteText_SingleLine_(text, params);
+    NOT_IMPLEMENTED(false);
 }

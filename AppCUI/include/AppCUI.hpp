@@ -786,7 +786,6 @@ namespace Graphics
         Left    = 0x00,
         Center  = 0x01,
         Right   = 0x02,
-        Padding = 0x04
     };
 
     namespace ProgressStatus
@@ -827,6 +826,36 @@ namespace Graphics
         {
         }
         WriteCharacterBufferParams(WriteCharacterBufferFlags _flg) : Flags(_flg)
+        {
+        }
+    };
+
+    enum class WriteTextFlags : unsigned int
+    {
+        None            = 0,
+        SingleLine      = 0x0000001,
+        MultipleLines   = 0x0000002,
+        OverwriteColors = 0x0000004,
+        HighlightHotKey = 0x0000008,
+        ClipToWidth     = 0x0000010,
+    };
+    struct WriteTextParams
+    {
+        WriteTextFlags Flags;
+        ColorPair Color;
+        ColorPair HotKeyColor;
+        TextAlignament Align;
+        unsigned int HotKeyPosition;
+        int X,Y;
+        unsigned int Width, Height;
+
+        WriteTextParams() : Flags(WriteTextFlags::None), Align(TextAlignament::Left)
+        {
+        }
+        WriteTextParams(WriteTextFlags flags) : Flags(flags), Align(TextAlignament::Left)
+        {
+        }
+        WriteTextParams(WriteTextFlags flags, TextAlignament align) : Flags(flags), Align(align)
         {
         }
     };
@@ -1061,6 +1090,14 @@ namespace Graphics
     class EXPORT Canvas;
     class EXPORT Renderer
     {
+        struct DrawTextInfo
+        {
+            int X, Y;
+            unsigned int TextStart, TextEnd;
+            Character* Start;
+            Character* End;
+            Character* HotKey;
+        };
       protected:
         Character* Characters;
         Character** OffsetRows;
@@ -1104,6 +1141,8 @@ namespace Graphics
               const WriteCharacterBufferParams& params,
               unsigned int start,
               unsigned int end);
+
+        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, DrawTextInfo& output);
 
       public:
         // Horizontal lines
@@ -1175,6 +1214,11 @@ namespace Graphics
               const ColorPair hotKeyColor,
               unsigned int hotKeyOffset,
               TextAlignament align);
+
+        bool _WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params);
+        bool _WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params);
+        bool WriteText(const CharacterBuffer& text, const WriteTextParams& params);
+        bool WriteText(const std::string_view& text, const WriteTextParams& params);
 
         // Canvas & Images
         bool DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);
@@ -2120,6 +2164,7 @@ ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteCharacterBufferFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);

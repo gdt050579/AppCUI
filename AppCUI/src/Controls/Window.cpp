@@ -207,7 +207,7 @@ void Window::Paint(Graphics::Renderer& renderer)
               Members->Layout.Width - 10,
               Members->Text,
               colorTitle,
-              TextAlignament::Center | TextAlignament::Padding);
+              TextAlignament::Center /*| TextAlignament::Padding*/);
     }
     // close button
     if ((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
