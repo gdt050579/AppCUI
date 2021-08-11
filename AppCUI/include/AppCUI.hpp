@@ -1220,6 +1220,16 @@ namespace Graphics
         bool WriteText(const CharacterBuffer& text, const WriteTextParams& params);
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
+        // Single line wrappers
+        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
+        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
+        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align);
+        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
+        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
+        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align);
+
         // Canvas & Images
         bool DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);
 

@@ -16,12 +16,16 @@ struct MyUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
 
-        for (unsigned int tr=2;tr<24;tr+=2)
-            renderer.DrawHorizontalLine(10, tr, 17, '-', ColorPair{ Color::White, Color::Blue });
-
+        for (unsigned int tr = 2; tr < 24; tr += 2)
+        {
+            renderer.DrawHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
+            renderer.DrawHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });
+        }
+            
+        // first batch
         WriteTextParams params(WriteTextFlags::SingleLine);
         params.Width = 8;
-        params.X     = 10;
+        params.X     = 5;
         params.Y     = 2;
         params.Align = TextAlignament::Left;
         params.Color = NoColorPair;
@@ -62,7 +66,20 @@ struct MyUserControl : public UserControl
         renderer.WriteText("12345678", params);
 
         params.Y     = 22;
-        renderer.WriteText("12345678ABCD", params);
+        renderer.WriteText("123456789ABCD", params);
+
+        // second batch
+        renderer.WriteSingleLineText(25, 2, "1234", NoColorPair);
+        renderer.WriteSingleLineText(25, 4, "123456789ABCD", NoColorPair);
+        renderer.WriteSingleLineText(25, 6, 8, "123456789ABCD", NoColorPair);
+        renderer.WriteSingleLineText(25, 8, "1234", NoColorPair, TextAlignament::Right);
+        renderer.WriteSingleLineText(25, 10, 8, "1234", NoColorPair, TextAlignament::Right);
+        renderer.WriteSingleLineText(25, 12, 8, "123456789ABCD", NoColorPair, TextAlignament::Right);
+        renderer.WriteSingleLineText(25, 14, 8, "12345678", NoColorPair, TextAlignament::Right);
+        renderer.WriteSingleLineText(25, 16, "123", NoColorPair, TextAlignament::Center);
+        renderer.WriteSingleLineText(25, 18, 8, "1234", NoColorPair, TextAlignament::Center);
+        renderer.WriteSingleLineText(25, 20, 8, "12345678", NoColorPair, TextAlignament::Center);
+        renderer.WriteSingleLineText(25, 22, 8, "123456789ABCD", NoColorPair, TextAlignament::Center);
     }
 };
 

@@ -1512,3 +1512,79 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
     }
     NOT_IMPLEMENTED(false);
 }
+bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine);
+    params.X = x;
+    params.Y = y;
+    params.Color = color;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine, align);
+    params.X     = x;
+    params.Y     = y;
+    params.Color = color;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey);
+    params.X              = x;
+    params.Y              = y;
+    params.Color          = color;
+    params.HotKeyColor    = hotKeyColor;
+    params.HotKeyPosition = hotKeyOffset;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey, align);
+    params.X              = x;
+    params.Y              = y;
+    params.Color          = color;
+    params.HotKeyColor    = hotKeyColor;
+    params.HotKeyPosition = hotKeyOffset;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
+    params.X = x;
+    params.Y = y;
+    params.Color = color;
+    params.Width = width;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth, align);
+    params.X     = x;
+    params.Y     = y;
+    params.Color = color;
+    params.Width = width;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth);
+    params.X              = x;
+    params.Y              = y;
+    params.Color          = color;
+    params.HotKeyColor    = hotKeyColor;
+    params.HotKeyPosition = hotKeyOffset;
+    params.Width          = width;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
+{
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth, align);
+    params.X              = x;
+    params.Y              = y;
+    params.Color          = color;
+    params.HotKeyColor    = hotKeyColor;
+    params.HotKeyPosition = hotKeyOffset;
+    params.Width          = width;
+    return WriteText(text, params);
+}
