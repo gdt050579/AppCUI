@@ -137,7 +137,7 @@ namespace AppCUI
 {
 namespace Utils
 {
-    using ConstString = std::variant<std::string_view, std::u8string_view>;
+    using ConstString = std::variant<std::string_view, std::u8string_view, std::u16string_view>;
 }
 namespace Application
 {

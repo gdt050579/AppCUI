@@ -1495,13 +1495,6 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
     DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
     {
-        if (std::holds_alternative<std::u8string_view>(text))
-        {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u8string_view>(text).length(), dti) == false)
-                return false;
-            RenderSingleLineString<std::u8string_view>(std::get<std::u8string_view>(text), dti, params);
-            return true;
-        }
         if (std::holds_alternative<std::string_view>(text))
         {
             if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), dti) == false)
@@ -1509,6 +1502,21 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
             RenderSingleLineString<std::string_view>(std::get<std::string_view>(text), dti, params);
             return true;
         }
+        if (std::holds_alternative<std::u16string_view>(text))
+        {
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u16string_view>(text).length(), dti) == false)
+                return false;
+            RenderSingleLineString<std::u16string_view>(std::get<std::u16string_view>(text), dti, params);
+            return true;
+        }
+        if (std::holds_alternative<std::u8string_view>(text))
+        {
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u8string_view>(text).length(), dti) == false)
+                return false;
+            RenderSingleLineString<std::u8string_view>(std::get<std::u8string_view>(text), dti, params);
+            return true;
+        }
+        RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
     }
     NOT_IMPLEMENTED(false);
 }
