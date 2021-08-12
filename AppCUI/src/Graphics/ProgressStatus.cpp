@@ -56,8 +56,8 @@ void ProgressStatus_Paint_Panel()
     canvas->WriteSingleLineText(
           5,
           0,
-          PSData.Title,
           PROGRESS_STATUS_PANEL_WIDTH - 10,
+          PSData.Title,          
           PSData.App->config.ProgressStatus.Title,
           TextAlignament::Center);
     canvas->WriteSingleLineText(20, 6, "Hit 'ESC' to cancel", PSData.App->config.ProgressStatus.TerminateMessage);
