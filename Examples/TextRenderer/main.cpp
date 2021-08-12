@@ -20,9 +20,10 @@ struct MyUserControl : public UserControl
         {
             renderer.DrawHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
             renderer.DrawHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });
+            renderer.DrawHorizontalLine(45, tr, 52, '-', ColorPair{ Color::White, Color::DarkRed });
         }
             
-        // first batch
+        // first batch (direct write through WriteText function)
         WriteTextParams params(WriteTextFlags::SingleLine);
         params.Width = 8;
         params.X     = 5;
@@ -80,6 +81,20 @@ struct MyUserControl : public UserControl
         renderer.WriteSingleLineText(25, 18, 8, "1234", NoColorPair, TextAlignament::Center);
         renderer.WriteSingleLineText(25, 20, 8, "12345678", NoColorPair, TextAlignament::Center);
         renderer.WriteSingleLineText(25, 22, 8, "123456789ABCD", NoColorPair, TextAlignament::Center);
+
+        // 3rd batch (with 3rd letter (offset 2 in a zero-index array) is a hotkey highlighted)
+        ColorPair hkCP = ColorPair{ Color::Black, Color::White };
+        renderer.WriteSingleLineText(45, 2, "1234", NoColorPair, hkCP, 2);
+        renderer.WriteSingleLineText(45, 4, "123456789ABCD", NoColorPair, hkCP, 2);
+        renderer.WriteSingleLineText(45, 6, 8, "123456789ABCD", NoColorPair,hkCP, 2);
+        renderer.WriteSingleLineText(45, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Right);
+        renderer.WriteSingleLineText(45, 10, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Right);
+        renderer.WriteSingleLineText(45, 12, 8, "123456789ABCD", NoColorPair, hkCP, 2, TextAlignament::Right);
+        renderer.WriteSingleLineText(45, 14, 8, "12345678", NoColorPair, hkCP, 2, TextAlignament::Right);
+        renderer.WriteSingleLineText(45, 16, "123", NoColorPair, hkCP, 2, TextAlignament::Center);
+        renderer.WriteSingleLineText(45, 18, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Center);
+        renderer.WriteSingleLineText(45, 20, 8, "12345678", NoColorPair, hkCP, 2, TextAlignament::Center);
+        renderer.WriteSingleLineText(45, 22, 8, "123456789ABCD", NoColorPair, hkCP, 2, TextAlignament::Center);
     }
 };
 
@@ -90,7 +105,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
   public:
     TicTacToeWin()
     {
-        this->Create("Custom renderer", "a:c,w:80,h:26");
+        this->Create("Single line strings", "a:c,w:80,h:26");
         uc.Create(this, "x:0,y:0,w:100%,h:100%");
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override

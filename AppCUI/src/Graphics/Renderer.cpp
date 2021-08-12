@@ -2,6 +2,7 @@
 #include <string.h>
 
 using namespace AppCUI::Graphics;
+using namespace AppCUI::Utils;
 
 int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::SpecialChars::Count] = {
     0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
@@ -1511,9 +1512,10 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
         }
         if (std::holds_alternative<std::u8string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u8string_view>(text).length(), dti) == false)
+            LocalUnicodeStringBuilder<1024> tmp(std::get<std::u8string_view>(text));
+            if (_Compute_DrawTextInfo_SingleLine_(params, tmp.Len(), dti) == false)
                 return false;
-            RenderSingleLineString<std::u8string_view>(std::get<std::u8string_view>(text), dti, params);
+            RenderSingleLineString<std::u16string_view>(tmp.ToStringView(), dti, params);
             return true;
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");

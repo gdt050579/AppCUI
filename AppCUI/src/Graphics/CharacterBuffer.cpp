@@ -3,12 +3,7 @@
 #include <string.h>
 
 using namespace AppCUI::Graphics;
-
-struct UnicodeChar
-{
-    unsigned short Value;
-    unsigned int Length;
-};
+using namespace AppCUI::Utils;
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
     if ((requiredSpace) > (Allocated & 0x7FFFFFFF))                                                                    \
@@ -22,41 +17,7 @@ struct UnicodeChar
         textSize = AppCUI::Utils::String::Len(text);                                                                   \
     }
 
-bool UTF8_to_Unicode(const char8_t* p, const char8_t* end, UnicodeChar& result)
-{
-    // unicode encoding
-    if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
-    {
-        CHECK(p + 1 < end, false, "Invalid unicode sequence (missing one extra character after 110xxxx)");
-        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (110xxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 0x1F)) << 6) | ((unsigned short) ((*(p + 1)) & 63));
-        result.Length = 2;
-        return true;
-    }
-    if (((*p) >> 4) == 14) // binary encoding 1110xxxx, followed by 2 bytes with 10xxxxxx
-    {
-        CHECK(p + 2 < end, false, "Invalid unicode sequence (missing two extra characters after 1110xxxx)");
-        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (1110xxxx should be followed by 10xxxxxx)");
-        CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 0x0F)) << 12) | (((unsigned short) ((*(p + 1)) & 63)) << 6) |
-                       ((unsigned short) ((*(p + 2)) & 63));
-        result.Length = 3;
-        return true;
-    }
-    if (((*p) >> 3) == 30) // binary encoding 11110xxx, followed by 3 bytes with 10xxxxxx
-    {
-        CHECK(p + 3 < end, false, "Invalid unicode sequence (missing two extra characters after 11110xxx)");
-        CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (11110xxx should be followed by 10xxxxxx)");
-        CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        CHECK((p[3] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 7)) << 18) | (((unsigned short) ((*(p + 1)) & 63)) << 12) |
-                       (((unsigned short) ((*(p + 2)) & 63)) << 6) | ((unsigned short) ((*(p + 3)) & 63));
-        result.Length = 4;
-        return true;
-    }
-    // invalid 16 bytes encoding
-    RETURNERROR(false, "Invalid UTF-8 encoding ");
-}
+
 constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2)
 {
     // GDT: temporary implementation ==> should be addapted for UNICODE characters as well
@@ -161,7 +122,7 @@ bool CharacterBuffer::Add(const std::u8string_view text, const ColorPair color)
         else
         {
             // unicode encoding
-            CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            CHECK(ConvertUTF8CharToUnicodeChar(p, p_end, uc), false, "Fail to convert to unicode !");
             ch->Code = uc.Value;
             textSize -= uc.Length;
             p += uc.Length;
@@ -261,7 +222,7 @@ bool CharacterBuffer::SetWithHotKey(const std::u8string_view text, unsigned int&
         else
         {
             // unicode encoding
-            CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            CHECK(ConvertUTF8CharToUnicodeChar(p, p_end, uc), false, "Fail to convert to unicode !");
             ch->Code = uc.Value;
             textSize -= uc.Length;
             p += uc.Length;
@@ -326,7 +287,7 @@ bool CharacterBuffer::SetWithNewLines(const std::u8string_view text, const Color
         else
         {
             // unicode encoding
-            CHECK(UTF8_to_Unicode(p, p_end, uc), false, "Fail to convert to unicode !");
+            CHECK(ConvertUTF8CharToUnicodeChar(p, p_end, uc), false, "Fail to convert to unicode !");
             ch->Code = uc.Value;
             textSize -= uc.Length;
             p += uc.Length;
@@ -463,7 +424,7 @@ int  CharacterBuffer::FindUTF8(const std::u8string_view& text, bool ignoreCase) 
             }
             else
             {
-                if (!UTF8_to_Unicode(s, p_end, uc))
+                if (!ConvertUTF8CharToUnicodeChar(s, p_end, uc))
                     break;
             }
             if (ignoreCase)

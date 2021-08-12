@@ -187,6 +187,7 @@ namespace Graphics
             Y = y;
         }
     };
+    class EXPORT CharacterBuffer;
 }; // namespace Console
 namespace Input
 {
@@ -460,6 +461,37 @@ namespace Utils
         }
         char& operator[](int poz);
     };
+    class EXPORT UnicodeStringBuilder
+    {
+        char16_t* Chars;
+        unsigned int Size;
+        unsigned int Allocated;
+
+        void Create(char16_t* localBuffer, size_t localBufferSize);
+      public:
+        UnicodeStringBuilder();
+        UnicodeStringBuilder(char16_t * localBuffer, size_t localBufferSize);
+        UnicodeStringBuilder(const AppCUI::Utils::ConstString& text);
+        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const AppCUI::Utils::ConstString& text);
+        UnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(char16_t * localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
+
+        ~UnicodeStringBuilder();
+        void Destroy();
+
+        bool Set(const AppCUI::Utils::ConstString& text);
+        bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        bool Resize(size_t size);
+
+        inline const unsigned int Len() const
+        {
+            return Size;
+        }
+        inline std::u16string_view ToStringView() const
+        {
+            return std::u16string_view{ Chars, (size_t)Size };
+        }
+    };
 
     enum class NumberParseFlags : unsigned int
     {
@@ -509,6 +541,15 @@ namespace Utils
             Create(tempBuffer, size, true);
         }
     };
+    template <size_t size>
+    class LocalUnicodeStringBuilder : public UnicodeStringBuilder
+    {
+        char16_t tempBuffer[size];
+      public:
+        LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size) { }
+        LocalUnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer) : UnicodeStringBuilder(tempBuffer, size, charBuffer) { }
+        LocalUnicodeStringBuilder(const AppCUI::Utils::ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text) { }
+    };
 
     class EXPORT KeyUtils
     {
@@ -535,10 +576,8 @@ namespace Utils
         void* Data;
 
       public:
-        IniValue() : Data(nullptr)
-        {
-        }
-        IniValue(void* data) : Data(data){};
+        IniValue() : Data(nullptr) { }
+        IniValue(void* data) : Data(data) { };
 
         std::optional<unsigned long long> AsUInt64();
         std::optional<long long> AsInt64();
@@ -569,10 +608,8 @@ namespace Utils
         void* Data;
 
       public:
-        IniSection() : Data(nullptr)
-        {
-        }
-        IniSection(void* data) : Data(data){};
+        IniSection() : Data(nullptr) { }
+        IniSection(void* data) : Data(data) { };
 
         inline bool Exists() const
         {

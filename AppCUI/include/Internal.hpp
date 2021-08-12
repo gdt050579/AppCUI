@@ -267,6 +267,15 @@ namespace Application
 {
     AppCUI::Internal::Application* GetApplication();
 }
+namespace Utils
+{
+    struct UnicodeChar
+    {
+        unsigned short Value;
+        unsigned int Length;
+    };
+    inline bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
+}
 namespace Log
 {
     void Unit(); // needed to release some alocation buffers
