@@ -1134,9 +1134,9 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
         output.TextStart += (unsigned int)(Clip.Left - x);
         x = Clip.Left;
     }
-    if ((x + (int) (output.TextEnd - output.TextStart)) > Clip.Right)
+    if ((x + (int) (output.TextEnd - output.TextStart)) > (Clip.Right+1))
     {
-        output.TextEnd -= (unsigned int) ((x + (int) (output.TextEnd - output.TextStart)) - Clip.Right);
+        output.TextEnd -= (unsigned int) ((x + (int) (output.TextEnd - output.TextStart)) - (Clip.Right+1));
         if (output.TextEnd <= output.TextStart)
             return false; // nothing to draw (sanity check)
     }

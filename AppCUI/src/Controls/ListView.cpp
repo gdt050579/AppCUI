@@ -128,6 +128,9 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
     int x = 1 - Columns.XOffset;
 
     ListViewColumn* column = this->Columns.List;
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
+    params.Y = 1;
+
     for (unsigned int tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
         if (this->Focused)
@@ -145,24 +148,23 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
             else
                 lvCol = defaultCol;
         }
-        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) ||
-            ((Flags & ListViewFlags::Sortable) == ListViewFlags::None))
-            // renderer.WriteSingleLineText(x + 1, 1, column->Name, column->Width - 2, lvCol->Text, column->Align,
-            // column->NameLength);
-            renderer.WriteCharacterBuffer(x + 1, 1, column->Width - 2, column->Name, lvCol->Text, column->Align);
+        params.X     = x + 1;
+        params.Width = column->Width - 2;
+        params.Color = lvCol->Text;
+        params.Align = column->Align;
+        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || ((Flags & ListViewFlags::Sortable) == ListViewFlags::None))
+        {
+            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
+            renderer.WriteText(column->Name, params);
+        }
         else
-            //renderer.WriteSingleLineTextWithHotKey(
-            //      x + 1,
-            //      1,
-            //      column->Name,
-            //      column->Width - 2,
-            //      lvCol->Text,
-            //      lvCol->HotKey,
-            //      column->HotKeyOffset,
-            //      column->Align,
-            //      column->NameLength);
-            renderer.WriteCharacterBuffer(
-                  x + 1, 1, column->Width - 2, column->Name, lvCol->Text, lvCol->HotKey,column->HotKeyOffset, column->Align);
+        {
+            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
+                           WriteTextFlags::HighlightHotKey;
+            params.HotKeyColor    = lvCol->HotKey;
+            params.HotKeyPosition = column->HotKeyOffset;
+            renderer.WriteText(column->Name, params);      
+        }
         x += column->Width;
         if ((this->Focused) && (tr == SortParams.ColumnIndex))
             renderer.WriteSpecialCharacter(
@@ -187,7 +189,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     CharacterBuffer* subitem = item->SubItem;
     ColorPair itemCol        = Cfg->ListView.Item.Regular;
     ColorPair checkCol, uncheckCol;
-    //WriteCharacterBufferParams params;
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
+    params.Y = y;
+
     if (Flags & GATTR_ENABLE)
     {
         checkCol   = Cfg->ListView.CheckedSymbol;
@@ -223,9 +227,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         itemCol = Cfg->ListView.Item.Inactive;
     
     // prepare params
-    //params.Flags = WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::WRAP_TO_WIDTH |
-    //               WriteCharacterBufferFlags::OVERWRITE_COLORS;
-    //params.Color = itemCol;
+    params.Color = itemCol;
     
     // first column
     int end_first_column = x + ((int) column->Width);
@@ -244,10 +246,10 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     itemStarts = x;
     if (x < end_first_column)
     {
-        //renderer.WriteSingleLineText( x, y, subitem->GetText(), end_first_column - x, itemCol, column->Align, subitem->Len());
-        //params.Width = end_first_column - x;
-        //renderer.WriteCharacterBuffer(x, y, *subitem, params);    
-        renderer.WriteCharacterBuffer(x, y, end_first_column - (x+1), *subitem, itemCol, column->Align);
+        params.Width = end_first_column - x;
+        params.X     = x;
+        params.Align = column->Align;
+        renderer.WriteText(*subitem, params);
     }
 
     // rest of the columns
@@ -256,15 +258,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     column++;
     for (unsigned int tr = 1; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
-        //renderer.WriteSingleLineText(x, y, subitem->GetText(), column->Width, itemCol, column->Align, subitem->Len());
-        //params.Width = column->Width;
-        //renderer.WriteCharacterBuffer(x, y, *subitem, params);
-        if ((column->Align & TextAlignament::Center) == TextAlignament::Center)
-            renderer.WriteCharacterBuffer(x + column->Width/2, y, column->Width, *subitem, itemCol, column->Align);
-        else if ((column->Align & TextAlignament::Right) == TextAlignament::Right)
-            renderer.WriteCharacterBuffer(x + column->Width - 1, y, column->Width, *subitem, itemCol, column->Align);
-        else
-            renderer.WriteCharacterBuffer(x, y, column->Width-1, *subitem, itemCol, column->Align);
+        params.Width = column->Width;
+        params.X     = x;
+        params.Align = column->Align;
+        renderer.WriteText(*subitem, params);
+
         x += column->Width;
         x++;
         subitem++;

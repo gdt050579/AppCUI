@@ -21,12 +21,11 @@ void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    auto* bc     = &Members->Cfg->Button.Normal;
-    bool pressed = false;
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::SINGLE_LINE | WriteCharacterBufferFlags::OVERWRITE_COLORS |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
 
+    auto* bc              = &Members->Cfg->Button.Normal;
+    bool pressed          = false;
+    params.Y              = 0;
     params.HotKeyPosition = Members->HotKeyOffset;
     // daca e disable
     if (!IsEnabled())
@@ -75,7 +74,8 @@ void Button::Paint(Graphics::Renderer& renderer)
         {
             params.Color       = Members->Cfg->Button.Focused.TextColor;
             params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
-            renderer.WriteCharacterBuffer(x + 1, 0, Members->Text, params);
+            params.X           = x + 1;            
+            renderer.WriteText(Members->Text, params);
         }
     }
     else
@@ -85,7 +85,8 @@ void Button::Paint(Graphics::Renderer& renderer)
         {
             params.Color       = bc->TextColor;
             params.HotKeyColor = bc->HotKeyColor;
-            renderer.WriteCharacterBuffer(x, 0, Members->Text, params);
+            params.X           = x ;
+            renderer.WriteText(Members->Text, params);
         }
         renderer.DrawHorizontalLineWithSpecialChar(
               1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, ColorPair{ Color::Black, Color::Transparent });
