@@ -1318,7 +1318,7 @@ bool Renderer::ResetClip()
 
 
 bool Renderer::_Compute_DrawTextInfo_SingleLine_(
-      const WriteTextParams& params, unsigned int charactersCount, DrawTextInfo& output)
+      const WriteTextParams& params, unsigned int charactersCount, AppCUI::Graphics::Renderer::DrawTextInfo& output)
 {
     CHECK_VISIBLE;
     // check size
@@ -1493,7 +1493,7 @@ bool Renderer::WriteText(const CharacterBuffer& text, const WriteTextParams& par
 }
 bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params)
 {
-    DrawTextInfo dti;
+    AppCUI::Graphics::Renderer::DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
     {
         if (std::holds_alternative<std::string_view>(text))

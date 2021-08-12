@@ -274,7 +274,7 @@ namespace Utils
         unsigned short Value;
         unsigned int Length;
     };
-    inline bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
+    bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
 }
 namespace Log
 {

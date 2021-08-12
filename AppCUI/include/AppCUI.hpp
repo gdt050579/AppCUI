@@ -1127,6 +1127,7 @@ namespace Graphics
     class EXPORT Canvas;
     class EXPORT Renderer
     {
+      public:
         struct DrawTextInfo
         {
             int X, Y;
