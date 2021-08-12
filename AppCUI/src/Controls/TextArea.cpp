@@ -348,7 +348,7 @@ void TextAreaControlContext::DrawLineNumber(
     if (poz < 27)
         temp[28] = '.';
 
-    renderer.WriteSingleLineText(0, pozY, temp + 28, lineNumberColor, LINE_NUMBERS_WIDTH - 1);
+    renderer.WriteSingleLineText(0, pozY, std::string_view(temp + 28, LINE_NUMBERS_WIDTH - 1), lineNumberColor);
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {

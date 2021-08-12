@@ -60,7 +60,7 @@ void ProgressStatus_Paint_Panel()
           PROGRESS_STATUS_PANEL_WIDTH - 10,
           PSData.App->config.ProgressStatus.Title,
           TextAlignament::Center);
-    canvas->WriteSingleLineText(20, 6, "Hit 'ESC' to cancel", PSData.App->config.ProgressStatus.TerminateMessage, 19);
+    canvas->WriteSingleLineText(20, 6, "Hit 'ESC' to cancel", PSData.App->config.ProgressStatus.TerminateMessage);
 
     PSData.Showed = true;
     PSData.App->terminal->Update();
@@ -81,27 +81,25 @@ void ProgressStatus_Paint_Status()
         canvas->WriteSingleLineText(
               PROGRESS_STATUS_PANEL_WIDTH - 6,
               2,
-              PSData.progressString,
-              PSData.App->config.ProgressStatus.Percentage,
-              4);
+              std::string_view(PSData.progressString,4),
+              PSData.App->config.ProgressStatus.Percentage);
         canvas->DrawHorizontalLine(
               2,
               3,
               ((PSData.Progress * (PROGRESS_STATUS_PANEL_WIDTH - 4)) / 100) + 1,
               ' ',
               PSData.App->config.ProgressStatus.FullProgressBar);
-        canvas->WriteSingleLineText(2, 4, "ETA:", PSData.App->config.ProgressStatus.Text, 4);
+        canvas->WriteSingleLineText(2, 4, "ETA:", PSData.App->config.ProgressStatus.Text);
     }
     else
     {
-        canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.ProgressStatus.Text, 9);
+        canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.ProgressStatus.Text);
     }
     canvas->WriteSingleLineText(
           (PROGRESS_STATUS_PANEL_WIDTH - 2) - PSData.timeStringSize,
           4,
-          PSData.timeString,
-          PSData.App->config.ProgressStatus.Time,
-          PSData.timeStringSize);
+          std::string_view(PSData.timeString,PSData.timeStringSize),
+          PSData.App->config.ProgressStatus.Time);
 
     PSData.App->terminal->Update();
 }

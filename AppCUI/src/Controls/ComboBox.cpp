@@ -427,7 +427,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
               cbc->Text,
               TextAlignament::Left);
     }        
-    renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button, 3);
+    renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button);
     renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc->Button);
 
     if (Members->Flags & GATTR_EXPANDED)

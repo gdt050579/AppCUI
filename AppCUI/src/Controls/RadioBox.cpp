@@ -27,7 +27,7 @@ void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
         cbc = &Members->Cfg->StateControl.Focused;
     else if (Members->MouseIsOver)
         cbc = &Members->Cfg->StateControl.Hover;
-    renderer.WriteSingleLineText(0, 0, "( ) ", cbc->TextColor, 4);
+    renderer.WriteSingleLineText(0, 0, "( ) ", cbc->TextColor);
 
     WriteCharacterBufferParams params(
           WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::PROCESS_NEW_LINE |

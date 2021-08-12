@@ -494,52 +494,7 @@ bool Renderer::DrawRectSize(
     CHECK(((width > 0) && (height > 0)), false, "");
     return DrawRect(x, y, x + ((int) width) - 1, y + ((int) height) - 1, color, doubleLine);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const char* text, const ColorPair color, int textSize)
-{
-    CHECK(text, false, "Expecting a valid (non-null) text ");
-    CHECK_VISIBLE;
-    TRANSLATE_COORDONATES(x, y);
 
-    if ((y < Clip.Top) || (y > Clip.Bottom))
-        return false;
-    if (x > Clip.Right)
-        return false;
-    if (textSize < 0)
-        textSize = AppCUI::Utils::String::Len(text);
-    if (x + textSize < Clip.Left)
-        return false;
-    const unsigned char* s = (const unsigned char*) text;
-    const unsigned char* e = s + textSize;
-    // needs more optimizations
-    Character* c = this->OffsetRows[y] + x;
-    if (NO_TRANSPARENCY(color))
-    {
-        while ((s < e) && (x <= Clip.Right))
-        {
-            if (x >= Clip.Left)
-            {
-                SET_CHARACTER(c, *s, color);
-            }
-            c++;
-            s++;
-            x++;
-        }
-    }
-    else
-    {
-        while ((s < e) && (x <= Clip.Right))
-        {
-            if (x >= Clip.Left)
-            {
-                SET_CHARACTER_EX(c, *s, color);
-            }
-            c++;
-            s++;
-            x++;
-        }
-    }
-    return true;
-}
 bool Renderer::WriteSingleLineText(
       int x, int y, const char* text, unsigned int width, const ColorPair color, TextAlignament align, int textSize)
 {

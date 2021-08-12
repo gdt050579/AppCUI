@@ -369,13 +369,13 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
             const char* txt  = this->Filter.SearchText.GetText();
             if (len < 12)
             {
-                renderer.WriteSingleLineText(3, yPoz, txt, Cfg->ListView.FilterText, len);
+                renderer.WriteSingleLineText(3, yPoz, std::string_view(txt,len), Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor(3 + len, yPoz);
             }
             else
             {
-                renderer.WriteSingleLineText(3, yPoz, txt + (len - 12), Cfg->ListView.FilterText, 12);
+                renderer.WriteSingleLineText(3, yPoz, std::string_view(txt + (len - 12),12), Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor(3 + 12, yPoz);
             }
@@ -385,7 +385,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         if ((this->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
             renderer.WriteSingleLineText(
-                  x_ofs, yPoz, this->Selection.Status, Cfg->ListView.StatusColor, this->Selection.StatusLength);
+                  x_ofs, yPoz, std::string_view(this->Selection.Status,this->Selection.StatusLength), Cfg->ListView.StatusColor);
         }
     }
 }

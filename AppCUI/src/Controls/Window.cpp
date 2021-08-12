@@ -225,12 +225,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             c2 = colorWindowButton;
             break;
         }
-        renderer.WriteSingleLineText(
-              Members->rCloseButton.Left,
-              Members->rCloseButton.Y,
-              "[ ]",
-              c1,
-              Members->rCloseButton.Right - Members->rCloseButton.Left + 1);
+        renderer.WriteSingleLineText(Members->rCloseButton.Left, Members->rCloseButton.Y, "[ ]", c1);
         renderer.WriteCharacter(Members->rCloseButton.Left + 1, Members->rCloseButton.Y, 'x', c2);
     }
     // maximize button
@@ -249,12 +244,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             c2 = colorWindowButton;
             break;
         }
-        renderer.WriteSingleLineText(
-              Members->rMaximizeButton.Left,
-              Members->rMaximizeButton.Y,
-              "[ ]",
-              c1,
-              Members->rMaximizeButton.Right - Members->rMaximizeButton.Left + 1);
+        renderer.WriteSingleLineText(Members->rMaximizeButton.Left, Members->rMaximizeButton.Y, "[ ]", c1);
         if (Members->Maximized)
             renderer.WriteSpecialCharacter(
                   Members->rMaximizeButton.Left + 1, Members->rMaximizeButton.Y, SpecialChars::ArrowUpDown, c2);

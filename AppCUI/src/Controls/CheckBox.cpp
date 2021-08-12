@@ -27,7 +27,7 @@ void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
     else if (Members->MouseIsOver)
         cbc = &Members->Cfg->StateControl.Hover;
 
-    renderer.WriteSingleLineText(0, 0, "[ ] ", cbc->TextColor, 4);
+    renderer.WriteSingleLineText(0, 0, "[ ] ", cbc->TextColor);
 
     WriteCharacterBufferParams params(
           WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::PROCESS_NEW_LINE |

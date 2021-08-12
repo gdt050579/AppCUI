@@ -98,8 +98,7 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
         ComputeScreenPos();
 
     if (ShiftStatus.Size > 0)
-        renderer.WriteSingleLineText(
-              0, BarLayout.Y, ShiftStatus.Name, Cfg->CommandBar.ShiftKeysColor, ShiftStatus.Size);
+        renderer.WriteSingleLineText(0, BarLayout.Y, std::string_view(ShiftStatus.Name,ShiftStatus.Size), Cfg->CommandBar.ShiftKeysColor);
 
     unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
@@ -122,10 +121,8 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
         else
             colCfg = &this->Cfg->CommandBar.Normal;
 
-        renderer.WriteSingleLineText(
-              cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor, cmd->KeyNameWidth);
-        renderer.WriteSingleLineText(
-              cmd->StartScreenPos + cmd->KeyNameWidth, BarLayout.Y, cmd->Name, colCfg->NameColor, cmd->NameWidth);
+        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, std::string_view(cmd->KeyName,cmd->KeyNameWidth), colCfg->KeyColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyNameWidth, BarLayout.Y, std::string_view(cmd->Name,cmd->NameWidth), colCfg->NameColor);
 
         bi++;
     }

@@ -1201,7 +1201,6 @@ namespace Graphics
               int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
         // Texts
-        bool WriteSingleLineText(int x, int y, const char* text, const ColorPair color, int textSize = -1);
         bool WriteSingleLineText(
               int x,
               int y,
