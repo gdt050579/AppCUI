@@ -406,6 +406,11 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |
+          WriteTextFlags::FitTextToWidth);
+
+    params.Align = TextAlignament::Left;
     auto* cbc = &Members->Cfg->ComboBox.Normal;
     if (!this->IsEnabled())
         cbc = &Members->Cfg->ComboBox.Inactive;
@@ -418,14 +423,11 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
     renderer.DrawHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc->Text);
     if (Members->CurentItemIndex < itemsCount)
     {
-        //renderer.WriteSingleLineText(1, 0, txt, Members->Layout.Width - 6, cbc->Text);
-        renderer.WriteCharacterBuffer(
-              0,
-              0,
-              Members->Layout.Width - 6,
-              Members->Items[Members->CurentItemIndex].Text,
-              cbc->Text,
-              TextAlignament::Left);
+        params.X = 1;
+        params.Y = 0;
+        params.Width = Members->Layout.Width - 6;
+        params.Color = cbc->Text;
+        renderer.WriteText(Members->Items[Members->CurentItemIndex].Text, params);
     }        
     renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button);
     renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc->Button);
@@ -436,23 +438,17 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
               0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
         renderer.DrawRect(
               0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, Members->Cfg->ComboBox.Focus.Text, false);
+        params.X     = 1;
+        params.Width = Members->Layout.Width - 2;
+        params.Color = Members->Cfg->ComboBox.Focus.Text;
         for (unsigned int tr = 0; tr < Members->VisibleItems; tr++)
         {
             if ((tr + Members->FirstVisibleItem)<itemsCount)
-                renderer.WriteCharacterBuffer(
-                      1,
-                      tr+2,
-                      Members->Layout.Width - 2,
-                      Members->Items[tr + Members->FirstVisibleItem].Text,
-                      Members->Cfg->ComboBox.Focus.Text,
-                      TextAlignament::Left);
-            //renderer.WriteSingleLineText(
-            //      2,
-            //      tr + 2,
-            //      GetUnsafeItemText(tr + Members->FirstVisibleItem),
-            //      Members->Layout.Width - 2,
-            //      Members->Cfg->ComboBox.Focus.Text,
-            //      TextAlignament::Left);
+            {                
+                params.Y = tr + 2;
+                renderer.WriteText(Members->Items[tr + Members->FirstVisibleItem].Text, params);
+            }
+
             if ((tr + Members->FirstVisibleItem) == Members->CurentItemIndex)
                 renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
             else if ((tr + Members->FirstVisibleItem) == Members->HoveredIndexItem)
