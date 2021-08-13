@@ -875,6 +875,7 @@ namespace Graphics
         OverwriteColors = 0x0000004,
         HighlightHotKey = 0x0000008,
         ClipToWidth     = 0x0000010,
+        FitTextToWidth  = 0x0000020,
     };
     struct WriteTextParams
     {
@@ -1135,6 +1136,7 @@ namespace Graphics
             Character* Start;
             Character* End;
             Character* HotKey;
+            bool TextFit;
         };
       protected:
         Character* Characters;

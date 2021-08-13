@@ -87,20 +87,35 @@ int TabControlContext::MousePositionToPanel(int x, int y)
     LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
     return -1;
 }
-void TabControlContext::PaintTopPanelTab(Graphics::Renderer& renderer)
+void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, bool onTop)
 {
-    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.DrawHorizontalLineSize(0, 0, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
     params.Width = this->TabTitleSize - 2;
+    params.Align = TextAlignament::Center;
     int poz      = 1;
     int borderX  = -1;
-    unsigned int txLen;
+
+    if (onTop)
+        params.Y = 0;
+    else
+        params.Y = this->Layout.Height - 1;
+
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
+    {
+        if (onTop)
+            renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+        else
+            renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+    }
+        
+    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
+        renderer.DrawHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
+
+
+
 
     for (unsigned int tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
@@ -126,64 +141,13 @@ void TabControlContext::PaintTopPanelTab(Graphics::Renderer& renderer)
             params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
         }
 
-        renderer.DrawHorizontalLineSize(poz, 0, this->TabTitleSize, ' ', params.Color);
+        renderer.DrawHorizontalLineSize(poz, params.Y, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
-        txLen                 = cc->Text.Len();
-        if (txLen < params.Width)
-            renderer.WriteCharacterBuffer(poz + 1 + ((params.Width - txLen) >> 1), 0, cc->Text, params);
-        else
-            renderer.WriteCharacterBuffer(poz + 1, 0, cc->Text, params);
+        params.X              = poz + 1;
+        renderer.WriteText(cc->Text, params);
     }
 }
-void TabControlContext::PaintBottomPanelTab(Graphics::Renderer& renderer)
-{
-    int y_poz = this->Layout.Height - 1;
-    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
-    if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.DrawHorizontalLineSize(0, y_poz, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
 
-    params.Width = this->TabTitleSize - 2;
-    int poz      = 1;
-    int borderX  = -1;
-    unsigned int txLen;
-
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
-    {
-        if (this->Controls[tr] == nullptr)
-            continue;
-        ControlContext* cc = (ControlContext*) this->Controls[tr]->Context;
-        if (cc == nullptr)
-            continue;
-
-        if (tr == this->CurrentControlIndex)
-        {
-            params.Color       = this->Cfg->Tab.PageColor;
-            params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
-        }
-        else if (tr == this->HoveredTabIndex)
-        {
-            params.Color       = this->Cfg->Tab.HoverColor;
-            params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
-        }
-        else
-        {
-            params.Color       = this->Cfg->Tab.TabBarColor;
-            params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
-        }
-
-        renderer.DrawHorizontalLineSize(poz, y_poz, this->TabTitleSize, ' ', params.Color);
-        params.HotKeyPosition = cc->HotKeyOffset;
-        txLen                 = cc->Text.Len();
-        if (txLen < params.Width)
-            renderer.WriteCharacterBuffer(poz + 1 + ((params.Width - txLen) >> 1), y_poz, cc->Text, params);
-        else
-            renderer.WriteCharacterBuffer(poz + 1, y_poz, cc->Text, params);
-    }
-}
 void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
@@ -432,10 +396,10 @@ void Tab::Paint(Graphics::Renderer& renderer)
     switch (TAB_DISPLAY_MODE(Members->Flags))
     {
     case TAB_DISPLAY_MODE_TOP:
-        Members->PaintTopPanelTab(renderer);
+        Members->PaintTopBottomPanelTab(renderer, true);
         break;
     case TAB_DISPLAY_MODE_BOTTOM:
-        Members->PaintBottomPanelTab(renderer);
+        Members->PaintTopBottomPanelTab(renderer, false);
         break;
     case TAB_DISPLAY_MODE_LEFT:
         Members->PaintLeftPanelTab(renderer);
@@ -447,7 +411,7 @@ void Tab::Paint(Graphics::Renderer& renderer)
 }
 bool Tab::SetTabPageTitleSize(unsigned int newSize)
 {
-    CHECK(newSize >= 10, false, "Tab page title size should be bigger than 10");
+    CHECK(newSize >= 5, false, "Tab page title size should be bigger than 5");
     CHECK(newSize < 256, false, "Tab page title size should be smaller than 256");
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     Members->TabTitleSize = newSize;

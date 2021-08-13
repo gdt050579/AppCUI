@@ -222,8 +222,7 @@ struct TabControlContext : public ControlContext
 
     int MousePositionToPanel(int x, int y);
     void UpdateMargins();
-    void PaintTopPanelTab(Graphics::Renderer& renderer);
-    void PaintBottomPanelTab(Graphics::Renderer& renderer);
+    void PaintTopBottomPanelTab(Graphics::Renderer& renderer, bool onTop);
     void PaintLeftPanelTab(Graphics::Renderer& renderer);
     void PaintListPanelTab(Graphics::Renderer& renderer);
 };

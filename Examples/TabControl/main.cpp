@@ -22,8 +22,9 @@ class TabExampleWin : public AppCUI::Controls::Window
     Label inf;
     Button btnClose;
 
+
   public:
-    TabExampleWin(TabFlags flags)
+    TabExampleWin(TabFlags flags, unsigned int tabSize)
     {
         Utils::LocalString<256> temp;
         temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
@@ -35,6 +36,7 @@ class TabExampleWin : public AppCUI::Controls::Window
         btnClose.Create(this, "Close", "r:0,b:0,w:12", CLOSE_BUTTON_ID);
 
         tb.Create(this, "x:1,y:7,w:56,h:8", flags);
+        tb.SetTabPageTitleSize(tabSize);
         // first page
         pg1.Create(&tb, "&RadioBox");
         r1.Create(&pg1, "Option &1", "x:1,y:1,w:20", 100);
@@ -51,6 +53,7 @@ class TabExampleWin : public AppCUI::Controls::Window
         pg3.Create(&tb, "&TextField");
         lb1.Create(&pg3, "Enter a text", "x:1,y:1,w:15");
         tx1.Create(&pg3, "some text ...", "x:17,y:1,w:20,h:5");
+
 
         tb.SetCurrentTabPage(0);
     }
@@ -71,11 +74,13 @@ class MyWin : public AppCUI::Controls::Window
     RadioBox tabTop, tabBottom, tabLeft, tabList;
     CheckBox cbTransparent, cbTabBar;
     Button btnShow;
+    ComboBox cbTabSize;
+    Label lbTabSize;
 
   public:
     MyWin()
     {
-        this->Create("Tab example config", "a:c,w:50,h:15");
+        this->Create("Tab example config", "a:c,w:50,h:17");
         p.Create(this, "Tab mode", "x:1,y:1,w:46,h:6");
         tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
@@ -85,6 +90,14 @@ class MyWin : public AppCUI::Controls::Window
 
         cbTransparent.Create(this, "Transparent background for tab pages", "x:1,y:8,w:46");
         cbTabBar.Create(this, "Show tab bar with pages", "x:1,y:9,w:46");
+
+        lbTabSize.Create(this, "Tabs &width", "x:1,y:11,w:10");
+        cbTabSize.Create(
+              this,
+              "x:14,y:11,w:32",
+              "Tiny (5 characters),Small (7 characters),Medium (10 characters),Normal (14 characters),Large (18 characters)");
+        cbTabSize.SetHotKey('W');
+        cbTabSize.SetCurentItemIndex(3);
 
         btnShow.Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
@@ -104,7 +117,9 @@ class MyWin : public AppCUI::Controls::Window
         if (cbTabBar.IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        TabExampleWin tw(flags);
+        unsigned int tabSizes[] = { 5, 7, 10, 14, 18 };
+
+        TabExampleWin tw(flags, tabSizes[cbTabSize.GetCurrentItemIndex()]);
         tw.Show();
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override

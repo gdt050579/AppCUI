@@ -1081,14 +1081,18 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
 
     output.TextStart = 0;
     output.TextEnd   = charactersCount;
+    output.TextFit   = false;
     // check Text alignament
     switch (params.Align)
     {
     case TextAlignament::Left:
-        if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
+        if ((params.Flags & (WriteTextFlags::FitTextToWidth|WriteTextFlags::ClipToWidth))!= WriteTextFlags::None)
         {
-            if (charactersCount>params.Width)
-                output.TextEnd = params.Width;            
+            if (charactersCount > params.Width)
+            {
+                output.TextEnd = params.Width;
+                output.TextFit = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
+            }                
         }
         break;
     case TextAlignament::Right:
@@ -1097,11 +1101,23 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
             if (params.Width >= charactersCount)
                 x = x + (int) (params.Width - charactersCount); // entire string fits the width
             else
-                output.TextStart += (charactersCount - params.Width); // x remains the same, move text offset
-            
+            {
+                // x remains the same, move text offset depending on settings
+                if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
+                {
+                    output.TextEnd = params.Width;
+                    output.TextFit = true;
+                }
+                else
+                {
+                    output.TextStart += (charactersCount - params.Width); 
+                }                                    
+            }                            
         }            
         else
-            x -= (int) (charactersCount-1);
+        {
+            x -= (int) (charactersCount - 1);
+        }            
         break;
     case TextAlignament::Center:
         if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
@@ -1110,10 +1126,18 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
                 x = x + (int) ((params.Width - charactersCount)/2); // entire string fits the width
             else
             {
-                output.TextStart += (charactersCount - params.Width) / 2; // x remains the same, move text
-                output.TextEnd = output.TextStart + params.Width;
-                if (output.TextEnd > charactersCount)
-                    output.TextEnd = charactersCount; // sanity check
+                if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
+                {
+                    output.TextEnd = params.Width;
+                    output.TextFit = true;
+                }
+                else
+                {
+                    output.TextStart += (charactersCount - params.Width) / 2; // x remains the same, move text
+                    output.TextEnd = output.TextStart + params.Width;
+                    if (output.TextEnd > charactersCount)
+                        output.TextEnd = charactersCount; // sanity check
+                }
             }
                 
         }
