@@ -193,16 +193,7 @@ unsigned int ComboBox::GetItemsCount()
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, 0);
     return (unsigned int) Members->Items.size();
 }
-//const char* ComboBox::GetUnsafeCurrentItemText()
-//{
-//    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, nullptr);
-//    return GetUnsafeItemText(Members->CurentItemIndex);
-//}
-//bool ComboBox::GetCurrentItemtext(Utils::String& itemText)
-//{
-//    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-//    return GetItemText(Members->CurentItemIndex, itemText);
-//}
+
 unsigned int ComboBox::GetCurrentItemIndex()
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, ComboBox::NO_ITEM_SELECTED);

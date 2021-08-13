@@ -1900,14 +1900,9 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        //const char* GetUnsafeItemText(unsigned int index);
-        //bool GetItemText(unsigned int index, Utils::String& itemText);
-        //const char* GetUnsafeCurrentItemText();
-        //bool GetCurrentItemtext(Utils::String& itemText);
-        ItemData GetCurrentItemUserData();
+        bool Create(Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text = std::string_view(), char itemsSeparator = ',');
 
-        bool Create(
-              Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text = std::string_view(), char itemsSeparator = ',');
+        ItemData GetCurrentItemUserData();
         unsigned int GetItemsCount();
         unsigned int GetCurrentItemIndex();
         const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();

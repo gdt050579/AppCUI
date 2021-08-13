@@ -603,7 +603,7 @@ void CharacterBuffer::SetColor(const ColorPair color)
         ch++;
     }
 }
-bool CharacterBuffer::CopyString(AppCUI::Utils::String& text, unsigned int start, unsigned int end)
+bool CharacterBuffer::CopyString_1(AppCUI::Utils::String& text, unsigned int start, unsigned int end)
 {
     CHECK(start < end, false, "Start position (%d) should be smaller than the end position (%d)", start, end);
     CHECK(end <= Count,
@@ -623,7 +623,7 @@ bool CharacterBuffer::CopyString(AppCUI::Utils::String& text, unsigned int start
     }
     return true;
 }
-bool CharacterBuffer::CopyString(AppCUI::Utils::String& text)
+bool CharacterBuffer::CopyString_1(AppCUI::Utils::String& text)
 {
     return CopyString(text, 0, this->Count);
 }
