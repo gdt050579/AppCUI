@@ -161,10 +161,11 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
 
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
     params.Width = this->TabTitleSize - 2;
+    params.X     = 1;
 
     for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
     {
@@ -191,7 +192,8 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 
         renderer.DrawHorizontalLineSize(0, tr + 1, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
-        renderer.WriteCharacterBuffer(1, tr + 1, cc->Text, params);
+        params.Y              = tr + 1;
+        renderer.WriteText(cc->Text, params);
     }
 }
 void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
@@ -199,10 +201,11 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.Clear(' ', this->Cfg->Tab.PageColor);
 
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::SINGLE_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
     params.Width = this->Layout.Width - 2;
+    params.X     = 1;
     int ypoz;
     for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
     {
@@ -233,7 +236,8 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
             ypoz = this->Layout.Height - (this->ControlsCount - tr);
         renderer.DrawHorizontalLineSize(0, ypoz, this->Layout.Width, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
-        renderer.WriteCharacterBuffer(1, ypoz, cc->Text, params);
+        params.Y              = ypoz;
+        renderer.WriteText(cc->Text, params);
     }
 }
 bool NextTab(Tab* t)
