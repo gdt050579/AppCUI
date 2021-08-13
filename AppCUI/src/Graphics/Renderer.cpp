@@ -870,70 +870,7 @@ bool Renderer::WriteCharacterBuffer(
     }
     return true;
 }
-bool Renderer::WriteCharacterBuffer(
-      int x,
-      int y,
-      unsigned int width,
-      const AppCUI::Graphics::CharacterBuffer& cb,
-      const ColorPair textColor,
-      TextAlignament align)
-{
-    return WriteCharacterBuffer(x, y, width, cb, textColor, NoColorPair, 0xFFFFFFFF, align);
-}
-bool Renderer::WriteCharacterBuffer(
-      int x,
-      int y,
-      unsigned int width,
-      const AppCUI::Graphics::CharacterBuffer& cb,
-      const ColorPair textColor,
-      const ColorPair hotKeyColor,
-      unsigned int hotKeyOffset,
-      TextAlignament align)
-{
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::WRAP_TO_WIDTH |
-          WriteCharacterBufferFlags::SINGLE_LINE);
-    params.Color = textColor;
-    if (hotKeyOffset != 0xFFFFFFFF)
-    {
-        params.Flags |= WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY;
-        params.HotKeyColor    = hotKeyColor;
-        params.HotKeyPosition = hotKeyOffset;
-    }
-    //bool hasPadding = ((align & TextAlignament::Padding) == TextAlignament::Padding);
-    bool hasPadding = false;
-    if (hasPadding)
-    {
-        CHECK(width >= 2, false, "width parameter must be bigger than 2 to support padding !");
-        width -= 2;
-    }
-    params.Width        = width;
-    unsigned int txSize = cb.Len();
-    txSize              = MINVALUE(txSize, width);
 
-    if ((align & TextAlignament::Right) == TextAlignament::Right)
-    {
-        // align on right
-        x = (x - (int) txSize);
-    }
-    else if ((align & TextAlignament::Center) == TextAlignament::Center)
-    {
-        // align on right
-        x = (x - ((int) txSize >> 1));
-    }
-    else
-    {
-        // align on left
-        x++;
-    }
-    if (hasPadding)
-    {
-        CHECK(WriteCharacter(x - 1, y, ' ', textColor), false, "Fail to write left padding !");
-        CHECK(WriteCharacter(x + txSize, y, ' ', textColor), false, "Fail to write write padding !");
-    }
-    CHECK(WriteCharacterBuffer(x, y, cb, params), false, "Fail to write text !");
-    return true;
-}
 
 bool Renderer::DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor)
 {
@@ -1194,6 +1131,14 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
         }
     }
 
+    // margins
+    output.LeftMargin = nullptr;
+    output.RightMargin = nullptr;
+    if (((params.Flags & WriteTextFlags::LeftMargin) != WriteTextFlags::None) && ((x - 1) >= Clip.Left))
+        output.LeftMargin = output.Start - 1;   
+    if (((params.Flags & WriteTextFlags::RightMargin) != WriteTextFlags::None) &&
+        ((x + output.TextEnd - output.TextStart) <= Clip.Right))
+        output.RightMargin = output.End;
     // all good 
     return true;
 }
@@ -1245,6 +1190,15 @@ bool Renderer::_WriteText_SingleLine_(const CharacterBuffer& text, const WriteTe
             SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
         }
     }
+    // margins
+    if (dti.LeftMargin)
+    {
+        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+    }
+    if (dti.RightMargin)
+    {
+        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
+    }
     return true;
 }
 template <typename T>
@@ -1284,6 +1238,15 @@ inline void RenderSingleLineString(
         {
             SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
         }
+    }
+    // margins
+    if (dti.LeftMargin)
+    {
+        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+    }
+    if (dti.RightMargin)
+    {
+        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
     }
 }
 

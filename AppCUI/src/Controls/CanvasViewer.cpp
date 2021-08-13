@@ -56,15 +56,17 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
         renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
         if (Members->Layout.Width > 6)
         {
-            renderer.WriteCharacterBuffer(
-                  3,
-                  0,
-                  Members->Layout.Width - 6,
-                  Members->Text,
-                  col->Text,
-                  col->Hotkey,
-                  Members->HotKeyOffset,
-                  TextAlignament::Left /*| TextAlignament::Padding*/);
+            WriteTextParams params(
+                  WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth |
+                  WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin);
+            params.X              = 3;
+            params.Y              = 0;
+            params.Color          = col->Text;
+            params.HotKeyColor    = col->Hotkey;
+            params.HotKeyPosition = Members->HotKeyOffset;
+            params.Width          = Members->Layout.Width - 6;
+            params.Align          = TextAlignament::Left;
+            renderer.WriteText(Members->Text, params);
         }
         if (!renderer.SetClipMargins(1, 1, 1, 1))
             return; // clipping is not visible --> no need to try to draw the rest

@@ -201,13 +201,15 @@ void Window::Paint(Graphics::Renderer& renderer)
 
     if (Members->Layout.Width > 10)
     {
-        renderer.WriteCharacterBuffer(
-              Members->Layout.Width / 2,
-              0,
-              Members->Layout.Width - 10,
-              Members->Text,
-              colorTitle,
-              TextAlignament::Center /*| TextAlignament::Padding*/);
+        WriteTextParams params(
+              WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth |
+              WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+              TextAlignament::Center);
+        params.X     = 5;
+        params.Y     = 0;
+        params.Color = colorTitle;
+        params.Width = Members->Layout.Width - 10;
+        renderer.WriteText(Members->Text, params);
     }
     // close button
     if ((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None)

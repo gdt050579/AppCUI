@@ -33,13 +33,14 @@ void Panel::Paint(Graphics::Renderer& renderer)
               0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, false);
         if (Members->Layout.Width > 6)
         {
-            renderer.WriteCharacterBuffer(
-                  3,
-                  0,
-                  Members->Layout.Width - 6,
-                  Members->Text,
-                  Members->Cfg->Panel.NormalColor,
-                  TextAlignament::Left /*| TextAlignament::Padding*/);
+            WriteTextParams params(
+                  WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
+                  WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin, TextAlignament::Left);
+            params.X              = 3;
+            params.Y              = 0;
+            params.Color          = Members->Cfg->Panel.NormalColor;
+            params.Width          = Members->Layout.Width - 6;
+            renderer.WriteText(Members->Text, params);
         }
     }
 }

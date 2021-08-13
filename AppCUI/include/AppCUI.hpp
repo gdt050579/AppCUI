@@ -876,6 +876,8 @@ namespace Graphics
         HighlightHotKey = 0x0000008,
         ClipToWidth     = 0x0000010,
         FitTextToWidth  = 0x0000020,
+        LeftMargin      = 0x0000040,
+        RightMargin     = 0x0000080,
     };
     struct WriteTextParams
     {
@@ -1137,6 +1139,8 @@ namespace Graphics
             Character* End;
             Character* HotKey;
             Character* FitCharStart;
+            Character* LeftMargin;
+            Character* RightMargin;
         };
       protected:
         Character* Characters;
@@ -1217,22 +1221,7 @@ namespace Graphics
               int y,
               const AppCUI::Graphics::CharacterBuffer& cb,
               const AppCUI::Graphics::WriteCharacterBufferParams& params);
-        bool WriteCharacterBuffer(
-              int x,
-              int y,
-              unsigned int width,
-              const AppCUI::Graphics::CharacterBuffer& cb,
-              const ColorPair textColor,
-              TextAlignament align);
-        bool WriteCharacterBuffer(
-              int x,
-              int y,
-              unsigned int width,
-              const AppCUI::Graphics::CharacterBuffer& cb,
-              const ColorPair textColor,
-              const ColorPair hotKeyColor,
-              unsigned int hotKeyOffset,
-              TextAlignament align);
+
 
         bool _WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params);
         bool _WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params);
