@@ -1079,9 +1079,10 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false; // outside clip rect -> exit
 
-    output.TextStart = 0;
-    output.TextEnd   = charactersCount;
-    output.TextFit   = false;
+    output.TextStart    = 0;
+    output.TextEnd      = charactersCount;
+    output.FitCharStart = nullptr;
+    bool TextFit        = false;
     // check Text alignament
     switch (params.Align)
     {
@@ -1091,7 +1092,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
             if (charactersCount > params.Width)
             {
                 output.TextEnd = params.Width;
-                output.TextFit = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
+                TextFit = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
             }                
         }
         break;
@@ -1106,7 +1107,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
                     output.TextEnd = params.Width;
-                    output.TextFit = true;
+                    TextFit        = true;
                 }
                 else
                 {
@@ -1129,7 +1130,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
                     output.TextEnd = params.Width;
-                    output.TextFit = true;
+                    TextFit        = true;
                 }
                 else
                 {
@@ -1182,6 +1183,17 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
         output.HotKey = nullptr; // nothing to highlight
     }
 
+    // Text fit
+    if (TextFit)
+    {
+        unsigned int sz = output.TextEnd - output.TextStart;
+        if (sz > 4)
+        {
+            sz = MINVALUE(sz - 3, 3);
+            output.FitCharStart = output.End - sz;
+        }
+    }
+
     // all good 
     return true;
 }
@@ -1225,6 +1237,14 @@ bool Renderer::_WriteText_SingleLine_(const CharacterBuffer& text, const WriteTe
     {
         SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
     }
+    // fit size
+    if (dti.FitCharStart)
+    {
+        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
+        {
+            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
+        }
+    }
     return true;
 }
 template <typename T>
@@ -1232,6 +1252,7 @@ inline void RenderSingleLineString(
       const T& text, AppCUI::Graphics::Renderer::DrawTextInfo& dti, const WriteTextParams& params)
 {
     auto* ch = text.data() + dti.TextStart;
+
 
     if (NO_TRANSPARENCY(params.Color))
     {
@@ -1251,10 +1272,18 @@ inline void RenderSingleLineString(
             ch++;
         }
     }
-
+    // hot key 
     if (dti.HotKey)
     {
         SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
+    }
+    // fit size
+    if (dti.FitCharStart)
+    {
+        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
+        {
+            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
+        }
     }
 }
 

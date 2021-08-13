@@ -1136,7 +1136,7 @@ namespace Graphics
             Character* Start;
             Character* End;
             Character* HotKey;
-            bool TextFit;
+            Character* FitCharStart;
         };
       protected:
         Character* Characters;
