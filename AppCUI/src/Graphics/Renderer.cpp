@@ -53,6 +53,122 @@ using namespace AppCUI::Graphics;
     if (this->Clip.Visible == false)                                                                                   \
         return false;
 
+struct DrawTextInfo
+{
+    int X, Y;
+    unsigned int TextStart, TextEnd;
+    Character* Start;
+    Character* End;
+    Character* HotKey;
+    Character* FitCharStart;
+    Character* LeftMargin;
+    Character* RightMargin;
+};
+
+//========================================================================================== Write text [single line] ====
+template <typename T>
+inline void RenderSingleLineString(const T& text, DrawTextInfo& dti, const WriteTextParams& params)
+{
+    auto* ch = text.data() + dti.TextStart;
+
+    if (NO_TRANSPARENCY(params.Color))
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER(dti.Start, *ch, params.Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+    else
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER_EX(dti.Start, *ch, params.Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+    // hot key
+    if (dti.HotKey)
+    {
+        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
+    }
+    // fit size
+    if (dti.FitCharStart)
+    {
+        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
+        {
+            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
+        }
+    }
+    // margins
+    if (dti.LeftMargin)
+    {
+        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+    }
+    if (dti.RightMargin)
+    {
+        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
+    }
+}
+template <>
+inline void RenderSingleLineString<CharacterView>(const CharacterView& text, DrawTextInfo& dti, const WriteTextParams& params)
+{
+    const Character* ch = text.data() + dti.TextStart;
+    if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
+    {
+        if (NO_TRANSPARENCY(params.Color))
+        {
+            while (dti.Start < dti.End)
+            {
+                SET_CHARACTER(dti.Start, ch->Code, params.Color);
+                dti.Start++;
+                ch++;
+            }
+        }
+        else
+        {
+            while (dti.Start < dti.End)
+            {
+                SET_CHARACTER_EX(dti.Start, ch->Code, params.Color);
+                dti.Start++;
+                ch++;
+            }
+        }
+    }
+    else
+    {
+        while (dti.Start < dti.End)
+        {
+            SET_CHARACTER_EX(dti.Start, ch->Code, ch->Color);
+            dti.Start++;
+            ch++;
+        }
+    }
+    if (dti.HotKey)
+    {
+        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
+    }
+    // fit size
+    if (dti.FitCharStart)
+    {
+        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
+        {
+            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
+        }
+    }
+    // margins
+    if (dti.LeftMargin)
+    {
+        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+    }
+    if (dti.RightMargin)
+    {
+        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
+    }
+}
+
 Renderer::Renderer()
 {
     TranslateX = TranslateY = 0;
@@ -496,86 +612,6 @@ bool Renderer::DrawRectSize(
 }
 
 
-
-bool Renderer::WriteMultiLineText(int x, int y, const char* text, const ColorPair color, int textSize)
-{
-    CHECK(text, false, "Expecting a valid (non-null) text ");
-    CHECK_VISIBLE;
-    TRANSLATE_COORDONATES(x, y);
-
-    if (textSize < 0)
-        textSize = AppCUI::Utils::String::Len(text);
-    const unsigned char* s = (const unsigned char*) text;
-    const unsigned char* e = s + textSize;
-    Character* c           = this->OffsetRows[y] + x;
-    int orig_x             = x;
-    while ((s < e) && (y <= Clip.Bottom))
-    {
-        if ((*s) != '\n')
-        {
-            if ((x >= Clip.Left) && (x <= Clip.Right))
-            {
-                SET_CHARACTER_EX(c, *s, color);
-            }
-            c++;
-            x++;
-        }
-        else
-        {
-            y++;
-            x = orig_x;
-            c = this->OffsetRows[y] + x;
-        }
-        s++;
-    }
-    return true;
-}
-bool Renderer::WriteMultiLineTextWithHotKey(
-      int x, int y, const char* text, const ColorPair color, const ColorPair hotKeyColor, int textSize)
-{
-    CHECK(text, false, "Expecting a valid (non-null) text ");
-    CHECK_VISIBLE;
-    TRANSLATE_COORDONATES(x, y);
-
-    if (textSize < 0)
-        textSize = AppCUI::Utils::String::Len(text);
-    const unsigned char* s = (const unsigned char*) text;
-    const unsigned char* e = s + textSize;
-    Character* c           = this->OffsetRows[y] + x;
-    Character* hotkey      = nullptr;
-    int orig_x             = x;
-    while ((s < e) && (y <= Clip.Bottom))
-    {
-        if ((*s) != '\n')
-        {
-            if ((x >= Clip.Left) && (x <= Clip.Right))
-            {
-                if ((!hotkey) && ((*s) == '&'))
-                {
-                    hotkey = c;
-                    x--;
-                    c--;
-                }
-                else
-                {
-                    SET_CHARACTER_EX(c, *s, color);
-                }
-            }
-            c++;
-            x++;
-        }
-        else
-        {
-            y++;
-            x = orig_x;
-            c = this->OffsetRows[y] + x;
-        }
-        s++;
-    }
-    if (hotkey)
-        SET_CHARACTER_EX(hotkey, -1, hotKeyColor);
-    return true;
-}
 bool Renderer::_WriteCharacterBuffer_SingleLine(
       int x,
       int y,
@@ -1003,8 +1039,7 @@ bool Renderer::ResetClip()
 }
 
 
-bool Renderer::_Compute_DrawTextInfo_SingleLine_(
-      const WriteTextParams& params, unsigned int charactersCount, AppCUI::Graphics::Renderer::DrawTextInfo& output)
+bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput)
 {
     CHECK_VISIBLE;
     // check size
@@ -1015,10 +1050,11 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     int y = params.Y + this->TranslateY;
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false; // outside clip rect -> exit
+    DrawTextInfo* output = reinterpret_cast<DrawTextInfo*>(drawTextInfoOutput);
 
-    output.TextStart    = 0;
-    output.TextEnd      = charactersCount;
-    output.FitCharStart = nullptr;
+    output->TextStart    = 0;
+    output->TextEnd      = charactersCount;
+    output->FitCharStart = nullptr;
     bool TextFit        = false;
     // check Text alignament
     switch (params.Align)
@@ -1028,7 +1064,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
         {
             if (charactersCount > params.Width)
             {
-                output.TextEnd = params.Width;
+                output->TextEnd = params.Width;
                 TextFit = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
             }                
         }
@@ -1043,12 +1079,12 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
                 // x remains the same, move text offset depending on settings
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
-                    output.TextEnd = params.Width;
+                    output->TextEnd = params.Width;
                     TextFit        = true;
                 }
                 else
                 {
-                    output.TextStart += (charactersCount - params.Width); 
+                    output->TextStart += (charactersCount - params.Width); 
                 }                                    
             }                            
         }            
@@ -1066,15 +1102,15 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
             {
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
-                    output.TextEnd = params.Width;
+                    output->TextEnd = params.Width;
                     TextFit        = true;
                 }
                 else
                 {
-                    output.TextStart += (charactersCount - params.Width) / 2; // x remains the same, move text
-                    output.TextEnd = output.TextStart + params.Width;
-                    if (output.TextEnd > charactersCount)
-                        output.TextEnd = charactersCount; // sanity check
+                    output->TextStart += (charactersCount - params.Width) / 2; // x remains the same, move text
+                    output->TextEnd = output->TextStart + params.Width;
+                    if (output->TextEnd > charactersCount)
+                        output->TextEnd = charactersCount; // sanity check
                 }
             }
                 
@@ -1091,186 +1127,80 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
         return false; // outside the clipping area
     if (x<Clip.Left)
     {
-        if ((x + (int) (output.TextEnd - output.TextStart)) < Clip.Left)
+        if ((x + (int) (output->TextEnd - output->TextStart)) < Clip.Left)
             return false; // outside the clipping area
-        output.TextStart += (unsigned int)(Clip.Left - x);
+        output->TextStart += (unsigned int)(Clip.Left - x);
         x = Clip.Left;
     }
-    if ((x + (int) (output.TextEnd - output.TextStart)) > (Clip.Right+1))
+    if ((x + (int) (output->TextEnd - output->TextStart)) > (Clip.Right+1))
     {
-        output.TextEnd -= (unsigned int) ((x + (int) (output.TextEnd - output.TextStart)) - (Clip.Right+1));
-        if (output.TextEnd <= output.TextStart)
+        output->TextEnd -= (unsigned int) ((x + (int) (output->TextEnd - output->TextStart)) - (Clip.Right+1));
+        if (output->TextEnd <= output->TextStart)
             return false; // nothing to draw (sanity check)
     }
     
     // compute screen buffer pointers
-    output.Start = this->OffsetRows[y] + x;
-    output.End   = output.Start + (output.TextEnd - output.TextStart);
+    output->Start = this->OffsetRows[y] + x;
+    output->End   = output->Start + (output->TextEnd - output->TextStart);
     
     // hotkey
     if ((params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None)
     {
-        if ((params.HotKeyPosition >= output.TextStart) && (params.HotKeyPosition < output.TextEnd))
-            output.HotKey = output.Start + (params.HotKeyPosition - output.TextStart);
+        if ((params.HotKeyPosition >= output->TextStart) && (params.HotKeyPosition < output->TextEnd))
+            output->HotKey = output->Start + (params.HotKeyPosition - output->TextStart);
         else
-            output.HotKey = nullptr; // not visible
+            output->HotKey = nullptr; // not visible
     }
     else
     {
-        output.HotKey = nullptr; // nothing to highlight
+        output->HotKey = nullptr; // nothing to highlight
     }
 
     // Text fit
     if (TextFit)
     {
-        unsigned int sz = output.TextEnd - output.TextStart;
+        unsigned int sz = output->TextEnd - output->TextStart;
         if (sz > 4)
         {
             sz = MINVALUE(sz - 3, 3);
-            output.FitCharStart = output.End - sz;
+            output->FitCharStart = output->End - sz;
         }
     }
 
     // margins
-    output.LeftMargin = nullptr;
-    output.RightMargin = nullptr;
+    output->LeftMargin = nullptr;
+    output->RightMargin = nullptr;
     if (((params.Flags & WriteTextFlags::LeftMargin) != WriteTextFlags::None) && ((x - 1) >= Clip.Left))
-        output.LeftMargin = output.Start - 1;   
+        output->LeftMargin = output->Start - 1;   
     if (((params.Flags & WriteTextFlags::RightMargin) != WriteTextFlags::None) &&
-        ((x + output.TextEnd - output.TextStart) <= Clip.Right))
-        output.RightMargin = output.End;
+        ((x + output->TextEnd - output->TextStart) <= Clip.Right))
+        output->RightMargin = output->End;
     // all good 
     return true;
 }
-bool Renderer::_WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params)
-{
-    DrawTextInfo dti;
-    if (_Compute_DrawTextInfo_SingleLine_(params, text.Len(), dti) == false)
-        return false;
-    Character* ch = text.GetBuffer() + dti.TextStart;
-    if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
-    {
-        if (NO_TRANSPARENCY(params.Color))
-        {
-            while (dti.Start < dti.End)
-            {
-                SET_CHARACTER(dti.Start, ch->Code, params.Color);
-                dti.Start++;
-                ch++;
-            }
-        }
-        else
-        {
-            while (dti.Start < dti.End)
-            {
-                SET_CHARACTER_EX(dti.Start, ch->Code, params.Color);
-                dti.Start++;
-                ch++;
-            }
-        }
-    }
-    else
-    {
-        while (dti.Start < dti.End)
-        {
-            SET_CHARACTER_EX(dti.Start, ch->Code, ch->Color);
-            dti.Start++;
-            ch++;
-        }
-    }
-    if (dti.HotKey)
-    {
-        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
-    }
-    // fit size
-    if (dti.FitCharStart)
-    {
-        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
-        {
-            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
-        }
-    }
-    // margins
-    if (dti.LeftMargin)
-    {
-        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
-    }
-    if (dti.RightMargin)
-    {
-        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
-    }
-    return true;
-}
-template <typename T>
-inline void RenderSingleLineString(
-      const T& text, AppCUI::Graphics::Renderer::DrawTextInfo& dti, const WriteTextParams& params)
-{
-    auto* ch = text.data() + dti.TextStart;
 
-
-    if (NO_TRANSPARENCY(params.Color))
-    {
-        while (dti.Start < dti.End)
-        {
-            SET_CHARACTER(dti.Start, *ch, params.Color);
-            dti.Start++;
-            ch++;
-        }
-    }
-    else
-    {
-        while (dti.Start < dti.End)
-        {
-            SET_CHARACTER_EX(dti.Start, *ch, params.Color);
-            dti.Start++;
-            ch++;
-        }
-    }
-    // hot key 
-    if (dti.HotKey)
-    {
-        SET_CHARACTER_EX(dti.HotKey, -1, params.HotKeyColor);
-    }
-    // fit size
-    if (dti.FitCharStart)
-    {
-        for (; dti.FitCharStart < dti.End; dti.FitCharStart++)
-        {
-            SET_CHARACTER_EX(dti.FitCharStart, '.', NoColorPair);
-        }
-    }
-    // margins
-    if (dti.LeftMargin)
-    {
-        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
-    }
-    if (dti.RightMargin)
-    {
-        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
-    }
-}
-
-bool Renderer::WriteText(const CharacterBuffer& text, const WriteTextParams& params)
-{
-    if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
-        return _WriteText_SingleLine_(text, params);
-    NOT_IMPLEMENTED(false);
-}
 bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params)
 {
-    AppCUI::Graphics::Renderer::DrawTextInfo dti;
+    DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
     {
         if (std::holds_alternative<std::string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), &dti) == false)
                 return false;
             RenderSingleLineString<std::string_view>(std::get<std::string_view>(text), dti, params);
             return true;
         }
+        if (std::holds_alternative<CharacterView>(text))
+        {
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<CharacterView>(text).length(), &dti) == false)
+                return false;
+            RenderSingleLineString<CharacterView>(std::get<CharacterView>(text), dti, params);
+            return true;
+        }
         if (std::holds_alternative<std::u16string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u16string_view>(text).length(), dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u16string_view>(text).length(), &dti) == false)
                 return false;
             RenderSingleLineString<std::u16string_view>(std::get<std::u16string_view>(text), dti, params);
             return true;
@@ -1278,7 +1208,7 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
         if (std::holds_alternative<std::u8string_view>(text))
         {
             LocalUnicodeStringBuilder<1024> tmp(std::get<std::u8string_view>(text));
-            if (_Compute_DrawTextInfo_SingleLine_(params, tmp.Len(), dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, tmp.Len(), &dti) == false)
                 return false;
             RenderSingleLineString<std::u16string_view>(tmp.ToStringView(), dti, params);
             return true;

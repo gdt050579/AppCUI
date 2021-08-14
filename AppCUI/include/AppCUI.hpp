@@ -135,28 +135,28 @@
 
 namespace AppCUI
 {
-namespace Utils
-{
-    using ConstString = std::variant<std::string_view, std::u8string_view, std::u16string_view>;
-}
-namespace Application
-{
-    struct Config;
-    class CommandBar;
-}; // namespace Application
-namespace Dialogs
-{
-    enum class Result : int
-    {
-        None   = 0,
-        Ok     = 1,
-        Cancel = 2,
-        Yes    = 3,
-        No     = 4,
-    };
-}
 namespace Graphics
 {
+    enum class Color : unsigned char
+    {
+        Black       = 0x00,
+        DarkBlue    = 0x01,
+        DarkGreen   = 0x02,
+        Teal        = 0x03,
+        DarkRed     = 0x04,
+        Magenta     = 0x05,
+        Olive       = 0x06,
+        Silver      = 0x07,
+        Gray        = 0x08,
+        Blue        = 0x09,
+        Green       = 0x0A,
+        Aqua        = 0x0B,
+        Red         = 0x0C,
+        Pink        = 0x0D,
+        Yellow      = 0x0E,
+        White       = 0x0F,
+        Transparent = 0x10,
+    };
     struct Size
     {
         unsigned int Width, Height;
@@ -187,8 +187,49 @@ namespace Graphics
             Y = y;
         }
     };
+    struct ColorPair
+    {
+        Color Foreground;
+        Color Background;
+    };
+    constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };
+    constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
+    struct Character
+    {
+        union
+        {
+            struct
+            {
+                char16_t Code;
+                ColorPair Color;
+            };
+            unsigned int PackedValue;
+        };
+    };
     class EXPORT CharacterBuffer;
-}; // namespace Console
+}; // namespace Graphics
+namespace Utils
+{
+    using CharacterView = std::basic_string_view<AppCUI::Graphics::Character>;
+    using ConstString = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
+}
+namespace Application
+{
+    struct Config;
+    class CommandBar;
+}; // namespace Application
+namespace Dialogs
+{
+    enum class Result : int
+    {
+        None   = 0,
+        Ok     = 1,
+        Cancel = 2,
+        Yes    = 3,
+        No     = 4,
+    };
+}
+
 namespace Input
 {
     enum class Key : unsigned int
@@ -722,27 +763,6 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Color : unsigned char
-    {
-        Black       = 0x00,
-        DarkBlue    = 0x01,
-        DarkGreen   = 0x02,
-        Teal        = 0x03,
-        DarkRed     = 0x04,
-        Magenta     = 0x05,
-        Olive       = 0x06,
-        Silver      = 0x07,
-        Gray        = 0x08,
-        Blue        = 0x09,
-        Green       = 0x0A,
-        Aqua        = 0x0B,
-        Red         = 0x0C,
-        Pink        = 0x0D,
-        Yellow      = 0x0E,
-        White       = 0x0F,
-        Transparent = 0x10,
-    };
-
     enum class Alignament : unsigned int
     {
         TopLeft = 0,
@@ -831,25 +851,7 @@ namespace Graphics
         bool EXPORT Update(unsigned long long value, const char* text = nullptr);
     }; // namespace ProgressStatus
 
-    struct ColorPair
-    {
-        Color Foreground;
-        Color Background;
-    };
-    constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };
-    constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
-    struct Character
-    {
-        union
-        {
-            struct
-            {
-                char16_t Code;
-                ColorPair Color;
-            };
-            unsigned int PackedValue;
-        };
-    };
+
 
     struct WriteCharacterBufferParams
     {
@@ -1088,6 +1090,10 @@ namespace Graphics
             ToPath(temp);
             return temp;
         }
+        inline operator AppCUI::Utils::CharacterView() const
+        {
+            return AppCUI::Utils::CharacterView(Buffer, Count);
+        }
     };
 
     class EXPORT Image
@@ -1129,19 +1135,7 @@ namespace Graphics
 
     class EXPORT Canvas;
     class EXPORT Renderer
-    {
-      public:
-        struct DrawTextInfo
-        {
-            int X, Y;
-            unsigned int TextStart, TextEnd;
-            Character* Start;
-            Character* End;
-            Character* HotKey;
-            Character* FitCharStart;
-            Character* LeftMargin;
-            Character* RightMargin;
-        };
+    {    
       protected:
         Character* Characters;
         Character** OffsetRows;
@@ -1186,7 +1180,7 @@ namespace Graphics
               unsigned int start,
               unsigned int end);
 
-        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, DrawTextInfo& output);
+        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput);
 
       public:
         // Horizontal lines
@@ -1203,13 +1197,7 @@ namespace Graphics
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
         bool FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color);
         bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(
-              int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
-
-        // Texts
-        bool WriteMultiLineText(int x, int y, const char* text, const ColorPair color, int textSize = -1);
-        bool WriteMultiLineTextWithHotKey(
-              int x, int y, const char* text, const ColorPair color, const ColorPair hotKeyColor, int textSize = -1);
+        bool DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
         // Characters
         bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
@@ -1222,10 +1210,7 @@ namespace Graphics
               const AppCUI::Graphics::CharacterBuffer& cb,
               const AppCUI::Graphics::WriteCharacterBufferParams& params);
 
-
-        bool _WriteText_SingleLine_(const CharacterBuffer& text, const WriteTextParams& params);
-        bool _WriteText_SingleLine_(const std::string_view& text, const WriteTextParams& params);
-        bool WriteText(const CharacterBuffer& text, const WriteTextParams& params);
+        // Texts
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
