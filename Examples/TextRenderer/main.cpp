@@ -95,6 +95,29 @@ struct MyUserControl : public UserControl
         renderer.WriteSingleLineText(45, 18, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Center);
         renderer.WriteSingleLineText(45, 20, 8, "12345678", NoColorPair, hkCP, 2, TextAlignament::Center);
         renderer.WriteSingleLineText(45, 22, 8, "123456789ABCD", NoColorPair, hkCP, 2, TextAlignament::Center);
+
+        renderer.DrawVerticalLineWithSpecialChar(
+              60, 0, 26, SpecialChars::BoxVerticalDoubleLine, ColorPair{ Color::White, Color::DarkBlue });
+
+        // multi line example
+        renderer.FillRectSize(62, 2, 15, 3, ' ', ColorPair{ Color::White, Color::Blue });
+        params.Flags = WriteTextFlags::MultipleLines;
+        params.Align = TextAlignament::Left;
+        params.X     = 62;
+        params.Y     = 2;
+        renderer.WriteText("This is a multi-line string\n- it expends over 2 lines\n\r- it has no clipping wo width", params);
+        
+        renderer.FillRectSize(62, 7, 20, 3, ' ', ColorPair{ Color::White, Color::Blue });
+        params.Flags |= WriteTextFlags::ClipToWidth;
+        params.Y     = 7;
+        params.Width = 20;
+        renderer.WriteText("This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
+
+        renderer.FillRectSize(62, 11, 20, 3, ' ', ColorPair{ Color::White, Color::Blue });
+        params.Y     = 11;
+        params.Align = TextAlignament::Right;
+        renderer.WriteText("This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
+
     }
 };
 
@@ -105,7 +128,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
   public:
     TicTacToeWin()
     {
-        this->Create("Single line strings", "a:c,w:80,h:26");
+        this->Create("Single line strings", "a:c,w:100,h:26");
         uc.Create(this, "x:0,y:0,w:100%,h:100%");
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override

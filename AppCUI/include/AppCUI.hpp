@@ -205,10 +205,18 @@ namespace Graphics
             };
             unsigned int PackedValue;
         };
-        inline constexpr bool operator ==(char value) const { return Code == value; }
-        inline constexpr bool operator !=(char value) const { return Code != value; }
+        inline constexpr bool operator ==(char value)     const { return Code == value; }
+        inline constexpr bool operator !=(char value)     const { return Code != value; }
         inline constexpr bool operator ==(char16_t value) const { return Code == value; }
         inline constexpr bool operator !=(char16_t value) const { return Code != value; }
+        inline constexpr bool operator > (char value)     const { return Code > value;  }
+        inline constexpr bool operator > (char16_t value) const { return Code > value;  }
+        inline constexpr bool operator < (char value)     const { return Code < value;  }
+        inline constexpr bool operator < (char16_t value) const { return Code < value;  }
+        inline constexpr bool operator >=(char value)     const { return Code >= value; }
+        inline constexpr bool operator >=(char16_t value) const { return Code >= value; }
+        inline constexpr bool operator <=(char value)     const { return Code <= value; }
+        inline constexpr bool operator <=(char16_t value) const { return Code <= value; }
     };
     class EXPORT CharacterBuffer;
 }; // namespace Graphics

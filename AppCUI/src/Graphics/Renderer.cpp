@@ -169,6 +169,61 @@ inline void RenderSingleLineString<CharacterView>(const CharacterView& text, Dra
     }
 }
 
+//========================================================================================== Write text [multi line] ====
+template <typename T>
+inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params, Renderer& renderer)
+{
+    auto p         = text.data();
+    auto end       = p + text.length();
+    auto lineStart = p;
+    bool result    = false;
+
+    WriteTextParams singleLineParams;
+    singleLineParams.Flags =
+          params.Flags & (WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
+                          WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin | WriteTextFlags::HighlightHotKey |
+                          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
+    singleLineParams.Flags |= WriteTextFlags::SingleLine;
+    singleLineParams.Align          = params.Align;
+    singleLineParams.Color          = params.Color;
+    singleLineParams.HotKeyPosition = params.HotKeyPosition;
+    singleLineParams.HotKeyColor    = params.HotKeyColor;
+    singleLineParams.X              = params.X;
+    singleLineParams.Y              = params.Y;
+    singleLineParams.Width          = params.Width;
+
+    while (p < end)
+    {
+        lineStart = p;
+        while ((p < end) && ((*p) != '\n') && ((*p) != '\r'))
+            p++;
+        result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
+        // skip new line and update Y parameter
+        while (p<end)
+        {
+            if ((*p) =='\n')
+            {
+                singleLineParams.Y++;
+                p++;
+                if ((p < end) && ((*p) == '\r')) // skip CRLF
+                    p++;
+                continue;
+            }
+            if ((*p) == '\r')
+            {
+                singleLineParams.Y++;
+                p++;
+                if ((p < end) && ((*p) == '\n')) // skip LFCR
+                    p++;
+                continue;
+            }
+            break; // no CR or LF 
+        }
+    }
+    return result;
+}
+
+
 Renderer::Renderer()
 {
     TranslateX = TranslateY = 0;
@@ -1215,7 +1270,28 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
     }
-    NOT_IMPLEMENTED(false);
+    if ((params.Flags & WriteTextFlags::MultipleLines) != WriteTextFlags::None)
+    {
+        if (std::holds_alternative<CharacterView>(text))
+        {
+            return ProcessMultiLinesString<CharacterView>(std::get<CharacterView>(text), params, *this);
+        }
+        if (std::holds_alternative<std::string_view>(text))
+        {
+            return ProcessMultiLinesString<std::string_view>(std::get<std::string_view>(text), params, *this);
+        }
+        if (std::holds_alternative<std::u16string_view>(text))
+        {
+            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+        }
+        if (std::holds_alternative<std::u8string_view>(text))
+        {
+            LocalUnicodeStringBuilder<2048> tmp(std::get<std::u8string_view>(text));
+            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+        }
+        RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
+    }
+    RETURNERROR(false, "Missing `WriteTextFlags::MultipleLines` or `WriteTextFlags::SingleLine` from params.Flags !");
 }
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color)
 {
