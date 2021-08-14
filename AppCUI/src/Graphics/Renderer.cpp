@@ -176,6 +176,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     auto p         = text.data();
     auto end       = p + text.length();
     auto lineStart = p;
+    auto start     = p;
     bool result    = false;
     bool textWrap  = false;
 
@@ -186,12 +187,14 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
                           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
     singleLineParams.Flags |= WriteTextFlags::SingleLine;
     singleLineParams.Align          = params.Align;
-    singleLineParams.Color          = params.Color;
-    singleLineParams.HotKeyPosition = params.HotKeyPosition;
+    singleLineParams.Color          = params.Color;   
     singleLineParams.HotKeyColor    = params.HotKeyColor;
     singleLineParams.X              = params.X;
     singleLineParams.Y              = params.Y;
     singleLineParams.Width          = params.Width;
+    bool showHotKey                 = (params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None;
+
+
 
     if ((params.Flags & WriteTextFlags::WrapToWidth) != WriteTextFlags::None)
     {
@@ -211,7 +214,13 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
                 p++;
                 singleLineParams.Width++;
             }
-                
+            if (showHotKey)
+            {
+                if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (lineStart - start);
+                else
+                    singleLineParams.HotKeyPosition = 0xFFFFFFFF;
+            }
             result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
             // skip new line and update Y parameter
             lineStart = p;
@@ -246,6 +255,13 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             lineStart = p;
             while ((p < end) && ((*p) != '\n') && ((*p) != '\r'))
                 p++;
+            if (showHotKey)
+            {
+                if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (lineStart - start);
+                else
+                    singleLineParams.HotKeyPosition = 0xFFFFFFFF;
+            }
             result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
             // skip new line and update Y parameter
             while (p < end)
