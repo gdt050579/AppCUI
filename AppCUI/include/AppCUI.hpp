@@ -902,7 +902,7 @@ namespace Graphics
         TextAlignament Align;
         unsigned int HotKeyPosition;
         int X,Y;
-        unsigned int Width, Height;
+        unsigned int Width;
 
         WriteTextParams() : Flags(WriteTextFlags::None), Align(TextAlignament::Left)
         {

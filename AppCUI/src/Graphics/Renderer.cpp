@@ -202,6 +202,42 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
 
     if (textWrap)
     {
+        while (p < end)
+        {
+            lineStart              = p;
+            singleLineParams.Width = 0;
+            while ((p < end) && ((*p) != '\n') && ((*p) != '\r') && (singleLineParams.Width < params.Width))
+            {
+                p++;
+                singleLineParams.Width++;
+            }
+                
+            result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
+            // skip new line and update Y parameter
+            lineStart = p;
+            while (p < end)
+            {
+                if ((*p) == '\n')
+                {
+                    singleLineParams.Y++;
+                    p++;
+                    if ((p < end) && ((*p) == '\r')) // skip CRLF
+                        p++;
+                    continue;
+                }
+                if ((*p) == '\r')
+                {
+                    singleLineParams.Y++;
+                    p++;
+                    if ((p < end) && ((*p) == '\n')) // skip LFCR
+                        p++;
+                    continue;
+                }
+                if (p == lineStart)
+                    singleLineParams.Y++; // we've break the previous text as a result of text wrapping
+                break;
+            }
+        }
     }
     else
     {

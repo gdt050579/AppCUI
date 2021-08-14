@@ -118,6 +118,13 @@ struct MyUserControl : public UserControl
         params.Align = TextAlignament::Right;
         renderer.WriteText("This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
 
+        renderer.FillRectSize(62, 16, 20, 4, ' ', ColorPair{ Color::White, Color::Blue });
+        params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
+        params.Y     = 16;
+        params.Width = 20;
+        params.Align = TextAlignament::Left;
+        renderer.WriteText("This is a string that will be wrapped to the current width into multiple lines.", params);
+
     }
 };
 
