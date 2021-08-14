@@ -1217,7 +1217,7 @@ namespace Graphics
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 
         // Character Buffer
-        bool WriteCharacterBuffer(
+        bool WriteCharacterBuffer_1(
               int x,
               int y,
               const AppCUI::Graphics::CharacterBuffer& cb,

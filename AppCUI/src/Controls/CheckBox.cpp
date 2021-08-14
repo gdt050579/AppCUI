@@ -29,24 +29,24 @@ void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 
     renderer.WriteSingleLineText(0, 0, "[ ] ", cbc->TextColor);
 
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::PROCESS_NEW_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
+    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
     params.HotKeyPosition = Members->HotKeyOffset;
+    params.X              = 4;
+    params.Y              = 0;
     if (Members->Layout.Height == 1)
     {
         params.Color       = cbc->TextColor;
         params.HotKeyColor = cbc->HotKeyColor;
-        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+        params.Flags |= WriteTextFlags::SingleLine;
     }
     else
     {
         params.Color       = cbc->TextColor;
         params.HotKeyColor = cbc->HotKeyColor;
-        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES | WriteCharacterBufferFlags::WRAP_TO_WIDTH;
+        params.Flags |= WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
         params.Width = Members->Layout.Width - 4; // without the '[ ] ' characters
     }
-    renderer.WriteCharacterBuffer(4, 0, Members->Text, params);
+    renderer.WriteText(Members->Text, params);
 
     if (IsChecked())
     {

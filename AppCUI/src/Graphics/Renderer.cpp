@@ -984,7 +984,7 @@ bool Renderer::_WriteCharacterBuffer_MultiLine_ProcessNewLine(
     return true;
 }
 
-bool Renderer::WriteCharacterBuffer(
+bool Renderer::WriteCharacterBuffer_1(
       int x,
       int y,
       const AppCUI::Graphics::CharacterBuffer& cb,

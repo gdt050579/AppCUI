@@ -343,15 +343,14 @@ void TextField::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
 
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::BUFFER_RANGE | WriteCharacterBufferFlags::WRAP_TO_WIDTH);
-    params.Start = Members->Cursor.StartOffset;
-    params.End   = Members->Text.Len();
+    WriteTextParams params(WriteTextFlags::WrapToWidth | WriteTextFlags::ClipToWidth, TextAlignament::Left);
     params.Width = Members->Layout.Width - 2;
+    params.X     = 1;
+    params.Y     = 0;
     if (Members->Layout.Height == 1)
-        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+        params.Flags |= WriteTextFlags::SingleLine;
     else
-        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES;
+        params.Flags |= WriteTextFlags::MultipleLines;
 
     if (!this->IsEnabled())
         params.Color = Members->Cfg->Text.Inactive.Text;
@@ -385,14 +384,18 @@ void TextField::Paint(Graphics::Renderer& renderer)
             // if no selection is present and no syntax highlighting --> use overwrite colors as it is faster
             if ((Members->Selection.Start < 0) &&
                 ((Members->Flags & TextFieldFlags::SyntaxHighlighting) == TextFieldFlags::None))
-                params.Flags |= WriteCharacterBufferFlags::OVERWRITE_COLORS;
+                params.Flags |= WriteTextFlags::OverwriteColors;
         }
     }
     else
     {
-        params.Flags |= WriteCharacterBufferFlags::OVERWRITE_COLORS;
+        params.Flags |= WriteTextFlags::OverwriteColors;
     }
-    renderer.WriteCharacterBuffer(1, 0, Members->Text, params);
+    renderer.WriteText(
+          CharacterView(
+                Members->Text.GetBuffer() + Members->Cursor.StartOffset,
+                Members->Text.Len() - Members->Cursor.StartOffset),
+          params);
     if (Members->Focused)
     {
         int y = (Members->Cursor.Pos - Members->Cursor.StartOffset) / params.Width;

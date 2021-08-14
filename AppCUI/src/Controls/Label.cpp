@@ -18,21 +18,20 @@ bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, c
 void Label::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
-    WriteCharacterBufferParams params(
-          WriteCharacterBufferFlags::OVERWRITE_COLORS | WriteCharacterBufferFlags::PROCESS_NEW_LINE |
-          WriteCharacterBufferFlags::HIGHLIGHT_HOTKEY);
-
+    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
+    params.X              = 0;
+    params.Y              = 0;
     params.Color          = Members->Cfg->Label.NormalColor;
     params.HotKeyColor    = Members->Cfg->Label.HotKeyColor;
     params.HotKeyPosition = Members->HotKeyOffset;
     if (Members->Layout.Height == 1)
     {
-        params.Flags |= WriteCharacterBufferFlags::SINGLE_LINE;
+        params.Flags |= WriteTextFlags::SingleLine;
     }
     else
     {
-        params.Flags |= WriteCharacterBufferFlags::MULTIPLE_LINES | WriteCharacterBufferFlags::WRAP_TO_WIDTH;
+        params.Flags |= WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
         params.Width = Members->Layout.Width;
     }
-    renderer.WriteCharacterBuffer(0, 0, Members->Text, params);
+    renderer.WriteText(Members->Text, params);
 }
