@@ -1171,28 +1171,6 @@ namespace Graphics
 
         void _Destroy();
         bool _ClearEntireSurface(int character, const ColorPair color);
-        bool _WriteCharacterBuffer_SingleLine(
-              int x,
-              int y,
-              const CharacterBuffer& cb,
-              const WriteCharacterBufferParams& params,
-              unsigned int start,
-              unsigned int end);
-        bool _WriteCharacterBuffer_MultiLine_WithWidth(
-              int x,
-              int y,
-              const CharacterBuffer& cb,
-              const WriteCharacterBufferParams& params,
-              unsigned int start,
-              unsigned int end);
-        bool _WriteCharacterBuffer_MultiLine_ProcessNewLine(
-              int x,
-              int y,
-              const CharacterBuffer& cb,
-              const WriteCharacterBufferParams& params,
-              unsigned int start,
-              unsigned int end);
-
         bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput);
 
       public:
@@ -1215,13 +1193,6 @@ namespace Graphics
         // Characters
         bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
-
-        // Character Buffer
-        bool WriteCharacterBuffer_1(
-              int x,
-              int y,
-              const AppCUI::Graphics::CharacterBuffer& cb,
-              const AppCUI::Graphics::WriteCharacterBufferParams& params);
 
         // Texts
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
