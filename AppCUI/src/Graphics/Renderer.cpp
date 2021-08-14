@@ -177,6 +177,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     auto end       = p + text.length();
     auto lineStart = p;
     bool result    = false;
+    bool textWrap  = false;
 
     WriteTextParams singleLineParams;
     singleLineParams.Flags =
@@ -192,32 +193,45 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     singleLineParams.Y              = params.Y;
     singleLineParams.Width          = params.Width;
 
-    while (p < end)
+    if ((params.Flags & WriteTextFlags::WrapToWidth) != WriteTextFlags::None)
     {
-        lineStart = p;
-        while ((p < end) && ((*p) != '\n') && ((*p) != '\r'))
-            p++;
-        result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
-        // skip new line and update Y parameter
-        while (p<end)
+        // Wrap to Width requires ClipToWidth as well for alignament
+        singleLineParams.Flags |= WriteTextFlags::ClipToWidth;
+        textWrap = true; 
+    }
+
+    if (textWrap)
+    {
+    }
+    else
+    {
+        while (p < end)
         {
-            if ((*p) =='\n')
-            {
-                singleLineParams.Y++;
+            lineStart = p;
+            while ((p < end) && ((*p) != '\n') && ((*p) != '\r'))
                 p++;
-                if ((p < end) && ((*p) == '\r')) // skip CRLF
-                    p++;
-                continue;
-            }
-            if ((*p) == '\r')
+            result |= renderer.WriteText(T(lineStart, p - lineStart), singleLineParams);
+            // skip new line and update Y parameter
+            while (p < end)
             {
-                singleLineParams.Y++;
-                p++;
-                if ((p < end) && ((*p) == '\n')) // skip LFCR
+                if ((*p) == '\n')
+                {
+                    singleLineParams.Y++;
                     p++;
-                continue;
+                    if ((p < end) && ((*p) == '\r')) // skip CRLF
+                        p++;
+                    continue;
+                }
+                if ((*p) == '\r')
+                {
+                    singleLineParams.Y++;
+                    p++;
+                    if ((p < end) && ((*p) == '\n')) // skip LFCR
+                        p++;
+                    continue;
+                }
+                break; // no CR or LF
             }
-            break; // no CR or LF 
         }
     }
     return result;
