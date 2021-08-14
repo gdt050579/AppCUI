@@ -205,6 +205,10 @@ namespace Graphics
             };
             unsigned int PackedValue;
         };
+        inline constexpr bool operator ==(char value) const { return Code == value; }
+        inline constexpr bool operator !=(char value) const { return Code != value; }
+        inline constexpr bool operator ==(char16_t value) const { return Code == value; }
+        inline constexpr bool operator !=(char16_t value) const { return Code != value; }
     };
     class EXPORT CharacterBuffer;
 }; // namespace Graphics
@@ -878,8 +882,9 @@ namespace Graphics
         HighlightHotKey = 0x0000008,
         ClipToWidth     = 0x0000010,
         FitTextToWidth  = 0x0000020,
-        LeftMargin      = 0x0000040,
-        RightMargin     = 0x0000080,
+        WrapToWidth     = 0x0000040,
+        LeftMargin      = 0x0000080,
+        RightMargin     = 0x0000100,
     };
     struct WriteTextParams
     {
