@@ -839,17 +839,7 @@ namespace Graphics
         // always last
         Count
     };
-    enum class WriteCharacterBufferFlags : unsigned int
-    {
-        NONE             = 0,
-        SINGLE_LINE      = 0x0000001,
-        MULTIPLE_LINES   = 0x0000002,
-        OVERWRITE_COLORS = 0x0000004,
-        WRAP_TO_WIDTH    = 0x0000008,
-        HIGHLIGHT_HOTKEY = 0x0000010,
-        BUFFER_RANGE     = 0x0000020,
-        PROCESS_NEW_LINE = 0x0000040,
-    };
+
     enum class TextAlignament : unsigned int
     {
         Left    = 0x00,
@@ -862,24 +852,6 @@ namespace Graphics
         void EXPORT Init(const char* Title, unsigned long long maxValue = 0);
         bool EXPORT Update(unsigned long long value, const char* text = nullptr);
     }; // namespace ProgressStatus
-
-
-
-    struct WriteCharacterBufferParams
-    {
-        WriteCharacterBufferFlags Flags;
-        ColorPair Color;
-        ColorPair HotKeyColor;
-        unsigned int HotKeyPosition;
-        unsigned int Start, End;
-        unsigned int Width;
-        WriteCharacterBufferParams() : Flags(WriteCharacterBufferFlags::NONE)
-        {
-        }
-        WriteCharacterBufferParams(WriteCharacterBufferFlags _flg) : Flags(_flg)
-        {
-        }
-    };
 
     enum class WriteTextFlags : unsigned int
     {
@@ -2145,7 +2117,6 @@ namespace Application
 ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteCharacterBufferFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
