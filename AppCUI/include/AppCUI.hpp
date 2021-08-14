@@ -1432,8 +1432,8 @@ namespace Controls
         virtual void OnAfterResize(int newWidth, int newHeight);
         virtual bool OnBeforeAddControl(Control* ctrl);
         virtual void OnAfterAddControl(Control* ctrl);
-        virtual bool OnBeforeSetText(const char* text);
-        virtual void OnAfterSetText(const char* text);
+        virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
+        virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
         virtual void OnExpandView(AppCUI::Graphics::Clip& expandedClip);
         virtual void OnPackView();
@@ -1578,7 +1578,7 @@ namespace Controls
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* Context                            = nullptr);
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
-        void OnAfterSetText(const char* text) override;
+        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
         bool OnMouseEnter() override;
@@ -1615,7 +1615,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
-        void OnAfterSetText(const char* newText) override;
+        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);

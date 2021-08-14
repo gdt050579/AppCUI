@@ -1038,9 +1038,8 @@ void AppCUI::Controls::Control::RecomputeLayout()
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey)
 {
-    // GDT: need to rethink this callback
-    //if (OnBeforeSetText(text.data()) == false)
-    //    return false;
+    if (OnBeforeSetText(caption) == false)
+        return false;
     if (updateHotKey)
     {
         if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair) == false)
@@ -1051,8 +1050,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         if (CTRLC->Text.Set(caption, NoColorPair) == false)
             return false;
     }
-    // GDT: need to rethink this callback
-    //OnAfterSetText(text.data());
+    OnAfterSetText(caption);
     return true;
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
@@ -1273,11 +1271,11 @@ void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control* ctr
     if (CTRLC->ControlsCount == 1)
         CTRLC->CurrentControlIndex = 0;
 }
-bool AppCUI::Controls::Control::OnBeforeSetText(const char* text)
+bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString& text)
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterSetText(const char* text)
+void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString& text)
 {
 }
 void AppCUI::Controls::Control::OnUpdateScrollBars()

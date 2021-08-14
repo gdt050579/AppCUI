@@ -332,7 +332,7 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 
     return false;
 }
-void TextField::OnAfterSetText(const char* text)
+void TextField::OnAfterSetText(const AppCUI::Utils::ConstString& text)
 {
     // repozitionez cursorul
     TextField_MoveTo(this, 0, false);
