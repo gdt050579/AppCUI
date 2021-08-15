@@ -174,15 +174,6 @@ CharacterBuffer::CharacterBuffer()
     Buffer    = nullptr;
 }
 
-void CharacterBuffer::Swap(CharacterBuffer& obj) noexcept
-{
-    //LOG_INFO("Swap %p with %p", this, &obj);
-    std::swap(this->Buffer, obj.Buffer);
-    std::swap(this->Allocated, obj.Allocated);
-    std::swap(this->Count, obj.Count);
-}
-
-
 CharacterBuffer::~CharacterBuffer(void)
 {
     //LOG_INFO("DTOR for %p [Buffer=%p,Count=%d,Allocated=%d]", this, Buffer, (int) Count, (int) Allocated);
@@ -190,7 +181,13 @@ CharacterBuffer::~CharacterBuffer(void)
 }
 
 
-
+void CharacterBuffer::Swap(CharacterBuffer& obj) noexcept
+{
+    // LOG_INFO("Swap %p with %p", this, &obj);
+    std::swap(this->Buffer, obj.Buffer);
+    std::swap(this->Allocated, obj.Allocated);
+    std::swap(this->Count, obj.Count);
+}
 void CharacterBuffer::Destroy()
 {
     //LOG_INFO("Destroy Character Buffer from (%p) with [Buffer = %p, Count = %d, Allocated = %d]",this, Buffer, (int)Count, (int)Allocated);
@@ -466,7 +463,7 @@ int  CharacterBuffer::Find(const AppCUI::Utils::ConstString& text, bool ignoreCa
         RETURNERROR(-1, "Unknwon string view type: %d", textObj.Type);
     }
 }
-int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const
+int  CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const
 {
     Character* s = this->Buffer;
     Character* s_end = s + this->Count;
