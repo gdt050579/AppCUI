@@ -295,6 +295,13 @@ bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
     case Key::Enter:
         OnHotKey();
         return true;
+    case Key::Escape:
+        if (IsChecked())
+        {
+            OnHotKey();
+            return true;
+        }
+        break;
     }
     return false;
 }
