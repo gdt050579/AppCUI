@@ -215,6 +215,7 @@ namespace Graphics
         inline constexpr bool operator >=(char16_t value) const { return Code >= value; }
         inline constexpr bool operator <=(char value)     const { return Code <= value; }
         inline constexpr bool operator <=(char16_t value) const { return Code <= value; }
+        inline constexpr      operator char16_t()         const { return Code; }
     };
     class EXPORT CharacterBuffer;
 }; // namespace Graphics
@@ -538,6 +539,10 @@ namespace Utils
         {
             return Size;
         }
+        inline const char16_t* GetString() const
+        {
+            return Chars;
+        }
         inline std::u16string_view ToStringView() const
         {
             return std::u16string_view{ Chars, (size_t)Size };
@@ -580,6 +585,42 @@ namespace Utils
               std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
     }; // namespace Number
+
+    enum class StringViewType: unsigned int
+    {
+        Ascii = 0,
+        UTF8,
+        Unicode16,
+        CharacterBuffer
+    };
+
+    struct ConstStringObject
+    {
+      private:
+        template <typename T>
+        inline void BuildFromAlternative(const ConstString& obj, StringViewType type)
+        {
+            Data   = std::get<T>(obj).data();
+            Length = std::get<T>(obj).length();
+            Type   = type;
+        }
+      public:
+        const void* Data;
+        size_t Length;
+        StringViewType Type;
+        inline ConstStringObject() : Data(nullptr), Length(0), Type(StringViewType::Ascii) { }
+        inline ConstStringObject(const ConstString& obj)
+        {
+            if (std::holds_alternative<std::string_view>(obj))
+                BuildFromAlternative<std::string_view>(obj, StringViewType::Ascii);
+            else if (std::holds_alternative<CharacterView>(obj))
+                BuildFromAlternative<CharacterView>(obj, StringViewType::CharacterBuffer);
+            else if (std::holds_alternative<std::u8string_view>(obj))
+                BuildFromAlternative<std::u8string_view>(obj, StringViewType::UTF8);
+            else
+                BuildFromAlternative<std::u16string_view>(obj, StringViewType::Unicode16);
+        }
+    };
 
     template <int size>
     class LocalString : public String
@@ -687,6 +728,8 @@ namespace Utils
         IniValue GetValue(std::string_view valuePath);
         unsigned int GetSectionsCount();
     };
+
+    
 }; // namespace Utils
 namespace OS
 {
@@ -971,18 +1014,13 @@ namespace Graphics
 
 
         bool Grow(size_t newSize);
-        bool Add(const std::string_view text, const ColorPair color = NoColorPair);
-        bool Add(const std::u8string_view text, const ColorPair color = NoColorPair);
-        bool Set(const std::string_view text, const ColorPair color = NoColorPair);
-        bool Set(const std::u8string_view text, const ColorPair color = NoColorPair);
+
         bool SetWithHotKey(
               const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
         bool SetWithHotKey(
               const std::u8string_view text,
               unsigned int& hotKeyCharacterPosition,
               const ColorPair color = NoColorPair);
-        bool SetWithNewLines(const std::u8string_view text, const ColorPair color = NoColorPair);
-        bool SetWithNewLines(const std::string_view text, const ColorPair color = NoColorPair);
         int  FindAscii(const std::string_view& text, bool ignoreCase) const;
         int  FindUTF8(const std::u8string_view& text, bool ignoreCase) const;
       public:
