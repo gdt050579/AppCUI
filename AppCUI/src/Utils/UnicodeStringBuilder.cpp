@@ -149,7 +149,7 @@ bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
     }
     if (std::holds_alternative<std::u8string_view>(text))
     {
-        size_t sz                  = std::get<std::string_view>(text).length();
+        size_t sz                  = std::get<std::u8string_view>(text).length();
         const char8_t* start       = std::get<std::u8string_view>(text).data();
         const char8_t* end         = start + sz;
         auto* p                    = this->Chars;
