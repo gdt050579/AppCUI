@@ -354,17 +354,7 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
         return SetWithHotKey(std::get<std::string_view>(text), hotKeyCharacterPosition, color);
     }
 }
-bool CharacterBuffer::SetWithNewLines(const AppCUI::Utils::ConstString& text, const ColorPair color)
-{
-    if (std::holds_alternative<std::u8string_view>(text))
-    {
-        return SetWithNewLines(std::get<std::u8string_view>(text), color);
-    }
-    else
-    {
-        return SetWithNewLines(std::get<std::string_view>(text), color);
-    }
-}
+
 void CharacterBuffer::Clear()
 {
     this->Count = 0;

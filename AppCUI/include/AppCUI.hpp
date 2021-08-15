@@ -1064,8 +1064,6 @@ namespace Graphics
               unsigned int& hotKeyCharacterPosition,
               const ColorPair color = NoColorPair);
 
-        bool SetWithNewLines(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
-
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(

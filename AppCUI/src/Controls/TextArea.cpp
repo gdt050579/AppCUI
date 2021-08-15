@@ -774,7 +774,7 @@ bool TextArea::Create(
     CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
-    CHECK(Members->Text.SetWithNewLines(caption), false, "Fail to set text to internal CharactersBuffers object !");
+    CHECK(Members->Text.Set(caption), false, "Fail to set text to internal CharactersBuffers object !");
     CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
     // scroll bars
     if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
