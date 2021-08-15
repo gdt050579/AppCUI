@@ -467,7 +467,7 @@ ControlContext::ControlContext()
     this->Focused                                  = false;
     this->MouseIsOver                              = false;
     this->Cfg                                      = AppCUI::Application::GetAppConfig();
-    this->HotKeyOffset                             = 0xFFFFFFFF;
+    this->HotKeyOffset                             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     this->ScrollBars.LeftMargin                    = 2;
     this->ScrollBars.TopMargin                     = 2;
     this->ScrollBars.VerticalValue                 = 0;
@@ -767,10 +767,10 @@ bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption
 
     if (computeHotKey)
     {
-        CTRLC->HotKeyOffset = 0xFFFFFFFF;
+        CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
         CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset , NoColorPair),false,"Fail to set text with UTF8 value");
 
-        if (CTRLC->HotKeyOffset != 0xFFFFFFFF)
+        if (CTRLC->HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
             this->SetHotKey(CTRLC->Text.GetBuffer()[CTRLC->HotKeyOffset].Code);
     }
     else
@@ -1133,7 +1133,7 @@ AppCUI::Input::Key AppCUI::Controls::Control::GetHotKey()
 void AppCUI::Controls::Control::ClearHotKey()
 {
     CTRLC->HotKey       = Key::None;
-    CTRLC->HotKeyOffset = 0xFFFFFFFF;
+    CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
 void AppCUI::Controls::Control::SetControlID(int newID)
 {

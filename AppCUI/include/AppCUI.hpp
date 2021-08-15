@@ -1014,16 +1014,12 @@ namespace Graphics
 
 
         bool Grow(size_t newSize);
-
-        bool SetWithHotKey(
-              const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
-        bool SetWithHotKey(
-              const std::u8string_view text,
-              unsigned int& hotKeyCharacterPosition,
-              const ColorPair color = NoColorPair);
         int  FindAscii(const std::string_view& text, bool ignoreCase) const;
         int  FindUTF8(const std::u8string_view& text, bool ignoreCase) const;
       public:
+        static constexpr unsigned int INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
+
+
         void Swap(CharacterBuffer&) noexcept;
         CharacterBuffer();
         inline CharacterBuffer(const CharacterBuffer& obj)
@@ -1059,10 +1055,7 @@ namespace Graphics
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
-        bool SetWithHotKey(
-              const AppCUI::Utils::ConstString& text,
-              unsigned int& hotKeyCharacterPosition,
-              const ColorPair color = NoColorPair);
+        bool SetWithHotKey(const AppCUI::Utils::ConstString& text,unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);

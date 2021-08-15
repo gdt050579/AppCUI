@@ -54,6 +54,57 @@ void CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceChara
         source++;
     }
 }
+template <typename T>
+void CopyStringToCharBufferWidthHotKey(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, unsigned int &hotKeyPos)
+{
+    // it is iassume that dest, source and sourceCharactersCount are valid values
+    // all new-line formats will be converted into a single separator
+    const T* end     = source + sourceCharactersCount;
+    const T* start   = source;
+    bool hotKeyFound = false;
+    while (source < end)
+    {
+        dest->Color = col;
+        if ((*source) == '\r')
+        {
+            dest->Code = NEW_LINE_CODE;
+            dest++;
+            source++;
+            if ((source < end) && ((*source) == '\n'))
+                source++;
+            continue;
+        }
+        if ((*source) == '\n')
+        {
+            dest->Code = NEW_LINE_CODE;
+            dest++;
+            source++;
+            if ((source < end) && ((*source) == '\r'))
+                source++;
+            continue;
+        }
+        if ((!hotKeyFound) && ((*source) == '&') && ((source + 1) < end))
+        {
+            if (((source[1] >= 'A') && (source[1] <='Z')) ||
+                ((source[1] >= 'a') && (source[1] <='z')) ||
+                ((source[1] >= '0') && (source[1] <='9')))
+            {
+                // found a hotkey
+                hotKeyPos = (unsigned int) (source - start);
+                source++; // skip `&` character
+                dest->Code = (char16_t) (*source);
+                dest++;
+                source++;
+                hotKeyFound = true;
+                continue;
+            }
+        }
+        // no new_line --> direct copy
+        dest->Code = (char16_t) (*source);
+        dest++;
+        source++;
+    }
+}
 
 constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2)
 {
@@ -124,84 +175,6 @@ bool CharacterBuffer::Set(const CharacterBuffer& obj)
         memcpy(this->Buffer, obj.Buffer, sizeof(Character) * obj.Count);   
     }
     this->Count = obj.Count;
-    return true;
-}
-bool CharacterBuffer::SetWithHotKey(const std::string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color)
-{
-    hotKeyCharacterPosition = 0xFFFFFFFF;
-    CHECK(text.data(), false, "Expecting a valid (non-null) text");
-    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
-    Character* ch              = this->Buffer;
-    const unsigned char* p     = (const unsigned char*) text.data();
-    auto textSize              = text.size();
-
-    while (textSize > 0)
-    {
-        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
-        {
-            char tmp = p[1] | 0x20;
-            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
-            {
-                hotKeyCharacterPosition = (unsigned int) (p - (const unsigned char*) text.data());
-                p++;
-                textSize--;
-                continue;
-            }
-        }
-        ch->Color = color;
-        ch->Code  = *p;
-        ch++;
-        p++;
-        textSize--;
-    }
-    this->Count = (unsigned int) (ch - this->Buffer);
-    return true;
-}
-bool CharacterBuffer::SetWithHotKey(const std::u8string_view text, unsigned int& hotKeyCharacterPosition, const ColorPair color)
-{
-    hotKeyCharacterPosition = 0xFFFFFFFF;
-    CHECK(text.data(), false, "Expecting a valid (non-null) text");
-    VALIDATE_ALLOCATED_SPACE(text.size() + this->Count, false);
-    Character* ch              = this->Buffer;
-    const char8_t* p           = text.data();
-    const char8_t* p_end       = p + text.size();
-    auto textSize              = text.size();
-    UnicodeChar uc;
-
-
-    while (textSize > 0)
-    {
-        if ((hotKeyCharacterPosition == 0xFFFFFFFF) && ((*p) == '&') && (textSize > 1 /* not the last character*/))
-        {
-            char8_t tmp = p[1] | 0x20;
-            if (((tmp >= 'a') && (tmp <= 'z')) || ((tmp >= '0') && (tmp <= '9')))
-            {
-                hotKeyCharacterPosition = (unsigned int) (ch - this->Buffer);
-                p++;
-                textSize--;
-                continue;
-            }
-        }
-        ch->Color = color;
-        if ((*p) < 0x80)
-        {
-            ch->Code = *p;
-            p++;
-            ch++;
-            textSize--;
-        }
-        else
-        {
-            // unicode encoding
-            CHECK(ConvertUTF8CharToUnicodeChar(p, p_end, uc), false, "Fail to convert to unicode !");
-            ch->Code = uc.Value;
-            textSize -= uc.Length;
-            p += uc.Length;
-            ch++;
-        }
-    }
-    this->Count = (unsigned int) (ch - this->Buffer);
-    
     return true;
 }
 
@@ -345,14 +318,39 @@ bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPai
 }
 bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsigned int& hotKeyCharacterPosition,const ColorPair color)
 {
-    if (std::holds_alternative<std::u8string_view>(text))
+    AppCUI::Utils::ConstStringObject textObj(text);
+    LocalUnicodeStringBuilder<1024> ub;
+    hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
+    if (textObj.Length == 0)
+        return true; // nothing to do
+    CHECK(Grow(textObj.Length), false, "Fail to allocate space for the character buffer: %z", textObj.Length);
+    switch (textObj.Type)
     {
-        return SetWithHotKey(std::get<std::u8string_view>(text), hotKeyCharacterPosition, color);
+    case StringViewType::Ascii:
+        CopyStringToCharBufferWidthHotKey<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        this->Count = textObj.Length;
+        break;
+    case StringViewType::CharacterBuffer:
+        CopyStringToCharBufferWidthHotKey<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        this->Count = textObj.Length;
+        break;
+    case StringViewType::Unicode16:
+        CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        this->Count = textObj.Length;
+        break;
+    case StringViewType::UTF8:
+        CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
+        CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
+        this->Count = ub.Len();
+        break;
+    default:
+        RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
     }
-    else
-    {
-        return SetWithHotKey(std::get<std::string_view>(text), hotKeyCharacterPosition, color);
-    }
+    // if we found a key - substract the `&` from the size
+    if (hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET)
+        this->Count--;
+    return true;
 }
 
 void CharacterBuffer::Clear()
