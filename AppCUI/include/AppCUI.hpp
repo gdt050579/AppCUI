@@ -91,37 +91,37 @@
 #endif
 
 #define ADD_FLAG_OPERATORS(type, basic_type)                                                                           \
-    inline constexpr type operator| (const type f1, const type f2)                                                     \
+    inline constexpr type operator|(const type f1, const type f2)                                                      \
     {                                                                                                                  \
         return static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2));                           \
     }                                                                                                                  \
-    inline constexpr basic_type operator| (const basic_type f1, const type f2)                                         \
+    inline constexpr basic_type operator|(const basic_type f1, const type f2)                                          \
     {                                                                                                                  \
         return static_cast<basic_type>(f1) | static_cast<basic_type>(f2);                                              \
     }                                                                                                                  \
-    inline constexpr basic_type operator| (const type f1, const basic_type f2)                                         \
+    inline constexpr basic_type operator|(const type f1, const basic_type f2)                                          \
     {                                                                                                                  \
         return static_cast<basic_type>(f1) | static_cast<basic_type>(f2);                                              \
     }                                                                                                                  \
-    inline constexpr type operator& (const type f1, const type f2)                                                     \
+    inline constexpr type operator&(const type f1, const type f2)                                                      \
     {                                                                                                                  \
         return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2));                           \
     }                                                                                                                  \
-    inline constexpr type operator& (const basic_type f1, const type f2)                                               \
+    inline constexpr type operator&(const basic_type f1, const type f2)                                                \
     {                                                                                                                  \
         return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2));                           \
     }                                                                                                                  \
-    inline constexpr type operator& (const type f1, const basic_type f2)                                               \
+    inline constexpr type operator&(const type f1, const basic_type f2)                                                \
     {                                                                                                                  \
         return static_cast<type>(static_cast<basic_type>(f1) & static_cast<basic_type>(f2));                           \
     }                                                                                                                  \
-    inline constexpr bool operator&& (const type f1, const basic_type f2)                                              \
+    inline constexpr bool operator&&(const type f1, const basic_type f2)                                               \
     {                                                                                                                  \
-        return ((static_cast<basic_type>(f1) & static_cast<basic_type>(f2))!=0);                                       \
+        return ((static_cast<basic_type>(f1) & static_cast<basic_type>(f2)) != 0);                                     \
     }                                                                                                                  \
-    inline constexpr bool operator&& (const basic_type f1, const type f2)                                              \
+    inline constexpr bool operator&&(const basic_type f1, const type f2)                                               \
     {                                                                                                                  \
-        return ((static_cast<basic_type>(f1) & static_cast<basic_type>(f2))!=0);                                       \
+        return ((static_cast<basic_type>(f1) & static_cast<basic_type>(f2)) != 0);                                     \
     }                                                                                                                  \
     inline constexpr type operator|=(type& f1, const type f2)                                                          \
     {                                                                                                                  \
@@ -203,27 +203,66 @@ namespace Graphics
             };
             unsigned int PackedValue;
         };
-        inline constexpr bool operator ==(char value)     const { return Code == value; }
-        inline constexpr bool operator !=(char value)     const { return Code != value; }
-        inline constexpr bool operator ==(char16_t value) const { return Code == value; }
-        inline constexpr bool operator !=(char16_t value) const { return Code != value; }
-        inline constexpr bool operator > (char value)     const { return Code > value;  }
-        inline constexpr bool operator > (char16_t value) const { return Code > value;  }
-        inline constexpr bool operator < (char value)     const { return Code < value;  }
-        inline constexpr bool operator < (char16_t value) const { return Code < value;  }
-        inline constexpr bool operator >=(char value)     const { return Code >= value; }
-        inline constexpr bool operator >=(char16_t value) const { return Code >= value; }
-        inline constexpr bool operator <=(char value)     const { return Code <= value; }
-        inline constexpr bool operator <=(char16_t value) const { return Code <= value; }
-        inline constexpr      operator char16_t()         const { return Code; }
+        inline constexpr bool operator==(char value) const
+        {
+            return Code == value;
+        }
+        inline constexpr bool operator!=(char value) const
+        {
+            return Code != value;
+        }
+        inline constexpr bool operator==(char16_t value) const
+        {
+            return Code == value;
+        }
+        inline constexpr bool operator!=(char16_t value) const
+        {
+            return Code != value;
+        }
+        inline constexpr bool operator>(char value) const
+        {
+            return Code > value;
+        }
+        inline constexpr bool operator>(char16_t value) const
+        {
+            return Code > value;
+        }
+        inline constexpr bool operator<(char value) const
+        {
+            return Code < value;
+        }
+        inline constexpr bool operator<(char16_t value) const
+        {
+            return Code < value;
+        }
+        inline constexpr bool operator>=(char value) const
+        {
+            return Code >= value;
+        }
+        inline constexpr bool operator>=(char16_t value) const
+        {
+            return Code >= value;
+        }
+        inline constexpr bool operator<=(char value) const
+        {
+            return Code <= value;
+        }
+        inline constexpr bool operator<=(char16_t value) const
+        {
+            return Code <= value;
+        }
+        inline constexpr operator char16_t() const
+        {
+            return Code;
+        }
     };
     class EXPORT CharacterBuffer;
 }; // namespace Graphics
 namespace Utils
 {
     using CharacterView = std::basic_string_view<AppCUI::Graphics::Character>;
-    using ConstString = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
-}
+    using ConstString   = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
+} // namespace Utils
 namespace Application
 {
     struct Config;
@@ -316,7 +355,7 @@ namespace Input
         Ctrl  = 0x2000,
         Shift = 0x4000
     };
-    enum class MouseButton: unsigned int
+    enum class MouseButton : unsigned int
     {
         None          = 0,
         Left          = 0x01,
@@ -324,7 +363,7 @@ namespace Input
         Right         = 0x04,
         DoubleClicked = 0x08,
     };
-};
+}; // namespace Input
 namespace Utils
 {
     class EXPORT Array32
@@ -520,13 +559,15 @@ namespace Utils
         unsigned int Allocated;
 
         void Create(char16_t* localBuffer, size_t localBufferSize);
+
       public:
         UnicodeStringBuilder();
-        UnicodeStringBuilder(char16_t * localBuffer, size_t localBufferSize);
+        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize);
         UnicodeStringBuilder(const AppCUI::Utils::ConstString& text);
         UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const AppCUI::Utils::ConstString& text);
         UnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer);
-        UnicodeStringBuilder(char16_t * localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(
+              char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
 
         ~UnicodeStringBuilder();
         void Destroy();
@@ -545,7 +586,7 @@ namespace Utils
         }
         inline std::u16string_view ToStringView() const
         {
-            return std::u16string_view{ Chars, (size_t)Size };
+            return std::u16string_view{ Chars, (size_t) Size };
         }
     };
 
@@ -586,13 +627,18 @@ namespace Utils
 
     }; // namespace Number
 
-    enum class StringViewType: unsigned int
+    enum class StringViewType : unsigned int
     {
         Ascii = 0,
         UTF8,
         Unicode16,
-        CharacterBuffer
+        CharacterBuffer,
+
+        // must be the last member
+        Count
     };
+
+    static_assert(std::variant_size_v<ConstString> == static_cast<unsigned int>(StringViewType::Count));
 
     struct ConstStringObject
     {
@@ -604,21 +650,33 @@ namespace Utils
             Length = std::get<T>(obj).length();
             Type   = type;
         }
+
       public:
         const void* Data;
         size_t Length;
         StringViewType Type;
-        inline ConstStringObject() : Data(nullptr), Length(0), Type(StringViewType::Ascii) { }
+        inline ConstStringObject() : Data(nullptr), Length(0), Type(StringViewType::Ascii)
+        {
+        }
         inline ConstStringObject(const ConstString& obj)
         {
-            if (std::holds_alternative<std::string_view>(obj))
+            switch (obj.index())
+            {
+            case 0:
                 BuildFromAlternative<std::string_view>(obj, StringViewType::Ascii);
-            else if (std::holds_alternative<CharacterView>(obj))
-                BuildFromAlternative<CharacterView>(obj, StringViewType::CharacterBuffer);
-            else if (std::holds_alternative<std::u8string_view>(obj))
+                break;
+            case 1:
                 BuildFromAlternative<std::u8string_view>(obj, StringViewType::UTF8);
-            else
+                break;
+            case 2:
                 BuildFromAlternative<std::u16string_view>(obj, StringViewType::Unicode16);
+                break;
+            case 3:
+                BuildFromAlternative<CharacterView>(obj, StringViewType::CharacterBuffer);
+                break;
+            default:
+                throw std::bad_variant_access();
+            }
         }
     };
 
@@ -637,10 +695,18 @@ namespace Utils
     class LocalUnicodeStringBuilder : public UnicodeStringBuilder
     {
         char16_t tempBuffer[size];
+
       public:
-        LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size) { }
-        LocalUnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer) : UnicodeStringBuilder(tempBuffer, size, charBuffer) { }
-        LocalUnicodeStringBuilder(const AppCUI::Utils::ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text) { }
+        LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size)
+        {
+        }
+        LocalUnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+            : UnicodeStringBuilder(tempBuffer, size, charBuffer)
+        {
+        }
+        LocalUnicodeStringBuilder(const AppCUI::Utils::ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text)
+        {
+        }
     };
 
     class EXPORT KeyUtils
@@ -668,8 +734,10 @@ namespace Utils
         void* Data;
 
       public:
-        IniValue() : Data(nullptr) { }
-        IniValue(void* data) : Data(data) { };
+        IniValue() : Data(nullptr)
+        {
+        }
+        IniValue(void* data) : Data(data){};
 
         std::optional<unsigned long long> AsUInt64();
         std::optional<long long> AsInt64();
@@ -700,8 +768,10 @@ namespace Utils
         void* Data;
 
       public:
-        IniSection() : Data(nullptr) { }
-        IniSection(void* data) : Data(data) { };
+        IniSection() : Data(nullptr)
+        {
+        }
+        IniSection(void* data) : Data(data){};
 
         inline bool Exists() const
         {
@@ -729,7 +799,6 @@ namespace Utils
         unsigned int GetSectionsCount();
     };
 
-    
 }; // namespace Utils
 namespace OS
 {
@@ -883,9 +952,9 @@ namespace Graphics
 
     enum class TextAlignament : unsigned int
     {
-        Left    = 0x00,
-        Center  = 0x01,
-        Right   = 0x02,
+        Left   = 0x00,
+        Center = 0x01,
+        Right  = 0x02,
     };
 
     namespace ProgressStatus
@@ -914,7 +983,7 @@ namespace Graphics
         ColorPair HotKeyColor;
         TextAlignament Align;
         unsigned int HotKeyPosition;
-        int X,Y;
+        int X, Y;
         unsigned int Width;
 
         WriteTextParams() : Flags(WriteTextFlags::None), Align(TextAlignament::Left)
@@ -1012,11 +1081,10 @@ namespace Graphics
         size_t Count;
         size_t Allocated;
 
-
         bool Grow(size_t newSize);
+
       public:
         static constexpr unsigned int INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
-
 
         void Swap(CharacterBuffer&) noexcept;
         CharacterBuffer();
@@ -1053,7 +1121,10 @@ namespace Graphics
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
-        bool SetWithHotKey(const AppCUI::Utils::ConstString& text,unsigned int& hotKeyCharacterPosition, const ColorPair color = NoColorPair);
+        bool SetWithHotKey(
+              const AppCUI::Utils::ConstString& text,
+              unsigned int& hotKeyCharacterPosition,
+              const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
@@ -1069,7 +1140,7 @@ namespace Graphics
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
         bool CopyString(Utils::String& text);
 
-        int  Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
+        int Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
         inline bool Contains(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const
         {
             return Find(text, ignoreCase) != -1;
@@ -1080,8 +1151,16 @@ namespace Graphics
         bool ToString(std::u16string& output) const;
         bool ToPath(std::filesystem::path& output) const;
 
-        inline CharacterBuffer& operator=(const CharacterBuffer& obj) { Set(obj); return *this; }
-        inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept { Swap(obj); return *this; }
+        inline CharacterBuffer& operator=(const CharacterBuffer& obj)
+        {
+            Set(obj);
+            return *this;
+        }
+        inline CharacterBuffer& operator=(CharacterBuffer&& obj) noexcept
+        {
+            Swap(obj);
+            return *this;
+        }
         inline operator std::string() const
         {
             std::string temp;
@@ -1145,7 +1224,7 @@ namespace Graphics
 
     class EXPORT Canvas;
     class EXPORT Renderer
-    {    
+    {
       protected:
         Character* Characters;
         Character** OffsetRows;
@@ -1168,7 +1247,8 @@ namespace Graphics
 
         void _Destroy();
         bool _ClearEntireSurface(int character, const ColorPair color);
-        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput);
+        bool _Compute_DrawTextInfo_SingleLine_(
+              const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput);
 
       public:
         // Horizontal lines
@@ -1185,7 +1265,8 @@ namespace Graphics
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
         bool FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color);
         bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
+        bool DrawRectSize(
+              int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
         // Characters
         bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
@@ -1196,13 +1277,49 @@ namespace Graphics
 
         // Single line wrappers
         bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
-        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
-        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
-        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align);
+        bool WriteSingleLineText(
+              int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              const AppCUI::Utils::ConstString& text,
+              ColorPair color,
+              ColorPair hotKeyColor,
+              unsigned int hotKeyOffset);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              const AppCUI::Utils::ConstString& text,
+              ColorPair color,
+              ColorPair hotKeyColor,
+              unsigned int hotKeyOffset,
+              TextAlignament align);
+        bool WriteSingleLineText(
+              int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              unsigned int width,
+              const AppCUI::Utils::ConstString& text,
+              ColorPair color,
+              TextAlignament align);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              unsigned int width,
+              const AppCUI::Utils::ConstString& text,
+              ColorPair color,
+              ColorPair hotKeyColor,
+              unsigned int hotKeyOffset);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              unsigned int width,
+              const AppCUI::Utils::ConstString& text,
+              ColorPair color,
+              ColorPair hotKeyColor,
+              unsigned int hotKeyOffset,
+              TextAlignament align);
 
         // Canvas & Images
         bool DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);
@@ -1275,7 +1392,7 @@ namespace Graphics
         }
     };
 
-}; // namespace Console
+}; // namespace Graphics
 namespace Controls
 {
     enum class Event : unsigned int
@@ -1347,7 +1464,11 @@ namespace Controls
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
 
-        bool Init(Control* parent, const AppCUI::Utils::ConstString & caption, const std::string_view& layout, bool computeHotKey = false);
+        bool Init(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              bool computeHotKey = false);
 
       public:
         Control();
@@ -1771,7 +1892,8 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::TextAlignament Align, unsigned int Size = 10);
+        bool AddColumn(
+              const AppCUI::Utils::ConstString& text, AppCUI::Graphics::TextAlignament Align, unsigned int Size = 10);
         bool SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text);
         bool SetColumnAlignament(unsigned int columnIndex, AppCUI::Graphics::TextAlignament Align);
         bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
@@ -1784,10 +1906,21 @@ namespace Controls
         // items add
         ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
         ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1);
-        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2);
-        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1, const AppCUI::Utils::ConstString& subItem2, const AppCUI::Utils::ConstString& subItem3, const AppCUI::Utils::ConstString& subItem4);
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2);
+        ItemHandle AddItem(
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3);
+        ItemHandle AddItem(
+              const AppCUI::Utils::ConstString& text,
+              const AppCUI::Utils::ConstString& subItem1,
+              const AppCUI::Utils::ConstString& subItem2,
+              const AppCUI::Utils::ConstString& subItem3,
+              const AppCUI::Utils::ConstString& subItem4);
         ItemHandle AddItem(
               const AppCUI::Utils::ConstString& text,
               const AppCUI::Utils::ConstString& subItem1,
@@ -1866,7 +1999,11 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        bool Create(Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text = std::string_view(), char itemsSeparator = ',');
+        bool Create(
+              Control* parent,
+              const std::string_view& layout,
+              const AppCUI::Utils::ConstString& text = std::string_view(),
+              char itemsSeparator                    = ',');
 
         ItemData GetCurrentItemUserData();
         unsigned int GetItemsCount();
@@ -2055,7 +2192,8 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor, HoverHotKeyColor;
+            Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,
+                  HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } Tab;
         struct
