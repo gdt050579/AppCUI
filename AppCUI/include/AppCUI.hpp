@@ -1014,8 +1014,6 @@ namespace Graphics
 
 
         bool Grow(size_t newSize);
-        int  FindAscii(const std::string_view& text, bool ignoreCase) const;
-        int  FindUTF8(const std::u8string_view& text, bool ignoreCase) const;
       public:
         static constexpr unsigned int INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
 
