@@ -22,11 +22,12 @@ using namespace AppCUI::Utils;
 constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2);
 
 template<typename T>
-void CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col)
+size_t CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col)
 {
     // it is iassume that dest, source and sourceCharactersCount are valid values
     // all new-line formats will be converted into a single separator 
     const T* end = source + sourceCharactersCount;
+    Character* ch_start = dest;
     while (source < end)
     {
         dest->Color = col;
@@ -53,6 +54,7 @@ void CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceChara
         dest++;
         source++;
     }
+    return dest - ch_start;
 }
 template <typename T>
 void CopyStringToCharBufferWidthHotKey(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, unsigned int &hotKeyPos)
@@ -336,41 +338,57 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
     this->Count--;
     return true;
 }
-bool CharacterBuffer::Insert(const char* text, unsigned int position, const ColorPair color, unsigned int textSize)
+bool CharacterBuffer::Insert(const AppCUI::Utils::ConstString& text, unsigned int position, const ColorPair color)
 {
-    CHECK(text, false, "Expecting a valid (non-null) text");
-    CHECK(position <= this->Count,
-          false,
-          "Invalid insert offset: %d (should be between 0 and %d)",
-          position,
-          this->Count);
-    COMPUTE_TEXT_SIZE(text, textSize);
-    if (textSize == 0)
-        return true; // nothing to insert
-    VALIDATE_ALLOCATED_SPACE(textSize + this->Count, false);
+    AppCUI::Utils::ConstStringObject textObj(text);
+    LocalUnicodeStringBuilder<1024> ub;
+
+    if (textObj.Length == 0)
+        return true; // nothing to do
+
+    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
+    CHECK(position <= this->Count, false, "Invalid insert offset: %d (should be between 0 and %d)", position, this->Count);
+    CHECK(Grow(this->Count + textObj.Length), false, "Fail to allocate space for the character buffer: %z", this->Count + textObj.Length);
+
+    // make space for new data
     if (position < this->Count)
     {
+        memmove(this->Buffer + position + textObj.Length, this->Buffer + position, (this->Count - position) * sizeof(Character));
+    }
+
+    size_t writtenChars;
+
+    switch (textObj.Type)
+    {
+    case StringViewType::Ascii:
+        writtenChars = CopyStringToCharBuffer<char>(this->Buffer + position, (const char*) textObj.Data, textObj.Length, color);
+        break;
+    case StringViewType::CharacterBuffer:
+        writtenChars = CopyStringToCharBuffer<Character>(this->Buffer + position, (const Character*) textObj.Data, textObj.Length, color);
+        break;
+    case StringViewType::Unicode16:
+        writtenChars = CopyStringToCharBuffer<char16_t>(this->Buffer + position, (const char16_t*) textObj.Data, textObj.Length, color);
+        break;
+    case StringViewType::UTF8:
+        CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
+        writtenChars = CopyStringToCharBuffer<char16_t>(this->Buffer + position, ub.GetString(), ub.Len(), color);
+        break;
+    default:
+        RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
+    }
+    CHECK(writtenChars <= textObj.Length, false, "Internal error => possible buffer overwrite !");
+    if (writtenChars<textObj.Length)
+    {
+        // fewer chars were actually writtem
         memmove(
-              this->Buffer + position + textSize,
-              this->Buffer + position,
+              this->Buffer + position + writtenChars,
+              this->Buffer + position + textObj.Length,
               (this->Count - position) * sizeof(Character));
     }
-    auto c = this->Buffer + position;
-    this->Count += textSize;
-    while (textSize > 0)
-    {
-        c->Code  = *text;
-        c->Color = color;
-        text++;
-        c++;
-        textSize--;
-    }
+    this->Count += writtenChars;
     return true;
 }
-bool CharacterBuffer::Insert(const AppCUI::Utils::String& text, unsigned int position, const ColorPair color)
-{
-    return Insert(text.GetText(), position, color, text.Len());
-}
+
 bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(this->Count + 1, false);
