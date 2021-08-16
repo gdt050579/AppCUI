@@ -57,13 +57,14 @@ size_t CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCha
     return dest - ch_start;
 }
 template <typename T>
-void CopyStringToCharBufferWidthHotKey(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, unsigned int &hotKeyPos)
+size_t CopyStringToCharBufferWidthHotKey(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, unsigned int &hotKeyPos)
 {
     // it is iassume that dest, source and sourceCharactersCount are valid values
     // all new-line formats will be converted into a single separator
-    const T* end     = source + sourceCharactersCount;
-    const T* start   = source;
-    bool hotKeyFound = false;
+    const T* end        = source + sourceCharactersCount;
+    const T* start      = source;
+    Character* ch_start = dest;
+    bool hotKeyFound    = false;
     while (source < end)
     {
         dest->Color = col;
@@ -106,6 +107,7 @@ void CopyStringToCharBufferWidthHotKey(Character* dest, const T* source, size_t 
         dest++;
         source++;
     }
+    return dest - ch_start;
 }
 template <typename T>
 int FindInCharacterBuffer(const T& sv, const CharacterView &charView, bool ignoreCase)
@@ -231,35 +233,33 @@ bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPai
     AppCUI::Utils::ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
     
-    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
     if (textObj.Length == 0)
         return true; // nothing to do
-    CHECK(Grow(this->Count + textObj.Length),
-          false,
-          "Fail to allocate space for the character buffer: %z",
-          this->Count + textObj.Length);
+    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
+    CHECK(Grow(this->Count + textObj.Length),false, "Fail to allocate space for the character buffer: %z", this->Count + textObj.Length);
+
+    size_t sz;
+
     switch (textObj.Type)
     {
     case StringViewType::Ascii:
-        CopyStringToCharBuffer<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color);
-        this->Count += textObj.Length;
+        sz = CopyStringToCharBuffer<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color);
         break;
     case StringViewType::CharacterBuffer:
-        CopyStringToCharBuffer<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color);
-        this->Count += textObj.Length;
+        sz = CopyStringToCharBuffer<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color);
         break;
     case StringViewType::Unicode16:
-        CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color);
-        this->Count += textObj.Length;
+        sz = CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color);
         break;
     case StringViewType::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color);
-        this->Count += ub.Len();
+        sz = CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color);
         break;
     default:
         RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
     }
+    CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
+    this->Count += sz;
     return true;
 }
 bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPair color)
@@ -272,35 +272,34 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
     AppCUI::Utils::ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
     hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
+
     if (textObj.Length == 0)
         return true; // nothing to do
+    CHECK(textObj.Data, false, "Expecting a valid (non-null) string");
     CHECK(Grow(textObj.Length), false, "Fail to allocate space for the character buffer: %z", textObj.Length);
+
+    size_t sz;
+
     switch (textObj.Type)
     {
     case StringViewType::Ascii:
-        CopyStringToCharBufferWidthHotKey<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
-        this->Count = textObj.Length;
+        sz = CopyStringToCharBufferWidthHotKey<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringViewType::CharacterBuffer:
-        CopyStringToCharBufferWidthHotKey<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
-        this->Count = textObj.Length;
+        sz = CopyStringToCharBufferWidthHotKey<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringViewType::Unicode16:
-        CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
-        this->Count = textObj.Length;
+        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringViewType::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
-        this->Count = ub.Len();
+        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
         break;
     default:
         RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
     }
-    // if we found a key - substract the `&` from the size
-    if (hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET)
-        this->Count--;
+    CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
+    this->Count += sz;
     return true;
 }
 

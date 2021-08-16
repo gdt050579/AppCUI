@@ -192,7 +192,7 @@ void TextField_PasteFromClipboard(TextField* control)
         return;
     }
     TextField_DeleteSelected(control);
-    if (Members->Text.Insert(temp, Members->Cursor.Pos))
+    if (Members->Text.Insert(std::string_view(temp.GetText(),temp.Len()), Members->Cursor.Pos))
     {
         TextField_MoveTo(control, Members->Cursor.Pos + temp.Len(), false);
     }

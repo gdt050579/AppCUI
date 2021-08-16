@@ -20,7 +20,7 @@ class MyWin : public AppCUI::Controls::Window
         c2.SetEnabled(false);
         c3.Create(
               this,
-              "A &multi line checkbox that has an ID (defined as\nA_CHECKBOX_ID with value 12345) that can be used\nto "
+              "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be used\nto "
               "see if the checkbox has been clicked",
               "x:1,y:4,w:56,h:4",
               A_CHECKBOX_ID);

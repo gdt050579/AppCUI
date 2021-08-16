@@ -615,7 +615,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
     DeleteSelected();
     temp.ConvertToInternalNewLineFormat();
-    if (Text.Insert(temp, View.CurrentPosition))
+    if (Text.Insert(std::string_view(temp.GetText(),temp.Len()), View.CurrentPosition))
     {
         View.CurrentPosition += temp.Len();
         UpdateLines();

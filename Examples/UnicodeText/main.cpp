@@ -14,11 +14,11 @@ class SimpleWin : public AppCUI::Controls::Window
         this->Create("UNICODE test ", "a:c,w:40,h:15");
         l1.Create(
               this,
-              u8"Words in German and French: \n - Déjà vu, Schön, Groß, Fähig\n"
+              u8"Words in German and French: \n - Déjà vu, Schön, Groß, Fähig\n\r"
               u8"Words in Russian: \n - Любовь, Кошка, Улыбаться\n"
-              u8"Math symbols: ∑ ∫ ∏\n"
+              u8"Math symbols: ∑ ∫ ∏\n\r"
               u8"Cards: ♠ ♣ ♥ ♦\n"
-              u8"Fractions: ⅓ ⅔ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞\n"
+              u8"Fractions: ⅓ ⅔ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞\n\r"
               u8"--!--",
               "x:1,y:1,w:36,h:10");
     }
