@@ -90,8 +90,7 @@ namespace Internal
         AppCUI::Input::Key KeyCode;
         int NameWidth;
         char Name[MAX_COMMANDBAR_FIELD_NAME];
-        int KeyNameWidth;
-        const char* KeyName;
+        std::string_view KeyName;
         unsigned int Version;
     };
     struct CommandBarFieldIndex

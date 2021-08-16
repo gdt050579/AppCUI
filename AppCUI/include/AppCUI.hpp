@@ -722,7 +722,7 @@ namespace Utils
         // Returns the name of the Key without modifiers
         static std::string_view GetKeyName(AppCUI::Input::Key keyCode);
         static std::string_view GetKeyModifierName(AppCUI::Input::Key keyCode);
-        static const char* GetKeyNamePadded(AppCUI::Input::Key keyCode, unsigned int* nameSize = nullptr);        
+        static std::string_view GetKeyNamePadded(AppCUI::Input::Key keyCode);        
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
         static AppCUI::Input::Key FromString(const char* stringRepresentation);

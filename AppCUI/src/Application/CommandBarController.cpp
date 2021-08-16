@@ -81,8 +81,7 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const char* Name, int
     // Precompute text sizes
     b->NameWidth             = (int) (s - (b->Name));
     unsigned int keyNameSize = 0;
-    b->KeyName               = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode, &keyNameSize);
-    b->KeyNameWidth          = keyNameSize;
+    b->KeyName               = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
     HasKeys[shift]           = true;
     RecomputeScreenPos       = true;
     return true;
@@ -120,8 +119,8 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
         else
             colCfg = &this->Cfg->CommandBar.Normal;
 
-        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, std::string_view(cmd->KeyName,cmd->KeyNameWidth), colCfg->KeyColor);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyNameWidth, BarLayout.Y, std::string_view(cmd->Name,cmd->NameWidth), colCfg->NameColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyName.length(), BarLayout.Y, std::string_view(cmd->Name,cmd->NameWidth), colCfg->NameColor);
 
         bi++;
     }
@@ -157,7 +156,7 @@ void CommandBarController::ComputeScreenPos()
                 current->Field = bf;
                 current++;
                 bf->StartScreenPos = start;
-                start += bf->KeyNameWidth + bf->NameWidth;
+                start += bf->KeyName.length() + bf->NameWidth;
                 bf->EndScreenPos = start;
 
                 if (start > this->BarLayout.Width)
