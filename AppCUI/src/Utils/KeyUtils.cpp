@@ -72,10 +72,24 @@ bool AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils
     CHECK(text.Add(k), false, "");
     return true;
 }
-AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const char* key)
+AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const std::string_view& stringRepresentation)
 {
+    
     unsigned int code     = 0;
     unsigned int modifier = 0;
+    if (stringRepresentation.data() == nullptr)
+        return AppCUI::Input::Key::None;
+    if (stringRepresentation.length() == 0)
+        return AppCUI::Input::Key::None;  
+    if (stringRepresentation.length() > 48)
+        return AppCUI::Input::Key::None;
+    // temporary solution
+    char Key[64];
+    memcpy(Key, stringRepresentation.data(), stringRepresentation.length());
+    
+    // make sure that we have the trailing \0
+    Key[stringRepresentation.length()] = 0;
+    const char* key                    = Key;
 
     // automat de stari - pentru modifier
     for (int tr = 0; tr < 3; tr++)
@@ -112,8 +126,4 @@ AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const char* key)
     if (code == 0)
         return AppCUI::Input::Key::None;
     return (AppCUI::Input::Key)((modifier << KEY_SHIFT_BITS) | code);
-}
-AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(AppCUI::Utils::String& text)
-{
-    return FromString(text.GetText());
 }

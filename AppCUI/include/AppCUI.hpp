@@ -725,8 +725,8 @@ namespace Utils
         static std::string_view GetKeyNamePadded(AppCUI::Input::Key keyCode);        
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
-        static AppCUI::Input::Key FromString(const char* stringRepresentation);
-        static AppCUI::Input::Key FromString(AppCUI::Utils::String& text);
+        static AppCUI::Input::Key FromString(const std::string_view & stringRepresentation);
+        
     };
 
     class EXPORT IniValue

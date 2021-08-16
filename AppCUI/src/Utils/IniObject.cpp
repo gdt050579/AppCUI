@@ -520,7 +520,7 @@ std::optional<bool> IniValue::AsBool()
 std::optional<AppCUI::Input::Key> IniValue::AsKey()
 {
     VALIDATE_VALUE(std::nullopt);
-    Key k = KeyUtils::FromString(value->KeyValue);
+    Key k = KeyUtils::FromString(std::string_view{ value->KeyValue.GetText(), value->KeyValue.Len() });
     if (k == Key::None)
         return std::nullopt;
     return k;
