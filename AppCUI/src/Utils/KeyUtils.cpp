@@ -5,18 +5,18 @@ struct __KeyAndSize__
     const char* Name;
     unsigned int NameSize;
 };
-static __KeyAndSize__ _Key_Modifiers[8] = {
-    /* 0 */ { "", 0 },
-    /* 1 */ { "Alt+", 4 },
-    /* 2 */ { "Ctrl+", 5 },
-    /* 3 */ { "Ctrl+Alt+", 9 },
-    /* 4 */ { "Shift+", 6 },
-    /* 5 */ { "Alt+Shift+", 10 },
-    /* 6 */ { "Ctrl+Shift+", 11 },
-    /* 7 */ { "Ctrl+Alt+Shift+", 15 }
+static constexpr std::string_view _Key_Modifiers[8] = {
+    /* 0 */ "",
+    /* 1 */ "Alt+",
+    /* 2 */ "Ctrl+", 
+    /* 3 */ "Ctrl+Alt+", 
+    /* 4 */ "Shift+", 
+    /* 5 */ "Alt+Shift+", 
+    /* 6 */ "Ctrl+Shift+", 
+    /* 7 */ "Ctrl+Alt+Shift+", 
 };
-static const char* _Key_Name[] = {
-    nullptr, "F1",     "F2",       "F3",     "F4",     "F5",     "F6",        "F7",  "F8",   "F9", "F10",
+static constexpr std::string_view _Key_Name[] = {
+    "",      "F1",     "F2",       "F3",     "F4",     "F5",     "F6",        "F7",  "F8",   "F9", "F10",
     "F11",   "F12",    "Enter",    "Escape", "Insert", "Delete", "Backspace", "Tab", "Left", "Up", "Down",
     "Righ",  "PageUp", "PageDown", "Home",   "End",    "Space",  "A",         "B",   "C",    "D",  "E",
     "F",     "G",      "H",        "I",      "J",      "K",      "L",         "M",   "N",    "O",  "P",
@@ -39,11 +39,11 @@ static __KeyAndSize__ _Key_Name_Padded[] = {
     { " 6 ", 3 },      { " 7 ", 3 },      { " 8 ", 3 },          { " 9 ", 3 },
 };
 
-const char* AppCUI::Utils::KeyUtils::GetKeyName(AppCUI::Input::Key keyCode)
+std::string_view AppCUI::Utils::KeyUtils::GetKeyName(AppCUI::Input::Key keyCode)
 {
     unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
-    if ((keyIndex >= (sizeof(_Key_Name) / sizeof(const char*))))
-        return nullptr;
+    if ((keyIndex >= (sizeof(_Key_Name) / sizeof(std::string_view))))
+        return std::string_view("",0);
     return _Key_Name[keyIndex];
 }
 const char* AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::Input::Key keyCode, unsigned int* nameSize)
@@ -56,15 +56,12 @@ const char* AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::Input::Key keyCode
         (*nameSize) = kas->NameSize;
     return kas->Name;
 }
-const char* AppCUI::Utils::KeyUtils::GetKeyModifierName(AppCUI::Input::Key keyCode, unsigned int* nameSize)
+std::string_view AppCUI::Utils::KeyUtils::GetKeyModifierName(AppCUI::Input::Key keyCode)
 {
     unsigned int keyIndex = (((unsigned int) keyCode) >> KEY_SHIFT_BITS) & 0x7;
     if (keyIndex > 7)
-        return nullptr;
-    __KeyAndSize__* kas = _Key_Modifiers + keyIndex;
-    if (nameSize)
-        (*nameSize) = kas->NameSize;
-    return kas->Name;
+        return std::string_view("", 0);
+    return _Key_Modifiers[keyIndex];
 }
 bool AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize)
 {
@@ -76,8 +73,8 @@ bool AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, char* text, i
 }
 bool AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text)
 {
-    const char* m = GetKeyModifierName(keyCode);
-    const char* k = GetKeyName(keyCode);
+    const char* m = GetKeyModifierName(keyCode).data();
+    const char* k = GetKeyName(keyCode).data();
     CHECK(text.Set(""), false, "");
     CHECK((m != nullptr) && (k != nullptr), false, "");
     CHECK(text.Set(m), false, "");
@@ -112,10 +109,10 @@ AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const char* key)
         }
         break;
     }
-    const char** p = &_Key_Name[1];
-    for (int tr = 1; tr < sizeof(_Key_Name) / sizeof(const char*); tr++, p++)
+    auto *p = &_Key_Name[1];
+    for (int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
     {
-        if (Utils::String::Equals(key, *p))
+        if (Utils::String::Equals(key, p->data()))
         {
             code = tr;
             break;

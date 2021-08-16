@@ -16,8 +16,7 @@ void CommandBarController::Init(
     PressedField     = nullptr;
     HoveredField     = nullptr;
     LastCommand      = 0;
-    ShiftStatus.Size = 0;
-    ShiftStatus.Name = nullptr;
+    ShiftStatus      = std::string_view("", 0);
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
 {
@@ -97,8 +96,8 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
     if (RecomputeScreenPos)
         ComputeScreenPos();
 
-    if (ShiftStatus.Size > 0)
-        renderer.WriteSingleLineText(0, BarLayout.Y, std::string_view(ShiftStatus.Name,ShiftStatus.Size), Cfg->CommandBar.ShiftKeysColor);
+    if (ShiftStatus.length() > 0)
+        renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->CommandBar.ShiftKeysColor);
 
     unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
@@ -134,9 +133,8 @@ void CommandBarController::ComputeScreenPos()
 
     int startPoz;
     // validez shift state
-    ShiftStatus.Size = 0;
-    ShiftStatus.Name = Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey, &ShiftStatus.Size);
-    startPoz         = (int) ShiftStatus.Size;
+    ShiftStatus = AppCUI::Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
+    startPoz         = (int) ShiftStatus.length();
     if (startPoz > 0)
         startPoz++;
 

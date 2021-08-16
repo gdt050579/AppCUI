@@ -110,11 +110,7 @@ namespace Internal
             int Y, Width;
         } BarLayout;
 
-        struct
-        {
-            const char* Name;
-            unsigned int Size;
-        } ShiftStatus;
+        std::string_view ShiftStatus;
 
         AppCUI::Application::Config* Cfg;
         AppCUI::Input::Key CurrentShiftKey;
