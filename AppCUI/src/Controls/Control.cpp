@@ -750,15 +750,8 @@ AppCUI::Controls::Control::~Control()
 }
 bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
-    bool isUTF8 = std::holds_alternative<std::u8string_view>(caption);
-    
-    if (isUTF8)
-    {
-        CHECK(std::get<std::u8string_view>(caption).data(), false, "Expecting a valid (non-null) ascii string ");
-    }
-    else {
-        CHECK(std::get<std::string_view>(caption).data(), false, "Expecting a valid (non-null) UTF-8 string ");
-    }
+    AppCUI::Utils::ConstStringObject captionObj(caption);
+    CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
 
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
