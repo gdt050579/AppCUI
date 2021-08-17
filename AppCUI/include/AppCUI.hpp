@@ -855,12 +855,12 @@ namespace OS
          * Opens a file for Read/Write. The file MUST exists. The file pointer will be set at the end of the file.
          * @param[in] filePath is the full path to an existing file.
          */
-        bool OpenWrite(const char* filePath);
+        bool OpenWrite(const std::filesystem::path& path);
         /**
          * Opens a file for Read. The file MUST exists. The file pointer will be set at the begining of the file.
          * @param[in] filePath is the full path to an existing file.
          */
-        bool OpenRead(const char* filePath);
+        bool OpenRead(const std::filesystem::path& path);
         /**
          * Creates a new file. If the file exists and overwriteExisting parameter is set to true, it will be
          * overwritten.
@@ -868,7 +868,7 @@ namespace OS
          * @param[in] overwriteExisting - if set to true and the file exists it will overwrite the file. If set to false
          * and a file exists, will fail to overwrite and the method will return false.
          */
-        bool Create(const char* filePath, bool overwriteExisting = true);
+        bool Create(const std::filesystem::path& path, bool overwriteExisting = true);
 
         bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) override;
         bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten) override;

@@ -14,33 +14,29 @@ File::~File()
     this->Close();
 }
 
-bool File::OpenWrite(const char* filePath)
+bool File::OpenWrite(const std::filesystem::path& path)
 {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
-    int fileId = open(filePath, O_RDWR);
+    int fileId = open(path.string().c_str(), O_RDWR);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
     CHECK(lseek(this->FileID.fid, 0, SEEK_END) >= 0, false, "ERROR: %s", strerror(errno));
     return true;
 }
 
-bool File::OpenRead(const char* filePath)
+bool File::OpenRead(const std::filesystem::path& path)
 {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
-    int fileId = open(filePath, O_RDONLY);
+    int fileId = open(path.string().c_str(), O_RDONLY);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
     return true;
 }
 
-bool File::Create(const char* filePath, bool overwriteExisting)
+bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
 {
-    CHECK(filePath != nullptr, false, "Invalid NULL file path.");
     Close();
-    int fileId =
-          open(filePath, overwriteExisting ? O_CREAT | O_RDWR | O_EXCL : O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
+    int fileId = open(path.string().c_str(), overwriteExisting ? O_CREAT | O_RDWR | O_EXCL : O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
     return true;

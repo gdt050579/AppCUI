@@ -6,6 +6,7 @@ using namespace AppCUI::OS;
     CHECK(this->FileID.Handle != INVALID_HANDLE_VALUE, returnValue, "File has not been opened !");
 #define F_HNDL ((HANDLE) this->FileID.Handle)
 
+
 File::File()
 {
     this->FileID.Handle = INVALID_HANDLE_VALUE;
@@ -15,42 +16,63 @@ File::~File()
     this->Close();
 }
 
-bool File::OpenWrite(const char* filePath)
-{
-    CHECK(filePath, false, "Expecting a valid (non-null) file path !");
+bool File::OpenWrite(const std::filesystem::path& path)
+{    
     Close();
-    HANDLE hFile = CreateFileA(
-          filePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-    CHECK(hFile != INVALID_HANDLE_VALUE, false, "Fail to create: %s ==> Error code: %d", filePath, GetLastError());
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) path.u16string().c_str(),
+          GENERIC_READ | GENERIC_WRITE,
+          FILE_SHARE_READ | FILE_SHARE_WRITE,
+          NULL,
+          OPEN_EXISTING,
+          0,
+          NULL);
+    CHECK(hFile != INVALID_HANDLE_VALUE,
+          false,
+          "Fail to create: %s ==> Error code: %d",
+          path.string().c_str(),
+          GetLastError());
     CHECK(SetFilePointer(hFile, 0, NULL, FILE_END) != INVALID_SET_FILE_POINTER,
           false,
           "Fail to set file pointer at the end of the file !");
     this->FileID.Handle = hFile;
     return true;
 }
-bool File::OpenRead(const char* filePath)
+bool File::OpenRead(const std::filesystem::path& path)
 {
-    CHECK(filePath, false, "Expecting a valid (non-null) file path !");
     Close();
-    HANDLE hFile =
-          CreateFileA(filePath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-    CHECK(hFile != INVALID_HANDLE_VALUE, false, "Fail to create: %s ==> Error code: %d", filePath, GetLastError());
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) path.u16string().c_str(),
+          GENERIC_READ,
+          FILE_SHARE_READ | FILE_SHARE_WRITE,
+          NULL,
+          OPEN_EXISTING,
+          0,
+          NULL);
+    CHECK(hFile != INVALID_HANDLE_VALUE,
+          false,
+          "Fail to create: %s ==> Error code: %d",
+          path.string().c_str(),
+          GetLastError());
     this->FileID.Handle = hFile;
     return true;
 }
-bool File::Create(const char* filePath, bool overwriteExisting)
+bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
 {
-    CHECK(filePath, false, "Expecting a valid (non-null) file path !");
     Close();
-    HANDLE hFile = CreateFileA(
-          filePath,
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) path.u16string().c_str(),
           GENERIC_READ | GENERIC_WRITE,
           FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL,
           overwriteExisting ? CREATE_ALWAYS : CREATE_NEW,
           0,
           NULL);
-    CHECK(hFile != INVALID_HANDLE_VALUE, false, "Fail to create: %s ==> Error code: %d", filePath, GetLastError());
+    CHECK(hFile != INVALID_HANDLE_VALUE,
+          false,
+          "Fail to create: %s ==> Error code: %d",
+          path.string().c_str(),
+          GetLastError());
     this->FileID.Handle = hFile;
     return true;
 }
