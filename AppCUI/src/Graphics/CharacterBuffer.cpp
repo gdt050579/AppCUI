@@ -240,23 +240,23 @@ bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPai
 
     size_t sz;
 
-    switch (textObj.Type)
+    switch (textObj.Encoding)
     {
-    case StringViewType::Ascii:
+    case StringEncoding::Ascii:
         sz = CopyStringToCharBuffer<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::CharacterBuffer:
+    case StringEncoding::CharacterBuffer:
         sz = CopyStringToCharBuffer<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::Unicode16:
+    case StringEncoding::Unicode16:
         sz = CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::UTF8:
+    case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
         sz = CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color);
         break;
     default:
-        RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
+        RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
     this->Count += sz;
@@ -280,23 +280,23 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
 
     size_t sz;
 
-    switch (textObj.Type)
+    switch (textObj.Encoding)
     {
-    case StringViewType::Ascii:
+    case StringEncoding::Ascii:
         sz = CopyStringToCharBufferWidthHotKey<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
-    case StringViewType::CharacterBuffer:
+    case StringEncoding::CharacterBuffer:
         sz = CopyStringToCharBufferWidthHotKey<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
-    case StringViewType::Unicode16:
+    case StringEncoding::Unicode16:
         sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
-    case StringViewType::UTF8:
+    case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
         sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
         break;
     default:
-        RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
+        RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
     this->Count += sz;
@@ -357,23 +357,23 @@ bool CharacterBuffer::Insert(const AppCUI::Utils::ConstString& text, unsigned in
 
     size_t writtenChars;
 
-    switch (textObj.Type)
+    switch (textObj.Encoding)
     {
-    case StringViewType::Ascii:
+    case StringEncoding::Ascii:
         writtenChars = CopyStringToCharBuffer<char>(this->Buffer + position, (const char*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::CharacterBuffer:
+    case StringEncoding::CharacterBuffer:
         writtenChars = CopyStringToCharBuffer<Character>(this->Buffer + position, (const Character*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::Unicode16:
+    case StringEncoding::Unicode16:
         writtenChars = CopyStringToCharBuffer<char16_t>(this->Buffer + position, (const char16_t*) textObj.Data, textObj.Length, color);
         break;
-    case StringViewType::UTF8:
+    case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
         writtenChars = CopyStringToCharBuffer<char16_t>(this->Buffer + position, ub.GetString(), ub.Len(), color);
         break;
     default:
-        RETURNERROR(false, "Unknwon string view type: %d", textObj.Type);
+        RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(writtenChars <= textObj.Length, false, "Internal error => possible buffer overwrite !");
     if (writtenChars<textObj.Length)
@@ -465,19 +465,19 @@ int  CharacterBuffer::Find(const AppCUI::Utils::ConstString& text, bool ignoreCa
     if (textObj.Length == 0)
         return 0; // nothing to do
 
-    switch (textObj.Type)
+    switch (textObj.Encoding)
     {
-    case StringViewType::Ascii:
+    case StringEncoding::Ascii:
         return FindInCharacterBuffer<std::string_view>(std::get<std::string_view>(text), *this, ignoreCase);
-    case StringViewType::CharacterBuffer:
+    case StringEncoding::CharacterBuffer:
         return FindInCharacterBuffer<CharacterView>(std::get<CharacterView>(text), *this, ignoreCase);
-    case StringViewType::Unicode16:
+    case StringEncoding::Unicode16:
         return FindInCharacterBuffer<std::u16string_view>(std::get<std::u16string_view>(text), *this, ignoreCase);
-    case StringViewType::UTF8:
+    case StringEncoding::UTF8:
         CHECK(ub.Set(text), -1, "Fail to convert UTF-8 to current internal format !");
         return FindInCharacterBuffer<std::u16string_view>(ub.ToStringView(), *this, ignoreCase);
     default:
-        RETURNERROR(-1, "Unknwon string view type: %d", textObj.Type);
+        RETURNERROR(-1, "Unknwon string encoding type: %d", textObj.Encoding);
     }
 }
 int  CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const

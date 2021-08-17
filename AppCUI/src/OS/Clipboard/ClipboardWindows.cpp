@@ -49,7 +49,7 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
     CHECK(textObj.Data != nullptr, false, "Text should be different than nullptr !");
     
     AppCUI::Utils::LocalUnicodeStringBuilder<1024> unicode;
-    if (textObj.Type == StringViewType::Ascii)
+    if (textObj.Encoding == StringEncoding::Ascii)
         return CopyTextBufferToClipboard(textObj.Data, sizeof(char), textObj.Length);
     CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
     return CopyTextBufferToClipboard(unicode.GetString(), sizeof(char16_t), unicode.Len());

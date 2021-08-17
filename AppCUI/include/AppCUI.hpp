@@ -627,7 +627,7 @@ namespace Utils
 
     }; // namespace Number
 
-    enum class StringViewType : unsigned int
+    enum class StringEncoding : unsigned int
     {
         Ascii = 0,
         UTF8,
@@ -638,24 +638,24 @@ namespace Utils
         Count
     };
 
-    static_assert(std::variant_size_v<ConstString> == static_cast<unsigned int>(StringViewType::Count));
+    static_assert(std::variant_size_v<ConstString> == static_cast<unsigned int>(StringEncoding::Count));
 
     struct ConstStringObject
     {
       private:
         template <typename T>
-        inline void BuildFromAlternative(const ConstString& obj, StringViewType type)
+        inline void BuildFromAlternative(const ConstString& obj, StringEncoding encoding)
         {
-            Data   = std::get<T>(obj).data();
-            Length = std::get<T>(obj).length();
-            Type   = type;
+            Data     = std::get<T>(obj).data();
+            Length   = std::get<T>(obj).length();
+            Encoding = encoding;
         }
 
       public:
         const void* Data;
         size_t Length;
-        StringViewType Type;
-        inline ConstStringObject() : Data(nullptr), Length(0), Type(StringViewType::Ascii)
+        StringEncoding Encoding;
+        inline ConstStringObject() : Data(nullptr), Length(0), Encoding(StringEncoding::Ascii)
         {
         }
         inline ConstStringObject(const ConstString& obj)
@@ -663,16 +663,16 @@ namespace Utils
             switch (obj.index())
             {
             case 0:
-                BuildFromAlternative<std::string_view>(obj, StringViewType::Ascii);
+                BuildFromAlternative<std::string_view>(obj, StringEncoding::Ascii);
                 break;
             case 1:
-                BuildFromAlternative<std::u8string_view>(obj, StringViewType::UTF8);
+                BuildFromAlternative<std::u8string_view>(obj, StringEncoding::UTF8);
                 break;
             case 2:
-                BuildFromAlternative<std::u16string_view>(obj, StringViewType::Unicode16);
+                BuildFromAlternative<std::u16string_view>(obj, StringEncoding::Unicode16);
                 break;
             case 3:
-                BuildFromAlternative<CharacterView>(obj, StringViewType::CharacterBuffer);
+                BuildFromAlternative<CharacterView>(obj, StringEncoding::CharacterBuffer);
                 break;
             default:
                 throw std::bad_variant_access();

@@ -153,18 +153,18 @@ bool ComboBox::Create(
     unsigned int count                    = 0;
     
     AppCUI::Utils::ConstStringObject listItems(text);
-    switch (listItems.Type)
+    switch (listItems.Encoding)
     {
-        case StringViewType::Ascii:
+        case StringEncoding::Ascii:
             count = ComputeItemsCount<char>((const char *)listItems.Data, listItems.Length, itemsSeparator);
             break;
-        case StringViewType::UTF8:
+        case StringEncoding::UTF8:
             count = ComputeItemsCount<char8_t>((const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
-        case StringViewType::Unicode16:
+        case StringEncoding::Unicode16:
             count = ComputeItemsCount<char16_t>((const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
-        case StringViewType::CharacterBuffer:
+        case StringEncoding::CharacterBuffer:
             count = ComputeItemsCount<Character>((const Character*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         default:
@@ -177,18 +177,18 @@ bool ComboBox::Create(
     if (count>0)
     {
         bool result = false;
-        switch (listItems.Type)
+        switch (listItems.Encoding)
         {
-        case StringViewType::Ascii:
+        case StringEncoding::Ascii:
             result = AddItemsFromList<char, std::string_view>(this,(const char*) listItems.Data,listItems.Length,itemsSeparator);
             break;
-        case StringViewType::UTF8:
+        case StringEncoding::UTF8:
             result = AddItemsFromList<char8_t, std::u8string_view>(this, (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
-        case StringViewType::Unicode16:
+        case StringEncoding::Unicode16:
             result = AddItemsFromList<char16_t, std::u16string_view>(this, (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
-        case StringViewType::CharacterBuffer:
+        case StringEncoding::CharacterBuffer:
             result = AddItemsFromList<Character, CharacterView>(this, (const Character*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         default:

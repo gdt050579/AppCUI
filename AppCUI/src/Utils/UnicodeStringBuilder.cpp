@@ -136,21 +136,21 @@ bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length), false, "Fail to resize buffer !");
-    switch (obj.Type)
+    switch (obj.Encoding)
     {
-        case StringViewType::Ascii:
+        case StringEncoding::Ascii:
             CopyText<unsigned char>(this->Chars, (const unsigned char*) obj.Data, obj.Length);
             this->Size = obj.Length;
             return true;
-        case StringViewType::CharacterBuffer:
+        case StringEncoding::CharacterBuffer:
             CopyText<Character>(this->Chars, (const Character*) obj.Data, obj.Length);
             this->Size = obj.Length;
             return true;
-        case StringViewType::Unicode16:
+        case StringEncoding::Unicode16:
             memcpy(this->Chars, obj.Data, sizeof(char16_t) * obj.Length);
             this->Size = obj.Length;
             return true;
-        case StringViewType::UTF8:
+        case StringEncoding::UTF8:
             const char8_t* start = (const char8_t*) obj.Data;
             const char8_t* end   = start + obj.Length;
             auto* p              = this->Chars;

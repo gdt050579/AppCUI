@@ -11,7 +11,7 @@ bool Clipboard::Clear()
 bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 {
     AppCUI::Utils::ConstStringObject textObj(text);
-    if (textObj.Type == StringViewType::Ascii)
+    if (textObj.Encoding == StringEncoding::Ascii)
     {
 	// GDT: temporary fix - we can't guarantee that text is a NULL terminated string
     	CHECK(SDL_SetClipboardText((const char *)textObj.Data) > 0, false, "Failed to set clipboard text: %s", SDL_GetError());
