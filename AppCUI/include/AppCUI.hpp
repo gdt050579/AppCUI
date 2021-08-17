@@ -777,7 +777,7 @@ namespace Utils
         {
             return Data != nullptr;
         }
-        const char* GetName() const;
+        std::string_view GetName() const;
         IniValue GetValue(std::string_view keyName);
     };
     class EXPORT IniObject
@@ -790,7 +790,7 @@ namespace Utils
         ~IniObject();
 
         bool CreateFromString(std::string_view text);
-        bool CreateFromFile(const char* fileName);
+        bool CreateFromFile(const std::filesystem::path& fileName);
         bool Create();
 
         bool HasSection(std::string_view name);
@@ -2084,7 +2084,7 @@ namespace Log
           const char* format,
           ...);
     void EXPORT SetLogCallback(void (*callback)(const Message&));
-    bool EXPORT ToFile(const char* fileName);
+    bool EXPORT ToFile(const std::filesystem::path& fileName);
     bool EXPORT ToOutputDebugString();
     bool EXPORT ToStdErr();
     bool EXPORT ToStdOut();
@@ -2259,7 +2259,7 @@ namespace Application
           Application::InitializationFlags flags = Application::InitializationFlags::NONE);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(const char* iniFile);
+    EXPORT bool Init(const std::filesystem::path& iniFilePath);
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);

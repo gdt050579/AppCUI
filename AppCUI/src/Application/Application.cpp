@@ -12,21 +12,21 @@ bool AppCUI::Application::Init(Application::InitializationFlags flags)
 {
     return AppCUI::Application::Init(CURRENT_CONSOLE_WIDTH, CURRENT_CONSOLE_HEIGHT, flags);
 }
-bool AppCUI::Application::Init(const char* iniFile)
+bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
 {
-    LOG_INFO("Initializing AppCUI using: %s", iniFile);
+    LOG_INFO("Initializing AppCUI using: %s", iniFilePath.string().c_str());
     CHECK(app == nullptr, false, "Application has already been initialized !");
     AppCUI::Utils::IniObject ini;
-    if (ini.CreateFromFile(iniFile) == false)
+    if (ini.CreateFromFile(iniFilePath) == false)
     {
-        LOG_WARNING("Fail to load ini file: %s ==> using default configuration", iniFile);
+        LOG_WARNING("Fail to load ini file: %s ==> using default configuration", iniFilePath.string().c_str());
         return AppCUI::Application::Init(Application::InitializationFlags::NONE);
     }
     // ini file is created --> let's load the section
     auto AppCUISection = ini.GetSection("appcui");
     if (AppCUISection.Exists() == false)
     {
-        LOG_WARNING("Section [AppCUI] was not found in %s ==> using the default configuration", iniFile);
+        LOG_WARNING("Section [AppCUI] was not found in %s ==> using the default configuration", iniFilePath.string().c_str());
         return AppCUI::Application::Init(Application::InitializationFlags::NONE);
     }
     // we have the section ==> lets build up some parameters

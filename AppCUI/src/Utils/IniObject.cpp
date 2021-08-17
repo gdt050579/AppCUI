@@ -442,10 +442,11 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 }
 
 //============================================================================= INI Section ===
-const char* IniSection::GetName() const
+std::string_view IniSection::GetName() const
 {
     CHECK(this->Data, nullptr, "");
-    return ((AppCUI::Ini::Section*) Data)->Name.GetText();
+    return std::string_view{ ((AppCUI::Ini::Section*) Data)->Name.GetText(),
+                             ((AppCUI::Ini::Section*) Data)->Name.Len() };
 }
 IniValue IniSection::GetValue(std::string_view keyName)
 {
@@ -699,16 +700,14 @@ bool IniObject::CreateFromString(std::string_view text)
     CHECK(WRAPPER->Parse(start, end), false, "Fail to parser buffer !");
     return true;
 }
-bool IniObject::CreateFromFile(const char* fileName)
+bool IniObject::CreateFromFile(const std::filesystem::path & fileName)
 {
-    CHECK(fileName, false, "Expecting a valid (non-null) ini file !");
-
     AppCUI::OS::File f;
     unsigned int bufferSize;
-    CHECK(f.OpenRead(fileName), false, "Fail to open file: %s", fileName);
+    CHECK(f.OpenRead(fileName), false, "Fail to open file: %s", fileName.string().c_str());
     auto buf = f.ReadContentToBuffer(bufferSize);
     f.Close();
-    CHECK(buf.get(), false, "Unable to read content of ini file: %s", fileName);
+    CHECK(buf.get(), false, "Unable to read content of ini file: %s", fileName.string().c_str());
     CHECK(bufferSize, false, "Empty INI file");
     return CreateFromString(std::string_view(buf.get(), bufferSize));
 }

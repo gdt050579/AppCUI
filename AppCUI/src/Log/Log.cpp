@@ -112,7 +112,7 @@ void _write_to_file_callback_(const AppCUI::Log::Message& msg)
         logFile->Write(tmpString.GetText(), tmpString.Len());
     }
 }
-bool Log::ToFile(const char* fileName)
+bool Log::ToFile(const std::filesystem::path& fileName)
 {
     if (logFile == nullptr)
     {
