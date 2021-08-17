@@ -2124,7 +2124,7 @@ namespace Application
       public:
         CommandBar();
         void Init(void* controller);
-        bool SetCommand(AppCUI::Input::Key keyCode, const char* Name, int CommandID);
+        bool SetCommand(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int CommandID);
     };
 
     struct Config

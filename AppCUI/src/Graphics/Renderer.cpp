@@ -1063,7 +1063,7 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
 }
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors);
     params.X = x;
     params.Y = y;
     params.Color = color;
@@ -1071,7 +1071,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
 }
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine, align);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors, align);
     params.X     = x;
     params.Y     = y;
     params.Color = color;
@@ -1079,7 +1079,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
 }
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1089,7 +1089,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
 }
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey, align);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey, align);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1099,7 +1099,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
 }
 bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.X = x;
     params.Y = y;
     params.Color = color;
@@ -1108,7 +1108,7 @@ bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCU
 }
 bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth, align);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth, align);
     params.X     = x;
     params.Y     = y;
     params.Color = color;
@@ -1117,7 +1117,7 @@ bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCU
 }
 bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1128,7 +1128,7 @@ bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCU
 }
 bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth, align);
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth, align);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;

@@ -52,9 +52,8 @@ void CommandBarController::Clear()
     }
     RecomputeScreenPos = true;
 }
-bool CommandBarController::Set(AppCUI::Input::Key keyCode, const char* Name, int Command)
+bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command)
 {
-    CHECK(Name != nullptr, false, "Accelator name should not be nullptr !");
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
     CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
     unsigned int index = (((unsigned int) keyCode) & 0xFF);
@@ -63,24 +62,12 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const char* Name, int
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, false, "Invalid shift combination !");
 
     CommandBarField* b = &Fields[shift][index];
-    b->Command         = Command;
-    b->KeyCode         = keyCode;
-    b->Version         = CurrentVersion;
-    const char* nm     = Name;
-    char* s            = &b->Name[0];
-    char* e            = s + (MAX_COMMANDBAR_FIELD_NAME - 2);
-    while ((s < e) && ((*nm) != 0))
-    {
-        (*s) = (*nm);
-        s++;
-        nm++;
-    }
-    (*s) = ' '; // one extra spare
-    s++;
-    (*s) = 0;
-    // Precompute text sizes
-    b->NameWidth             = (int) (s - (b->Name));
-    unsigned int keyNameSize = 0;
+    CHECK(b->Name.Set(caption), false, "Fail to copy caption");
+    CHECK(b->Name.Add(" "), false, "Fail to add extra step !");
+
+    b->Command               = Command;
+    b->KeyCode               = keyCode;
+    b->Version               = CurrentVersion;
     b->KeyName               = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
     HasKeys[shift]           = true;
     RecomputeScreenPos       = true;
@@ -120,7 +107,7 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
             colCfg = &this->Cfg->CommandBar.Normal;
 
         renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyName.length(), BarLayout.Y, std::string_view(cmd->Name,cmd->NameWidth), colCfg->NameColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
 
         bi++;
     }
@@ -156,7 +143,7 @@ void CommandBarController::ComputeScreenPos()
                 current->Field = bf;
                 current++;
                 bf->StartScreenPos = start;
-                start += bf->KeyName.length() + bf->NameWidth;
+                start += bf->KeyName.length() + bf->Name.Len();
                 bf->EndScreenPos = start;
 
                 if (start > this->BarLayout.Width)

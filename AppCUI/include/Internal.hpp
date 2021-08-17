@@ -88,9 +88,8 @@ namespace Internal
     {
         int Command, StartScreenPos, EndScreenPos;
         AppCUI::Input::Key KeyCode;
-        int NameWidth;
-        char Name[MAX_COMMANDBAR_FIELD_NAME];
         std::string_view KeyName;
+        AppCUI::Graphics::CharacterBuffer Name;
         unsigned int Version;
     };
     struct CommandBarFieldIndex
@@ -99,7 +98,7 @@ namespace Internal
     };
     class CommandBarController
     {
-        CommandBarField Fields[MAX_COMMANDBAR_FIELD_NAME][(unsigned int) AppCUI::Input::Key::Count];
+        CommandBarField Fields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) AppCUI::Input::Key::Count];
         CommandBarFieldIndex VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) AppCUI::Input::Key::Count];
         int IndexesCount[MAX_COMMANDBAR_SHIFTSTATES];
         bool HasKeys[MAX_COMMANDBAR_SHIFTSTATES];
@@ -130,7 +129,7 @@ namespace Internal
         void Paint(AppCUI::Graphics::Renderer& renderer);
         void Clear();
         void SetDesktopSize(unsigned int width, unsigned int height);
-        bool Set(AppCUI::Input::Key keyCode, const char* Name, int Command);
+        bool Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command);
         bool SetShiftKey(AppCUI::Input::Key keyCode);
         bool OnMouseOver(int x, int y, bool& repaint);
         bool OnMouseDown();
