@@ -1,4 +1,5 @@
 #include "AppCUI.hpp"
+#include <string.h>
 
 struct __KeyAndSize__
 {
