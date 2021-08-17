@@ -8,16 +8,16 @@ bool Clipboard::Clear()
     return true;
 }
 
-bool Clipboard::SetText(const char* text, unsigned int textSize)
+bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 {
-    CHECK(SDL_SetClipboardText(text) > 0, false, "Failed to set clipboard text: %s", SDL_GetError());
-    return true;
-}
-
-bool Clipboard::SetText(const AppCUI::Utils::String& text)
-{
-    CHECK(SDL_SetClipboardText(text.GetText()) > 0, false, "Failed to set clipboard text: %s", SDL_GetError());
-    return true;
+    AppCUI::Utils::ConstStringObject textObj(text);
+    if (textObj.Type == StringViewType::Ascii)
+    {
+	// GDT: temporary fix - we can't guarantee that text is a NULL terminated string
+    	CHECK(SDL_SetClipboardText((const char *)textObj.Data) > 0, false, "Failed to set clipboard text: %s", SDL_GetError());
+    	return true;
+    }
+    NOT_IMPLEMENTED(false,"Support for UNICODE/UTF-8/Character is not implemented yet");
 }
 
 bool Clipboard::GetText(AppCUI::Utils::String& text)
