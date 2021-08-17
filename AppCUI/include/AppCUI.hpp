@@ -807,8 +807,7 @@ namespace OS
         Clipboard() = delete;
 
       public:
-        static bool SetText(const char* text, unsigned int textLen = 0xFFFFFFFF);
-        static bool SetText(const AppCUI::Utils::String& text);
+        static bool SetText(const AppCUI::Utils::ConstString& text);
         static bool GetText(AppCUI::Utils::String& text);
         static bool Clear();
     };
@@ -1177,6 +1176,12 @@ namespace Graphics
         inline operator AppCUI::Utils::CharacterView() const
         {
             return AppCUI::Utils::CharacterView(Buffer, Count);
+        }
+        inline AppCUI::Utils::CharacterView SubString(size_t start,size_t end) const
+        {
+            if ((end > start) && (Buffer) && (end <= Count))
+                return AppCUI::Utils::CharacterView{ Buffer + start, end - start };
+            return AppCUI::Utils::CharacterView{ nullptr, 0 };
         }
     };
 

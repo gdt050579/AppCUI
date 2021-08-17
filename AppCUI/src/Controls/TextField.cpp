@@ -165,20 +165,12 @@ void TextField_SetSelection(TextField* control, int start, int end)
 void TextField_CopyToClipboard(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-    LocalString<2048> temp;
 
     if (!TextField_HasSelection(control))
         return;
-    if (Members->Text.CopyString(temp, Members->Selection.Start, Members->Selection.End + 1))
+    if (!AppCUI::OS::Clipboard::SetText(Members->Text.SubString(Members->Selection.Start, (size_t)Members->Selection.End + 1)))
     {
-        if (!AppCUI::OS::Clipboard::SetText(temp))
-        {
-            LOG_WARNING("Fail to copy string to the clipboard: %s", temp.GetText());
-        }
-    }
-    else
-    {
-        LOG_WARNING("Fail to copy string from character buffers");
+        LOG_WARNING("Fail to copy string to the clipboard");
     }
 }
 void TextField_PasteFromClipboard(TextField* control)

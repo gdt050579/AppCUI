@@ -6,6 +6,18 @@ using namespace AppCUI::Graphics;
 #define LOCAL_BUFFER_FLAG       0x80000000
 #define MAX_ALLOCATION_SIZE     0x7FFFFFFF
 
+template <typename T>
+void CopyText(char16_t * dest, const T* source, size_t len)
+{
+    while (len>0)
+    {
+        *dest = (char16_t) (*source);
+        dest++;
+        source++;
+        len--;
+    }
+}
+
 bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
 {
     // unicode encoding (based on the code described in https://en.wikipedia.org/wiki/UTF-8)
@@ -122,73 +134,53 @@ UnicodeStringBuilder::~UnicodeStringBuilder()
 }
 bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
 {
-    if (std::holds_alternative<std::string_view>(text))
+    ConstStringObject obj(text);
+    CHECK(Resize(obj.Length), false, "Fail to resize buffer !");
+    switch (obj.Type)
     {
-        size_t sz                  = std::get<std::string_view>(text).length();
-        const unsigned char* start = (const unsigned char*) std::get<std::string_view>(text).data();
-        const unsigned char* end   = start + sz;
-        auto* p                    = this->Chars;
-        CHECK(Resize(sz), false, "Fail to resize buffer !");
-        while (start < end)
-        {
-            *p = * start;
-            start++;
-            p++;
-        }
-        this->Size = (unsigned int) sz;
-        return true;
-    }
-    if (std::holds_alternative<std::u16string_view>(text))
-    {
-        size_t sz                  = std::get<std::u16string_view>(text).length();
-        const char16_t* start      = (const char16_t*) std::get<std::u16string_view>(text).data();
-        CHECK(Resize(sz), false, "Fail to resize buffer !");
-        memcpy(this->Chars, start, sizeof(char16_t) * sz);
-        this->Size = (unsigned int) sz;
-        return true;
-    }
-    if (std::holds_alternative<std::u8string_view>(text))
-    {
-        size_t sz                  = std::get<std::u8string_view>(text).length();
-        const char8_t* start       = std::get<std::u8string_view>(text).data();
-        const char8_t* end         = start + sz;
-        auto* p                    = this->Chars;
-        this->Size                 = 0;
+        case StringViewType::Ascii:
+            CopyText<unsigned char>(this->Chars, (const unsigned char*) obj.Data, obj.Length);
+            this->Size = obj.Length;
+            return true;
+        case StringViewType::CharacterBuffer:
+            CopyText<Character>(this->Chars, (const Character*) obj.Data, obj.Length);
+            this->Size = obj.Length;
+            return true;
+        case StringViewType::Unicode16:
+            memcpy(this->Chars, obj.Data, sizeof(char16_t) * obj.Length);
+            this->Size = obj.Length;
+            return true;
+        case StringViewType::UTF8:
+            const char8_t* start = (const char8_t*) obj.Data;
+            const char8_t* end   = start + obj.Length;
+            auto* p              = this->Chars;
+            this->Size           = 0;
 
-        CHECK(Resize(sz), false, "Fail to resize buffer !");
-        UnicodeChar uc;
-        while (start < end)
-        {
-            if ((*start) < 0x80)
+            UnicodeChar uc;
+            while (start < end)
             {
-                *p = *start;
-                start++;
+                if ((*start) < 0x80)
+                {
+                    *p = *start;
+                    start++;
+                }
+                else
+                {
+                    CHECK(ConvertUTF8CharToUnicodeChar(start, end, uc), false, "Fail to convert unicode character !");
+                    *p = uc.Value;
+                    start += uc.Length;
+                }
+                p++;
             }
-            else
-            {
-                CHECK(ConvertUTF8CharToUnicodeChar(start, end, uc), false, "Fail to convert unicode character !");
-                *p = uc.Value;
-                start += uc.Length;
-            }
-            p++;
-        }
-        this->Size = (unsigned int) (p - this->Chars);
-        return true;
+            this->Size = (unsigned int) (p - this->Chars);
+            return true;
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
 }
 bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len()), false, "Fail to resize buffer !");
-    Character* start = charBuffer.GetBuffer();
-    Character* end   = start + charBuffer.Len();
-    auto* p          = this->Chars;
-    while (start < end)
-    {
-        *p = start->Code;
-        start++;
-        p++;
-    }
+    CopyText<Character>(this->Chars, charBuffer.GetBuffer(), charBuffer.Len());
     this->Size = (unsigned int) charBuffer.Len();
     return true;
 }

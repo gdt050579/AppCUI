@@ -1,6 +1,40 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::OS;
+using namespace AppCUI::Utils;
+
+bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t length)
+{
+    HANDLE hMem;
+    CHECK((hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, (length+1) * characterSize )),
+          false,
+          "Fail to allocate %z bytes in data memory to copy a string",
+          length+1);
+    void* temp = (void*) GlobalLock(hMem);
+    if (temp)
+    {
+        memcpy(temp, buf, length * characterSize);
+        if (characterSize == 1)
+            ((unsigned char*) temp)[length] = 0;
+        else if (characterSize == 2)
+            ((unsigned short*) temp)[length] = 0;
+    }
+    GlobalUnlock(hMem);
+    CHECK(temp, false, "Global Lock failed !");
+
+    CHECK(OpenClipboard(nullptr), false, "Fail to open the clipboard object !");
+    EmptyClipboard();
+
+    // copy to clipboard --> two formats (ascii and unicode)
+    HANDLE h = nullptr;
+    if (characterSize == 1)
+        h = SetClipboardData(CF_TEXT, hMem);
+    else if (characterSize == 2) 
+        h = SetClipboardData(CF_UNICODETEXT, hMem);
+    CloseClipboard();
+    CHECK(h != nullptr, false, "Fail to copy text data into clipboard (Error: %d) or invalid character size (expecting either 1 or 2)", GetLastError());        
+    return true;
+}
 
 bool Clipboard::Clear()
 {
@@ -9,43 +43,18 @@ bool Clipboard::Clear()
     CloseClipboard();
     return true;
 }
-bool Clipboard::SetText(const char* text, unsigned int textSize)
+bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 {
-    CHECK(text != nullptr, false, "Text should be different than nullptr !");
-    if (textSize == 0xFFFFFFFF)
-        textSize = Utils::String::Len(text);
-    textSize++; // last NULL character
-
-    HANDLE hMem;
-    CHECK((hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, textSize)),
-          false,
-          "Fail to allocate %d bytes in data memory to copy a string",
-          textSize);
-    char* temp = (char*) GlobalLock(hMem);
-    if (temp)
-    {
-        memcpy(temp, text, textSize - 1);
-        temp[textSize - 1] = 0;
-    }
-    GlobalUnlock(hMem);
-    CHECK(temp, false, "Global Lock failed !");
-
-    CHECK(OpenClipboard(nullptr), false, "Fail to open the clipboard object !");
-    EmptyClipboard();
-    while (true)
-    {
-        HANDLE h = SetClipboardData(CF_TEXT, temp);
-        CHECK(h != nullptr, false, "Fail to copy text data into clipboard (Error: %d)", GetLastError());
-        CloseClipboard();
-        return true;
-    }
-    CloseClipboard();
-    return false;
+    AppCUI::Utils::ConstStringObject textObj(text);
+    CHECK(textObj.Data != nullptr, false, "Text should be different than nullptr !");
+    
+    AppCUI::Utils::LocalUnicodeStringBuilder<1024> unicode;
+    if (textObj.Type == StringViewType::Ascii)
+        return CopyTextBufferToClipboard(textObj.Data, sizeof(char), textObj.Length);
+    CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
+    return CopyTextBufferToClipboard(unicode.GetString(), sizeof(char16_t), unicode.Len());
 }
-bool Clipboard::SetText(const AppCUI::Utils::String& text)
-{
-    return SetText(text.GetText(), text.Len());
-}
+
 
 bool Clipboard::GetText(AppCUI::Utils::String& text)
 {

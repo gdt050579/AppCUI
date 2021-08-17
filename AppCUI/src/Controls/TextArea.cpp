@@ -588,19 +588,11 @@ void TextAreaControlContext::SetSelection(unsigned int start, unsigned int end)
 }
 void TextAreaControlContext::CopyToClipboard()
 {
-    LocalString<2048> temp;
     if (this->Selection.Start == INVALID_SELECTION)
         return;
-    if (this->Text.CopyString(temp, this->Selection.Start, this->Selection.End))
+    if (!AppCUI::OS::Clipboard::SetText(this->Text.SubString(this->Selection.Start, this->Selection.End)))
     {
-        if (!AppCUI::OS::Clipboard::SetText(temp))
-        {
-            LOG_WARNING("Fail to copy string to the clipboard: %s", temp.GetText());
-        }
-    }
-    else
-    {
-        LOG_WARNING("Fail to copy string from character buffers");
+        LOG_WARNING("Fail to copy string to the clipboard");
     }
 }
 void TextAreaControlContext::PasteFromClipboard()
