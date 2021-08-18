@@ -834,7 +834,7 @@ namespace OS
 
       public:
         static bool SetText(const AppCUI::Utils::ConstString& text);
-        static bool GetText(AppCUI::Utils::String& text);
+        static bool GetText(AppCUI::Utils::UnicodeStringBuilder& text);
         static bool Clear();
     };
     class EXPORT IFile

@@ -56,12 +56,12 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 }
 
 
-bool Clipboard::GetText(AppCUI::Utils::String& text)
+bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
 {
     CHECK(OpenClipboard(nullptr), false, "Fail to open clipboard object !");
     while (true)
     {
-        const char* temp = (const char*) GetClipboardData(CF_TEXT);
+        const char16_t* temp = (const char16_t*) GetClipboardData(CF_UNICODETEXT);
         CHECKBK(temp, "Invalid object received from clipboard data (null)");
         CHECKBK(text.Set(temp), "Fail to copy text into String buffer !");
         CloseClipboard();

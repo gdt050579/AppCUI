@@ -177,14 +177,14 @@ void TextField_PasteFromClipboard(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
-    LocalString<2048> temp;
+    LocalUnicodeStringBuilder<2048> temp;
     if (AppCUI::OS::Clipboard::GetText(temp) == false)
     {
         LOG_WARNING("Fail to retrive a text from the clipboard.");
         return;
     }
     TextField_DeleteSelected(control);
-    if (Members->Text.Insert(std::string_view(temp.GetText(),temp.Len()), Members->Cursor.Pos))
+    if (Members->Text.Insert(temp.ToStringView(), Members->Cursor.Pos))
     {
         TextField_MoveTo(control, Members->Cursor.Pos + temp.Len(), false);
     }

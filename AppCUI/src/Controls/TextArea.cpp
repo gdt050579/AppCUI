@@ -599,15 +599,14 @@ void TextAreaControlContext::PasteFromClipboard()
 {
     if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
-    LocalString<2048> temp;
+    LocalUnicodeStringBuilder<2048> temp;
     if (Clipboard::GetText(temp) == false)
     {
         LOG_WARNING("Fail to retrive a text from the clipboard.");
         return;
     }
     DeleteSelected();
-    temp.ConvertToInternalNewLineFormat();
-    if (Text.Insert(std::string_view(temp.GetText(),temp.Len()), View.CurrentPosition))
+    if (Text.Insert(temp.ToStringView(), View.CurrentPosition))
     {
         View.CurrentPosition += temp.Len();
         UpdateLines();

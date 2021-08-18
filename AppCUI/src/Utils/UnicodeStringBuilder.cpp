@@ -190,7 +190,7 @@ void UnicodeStringBuilder::ToString(std::string& output) const
         output.clear();
     else
     {
-        output.reserve(this->Size + 1);
+        output.reserve((size_t)this->Size + 1);
         char temp[128];
         char16_t* p      = this->Chars;
         char16_t* e      = p + this->Size;

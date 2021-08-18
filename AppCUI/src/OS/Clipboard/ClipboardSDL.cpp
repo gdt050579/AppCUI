@@ -20,7 +20,7 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
     NOT_IMPLEMENTED(false,"Support for UNICODE/UTF-8/Character is not implemented yet");
 }
 
-bool Clipboard::GetText(AppCUI::Utils::String& text)
+bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
 {
     if (SDL_HasClipboardText())
     {

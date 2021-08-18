@@ -10,7 +10,7 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::GetText(AppCUI::Utils::String& text)
+bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
 {
     NOT_IMPLEMENTED(false);
 }
