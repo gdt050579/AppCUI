@@ -222,7 +222,7 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
         output.clear();
     else
     {
-        output.reserve(this->Size + 1);
+        output.reserve((size_t)this->Size + 1);
         output = std::u16string_view{ this->Chars, this->Size };
     }
 }
