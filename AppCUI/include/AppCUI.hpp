@@ -958,8 +958,9 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const char* Title, unsigned long long maxValue = 0);
-        bool EXPORT Update(unsigned long long value, const char* text = nullptr);
+        void EXPORT Init(const AppCUI::Utils::ConstString& Title, unsigned long long maxValue = 0);
+        bool EXPORT Update(unsigned long long value, const AppCUI::Utils::ConstString& content);
+        bool EXPORT Update(unsigned long long value);
     }; // namespace ProgressStatus
 
     enum class WriteTextFlags : unsigned int

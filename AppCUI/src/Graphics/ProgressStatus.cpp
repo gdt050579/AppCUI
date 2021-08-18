@@ -19,8 +19,9 @@ using namespace std::chrono;
 
 struct ProgressStatusData
 {
-    char Title[MAX_PROGRESS_STATUS_TITLE];
-    char Text[MAX_PROGRESS_STATUS_TEXT];
+    CharacterBuffer Title;
+    CharacterBuffer Text;
+
     unsigned long long MaxValue;
     bool Showed;
     time_point<steady_clock> StartTime;
@@ -33,7 +34,7 @@ struct ProgressStatusData
     unsigned int Progress;
 };
 
-static ProgressStatusData PSData = { 0 };
+static ProgressStatusData PSData = { };
 bool progress_inited             = false;
 
 void ProgressStatus_Paint_Panel()
@@ -53,14 +54,15 @@ void ProgressStatus_Paint_Panel()
           PROGRESS_STATUS_PANEL_HEIGHT,
           PSData.App->config.ProgressStatus.Border,
           false);
-    canvas->WriteSingleLineText(
-          5,
-          0,
-          PROGRESS_STATUS_PANEL_WIDTH - 10,
-          PSData.Title,          
-          PSData.App->config.ProgressStatus.Title,
-          TextAlignament::Center);
-    canvas->WriteSingleLineText(20, 6, "Hit 'ESC' to cancel", PSData.App->config.ProgressStatus.TerminateMessage);
+    WriteTextParams params(
+                WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
+                WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+                TextAlignament::Center);
+    params.X     = 5;
+    params.Y     = 0;
+    params.Color = PSData.App->config.ProgressStatus.Title;
+    params.Width = PROGRESS_STATUS_PANEL_WIDTH - 10;
+    canvas->WriteText(PSData.Title, params);
 
     PSData.Showed = true;
     PSData.App->terminal->Update();
@@ -142,11 +144,10 @@ void ProgressStatus_ComputeTime(unsigned long long time)
     PSData.timeString[index]   = 0;
     PSData.timeStringSize      = index;
 }
-void ProgressStatus::Init(const char* Title, unsigned long long maxValue)
+void ProgressStatus::Init(const AppCUI::Utils::ConstString& Title, unsigned long long maxValue)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
-    PSData.Title[0] = 0;
     PSData.MaxValue = maxValue;
     PSData.Showed   = false;
     PSData.WindowClip.Reset();
@@ -165,19 +166,16 @@ void ProgressStatus::Init(const char* Title, unsigned long long maxValue)
     PSData.Ellapsed          = 0;
     PSData.LastEllapsed      = 0;
     PSData.timeString[0]     = 0;
-    if (Title)
+    if (PSData.Title.Set(Title)==false)
     {
-        int sz = MINVALUE(Utils::String::Len(Title), MAX_PROGRESS_STATUS_TITLE - 3);
-        Utils::String::Set(&PSData.Title[1], Title, MAX_PROGRESS_STATUS_TITLE, sz);
-        PSData.Title[0]      = ' ';
-        PSData.Title[sz + 1] = ' ';
-        PSData.Title[sz + 2] = 0;
+        LOG_WARNING("Fail to set title for progress status object !");
+        PSData.Title.Clear();
     }
     PSData.App->RepaintStatus = REPAINT_STATUS_ALL; // once the progress is over, all screen will be re-drawn
     PSData.StartTime          = std::chrono::steady_clock::now();
     progress_inited           = true;
 }
-bool ProgressStatus::Update(unsigned long long value, const char* text)
+bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::ConstString* content)
 {
     CHECK(progress_inited,
           true,
@@ -217,24 +215,11 @@ bool ProgressStatus::Update(unsigned long long value, const char* text)
             showStatus = true;
         }
     }
-    if (text)
+    if (content)
     {
-        int sz  = 0;
-        char* p = &PSData.Text[0];
-        while ((sz < MAX_PROGRESS_STATUS_TEXT - 1) && ((*text) != 0))
-        {
-            if ((*p) != (*text))
-            {
-                (*p)       = (*text);
-                showStatus = true;
-            }
-            p++;
-            text++;
-            sz++;
-        }
-        if ((*p) != (*text))
-            showStatus = true;
-        (*p) = 0;
+        if (!PSData.Text.Set(*content))
+            PSData.Text.Clear();
+        showStatus = true;
     }
     PSData.Ellapsed =
           std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - PSData.StartTime).count();
@@ -301,4 +286,13 @@ bool ProgressStatus::Update(unsigned long long value, const char* text)
         }
     }
     return false;
+}
+
+bool ProgressStatus::Update(unsigned long long value, const AppCUI::Utils::ConstString& content)
+{
+    return __ProgressStatus_Update(value, &content);
+}
+bool ProgressStatus::Update(unsigned long long value)
+{
+    return __ProgressStatus_Update(value, nullptr);
 }
