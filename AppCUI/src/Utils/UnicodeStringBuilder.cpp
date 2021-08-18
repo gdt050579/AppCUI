@@ -186,7 +186,7 @@ bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuff
 }
 void UnicodeStringBuilder::ToString(std::string& output) const
 {
-    if (this->Chars)
+    if (this->Chars == nullptr)
         output.clear();
     else
     {
@@ -218,7 +218,7 @@ void UnicodeStringBuilder::ToString(std::string& output) const
 }
 void UnicodeStringBuilder::ToString(std::u16string& output) const
 {
-    if (this->Chars)
+    if (this->Chars == nullptr)
         output.clear();
     else
     {
@@ -228,7 +228,7 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
 }
 void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
 {
-    if (this->Chars)
+    if (this->Chars == nullptr)
         output.clear();
     else
     {
