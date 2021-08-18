@@ -419,7 +419,7 @@ void ListViewControlContext::DeleteAllColumns()
     Columns.Count = 0;
     UpdateColumnsWidth();
 }
-int ListViewControlContext::GetNrColumns()
+int  ListViewControlContext::GetNrColumns()
 {
     return Columns.Count;
 }
@@ -617,7 +617,7 @@ bool ListViewControlContext::SetCurrentIndex(ItemHandle item)
     MoveTo((int) item);
     return true;
 }
-int ListViewControlContext::GetFirstVisibleLine()
+int  ListViewControlContext::GetFirstVisibleLine()
 {
     return Items.FirstVisibleIndex;
 }
@@ -639,7 +639,7 @@ void ListViewControlContext::DeleteAllItems()
     Filter.SearchText.Clear();
 }
 // movement
-int ListViewControlContext::GetVisibleItemsCount()
+int  ListViewControlContext::GetVisibleItemsCount()
 {
     int vis = Layout.Height - 3;
     if ((Flags & ListViewFlags::HideColumns) != ListViewFlags::None)
@@ -1108,7 +1108,25 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
     }
     return false;
 }
-// sort
+bool ListViewControlContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+    switch (direction)
+    {
+    case AppCUI::Input::MouseWheel::Up:
+        if (this->Items.FirstVisibleIndex > 0)
+            this->Items.FirstVisibleIndex--;
+        return true;
+    case AppCUI::Input::MouseWheel::Down:
+        this->Items.FirstVisibleIndex++;
+        return true;
+    case AppCUI::Input::MouseWheel::Left:
+        return OnKeyEvent(Key::Left, 0);
+    case AppCUI::Input::MouseWheel::Right:
+        return OnKeyEvent(Key::Right, 0);
+    }
+    return false;
+}
+      // sort
 void ListViewControlContext::SetSortColumn(unsigned int colIndex)
 {
     if (colIndex >= Columns.Count)
@@ -1652,6 +1670,10 @@ void ListView::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 bool ListView::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     return WRAPPER->OnMouseDrag(x, y, button);
+}
+bool ListView::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+    return WRAPPER->OnMouseWheel(x, y, direction);
 }
 bool ListView::OnMouseOver(int x, int y)
 {

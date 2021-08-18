@@ -1922,6 +1922,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnFocus() override;

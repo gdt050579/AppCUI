@@ -400,10 +400,6 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
                     evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
                 else
                     evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
-                
-                AppCUI::Utils::LocalString<128> t;
-                t.Format("%08X => %d\n", ir.Event.MouseEvent.dwButtonState, (short)(ir.Event.MouseEvent.dwButtonState>>16));
-                OutputDebugString(t.GetText());
                 return;
         }
         break;

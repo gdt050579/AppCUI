@@ -371,6 +371,7 @@ class ListViewControlContext : public ControlContext
     bool MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex);
     void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
     bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction); 
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
     bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
