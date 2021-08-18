@@ -184,3 +184,54 @@ bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuff
     this->Size = (unsigned int) charBuffer.Len();
     return true;
 }
+void UnicodeStringBuilder::ToString(std::string& output) const
+{
+    if (this->Chars)
+        output.clear();
+    else
+    {
+        output.reserve(this->Size + 1);
+        char temp[128];
+        char16_t* p      = this->Chars;
+        char16_t* e      = p + this->Size;
+        unsigned char* r = (unsigned char *)&temp;
+        size_t sz   = 0;
+        while (p<e)
+        {
+            if (sz >= sizeof(temp))
+            {
+                output += std::string_view{ temp, sz };
+                sz = 0;
+                r  = (unsigned char*) &temp;
+            }
+            if (*p >= 0x80)
+                *r = '?';
+            else
+                *r = (unsigned char)(*p);
+            r++;
+            sz++;
+            p++;
+        }
+        if (sz >= sizeof(temp))
+            output += std::string_view{ temp, sz };
+    }
+}
+void UnicodeStringBuilder::ToString(std::u16string& output) const
+{
+    if (this->Chars)
+        output.clear();
+    else
+    {
+        output.reserve(this->Size + 1);
+        output = std::u16string_view{ this->Chars, this->Size };
+    }
+}
+void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
+{
+    if (this->Chars)
+        output.clear();
+    else
+    {
+        output = std::u16string_view{ this->Chars, this->Size };   
+    }
+}

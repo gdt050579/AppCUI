@@ -576,6 +576,10 @@ namespace Utils
         bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
         bool Resize(size_t size);
 
+        void ToString(std::string& output) const;
+        void ToString(std::u16string& output) const;
+        void ToPath(std::filesystem::path& output) const;
+
         inline const unsigned int Len() const
         {
             return Size;
@@ -585,6 +589,28 @@ namespace Utils
             return Chars;
         }
         inline std::u16string_view ToStringView() const
+        {
+            return std::u16string_view{ Chars, (size_t) Size };
+        }
+        inline operator std::string() const
+        {
+            std::string temp;
+            ToString(temp);
+            return temp;
+        }
+        inline operator std::u16string() const
+        {
+            std::u16string temp;
+            ToString(temp);
+            return temp;
+        }
+        inline operator std::filesystem::path() const
+        {
+            std::filesystem::path temp;
+            ToPath(temp);
+            return temp;
+        }
+        inline operator std::u16string_view() const
         {
             return std::u16string_view{ Chars, (size_t) Size };
         }
