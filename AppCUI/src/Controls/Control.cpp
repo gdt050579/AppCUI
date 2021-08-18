@@ -1227,8 +1227,9 @@ bool AppCUI::Controls::Control::OnMouseLeave()
 {
     return false;
 }
-void AppCUI::Controls::Control::OnMouseWheel(int direction)
+bool AppCUI::Controls::Control::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
+    return false;
 }
 void AppCUI::Controls::Control::OnHotKey()
 {

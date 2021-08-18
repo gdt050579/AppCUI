@@ -670,7 +670,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
     case MOUSE_LOCKED_OBJECT_NONE:
-        // validez acceleratorii mai intai
+        // check command bar first
         if (this->CommandBarObject.OnMouseOver(x, y, repaint))
         {
             if (this->MouseOverControl)
@@ -731,10 +731,21 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
         break;
     }
 }
-void AppCUI::Internal::Application::OnMouseWheel()
+void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
     if (MouseLockedObject != MOUSE_LOCKED_OBJECT_NONE)
         return;
+    AppCUI::Controls::Control* ctrl;
+    if (ModalControlsCount == 0)
+        ctrl = CoordinatesToControl(&Desktop, x, y);
+    else
+        ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
+    if (ctrl)
+    {
+        ControlContext* cc = ((ControlContext*) (ctrl->Context));
+        if (ctrl->OnMouseWheel(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, direction))
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+    }
 }
 void AppCUI::Internal::Application::PackControl(bool redraw)
 {
@@ -831,6 +842,9 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             break;
         case SystemEvents::MOUSE_MOVE:
             OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
+            break;
+        case SystemEvents::MOUSE_WHEEL:
+            OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel);
             break;
         case SystemEvents::KEY_PRESSED:
             ProcessKeyPress(evnt.keyCode, evnt.asciiCode);

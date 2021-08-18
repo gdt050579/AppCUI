@@ -363,6 +363,14 @@ namespace Input
         Right         = 0x04,
         DoubleClicked = 0x08,
     };
+    enum class MouseWheel : unsigned int
+    {
+        None = 0,
+        Up,
+        Down,
+        Left,
+        Right
+    };
 }; // namespace Input
 namespace Utils
 {
@@ -1595,8 +1603,9 @@ namespace Controls
         virtual bool OnMouseEnter();
         virtual bool OnMouseOver(int x, int y);
         virtual bool OnMouseLeave();
+        virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+        
 
-        virtual void OnMouseWheel(int direction);
         virtual bool OnEvent(const void* sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
         virtual void OnUpdateScrollBars();

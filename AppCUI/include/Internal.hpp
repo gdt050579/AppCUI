@@ -67,6 +67,7 @@ namespace Internal
             MOUSE_DOWN,
             MOUSE_UP,
             MOUSE_MOVE,
+            MOUSE_WHEEL,
             APP_CLOSE,
             APP_RESIZED,
             KEY_PRESSED,
@@ -79,6 +80,7 @@ namespace Internal
             int mouseX, mouseY;
             unsigned int newWidth, newHeight;
             AppCUI::Input::MouseButton mouseButton;
+            AppCUI::Input::MouseWheel mouseWheel;
             AppCUI::Input::Key keyCode;
             char asciiCode;
         };
@@ -237,7 +239,7 @@ namespace Internal
         void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseMove(int x, int y, AppCUI::Input::MouseButton button);
-        void OnMouseWheel();
+        void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
         void SendCommand(int command);
         void Terminate();
 

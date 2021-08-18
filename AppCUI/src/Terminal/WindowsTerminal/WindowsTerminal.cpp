@@ -394,6 +394,17 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
             case MOUSE_MOVED:
                 evnt.eventType = SystemEvents::MOUSE_MOVE;
                 return;
+            case MOUSE_WHEELED:
+                evnt.eventType = SystemEvents::MOUSE_WHEEL;
+                if (ir.Event.MouseEvent.dwButtonState >= 0x80000000)
+                    evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+                else
+                    evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+                
+                AppCUI::Utils::LocalString<128> t;
+                t.Format("%08X => %d\n", ir.Event.MouseEvent.dwButtonState, (short)(ir.Event.MouseEvent.dwButtonState>>16));
+                OutputDebugString(t.GetText());
+                return;
         }
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
