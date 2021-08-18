@@ -2052,9 +2052,13 @@ namespace Dialogs
 
       public:
         static std::optional<std::filesystem::path> ShowSaveFileWindow(
-              const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path);
+              const AppCUI::Utils::ConstString& fileName,
+              std::string_view extensionFilter,
+              const std::filesystem::path& path);
         static std::optional<std::filesystem::path> ShowOpenFileWindow(
-              const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path);
+              const AppCUI::Utils::ConstString& fileName,
+              std::string_view extensionFilter,
+              const std::filesystem::path& path);
     };
 
 } // namespace Dialogs

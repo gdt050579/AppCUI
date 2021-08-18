@@ -56,7 +56,10 @@ struct FileDialogClass
     bool ProcessExtensionFilter(const char* start, const char *end);
 
     int Show(
-          bool open, const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* _path);
+          bool open,
+          const AppCUI::Utils::ConstString& fileName,
+          std::string_view extensionFilter,
+          const std::filesystem::path & _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
     void UpdateFileList();
@@ -388,7 +391,10 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
     return true;
 }
 int FileDialogClass::Show(
-      bool open, const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* _path)
+      bool open,
+      const AppCUI::Utils::ConstString& fileName,
+      std::string_view extensionFilter,
+      const std::filesystem::path & _path)
 {
 
     extFilter       = nullptr;
@@ -427,10 +433,10 @@ int FileDialogClass::Show(
 
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
-    if ((_path == nullptr) || (Utils::String::Len(_path) == 0))
+    if (_path.empty())
         UpdateCurrentFolder();
     else
-        lbPath.SetText(_path);
+        lbPath.SetText(_path.u8string());
 
     this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
     this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
@@ -442,7 +448,7 @@ int FileDialogClass::Show(
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, extensionFilter, path);
@@ -451,7 +457,7 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const char* path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, extensionFilter, path);
