@@ -5,19 +5,18 @@
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Utils;
 
-
+// 24 bits for max size 
+// it is important that maxSize (24 bits) x sizeof(Character) (4) cand always be repesented on 32 bits
+#define MAX_ALLOCATION_SIZE 0x00FFFFFF
+#define ALOCATION_MASK      0x00FFFFFF
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
-    if ((requiredSpace) > (Allocated & 0x7FFFFFFF))                                                                    \
+    if ((requiredSpace) > (Allocated & ALOCATION_MASK))                                                                \
     {                                                                                                                  \
-        CHECK(Grow(requiredSpace), returnValue, "Fail to allocate space for %d bytes", (requiredSpace));               \
+        CHECK(Grow(requiredSpace), returnValue, "Fail to allocate space for %z bytes", (size_t)(requiredSpace));       \
     }
 
-#define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
-    if (textSize == 0xFFFFFFFF)                                                                                        \
-    {                                                                                                                  \
-        textSize = AppCUI::Utils::String::Len(text);                                                                   \
-    }
+
 
 constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2);
 
@@ -202,18 +201,29 @@ void CharacterBuffer::Destroy()
 }
 bool CharacterBuffer::Grow(size_t newSize)
 {
-    newSize = ((newSize | 15) + 1) & 0x7FFFFFFF;
-    if (newSize <= (Allocated & 0x7FFFFFFF))
+    // make sure that the original size is a 32 bytes value (smaller than 0x00FFFFFF)
+    CHECK(newSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
+    if (newSize <= (size_t)(Allocated & ALOCATION_MASK))
         return true;
-    Character* temp = new Character[newSize];
-    CHECK(temp, false, "Failed to allocate: %d characters", newSize);
+    size_t alingSize = ((newSize | 15) + 1);
+    CHECK(alingSize >= newSize, false, "Integer overflow (x86 case) for %z size!", newSize);
+    CHECK(alingSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
+    Character* temp;
+    try
+    {
+        temp = new Character[alingSize];
+    }
+    catch (...)
+    {
+        RETURNERROR(false, "Failed to allocate: %z characters", alingSize);
+    }
     if (Buffer)
     {
         memcpy(temp, Buffer, sizeof(Character) * this->Count);
         delete []Buffer;
     }
     Buffer    = temp;
-    Allocated = newSize;
+    Allocated = (unsigned int) alingSize;
     return true;
 }
 
@@ -259,7 +269,8 @@ bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPai
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
-    this->Count += sz;
+    // sz cand be fitted in 32 bits
+    this->Count += (unsigned int)sz;
     return true;
 }
 bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPair color)
@@ -299,7 +310,7 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
-    this->Count += sz;
+    this->Count += (unsigned int)sz;
     return true;
 }
 
@@ -384,13 +395,13 @@ bool CharacterBuffer::Insert(const AppCUI::Utils::ConstString& text, unsigned in
               this->Buffer + position + textObj.Length,
               (this->Count - position) * sizeof(Character));
     }
-    this->Count += writtenChars;
+    this->Count += (unsigned int)writtenChars;
     return true;
 }
 
 bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
 {
-    VALIDATE_ALLOCATED_SPACE(this->Count + 1, false);
+    VALIDATE_ALLOCATED_SPACE(((size_t)this->Count) + 1, false);
     CHECK(position <= this->Count,
           false,
           "Invalid insert offset: %d (should be between 0 and %d)",

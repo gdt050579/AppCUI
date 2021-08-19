@@ -4,7 +4,7 @@ using namespace AppCUI::Utils;
 using namespace AppCUI::Graphics;
 
 #define LOCAL_BUFFER_FLAG       0x80000000
-#define MAX_ALLOCATION_SIZE     0x7FFFFFFF
+#define MAX_ALLOCATION_SIZE     0x00FFFFFF
 
 template <typename T>
 void CopyText(char16_t * dest, const T* source, size_t len)
@@ -66,7 +66,7 @@ void UnicodeStringBuilder::Create(char16_t* localBuffer, size_t localBufferSize)
     {
         this->Chars     = localBuffer;
         this->Size      = 0;
-        this->Allocated = localBufferSize | LOCAL_BUFFER_FLAG;
+        this->Allocated = (unsigned int) (localBufferSize & 0x7FFFFFFF) | LOCAL_BUFFER_FLAG;
     }
 }
 void UnicodeStringBuilder::Destroy()
@@ -77,13 +77,25 @@ void UnicodeStringBuilder::Destroy()
     this->Size      = 0;
     this->Allocated = 0;
 }
-bool UnicodeStringBuilder::Resize(size_t size)
+bool UnicodeStringBuilder::Resize(size_t newSize)
 {
-    CHECK(size < MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x7FFFFFFF");
-    if ((unsigned int)size < Allocated)
+    // make sure that the original size is a 32 bytes value (smaller than 0x00FFFFFF)
+    CHECK(newSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
+    if (newSize <= (size_t)Allocated)
         return true;
-    char16_t* newBuf = new char16_t[size];
-    CHECK(newBuf != nullptr, false, "Fail to allocate buffer !");
+    size_t alingSize = (newSize | 0xFF) + 1;
+    CHECK(alingSize >= newSize, false, "Integer overflow (x86 case) for %z size!", newSize);
+    // make sure that the aligned size (8-bytes aligned) is smaller that 0x00FFFFFF
+    CHECK(alingSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
+    char16_t* newBuf;
+    try
+    {
+        newBuf = new char16_t[alingSize];
+    }
+    catch (...)
+    {
+        RETURNERROR(false, "Fail to allocte %z elemens for Unicode buffer", alingSize);
+    }
     if (this->Chars)
     {
         if (this->Size > 0)
@@ -93,7 +105,7 @@ bool UnicodeStringBuilder::Resize(size_t size)
         delete[] this->Chars;
     }
     newBuf = this->Chars;
-    this->Allocated = (unsigned int) size;
+    this->Allocated = (unsigned int) alingSize;
     return true;
 }
 UnicodeStringBuilder::UnicodeStringBuilder()
@@ -136,19 +148,20 @@ bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length), false, "Fail to resize buffer !");
+    // at this point we know that obj.Length is storable on an unsigned int value
     switch (obj.Encoding)
     {
         case StringEncoding::Ascii:
             CopyText<unsigned char>(this->Chars, (const unsigned char*) obj.Data, obj.Length);
-            this->Size = obj.Length;
+            this->Size = (unsigned int)obj.Length;
             return true;
         case StringEncoding::CharacterBuffer:
             CopyText<Character>(this->Chars, (const Character*) obj.Data, obj.Length);
-            this->Size = obj.Length;
+            this->Size = (unsigned int) obj.Length;
             return true;
         case StringEncoding::Unicode16:
             memcpy(this->Chars, obj.Data, sizeof(char16_t) * obj.Length);
-            this->Size = obj.Length;
+            this->Size = (unsigned int) obj.Length;
             return true;
         case StringEncoding::UTF8:
             const char8_t* start = (const char8_t*) obj.Data;

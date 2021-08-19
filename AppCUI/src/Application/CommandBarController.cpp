@@ -107,7 +107,7 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
             colCfg = &this->Cfg->CommandBar.Normal;
 
         renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos + (int)cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
 
         bi++;
     }
@@ -143,7 +143,7 @@ void CommandBarController::ComputeScreenPos()
                 current->Field = bf;
                 current++;
                 bf->StartScreenPos = start;
-                start += bf->KeyName.length() + bf->Name.Len();
+                start += (int) (bf->KeyName.length() + bf->Name.Len());
                 bf->EndScreenPos = start;
 
                 if (start > this->BarLayout.Width)

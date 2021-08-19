@@ -1112,8 +1112,8 @@ namespace Graphics
     class EXPORT CharacterBuffer
     {
         Character* Buffer;
-        size_t Count;
-        size_t Allocated;
+        unsigned int Count;
+        unsigned int Allocated;
 
         bool Grow(size_t newSize);
 
@@ -1139,7 +1139,7 @@ namespace Graphics
         void Destroy();
         void Clear();
 
-        inline size_t Len() const
+        inline unsigned int Len() const
         {
             return Count;
         }
