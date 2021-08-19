@@ -2060,6 +2060,7 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(AppCUI::Graphics::Clip& expandedClip) override;
         void OnPackView() override;

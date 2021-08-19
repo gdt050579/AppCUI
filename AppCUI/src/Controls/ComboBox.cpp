@@ -380,6 +380,35 @@ void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     }
     OnHotKey();
 }
+bool ComboBox::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+
+    if (Members->Flags & GATTR_EXPANDED)
+    {
+        switch (direction)
+        {
+        case AppCUI::Input::MouseWheel::Up:
+            if (Members->FirstVisibleItem > 0)
+                Members->FirstVisibleItem--;
+            return true;
+        case AppCUI::Input::MouseWheel::Down:
+            if ((size_t)Members->FirstVisibleItem +1 < Members->Items.size())
+                Members->FirstVisibleItem++;
+            return true;
+        }
+    } else
+    {
+        switch (direction)
+        {
+            case AppCUI::Input::MouseWheel::Up:
+                return OnKeyEvent(Key::Up, 0);
+            case AppCUI::Input::MouseWheel::Down:
+                return OnKeyEvent(Key::Down, 0);
+        }
+    }
+    return false;
+}
 bool ComboBox::OnMouseOver(int x, int y)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
