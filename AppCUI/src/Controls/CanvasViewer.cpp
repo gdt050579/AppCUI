@@ -112,6 +112,21 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
     }
     return false;
 }
+bool AppCUI::Controls::CanvasViewer::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+    switch (direction)
+    {
+        case AppCUI::Input::MouseWheel::Up:
+            return OnKeyEvent(Key::Up, 0);
+        case AppCUI::Input::MouseWheel::Down:
+            return OnKeyEvent(Key::Down, 0);
+        case AppCUI::Input::MouseWheel::Left:
+            return OnKeyEvent(Key::Left, 0);
+        case AppCUI::Input::MouseWheel::Right:
+            return OnKeyEvent(Key::Right, 0);
+    }
+    return false;
+}
 bool AppCUI::Controls::CanvasViewer::OnMouseEnter()
 {
     return true;

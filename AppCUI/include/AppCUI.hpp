@@ -1872,6 +1872,7 @@ namespace Controls
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
