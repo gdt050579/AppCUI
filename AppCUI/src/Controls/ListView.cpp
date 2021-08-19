@@ -1117,7 +1117,8 @@ bool ListViewControlContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWhee
             this->Items.FirstVisibleIndex--;
         return true;
     case AppCUI::Input::MouseWheel::Down:
-        this->Items.FirstVisibleIndex++;
+        if (this->Items.FirstVisibleIndex + 1 < this->Items.Indexes.Len())
+            this->Items.FirstVisibleIndex++;
         return true;
     case AppCUI::Input::MouseWheel::Left:
         return OnKeyEvent(Key::Left, 0);
