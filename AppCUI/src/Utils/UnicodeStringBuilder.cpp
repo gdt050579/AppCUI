@@ -81,7 +81,7 @@ bool UnicodeStringBuilder::Resize(size_t newSize)
 {
     // make sure that the original size is a 32 bytes value (smaller than 0x00FFFFFF)
     CHECK(newSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
-    if (newSize <= (size_t)Allocated)
+    if (newSize <= (size_t)(Allocated & MAX_ALLOCATION_SIZE))
         return true;
     size_t alingSize = (newSize | 0xFF) + 1;
     CHECK(alingSize >= newSize, false, "Integer overflow (x86 case) for %z size!", newSize);
@@ -102,9 +102,10 @@ bool UnicodeStringBuilder::Resize(size_t newSize)
         {
             memcpy(newBuf, this->Chars, sizeof(char16_t) * this->Size);
         }
-        delete[] this->Chars;
+        if (!(this->Allocated & LOCAL_BUFFER_FLAG))
+            delete[] this->Chars;
     }
-    newBuf = this->Chars;
+    this->Chars = newBuf;
     this->Allocated = (unsigned int) alingSize;
     return true;
 }
