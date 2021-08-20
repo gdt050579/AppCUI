@@ -56,7 +56,7 @@ using namespace AppCUI::Graphics;
 struct DrawTextInfo
 {
     int X, Y;
-    unsigned int TextStart, TextEnd;
+    size_t TextStart, TextEnd;
     Character* Start;
     Character* End;
     Character* HotKey;
@@ -180,6 +180,8 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     bool result    = false;
     bool textWrap  = false;
 
+    CHECK(text.length() < 0x00FFFFFF, false, "Text is too long: %z characters (should be smaller than 0x00FFFFFF)", (size_t)text.length());
+
     WriteTextParams singleLineParams;
     singleLineParams.Flags =
           params.Flags & (WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
@@ -217,7 +219,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (unsigned int)(lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -258,7 +260,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (unsigned int) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -862,12 +864,14 @@ bool Renderer::ResetClip()
 }
 
 
-bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput)
+bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput)
 {
     CHECK_VISIBLE;
     // check size
     if (charactersCount == 0)
         return false; // empty text, nothing to draw
+    CHECK(charactersCount<0x00FFFFFF,false,"String is too large (%z characters) - max allowed size is 0x00FFFFFF !",charactersCount);
+
     // translate coordonates
     int x = params.X + this->TranslateX;
     int y = params.Y + this->TranslateY;
@@ -878,7 +882,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
     output->TextStart    = 0;
     output->TextEnd      = charactersCount;
     output->FitCharStart = nullptr;
-    bool TextFit        = false;
+    bool TextFit         = false;
     // check Text alignament
     switch (params.Align)
     {
@@ -952,12 +956,12 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
     {
         if ((x + (int) (output->TextEnd - output->TextStart)) < Clip.Left)
             return false; // outside the clipping area
-        output->TextStart += (unsigned int)(Clip.Left - x);
+        output->TextStart += (Clip.Left - x);
         x = Clip.Left;
     }
     if ((x + (int) (output->TextEnd - output->TextStart)) > (Clip.Right+1))
     {
-        output->TextEnd -= (unsigned int) ((x + (int) (output->TextEnd - output->TextStart)) - (Clip.Right+1));
+        output->TextEnd -= ((x + (int) (output->TextEnd - output->TextStart)) - (Clip.Right+1));
         if (output->TextEnd <= output->TextStart)
             return false; // nothing to draw (sanity check)
     }
@@ -982,7 +986,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
     // Text fit
     if (TextFit)
     {
-        unsigned int sz = output->TextEnd - output->TextStart;
+        unsigned int sz = (unsigned int) (output->TextEnd - output->TextStart);
         if (sz > 4)
         {
             sz = MINVALUE(sz - 3, 3);

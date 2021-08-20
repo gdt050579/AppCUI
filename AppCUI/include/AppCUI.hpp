@@ -1282,8 +1282,7 @@ namespace Graphics
 
         void _Destroy();
         bool _ClearEntireSurface(int character, const ColorPair color);
-        bool _Compute_DrawTextInfo_SingleLine_(
-              const WriteTextParams& params, unsigned int charactersCount, void* drawTextInfoOutput);
+        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput);
 
       public:
         // Horizontal lines
