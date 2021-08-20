@@ -2093,10 +2093,11 @@ namespace Controls
       public:
         Menu();
         Menu(unsigned int itemsCount);
+        ~Menu();
 
-        ItemHandle AddCommandItem(const AppCUI::Utils::ConstString & text, int CommandID, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
-        ItemHandle AddCheckItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
-        ItemHandle AddRadioItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
+        ItemHandle AddCommandItem(const AppCUI::Utils::ConstString & text, int CommandID, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddCheckItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddRadioItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
         ItemHandle AddSeparator();
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text, Menu* subMenu);
 
