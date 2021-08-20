@@ -726,7 +726,7 @@ void ListViewControlContext::MoveTo(int index)
 }
 bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
-    Utils::String temp;
+    LocalUnicodeStringBuilder<256> temp;
     ListViewItem* lvi;
     bool selected;
 
@@ -930,37 +930,35 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
             return true;
         case Key::Ctrl | Key::C:
         case Key::Ctrl | Key::Insert:
-            //temp.Create(256);
-            //if (Items.Indexes.Len() > 0)
-            //{
-            //    for (unsigned int tr = 0; tr < Columns.Count; tr++)
-            //    {
-            //        if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
-            //        {
-            //            temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr].GetText());
-            //            if (clipboardSeparator != 0)
-            //                temp.AddChar(clipboardSeparator);
-            //        }
-            //    }
-            //    AppCUI::OS::Clipboard::SetText(temp);
-            //}
+            if (Items.Indexes.Len() > 0)
+            {
+                for (unsigned int tr = 0; tr < Columns.Count; tr++)
+                {
+                    if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
+                    {
+                        temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
+                        if (clipboardSeparator != 0)
+                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                    }
+                }
+                AppCUI::OS::Clipboard::SetText(temp);
+            }
             return true;
         case Key::Ctrl | Key::Alt | Key::Insert:
-            //temp.Create(4096);
-            //for (unsigned int gr = 0; gr < Items.Indexes.Len(); gr++)
-            //{
-            //    for (unsigned int tr = 0; tr < Columns.Count; tr++)
-            //    {
-            //        if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
-            //        {
-            //            temp.Add(GetFilteredItem(gr)->SubItem[tr].GetText());
-            //            if (clipboardSeparator != 0)
-            //                temp.AddChar(clipboardSeparator);
-            //        }
-            //    }
-            //    temp.Add("\r\n");
-            //}
-            //AppCUI::OS::Clipboard::SetText(temp);
+            for (unsigned int gr = 0; gr < Items.Indexes.Len(); gr++)
+            {
+                for (unsigned int tr = 0; tr < Columns.Count; tr++)
+                {
+                    if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
+                    {
+                        temp.Add(GetFilteredItem(gr)->SubItem[tr]);
+                        if (clipboardSeparator != 0)
+                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                    }
+                }
+                temp.Add("\n");
+            }
+            AppCUI::OS::Clipboard::SetText(temp);
             return true;
         };
         // caut sort
@@ -1117,9 +1115,13 @@ bool ListViewControlContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWhee
             this->Items.FirstVisibleIndex--;
         return true;
     case AppCUI::Input::MouseWheel::Down:
-        if (this->Items.FirstVisibleIndex + 1 < this->Items.Indexes.Len())
-            this->Items.FirstVisibleIndex++;
-        return true;
+        if (this->Items.FirstVisibleIndex >= 0)
+        {
+            if (((size_t)this->Items.FirstVisibleIndex) + 1 < this->Items.Indexes.Len())
+                this->Items.FirstVisibleIndex++;
+            return true;
+        } 
+        break;
     case AppCUI::Input::MouseWheel::Left:
         return OnKeyEvent(Key::Left, 0);
     case AppCUI::Input::MouseWheel::Right:
