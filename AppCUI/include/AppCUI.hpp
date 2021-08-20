@@ -1548,7 +1548,7 @@ namespace Controls
         void ClearGroup();
 
         // hot key
-        bool SetHotKey(char hotKey);
+        bool SetHotKey(char16_t hotKey);
         Input::Key GetHotKey();
         void ClearHotKey();
 

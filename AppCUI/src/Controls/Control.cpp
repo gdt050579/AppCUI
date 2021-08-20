@@ -1089,7 +1089,7 @@ void AppCUI::Controls::Control::ClearGroup()
     CTRLC->GroupID = 0;
 }
 
-bool AppCUI::Controls::Control::SetHotKey(char hotKey)
+bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
 {
     hotKey |= 0x20;
     CHECK((((hotKey >= 'a') && (hotKey <= 'z')) || ((hotKey >= '0') && (hotKey <= '9'))),
