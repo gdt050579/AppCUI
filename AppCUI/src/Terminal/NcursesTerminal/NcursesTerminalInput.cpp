@@ -63,7 +63,7 @@ bool NcursesTerminal::initInput()
     return true;
 }
 
-void NcursesTerminal::handleMouse(SystemEvents::Event& evt, const int c)
+void NcursesTerminal::handleMouse(SystemEvent& evt, const int c)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)
@@ -74,15 +74,15 @@ void NcursesTerminal::handleMouse(SystemEvents::Event& evt, const int c)
 
         if (state & BUTTON1_PRESSED)
         {
-            evt.eventType = SystemEvents::MOUSE_DOWN;
+            evt.eventType = SystemEventType::MouseDown;
         }
         else if (state & BUTTON1_RELEASED)
         {
-            evt.eventType = SystemEvents::MOUSE_UP;
+            evt.eventType = SystemEventType::MouseUp;
         }
         else if (state & REPORT_MOUSE_POSITION)
         {
-            evt.eventType = SystemEvents::MOUSE_MOVE;
+            evt.eventType = SystemEventType::MouseMove;
         }
     }
 }
@@ -92,7 +92,7 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvents::Event& evt, const int c)
     if (c == INSERT_MODE_KEY)
     {
         mode          = TerminalMode::TerminalInsert;
-        evt.eventType = SystemEvents::REDRAW;
+        evt.eventType = SystemEventType::RequestRedraw;
         return;
     }
 
@@ -118,15 +118,15 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvents::Event& evt, const int c)
         return;
     }
 
-    evt.eventType = SystemEvents::NONE;
+    evt.eventType = SystemEventType::None;
 }
 
-void NcursesTerminal::handleKeyInsertMode(SystemEvents::Event& evt, const int c)
+void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
 {
     if (c == KEY_ESCAPE) // ESC
     {
         mode          = TerminalMode::TerminalNormal;
-        evt.eventType = SystemEvents::REDRAW;
+        evt.eventType = SystemEvents::RequestRedraw;
         return;
     }
 
@@ -158,13 +158,13 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvents::Event& evt, const int c)
         return;
     }
 
-    evt.eventType = SystemEvents::NONE;
+    evt.eventType = SystemEventType::None;
 }
 
-void NcursesTerminal::handleKey(SystemEvents::Event& evt, const int c)
+void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
 {
     debugChar(0, c, "key");
-    evt.eventType = SystemEvents::KEY_PRESSED;
+    evt.eventType = SystemEventType::KeyPressed;
     if (mode == TerminalMode::TerminalNormal)
     {
         handleKeyNormalMode(evt, c);
@@ -175,9 +175,9 @@ void NcursesTerminal::handleKey(SystemEvents::Event& evt, const int c)
     }
 }
 
-void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
+void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEvents::NONE;
+    evnt.eventType = SystemEventType::None;
     evnt.keyCode   = Key::None;
     evnt.asciiCode = 0;
     // select on stdin with timeout, should  translate to about ~30 fps

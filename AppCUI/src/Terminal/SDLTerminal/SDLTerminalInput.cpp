@@ -60,43 +60,43 @@ bool SDLTerminal::initInput(const InitializationData& initData)
     return true;
 }
 
-void SDLTerminal::handleMouse(SystemEvents::Event& evt, const SDL_Event& eSdl)
+void SDLTerminal::handleMouse(SystemEvent& evt, const SDL_Event& eSdl)
 {
     if (eSdl.type == SDL_MOUSEBUTTONDOWN)
     {
-        evt.eventType = SystemEvents::MOUSE_DOWN;
+        evt.eventType = SystemEventType::MouseDown;
         evt.mouseX    = eSdl.button.x / charWidth;
         evt.mouseY    = eSdl.button.y / charHeight;
     }
     else if (eSdl.type == SDL_MOUSEBUTTONUP)
     {
-        evt.eventType = SystemEvents::MOUSE_UP;
+        evt.eventType = SystemEventType::MouseUp;
         evt.mouseX    = eSdl.button.x / charWidth;
         evt.mouseY    = eSdl.button.y / charHeight;
     }
     else if (eSdl.type == SDL_MOUSEMOTION)
     {
-        evt.eventType = SystemEvents::MOUSE_MOVE;
+        evt.eventType = SystemEventType::MouseMove;
         evt.mouseX    = eSdl.motion.x / charWidth;
         evt.mouseY    = eSdl.motion.y / charHeight;
     }
 }
 
-void SDLTerminal::handleKeyUp(SystemEvents::Event& evt, const SDL_Event& eSdl)
+void SDLTerminal::handleKeyUp(SystemEvent& evt, const SDL_Event& eSdl)
 {
     const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
     auto currentShiftState        = getShiftState(keyModifiers);
     if (currentShiftState != oldShiftState)
     {
-        evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+        evt.eventType = SystemEventType::ShiftStateChanged;
         evt.keyCode   = currentShiftState;
     }
     oldShiftState = currentShiftState;
 }
 
-void SDLTerminal::handleKeyDown(SystemEvents::Event& evt, const SDL_Event& eSdl)
+void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 {
-    evt.eventType = SystemEvents::KEY_PRESSED;
+    evt.eventType = SystemEventType::KeyPressed;
 
     const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
     const SDL_Scancode virtualKey = eSdl.key.keysym.scancode;
@@ -130,7 +130,7 @@ void SDLTerminal::handleKeyDown(SystemEvents::Event& evt, const SDL_Event& eSdl)
     {
         if (currentShiftState != oldShiftState)
         {
-            evt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+            evt.eventType = SystemEventType::ShiftStateChanged;
         }
     }
 
@@ -138,9 +138,9 @@ void SDLTerminal::handleKeyDown(SystemEvents::Event& evt, const SDL_Event& eSdl)
     oldShiftState = currentShiftState;
 }
 
-void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
+void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEvents::NONE;
+    evnt.eventType = SystemEventsType::None;
     evnt.keyCode   = Key::None;
     evnt.asciiCode = 0;
 
@@ -156,7 +156,7 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
     switch (e.type)
     {
     case SDL_QUIT:
-        evnt.eventType = SystemEvents::APP_CLOSE;
+        evnt.eventType = SystemEventType::AppClosed;
         break;
     case SDL_MOUSEMOTION:
     case SDL_MOUSEBUTTONUP:
@@ -174,7 +174,7 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
         {
             if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
             {
-                evnt.eventType = SystemEvents::APP_RESIZED;
+                evnt.eventType = SystemEventType::AppResized;
                 evnt.newWidth  = e.window.data1 / charWidth;
                 evnt.newHeight = e.window.data2 / charHeight;
             }
