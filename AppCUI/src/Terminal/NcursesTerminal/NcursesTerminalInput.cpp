@@ -87,7 +87,7 @@ void NcursesTerminal::handleMouse(SystemEvent& evt, const int c)
     }
 }
 
-void NcursesTerminal::handleKeyNormalMode(SystemEvents::Event& evt, const int c)
+void NcursesTerminal::handleKeyNormalMode(SystemEvent& evt, const int c)
 {
     if (c == INSERT_MODE_KEY)
     {
@@ -126,7 +126,7 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
     if (c == KEY_ESCAPE) // ESC
     {
         mode          = TerminalMode::TerminalNormal;
-        evt.eventType = SystemEvents::RequestRedraw;
+        evt.eventType = SystemEventType::RequestRedraw;
         return;
     }
 
