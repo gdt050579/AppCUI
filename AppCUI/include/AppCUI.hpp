@@ -746,12 +746,9 @@ namespace Utils
     class EXPORT KeyUtils
     {
       public:
-        enum
-        {
-            KEY_SHIFT_MASK = 0x7000,
-            KEY_SHIFT_BITS = 12,
-            KEY_CODE_MASK  = 0xFF
-        };
+        constexpr static const unsigned int KEY_SHIFT_MASK = 0x7000;
+        constexpr static const unsigned int KEY_SHIFT_BITS = 12;
+        constexpr static const unsigned int KEY_CODE_MASK  = 0xFF;
 
         // Returns the name of the Key without modifiers
         static std::string_view GetKeyName(AppCUI::Input::Key keyCode);
