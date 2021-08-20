@@ -140,7 +140,7 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 
 void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEventsType::None;
+    evnt.eventType = SystemEventType::None;
     evnt.keyCode   = Key::None;
     evnt.asciiCode = 0;
 
