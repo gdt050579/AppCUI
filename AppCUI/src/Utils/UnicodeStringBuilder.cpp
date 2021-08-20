@@ -144,57 +144,68 @@ UnicodeStringBuilder::~UnicodeStringBuilder()
 {
     Destroy();
 }
-bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
+bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
 {
     ConstStringObject obj(text);
-    CHECK(Resize(obj.Length), false, "Fail to resize buffer !");
+    CHECK(Resize(obj.Length+this->Size), false, "Fail to resize buffer !");
     // at this point we know that obj.Length is storable on an unsigned int value
     switch (obj.Encoding)
     {
-        case StringEncoding::Ascii:
-            CopyText<unsigned char>(this->Chars, (const unsigned char*) obj.Data, obj.Length);
-            this->Size = (unsigned int)obj.Length;
-            return true;
-        case StringEncoding::CharacterBuffer:
-            CopyText<Character>(this->Chars, (const Character*) obj.Data, obj.Length);
-            this->Size = (unsigned int) obj.Length;
-            return true;
-        case StringEncoding::Unicode16:
-            memcpy(this->Chars, obj.Data, sizeof(char16_t) * obj.Length);
-            this->Size = (unsigned int) obj.Length;
-            return true;
-        case StringEncoding::UTF8:
-            const char8_t* start = (const char8_t*) obj.Data;
-            const char8_t* end   = start + obj.Length;
-            auto* p              = this->Chars;
-            this->Size           = 0;
+    case StringEncoding::Ascii:
+        CopyText<unsigned char>(this->Chars + this->Size, (const unsigned char*) obj.Data, obj.Length);
+        this->Size += (unsigned int) obj.Length;
+        return true;
+    case StringEncoding::CharacterBuffer:
+        CopyText<Character>(this->Chars + this->Size, (const Character*) obj.Data, obj.Length);
+        this->Size += (unsigned int) obj.Length;
+        return true;
+    case StringEncoding::Unicode16:
+        memcpy(this->Chars + this->Size, obj.Data, sizeof(char16_t) * obj.Length);
+        this->Size += (unsigned int) obj.Length;
+        return true;
+    case StringEncoding::UTF8:
+        const char8_t* start = (const char8_t*) obj.Data;
+        const char8_t* end   = start + obj.Length;
+        auto* p              = this->Chars + this->Size;
 
-            UnicodeChar uc;
-            while (start < end)
+        UnicodeChar uc;
+        while (start < end)
+        {
+            if ((*start) < 0x80)
             {
-                if ((*start) < 0x80)
-                {
-                    *p = *start;
-                    start++;
-                }
-                else
-                {
-                    CHECK(ConvertUTF8CharToUnicodeChar(start, end, uc), false, "Fail to convert unicode character !");
-                    *p = uc.Value;
-                    start += uc.Length;
-                }
-                p++;
+                *p = *start;
+                start++;
             }
-            this->Size = (unsigned int) (p - this->Chars);
-            return true;
+            else
+            {
+                CHECK(ConvertUTF8CharToUnicodeChar(start, end, uc), false, "Fail to convert unicode character !");
+                *p = uc.Value;
+                start += uc.Length;
+            }
+            p++;
+        }
+        this->Size += (unsigned int) (p - this->Chars);
+        return true;
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
+}
+bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
+{
+    this->Size = 0;
+    return Add(text);
 }
 bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len()), false, "Fail to resize buffer !");
     CopyText<Character>(this->Chars, charBuffer.GetBuffer(), charBuffer.Len());
     this->Size = (unsigned int) charBuffer.Len();
+    return true;
+}
+bool UnicodeStringBuilder::Add(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+{
+    CHECK(Resize(charBuffer.Len()+this->Size), false, "Fail to resize buffer !");
+    CopyText<Character>(this->Chars + this->Size, charBuffer.GetBuffer(), charBuffer.Len());
+    this->Size += (unsigned int) charBuffer.Len();
     return true;
 }
 void UnicodeStringBuilder::ToString(std::string& output) const

@@ -582,6 +582,8 @@ namespace Utils
 
         bool Set(const AppCUI::Utils::ConstString& text);
         bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        bool Add(const AppCUI::Utils::ConstString& text);
+        bool Add(const AppCUI::Graphics::CharacterBuffer& charBuffer);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
@@ -621,6 +623,26 @@ namespace Utils
         inline operator std::u16string_view() const
         {
             return std::u16string_view{ Chars, (size_t) Size };
+        }
+        inline UnicodeStringBuilder& operator+=(const AppCUI::Utils::ConstString& text)
+        {
+            Add(text);
+            return *this;
+        }
+        inline UnicodeStringBuilder& operator+=(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+        {
+            Add(charBuffer);
+            return *this;
+        }
+        inline UnicodeStringBuilder& operator=(const AppCUI::Utils::ConstString& text)
+        {
+            Set(text);
+            return *this;
+        }
+        inline UnicodeStringBuilder& operator=(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+        {
+            Set(charBuffer);
+            return *this;
         }
     };
 
