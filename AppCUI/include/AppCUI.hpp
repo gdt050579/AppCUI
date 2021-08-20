@@ -2086,6 +2086,28 @@ namespace Controls
         virtual ~ComboBox();
     };
 
+
+    class EXPORT Menu
+    {
+        void* Data;
+      public:
+        Menu();
+        Menu(unsigned int itemsCount);
+
+        ItemHandle AddCommandItem(const AppCUI::Utils::ConstString & text, int CommandID, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
+        ItemHandle AddCheckItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
+        ItemHandle AddRadioItem(const AppCUI::Utils::ConstString & text, int CommandID = -1, AppCUI::Input::Key hotKey = AppCUI::Input::Key::None);
+        ItemHandle AddSeparator();
+        ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text, Menu* subMenu);
+
+        bool SetEnable(ItemHandle menuItem, bool status);
+        bool SetChecked(ItemHandle menuItem, bool status);
+
+        void Show(int x, int y);
+        
+        void Paint(AppCUI::Graphics::Renderer& renderer);
+
+    };
 }; // namespace Controls
 namespace Dialogs
 {
