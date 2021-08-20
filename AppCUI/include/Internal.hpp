@@ -59,32 +59,30 @@ namespace AppCUI
 {
 namespace Internal
 {
-    namespace SystemEvents
+    enum class SystemEventType : unsigned int
     {
-        enum Type : unsigned int
-        {
-            NONE = 0,
-            MOUSE_DOWN,
-            MOUSE_UP,
-            MOUSE_MOVE,
-            MOUSE_WHEEL,
-            APP_CLOSE,
-            APP_RESIZED,
-            KEY_PRESSED,
-            SHIFT_STATE_CHANGED,
-            REDRAW,
-        };
-        struct Event
-        {
-            SystemEvents::Type eventType;
-            int mouseX, mouseY;
-            unsigned int newWidth, newHeight;
-            AppCUI::Input::MouseButton mouseButton;
-            AppCUI::Input::MouseWheel mouseWheel;
-            AppCUI::Input::Key keyCode;
-            char asciiCode;
-        };
-    } // namespace SystemEvents
+        None = 0,
+        MouseDown,
+        MouseUp,
+        MouseMove,
+        MouseWheel,
+        AppClosed,
+        AppResized,
+        KeyPressed,
+        ShiftStateChanged,
+        RequestRedraw,
+    };
+    struct SystemEvent
+    {
+        SystemEventType eventType;
+        int mouseX, mouseY;
+        unsigned int newWidth, newHeight;
+        AppCUI::Input::MouseButton mouseButton;
+        AppCUI::Input::MouseWheel mouseWheel;
+        AppCUI::Input::Key keyCode;
+        char asciiCode;
+    };
+ 
 
     struct CommandBarField
     {
@@ -201,7 +199,7 @@ namespace Internal
         virtual void OnUninit()                                                  = 0;
         virtual void OnFlushToScreen()                                           = 0;
         virtual bool OnUpdateCursor()                                            = 0;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt) = 0;
+        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)         = 0;
         virtual bool IsEventAvailable()                                          = 0;
 
         virtual ~AbstractTerminal();

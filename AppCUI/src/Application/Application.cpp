@@ -779,7 +779,7 @@ void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key ShiftSt
 }
 bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
 {
-    AppCUI::Internal::SystemEvents::Event evnt;
+    AppCUI::Internal::SystemEvent evnt;
     RepaintStatus            = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
@@ -819,10 +819,10 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         this->terminal->GetSystemEvent(evnt);
         switch (evnt.eventType)
         {
-        case SystemEvents::APP_CLOSE:
+        case SystemEventType::AppClosed:
             LoopStatus = LOOP_STATUS_STOP_APP;
             break;
-        case SystemEvents::APP_RESIZED:
+        case SystemEventType::AppResized:
             if (((evnt.newWidth != this->terminal->ScreenCanvas.GetWidth()) ||
                  (evnt.newHeight != this->terminal->ScreenCanvas.GetHeight())) &&
                 (evnt.newWidth > 0) && (evnt.newHeight > 0))
@@ -834,25 +834,25 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 this->RepaintStatus = REPAINT_STATUS_ALL;
             }
             break;
-        case SystemEvents::MOUSE_DOWN:
+        case SystemEventType::MouseDown:
             OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
-        case SystemEvents::MOUSE_UP:
+        case SystemEventType::MouseUp:
             OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
-        case SystemEvents::MOUSE_MOVE:
+        case SystemEventType::MouseMove:
             OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
             break;
-        case SystemEvents::MOUSE_WHEEL:
+        case SystemEventType::MouseWheel:
             OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel);
             break;
-        case SystemEvents::KEY_PRESSED:
+        case SystemEventType::KeyPressed:
             ProcessKeyPress(evnt.keyCode, evnt.asciiCode);
             break;
-        case SystemEvents::SHIFT_STATE_CHANGED:
+        case SystemEventType::ShiftStateChanged:
             ProcessShiftState(evnt.keyCode);
             break;
-        case SystemEvents::REDRAW:
+        case SystemEventType::RequestRedraw:
             this->RepaintStatus = REPAINT_STATUS_ALL;
             break;
         default:

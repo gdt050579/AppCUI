@@ -289,7 +289,7 @@ void WindowsTerminal::OnFlushToScreen()
     // copy the entire buffer
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
     AppCUI::Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
-    AppCUI::Graphics::Character* e = c + (w * h);
+    AppCUI::Graphics::Character* e = c + ((size_t) w * (size_t) h);
     CHAR_INFO* d                  = this->ConsoleBuffer;
     while (c < e)
     {
@@ -316,13 +316,13 @@ bool WindowsTerminal::OnUpdateCursor()
     }
     return true;
 }
-void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt)
+void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
     DWORD nrread;
     INPUT_RECORD ir;
     AppCUI::Input::Key eventShiftState;
 
-    evnt.eventType = SystemEvents::NONE;
+    evnt.eventType = SystemEventType::None;
     if ((ReadConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
         return;
 
@@ -355,16 +355,16 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
         if (evnt.keyCode == AppCUI::Input::Key::None)
         {
             if (eventShiftState != this->shiftState)
-                evnt.eventType = SystemEvents::SHIFT_STATE_CHANGED;
+                evnt.eventType = SystemEventType::ShiftStateChanged;
             else if ((evnt.asciiCode > 0) && (ir.Event.KeyEvent.bKeyDown))
-                evnt.eventType = SystemEvents::KEY_PRESSED;
+                evnt.eventType = SystemEventType::KeyPressed;
             evnt.keyCode = eventShiftState;
         }
         else
         {
             evnt.keyCode |= eventShiftState;
             if (ir.Event.KeyEvent.bKeyDown)
-                evnt.eventType = SystemEvents::KEY_PRESSED;
+                evnt.eventType = SystemEventType::KeyPressed;
         }
         this->shiftState = eventShiftState;
         break;
@@ -383,19 +383,19 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
         {
             case 0:
                 if (ir.Event.MouseEvent.dwButtonState)
-                    evnt.eventType = SystemEvents::MOUSE_DOWN;
+                    evnt.eventType = SystemEventType::MouseDown;
                 else
-                    evnt.eventType = SystemEvents::MOUSE_UP;
+                    evnt.eventType = SystemEventType::MouseUp;
                 return;
             case DOUBLE_CLICK:
-                evnt.eventType = SystemEvents::MOUSE_DOWN;
+                evnt.eventType = SystemEventType::MouseDown;
                 evnt.mouseButton |= AppCUI::Input::MouseButton::DoubleClicked;
                 break;
             case MOUSE_MOVED:
-                evnt.eventType = SystemEvents::MOUSE_MOVE;
+                evnt.eventType = SystemEventType::MouseMove;
                 return;
             case MOUSE_WHEELED:
-                evnt.eventType = SystemEvents::MOUSE_WHEEL;
+                evnt.eventType = SystemEventType::MouseWheel;
                 if (ir.Event.MouseEvent.dwButtonState >= 0x80000000)
                     evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
                 else
@@ -408,7 +408,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt
         {
             evnt.newWidth  = ir.Event.WindowBufferSizeEvent.dwSize.X;
             evnt.newHeight = ir.Event.WindowBufferSizeEvent.dwSize.Y;
-            evnt.eventType = SystemEvents::APP_RESIZED;
+            evnt.eventType = SystemEventType::AppResized;
         }
         else
         {

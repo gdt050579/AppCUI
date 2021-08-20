@@ -60,7 +60,7 @@ namespace Internal
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt) override;
+        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual void RestoreOriginalConsoleSettings() override;
 
@@ -71,10 +71,10 @@ namespace Internal
         void uninitScreen();
         void uninitInput();
 
-        void handleMouse(SystemEvents::Event& evt, const int c);
-        void handleKey(SystemEvents::Event& evt, const int c);
-        void handleKeyNormalMode(SystemEvents::Event& evt, const int c);
-        void handleKeyInsertMode(SystemEvents::Event& evt, const int c);
+        void handleMouse(SystemEvent& evt, const int c);
+        void handleKey(SystemEvent& evt, const int c);
+        void handleKeyNormalMode(SystemEvent& evt, const int c);
+        void handleKeyInsertMode(SystemEvent& evt, const int c);
     };
 } // namespace Internal
 } // namespace AppCUI

@@ -37,7 +37,7 @@ namespace Internal
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvents::Event& evnt) override;
+        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual ~WindowsTerminal();
     };

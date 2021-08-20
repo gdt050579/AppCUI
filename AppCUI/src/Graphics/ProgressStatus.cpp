@@ -258,7 +258,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
 
     if (PSData.App->terminal->IsEventAvailable())
     {
-        AppCUI::Internal::SystemEvents::Event evnt;
+        AppCUI::Internal::SystemEvent evnt;
         bool requestQuit = false;
         // read up to 100 events
         for (int tr = 0; tr < 100; tr++)
@@ -266,7 +266,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
             if (PSData.App->terminal->IsEventAvailable() == false)
                 break;
             PSData.App->terminal->GetSystemEvent(evnt);
-            if ((evnt.eventType == AppCUI::Internal::SystemEvents::KEY_PRESSED) &&
+            if ((evnt.eventType == AppCUI::Internal::SystemEventType::KeyPressed) &&
                 (evnt.keyCode == AppCUI::Input::Key::Escape))
             {
                 requestQuit = true;
