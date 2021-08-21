@@ -2108,6 +2108,13 @@ namespace Controls
         
         void Paint(AppCUI::Graphics::Renderer& renderer);
 
+        // mouse events
+        void OnMouseMove(int x, int y);
+        bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+        void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+
+        // key events
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode); 
     };
 }; // namespace Controls
 namespace Dialogs

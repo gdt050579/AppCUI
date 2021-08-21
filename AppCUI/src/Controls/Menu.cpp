@@ -126,7 +126,7 @@ MenuItem::MenuItem(const MenuItem& obj)
     if (obj.SubMenu)
     {
         // make a copy of the submenu
-        // GDT: need the rearchiteturize this part !
+        // GDT: need to rearchiteturize this part !
     }
 }
 MenuItem::MenuItem(MenuItem&& obj)
@@ -218,6 +218,23 @@ void Menu::Show(int x, int y)
 
 void Menu::Paint(AppCUI::Graphics::Renderer& renderer)
 {
+}
+
+void Menu::OnMouseMove(int x, int y)
+{
+}
+bool Menu::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+{
+    NOT_IMPLEMENTED(false);
+}
+void Menu::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+}
+
+// key events
+bool Menu::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+{
+    NOT_IMPLEMENTED(false);
 }
 
 #undef CTX
