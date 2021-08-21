@@ -29,11 +29,18 @@ struct MenuItem
     bool Checked;
     Menu* SubMenu;
 
-    MenuItem();
-    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key hotKey);
-    MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu);
+    void Copy(const MenuItem& obj);
+    void Swap(MenuItem& obj) noexcept;
+
+    MenuItem(); // line
+    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key hotKey); // commands
+    MenuItem(const AppCUI::Utils::ConstString& text); // submenu
     MenuItem(const MenuItem& obj);
-    MenuItem(MenuItem&& obj);
+    MenuItem(MenuItem&& obj) noexcept;
+    ~MenuItem();
+
+    inline MenuItem& operator=(const MenuItem& obj) { Copy(obj); return *this; }
+    inline MenuItem& operator=(MenuItem&& obj) noexcept { Swap(obj); return *this; }
 };
 
 struct MenuContext
@@ -45,7 +52,40 @@ struct MenuContext
     ItemHandle AddItem(MenuItem&& itm);
 };
 
+void MenuItem::Copy(const MenuItem& obj)
+{
+    this->Type         = obj.Type;
+    this->Checked      = obj.Checked;
+    this->CommandID    = obj.CommandID;
+    this->Enabled      = obj.Enabled;
+    this->HotKey       = obj.HotKey;
+    this->HotKeyOffset = obj.HotKeyOffset;
+    this->Name         = obj.Name;
+    this->ShortcutKey  = obj.ShortcutKey;
+    // delete the old menu
+    if (this->SubMenu)
+    {
+        delete this->SubMenu;
+        this->SubMenu = nullptr;
+    }
+    if (obj.SubMenu)
+        this->SubMenu = new Menu(*obj.SubMenu);
+}
+void MenuItem::Swap(MenuItem& obj) noexcept
+{
+    // copy some values
+    this->Type         = obj.Type;
+    this->Checked      = obj.Checked;
+    this->CommandID    = obj.CommandID;
+    this->Enabled      = obj.Enabled;
+    this->HotKey       = obj.HotKey;
+    this->HotKeyOffset = obj.HotKeyOffset;
+    this->ShortcutKey  = obj.ShortcutKey;
 
+    // swap others
+    this->Name.Swap(obj.Name);
+    std::swap(this->SubMenu, obj.SubMenu);
+}
 MenuItem::MenuItem()
 {
     Type              = MenuItemType::Line;
@@ -83,16 +123,19 @@ MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, in
         }
     }
 }
-MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
+MenuItem::MenuItem(const AppCUI::Utils::ConstString& text)
 {
     Type = MenuItemType::Invalid;
-    if (subMenu == nullptr)
-    {
-        LOG_ERROR("Expecting a non-null submenu parameter");        
-        return;
-    }
     if (Name.SetWithHotKey(text, HotKeyOffset))
     {
+        try
+        {
+            SubMenu = new Menu(16); // 16 reserved items by default
+        }
+        catch (...)
+        {
+            return; // could not allocate --> exit with MenuItemType::Invalid
+        }
         Type        = MenuItemType::SubMenu;
         Enabled     = true;
         Checked     = true;
@@ -115,33 +158,20 @@ MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
 }
 MenuItem::MenuItem(const MenuItem& obj)
 {
-    this->Checked      = obj.Checked;
-    this->CommandID    = obj.CommandID;
-    this->Enabled      = obj.Enabled;
-    this->HotKey       = obj.HotKey;
-    this->HotKeyOffset = obj.HotKeyOffset;
-    this->Name         = obj.Name;
-    this->ShortcutKey  = obj.ShortcutKey;
     this->SubMenu      = nullptr;
-    if (obj.SubMenu)
-    {
-        // make a copy of the submenu
-        // GDT: need to rearchiteturize this part !
-    }
+    Copy(obj);
 }
-MenuItem::MenuItem(MenuItem&& obj)
+MenuItem::MenuItem(MenuItem&& obj) noexcept
 {
-    // copy some values
-    this->Checked      = obj.Checked;
-    this->CommandID    = obj.CommandID;
-    this->Enabled      = obj.Enabled;
-    this->HotKey       = obj.HotKey;
-    this->HotKeyOffset = obj.HotKeyOffset;
-    this->ShortcutKey  = obj.ShortcutKey;
-    this->SubMenu      = obj.SubMenu;
-    obj.SubMenu        = nullptr; 
-    // swap other
-    this->Name.Swap(obj.Name);
+    this->SubMenu = nullptr;
+    Swap(obj);
+}
+MenuItem::~MenuItem()
+{
+    if (SubMenu)
+        delete SubMenu;
+    SubMenu = nullptr;
+    Name.Destroy();
 }
 
 MenuContext::MenuContext()
@@ -175,6 +205,14 @@ Menu::Menu(unsigned int itemsCount)
 {
     this->Data = new MenuContext(itemsCount);
 }
+Menu::Menu(const Menu& obj)
+{
+    this->Data = new MenuContext();
+    if (obj.Data)
+    {
+        CTX->Items = ((MenuContext*) (obj.Data))->Items;
+    }    
+}
 Menu::~Menu()
 {
     if (this->Data)
@@ -198,9 +236,9 @@ ItemHandle Menu::AddSeparator()
 {
     return CTX->AddItem(MenuItem());
 }
-ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text, Menu* subMenu)
+ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 {
-    return CTX->AddItem(MenuItem(text, subMenu));
+    return CTX->AddItem(MenuItem(text));
 }
 
 bool Menu::SetEnable(ItemHandle menuItem, bool status)
@@ -210,6 +248,11 @@ bool Menu::SetEnable(ItemHandle menuItem, bool status)
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
 {
     NOT_IMPLEMENTED(false);
+}
+
+Menu* Menu::GetSubMenu(ItemHandle menuItem)
+{
+    NOT_IMPLEMENTED(nullptr);
 }
 
 void Menu::Show(int x, int y)
