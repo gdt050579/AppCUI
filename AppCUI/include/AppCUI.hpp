@@ -2103,6 +2103,8 @@ namespace Controls
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
 
         Menu* GetSubMenu(ItemHandle menuItem);
+        Menu* GetParentMenu();
+
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 

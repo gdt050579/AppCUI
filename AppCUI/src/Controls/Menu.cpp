@@ -6,6 +6,8 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
 #define CTX ((MenuContext*) Data)
+#define CHECK_VALID_ITEM(retValue)     CHECK((size_t) menuItem < CTX->Items.size(), retValue, "Invalid index: %u (should be a value between [0..%z)",(unsigned int)menuItem,CTX->Items.size());
+
 
 
 enum class MenuItemType: unsigned int
@@ -34,7 +36,7 @@ struct MenuItem
 
     MenuItem(); // line
     MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key hotKey); // commands
-    MenuItem(const AppCUI::Utils::ConstString& text); // submenu
+    MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj);
     MenuItem(MenuItem&& obj) noexcept;
     ~MenuItem();
@@ -46,6 +48,9 @@ struct MenuItem
 struct MenuContext
 {
     std::vector<MenuItem> Items;
+    Menu* Parent;
+    AppCUI::Graphics::Clip ScreenClip;
+
 
     MenuContext();
     MenuContext(unsigned int itemsCount);
@@ -123,25 +128,17 @@ MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, in
         }
     }
 }
-MenuItem::MenuItem(const AppCUI::Utils::ConstString& text)
+MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset))
     {
-        try
-        {
-            SubMenu = new Menu(16); // 16 reserved items by default
-        }
-        catch (...)
-        {
-            return; // could not allocate --> exit with MenuItemType::Invalid
-        }
         Type        = MenuItemType::SubMenu;
         Enabled     = true;
         Checked     = true;
-        SubMenu     = nullptr;
         ShortcutKey = AppCUI::Input::Key::None;
         HotKey      = AppCUI::Input::Key::None;
+        SubMenu     = subMenu;
         if (HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
         {
             char16_t ch = Name.GetBuffer()[HotKeyOffset].Code;
@@ -176,9 +173,11 @@ MenuItem::~MenuItem()
 
 MenuContext::MenuContext()
 {
+    this->Parent = nullptr;
 }
 MenuContext::MenuContext(unsigned int itemsCount)
 {
+    this->Parent = nullptr;
     Items.reserve(itemsCount);
 }
 ItemHandle MenuContext::AddItem(MenuItem&& itm)
@@ -188,8 +187,9 @@ ItemHandle MenuContext::AddItem(MenuItem&& itm)
     CHECK(Items.size() < 0xFFFF, false, "A maximum of 0xFFFF items can be added to a Menu");
     try
     {
+        auto res = ItemHandle{ (unsigned int) Items.size() };
         Items.push_back(itm);
-        return ItemHandle{ (unsigned int)Items.size() };
+        return res;
     }
     catch (...)
     {
@@ -238,21 +238,40 @@ ItemHandle Menu::AddSeparator()
 }
 ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 {
-    return CTX->AddItem(MenuItem(text));
+    try
+    {
+        Menu* SubMenu                            = new Menu(16); // 16 reserved items by default
+        ((MenuContext*) (SubMenu->Data))->Parent = this;
+        return CTX->AddItem(MenuItem(text, SubMenu));
+    }
+    catch (...)
+    {
+        return InvalidItemHandle; // could not allocate 
+    }    
 }
-
+Menu* Menu::GetParentMenu()
+{
+    if (!Data)
+        return nullptr;
+    return CTX->Parent;
+}
 bool Menu::SetEnable(ItemHandle menuItem, bool status)
 {
-    NOT_IMPLEMENTED(false);
+    CHECK_VALID_ITEM(false);
+    CTX->Items[(unsigned int) menuItem].Enabled = status;
+    return true;
 }
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
 {
-    NOT_IMPLEMENTED(false);
+    CHECK_VALID_ITEM(false);
+    CTX->Items[(unsigned int) menuItem].Checked = status;
+    return true;
 }
 
 Menu* Menu::GetSubMenu(ItemHandle menuItem)
 {
-    NOT_IMPLEMENTED(nullptr);
+    CHECK_VALID_ITEM(nullptr);
+    return CTX->Items[(unsigned int) menuItem].SubMenu;
 }
 
 void Menu::Show(int x, int y)
