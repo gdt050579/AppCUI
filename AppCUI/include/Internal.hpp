@@ -222,6 +222,7 @@ namespace Internal
         AppCUI::Controls::Control* MouseLockedControl;
         AppCUI::Controls::Control* MouseOverControl;
         AppCUI::Controls::Control* ExpandedControl;
+        AppCUI::Controls::Menu* VisibleMenu;
         unsigned int ModalControlsCount;
         int LoopStatus;
         unsigned int RepaintStatus;

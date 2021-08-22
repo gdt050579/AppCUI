@@ -176,7 +176,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
-    // ma desenez pe mine
+    // draw myself
     app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ScreenClip);
     app->terminal->ScreenCanvas.SetTranslate(
           Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
@@ -240,6 +240,21 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
         PaintControl(Members->Controls[idx], renderer, true);
     }
+}
+void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& renderer, bool activ)
+{
+    if (!menu)
+        return;
+    auto menuContext = reinterpret_cast<MenuContext*>(menu->Context);
+    if (!menuContext)
+        return;
+    // go backwards and draw its parend first
+    if (menuContext->Parent)
+        PaintMenu(menuContext->Parent, renderer, false);
+    // draw myself
+    app->terminal->ScreenCanvas.SetAbsoluteClip(menuContext->ScreenClip);
+    app->terminal->ScreenCanvas.SetTranslate(menuContext->ScreenClip.ScreenPosition.X, menuContext->ScreenClip.ScreenPosition.Y);
+    menuContext->Paint(renderer,activ);
 }
 void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
 {
@@ -451,6 +466,7 @@ AppCUI::Internal::Application::Application()
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
     this->ExpandedControl    = nullptr;
+    this->VisibleMenu        = nullptr;
     this->ModalControlsCount = 0;
     this->LoopStatus         = LOOP_STATUS_NORMAL;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
@@ -465,6 +481,7 @@ void AppCUI::Internal::Application::Destroy()
     this->Inited             = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
+    this->VisibleMenu        = nullptr;
     this->ModalControlsCount = 0;
     this->LoopStatus         = LOOP_STATUS_NORMAL;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
@@ -531,6 +548,10 @@ void AppCUI::Internal::Application::Paint()
     this->terminal->ScreenCanvas.ClearClip();
     this->terminal->ScreenCanvas.SetTranslate(0, 0);
     this->CommandBarObject.Paint(this->terminal->ScreenCanvas);
+    // draw menu bar
+    // draw context menu
+    if (this->VisibleMenu)
+        PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
 }
 void AppCUI::Internal::Application::ComputePositions()
 {

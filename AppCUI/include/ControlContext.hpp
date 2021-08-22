@@ -400,6 +400,79 @@ class ComboBoxControlContext : public ControlContext
     unsigned int ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems, HoveredIndexItem;
 };
 
+
+enum class MenuItemType : unsigned int
+{
+    Invalid,
+    Command,
+    Check,
+    Radio,
+    Line,
+    SubMenu
+};
+struct MenuItem
+{
+    CharacterBuffer Name;
+    unsigned int HotKeyOffset;
+    AppCUI::Input::Key HotKey;
+    AppCUI::Input::Key ShortcutKey;
+    MenuItemType Type;
+    int CommandID;
+    bool Enabled;
+    bool Checked;
+    Menu* SubMenu;
+
+    void Copy(const MenuItem& obj);
+    void Swap(MenuItem& obj) noexcept;
+
+    MenuItem(); // line
+    MenuItem(
+          MenuItemType type,
+          const AppCUI::Utils::ConstString& text,
+          int CommandID,
+          AppCUI::Input::Key hotKey);                                // commands
+    MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
+    MenuItem(const MenuItem& obj);
+    MenuItem(MenuItem&& obj) noexcept;
+    ~MenuItem();
+
+    inline MenuItem& operator=(const MenuItem& obj)
+    {
+        Copy(obj);
+        return *this;
+    }
+    inline MenuItem& operator=(MenuItem&& obj) noexcept
+    {
+        Swap(obj);
+        return *this;
+    }
+};
+
+struct MenuContext
+{
+    std::vector<MenuItem> Items;
+    Menu* Parent;
+    AppCUI::Graphics::Clip ScreenClip;
+
+    MenuContext();
+    MenuContext(unsigned int itemsCount);
+    ItemHandle AddItem(MenuItem&& itm);
+
+public:
+    // methods
+    void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
+
+    // mouse events
+    void OnMouseMove(int x, int y);
+    bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+    void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+
+    // key events
+    bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
+};
+
+
+
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \

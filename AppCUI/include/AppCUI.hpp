@@ -2089,8 +2089,9 @@ namespace Controls
 
     class EXPORT Menu
     {
-        void* Data;
       public:
+        void* Context;
+      
         Menu();
         Menu(unsigned int itemsCount);
         Menu(const Menu& obj);
@@ -2103,22 +2104,11 @@ namespace Controls
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
 
         Menu* GetSubMenu(ItemHandle menuItem);
-        Menu* GetParentMenu();
 
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
-        void Show(int x, int y);
-        
-        void Paint(AppCUI::Graphics::Renderer& renderer);
-
-        // mouse events
-        void OnMouseMove(int x, int y);
-        bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
-        void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
-
-        // key events
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode); 
+        void Show(int x, int y);        
     };
 }; // namespace Controls
 namespace Dialogs

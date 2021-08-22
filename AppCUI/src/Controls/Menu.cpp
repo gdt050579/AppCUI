@@ -5,57 +5,9 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-#define CTX ((MenuContext*) Data)
+#define CTX ((MenuContext*) Context)
 #define CHECK_VALID_ITEM(retValue)     CHECK((size_t) menuItem < CTX->Items.size(), retValue, "Invalid index: %u (should be a value between [0..%z)",(unsigned int)menuItem,CTX->Items.size());
 
-
-
-enum class MenuItemType: unsigned int
-{
-    Invalid,
-    Command,
-    Check,
-    Radio,
-    Line,
-    SubMenu
-};
-struct MenuItem
-{
-    CharacterBuffer Name;
-    unsigned int HotKeyOffset;
-    AppCUI::Input::Key HotKey;
-    AppCUI::Input::Key ShortcutKey;
-    MenuItemType Type;
-    int CommandID;
-    bool Enabled;
-    bool Checked;
-    Menu* SubMenu;
-
-    void Copy(const MenuItem& obj);
-    void Swap(MenuItem& obj) noexcept;
-
-    MenuItem(); // line
-    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key hotKey); // commands
-    MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
-    MenuItem(const MenuItem& obj);
-    MenuItem(MenuItem&& obj) noexcept;
-    ~MenuItem();
-
-    inline MenuItem& operator=(const MenuItem& obj) { Copy(obj); return *this; }
-    inline MenuItem& operator=(MenuItem&& obj) noexcept { Swap(obj); return *this; }
-};
-
-struct MenuContext
-{
-    std::vector<MenuItem> Items;
-    Menu* Parent;
-    AppCUI::Graphics::Clip ScreenClip;
-
-
-    MenuContext();
-    MenuContext(unsigned int itemsCount);
-    ItemHandle AddItem(MenuItem&& itm);
-};
 
 void MenuItem::Copy(const MenuItem& obj)
 {
@@ -196,28 +148,49 @@ ItemHandle MenuContext::AddItem(MenuItem&& itm)
         RETURNERROR(InvalidItemHandle , "Exception thrown while adding menu item to std::vector");
     }
 }
+void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
+{
+}
 
+void MenuContext::OnMouseMove(int x, int y)
+{
+}
+bool MenuContext::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+{
+    NOT_IMPLEMENTED(false);
+}
+void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+{
+}
+
+// key events
+bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+{
+    NOT_IMPLEMENTED(false);
+}
+
+//=====================================================================================[Menu]====
 Menu::Menu()
 {
-    this->Data = new MenuContext();
+    this->Context = new MenuContext();
 }
 Menu::Menu(unsigned int itemsCount)
 {
-    this->Data = new MenuContext(itemsCount);
+    this->Context = new MenuContext(itemsCount);
 }
 Menu::Menu(const Menu& obj)
 {
-    this->Data = new MenuContext();
-    if (obj.Data)
+    this->Context = new MenuContext();
+    if (obj.Context)
     {
-        CTX->Items = ((MenuContext*) (obj.Data))->Items;
+        CTX->Items = ((MenuContext*) (obj.Context))->Items;
     }    
 }
 Menu::~Menu()
 {
-    if (this->Data)
-        delete ((MenuContext*) Data);
-    this->Data = nullptr;
+    if (this->Context)
+        delete ((MenuContext*) Context);
+    this->Context = nullptr;
 }
 
 ItemHandle Menu::AddCommandItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
@@ -241,19 +214,13 @@ ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
     try
     {
         Menu* SubMenu                            = new Menu(16); // 16 reserved items by default
-        ((MenuContext*) (SubMenu->Data))->Parent = this;
+        ((MenuContext*) (SubMenu->Context))->Parent = this;
         return CTX->AddItem(MenuItem(text, SubMenu));
     }
     catch (...)
     {
         return InvalidItemHandle; // could not allocate 
     }    
-}
-Menu* Menu::GetParentMenu()
-{
-    if (!Data)
-        return nullptr;
-    return CTX->Parent;
 }
 bool Menu::SetEnable(ItemHandle menuItem, bool status)
 {
@@ -276,27 +243,6 @@ Menu* Menu::GetSubMenu(ItemHandle menuItem)
 
 void Menu::Show(int x, int y)
 {
-}
-
-void Menu::Paint(AppCUI::Graphics::Renderer& renderer)
-{
-}
-
-void Menu::OnMouseMove(int x, int y)
-{
-}
-bool Menu::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
-{
-    NOT_IMPLEMENTED(false);
-}
-void Menu::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
-{
-}
-
-// key events
-bool Menu::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
-{
-    NOT_IMPLEMENTED(false);
 }
 
 #undef CTX
