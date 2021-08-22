@@ -61,7 +61,7 @@ MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, in
     {
         Type        = type;
         Enabled     = true;
-        Checked     = true;
+        Checked     = false;
         SubMenu     = nullptr;
         CommandID   = cmdID;
         ShortcutKey = shortcutKey;
@@ -187,10 +187,16 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
         case MenuItemType::Check:
             textParams.X = 3;
             renderer.WriteText(item.Name, textParams);
+            if (item.Checked)
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CheckMark, itemCol.Check);
             break;    
         case MenuItemType::Radio:
             textParams.X = 3;
             renderer.WriteText(item.Name, textParams);
+            if (item.Checked)
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleFilled, itemCol.Check);
+            else
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleEmpty, itemCol.Uncheck);
             break; 
         case MenuItemType::SubMenu:
             textParams.X = 1;
@@ -202,8 +208,8 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
         {
             auto k_n = KeyUtils::GetKeyName(item.ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item.ShortcutKey);
-            renderer.WriteSingleLineText(this->Width - k_n.size(), tr, k_n, itemCol.HotKey);
-            renderer.WriteSingleLineText(this->Width - (k_n.size()+m_n.size()), tr, m_n, itemCol.HotKey);
+            renderer.WriteSingleLineText(this->Width - (unsigned int)k_n.size(), tr, k_n, itemCol.HotKey);
+            renderer.WriteSingleLineText(this->Width - (unsigned int)(k_n.size()+m_n.size()), tr, m_n, itemCol.HotKey);
         }
 
 
@@ -325,8 +331,27 @@ bool Menu::SetEnable(ItemHandle menuItem, bool status)
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
 {
     CHECK_VALID_ITEM(false);
-    CTX->Items[(unsigned int) menuItem].Checked = status;
+    auto& i  = CTX->Items[(unsigned int) menuItem];
+    CHECK((i.Type == MenuItemType::Check) || (i.Type == MenuItemType::Radio), false, "Only Check and Radio item can change their state");
+    if (i.Type == MenuItemType::Radio)
+    {
+        // radio menu item -> uncheck all items that are radioboxes
+        unsigned int index = (unsigned int)menuItem;
+        while (((index >= 0) && (index < CTX->Items.size())) && (CTX->Items[index].Type == MenuItemType::Radio))
+        {
+            CTX->Items[index].Checked = false;
+            index--;
+        }
+        index = (unsigned int) menuItem + 1;
+        while ((index < CTX->Items.size()) && (CTX->Items[index].Type == MenuItemType::Radio))
+        {
+            CTX->Items[index].Checked = false;
+            index++;
+        }
+    }
+    i.Checked = status;
     return true;
+    
 }
 
 Menu* Menu::GetSubMenu(ItemHandle menuItem)

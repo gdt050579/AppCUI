@@ -26,11 +26,13 @@ void MyUserControl::Create(Control* parent)
     ctxMenu.AddCommandItem("&Open content", MENU_CMD_OPEN, Key::F3);
     ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR, Key::R|Key::Ctrl|Key::Alt);
     ctxMenu.AddSeparator();
-    ctxMenu.AddCheckItem("Flag &1");
+    auto flg1 = ctxMenu.AddCheckItem("Flag &1");
+    ctxMenu.SetChecked(flg1, true);
     ctxMenu.AddCheckItem("Flag &2");
     ctxMenu.AddCheckItem("Flag &3");
     ctxMenu.AddSeparator();
-    ctxMenu.AddRadioItem("Select option &A");
+    auto opt1 = ctxMenu.AddRadioItem("Select option &A");
+    ctxMenu.SetChecked(opt1, true);
     ctxMenu.AddRadioItem("Select option &B");
     ctxMenu.AddRadioItem("Select option &C");
     ctxMenu.AddSeparator();
