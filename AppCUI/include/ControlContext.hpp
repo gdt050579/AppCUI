@@ -453,6 +453,10 @@ struct MenuContext
     std::vector<MenuItem> Items;
     Menu* Parent;
     AppCUI::Graphics::Clip ScreenClip;
+    AppCUI::Application::Config* Cfg;
+    unsigned int FirstVisibleItem;
+    unsigned int VisibleItemsCount;
+    unsigned int Width;
 
     MenuContext();
     MenuContext(unsigned int itemsCount);

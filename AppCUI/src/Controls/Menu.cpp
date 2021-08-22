@@ -125,11 +125,19 @@ MenuItem::~MenuItem()
 
 MenuContext::MenuContext()
 {
-    this->Parent = nullptr;
+    this->Parent            = nullptr;
+    this->Cfg               = Application::GetAppConfig();
+    this->FirstVisibleItem  = 0;
+    this->VisibleItemsCount = 0;
+    this->Width             = 0;
 }
 MenuContext::MenuContext(unsigned int itemsCount)
 {
-    this->Parent = nullptr;
+    this->Parent            = nullptr;
+    this->Cfg               = Application::GetAppConfig();
+    this->FirstVisibleItem  = 0;
+    this->VisibleItemsCount = 0;
+    this->Width             = 0;
     Items.reserve(itemsCount);
 }
 ItemHandle MenuContext::AddItem(MenuItem&& itm)
@@ -150,9 +158,46 @@ ItemHandle MenuContext::AddItem(MenuItem&& itm)
 }
 void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 {
-    renderer.Clear(' ', ColorPair(Color::Black, Color::White));
-    renderer.DrawRectSize(
-          0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, ColorPair(Color::Black, Color::White), false);
+    auto &col = this->Cfg->Menu.Activ;
+    if (!activ)
+        col = this->Cfg->Menu.Parent;
+
+    auto& itemCol = col.Normal;
+    WriteTextParams textParams(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey, TextAlignament::Left);
+
+    renderer.Clear(' ', col.Background);
+    renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col.Background, false);
+    for (unsigned int tr=1;tr<=this->VisibleItemsCount;tr++)
+    {
+        MenuItem& item            = this->Items[tr - 1];
+        textParams.Color          = itemCol.Text;
+        textParams.HotKeyColor    = itemCol.HotKey;
+        textParams.HotKeyPosition = item.HotKeyOffset;
+        textParams.Y              = tr;
+        switch (item.Type)
+        {
+        case MenuItemType::Line:
+            renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col.Background);
+            break;
+        case MenuItemType::Command:
+            textParams.X = 1;
+            renderer.WriteText(item.Name, textParams);
+            break;
+        case MenuItemType::Check:
+            textParams.X = 3;
+            renderer.WriteText(item.Name, textParams);
+            break;    
+        case MenuItemType::Radio:
+            textParams.X = 3;
+            renderer.WriteText(item.Name, textParams);
+            break; 
+        case MenuItemType::SubMenu:
+            textParams.X = 1;
+            renderer.WriteText(item.Name, textParams);
+            renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol.Text);
+            break; 
+        }        
+    }
 }
 
 void MenuContext::OnMouseMove(int x, int y)
@@ -177,12 +222,15 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     // compute abosolute position
     while (relativeControl)
     {
-        x += relativeControl->GetX();
-        y += relativeControl->GetY();
+        x += relativeControl->GetX() + ((ControlContext*) relativeControl->Context)->Margins.Left;
+        y += relativeControl->GetY() + ((ControlContext*) relativeControl->Context)->Margins.Top;
         relativeControl = relativeControl->GetParent();
     }
+    // compute Width & Visible Items Count
+    Width = 20;
+    VisibleItemsCount = this->Items.size();
     // Set the clip
-    this->ScreenClip.Set(x, y, 10, 15);
+    this->ScreenClip.Set(x, y, Width+2, VisibleItemsCount+2);
     // link to application
     AppCUI::Application::SetContextualMenu(me);
 }

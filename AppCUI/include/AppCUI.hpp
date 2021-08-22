@@ -2329,7 +2329,17 @@ namespace Application
             } Focus, Normal, Inactive, Hover;
             Graphics::ColorPair Selection, HoverOveItem;
         } ComboBox;
-
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Background;
+                struct Item
+                {
+                    Graphics::ColorPair Text, HotKey, ShortCut, Check, Uncheck;
+                } Normal, Inactive, Selected;                
+            } Activ, Parent;
+        } Menu; 
         void SetDarkTheme();
     };
 
