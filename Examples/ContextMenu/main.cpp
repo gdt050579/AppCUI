@@ -16,6 +16,7 @@ class MyUserControl: public AppCUI::Controls::UserControl
   public:
     void Create(Control* parent);
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
+    void OnMousePressed(int x, int y, MouseButton button) override;
 };
 void MyUserControl::Create(Control* parent)
 {
@@ -37,6 +38,13 @@ void MyUserControl::Create(Control* parent)
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red");
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Green");
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue");
+}
+void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
+{
+    if ((button & MouseButton::Right) != MouseButton::None)
+    {
+        ctxMenu.Show(this, x, y);
+    }
 }
 void MyUserControl::Paint(AppCUI::Graphics::Renderer& renderer)
 {

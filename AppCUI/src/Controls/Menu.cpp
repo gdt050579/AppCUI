@@ -1,11 +1,11 @@
-#include "AppCUI.hpp"
+#include "Internal.hpp"
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-#define CTX ((MenuContext*) Context)
+#define CTX ((MenuContext*) this->Context)
 #define CHECK_VALID_ITEM(retValue)     CHECK((size_t) menuItem < CTX->Items.size(), retValue, "Invalid index: %u (should be a value between [0..%z)",(unsigned int)menuItem,CTX->Items.size());
 
 
@@ -150,6 +150,9 @@ ItemHandle MenuContext::AddItem(MenuItem&& itm)
 }
 void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 {
+    renderer.Clear(' ', ColorPair(Color::Black, Color::White));
+    renderer.DrawRectSize(
+          0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, ColorPair(Color::Black, Color::White), false);
 }
 
 void MenuContext::OnMouseMove(int x, int y)
@@ -167,6 +170,21 @@ void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction
 bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
 {
     NOT_IMPLEMENTED(false);
+}
+
+void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y)
+{
+    // compute abosolute position
+    while (relativeControl)
+    {
+        x += relativeControl->GetX();
+        y += relativeControl->GetY();
+        relativeControl = relativeControl->GetParent();
+    }
+    // Set the clip
+    this->ScreenClip.Set(x, y, 10, 15);
+    // link to application
+    AppCUI::Application::SetContextualMenu(me);
 }
 
 //=====================================================================================[Menu]====
@@ -243,6 +261,10 @@ Menu* Menu::GetSubMenu(ItemHandle menuItem)
 
 void Menu::Show(int x, int y)
 {
+    CTX->Show(this, nullptr, x, y);
 }
-
+void Menu::Show(Control* parent, int relativeX, int relativeY)
+{
+    CTX->Show(this, parent, relativeX, relativeY);
+}
 #undef CTX

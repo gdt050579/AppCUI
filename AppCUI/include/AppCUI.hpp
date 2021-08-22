@@ -2091,7 +2091,7 @@ namespace Controls
     {
       public:
         void* Context;
-      
+
         Menu();
         Menu(unsigned int itemsCount);
         Menu(const Menu& obj);
@@ -2108,7 +2108,8 @@ namespace Controls
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
-        void Show(int x, int y);        
+        void Show(int x, int y);      
+        void Show(Control* parent, int relativeX, int relativeY);
     };
 }; // namespace Controls
 namespace Dialogs

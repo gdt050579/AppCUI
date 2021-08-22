@@ -168,6 +168,15 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 {
     return app;
 }
+void AppCUI::Application::SetContextualMenu(AppCUI::Controls::Menu* mnu)
+{
+    if ((app) && (app->VisibleMenu != mnu))
+    {
+        app->VisibleMenu = mnu;
+        app->RepaintStatus |= REPAINT_STATUS_ALL;
+    }
+}
+
 
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {

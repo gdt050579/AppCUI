@@ -261,6 +261,7 @@ namespace Internal
 namespace Application
 {
     AppCUI::Internal::Application* GetApplication();
+    void SetContextualMenu(AppCUI::Controls::Menu* mnu);
 }
 namespace Utils
 {

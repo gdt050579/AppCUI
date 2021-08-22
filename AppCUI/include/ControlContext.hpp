@@ -469,6 +469,9 @@ public:
 
     // key events
     bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
+
+    // Show
+    void Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y);
 };
 
 
