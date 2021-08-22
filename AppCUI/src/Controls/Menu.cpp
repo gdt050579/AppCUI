@@ -7,6 +7,7 @@ using namespace AppCUI::Input;
 
 #define CTX ((MenuContext*) this->Context)
 #define CHECK_VALID_ITEM(retValue)     CHECK((size_t) menuItem < CTX->Items.size(), retValue, "Invalid index: %u (should be a value between [0..%z)",(unsigned int)menuItem,CTX->Items.size());
+#define NO_MENUITEM_SELECTED    0xFFFFFFFF
 
 
 void MenuItem::Copy(const MenuItem& obj)
@@ -129,6 +130,7 @@ MenuContext::MenuContext()
     this->Cfg               = Application::GetAppConfig();
     this->FirstVisibleItem  = 0;
     this->VisibleItemsCount = 0;
+    this->CurrentItem       = NO_MENUITEM_SELECTED;
     this->Width             = 0;
 }
 MenuContext::MenuContext(unsigned int itemsCount)
@@ -137,6 +139,7 @@ MenuContext::MenuContext(unsigned int itemsCount)
     this->Cfg               = Application::GetAppConfig();
     this->FirstVisibleItem  = 0;
     this->VisibleItemsCount = 0;
+    this->CurrentItem       = NO_MENUITEM_SELECTED;
     this->Width             = 0;
     Items.reserve(itemsCount);
 }
@@ -158,27 +161,42 @@ ItemHandle MenuContext::AddItem(MenuItem&& itm)
 }
 void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 {
-    auto &col = this->Cfg->Menu.Activ;
+    auto* col = &this->Cfg->Menu.Activ;
     if (!activ)
-        col = this->Cfg->Menu.Parent;
+        col = &this->Cfg->Menu.Parent;
 
-    auto& itemCol = col.Normal;
-    WriteTextParams textParams(WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey, TextAlignament::Left);
+    auto* itemCol = &col->Normal;
+    WriteTextParams textParams(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
+          TextAlignament::Left);
 
-    renderer.Clear(' ', col.Background);
-    renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col.Background, false);
+    renderer.Clear(' ', col->Background);
+    renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
     for (unsigned int tr=1;tr<=this->VisibleItemsCount;tr++)
     {
-        MenuItem& item            = this->Items[tr - 1];
-        textParams.Color          = itemCol.Text;
-        textParams.HotKeyColor    = itemCol.HotKey;
+        MenuItem& item = this->Items[tr - 1];
+        if (item.Enabled == false)
+            itemCol = &col->Inactive;
+        else
+        {
+            if (tr - 1 == this->CurrentItem)
+            {
+                itemCol = &col->Selected;
+                renderer.DrawHorizontalLine(1, tr, Width, ' ', col->Selected.Text);
+            }
+            else
+                itemCol = &col->Normal;
+        }
+        
+        textParams.Color          = itemCol->Text;
+        textParams.HotKeyColor    = itemCol->HotKey;
         textParams.HotKeyPosition = item.HotKeyOffset;
         textParams.Y              = tr;
-        
+              
         switch (item.Type)
         {
         case MenuItemType::Line:
-            renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col.Background);
+            renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col->Background);
             break;
         case MenuItemType::Command:
             textParams.X = 1;
@@ -188,36 +206,60 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
             textParams.X = 3;
             renderer.WriteText(item.Name, textParams);
             if (item.Checked)
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CheckMark, itemCol.Check);
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CheckMark, itemCol->Check);
             break;    
         case MenuItemType::Radio:
             textParams.X = 3;
             renderer.WriteText(item.Name, textParams);
             if (item.Checked)
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleFilled, itemCol.Check);
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleFilled, itemCol->Check);
             else
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleEmpty, itemCol.Uncheck);
+                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleEmpty, itemCol->Uncheck);
             break; 
         case MenuItemType::SubMenu:
             textParams.X = 1;
             renderer.WriteText(item.Name, textParams);
-            renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol.Text);
+            renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol->Text);
             break; 
         }     
         if (item.ShortcutKey != Key::None)
         {
             auto k_n = KeyUtils::GetKeyName(item.ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item.ShortcutKey);
-            renderer.WriteSingleLineText(this->Width - (unsigned int)k_n.size(), tr, k_n, itemCol.HotKey);
-            renderer.WriteSingleLineText(this->Width - (unsigned int)(k_n.size()+m_n.size()), tr, m_n, itemCol.HotKey);
+            renderer.WriteSingleLineText(this->Width - (unsigned int)k_n.size(), tr, k_n, itemCol->ShortCut);
+            renderer.WriteSingleLineText(this->Width - (unsigned int)(k_n.size()+m_n.size()), tr, m_n, itemCol->ShortCut);
         }
 
 
     }
 }
 
-void MenuContext::OnMouseMove(int x, int y)
+bool MenuContext::OnMouseMove(int x, int y)
 {
+    unsigned int newCurrentItem;
+    if ((x >= 1) && (y >= 1) && (x <= Width) && (y <= VisibleItemsCount))
+    {
+        newCurrentItem = (y - 1) + FirstVisibleItem;
+        if ((newCurrentItem < Items.size()) && (Items[newCurrentItem].Enabled) &&
+            (Items[newCurrentItem].Type != MenuItemType::Line))
+        {
+            // all good - found an item;
+        }
+        else
+        {
+            newCurrentItem = NO_MENUITEM_SELECTED;
+        }
+    }
+    else
+    {
+        newCurrentItem = NO_MENUITEM_SELECTED;
+    }
+    if (CurrentItem != newCurrentItem)
+    {
+        CurrentItem = newCurrentItem;
+        return true;
+    }
+    return false;
 }
 bool MenuContext::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {

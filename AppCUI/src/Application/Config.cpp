@@ -192,8 +192,17 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Activ.Normal.Check    = ColorPair{ Color::DarkGreen, Color::White };
     this->Menu.Activ.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::White };
 
+    this->Menu.Activ.Selected.Text     = ColorPair{ Color::White, Color::Magenta };
+    this->Menu.Activ.Selected.HotKey   = ColorPair{ Color::Yellow, Color::Magenta };
+    this->Menu.Activ.Selected.ShortCut = ColorPair{ Color::Yellow, Color::Magenta };
+    this->Menu.Activ.Selected.Check    = ColorPair{ Color::Silver, Color::Magenta };
+    this->Menu.Activ.Selected.Uncheck  = ColorPair{ Color::Silver, Color::Magenta };
 
-
+    this->Menu.Activ.Inactive.Text     = ColorPair{ Color::Silver, Color::White };
+    this->Menu.Activ.Inactive.HotKey   = ColorPair{ Color::Silver, Color::White };
+    this->Menu.Activ.Inactive.ShortCut = ColorPair{ Color::Silver, Color::White };
+    this->Menu.Activ.Inactive.Check    = ColorPair{ Color::Silver, Color::White };
+    this->Menu.Activ.Inactive.Uncheck  = ColorPair{ Color::Silver, Color::White };
 
 
 }

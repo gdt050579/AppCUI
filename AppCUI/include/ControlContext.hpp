@@ -456,6 +456,7 @@ struct MenuContext
     AppCUI::Application::Config* Cfg;
     unsigned int FirstVisibleItem;
     unsigned int VisibleItemsCount;
+    unsigned int CurrentItem;
     unsigned int Width;
 
     MenuContext();
@@ -467,7 +468,7 @@ public:
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
     // mouse events
-    void OnMouseMove(int x, int y);
+    bool OnMouseMove(int x, int y);
     bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
     void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 

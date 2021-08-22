@@ -700,7 +700,15 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
     case MOUSE_LOCKED_OBJECT_NONE:
-        // check command bar first
+        // if Menu is opened --> it receives all mouse events
+        if (this->VisibleMenu)
+        {
+            auto* mnuC = ((MenuContext*) (this->VisibleMenu->Context));
+            if (mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y))
+                RepaintStatus |= REPAINT_STATUS_DRAW;
+            break;
+        }
+        // check command bar
         if (this->CommandBarObject.OnMouseOver(x, y, repaint))
         {
             if (this->MouseOverControl)
