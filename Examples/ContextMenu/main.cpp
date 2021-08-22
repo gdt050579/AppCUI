@@ -24,7 +24,7 @@ void MyUserControl::Create(Control* parent)
     // build a menu
     ctxMenu.AddCommandItem("&Save content", MENU_CMD_SAVE, Key::F2);
     ctxMenu.AddCommandItem("&Open content", MENU_CMD_OPEN, Key::F3);
-    ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR);
+    ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR, Key::R|Key::Ctrl|Key::Alt);
     ctxMenu.AddSeparator();
     ctxMenu.AddCheckItem("Flag &1");
     ctxMenu.AddCheckItem("Flag &2");

@@ -174,6 +174,7 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
         textParams.HotKeyColor    = itemCol.HotKey;
         textParams.HotKeyPosition = item.HotKeyOffset;
         textParams.Y              = tr;
+        
         switch (item.Type)
         {
         case MenuItemType::Line:
@@ -196,7 +197,16 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
             renderer.WriteText(item.Name, textParams);
             renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol.Text);
             break; 
-        }        
+        }     
+        if (item.ShortcutKey != Key::None)
+        {
+            auto k_n = KeyUtils::GetKeyName(item.ShortcutKey);
+            auto m_n = KeyUtils::GetKeyModifierName(item.ShortcutKey);
+            renderer.WriteSingleLineText(this->Width - k_n.size(), tr, k_n, itemCol.HotKey);
+            renderer.WriteSingleLineText(this->Width - (k_n.size()+m_n.size()), tr, m_n, itemCol.HotKey);
+        }
+
+
     }
 }
 
@@ -226,8 +236,26 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         y += relativeControl->GetY() + ((ControlContext*) relativeControl->Context)->Margins.Top;
         relativeControl = relativeControl->GetParent();
     }
-    // compute Width & Visible Items Count
-    Width = 20;
+    // compute best width
+    Width             = 0;
+    for (size_t tr = 0; tr < this->Items.size();tr++)
+    {
+        auto& i        = this->Items[tr];
+        unsigned int w_left = i.Name.Len();
+        unsigned int w_right = 0;
+        if ((i.Type == MenuItemType::Radio) || (i.Type == MenuItemType::Check))
+            w_left += 2;
+        if (i.ShortcutKey != Key::None)
+        {
+            w_right += KeyUtils::GetKeyName(i.ShortcutKey).size();
+            w_right += KeyUtils::GetKeyModifierName(i.ShortcutKey).size();     
+            if (w_right > 0)
+                w_right += 4;
+        }
+
+        Width = MAXVALUE(Width, w_left + w_right);
+
+    }
     VisibleItemsCount = this->Items.size();
     // Set the clip
     this->ScreenClip.Set(x, y, Width+2, VisibleItemsCount+2);
