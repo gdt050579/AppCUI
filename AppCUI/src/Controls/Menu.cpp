@@ -472,7 +472,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     for (size_t tr = 0; tr < this->ItemsCount;tr++)
     {
         auto i               = this->Items[tr].get();
-        unsigned int w_left = i->Name.Len();
+        unsigned int w_left = i->Name.Len()+2;
         unsigned int w_right = 0;
         if ((i->Type == MenuItemType::Radio) || (i->Type == MenuItemType::Check))
             w_left += 2;
@@ -481,7 +481,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
             w_right += (unsigned int)KeyUtils::GetKeyName(i->ShortcutKey).size();
             w_right += (unsigned int)KeyUtils::GetKeyModifierName(i->ShortcutKey).size();     
             if (w_right > 0)
-                w_right += 4;
+                w_right += 2;
         }
 
         Width = MAXVALUE(Width, w_left + w_right);
