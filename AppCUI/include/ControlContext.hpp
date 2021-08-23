@@ -464,6 +464,8 @@ public:
     // methods
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
+    void RunItemAction(unsigned int index);
+
     // Move
     void UpdateFirstVisibleItem();
     void CreateAvailableItemsList(unsigned int* indexes, unsigned int& count);

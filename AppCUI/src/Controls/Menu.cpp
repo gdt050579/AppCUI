@@ -245,30 +245,7 @@ MousePressedResult MenuContext::OnMousePressed(int x, int y)
     // if click on a valid item, apply the action and close the menu
     if (mpi.ItemIndex != NO_MENUITEM_SELECTED)
     {
-        auto itm = this->Items[mpi.ItemIndex].get();
-        int commandID = -1;
-        switch (itm->Type)
-        {
-        case MenuItemType::Check:
-            this->SetChecked(mpi.ItemIndex, !itm->Checked);
-            commandID = itm->CommandID;
-            break;
-        case MenuItemType::Radio:
-            this->SetChecked(mpi.ItemIndex, true);
-            commandID = itm->CommandID;
-            break;
-        case MenuItemType::SubMenu:
-            itm->SubMenu->Show(Width + ScreenClip.ScreenPosition.X, y + ScreenClip.ScreenPosition.Y);
-            return MousePressedResult::Repaint;
-        case MenuItemType::Command:
-            commandID = itm->CommandID;
-            break;
-        }
-        if (commandID >= 0)
-        {
-            Application::GetApplication()->CloseContextualMenu();
-            Application::GetApplication()->SendCommand(commandID);            
-        }
+        RunItemAction(mpi.ItemIndex);
         // other type of items
         return MousePressedResult::Repaint;
     }
@@ -300,6 +277,33 @@ void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& 
         {
             indexes[count++] = tr;
         }
+    }
+}
+void MenuContext::RunItemAction(unsigned int itemIndex)
+{
+    auto itm      = this->Items[itemIndex].get();
+    int commandID = -1;
+    switch (itm->Type)
+    {
+    case MenuItemType::Check:
+        this->SetChecked(itemIndex, !itm->Checked);
+        commandID = itm->CommandID;
+        break;
+    case MenuItemType::Radio:
+        this->SetChecked(itemIndex, true);
+        commandID = itm->CommandID;
+        break;
+    case MenuItemType::SubMenu:
+        itm->SubMenu->Show(Width + ScreenClip.ScreenPosition.X, ScreenClip.ScreenPosition.Y + 1 + itemIndex - FirstVisibleItem);
+        break;
+    case MenuItemType::Command:
+        commandID = itm->CommandID;
+        break;
+    }
+    if (commandID >= 0)
+    {
+        Application::GetApplication()->CloseContextualMenu();
+        Application::GetApplication()->SendCommand(commandID);
     }
 }
 void MenuContext::UpdateFirstVisibleItem()
@@ -385,20 +389,34 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
             return true;
         case Key::Enter:
         case Key::Space:
-            break;
+            RunItemAction(this->CurrentItem);
+            return true;
         case Key::Escape:
+            // call the escape action
             break;
         case Key::Right:
-            break;
         case Key::Left:
-            break;
+            if ((this->CurrentItem < ItemsCount) && 
+                (Items[this->CurrentItem]->Enabled) && 
+                (Items[this->CurrentItem]->Type == MenuItemType::SubMenu))
+            {
+                if (keyCode == Key::Right)
+                    RunItemAction(this->CurrentItem);
+                else
+                {
+                    // call the escape action
+                }
+                return true;
+            }
+            return false;
     }
     // check short keys
     for (unsigned int tr=0;tr<ItemsCount;tr++)
     {
-        if ((Items[tr]->HotKey != Key::None) &&(Items[tr]->HotKey == keyCode))
+        if ((Items[tr]->HotKey != Key::None) && (Items[tr]->HotKey == keyCode) && (Items[tr]->Enabled))
         {
-            // do action for tr
+            RunItemAction(tr);
+            return true;
         }
     }
     // no binding
