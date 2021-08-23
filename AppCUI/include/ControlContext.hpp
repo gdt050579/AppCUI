@@ -432,7 +432,7 @@ struct MenuItem
 };
 enum class MousePressedResult: unsigned int
 {
-    None, Repaint, CheckParent
+    None, Repaint, CheckParent, Activate
 };
 struct MenuMousePositionInfo
 {
@@ -470,6 +470,7 @@ public:
     void ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi);
     bool OnMouseMove(int x, int y);
     MousePressedResult OnMousePressed(int x, int y);
+    bool IsOnMenu(int x, int y);
     void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
     // key events

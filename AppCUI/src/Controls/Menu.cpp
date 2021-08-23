@@ -267,17 +267,22 @@ MousePressedResult MenuContext::OnMousePressed(int x, int y)
         if (commandID >= 0)
         {
             Application::GetApplication()->CloseContextualMenu();
-            Application::GetApplication()->SendCommand(commandID);
-            return MousePressedResult::Repaint;
+            Application::GetApplication()->SendCommand(commandID);            
         }
         // other type of items
-        return MousePressedResult::None;
+        return MousePressedResult::Repaint;
     }
     // is it's on the menu -> do nothing
     if (mpi.IsOnMenu)
         return MousePressedResult::None;
     // if it's outsize, check if mouse is on one of its parens
     return MousePressedResult::CheckParent;
+}
+bool MenuContext::IsOnMenu(int x, int y)
+{
+    MenuMousePositionInfo mpi;
+    ComputeMousePositionInfo(x, y, mpi);
+    return mpi.IsOnMenu;
 }
 void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {

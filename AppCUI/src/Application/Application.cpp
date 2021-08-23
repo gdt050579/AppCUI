@@ -608,8 +608,20 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
 }
 void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y)
 {
-    auto* mcx   = reinterpret_cast<MenuContext*>(mnu->Context);
-    auto result = mcx->OnMousePressed(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y);
+    auto* mcx = reinterpret_cast<MenuContext*>(mnu->Context);
+    MousePressedResult result = MousePressedResult::None;
+    if (mnu == this->VisibleMenu)
+    {        
+        result = mcx->OnMousePressed(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y);
+    }
+    else
+    {
+        // check and see if we should not change current visible menu
+        if (mcx->IsOnMenu(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y))
+            result = MousePressedResult::Activate;
+        else
+            result = MousePressedResult::CheckParent;
+    }
     switch (result)
     {
     case MousePressedResult::None:
@@ -623,7 +635,11 @@ void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu
         else
             this->CloseContextualMenu();
         break;
-    }        
+    case MousePressedResult::Activate:
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+        ShowContextualMenu(mnu);
+        break;
+    }
 }
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {

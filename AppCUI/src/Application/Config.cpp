@@ -196,7 +196,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Activ.Selected.Text     = ColorPair{ Color::White, Color::Magenta };
     this->Menu.Activ.Selected.HotKey   = ColorPair{ Color::Yellow, Color::Magenta };
     this->Menu.Activ.Selected.ShortCut = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Menu.Activ.Selected.Check    = ColorPair{ Color::Silver, Color::Magenta };
+    this->Menu.Activ.Selected.Check    = ColorPair{ Color::Aqua, Color::Magenta };
     this->Menu.Activ.Selected.Uncheck  = ColorPair{ Color::Silver, Color::Magenta };
 
     this->Menu.Activ.Inactive.Text     = ColorPair{ Color::Silver, Color::White };
