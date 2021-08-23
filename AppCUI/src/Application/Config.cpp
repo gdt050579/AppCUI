@@ -186,6 +186,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ComboBox.HoverOveItem    = ColorPair{ Color::DarkRed, Color::Silver };
 
     this->Menu.Activ.Background      = ColorPair{ Color::Black, Color::White };
+
     this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
     this->Menu.Activ.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::White };
     this->Menu.Activ.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::White };
@@ -204,5 +205,23 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Activ.Inactive.Check    = ColorPair{ Color::Silver, Color::White };
     this->Menu.Activ.Inactive.Uncheck  = ColorPair{ Color::Silver, Color::White };
 
+    this->Menu.Parent.Background = ColorPair{ Color::Gray, Color::Silver };
 
+    this->Menu.Parent.Normal.Text     = ColorPair{ Color::Black, Color::Silver };
+    this->Menu.Parent.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::Silver };
+    this->Menu.Parent.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::Silver };
+    this->Menu.Parent.Normal.Check    = ColorPair{ Color::DarkGreen, Color::Silver };
+    this->Menu.Parent.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::Silver };
+
+    this->Menu.Parent.Selected.Text     = ColorPair{ Color::White, Color::Gray };
+    this->Menu.Parent.Selected.HotKey   = ColorPair{ Color::White, Color::Gray };
+    this->Menu.Parent.Selected.ShortCut = ColorPair{ Color::White, Color::Gray };
+    this->Menu.Parent.Selected.Check    = ColorPair{ Color::White, Color::Gray };
+    this->Menu.Parent.Selected.Uncheck  = ColorPair{ Color::White, Color::Gray };
+
+    this->Menu.Parent.Inactive.Text     = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Inactive.HotKey   = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Inactive.ShortCut = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Inactive.Check    = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Inactive.Uncheck  = ColorPair{ Color::Gray, Color::Silver };
 }

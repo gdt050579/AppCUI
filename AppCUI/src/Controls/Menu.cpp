@@ -205,7 +205,7 @@ bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
 }
 void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi)
 {
-    if ((x >= 1) && (y >= 1) && (x <= Width) && (y <= VisibleItemsCount))
+    if ((x >= 1) && (y >= 1) && (x <= (int)Width) && (y <= (int)VisibleItemsCount))
     {
         mpi.ItemIndex = (y - 1) + FirstVisibleItem;
         if ((mpi.ItemIndex < ItemsCount) && 
