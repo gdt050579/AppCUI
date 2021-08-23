@@ -6,7 +6,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
 #define CTX ((MenuContext*) this->Context)
-#define CHECK_VALID_ITEM(retValue)     CHECK((size_t) menuItem < CTX->Items.size(), retValue, "Invalid index: %u (should be a value between [0..%z)",(unsigned int)menuItem,CTX->Items.size());
+#define CHECK_VALID_ITEM(retValue)     CHECK(menuItem < CTX->ItemsCount, retValue, "Invalid index: %u (should be a value between [0..%u)",(unsigned int)menuItem,CTX->ItemsCount);
 #define NO_MENUITEM_SELECTED    0xFFFFFFFF
 
 
@@ -132,32 +132,19 @@ MenuContext::MenuContext()
     this->VisibleItemsCount = 0;
     this->CurrentItem       = NO_MENUITEM_SELECTED;
     this->Width             = 0;
+    this->ItemsCount        = 0;
 }
-MenuContext::MenuContext(unsigned int itemsCount)
+ItemHandle MenuContext::AddItem(MenuItem* itm)
 {
-    this->Parent            = nullptr;
-    this->Cfg               = Application::GetAppConfig();
-    this->FirstVisibleItem  = 0;
-    this->VisibleItemsCount = 0;
-    this->CurrentItem       = NO_MENUITEM_SELECTED;
-    this->Width             = 0;
-    Items.reserve(itemsCount);
-}
-ItemHandle MenuContext::AddItem(MenuItem&& itm)
-{
-    if (itm.Type == MenuItemType::Invalid)
+    if (itm->Type == MenuItemType::Invalid)
         return InvalidItemHandle;
-    CHECK(Items.size() < 0xFFFF, false, "A maximum of 0xFFFF items can be added to a Menu");
-    try
-    {
-        auto res = ItemHandle{ (unsigned int) Items.size() };
-        Items.push_back(itm);
-        return res;
-    }
-    catch (...)
-    {
-        RETURNERROR(InvalidItemHandle , "Exception thrown while adding menu item to std::vector");
-    }
+    CHECK(this->ItemsCount < MAX_NUMBER_OF_MENU_ITEMS,
+          InvalidItemHandle,
+          "A maximum of 256 items can be added to a Menu");
+
+    auto res = ItemHandle{ (unsigned int) this->ItemsCount };
+    Items[this->ItemsCount].reset(itm);
+    return res;
 }
 void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 {
@@ -174,8 +161,8 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
     renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
     for (unsigned int tr=1;tr<=this->VisibleItemsCount;tr++)
     {
-        MenuItem& item = this->Items[tr - 1];
-        if (item.Enabled == false)
+        MenuItem* item = this->Items[tr - 1].get();
+        if (item->Enabled == false)
             itemCol = &col->Inactive;
         else
         {
@@ -190,42 +177,42 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
         
         textParams.Color          = itemCol->Text;
         textParams.HotKeyColor    = itemCol->HotKey;
-        textParams.HotKeyPosition = item.HotKeyOffset;
+        textParams.HotKeyPosition = item->HotKeyOffset;
         textParams.Y              = tr;
               
-        switch (item.Type)
+        switch (item->Type)
         {
         case MenuItemType::Line:
             renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col->Background);
             break;
         case MenuItemType::Command:
             textParams.X = 1;
-            renderer.WriteText(item.Name, textParams);
+            renderer.WriteText(item->Name, textParams);
             break;
         case MenuItemType::Check:
             textParams.X = 3;
-            renderer.WriteText(item.Name, textParams);
-            if (item.Checked)
+            renderer.WriteText(item->Name, textParams);
+            if (item->Checked)
                 renderer.WriteSpecialCharacter(1, tr, SpecialChars::CheckMark, itemCol->Check);
             break;    
         case MenuItemType::Radio:
             textParams.X = 3;
-            renderer.WriteText(item.Name, textParams);
-            if (item.Checked)
+            renderer.WriteText(item->Name, textParams);
+            if (item->Checked)
                 renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleFilled, itemCol->Check);
             else
                 renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleEmpty, itemCol->Uncheck);
             break; 
         case MenuItemType::SubMenu:
             textParams.X = 1;
-            renderer.WriteText(item.Name, textParams);
+            renderer.WriteText(item->Name, textParams);
             renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol->Text);
             break; 
         }     
-        if (item.ShortcutKey != Key::None)
+        if (item->ShortcutKey != Key::None)
         {
-            auto k_n = KeyUtils::GetKeyName(item.ShortcutKey);
-            auto m_n = KeyUtils::GetKeyModifierName(item.ShortcutKey);
+            auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
+            auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
             renderer.WriteSingleLineText(this->Width - (unsigned int)k_n.size(), tr, k_n, itemCol->ShortCut);
             renderer.WriteSingleLineText(this->Width - (unsigned int)(k_n.size()+m_n.size()), tr, m_n, itemCol->ShortCut);
         }
@@ -235,28 +222,28 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 }
 bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
 {
-    CHECK(menuIndex < Items.size(), false, "Invalid menu index (%u) , should be between 0 and less than %z",menuIndex, Items.size());
-    auto& i = this->Items[menuIndex];
-    CHECK((i.Type == MenuItemType::Check) || (i.Type == MenuItemType::Radio),
+    CHECK(menuIndex < ItemsCount, false, "Invalid menu index (%u) , should be between 0 and less than %u",menuIndex, ItemsCount);
+    auto i = this->Items[menuIndex].get();
+    CHECK((i->Type == MenuItemType::Check) || (i->Type == MenuItemType::Radio),
           false,
           "Only Check and Radio item can change their state");
-    if (i.Type == MenuItemType::Radio)
+    if (i->Type == MenuItemType::Radio)
     {
         // radio menu item -> uncheck all items that are radioboxes
         unsigned int index = menuIndex;
-        while (((index >= 0) && (index < this->Items.size())) && (this->Items[index].Type == MenuItemType::Radio))
+        while (((index >= 0) && (index < this->ItemsCount)) && (this->Items[index]->Type == MenuItemType::Radio))
         {
-            this->Items[index].Checked = false;
+            this->Items[index]->Checked = false;
             index--;
         }
         index = menuIndex + 1;
-        while ((index < this->Items.size()) && (this->Items[index].Type == MenuItemType::Radio))
+        while ((index < this->ItemsCount) && (this->Items[index]->Type == MenuItemType::Radio))
         {
-            this->Items[index].Checked = false;
+            this->Items[index]->Checked = false;
             index++;
         }
     }
-    i.Checked = status;
+    i->Checked = status;
     return true;
 }
 void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi)
@@ -264,9 +251,9 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
     if ((x >= 1) && (y >= 1) && (x <= Width) && (y <= VisibleItemsCount))
     {
         mpi.ItemIndex = (y - 1) + FirstVisibleItem;
-        if ((mpi.ItemIndex < Items.size()) && 
-            (Items[mpi.ItemIndex].Enabled) &&
-            (Items[mpi.ItemIndex].Type != MenuItemType::Line))
+        if ((mpi.ItemIndex < ItemsCount) && 
+            (Items[mpi.ItemIndex]->Enabled) &&
+            (Items[mpi.ItemIndex]->Type != MenuItemType::Line))
         {
             // all good - current item is valid
         }
@@ -301,23 +288,23 @@ MousePressedResult MenuContext::OnMousePressed(int x, int y)
     // if click on a valid item, apply the action and close the menu
     if (mpi.ItemIndex != NO_MENUITEM_SELECTED)
     {
-        auto& itm = this->Items[mpi.ItemIndex];
+        auto itm = this->Items[mpi.ItemIndex].get();
         int commandID = -1;
-        switch (itm.Type)
+        switch (itm->Type)
         {
         case MenuItemType::Check:
-            this->SetChecked(mpi.ItemIndex, !itm.Checked);
-            commandID = itm.CommandID;
+            this->SetChecked(mpi.ItemIndex, !itm->Checked);
+            commandID = itm->CommandID;
             break;
         case MenuItemType::Radio:
             this->SetChecked(mpi.ItemIndex, true);
-            commandID = itm.CommandID;
+            commandID = itm->CommandID;
             break;
         case MenuItemType::SubMenu:
-            itm.SubMenu->Show(Width + ScreenClip.ScreenPosition.X, y + ScreenClip.ScreenPosition.Y);
+            itm->SubMenu->Show(Width + ScreenClip.ScreenPosition.X, y + ScreenClip.ScreenPosition.Y);
             return MousePressedResult::Repaint;
         case MenuItemType::Command:
-            commandID = itm.CommandID;
+            commandID = itm->CommandID;
             break;
         }
         if (commandID >= 0)
@@ -356,17 +343,17 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     }
     // compute best width
     Width             = 0;
-    for (size_t tr = 0; tr < this->Items.size();tr++)
+    for (size_t tr = 0; tr < this->ItemsCount;tr++)
     {
-        auto& i        = this->Items[tr];
-        unsigned int w_left = i.Name.Len();
+        auto i               = this->Items[tr].get();
+        unsigned int w_left = i->Name.Len();
         unsigned int w_right = 0;
-        if ((i.Type == MenuItemType::Radio) || (i.Type == MenuItemType::Check))
+        if ((i->Type == MenuItemType::Radio) || (i->Type == MenuItemType::Check))
             w_left += 2;
-        if (i.ShortcutKey != Key::None)
+        if (i->ShortcutKey != Key::None)
         {
-            w_right += KeyUtils::GetKeyName(i.ShortcutKey).size();
-            w_right += KeyUtils::GetKeyModifierName(i.ShortcutKey).size();     
+            w_right += KeyUtils::GetKeyName(i->ShortcutKey).size();
+            w_right += KeyUtils::GetKeyModifierName(i->ShortcutKey).size();     
             if (w_right > 0)
                 w_right += 4;
         }
@@ -374,7 +361,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         Width = MAXVALUE(Width, w_left + w_right);
 
     }
-    VisibleItemsCount = this->Items.size();
+    VisibleItemsCount = this->ItemsCount;
     // Set the clip
     this->ScreenClip.Set(x, y, Width+2, VisibleItemsCount+2);
     // link to application
@@ -388,18 +375,7 @@ Menu::Menu()
 {
     this->Context = new MenuContext();
 }
-Menu::Menu(unsigned int itemsCount)
-{
-    this->Context = new MenuContext(itemsCount);
-}
-Menu::Menu(const Menu& obj)
-{
-    this->Context = new MenuContext();
-    if (obj.Context)
-    {
-        CTX->Items = ((MenuContext*) (obj.Context))->Items;
-    }    
-}
+
 Menu::~Menu()
 {
     if (this->Context)
@@ -427,7 +403,7 @@ ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 {
     try
     {
-        Menu* SubMenu                               = new Menu(16); // 16 reserved items by default
+        Menu* SubMenu                               = new Menu(); 
         ((MenuContext*) (SubMenu->Context))->Parent = this;
         return CTX->AddItem(MenuItem(text, SubMenu));
     }
@@ -439,7 +415,7 @@ ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 bool Menu::SetEnable(ItemHandle menuItem, bool status)
 {
     CHECK_VALID_ITEM(false);
-    CTX->Items[(unsigned int) menuItem].Enabled = status;
+    CTX->Items[(unsigned int) menuItem]->Enabled = status;
     return true;
 }
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
@@ -451,7 +427,7 @@ bool Menu::SetChecked(ItemHandle menuItem, bool status)
 Menu* Menu::GetSubMenu(ItemHandle menuItem)
 {
     CHECK_VALID_ITEM(nullptr);
-    return CTX->Items[(unsigned int) menuItem].SubMenu;
+    return CTX->Items[(unsigned int) menuItem]->SubMenu;
 }
 
 void Menu::Show(int x, int y)

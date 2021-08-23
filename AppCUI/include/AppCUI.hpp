@@ -2093,8 +2093,7 @@ namespace Controls
         void* Context;
 
         Menu();
-        Menu(unsigned int itemsCount);
-        Menu(const Menu& obj);
+        Menu(const Menu& obj) = delete;
         ~Menu();
 
         ItemHandle AddCommandItem(const AppCUI::Utils::ConstString & text, int CommandID, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);

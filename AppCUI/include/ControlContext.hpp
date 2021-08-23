@@ -458,9 +458,13 @@ struct MenuMousePositionInfo
     bool IsOnUpButton;
     bool IsOnDownButton;
 };
+#define MAX_NUMBER_OF_MENU_ITEMS    256
 struct MenuContext
 {
-    std::vector<MenuItem> Items;
+    // std::vector messes up with inter-items pointers when calling copy/move ctor
+    // as a result, opening a sub-menu from another is likely to produce a crash (as the pointers will be invalid)
+    std::unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
+    unsigned int ItemsCount;
     Menu* Parent;
     AppCUI::Graphics::Clip ScreenClip;
     AppCUI::Application::Config* Cfg;
@@ -470,8 +474,7 @@ struct MenuContext
     unsigned int Width;
 
     MenuContext();
-    MenuContext(unsigned int itemsCount);
-    ItemHandle AddItem(MenuItem&& itm);
+    ItemHandle AddItem(MenuItem* itm);
 
 public:
     // methods
