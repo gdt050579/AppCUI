@@ -423,7 +423,7 @@ struct MenuItem
     Menu* SubMenu;
 
     MenuItem(); // line
-    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey); // commands
+    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey); // commands
     MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj) = delete;
     MenuItem(MenuItem&& obj) = delete;

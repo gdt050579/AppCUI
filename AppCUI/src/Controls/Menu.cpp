@@ -22,14 +22,14 @@ MenuItem::MenuItem()
     ShortcutKey       = AppCUI::Input::Key::None;
     HotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int cmdID, AppCUI::Input::Key shortcutKey)
+MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int cmdID, bool checked, AppCUI::Input::Key shortcutKey)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset))
     {
         Type        = type;
         Enabled     = true;
-        Checked     = false;
+        Checked     = checked;
         SubMenu     = nullptr;
         CommandID   = cmdID;
         ShortcutKey = shortcutKey;
@@ -55,7 +55,7 @@ MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
     {
         Type        = MenuItemType::SubMenu;
         Enabled     = true;
-        Checked     = true;
+        Checked     = false;
         ShortcutKey = AppCUI::Input::Key::None;
         HotKey      = AppCUI::Input::Key::None;
         SubMenu     = subMenu;
@@ -347,15 +347,15 @@ Menu::~Menu()
 
 ItemHandle Menu::AddCommandItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Command, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Command, text, CommandID, false, shortcutKey));
 }
-ItemHandle Menu::AddCheckItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
+ItemHandle Menu::AddCheckItem(const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Check, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Check, text, CommandID, checked, shortcutKey));
 }
-ItemHandle Menu::AddRadioItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
+ItemHandle Menu::AddRadioItem(const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Radio, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Radio, text, CommandID, checked, shortcutKey));
 }
 ItemHandle Menu::AddSeparator()
 {

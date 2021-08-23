@@ -9,10 +9,16 @@ using namespace AppCUI::Input;
 #define MENU_CMD_SAVE           1000
 #define MENU_CMD_OPEN           1001
 #define MENU_CMD_CLEAR          1002
+#define MENU_CMD_RED            1003
+#define MENU_CMD_GREEN          1004
+#define MENU_CMD_BLUE           1005
 
 class MyUserControl: public AppCUI::Controls::UserControl
 {
     Menu ctxMenu;
+
+  public:
+    Color squareColor;
   public:
     void Create(Control* parent);
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
@@ -21,26 +27,26 @@ class MyUserControl: public AppCUI::Controls::UserControl
 void MyUserControl::Create(Control* parent)
 {
     UserControl::Create(parent, "x:50%,y:50%,w:2,h:1");
+    squareColor = Color::Red;
     // build a menu
     ctxMenu.AddCommandItem("&Save content", MENU_CMD_SAVE, Key::F2);
     ctxMenu.AddCommandItem("&Open content", MENU_CMD_OPEN, Key::F3);
     auto cmd1 = ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR, Key::R|Key::Ctrl|Key::Alt);
     ctxMenu.SetEnable(cmd1, false);
     ctxMenu.AddSeparator();
-    auto flg1 = ctxMenu.AddCheckItem("Flag &1");
+    auto flg1 = ctxMenu.AddCheckItem("Flag &1",100);
     ctxMenu.SetChecked(flg1, true);
-    ctxMenu.AddCheckItem("Flag &2");
-    ctxMenu.AddCheckItem("Flag &3");
+    ctxMenu.AddCheckItem("Flag &2",200);
+    ctxMenu.AddCheckItem("Flag &3",300);
     ctxMenu.AddSeparator();
-    auto opt1 = ctxMenu.AddRadioItem("Select option &A");
-    ctxMenu.SetChecked(opt1, true);
-    ctxMenu.AddRadioItem("Select option &B");
-    ctxMenu.AddRadioItem("Select option &C");
+    ctxMenu.AddRadioItem("Select option &A",350,true);
+    ctxMenu.AddRadioItem("Select option &B",351);
+    ctxMenu.AddRadioItem("Select option &C",352);
     ctxMenu.AddSeparator();
     auto smHandle = ctxMenu.AddSubMenu("Color");
-    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red");
-    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Green");
-    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue");
+    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red", MENU_CMD_RED, true);
+    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Green", MENU_CMD_GREEN);
+    ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue", MENU_CMD_BLUE);
 }
 void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
 {
@@ -51,7 +57,7 @@ void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
 }
 void MyUserControl::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-    renderer.Clear(' ', ColorPair{ Color::White, Color::Red });
+    renderer.Clear(' ', ColorPair{ Color::White, squareColor });
 }
 class ContextMenuExample : public AppCUI::Controls::Window
 {
@@ -70,6 +76,21 @@ class ContextMenuExample : public AppCUI::Controls::Window
         {
             Application::Close();
             return true;
+        }
+        if (eventType == Event::EVENT_COMMAND)
+        {
+            switch (controlID)
+            {
+            case MENU_CMD_RED:
+                m.squareColor = Color::Red;
+                break;
+            case MENU_CMD_GREEN:
+                m.squareColor = Color::Green;
+                break;
+            case MENU_CMD_BLUE:
+                m.squareColor = Color::Blue;
+                break;
+            }
         }
         return false;
     }
