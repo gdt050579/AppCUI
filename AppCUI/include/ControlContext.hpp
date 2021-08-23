@@ -422,30 +422,13 @@ struct MenuItem
     bool Checked;
     Menu* SubMenu;
 
-    void Copy(const MenuItem& obj);
-    void Swap(MenuItem& obj) noexcept;
-
     MenuItem(); // line
-    MenuItem(
-          MenuItemType type,
-          const AppCUI::Utils::ConstString& text,
-          int CommandID,
-          AppCUI::Input::Key hotKey);                                // commands
+    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey); // commands
     MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
-    MenuItem(const MenuItem& obj);
-    MenuItem(MenuItem&& obj) noexcept;
+    MenuItem(const MenuItem& obj) = delete;
+    MenuItem(MenuItem&& obj) = delete;
     ~MenuItem();
 
-    inline MenuItem& operator=(const MenuItem& obj)
-    {
-        Copy(obj);
-        return *this;
-    }
-    inline MenuItem& operator=(MenuItem&& obj) noexcept
-    {
-        Swap(obj);
-        return *this;
-    }
 };
 enum class MousePressedResult: unsigned int
 {
@@ -474,7 +457,7 @@ struct MenuContext
     unsigned int Width;
 
     MenuContext();
-    ItemHandle AddItem(MenuItem* itm);
+    ItemHandle AddItem(std::unique_ptr<MenuItem> itm);
 
 public:
     // methods

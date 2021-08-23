@@ -10,40 +10,7 @@ using namespace AppCUI::Input;
 #define NO_MENUITEM_SELECTED    0xFFFFFFFF
 
 
-void MenuItem::Copy(const MenuItem& obj)
-{
-    this->Type         = obj.Type;
-    this->Checked      = obj.Checked;
-    this->CommandID    = obj.CommandID;
-    this->Enabled      = obj.Enabled;
-    this->HotKey       = obj.HotKey;
-    this->HotKeyOffset = obj.HotKeyOffset;
-    this->Name         = obj.Name;
-    this->ShortcutKey  = obj.ShortcutKey;
-    // delete the old menu
-    if (this->SubMenu)
-    {
-        delete this->SubMenu;
-        this->SubMenu = nullptr;
-    }
-    if (obj.SubMenu)
-        this->SubMenu = new Menu(*obj.SubMenu);
-}
-void MenuItem::Swap(MenuItem& obj) noexcept
-{
-    // copy some values
-    this->Type         = obj.Type;
-    this->Checked      = obj.Checked;
-    this->CommandID    = obj.CommandID;
-    this->Enabled      = obj.Enabled;
-    this->HotKey       = obj.HotKey;
-    this->HotKeyOffset = obj.HotKeyOffset;
-    this->ShortcutKey  = obj.ShortcutKey;
 
-    // swap others
-    this->Name.Swap(obj.Name);
-    std::swap(this->SubMenu, obj.SubMenu);
-}
 MenuItem::MenuItem()
 {
     Type              = MenuItemType::Line;
@@ -106,16 +73,7 @@ MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
         }
     }
 }
-MenuItem::MenuItem(const MenuItem& obj)
-{
-    this->SubMenu      = nullptr;
-    Copy(obj);
-}
-MenuItem::MenuItem(MenuItem&& obj) noexcept
-{
-    this->SubMenu = nullptr;
-    Swap(obj);
-}
+
 MenuItem::~MenuItem()
 {
     if (SubMenu)
@@ -134,16 +92,15 @@ MenuContext::MenuContext()
     this->Width             = 0;
     this->ItemsCount        = 0;
 }
-ItemHandle MenuContext::AddItem(MenuItem* itm)
+ItemHandle MenuContext::AddItem(std::unique_ptr<MenuItem> itm)
 {
     if (itm->Type == MenuItemType::Invalid)
         return InvalidItemHandle;
-    CHECK(this->ItemsCount < MAX_NUMBER_OF_MENU_ITEMS,
-          InvalidItemHandle,
-          "A maximum of 256 items can be added to a Menu");
+    CHECK(this->ItemsCount < MAX_NUMBER_OF_MENU_ITEMS,InvalidItemHandle, "A maximum of 256 items can be added to a Menu");
 
     auto res = ItemHandle{ (unsigned int) this->ItemsCount };
-    Items[this->ItemsCount].reset(itm);
+    Items[this->ItemsCount] = std::move(itm);
+    this->ItemsCount++;
     return res;
 }
 void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
@@ -385,19 +342,19 @@ Menu::~Menu()
 
 ItemHandle Menu::AddCommandItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(MenuItem(MenuItemType::Command, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Command, text, CommandID, shortcutKey));
 }
 ItemHandle Menu::AddCheckItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(MenuItem(MenuItemType::Check, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Check, text, CommandID, shortcutKey));
 }
 ItemHandle Menu::AddRadioItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
 {
-    return CTX->AddItem(MenuItem(MenuItemType::Radio, text, CommandID, shortcutKey));
+    return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Radio, text, CommandID, shortcutKey));
 }
 ItemHandle Menu::AddSeparator()
 {
-    return CTX->AddItem(MenuItem());
+    return CTX->AddItem(std::make_unique<MenuItem>());
 }
 ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 {
@@ -405,7 +362,7 @@ ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
     {
         Menu* SubMenu                               = new Menu(); 
         ((MenuContext*) (SubMenu->Context))->Parent = this;
-        return CTX->AddItem(MenuItem(text, SubMenu));
+        return CTX->AddItem(std::make_unique<MenuItem>(text, SubMenu));
     }
     catch (...)
     {
