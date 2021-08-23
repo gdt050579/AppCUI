@@ -570,7 +570,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     if (this->VisibleMenu)
     {
         auto menuContext = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
-        if (menuContext->ProcessKey(KeyCode, true))
+        if (menuContext->OnKeyEvent(KeyCode))
             RepaintStatus |= REPAINT_STATUS_DRAW;        
         return;
     }

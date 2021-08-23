@@ -287,8 +287,123 @@ bool MenuContext::IsOnMenu(int x, int y)
 void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
 }
-
+void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& count)
+{
+    // assume indexes is valid and has a size of MAX_NUMBER_OF_MENU_ITEMS
+    count = 0;
+    for (unsigned int tr = 0; tr < ItemsCount; tr++)
+    {
+        if (!Items[tr]->Enabled)
+            continue;
+        if ((Items[tr]->Type == MenuItemType::Command) || (Items[tr]->Type == MenuItemType::Check) ||
+            (Items[tr]->Type == MenuItemType::Radio) || (Items[tr]->Type == MenuItemType::SubMenu))
+        {
+            indexes[count++] = tr;
+        }
+    }
+}
+void MenuContext::UpdateFirstVisibleItem()
+{
+}
+void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
+{
+    unsigned int idx[MAX_NUMBER_OF_MENU_ITEMS];
+    unsigned int idxCount;
+    CreateAvailableItemsList(idx, idxCount);
+    if (idxCount == 0)
+    {
+        // no items or all items are disabled
+        this->CurrentItem = NO_MENUITEM_SELECTED;
+        return;
+    }
+    // if CurrentItem is NO_MENUITEM_SELECTED ==> select the first available item
+    if (this->CurrentItem >= this->ItemsCount)
+    {
+        this->CurrentItem = idx[0]; 
+    }
+    else
+    {
+        // make sure that this->CurrentItem is part of the list
+        unsigned int currentIdx = 0xFFFFFFFF;
+        unsigned int bestDiff   = 0xFFFFFFFF;
+        for (unsigned int tr = 0; tr < idxCount; tr++)
+        {
+            unsigned int diff;
+            if (idx[tr] < this->CurrentItem)
+                diff = this->CurrentItem - idx[tr];
+            else
+                diff = idx[tr] - this->CurrentItem;
+            if (diff < bestDiff)
+            {
+                bestDiff   = diff;
+                currentIdx = tr;
+            }
+        }
+        // sanity check
+        if (currentIdx>=idxCount)
+        {
+            // no item is selected
+            this->CurrentItem = NO_MENUITEM_SELECTED;
+            return;          
+        }
+        // compute the new position
+        switch (keyCode)
+        {
+        case Key::Up:
+            if (currentIdx > 0)
+                currentIdx--;
+            else
+                currentIdx = idxCount - 1;
+            break;
+        case Key::Down:
+            currentIdx++;
+            if (currentIdx >= idxCount)
+                currentIdx = 0;
+            break;
+        case Key::Home:
+            currentIdx = 0;
+            break;
+        case Key::End:
+            currentIdx = idxCount - 1;
+            break;
+        }
+        this->CurrentItem = idx[currentIdx];
+    }
+    UpdateFirstVisibleItem();
+}
 // key events
+bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
+{
+    // check movement keys
+    switch (keyCode)
+    {
+        case Key::Up:
+        case Key::Down:
+        case Key::Home:
+        case Key::End:
+            MoveCurrentItemTo(keyCode);
+            return true;
+        case Key::Enter:
+        case Key::Space:
+            break;
+        case Key::Escape:
+            break;
+        case Key::Right:
+            break;
+        case Key::Left:
+            break;
+    }
+    // check short keys
+    for (unsigned int tr=0;tr<ItemsCount;tr++)
+    {
+        if ((Items[tr]->HotKey != Key::None) &&(Items[tr]->HotKey == keyCode))
+        {
+            // do action for tr
+        }
+    }
+    // no binding
+    return false;
+}
 bool MenuContext::ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys)
 {
     for (unsigned int tr=0;tr<this->ItemsCount;tr++)

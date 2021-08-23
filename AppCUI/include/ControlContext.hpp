@@ -434,6 +434,7 @@ enum class MousePressedResult: unsigned int
 {
     None, Repaint, CheckParent, Activate
 };
+
 struct MenuMousePositionInfo
 {
     unsigned int ItemIndex;
@@ -463,6 +464,11 @@ public:
     // methods
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
+    // Move
+    void UpdateFirstVisibleItem();
+    void CreateAvailableItemsList(unsigned int* indexes, unsigned int& count);
+    void MoveCurrentItemTo(AppCUI::Input::Key keyCode);
+
     // Check
     bool SetChecked(unsigned int index, bool status);
 
@@ -474,6 +480,7 @@ public:
     void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
     // key events
+    bool OnKeyEvent(AppCUI::Input::Key keyCode);
     bool ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys);
 
     // Show

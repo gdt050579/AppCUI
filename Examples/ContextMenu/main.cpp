@@ -43,7 +43,7 @@ void MyUserControl::Create(Control* parent)
     ctxMenu.AddRadioItem("Select option &B",351);
     ctxMenu.AddRadioItem("Select option &C",352);
     ctxMenu.AddSeparator();
-    auto smHandle = ctxMenu.AddSubMenu("Color");
+    auto smHandle = ctxMenu.AddSubMenu("Co&lor");
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red", MENU_CMD_RED, true);
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Green", MENU_CMD_GREEN);
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue", MENU_CMD_BLUE);
