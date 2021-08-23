@@ -306,8 +306,13 @@ void MenuContext::RunItemAction(unsigned int itemIndex)
         Application::GetApplication()->SendCommand(commandID);
     }
 }
+void MenuContext::CloseMenu()
+{
+    // NOT IMPLEMENTED YET
+}
 void MenuContext::UpdateFirstVisibleItem()
 {
+    // NOT IMPLEMENTED YET
 }
 void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
 {
@@ -392,8 +397,8 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
             RunItemAction(this->CurrentItem);
             return true;
         case Key::Escape:
-            // call the escape action
-            break;
+            CloseMenu();
+            return true;
         case Key::Right:
         case Key::Left:
             if ((this->CurrentItem < ItemsCount) && 
@@ -403,9 +408,7 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
                 if (keyCode == Key::Right)
                     RunItemAction(this->CurrentItem);
                 else
-                {
-                    // call the escape action
-                }
+                    CloseMenu();
                 return true;
             }
             return false;

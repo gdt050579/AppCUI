@@ -465,6 +465,7 @@ public:
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
     void RunItemAction(unsigned int index);
+    void CloseMenu();
 
     // Move
     void UpdateFirstVisibleItem();
