@@ -447,7 +447,17 @@ struct MenuItem
         return *this;
     }
 };
-
+enum class MousePressedResult: unsigned int
+{
+    None, Repaint, CheckParent
+};
+struct MenuMousePositionInfo
+{
+    unsigned int ItemIndex;
+    bool IsOnMenu;
+    bool IsOnUpButton;
+    bool IsOnDownButton;
+};
 struct MenuContext
 {
     std::vector<MenuItem> Items;
@@ -467,9 +477,13 @@ public:
     // methods
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
+    // Check
+    bool SetChecked(unsigned int index, bool status);
+
     // mouse events
+    void ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi);
     bool OnMouseMove(int x, int y);
-    bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+    MousePressedResult OnMousePressed(int x, int y);
     void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
     // key events

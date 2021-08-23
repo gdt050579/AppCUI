@@ -235,6 +235,7 @@ namespace Internal
         void ComputePositions();
         void ProcessKeyPress(AppCUI::Input::Key keyCode, int AsciiCode);
         void ProcessShiftState(AppCUI::Input::Key ShiftState);
+        void ProcessMenuMouseClick(AppCUI::Controls::Menu * mnu,int x, int y);
         void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseMove(int x, int y, AppCUI::Input::MouseButton button);
@@ -245,6 +246,10 @@ namespace Internal
         // Pack/Expand
         void PackControl(bool redraw);
         bool ExpandControl(AppCUI::Controls::Control* ctrl);
+
+        // Menu
+        void CloseContextualMenu();
+        void ShowContextualMenu(AppCUI::Controls::Menu* mnu);
 
         // Common implementations
         bool Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height);
@@ -260,8 +265,7 @@ namespace Internal
 } // namespace Internal
 namespace Application
 {
-    AppCUI::Internal::Application* GetApplication();
-    void SetContextualMenu(AppCUI::Controls::Menu* mnu);
+    AppCUI::Internal::Application* GetApplication();    
 }
 namespace Utils
 {

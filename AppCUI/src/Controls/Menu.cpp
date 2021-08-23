@@ -233,37 +233,107 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 
     }
 }
-
-bool MenuContext::OnMouseMove(int x, int y)
+bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
 {
-    unsigned int newCurrentItem;
+    CHECK(menuIndex < Items.size(), false, "Invalid menu index (%u) , should be between 0 and less than %z",menuIndex, Items.size());
+    auto& i = this->Items[menuIndex];
+    CHECK((i.Type == MenuItemType::Check) || (i.Type == MenuItemType::Radio),
+          false,
+          "Only Check and Radio item can change their state");
+    if (i.Type == MenuItemType::Radio)
+    {
+        // radio menu item -> uncheck all items that are radioboxes
+        unsigned int index = menuIndex;
+        while (((index >= 0) && (index < this->Items.size())) && (this->Items[index].Type == MenuItemType::Radio))
+        {
+            this->Items[index].Checked = false;
+            index--;
+        }
+        index = menuIndex + 1;
+        while ((index < this->Items.size()) && (this->Items[index].Type == MenuItemType::Radio))
+        {
+            this->Items[index].Checked = false;
+            index++;
+        }
+    }
+    i.Checked = status;
+    return true;
+}
+void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi)
+{
     if ((x >= 1) && (y >= 1) && (x <= Width) && (y <= VisibleItemsCount))
     {
-        newCurrentItem = (y - 1) + FirstVisibleItem;
-        if ((newCurrentItem < Items.size()) && (Items[newCurrentItem].Enabled) &&
-            (Items[newCurrentItem].Type != MenuItemType::Line))
+        mpi.ItemIndex = (y - 1) + FirstVisibleItem;
+        if ((mpi.ItemIndex < Items.size()) && 
+            (Items[mpi.ItemIndex].Enabled) &&
+            (Items[mpi.ItemIndex].Type != MenuItemType::Line))
         {
-            // all good - found an item;
+            // all good - current item is valid
         }
         else
         {
-            newCurrentItem = NO_MENUITEM_SELECTED;
+            mpi.ItemIndex = NO_MENUITEM_SELECTED;
         }
     }
     else
     {
-        newCurrentItem = NO_MENUITEM_SELECTED;
+        mpi.ItemIndex = NO_MENUITEM_SELECTED;
     }
-    if (CurrentItem != newCurrentItem)
+    mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < this->Width + 2) && (y < this->VisibleItemsCount + 2);
+    mpi.IsOnUpButton   = false;
+    mpi.IsOnDownButton = false;
+}
+bool MenuContext::OnMouseMove(int x, int y)
+{
+    MenuMousePositionInfo mpi;
+    ComputeMousePositionInfo(x, y, mpi);
+    if (CurrentItem != mpi.ItemIndex)
     {
-        CurrentItem = newCurrentItem;
+        CurrentItem = mpi.ItemIndex;
         return true;
     }
     return false;
 }
-bool MenuContext::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+MousePressedResult MenuContext::OnMousePressed(int x, int y)
 {
-    NOT_IMPLEMENTED(false);
+    MenuMousePositionInfo mpi;
+    ComputeMousePositionInfo(x, y, mpi);
+    // if click on a valid item, apply the action and close the menu
+    if (mpi.ItemIndex != NO_MENUITEM_SELECTED)
+    {
+        auto& itm = this->Items[mpi.ItemIndex];
+        int commandID = -1;
+        switch (itm.Type)
+        {
+        case MenuItemType::Check:
+            this->SetChecked(mpi.ItemIndex, !itm.Checked);
+            commandID = itm.CommandID;
+            break;
+        case MenuItemType::Radio:
+            this->SetChecked(mpi.ItemIndex, true);
+            commandID = itm.CommandID;
+            break;
+        case MenuItemType::SubMenu:
+            itm.SubMenu->Show(Width + ScreenClip.ScreenPosition.X, y + ScreenClip.ScreenPosition.Y);
+            return MousePressedResult::Repaint;
+        case MenuItemType::Command:
+            commandID = itm.CommandID;
+            break;
+        }
+        if (commandID >= 0)
+        {
+            Application::GetApplication()->CloseContextualMenu();
+            Application::GetApplication()->SendCommand(commandID);
+            return MousePressedResult::Repaint;
+        }
+        // other type of items
+        return MousePressedResult::None;
+    }
+    // is it's on the menu -> do nothing
+    if (mpi.IsOnMenu)
+        return MousePressedResult::None;
+    // if it's outsize, check if mouse is on one of its parens
+    return MousePressedResult::CheckParent;
 }
 void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
@@ -308,7 +378,9 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     // Set the clip
     this->ScreenClip.Set(x, y, Width+2, VisibleItemsCount+2);
     // link to application
-    AppCUI::Application::SetContextualMenu(me);
+    auto* app = AppCUI::Application::GetApplication();
+    if (app)
+        app->ShowContextualMenu(me);
 }
 
 //=====================================================================================[Menu]====
@@ -355,7 +427,7 @@ ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
 {
     try
     {
-        Menu* SubMenu                            = new Menu(16); // 16 reserved items by default
+        Menu* SubMenu                               = new Menu(16); // 16 reserved items by default
         ((MenuContext*) (SubMenu->Context))->Parent = this;
         return CTX->AddItem(MenuItem(text, SubMenu));
     }
@@ -373,27 +445,7 @@ bool Menu::SetEnable(ItemHandle menuItem, bool status)
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
 {
     CHECK_VALID_ITEM(false);
-    auto& i  = CTX->Items[(unsigned int) menuItem];
-    CHECK((i.Type == MenuItemType::Check) || (i.Type == MenuItemType::Radio), false, "Only Check and Radio item can change their state");
-    if (i.Type == MenuItemType::Radio)
-    {
-        // radio menu item -> uncheck all items that are radioboxes
-        unsigned int index = (unsigned int)menuItem;
-        while (((index >= 0) && (index < CTX->Items.size())) && (CTX->Items[index].Type == MenuItemType::Radio))
-        {
-            CTX->Items[index].Checked = false;
-            index--;
-        }
-        index = (unsigned int) menuItem + 1;
-        while ((index < CTX->Items.size()) && (CTX->Items[index].Type == MenuItemType::Radio))
-        {
-            CTX->Items[index].Checked = false;
-            index++;
-        }
-    }
-    i.Checked = status;
-    return true;
-    
+    return CTX->SetChecked((unsigned int) menuItem, status);
 }
 
 Menu* Menu::GetSubMenu(ItemHandle menuItem)

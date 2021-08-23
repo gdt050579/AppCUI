@@ -168,14 +168,6 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 {
     return app;
 }
-void AppCUI::Application::SetContextualMenu(AppCUI::Controls::Menu* mnu)
-{
-    if ((app) && (app->VisibleMenu != mnu))
-    {
-        app->VisibleMenu = mnu;
-        app->RepaintStatus |= REPAINT_STATUS_ALL;
-    }
-}
 
 
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
@@ -614,15 +606,40 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
             SendCommand(cmd);
     }
 }
+void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y)
+{
+    auto* mcx   = reinterpret_cast<MenuContext*>(mnu->Context);
+    auto result = mcx->OnMousePressed(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y);
+    switch (result)
+    {
+    case MousePressedResult::None:
+        break;
+    case MousePressedResult::Repaint:
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+        break;
+    case MousePressedResult::CheckParent:
+        if (mcx->Parent)
+            ProcessMenuMouseClick(mcx->Parent, x, y);
+        else
+            this->CloseContextualMenu();
+        break;
+    }        
+}
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {
+    // check contextual menus
+    if (this->VisibleMenu)
+    {
+        ProcessMenuMouseClick(this->VisibleMenu, x, y);
+        return;
+    }
     if (this->CommandBarObject.OnMouseDown())
     {
         RepaintStatus |= REPAINT_STATUS_DRAW;
         MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
         return;
     }
-    // verific daca nu e un control
+    // check controls
     if (ModalControlsCount == 0)
         MouseLockedControl = CoordinatesToControl(&Desktop, x, y);
     else
@@ -809,6 +826,19 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
     ComputePositions();
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
+}
+void AppCUI::Internal::Application::CloseContextualMenu()
+{
+    this->VisibleMenu = nullptr;
+    this->RepaintStatus |= REPAINT_STATUS_DRAW;
+}
+void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* mnu)
+{
+    if (this->VisibleMenu != mnu)
+    {
+        this->VisibleMenu = mnu;
+        this->RepaintStatus |= REPAINT_STATUS_ALL;
+    }
 }
 void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key ShiftState)
 {
