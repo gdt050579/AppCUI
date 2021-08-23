@@ -223,7 +223,7 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
     {
         mpi.ItemIndex = NO_MENUITEM_SELECTED;
     }
-    mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < this->Width + 2) && (y < this->VisibleItemsCount + 2);
+    mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < (int)this->Width + 2) && (y < (int)this->VisibleItemsCount + 2);
     mpi.IsOnUpButton   = false;
     mpi.IsOnDownButton = false;
 }
@@ -289,9 +289,40 @@ void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction
 }
 
 // key events
-bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool MenuContext::ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys)
 {
-    NOT_IMPLEMENTED(false);
+    for (unsigned int tr=0;tr<this->ItemsCount;tr++)
+    {
+        if (!Items[tr]->Enabled)
+            continue;
+        if ((Items[tr]->Type == MenuItemType::Command) ||
+            (Items[tr]->Type == MenuItemType::Check) ||
+            (Items[tr]->Type == MenuItemType::Radio))
+        {
+            if ((Items[tr]->ShortcutKey == keyCode) || ((checkHotkeys) && (Items[tr]->HotKey == keyCode)))
+            {
+                if (Items[tr]->Type == MenuItemType::Check)
+                    this->SetChecked(tr, !Items[tr]->Checked);
+                if (Items[tr]->Type == MenuItemType::Radio)
+                    this->SetChecked(tr, true);
+                if (Items[tr]->CommandID >= 0)
+                {
+                    Application::GetApplication()->CloseContextualMenu();
+                    Application::GetApplication()->SendCommand(Items[tr]->CommandID);
+                }
+                return true; // key was processed
+            }
+                
+        }
+        if ((Items[tr]->Type == MenuItemType::SubMenu) && (Items[tr]->SubMenu))
+        {
+            MenuContext* ctx = reinterpret_cast<MenuContext*>(Items[tr]->SubMenu->Context);
+            if (ctx->ProcessKey(keyCode, checkHotkeys))
+                return true;
+        }
+    }
+    // if nothing matced - return false;
+    return false;
 }
 
 void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y)
@@ -304,7 +335,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         relativeControl = relativeControl->GetParent();
     }
     // compute best width
-    Width             = 0;
+    Width = 0;
     for (size_t tr = 0; tr < this->ItemsCount;tr++)
     {
         auto i               = this->Items[tr].get();
@@ -314,8 +345,8 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
             w_left += 2;
         if (i->ShortcutKey != Key::None)
         {
-            w_right += KeyUtils::GetKeyName(i->ShortcutKey).size();
-            w_right += KeyUtils::GetKeyModifierName(i->ShortcutKey).size();     
+            w_right += (unsigned int)KeyUtils::GetKeyName(i->ShortcutKey).size();
+            w_right += (unsigned int)KeyUtils::GetKeyModifierName(i->ShortcutKey).size();     
             if (w_right > 0)
                 w_right += 4;
         }

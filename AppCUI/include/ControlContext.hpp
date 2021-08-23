@@ -474,7 +474,7 @@ public:
     void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
     // key events
-    bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
+    bool ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys);
 
     // Show
     void Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y);

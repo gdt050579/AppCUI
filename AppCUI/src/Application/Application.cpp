@@ -566,6 +566,15 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
 {
     Control* ctrl = nullptr;
 
+    // if a contextual menu is visible --> all keys will be handle by it
+    if (this->VisibleMenu)
+    {
+        auto menuContext = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
+        if (menuContext->ProcessKey(KeyCode, true))
+            RepaintStatus |= REPAINT_STATUS_DRAW;        
+        return;
+    }
+
     if (ModalControlsCount == 0)
         ctrl = GetFocusedControl(&Desktop);
     else
@@ -583,7 +592,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
                             AsciiCode,
                             ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
             {
-                // daca a acceptat cineva o tasta - fac si o redesenare
+                // if a key was handlede --> repain
                 found = true;
                 RepaintStatus |= REPAINT_STATUS_DRAW;
                 break;
@@ -591,7 +600,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
         }
         if (ctrl->OnKeyEvent(KeyCode, AsciiCode))
         {
-            // daca a acceptat cineva o tasta - fac si o redesenare
+            // if a key was handlede --> repain
             found = true;
             RepaintStatus |= REPAINT_STATUS_DRAW;
             break;
@@ -600,7 +609,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     }
     if (!found)
     {
-        // verific in accelarator
+        // check command bar
         int cmd = this->CommandBarObject.GetCommandForKey(KeyCode);
         if (cmd > 0)
             SendCommand(cmd);
