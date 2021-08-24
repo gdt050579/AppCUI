@@ -52,6 +52,6 @@ ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-
+    renderer.DrawHorizontalLine(0, 0, 20, ' ', ColorPair(Color::Black, Color::White));
 }
 #undef NO_ITEM_SELECTED
