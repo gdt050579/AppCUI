@@ -473,8 +473,8 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         relativeControl = relativeControl->GetParent();
     }
     // compute best width
-    Width = 0;
-    for (size_t tr = 0; tr < this->ItemsCount;tr++)
+    unsigned int BestWidth = 0;
+    for (unsigned int tr = 0; tr < this->ItemsCount;tr++)
     {
         auto i               = this->Items[tr].get();
         unsigned int w_left = i->Name.Len()+2;
@@ -488,13 +488,70 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
             if (w_right > 0)
                 w_right += 2;
         }
-
-        Width = MAXVALUE(Width, w_left + w_right);
-
+        BestWidth = MAXVALUE(BestWidth, w_left + w_right);
     }
-    VisibleItemsCount = this->ItemsCount;
-    // Set the clip
-    this->ScreenClip.Set(x, y, Width+2, VisibleItemsCount+2);
+    // Check agains app size
+    Size appSize;
+    if (!Application::GetApplicationSize(appSize))
+    {
+        LOG_WARNING("Unable to retrieve application size --> contextual menu will not be display !");
+        return;
+    }
+    if ((appSize.Height < 5) || (appSize.Width < 10))
+    {
+        LOG_WARNING(
+              "Current application size %d x %d is too small to display a contextual menu (a size of at least 10 x 5 "
+              "is required)",
+              appSize.Width,
+              appSize.Height);
+        return;
+    }
+    // adjust X and Y to be on the screen
+    x = MAXVALUE(x, 0);
+    y = MAXVALUE(y, 0);
+    x = MINVALUE(x, (int)appSize.Width);
+    y = MINVALUE(y, (int)appSize.Height);
+
+    // validate max and min limits for menu width and height
+    auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 30); 
+    auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height-4), 5);   
+    unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
+    unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);    
+    VisibleItemsCount              = menuHeight - 2;
+    Width                          = menuWidth - 2;
+
+    // Set direction
+    bool toLeft, toBottom;
+    if (x + menuWidth <= appSize.Width)
+        toLeft = true; // best fit on left
+    else if (x >= (int)menuWidth)
+        toLeft = false; // best fit on right
+    else
+        toLeft = x < (int)(appSize.Width / 2); // if x is closest to right edge - expand to left, otherwise to right
+
+    if (y + menuHeight <= appSize.Height)
+        toBottom = true; // best fit on bottom
+    else if (y >= (int)menuHeight)
+        toBottom = false; // best fit on top
+    else
+        toBottom = y < (int)(appSize.Height / 2); // if y is closest to top edge - expand to top, otherwise to bottom
+
+    // set the actual clip
+    if (toLeft)
+    {
+        if (toBottom)
+            this->ScreenClip.Set(x, y, menuWidth, menuHeight);
+        else
+            this->ScreenClip.Set(x, y + 1 - (int) menuHeight, menuWidth, menuHeight);
+    }
+    else
+    {
+        if (toBottom)
+            this->ScreenClip.Set(x + 1 - (int) menuWidth, y, menuWidth, menuHeight);
+        else
+            this->ScreenClip.Set(x + 1 - (int) menuWidth, y + 1 - (int) menuHeight, menuWidth, menuHeight);
+    }
+    
     // link to application
     auto* app = AppCUI::Application::GetApplication();
     if (app)
