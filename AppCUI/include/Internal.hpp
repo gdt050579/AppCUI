@@ -155,12 +155,12 @@ namespace Internal
         std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
         unsigned int ItemsCount;
         unsigned int CurrentItem;
-
       public:
         MenuBar();
 
         AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
         AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
+        void Paint(AppCUI::Graphics::Renderer& renderer);        
     };
 
     class DesktopControl : public AppCUI::Controls::Control
@@ -240,6 +240,7 @@ namespace Internal
         DesktopControl Desktop;
         CommandBarController CommandBarObject;
         AppCUI::Application::CommandBar CommandBarWrapper;
+        std::unique_ptr<MenuBar> menu;
         AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
         AppCUI::Controls::Control* MouseLockedControl;
         AppCUI::Controls::Control* MouseOverControl;

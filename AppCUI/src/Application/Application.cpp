@@ -128,7 +128,8 @@ bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
     size.Height = app->terminal->ScreenCanvas.GetHeight();
     if (app->CommandBarObject.IsVisible())
         size.Height--;
-    // GDT: trebuie scazut meniul si bara de jos
+    if (app->menu)
+        size.Height--;
     return true;
 }
 
@@ -139,8 +140,21 @@ void AppCUI::Application::Close()
 }
 bool AppCUI::Application::AddWindow(AppCUI::Controls::Window* wnd)
 {
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
     return app->Desktop.AddControl(wnd);
 }
+AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name)
+{
+    CHECK(app, nullptr, "Application has not been initialized !");
+    CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
+    CHECK(app->menu, nullptr, "Application was not initialized with HAS_MENU option set up !");
+    ItemHandle itm = app->menu->AddMenu(name);
+    AppCUI::Controls::Menu* result = app->menu->GetMenu(itm);
+    CHECK(result, nullptr, "Fail to create menu !");
+    return result;
+}
+
 
 AppCUI::Application::Config* AppCUI::Application::GetAppConfig()
 {
@@ -507,11 +521,14 @@ bool AppCUI::Internal::Application::Init(
           this->terminal->ScreenCanvas.GetWidth(),
           this->terminal->ScreenCanvas.GetHeight(),
           &this->config,
-          (flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR) !=
-                AppCUI::Application::InitializationFlags::NONE);
+          (flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR) != AppCUI::Application::InitializationFlags::NONE);
     this->CommandBarWrapper.Init(&this->CommandBarObject);
-    LOG_INFO(
-          "Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+    LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+
+    // configure menu
+    if ((flags & AppCUI::Application::InitializationFlags::HAS_MENU) != AppCUI::Application::InitializationFlags::NONE)
+        this->menu = std::make_unique<AppCUI::Internal::MenuBar>();
+    
 
     CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,
@@ -550,6 +567,8 @@ void AppCUI::Internal::Application::Paint()
     this->terminal->ScreenCanvas.SetTranslate(0, 0);
     this->CommandBarObject.Paint(this->terminal->ScreenCanvas);
     // draw menu bar
+    if (this->menu)
+        this->menu->Paint(this->terminal->ScreenCanvas);
     // draw context menu
     if (this->VisibleMenu)
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);

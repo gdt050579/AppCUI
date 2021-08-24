@@ -31,5 +31,8 @@ ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
           MenuBar::MAX_ITEMS);
     NOT_IMPLEMENTED(ItemHandle{ NO_ITEM_SELECTED });
 }
+void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
+{
 
+}
 #undef NO_ITEM_SELECTED

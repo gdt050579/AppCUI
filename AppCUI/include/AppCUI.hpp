@@ -2362,6 +2362,7 @@ namespace Application
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
+    EXPORT AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name);
     EXPORT bool GetApplicationSize(AppCUI::Graphics::Size& size);
     EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);
     EXPORT void Repaint();
