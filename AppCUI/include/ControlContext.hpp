@@ -480,7 +480,7 @@ public:
     bool OnMouseMove(int x, int y);
     MousePressedResult OnMousePressed(int x, int y);
     bool IsOnMenu(int x, int y);
-    void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
     // key events
     bool OnKeyEvent(AppCUI::Input::Key keyCode);

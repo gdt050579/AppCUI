@@ -813,6 +813,13 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
 }
 void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
+    if (this->VisibleMenu)
+    {
+        auto* mcx = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
+        if (mcx->OnMouseWheel(x,y,direction))
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        return;
+    }
     if (MouseLockedObject != MOUSE_LOCKED_OBJECT_NONE)
         return;
     AppCUI::Controls::Control* ctrl;

@@ -266,8 +266,21 @@ bool MenuContext::IsOnMenu(int x, int y)
     ComputeMousePositionInfo(x, y, mpi);
     return mpi.IsOnMenu;
 }
-void MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
 {
+    if (this->VisibleItemsCount >= this->ItemsCount)
+        return false; // nothing to scroll
+    if ((direction == MouseWheel::Up) && (this->FirstVisibleItem>0))
+    {
+        this->FirstVisibleItem--;
+        return true;
+    }
+    if ((direction == MouseWheel::Down) && ((this->FirstVisibleItem + this->VisibleItemsCount) < this->ItemsCount))
+    {
+        this->FirstVisibleItem++;
+        return true;
+    }
+    return false;
 }
 void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& count)
 {
