@@ -455,7 +455,7 @@ struct MenuContext
     unsigned int FirstVisibleItem;
     unsigned int VisibleItemsCount;
     unsigned int CurrentItem;
-    unsigned int Width;
+    unsigned int Width, TextWidth;
 
     MenuContext();
     ItemHandle AddItem(std::unique_ptr<MenuItem> itm);

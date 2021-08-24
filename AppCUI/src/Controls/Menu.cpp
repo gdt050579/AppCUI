@@ -111,8 +111,10 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 
     auto* itemCol = &col->Normal;
     WriteTextParams textParams(
-          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth,
           TextAlignament::Left);
+    textParams.Width = this->TextWidth;
 
     renderer.Clear(' ', col->Background);
     renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
@@ -485,6 +487,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     }
     // compute best width
     unsigned int BestWidth = 0;
+    unsigned int maxHotKeyWidth = 0;
     for (unsigned int tr = 0; tr < this->ItemsCount;tr++)
     {
         auto i               = this->Items[tr].get();
@@ -500,6 +503,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
                 w_right += 2;
         }
         BestWidth = MAXVALUE(BestWidth, w_left + w_right);
+        maxHotKeyWidth = MAXVALUE(maxHotKeyWidth, w_right);
     }
     // Check agains app size
     Size appSize;
@@ -557,6 +561,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         
     VisibleItemsCount = menuHeight - 2;
     Width             = menuWidth - 2;
+    TextWidth         = Width - maxHotKeyWidth;
     // set the actual clip
     if (toLeft)
     {
