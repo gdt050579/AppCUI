@@ -144,7 +144,7 @@ bool AppCUI::Application::AddWindow(AppCUI::Controls::Window* wnd)
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
     return app->Desktop.AddControl(wnd);
 }
-AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name)
+AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
