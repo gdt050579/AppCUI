@@ -429,7 +429,7 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
     // no binding
     return false;
 }
-bool MenuContext::ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys)
+bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
 {
     for (unsigned int tr=0;tr<this->ItemsCount;tr++)
     {
@@ -439,7 +439,7 @@ bool MenuContext::ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys)
             (Items[tr]->Type == MenuItemType::Check) ||
             (Items[tr]->Type == MenuItemType::Radio))
         {
-            if ((Items[tr]->ShortcutKey == keyCode) || ((checkHotkeys) && (Items[tr]->HotKey == keyCode)))
+            if (Items[tr]->ShortcutKey == keyCode)
             {
                 if (Items[tr]->Type == MenuItemType::Check)
                     this->SetChecked(tr, !Items[tr]->Checked);
@@ -447,21 +447,19 @@ bool MenuContext::ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys)
                     this->SetChecked(tr, true);
                 if (Items[tr]->CommandID >= 0)
                 {
-                    Application::GetApplication()->CloseContextualMenu();
                     Application::GetApplication()->SendCommand(Items[tr]->CommandID);
                 }
                 return true; // key was processed
-            }
-                
+            }                
         }
         if ((Items[tr]->Type == MenuItemType::SubMenu) && (Items[tr]->SubMenu))
         {
             MenuContext* ctx = reinterpret_cast<MenuContext*>(Items[tr]->SubMenu->Context);
-            if (ctx->ProcessKey(keyCode, checkHotkeys))
+            if (ctx->ProcessShortCut(keyCode))
                 return true;
         }
     }
-    // if nothing matced - return false;
+    // if nothing matched - return false;
     return false;
 }
 

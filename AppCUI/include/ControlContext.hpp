@@ -484,7 +484,7 @@ public:
 
     // key events
     bool OnKeyEvent(AppCUI::Input::Key keyCode);
-    bool ProcessKey(AppCUI::Input::Key keyCode, bool checkHotkeys);
+    bool ProcessShortCut(AppCUI::Input::Key keyCode);
 
     // Show
     void Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y);
