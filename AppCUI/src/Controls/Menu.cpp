@@ -90,7 +90,10 @@ MenuContext::MenuContext()
     this->VisibleItemsCount = 0;
     this->CurrentItem       = NO_MENUITEM_SELECTED;
     this->Width             = 0;
+    this->TextWidth         = 0;
     this->ItemsCount        = 0;
+    this->ButtonUp          = MenuButtonState::Normal;
+    this->ButtonDown        = MenuButtonState::Normal;
 }
 ItemHandle MenuContext::AddItem(std::unique_ptr<MenuItem> itm)
 {
@@ -118,6 +121,42 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
 
     renderer.Clear(' ', col->Background);
     renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
+    // draw scroll buttons if case
+    if (this->VisibleItemsCount < this->ItemsCount)
+    {
+        ColorPair c;
+        // top button
+        if (this->FirstVisibleItem == 0)
+            c = col->Button.Inactive;
+        else
+        {
+            switch (this->ButtonUp)
+            {
+                case MenuButtonState::Normal: c = col->Button.Normal; break;
+                case MenuButtonState::Hovered: c = col->Button.Hover; break;
+                case MenuButtonState::Pressed: c = col->Button.Pressed; break;
+            }
+        }
+            
+        renderer.WriteSpecialCharacter(1 + this->Width / 2, 0, SpecialChars::TriangleUp, c);
+
+        // bottom button
+        if (this->FirstVisibleItem+this->VisibleItemsCount>=this->ItemsCount)
+            c = col->Button.Inactive;
+        else
+        {
+            switch (this->ButtonDown)
+            {
+                case MenuButtonState::Normal: c = col->Button.Normal; break;
+                case MenuButtonState::Hovered: c = col->Button.Hover; break;
+                case MenuButtonState::Pressed: c = col->Button.Pressed; break;
+            }
+        }
+
+        renderer.WriteSpecialCharacter(1 + this->Width / 2, ScreenClip.ClipRect.Height-1, SpecialChars::TriangleDown, c);
+    }
+
+    // draw items
     for (unsigned int tr=1;tr<=this->VisibleItemsCount;tr++)
     {
         unsigned int actualIndex = this->FirstVisibleItem + tr - 1;
@@ -229,24 +268,53 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
         mpi.ItemIndex = NO_MENUITEM_SELECTED;
     }
     mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < (int)this->Width + 2) && (y < (int)this->VisibleItemsCount + 2);
-    mpi.IsOnUpButton   = false;
-    mpi.IsOnDownButton = false;
+    mpi.IsOnUpButton   = (y == 0) && (x == (1 + this->Width / 2));
+    mpi.IsOnDownButton = (y == ScreenClip.ClipRect.Height - 1) && (x == (1 + this->Width / 2));
 }
 bool MenuContext::OnMouseMove(int x, int y)
 {
     MenuMousePositionInfo mpi;
     ComputeMousePositionInfo(x, y, mpi);
+    auto buttonUpStatus   = mpi.IsOnUpButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
+    auto buttonDownStatus = mpi.IsOnDownButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
+    bool result           = false; 
+    if (buttonUpStatus != this->ButtonUp)
+    {
+        this->ButtonUp = buttonUpStatus;
+        result         = true;
+    }
+    if (buttonDownStatus != this->ButtonDown)
+    {
+        this->ButtonDown = buttonDownStatus;
+        result         = true;
+    }
     if (CurrentItem != mpi.ItemIndex)
     {
         CurrentItem = mpi.ItemIndex;
-        return true;
+        result =  true;
     }
-    return false;
+    return result;
 }
 MousePressedResult MenuContext::OnMousePressed(int x, int y)
 {
     MenuMousePositionInfo mpi;
     ComputeMousePositionInfo(x, y, mpi);
+    // check buttons
+    if (this->VisibleItemsCount < this->ItemsCount)
+    {
+        if ((mpi.IsOnUpButton) && (this->FirstVisibleItem>0))
+        {
+            this->ButtonUp = MenuButtonState::Pressed;
+            OnMouseWheel(x, y, MouseWheel::Up);
+            return MousePressedResult::Repaint;
+        }
+        if ((mpi.IsOnDownButton) && (this->FirstVisibleItem+this->VisibleItemsCount < this->ItemsCount))
+        {
+            this->ButtonDown = MenuButtonState::Pressed;
+            OnMouseWheel(x, y, MouseWheel::Down);
+            return MousePressedResult::Repaint;
+        }
+    }
     // if click on a valid item, apply the action and close the menu
     if (mpi.ItemIndex != NO_MENUITEM_SELECTED)
     {
@@ -590,9 +658,11 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         else
             this->ScreenClip.Set(x + 1 - (int) menuWidth, y + 1 - (int) menuHeight, menuWidth, menuHeight);
     }
-    // clear selection
+    // clear selection & buttons
     this->FirstVisibleItem = 0;
     this->CurrentItem      = NO_MENUITEM_SELECTED;
+    this->ButtonUp         = MenuButtonState::Normal;
+    this->ButtonDown       = MenuButtonState::Normal;
     // link to application
     auto* app = AppCUI::Application::GetApplication();
     if (app)

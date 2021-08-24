@@ -434,8 +434,13 @@ enum class MousePressedResult: unsigned int
 {
     None, Repaint, CheckParent, Activate
 };
-
-struct MenuMousePositionInfo
+enum class MenuButtonState : unsigned char
+{
+    Normal, Hovered, Pressed
+};
+    
+    
+    struct MenuMousePositionInfo
 {
     unsigned int ItemIndex;
     bool IsOnMenu;
@@ -447,6 +452,8 @@ struct MenuContext
 {
     // std::vector messes up with inter-items pointers when calling copy/move ctor
     // as a result, opening a sub-menu from another is likely to produce a crash (as the pointers will be invalid)
+    // switching to regular pointer of std::unique_ptr type to avoid this
+
     std::unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
     unsigned int ItemsCount;
     Menu* Parent;
@@ -456,6 +463,7 @@ struct MenuContext
     unsigned int VisibleItemsCount;
     unsigned int CurrentItem;
     unsigned int Width, TextWidth;
+    MenuButtonState ButtonUp, ButtonDown;
 
     MenuContext();
     ItemHandle AddItem(std::unique_ptr<MenuItem> itm);

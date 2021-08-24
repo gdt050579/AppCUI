@@ -2333,10 +2333,14 @@ namespace Application
             struct
             {
                 Graphics::ColorPair Background;
-                struct Item
+                struct
                 {
                     Graphics::ColorPair Text, HotKey, ShortCut, Check, Uncheck;
-                } Normal, Inactive, Selected;                
+                } Normal, Inactive, Selected;
+                struct
+                {
+                    Graphics::ColorPair Normal, Hover, Inactive, Pressed;
+                } Button;
             } Activ, Parent;
         } Menu; 
         void SetDarkTheme();

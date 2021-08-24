@@ -224,4 +224,14 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Parent.Inactive.ShortCut = ColorPair{ Color::Gray, Color::Silver };
     this->Menu.Parent.Inactive.Check    = ColorPair{ Color::Gray, Color::Silver };
     this->Menu.Parent.Inactive.Uncheck  = ColorPair{ Color::Gray, Color::Silver };
+
+    this->Menu.Activ.Button.Normal   = ColorPair{ Color::Blue, Color::White };
+    this->Menu.Activ.Button.Inactive = ColorPair{ Color::Silver, Color::White };
+    this->Menu.Activ.Button.Hover    = ColorPair{ Color::Black, Color::Aqua };
+    this->Menu.Activ.Button.Pressed  = ColorPair{ Color::Red, Color::White };
+
+    this->Menu.Parent.Button.Normal   = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Button.Inactive = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
+    this->Menu.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
 }
