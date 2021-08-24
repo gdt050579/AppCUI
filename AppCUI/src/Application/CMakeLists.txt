@@ -5,4 +5,5 @@ target_sources(AppCUI PRIVATE
     CommandBarController.cpp
     Config.cpp
     Desktop.cpp
+    MenuBar.cpp
 )

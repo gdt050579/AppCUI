@@ -141,6 +141,28 @@ namespace Internal
         }
     };
 
+    struct MenuBarItem
+    {
+        AppCUI::Controls::Menu Mnu;
+        AppCUI::Graphics::Character Name;
+        AppCUI::Input::Key HotKey;
+        unsigned int HotKeyOffset;
+        MenuBarItem();
+    };
+    class MenuBar
+    {
+        static const constexpr unsigned int MAX_ITEMS = 32;
+        std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
+        unsigned int ItemsCount;
+        unsigned int CurrentItem;
+
+      public:
+        MenuBar();
+
+        AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
+        AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
+    };
+
     class DesktopControl : public AppCUI::Controls::Control
     {
       public:
