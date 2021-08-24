@@ -308,7 +308,7 @@ void MenuContext::RunItemAction(unsigned int itemIndex)
 }
 void MenuContext::CloseMenu()
 {
-    // NOT IMPLEMENTED YET
+    AppCUI::Application::GetApplication()->ShowContextualMenu(this->Parent);
 }
 void MenuContext::UpdateFirstVisibleItem()
 {
@@ -400,18 +400,22 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
             CloseMenu();
             return true;
         case Key::Right:
-        case Key::Left:
             if ((this->CurrentItem < ItemsCount) && 
                 (Items[this->CurrentItem]->Enabled) && 
                 (Items[this->CurrentItem]->Type == MenuItemType::SubMenu))
             {
-                if (keyCode == Key::Right)
-                    RunItemAction(this->CurrentItem);
-                else
-                    CloseMenu();
+                RunItemAction(this->CurrentItem);
                 return true;
             }
             return false;
+        case Key::Left:
+            if (this->Parent)
+            {
+                CloseMenu();
+                return true;
+            }
+            return false;
+
     }
     // check short keys
     for (unsigned int tr=0;tr<ItemsCount;tr++)
