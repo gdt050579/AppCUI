@@ -144,7 +144,7 @@ namespace Internal
     struct MenuBarItem
     {
         AppCUI::Controls::Menu Mnu;
-        AppCUI::Graphics::Character Name;
+        AppCUI::Graphics::CharacterBuffer Name;
         AppCUI::Input::Key HotKey;
         unsigned int HotKeyOffset;
         MenuBarItem();
