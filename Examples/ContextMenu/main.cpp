@@ -13,6 +13,13 @@ using namespace AppCUI::Input;
 #define MENU_CMD_GREEN          1004
 #define MENU_CMD_BLUE           1005
 
+std::string_view colors[] = {
+    "red",        "yellow",       "blue",           "brown",         "orange",     "green",
+    "violet",     "black",        "carnation pink", "yellow orange", "blue green", "red violet",
+    "red orange", "yellow green", "blue violet",    "white",         "violet red", "dandelion",
+    "cerulean",   "apricot",      "scarlet",        "green yellow",  "indigo",     "gray"
+};
+
 class MyUserControl: public AppCUI::Controls::UserControl
 {
     Menu ctxMenu;
@@ -49,6 +56,12 @@ void MyUserControl::Create(Control* parent)
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red", MENU_CMD_RED, true);
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Green", MENU_CMD_GREEN);
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue", MENU_CMD_BLUE);
+    ctxMenu.GetSubMenu(smHandle)->AddSeparator();
+    auto smOther = ctxMenu.GetSubMenu(smHandle)->AddSubMenu("&Other");
+    for (unsigned int tr = 0; tr < sizeof(colors) / sizeof(colors[0]);tr++)
+    {
+        ctxMenu.GetSubMenu(smHandle)->GetSubMenu(smOther)->AddRadioItem(colors[tr], 2000 + tr, tr == 0);
+    }
     ctxMenu.AddSeparator();
     ctxMenu.AddCommandItem("An item with a large caption with multiple characters", 1234, Key::Q | Key::Ctrl | Key::Alt);
 }
