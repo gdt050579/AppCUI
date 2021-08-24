@@ -532,8 +532,6 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         maxHeightForCurrentScreen  = MINVALUE(maxHeightForCurrentScreen, maxSize.Height);
     unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
     unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);  
-    VisibleItemsCount              = menuHeight - 2;
-    Width                          = menuWidth - 2;
 
     // Set direction
     bool toLeft, toBottom;
@@ -549,8 +547,16 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     else if (y >= (int)menuHeight)
         toBottom = false; // best fit on top
     else
-        toBottom = y < (int)(appSize.Height / 2); // if y is closest to top edge - expand to top, otherwise to bottom
-
+    {
+        toBottom = y < (int) (appSize.Height / 2); // if y is closest to top edge - expand to top, otherwise to bottom
+        if (toBottom)
+            menuHeight = MAXVALUE(appSize.Height - y, 5);
+        else
+            menuHeight = MAXVALUE(y, 5); // y - 0 = y
+    }
+        
+    VisibleItemsCount = menuHeight - 2;
+    Width             = menuWidth - 2;
     // set the actual clip
     if (toLeft)
     {
@@ -566,7 +572,9 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         else
             this->ScreenClip.Set(x + 1 - (int) menuWidth, y + 1 - (int) menuHeight, menuWidth, menuHeight);
     }
-    
+    // clear selection
+    this->FirstVisibleItem = 0;
+    this->CurrentItem      = NO_MENUITEM_SELECTED;
     // link to application
     auto* app = AppCUI::Application::GetApplication();
     if (app)
