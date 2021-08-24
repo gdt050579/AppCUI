@@ -2107,8 +2107,8 @@ namespace Controls
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
-        void Show(int x, int y);      
-        void Show(Control* parent, int relativeX, int relativeY);
+        void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });      
+        void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = {0,0});
     };
 }; // namespace Controls
 namespace Dialogs

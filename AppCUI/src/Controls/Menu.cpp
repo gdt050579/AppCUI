@@ -474,7 +474,7 @@ bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
     return false;
 }
 
-void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y)
+void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize)
 {
     // compute abosolute position
     while (relativeControl)
@@ -525,10 +525,13 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
 
     // validate max and min limits for menu width and height
     auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 30); 
-    auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height-4), 5);   
+    auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height - 4), 5);  
+    if (maxSize.Width >= 30)
+        maxWidthForCurrentScreen   = MINVALUE(maxWidthForCurrentScreen, maxSize.Width);
+    if (maxSize.Height>=5)
+        maxHeightForCurrentScreen  = MINVALUE(maxHeightForCurrentScreen, maxSize.Height);
     unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
     unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);  
-    menuHeight /= 2; // for debug purposes
     VisibleItemsCount              = menuHeight - 2;
     Width                          = menuWidth - 2;
 
@@ -630,12 +633,12 @@ Menu* Menu::GetSubMenu(ItemHandle menuItem)
     return CTX->Items[(unsigned int) menuItem]->SubMenu;
 }
 
-void Menu::Show(int x, int y)
+void Menu::Show(int x, int y, const AppCUI::Graphics::Size& maxSize)
 {
-    CTX->Show(this, nullptr, x, y);
+    CTX->Show(this, nullptr, x, y, maxSize);
 }
-void Menu::Show(Control* parent, int relativeX, int relativeY)
+void Menu::Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize)
 {
-    CTX->Show(this, parent, relativeX, relativeY);
+    CTX->Show(this, parent, relativeX, relativeY, maxSize);
 }
 #undef CTX

@@ -19,6 +19,7 @@ class MyUserControl: public AppCUI::Controls::UserControl
 
   public:
     Color squareColor;
+    bool smallMenu;
   public:
     void Create(Control* parent);
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
@@ -28,6 +29,7 @@ void MyUserControl::Create(Control* parent)
 {
     UserControl::Create(parent, "x:50%,y:50%,w:2,h:1");
     squareColor = Color::Red;
+    smallMenu   = false;
     // build a menu
     ctxMenu.AddCommandItem("&Save content", MENU_CMD_SAVE, Key::F2);
     ctxMenu.AddCommandItem("&Open content", MENU_CMD_OPEN, Key::F3);
@@ -52,7 +54,10 @@ void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
 {
     if ((button & MouseButton::Right) != MouseButton::None)
     {
-        ctxMenu.Show(this, x, y);
+        if (smallMenu)
+            ctxMenu.Show(this, x, y, { 20, 5 });
+        else
+            ctxMenu.Show(this, x, y);
     }
 }
 void MyUserControl::Paint(AppCUI::Graphics::Renderer& renderer)
@@ -63,11 +68,13 @@ class ContextMenuExample : public AppCUI::Controls::Window
 {
     Label l1;
     MyUserControl m;
+    CheckBox cb;
   public:
     ContextMenuExample()
     {
         this->Create("Context menu", "a:c,w:64,h:10");
         l1.Create(this, "Right click on the red-square below to view a context menu", "x:1,y:1,w:62");
+        cb.Create(this, "Small contextual menu with scroll", "x:1,y:2,w:62");
         m.Create(this);
     }
     bool OnEvent(const void* sender, Event eventType, int controlID) override
@@ -75,6 +82,11 @@ class ContextMenuExample : public AppCUI::Controls::Window
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
             Application::Close();
+            return true;
+        }
+        if (eventType == Event::EVENT_CHECKED_STATUS_CHANGED)
+        {
+            m.smallMenu = cb.IsChecked();
             return true;
         }
         if (eventType == Event::EVENT_COMMAND)
