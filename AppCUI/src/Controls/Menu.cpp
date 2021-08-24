@@ -118,12 +118,15 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
     renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
     for (unsigned int tr=1;tr<=this->VisibleItemsCount;tr++)
     {
-        MenuItem* item = this->Items[tr - 1].get();
+        unsigned int actualIndex = this->FirstVisibleItem + tr - 1;
+        if (actualIndex >= ItemsCount)
+            break;
+        MenuItem* item           = this->Items[actualIndex].get();
         if (item->Enabled == false)
             itemCol = &col->Inactive;
         else
         {
-            if (tr - 1 == this->CurrentItem)
+            if (actualIndex == this->CurrentItem)
             {
                 itemCol = &col->Selected;
                 renderer.DrawHorizontalLine(1, tr, Width, ' ', col->Selected.Text);
@@ -312,7 +315,13 @@ void MenuContext::CloseMenu()
 }
 void MenuContext::UpdateFirstVisibleItem()
 {
-    // NOT IMPLEMENTED YET
+    // if no current item -> exit
+    if (this->CurrentItem >= this->ItemsCount)
+        return;
+    if (this->CurrentItem < this->FirstVisibleItem)
+        this->FirstVisibleItem = this->CurrentItem;
+    if ((this->CurrentItem - this->FirstVisibleItem) >= this->VisibleItemsCount)
+        this->FirstVisibleItem = (this->CurrentItem - this->VisibleItemsCount) + 1;
 }
 void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
 {
@@ -422,6 +431,8 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
     {
         if ((Items[tr]->HotKey != Key::None) && (Items[tr]->HotKey == keyCode) && (Items[tr]->Enabled))
         {
+            this->CurrentItem = tr;
+            UpdateFirstVisibleItem();
             RunItemAction(tr);
             return true;
         }
@@ -516,7 +527,8 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 30); 
     auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height-4), 5);   
     unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
-    unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);    
+    unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);  
+    menuHeight /= 2; // for debug purposes
     VisibleItemsCount              = menuHeight - 2;
     Width                          = menuWidth - 2;
 
