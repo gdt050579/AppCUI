@@ -674,6 +674,42 @@ void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu
         break;
     }
 }
+bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
+{
+    bool processed = false;
+    bool repaint   = false;
+    // Process event in the following order:
+    // first the context menu, then the menu bar and then cmdbar
+    if (this->VisibleMenu)
+    {
+        auto* mnuC = ((MenuContext*) (this->VisibleMenu->Context));
+        processed  = mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y, repaint);
+    }
+    // check menu bar
+    if ((this->menu) && (!processed))
+        processed = this->menu->OnMouseMove(x, y, repaint);
+
+    // check command bar
+    if ((this->cmdBar) && (!processed))
+        processed = this->cmdBar->OnMouseMove(x, y, repaint);
+
+    // analyze the data
+    if (processed)
+    {
+        if (this->MouseOverControl)
+        {
+            if (this->MouseOverControl->OnMouseLeave())
+                RepaintStatus |= REPAINT_STATUS_DRAW;
+            ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
+        }
+        this->MouseOverControl = nullptr;  
+    }
+    if (repaint)
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+        
+
+    return processed;
+}
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {
     // check contextual menus
@@ -778,53 +814,8 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
     case MOUSE_LOCKED_OBJECT_NONE:
-        // if Menu is opened --> it receives all mouse events
-        if (this->VisibleMenu)
-        {
-            auto* mnuC = ((MenuContext*) (this->VisibleMenu->Context));
-            if (mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y))
-                RepaintStatus |= REPAINT_STATUS_DRAW;
+        if (ProcessMenuAndCmdBarMouseMove(x, y))
             break;
-        }
-        // check menu bar
-        if (this->menu)
-        {
-            if (this->menu->OnMouseMove(x,y))
-                RepaintStatus |= REPAINT_STATUS_DRAW;
-            if (y==0) // we are sure we are on the menu
-            {
-                if (this->MouseOverControl)
-                {
-                    if (this->MouseOverControl->OnMouseLeave())
-                        RepaintStatus |= REPAINT_STATUS_DRAW;
-                    ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
-                }
-                this->MouseOverControl = nullptr;
-                break; // no need to continue
-            }
-        }
-        // check command bar
-        if (this->cmdBar)
-        {
-            if (this->cmdBar->OnMouseOver(x, y, repaint))
-            {
-                if (this->MouseOverControl)
-                {
-                    if (this->MouseOverControl->OnMouseLeave())
-                        RepaintStatus |= REPAINT_STATUS_DRAW;
-                    ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
-                }
-                this->MouseOverControl = nullptr;
-                if (repaint)
-                    RepaintStatus |= REPAINT_STATUS_DRAW;
-                break;
-            }
-            else
-            {
-                if (repaint)
-                    RepaintStatus |= REPAINT_STATUS_DRAW;
-            }
-        }
 
         if (ModalControlsCount == 0)
             ctrl = CoordinatesToControl(&Desktop, x, y);
@@ -849,8 +840,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
                 // it is possible the OnMouseEnter might reset the MouseOverControl variable
                 ControlContext* cc = ((ControlContext*) (MouseOverControl->Context));
                 cc->MouseIsOver    = true;
-                if (MouseOverControl->OnMouseOver(
-                          x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
+                if (MouseOverControl->OnMouseOver(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
                     RepaintStatus |= REPAINT_STATUS_DRAW;
             }
         }
@@ -859,8 +849,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             if (this->MouseOverControl)
             {
                 ControlContext* cc = ((ControlContext*) (MouseOverControl->Context));
-                if (MouseOverControl->OnMouseOver(
-                          x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
+                if (MouseOverControl->OnMouseOver(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
                     RepaintStatus |= REPAINT_STATUS_DRAW;
             }
         }

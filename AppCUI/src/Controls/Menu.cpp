@@ -271,29 +271,28 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
     mpi.IsOnUpButton   = (y == 0) && (x == (1 + this->Width / 2));
     mpi.IsOnDownButton = (y == ScreenClip.ClipRect.Height - 1) && (x == (1 + this->Width / 2));
 }
-bool MenuContext::OnMouseMove(int x, int y)
+bool MenuContext::OnMouseMove(int x, int y, bool& repaint)
 {
     MenuMousePositionInfo mpi;
     ComputeMousePositionInfo(x, y, mpi);
     auto buttonUpStatus   = mpi.IsOnUpButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
     auto buttonDownStatus = mpi.IsOnDownButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
-    bool result           = false; 
     if (buttonUpStatus != this->ButtonUp)
     {
         this->ButtonUp = buttonUpStatus;
-        result         = true;
+        repaint        = true;
     }
     if (buttonDownStatus != this->ButtonDown)
     {
         this->ButtonDown = buttonDownStatus;
-        result         = true;
+        repaint          = true;
     }
     if (CurrentItem != mpi.ItemIndex)
     {
         CurrentItem = mpi.ItemIndex;
-        result =  true;
+        repaint     = true;
     }
-    return result;
+    return mpi.IsOnMenu;
 }
 MousePressedResult MenuContext::OnMousePressed(int x, int y)
 {

@@ -68,12 +68,18 @@ void MenuBar::SetWidth(unsigned int value)
     Width = value;
     RecomputePositions();
 }
-bool MenuBar::OnMouseMove(int x, int y)
+bool MenuBar::OnMouseMove(int x, int y, bool & repaint)
 {
     unsigned int idx = MousePositionToItem(x, y);
     if (idx != this->HoveredItem)
     {
         this->HoveredItem = idx;
+        repaint           = true;
+        return true;
+    }
+    if (y == 0)
+    {
+        repaint = false;
         return true;
     }
     return false;

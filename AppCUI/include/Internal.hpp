@@ -129,7 +129,7 @@ namespace Internal
         void SetDesktopSize(unsigned int width, unsigned int height);
         bool Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command);
         bool SetShiftKey(AppCUI::Input::Key keyCode);
-        bool OnMouseOver(int x, int y, bool& repaint);
+        bool OnMouseMove(int x, int y, bool& repaint);
         bool OnMouseDown();
         bool OnMouseUp(int& command);
         int GetCommandForKey(AppCUI::Input::Key keyCode);
@@ -163,7 +163,7 @@ namespace Internal
         void RecomputePositions();
         void SetWidth(unsigned int value);
         void Paint(AppCUI::Graphics::Renderer& renderer);        
-        bool OnMouseMove(int x, int y);
+        bool OnMouseMove(int x, int y, bool & repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
     };
 
@@ -265,6 +265,7 @@ namespace Internal
         void ProcessKeyPress(AppCUI::Input::Key keyCode, int AsciiCode);
         void ProcessShiftState(AppCUI::Input::Key ShiftState);
         void ProcessMenuMouseClick(AppCUI::Controls::Menu * mnu,int x, int y);
+        bool ProcessMenuAndCmdBarMouseMove(int x, int y);
         void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseMove(int x, int y, AppCUI::Input::MouseButton button);

@@ -187,7 +187,7 @@ bool CommandBarController::CleanFieldStatus()
     }
     return false;
 }
-bool CommandBarController::OnMouseOver(int x, int y, bool& repaint)
+bool CommandBarController::OnMouseMove(int x, int y, bool& repaint)
 {
     repaint = false;
     if (y < this->BarLayout.Y)
