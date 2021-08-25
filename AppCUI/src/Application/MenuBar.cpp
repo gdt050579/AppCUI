@@ -16,7 +16,8 @@ MenuBarItem::MenuBarItem()
 MenuBar::MenuBar()
 {
     this->ItemsCount  = 0;
-    this->CurrentItem = NO_ITEM_SELECTED;
+    this->OpenedItem  = NO_ITEM_SELECTED;
+    this->HoveredItem = NO_ITEM_SELECTED;
     this->Cfg         = AppCUI::Application::GetAppConfig();
 }
 Menu* MenuBar::GetMenu(ItemHandle itemHandle)
@@ -67,6 +68,27 @@ void MenuBar::SetWidth(unsigned int value)
     Width = value;
     RecomputePositions();
 }
+bool MenuBar::OnMouseMove(int x, int y)
+{
+    unsigned int idx = MousePositionToItem(x, y);
+    if (idx != this->HoveredItem)
+    {
+        this->HoveredItem = idx;
+        return true;
+    }
+    return false;
+}
+unsigned int MenuBar::MousePositionToItem(int x, int y)
+{
+    if (y!=0)
+        return NO_ITEM_SELECTED;
+    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    {
+        if ((x >= Items[tr]->X) && (x < (Items[tr]->X + Items[tr]->Name.Len() + 2)))
+            return tr;
+    }
+    return NO_ITEM_SELECTED;
+}
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     renderer.DrawHorizontalLine(0, 0, Width, ' ', Cfg->MenuBar.BackgroundColor);
@@ -79,9 +101,24 @@ void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
     for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
     {
         params.X              = Items[tr]->X + 1;
-        params.Color          = Cfg->MenuBar.Normal.NameColor;
-        params.HotKeyColor    = Cfg->MenuBar.Normal.HotKeyColor;
         params.HotKeyPosition = Items[tr]->HotKeyOffset;
+
+        if (tr == this->OpenedItem)
+        {
+            params.Color       = Cfg->MenuBar.Pressed.NameColor;
+            params.HotKeyColor = Cfg->MenuBar.Pressed.HotKeyColor;
+        }
+        else if (tr == this->HoveredItem)
+        {
+            params.Color       = Cfg->MenuBar.Hover.NameColor;
+            params.HotKeyColor = Cfg->MenuBar.Hover.HotKeyColor;
+        }
+        else
+        {
+            params.Color       = Cfg->MenuBar.Normal.NameColor;
+            params.HotKeyColor = Cfg->MenuBar.Normal.HotKeyColor;
+        }
+        
         renderer.WriteText(Items[tr]->Name, params);
     }
 }

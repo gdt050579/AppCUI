@@ -156,8 +156,11 @@ namespace Internal
         std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
         AppCUI::Application::Config* Cfg;
         unsigned int ItemsCount;
-        unsigned int CurrentItem;
+        unsigned int OpenedItem;
+        unsigned int HoveredItem;
         unsigned int Width;
+
+        unsigned int MousePositionToItem(int x, int y);
       public:
         MenuBar();
 
@@ -166,7 +169,7 @@ namespace Internal
         void RecomputePositions();
         void SetWidth(unsigned int value);
         void Paint(AppCUI::Graphics::Renderer& renderer);        
-
+        bool OnMouseMove(int x, int y);
     };
 
     class DesktopControl : public AppCUI::Controls::Control

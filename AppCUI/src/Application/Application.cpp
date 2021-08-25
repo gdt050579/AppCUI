@@ -773,6 +773,23 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
                 RepaintStatus |= REPAINT_STATUS_DRAW;
             break;
         }
+        // check menu bar
+        if (this->menu)
+        {
+            if (this->menu->OnMouseMove(x,y))
+                RepaintStatus |= REPAINT_STATUS_DRAW;
+            if (y==0) // we are sure we are on the menu
+            {
+                if (this->MouseOverControl)
+                {
+                    if (this->MouseOverControl->OnMouseLeave())
+                        RepaintStatus |= REPAINT_STATUS_DRAW;
+                    ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
+                }
+                this->MouseOverControl = nullptr;
+                break; // no need to continue
+            }
+        }
         // check command bar
         if (this->CommandBarObject.OnMouseOver(x, y, repaint))
         {

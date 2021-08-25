@@ -161,11 +161,25 @@ inline void RenderSingleLineString<CharacterView>(const CharacterView& text, Dra
     // margins
     if (dti.LeftMargin)
     {
-        SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+        if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
+        {
+            SET_CHARACTER_EX(dti.LeftMargin, ' ', params.Color);
+        }
+        else
+        {
+            SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
+        }        
     }
     if (dti.RightMargin)
     {
-        SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
+        if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
+        {
+            SET_CHARACTER_EX(dti.RightMargin, ' ', params.Color);
+        }
+        else
+        {
+            SET_CHARACTER_EX(dti.RightMargin, ' ', NoColorPair);
+        }  
     }
 }
 
