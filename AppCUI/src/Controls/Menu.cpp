@@ -566,7 +566,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         relativeControl = relativeControl->GetParent();
     }
     // compute best width
-    unsigned int BestWidth = 0;
+    unsigned int maxWidthLeft   = 0;
     unsigned int maxHotKeyWidth = 0;
     for (unsigned int tr = 0; tr < this->ItemsCount;tr++)
     {
@@ -582,9 +582,10 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
             if (w_right > 0)
                 w_right += 2;
         }
-        BestWidth = MAXVALUE(BestWidth, w_left + w_right);
+        maxWidthLeft   = MAXVALUE(maxWidthLeft, w_left);
         maxHotKeyWidth = MAXVALUE(maxHotKeyWidth, w_right);
     }
+    unsigned int BestWidth = maxWidthLeft + maxHotKeyWidth;
     // Check agains app size
     Size appSize;
     if (!Application::GetApplicationSize(appSize))
