@@ -117,15 +117,13 @@ namespace Internal
         CommandBarField* HoveredField;
         unsigned int CurrentVersion;
         bool RecomputeScreenPos;
-        bool Visible;
 
         void ComputeScreenPos();
         bool CleanFieldStatus();
         CommandBarField* MousePositionToField(int x, int y);
 
       public:
-        void Init(
-              unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg, bool visible);
+        CommandBarController(unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg);
         void Paint(AppCUI::Graphics::Renderer& renderer);
         void Clear();
         void SetDesktopSize(unsigned int width, unsigned int height);
@@ -135,10 +133,6 @@ namespace Internal
         bool OnMouseDown();
         bool OnMouseUp(int& command);
         int GetCommandForKey(AppCUI::Input::Key keyCode);
-        inline bool IsVisible() const
-        {
-            return Visible;
-        }
     };
 
     struct MenuBarItem
@@ -245,12 +239,14 @@ namespace Internal
     {
         AppCUI::Application::Config config;
         std::unique_ptr<AbstractTerminal> terminal;
+        std::unique_ptr<CommandBarController> cmdBar;
+        std::unique_ptr<MenuBar> menu;
+
         bool Inited;
 
         DesktopControl Desktop;
-        CommandBarController CommandBarObject;
         AppCUI::Application::CommandBar CommandBarWrapper;
-        std::unique_ptr<MenuBar> menu;
+        
         AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
         AppCUI::Controls::Control* MouseLockedControl;
         AppCUI::Controls::Control* MouseOverControl;

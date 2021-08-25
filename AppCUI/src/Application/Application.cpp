@@ -126,7 +126,7 @@ bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
     CHECK(app, false, "Application has not been initialized !");
     size.Width  = app->terminal->ScreenCanvas.GetWidth();
     size.Height = app->terminal->ScreenCanvas.GetHeight();
-    if (app->CommandBarObject.IsVisible())
+    if (app->cmdBar)
         size.Height--;
     if (app->menu)
         size.Height--;
@@ -369,7 +369,9 @@ AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl)
 }
 void UpdateCommandBar(AppCUI::Controls::Control* obj)
 {
-    app->CommandBarObject.Clear();
+    if (!app->cmdBar)
+        return;
+    app->cmdBar->Clear();
     while (obj != nullptr)
     {
         if (((ControlContext*) (obj->Context))->Handlers.OnUpdateCommandBarHandler != nullptr)
@@ -512,29 +514,25 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
     AppCUI::Internal::InitializationData initData;
     CHECK(initData.BuildFrom(flags, width, height), false, "Fail to create AppCUI initialization data !");
     CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
-
-    // configur other objects and settings
-    this->config.SetDarkTheme();
-    this->CommandBarObject.Init(
-          this->terminal->ScreenCanvas.GetWidth(),
-          this->terminal->ScreenCanvas.GetHeight(),
-          &this->config,
-          (flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR) != AppCUI::Application::InitializationFlags::NONE);
-    this->CommandBarWrapper.Init(&this->CommandBarObject);
     LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 
+    // configur other objects and settings
+    if ((flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR) != AppCUI::Application::InitializationFlags::NONE)
+    {
+        this->cmdBar = std::make_unique<AppCUI::Internal::CommandBarController>(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
+        this->CommandBarWrapper.Init(this->cmdBar.get());
+    }
     // configure menu
     if ((flags & AppCUI::Application::InitializationFlags::HAS_MENU) != AppCUI::Application::InitializationFlags::NONE)
     {
         this->menu = std::make_unique<AppCUI::Internal::MenuBar>();
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
     }
-        
-    
 
-    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
-          false,
-          "Failed to create desktop !");
+    this->config.SetDarkTheme();
+
+    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()), false, "Failed to create desktop !");
+
     LoopStatus         = LOOP_STATUS_NORMAL;
     RepaintStatus      = REPAINT_STATUS_ALL;
     MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
@@ -569,7 +567,8 @@ void AppCUI::Internal::Application::Paint()
     this->terminal->ScreenCanvas.ClearClip();
     this->terminal->ScreenCanvas.SetTranslate(0, 0);
     // draw command bar
-    this->CommandBarObject.Paint(this->terminal->ScreenCanvas);
+    if (this->cmdBar)
+        this->cmdBar->Paint(this->terminal->ScreenCanvas);
     // draw menu bar
     if (this->menu)
         this->menu->Paint(this->terminal->ScreenCanvas);        
@@ -633,7 +632,9 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     if (!found)
     {
         // check command bar
-        int cmd = this->CommandBarObject.GetCommandForKey(KeyCode);
+        int cmd = -1;
+        if (this->cmdBar)
+            cmd = this->cmdBar->GetCommandForKey(KeyCode);
         if (cmd > 0)
             SendCommand(cmd);
     }
@@ -687,11 +688,14 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
             RepaintStatus |= REPAINT_STATUS_DRAW;
         return;
     }
-    if (this->CommandBarObject.OnMouseDown())
+    if (this->cmdBar)
     {
-        RepaintStatus |= REPAINT_STATUS_DRAW;
-        MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
-        return;
+        if (this->cmdBar->OnMouseDown())
+        {
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+            MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
+            return;
+        }
     }
     // check controls
     if (ModalControlsCount == 0)
@@ -732,10 +736,13 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
     switch (MouseLockedObject)
     {
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
-        if (this->CommandBarObject.OnMouseUp(commandID))
-            RepaintStatus |= REPAINT_STATUS_DRAW;
-        if (commandID > 0)
-            SendCommand(commandID);
+        if (this->cmdBar)
+        {
+            if (this->cmdBar->OnMouseUp(commandID))
+                RepaintStatus |= REPAINT_STATUS_DRAW;
+            if (commandID > 0)
+                SendCommand(commandID);
+        }
         break;
     case MOUSE_LOCKED_OBJECT_CONTROL:
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
@@ -797,23 +804,26 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             }
         }
         // check command bar
-        if (this->CommandBarObject.OnMouseOver(x, y, repaint))
+        if (this->cmdBar)
         {
-            if (this->MouseOverControl)
+            if (this->cmdBar->OnMouseOver(x, y, repaint))
             {
-                if (this->MouseOverControl->OnMouseLeave())
+                if (this->MouseOverControl)
+                {
+                    if (this->MouseOverControl->OnMouseLeave())
+                        RepaintStatus |= REPAINT_STATUS_DRAW;
+                    ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
+                }
+                this->MouseOverControl = nullptr;
+                if (repaint)
                     RepaintStatus |= REPAINT_STATUS_DRAW;
-                ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
+                break;
             }
-            this->MouseOverControl = nullptr;
-            if (repaint)
-                RepaintStatus |= REPAINT_STATUS_DRAW;
-            break;
-        }
-        else
-        {
-            if (repaint)
-                RepaintStatus |= REPAINT_STATUS_DRAW;
+            else
+            {
+                if (repaint)
+                    RepaintStatus |= REPAINT_STATUS_DRAW;
+            }
         }
 
         if (ModalControlsCount == 0)
@@ -920,7 +930,7 @@ void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* m
 }
 void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key ShiftState)
 {
-    if (this->CommandBarObject.SetShiftKey(ShiftState))
+    if ((this->cmdBar) && (this->cmdBar->SetShiftKey(ShiftState)))
         RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
@@ -976,7 +986,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
                 this->terminal->ScreenCanvas.Resize(evnt.newWidth, evnt.newHeight);
                 this->Desktop.Resize(evnt.newWidth, evnt.newHeight);
-                this->CommandBarObject.SetDesktopSize(evnt.newWidth, evnt.newHeight);
+                if (this->cmdBar)
+                    this->cmdBar->SetDesktopSize(evnt.newWidth, evnt.newHeight);
                 if (this->menu)
                     this->menu->SetWidth(evnt.newWidth);
                 this->RepaintStatus = REPAINT_STATUS_ALL;

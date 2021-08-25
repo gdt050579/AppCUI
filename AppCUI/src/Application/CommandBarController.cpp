@@ -4,11 +4,9 @@ using namespace AppCUI::Internal;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
-void CommandBarController::Init(
-      unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg, bool visible)
+CommandBarController::CommandBarController( unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg)
 {
     this->Cfg = cfg;
-    Visible   = visible;
     SetDesktopSize(desktopWidth, desktopHeight);
     CurrentVersion = 0xFFFFFFFF;
     Clear();
@@ -20,8 +18,6 @@ void CommandBarController::Init(
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
 {
-    if (!Visible)
-        return;
     this->BarLayout.Width    = desktopWidth;
     this->BarLayout.Y        = desktopHeight - 1;
     this->RecomputeScreenPos = true;
@@ -75,9 +71,6 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::
 }
 void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-    if (!Visible)
-        return;
-
     renderer.DrawHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
     if (RecomputeScreenPos)
         ComputeScreenPos();
@@ -114,9 +107,6 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
 }
 void CommandBarController::ComputeScreenPos()
 {
-    if (!Visible)
-        return;
-
     int startPoz;
     // validez shift state
     ShiftStatus = AppCUI::Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
@@ -162,16 +152,13 @@ bool CommandBarController::SetShiftKey(AppCUI::Input::Key keyCode)
     if (keyCode != CurrentShiftKey)
     {
         CurrentShiftKey = keyCode;
-        if (Visible)
-            ComputeScreenPos();
+        ComputeScreenPos();
         return true;
     }
     return false;
 }
 CommandBarField* CommandBarController::MousePositionToField(int x, int y)
 {
-    if (!Visible)
-        return nullptr;
     if (RecomputeScreenPos)
         ComputeScreenPos();
     unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
@@ -203,8 +190,6 @@ bool CommandBarController::CleanFieldStatus()
 bool CommandBarController::OnMouseOver(int x, int y, bool& repaint)
 {
     repaint = false;
-    if (!Visible)
-        return false;
     if (y < this->BarLayout.Y)
     {
         repaint = CleanFieldStatus();
@@ -226,8 +211,6 @@ bool CommandBarController::OnMouseOver(int x, int y, bool& repaint)
 }
 bool CommandBarController::OnMouseDown()
 {
-    if (!Visible)
-        return false;
     if (this->HoveredField)
     {
         this->PressedField = this->HoveredField;
@@ -237,8 +220,6 @@ bool CommandBarController::OnMouseDown()
 }
 bool CommandBarController::OnMouseUp(int& command)
 {
-    if (!Visible)
-        return false;
     if (this->PressedField)
     {
         command = this->PressedField->Command;
