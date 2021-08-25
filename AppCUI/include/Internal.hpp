@@ -147,20 +147,26 @@ namespace Internal
         AppCUI::Graphics::CharacterBuffer Name;
         AppCUI::Input::Key HotKey;
         unsigned int HotKeyOffset;
+        int X;
         MenuBarItem();
     };
     class MenuBar
     {
         static const constexpr unsigned int MAX_ITEMS = 32;
         std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
+        AppCUI::Application::Config* Cfg;
         unsigned int ItemsCount;
         unsigned int CurrentItem;
+        unsigned int Width;
       public:
         MenuBar();
 
         AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
         AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
+        void RecomputePositions();
+        void SetWidth(unsigned int value);
         void Paint(AppCUI::Graphics::Renderer& renderer);        
+
     };
 
     class DesktopControl : public AppCUI::Controls::Control

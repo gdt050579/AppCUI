@@ -234,4 +234,12 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Parent.Button.Inactive = ColorPair{ Color::Gray, Color::Silver };
     this->Menu.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
     this->Menu.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
+
+    this->MenuBar.BackgroundColor      = ColorPair{ Color::Black, Color::White };
+    this->MenuBar.Normal.HotKeyColor   = ColorPair{ Color::DarkRed, Color::White };
+    this->MenuBar.Normal.NameColor     = ColorPair{ Color::Black, Color::White };
+    this->MenuBar.Hover.HotKeyColor    = ColorPair{ Color::DarkRed, Color::Silver };
+    this->MenuBar.Hover.NameColor      = ColorPair{ Color::Black, Color::Silver };
+    this->MenuBar.Pressed.HotKeyColor  = ColorPair{ Color::White, Color::Magenta };
+    this->MenuBar.Pressed.NameColor    = ColorPair{ Color::Yellow, Color::Magenta };
 }

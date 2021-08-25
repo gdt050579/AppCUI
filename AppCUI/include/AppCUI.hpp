@@ -2119,12 +2119,10 @@ namespace Dialogs
 
       public:
         static void ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static void ShowNotification(
-              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowNotification( const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static void ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static Result ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static Result ShowYesNoCancel(
-              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static Result ShowYesNoCancel( const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
     class EXPORT FileDialog
     {
@@ -2343,6 +2341,15 @@ namespace Application
                 } Button;
             } Activ, Parent;
         } Menu; 
+        struct
+        {
+            Graphics::ColorPair BackgroundColor;
+            struct
+            {
+                Graphics::ColorPair HotKeyColor;
+                Graphics::ColorPair NameColor;
+            } Normal, Hover, Pressed;
+        } MenuBar;
         void SetDarkTheme();
     };
 

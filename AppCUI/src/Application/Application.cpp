@@ -389,8 +389,7 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj)
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 
-bool AppCUI::Internal::InitializationData::BuildFrom(
-      AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
+bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     // front end
     AppCUI::Application::InitializationFlags frontEnd = flags & 0xFF;
@@ -502,8 +501,7 @@ void AppCUI::Internal::Application::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
 }
-bool AppCUI::Internal::Application::Init(
-      AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
+bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     LOG_INFO("Starting AppCUI ...");
     LOG_INFO("Flags           = %08X", (unsigned int) flags);
@@ -527,7 +525,11 @@ bool AppCUI::Internal::Application::Init(
 
     // configure menu
     if ((flags & AppCUI::Application::InitializationFlags::HAS_MENU) != AppCUI::Application::InitializationFlags::NONE)
+    {
         this->menu = std::make_unique<AppCUI::Internal::MenuBar>();
+        this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
+    }
+        
     
 
     CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
@@ -562,13 +564,15 @@ void AppCUI::Internal::Application::Paint()
     {
         PaintControl(&Desktop, this->terminal->ScreenCanvas, true);
     }
-    // draw command bar
+
+    // clip to the entire screen
     this->terminal->ScreenCanvas.ClearClip();
     this->terminal->ScreenCanvas.SetTranslate(0, 0);
+    // draw command bar
     this->CommandBarObject.Paint(this->terminal->ScreenCanvas);
     // draw menu bar
     if (this->menu)
-        this->menu->Paint(this->terminal->ScreenCanvas);
+        this->menu->Paint(this->terminal->ScreenCanvas);        
     // draw context menu
     if (this->VisibleMenu)
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
@@ -950,6 +954,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 this->terminal->ScreenCanvas.Resize(evnt.newWidth, evnt.newHeight);
                 this->Desktop.Resize(evnt.newWidth, evnt.newHeight);
                 this->CommandBarObject.SetDesktopSize(evnt.newWidth, evnt.newHeight);
+                if (this->menu)
+                    this->menu->SetWidth(evnt.newWidth);
                 this->RepaintStatus = REPAINT_STATUS_ALL;
             }
             break;
@@ -1024,11 +1030,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
 }
-void AppCUI::Internal::Application::RaiseEvent(
-      AppCUI::Controls::Control* control,
-      AppCUI::Controls::Control* sourceControl,
-      AppCUI::Controls::Event eventType,
-      int controlID)
+void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* control, AppCUI::Controls::Control* sourceControl, AppCUI::Controls::Event eventType, int controlID)
 {
     while (control != nullptr)
     {
