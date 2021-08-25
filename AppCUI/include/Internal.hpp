@@ -165,6 +165,7 @@ namespace Internal
         void Paint(AppCUI::Graphics::Renderer& renderer);        
         bool OnMouseMove(int x, int y, bool & repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+        void Close();
     };
 
     class DesktopControl : public AppCUI::Controls::Control

@@ -16,6 +16,7 @@ MenuBarItem::MenuBarItem()
 MenuBar::MenuBar()
 {
     this->ItemsCount  = 0;
+    this->Width       = 0;
     this->OpenedItem  = NO_ITEM_SELECTED;
     this->HoveredItem = NO_ITEM_SELECTED;
     this->Cfg         = AppCUI::Application::GetAppConfig();
@@ -75,6 +76,9 @@ bool MenuBar::OnMouseMove(int x, int y, bool & repaint)
     {
         this->HoveredItem = idx;
         repaint           = true;
+        // if MenuBar is already opened, moving a mouse over another menu will implicetely open that menu
+        if ((this->OpenedItem != NO_ITEM_SELECTED) && (idx != NO_ITEM_SELECTED))
+            OnMousePressed(x, y, MouseButton::Left);
         return true;
     }
     if (y == 0)
@@ -108,6 +112,11 @@ bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         return true;
     }
     return false;
+}
+void MenuBar::Close()
+{
+    this->OpenedItem  = NO_ITEM_SELECTED;
+    this->HoveredItem = NO_ITEM_SELECTED;
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {

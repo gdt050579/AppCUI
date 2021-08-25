@@ -801,7 +801,6 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
 void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::MouseButton button)
 {
     AppCUI::Controls::Control* ctrl;
-    bool repaint;
     switch (MouseLockedObject)
     {
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
@@ -907,6 +906,9 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
 void AppCUI::Internal::Application::CloseContextualMenu()
 {
     this->VisibleMenu = nullptr;
+    // close menu bar as well
+    if (this->menu)
+        this->menu->Close();
     this->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* mnu)
