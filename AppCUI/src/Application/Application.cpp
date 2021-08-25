@@ -681,6 +681,12 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
         ProcessMenuMouseClick(this->VisibleMenu, x, y);
         return;
     }
+    if (this->menu)
+    {
+        if (this->menu->OnMousePressed(x,y,button))
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        return;
+    }
     if (this->CommandBarObject.OnMouseDown())
     {
         RepaintStatus |= REPAINT_STATUS_DRAW;

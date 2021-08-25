@@ -84,10 +84,24 @@ unsigned int MenuBar::MousePositionToItem(int x, int y)
         return NO_ITEM_SELECTED;
     for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
     {
-        if ((x >= Items[tr]->X) && (x < (Items[tr]->X + Items[tr]->Name.Len() + 2)))
+        if ((x >= Items[tr]->X) && (x < (Items[tr]->X + (int)Items[tr]->Name.Len() + 2)))
             return tr;
     }
     return NO_ITEM_SELECTED;
+}
+bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+{
+    unsigned int idx = MousePositionToItem(x, y);
+    if (idx != this->OpenedItem)
+    {
+        this->OpenedItem = idx;
+        if (idx != NO_ITEM_SELECTED)
+        {
+            Items[idx]->Mnu.Show(Items[idx]->X, 1);
+        }
+        return true;
+    }
+    return false;
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {

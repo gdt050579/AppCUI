@@ -22,7 +22,7 @@ int main()
     Menu* help = Application::AddMenu("&Help");
     help->AddCommandItem("&About", 300);
     help->AddCommandItem("Search &online", 301);
-    files->AddSeparator();
+    help->AddSeparator();
     help->AddCommandItem("Check for &updates", 302);
     Application::Run();
     return 0;
