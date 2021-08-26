@@ -729,20 +729,16 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
         ProcessMenuMouseClick(this->VisibleMenu, x, y);
         return;
     }
-    if (this->menu)
+    if ((this->menu) && (this->menu->OnMousePressed(x, y, button)))
     {
-        if (this->menu->OnMousePressed(x,y,button))
-            RepaintStatus |= REPAINT_STATUS_DRAW;
+        RepaintStatus |= REPAINT_STATUS_DRAW;
         return;
     }
-    if (this->cmdBar)
+    if ((this->cmdBar) &&  (this->cmdBar->OnMouseDown()))
     {
-        if (this->cmdBar->OnMouseDown())
-        {
-            RepaintStatus |= REPAINT_STATUS_DRAW;
-            MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
-            return;
-        }
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+        MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
+        return;
     }
     // check controls
     if (ModalControlsCount == 0)
@@ -762,8 +758,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
                   button,
                   cc->Handlers.OnMousePressedHandlerContext);
         else
-            MouseLockedControl->OnMousePressed(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+            MouseLockedControl->OnMousePressed(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -774,7 +769,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
         return;
     }
 
-    // daca nu e -> curat
+    // else no object locked
     MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
 }
 void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::MouseButton button)
