@@ -187,34 +187,34 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
             renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col->Background);
             break;
         case MenuItemType::Command:
-            textParams.X = 1;
+            textParams.X = 2;
             renderer.WriteText(item->Name, textParams);
             break;
         case MenuItemType::Check:
-            textParams.X = 3;
+            textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CheckMark, itemCol->Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CheckMark, itemCol->Check);
             break;    
         case MenuItemType::Radio:
-            textParams.X = 3;
+            textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleFilled, itemCol->Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleFilled, itemCol->Check);
             else
-                renderer.WriteSpecialCharacter(1, tr, SpecialChars::CircleEmpty, itemCol->Uncheck);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleEmpty, itemCol->Uncheck);
             break; 
         case MenuItemType::SubMenu:
-            textParams.X = 1;
+            textParams.X = 2;
             renderer.WriteText(item->Name, textParams);
-            renderer.WriteSpecialCharacter(this->Width, tr, SpecialChars::TriangleRight, itemCol->Text);
+            renderer.WriteSpecialCharacter(this->Width - 1, tr, SpecialChars::TriangleRight, itemCol->Text);
             break; 
         }     
         if (item->ShortcutKey != Key::None)
         {
             auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
-            renderer.WriteSingleLineText(this->Width - (unsigned int)k_n.size(), tr, k_n, itemCol->ShortCut);
+            renderer.WriteSingleLineText(this->Width - (unsigned int) k_n.size(), tr, k_n, itemCol->ShortCut);
             renderer.WriteSingleLineText(this->Width - (unsigned int)(k_n.size()+m_n.size()), tr, m_n, itemCol->ShortCut);
         }
 
@@ -587,7 +587,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     for (unsigned int tr = 0; tr < this->ItemsCount;tr++)
     {
         auto i               = this->Items[tr].get();
-        unsigned int w_left = i->Name.Len()+2;
+        unsigned int w_left = i->Name.Len()+4;
         unsigned int w_right = 0;
         if ((i->Type == MenuItemType::Radio) || (i->Type == MenuItemType::Check))
             w_left += 2;
@@ -659,7 +659,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         
     VisibleItemsCount = menuHeight - 2;
     Width             = menuWidth - 2;
-    TextWidth         = Width - maxHotKeyWidth;
+    TextWidth         = Width - (maxHotKeyWidth+2);
     // set the actual clip
     if (toLeft)
     {
