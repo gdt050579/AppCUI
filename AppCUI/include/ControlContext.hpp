@@ -2,6 +2,7 @@
 #define __CONTROL_STANDARD_MEMBERS__
 
 #include "AppCUI.hpp"
+#include "Internal.hpp"
 #include <string.h>
 #include <vector>
 
@@ -116,6 +117,7 @@ struct WindowControlContext : public ControlContext
     } rCloseButton, rMaximizeButton, rResizeButton;
     unsigned char winButtonState;
     bool Maximized;
+    std::unique_ptr<AppCUI::Internal::MenuBar> menu;
 };
 
 class SplitterControlContext : public ControlContext

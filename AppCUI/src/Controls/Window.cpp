@@ -142,9 +142,9 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
-    Members->MinWidth =
-          12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, title, OneSpaceRightPadding, close
-              // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
+    Members->MinWidth =     12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, 
+                                // title, OneSpaceRightPadding, close
+                                // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
     Members->MinHeight      = 3;
     Members->MaxWidth       = 100000;
     Members->MaxHeight      = 100000;
@@ -157,6 +157,11 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
     {
         CHECK(MaximizeRestore(), false, "Fail to maximize window !");
+    }
+    if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
+    {
+        Members->menu = std::make_unique<AppCUI::Internal::MenuBar>();
+        Members->Margins.Top += 1;
     }
     return true;
 }
@@ -493,9 +498,18 @@ int Window::GetDialogResult()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     return Members->DialogResult;
 }
-
 bool Window::IsWindowInResizeMode()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     return (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE);
+}
+
+Menu* Window::AddMenu(const AppCUI::Utils::ConstString& name)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);
+    CHECK(Members->menu, nullptr, "Application was not initialized with Menu option set up !");
+    ItemHandle itm                 = Members->menu->AddMenu(name);
+    AppCUI::Controls::Menu* result = Members->menu->GetMenu(itm);
+    CHECK(result, nullptr, "Fail to create menu !");
+    return result;
 }

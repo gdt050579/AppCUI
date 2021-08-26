@@ -1472,6 +1472,7 @@ namespace Controls
     class EXPORT Control;
     class EXPORT TextField;
     class EXPORT ListView;
+    class EXPORT Menu;
     namespace Handlers
     {
         typedef void (*AfterResizeHandler)(
@@ -1650,7 +1651,8 @@ namespace Controls
         WarningWindow = 0x000800,
         NoCloseButton = 0x001000,
         FixedPosition = 0x004000,
-        Maximized     = 0x008000
+        Maximized     = 0x008000,
+        Menu          = 0x010000,
     };
     class EXPORT Window : public Control
     {
@@ -1675,6 +1677,8 @@ namespace Controls
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
+
+        Menu* AddMenu(const AppCUI::Utils::ConstString& name);
 
         virtual ~Window();
     };
