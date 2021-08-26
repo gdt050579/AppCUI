@@ -62,6 +62,7 @@ void BuildAppMenu()
     edit->AddCommandItem("&Copy", 200, Key::Ctrl | Key::Insert);
     edit->AddCommandItem("&paste", 201, Key::Shift | Key::Insert);
     edit->AddCommandItem("&Cut", 202, Key::Shift | Key::Delete);
+    edit->AddCommandItem("Special copy", 203, Key::Ctrl | Key::Alt | Key::Shift | Key::Insert);
     Menu* lang = Application::AddMenu("&Language");
     for (auto i : KeyWords)
         lang->AddRadioItem(i, 1000);

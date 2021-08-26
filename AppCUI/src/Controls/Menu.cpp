@@ -463,6 +463,17 @@ void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
             if (currentIdx >= idxCount)
                 currentIdx = 0;
             break;
+        case Key::PageUp:
+            if (currentIdx >= this->VisibleItemsCount)
+                currentIdx -= this->VisibleItemsCount;
+            else
+                currentIdx = 0;
+            break;
+        case Key::PageDown:
+            currentIdx += this->VisibleItemsCount;
+            if (currentIdx >= idxCount)
+                currentIdx = idxCount - 1;
+            break;
         case Key::Home:
             currentIdx = 0;
             break;
@@ -484,6 +495,8 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
         case Key::Down:
         case Key::Home:
         case Key::End:
+        case Key::PageUp:
+        case Key::PageDown:
             MoveCurrentItemTo(keyCode);
             return true;
         case Key::Enter:
@@ -589,6 +602,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         maxHotKeyWidth = MAXVALUE(maxHotKeyWidth, w_right);
     }
     unsigned int BestWidth = maxWidthLeft + maxHotKeyWidth;
+    BestWidth              = BestWidth | 1; // make sure it's not an odd number (this will help better position Arrow Up and Down)
     // Check agains app size
     Size appSize;
     if (!Application::GetApplicationSize(appSize))
@@ -612,10 +626,10 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     y = MINVALUE(y, (int)appSize.Height);
 
     // validate max and min limits for menu width and height
-    auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 30); 
+    auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 37); // use a non-odd number (31 / 33 / 35 --> bigger them 30)
     auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height - 4), 5);  
     if (maxSize.Width >= 30)
-        maxWidthForCurrentScreen   = MINVALUE(maxWidthForCurrentScreen, maxSize.Width);
+        maxWidthForCurrentScreen   = MINVALUE(maxWidthForCurrentScreen, (maxSize.Width|1));
     if (maxSize.Height>=5)
         maxHeightForCurrentScreen  = MINVALUE(maxHeightForCurrentScreen, maxSize.Height);
     unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
