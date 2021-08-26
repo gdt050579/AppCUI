@@ -129,6 +129,8 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         wcc->rResizeButton.Left    = wcc->Layout.Width - 1;
         wcc->rResizeButton.Right   = wcc->rResizeButton.Left;
     }
+    if (wcc->menu)
+        wcc->menu->SetWidth(wcc->Layout.Width - 2);
 }
 //=========================================================================================================================================================
 Window::~Window()
@@ -162,6 +164,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     {
         Members->menu = std::make_unique<AppCUI::Internal::MenuBar>();
         Members->Margins.Top += 1;
+        Members->menu->SetWidth(Members->Layout.Width - 2);
     }
     return true;
 }
@@ -204,6 +207,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', colorWindow);
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
 
+    // Title
     if (Members->Layout.Width > 10)
     {
         WriteTextParams params(
@@ -273,6 +277,12 @@ void Window::Paint(Graphics::Renderer& renderer)
                   c1);
         }
     }
+    // menu
+    if (Members->menu)
+    {
+        Members->menu->Paint(renderer,1,1);
+    }
+        
 }
 bool Window::MaximizeRestore()
 {

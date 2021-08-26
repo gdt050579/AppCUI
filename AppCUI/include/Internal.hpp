@@ -163,7 +163,7 @@ namespace Internal
         AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
         void RecomputePositions();
         void SetWidth(unsigned int value);
-        void Paint(AppCUI::Graphics::Renderer& renderer);        
+        void Paint(AppCUI::Graphics::Renderer& renderer, int x = 0, int y = 0);        
         bool OnMouseMove(int x, int y, bool & repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
         void Close();

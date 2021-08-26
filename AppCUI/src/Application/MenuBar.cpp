@@ -160,18 +160,18 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
     // nothing to process
     return false;
 }
-void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
+void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer, int x, int y)
 {
-    renderer.DrawHorizontalLine(0, 0, Width, ' ', Cfg->MenuBar.BackgroundColor);
+    renderer.DrawHorizontalLine(x, y, x + Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin |
           WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
           TextAlignament::Left);
-    params.Y = 0;
+    params.Y = y;
 
     for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
     {
-        params.X              = Items[tr]->X + 1;
+        params.X              = x + Items[tr]->X + 1;
         params.HotKeyPosition = Items[tr]->HotKeyOffset;
 
         if (tr == this->OpenedItem)
