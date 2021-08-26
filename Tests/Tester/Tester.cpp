@@ -71,7 +71,7 @@ class MyWin2 : public AppCUI::Controls::Window
 };
 int main()
 {
-    if (!Application::Init(Application::InitializationFlags::HAS_COMMANDBAR))
+    if (!Application::Init(Application::InitializationFlags::CommandBar))
         return 1;
     Application::AddWindow(new MyWin());
     Application::Run();

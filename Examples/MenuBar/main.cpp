@@ -77,7 +77,7 @@ void BuildAppMenu()
 }
 int main()
 {
-    if (!Application::Init(InitializationFlags::HAS_MENU | InitializationFlags::HAS_COMMANDBAR))
+    if (!Application::Init(InitializationFlags::Menu | InitializationFlags::CommandBar))
         return 1;
     Application::AddWindow(new ContextMenuExample());
     BuildAppMenu();

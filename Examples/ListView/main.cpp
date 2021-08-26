@@ -3456,7 +3456,7 @@ class MyWin : public AppCUI::Controls::Window
 
 int main()
 {
-    if (!Application::Init(InitializationFlags::HAS_COMMANDBAR))
+    if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
     Application::AddWindow(new MyWin());
     Application::Run();

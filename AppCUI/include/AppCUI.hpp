@@ -2176,7 +2176,7 @@ namespace Application
 {
     enum class InitializationFlags : unsigned int
     {
-        NONE = 0,
+        None = 0,
 
         // possible backends
         FRONTEND_DEFAULT  = 0,
@@ -2193,11 +2193,11 @@ namespace Application
         CHAR_SIZE_HUGE    = 0x00000500,
 
         // generic options
-        HAS_COMMANDBAR = 0x00010000,
-        HAS_MENU       = 0x00020000,
-        MAXIMIZED      = 0x00040000,
-        FULLSCREEN     = 0x00080000,
-        FIXED_SIZE     = 0x00100000,
+        CommandBar     = 0x00010000,
+        Menu           = 0x00020000,
+        Maximized      = 0x00040000,
+        Fullscreen     = 0x00080000,
+        FixedSize      = 0x00100000,
     };
 
     class EXPORT CommandBar
@@ -2356,13 +2356,13 @@ namespace Application
     EXPORT Config* GetAppConfig();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+    EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(
           unsigned int width,
           unsigned int height,
-          Application::InitializationFlags flags = Application::InitializationFlags::NONE);
+          Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(const std::filesystem::path& iniFilePath);

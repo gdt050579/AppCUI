@@ -20,14 +20,14 @@ bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
     if (ini.CreateFromFile(iniFilePath) == false)
     {
         LOG_WARNING("Fail to load ini file: %s ==> using default configuration", iniFilePath.string().c_str());
-        return AppCUI::Application::Init(Application::InitializationFlags::NONE);
+        return AppCUI::Application::Init(Application::InitializationFlags::None);
     }
     // ini file is created --> let's load the section
     auto AppCUISection = ini.GetSection("appcui");
     if (AppCUISection.Exists() == false)
     {
         LOG_WARNING("Section [AppCUI] was not found in %s ==> using the default configuration", iniFilePath.string().c_str());
-        return AppCUI::Application::Init(Application::InitializationFlags::NONE);
+        return AppCUI::Application::Init(Application::InitializationFlags::None);
     }
     // we have the section ==> lets build up some parameters
     auto frontend     = AppCUISection.GetValue("frontend").ToString();
@@ -35,7 +35,7 @@ bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
     bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
     // analize values
-    Application::InitializationFlags flags = Application::InitializationFlags::NONE;
+    Application::InitializationFlags flags = Application::InitializationFlags::None;
 
     // frontend
     if (frontend)
@@ -74,9 +74,9 @@ bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
     if (s_terminalSize)
     {
         if (String::Equals(s_terminalSize, "fullscreen", true))
-            flags |= Application::InitializationFlags::FULLSCREEN;
+            flags |= Application::InitializationFlags::Fullscreen;
         else if (String::Equals(s_terminalSize, "maximized", true))
-            flags |= Application::InitializationFlags::MAXIMIZED;
+            flags |= Application::InitializationFlags::Maximized;
         else
         {
             auto termSize = terminalSize.AsSize();
@@ -440,14 +440,14 @@ bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::Initia
     }
 
     // terminal size
-    if ((flags & AppCUI::Application::InitializationFlags::MAXIMIZED) != AppCUI::Application::InitializationFlags::NONE)
+    if ((flags & AppCUI::Application::InitializationFlags::Maximized) != AppCUI::Application::InitializationFlags::None)
     {
         this->TermSize = TerminalSize::Maximized;
         this->Width = this->Height = 0;
     }
     else if (
-          (flags & AppCUI::Application::InitializationFlags::FULLSCREEN) !=
-          AppCUI::Application::InitializationFlags::NONE)
+          (flags & AppCUI::Application::InitializationFlags::Fullscreen) !=
+          AppCUI::Application::InitializationFlags::None)
     {
         this->TermSize = TerminalSize::FullScreen;
         this->Width = this->Height = 0;
@@ -468,8 +468,8 @@ bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::Initia
 
     // other flags
     this->FixedSize =
-          ((flags & AppCUI::Application::InitializationFlags::FIXED_SIZE) !=
-           AppCUI::Application::InitializationFlags::NONE);
+          ((flags & AppCUI::Application::InitializationFlags::FixedSize) !=
+           AppCUI::Application::InitializationFlags::None);
 
     // all good
     return true;
@@ -517,13 +517,13 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
     LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 
     // configur other objects and settings
-    if ((flags & AppCUI::Application::InitializationFlags::HAS_COMMANDBAR) != AppCUI::Application::InitializationFlags::NONE)
+    if ((flags & AppCUI::Application::InitializationFlags::CommandBar) != AppCUI::Application::InitializationFlags::None)
     {
         this->cmdBar = std::make_unique<AppCUI::Internal::CommandBarController>(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
         this->CommandBarWrapper.Init(this->cmdBar.get());
     }
     // configure menu
-    if ((flags & AppCUI::Application::InitializationFlags::HAS_MENU) != AppCUI::Application::InitializationFlags::NONE)
+    if ((flags & AppCUI::Application::InitializationFlags::Menu) != AppCUI::Application::InitializationFlags::None)
     {
         this->menu = std::make_unique<AppCUI::Internal::MenuBar>();
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
