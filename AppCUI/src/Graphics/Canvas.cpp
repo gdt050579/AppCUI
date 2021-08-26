@@ -150,11 +150,12 @@ void Canvas::ExtendAbsoluteCliptToRightBottomCorner()
 }
 void Canvas::ClearClip()
 {
-    this->Clip.Left = this->Clip.Right = 0;
-    this->Clip.Right                   = this->Width - 1;
-    this->Clip.Bottom                  = this->Height - 1;
-    this->Clip.Visible                 = true;
-    this->ClipHasBeenCopied            = false;
+    this->Clip.Left            = 0;
+    this->Clip.Top             = 0;
+    this->Clip.Right           = this->Width - 1;
+    this->Clip.Bottom          = this->Height - 1;
+    this->Clip.Visible         = true;
+    this->ClipHasBeenCopied    = false;
 }
 void Canvas::SetTranslate(int offX, int offY)
 {
