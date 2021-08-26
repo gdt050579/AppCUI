@@ -393,7 +393,10 @@ void MenuContext::RunItemAction(unsigned int itemIndex)
 }
 void MenuContext::CloseMenu()
 {
-    AppCUI::Application::GetApplication()->ShowContextualMenu(this->Parent);
+    if (this->Parent)
+        AppCUI::Application::GetApplication()->ShowContextualMenu(this->Parent);
+    else
+        AppCUI::Application::GetApplication()->CloseContextualMenu();
 }
 void MenuContext::UpdateFirstVisibleItem()
 {

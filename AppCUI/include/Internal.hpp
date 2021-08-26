@@ -155,6 +155,7 @@ namespace Internal
         unsigned int Width;
 
         unsigned int MousePositionToItem(int x, int y);
+        void Open(unsigned int menuIndex);
       public:
         MenuBar();
 
@@ -166,6 +167,8 @@ namespace Internal
         bool OnMouseMove(int x, int y, bool & repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
         void Close();
+        bool IsOpened();
+        bool OnKeyEvent(AppCUI::Input::Key keyCode);
     };
 
     class DesktopControl : public AppCUI::Controls::Control

@@ -593,7 +593,12 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     {
         auto menuContext = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
         if (menuContext->OnKeyEvent(KeyCode))
-            RepaintStatus |= REPAINT_STATUS_DRAW;        
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        else if ((this->menu) && (this->menu->IsOpened())) // else if menubar is opened , pass the key to it
+        {
+            if (this->menu->OnKeyEvent(KeyCode))
+                RepaintStatus |= REPAINT_STATUS_DRAW;
+        }        
         return;
     }
 
@@ -614,7 +619,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
                             AsciiCode,
                             ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
             {
-                // if a key was handlede --> repain
+                // if a key was handled --> repaint
                 found = true;
                 RepaintStatus |= REPAINT_STATUS_DRAW;
                 break;
@@ -622,7 +627,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
         }
         if (ctrl->OnKeyEvent(KeyCode, AsciiCode))
         {
-            // if a key was handlede --> repain
+            // if a key was handled --> repaint
             found = true;
             RepaintStatus |= REPAINT_STATUS_DRAW;
             break;
@@ -631,12 +636,18 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     }
     if (!found)
     {
-        // check command bar
-        int cmd = -1;
-        if (this->cmdBar)
-            cmd = this->cmdBar->GetCommandForKey(KeyCode);
-        if (cmd > 0)
-            SendCommand(cmd);
+        // check the menu bar
+        if ((this->menu) && (this->menu->OnKeyEvent(KeyCode)))
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        else
+        {
+            // finally check command bar
+            int cmd = -1;
+            if (this->cmdBar)
+                cmd = this->cmdBar->GetCommandForKey(KeyCode);
+            if (cmd > 0)
+                SendCommand(cmd);
+        }
     }
 }
 void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y)

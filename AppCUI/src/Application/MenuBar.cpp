@@ -43,11 +43,11 @@ ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
     {
         char16_t ch = i->Name.GetBuffer()[i->HotKeyOffset].Code;
         if ((ch >= 'A') && (ch <= 'Z'))
-            i->HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'A'));
+            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::A + (ch - 'A'));
         else if ((ch >= 'a') && (ch <= 'z'))
-            i->HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'a'));
+            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::A + (ch - 'a'));
         else if ((ch >= '0') && (ch <= '9'))
-            i->HotKey = static_cast<Key>((unsigned int) Key::N0 + (ch - '0'));
+            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::N0 + (ch - '0'));
         else
             i->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET; // invalid hot key
     }
@@ -78,7 +78,7 @@ bool MenuBar::OnMouseMove(int x, int y, bool & repaint)
         repaint           = true;
         // if MenuBar is already opened, moving a mouse over another menu will implicetely open that menu
         if ((this->OpenedItem != NO_ITEM_SELECTED) && (idx != NO_ITEM_SELECTED))
-            OnMousePressed(x, y, MouseButton::Left);
+            Open(idx);
         return true;
     }
     if (y == 0)
@@ -99,16 +99,19 @@ unsigned int MenuBar::MousePositionToItem(int x, int y)
     }
     return NO_ITEM_SELECTED;
 }
+void MenuBar::Open(unsigned int menuIndex)
+{
+    this->OpenedItem = menuIndex;
+    if (menuIndex < ItemsCount)
+        Items[menuIndex]->Mnu.Show(Items[menuIndex]->X, 1);
+        OpenedItem = menuIndex;
+}
 bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     unsigned int idx = MousePositionToItem(x, y);
     if (idx != this->OpenedItem)
     {
-        this->OpenedItem = idx;
-        if (idx != NO_ITEM_SELECTED)
-        {
-            Items[idx]->Mnu.Show(Items[idx]->X, 1);
-        }
+        Open(idx);
         return true;
     }
     return false;
@@ -117,6 +120,45 @@ void MenuBar::Close()
 {
     this->OpenedItem  = NO_ITEM_SELECTED;
     this->HoveredItem = NO_ITEM_SELECTED;
+}
+bool MenuBar::IsOpened()
+{
+    return this->OpenedItem != NO_ITEM_SELECTED;
+}
+bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
+{
+    if (IsOpened())
+    {
+        switch (keyCode)
+        {
+        case Key::Left:
+            if (this->OpenedItem > 0)
+                Open(this->OpenedItem - 1);
+            else
+                Open(this->ItemsCount - 1);
+            return true;
+        case Key::Right:
+            if (this->OpenedItem + 1 < ItemsCount)
+                Open(this->OpenedItem + 1);
+            else
+                Open(0);
+            return true;
+        }        
+    }
+    else
+    {
+        // if not open - check for hot keys
+        for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+        {
+            if (this->Items[tr]->HotKey == keyCode)
+            {
+                Open(tr);
+                return true;
+            }
+        }
+    }
+    // nothing to process
+    return false;
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {
