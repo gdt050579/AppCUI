@@ -387,8 +387,9 @@ struct ComboBoxItem
 {
     AppCUI::Graphics::CharacterBuffer Text;
     AppCUI::Controls::ItemData Data;
+    bool Separator;
     ComboBoxItem();
-    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData);
+    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&);

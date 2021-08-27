@@ -2075,6 +2075,7 @@ namespace Controls
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
         bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { 0 });
+        bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;

@@ -18,10 +18,11 @@ ComboBoxItem::ComboBoxItem()
 {
     //LOG_INFO("ComBoxItem(ctor) at %p [Text:Buffer = %p]",this, this->Text.GetBuffer());
 }
-ComboBoxItem::ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData)
+ComboBoxItem::ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, bool separator)
 {
     this->Text.Set(caption);
-    this->Data = userData;
+    this->Data      = userData;
+    this->Separator = separator;
 }
 ComboBoxItem::~ComboBoxItem()
 {
@@ -42,12 +43,14 @@ ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj)
 {
     //LOG_INFO("ComBoxItem(move-ctor) at %p (from %p)", this, &obj);
     std::swap(this->Data, obj.Data);
+    std::swap(this->Separator, obj.Separator);
     this->Text.Swap(obj.Text);
 }
 ComboBoxItem& ComboBoxItem::operator=(const ComboBoxItem& obj)
 {
     //LOG_INFO("ComBoxItem(op-eq) at %p (from %p)", this, &obj);
     this->Data = obj.Data;
+    this->Separator = obj.Separator;
     this->Text.Set(obj.Text);
     return *this;
 }
@@ -56,17 +59,19 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
     //LOG_INFO("ComBoxItem(op-move) at %p (from %p)", this, &obj);
     this->Data = obj.Data;
     this->Text.Swap(obj.Text);
+    std::swap(this->Separator, obj.Separator);
     return *this;
 }
 
-bool ComboBox_AddItem(ComboBox* control, const AppCUI::Utils::ConstString& caption, ItemData userData = { 0 })
+bool ComboBox_AddItem(ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { 0 })
 {
     //LOG_INFO("ENTER --------------------------------------------------------------- ComboBox_AddItem ");
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
-    Members->Items.push_back(ComboBoxItem(caption,userData));
+    Members->Items.push_back(ComboBoxItem(caption, userData, separator));
     //LOG_INFO("EXIT ---------------------------------------------------------------- ComboBox_AddItem ");
     return true;
 }
+
 void ComboBox_MoveTo(ComboBox* control, unsigned int newPoz)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, );
@@ -121,14 +126,14 @@ bool AddItemsFromList(ComboBox* cbx, const T* p, size_t len, const char separato
         {
             if (start < p)
             {
-                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start)), false, "");
+                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start),false), false, "");
             }
             start = p + 1;
         }
     }
     if (start < p)
     {
-        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start)), false, "");
+        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start),false), false, "");
     }
     return true;
 }
@@ -138,8 +143,7 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-bool ComboBox::Create(
-      Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+bool ComboBox::Create(Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
 {
     CONTROL_INIT_CONTEXT(ComboBoxControlContext);
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
@@ -247,7 +251,7 @@ bool ComboBox::SetItemUserData(unsigned int index, ItemData userData)
 }
 bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, ItemData userData)
 {
-    CHECK(ComboBox_AddItem(this, caption, userData), false, "");
+    CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     if ((Members->CurentItemIndex < 0) && (Members->Items.size() > 0))
     {
@@ -255,6 +259,10 @@ bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, ItemData userD
         Members->FirstVisibleItem = 0;
     }
     return true;
+}
+bool ComboBox::AddSeparator(const AppCUI::Utils::ConstString& caption)
+{
+    return ComboBox_AddItem(this, caption, true, { 0 });
 }
 void ComboBox::DeleteAllItems()
 {
@@ -463,8 +471,8 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
     renderer.DrawHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc->Text);
     if (Members->CurentItemIndex < itemsCount)
     {
-        params.X = 1;
-        params.Y = 0;
+        params.X     = 1;
+        params.Y     = 0;
         params.Width = Members->Layout.Width - 6;
         params.Color = cbc->Text;
         renderer.WriteText(Members->Items[Members->CurentItemIndex].Text, params);
@@ -482,13 +490,27 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 2;
         params.Color = Members->Cfg->ComboBox.Focus.Text;
         for (unsigned int tr = 0; tr < Members->VisibleItems; tr++)
-        {
+        {            
             if ((tr + Members->FirstVisibleItem)<itemsCount)
-            {                
+            {               
+                auto& i = Members->Items[tr + Members->FirstVisibleItem];
                 params.Y = tr + 2;
-                renderer.WriteText(Members->Items[tr + Members->FirstVisibleItem].Text, params);
+                if (i.Separator)
+                {
+                    renderer.DrawHorizontalLineWithSpecialChar(
+                          1,
+                          tr + 2,
+                          Members->Layout.Width - 2,
+                          SpecialChars::BoxVerticalSingleLine,
+                          Members->Cfg->ComboBox.Inactive.Text);
+                }
+                else
+                {
+                    renderer.WriteText(i.Text, params);
+                }                
             }
 
+            // cursor or selection
             if ((tr + Members->FirstVisibleItem) == Members->CurentItemIndex)
                 renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
             else if ((tr + Members->FirstVisibleItem) == Members->HoveredIndexItem)
