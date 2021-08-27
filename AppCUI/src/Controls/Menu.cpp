@@ -85,6 +85,7 @@ MenuItem::~MenuItem()
 MenuContext::MenuContext()
 {
     this->Parent            = nullptr;
+    this->Owner             = nullptr;
     this->Cfg               = Application::GetAppConfig();
     this->FirstVisibleItem  = 0;
     this->VisibleItemsCount = 0;
@@ -277,6 +278,7 @@ bool MenuContext::OnMouseMove(int x, int y, bool& repaint)
     ComputeMousePositionInfo(x, y, mpi);
     auto buttonUpStatus   = mpi.IsOnUpButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
     auto buttonDownStatus = mpi.IsOnDownButton ? MenuButtonState::Hovered : MenuButtonState::Normal;
+    auto processed        = mpi.IsOnMenu;
     if (buttonUpStatus != this->ButtonUp)
     {
         this->ButtonUp = buttonUpStatus;
@@ -292,7 +294,7 @@ bool MenuContext::OnMouseMove(int x, int y, bool& repaint)
         CurrentItem = mpi.ItemIndex;
         repaint     = true;
     }
-    return mpi.IsOnMenu;
+    return processed;
 }
 MousePressedResult MenuContext::OnMousePressed(int x, int y)
 {
@@ -380,6 +382,8 @@ void MenuContext::RunItemAction(unsigned int itemIndex)
         break;
     case MenuItemType::SubMenu:
         itm->SubMenu->Show(Width + ScreenClip.ScreenPosition.X, ScreenClip.ScreenPosition.Y + 1 + itemIndex - FirstVisibleItem);
+        // transfer owner
+        (reinterpret_cast<MenuContext*>(itm->SubMenu->Context))->Owner = this->Owner;
         break;
     case MenuItemType::Command:
         commandID = itm->CommandID;
@@ -577,9 +581,16 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     // compute abosolute position
     while (relativeControl)
     {
-        x += relativeControl->GetX() + ((ControlContext*) relativeControl->Context)->Margins.Left;
-        y += relativeControl->GetY() + ((ControlContext*) relativeControl->Context)->Margins.Top;
+        x += relativeControl->GetX();        
+        y += relativeControl->GetY();
+        // move to parent        
         relativeControl = relativeControl->GetParent();
+        // add parent margins
+        if (relativeControl)
+        {
+            x += ((ControlContext*) relativeControl->Context)->Margins.Left;
+            y += ((ControlContext*) relativeControl->Context)->Margins.Top;
+        }
     }
     // compute best width
     unsigned int maxWidthLeft   = 0;

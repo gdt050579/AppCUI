@@ -149,21 +149,23 @@ namespace Internal
         static const constexpr unsigned int MAX_ITEMS = 32;
         std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
         AppCUI::Application::Config* Cfg;
+        AppCUI::Controls::Control* Parent;
         unsigned int ItemsCount;
         unsigned int OpenedItem;
         unsigned int HoveredItem;
         unsigned int Width;
+        int X, Y;
 
         unsigned int MousePositionToItem(int x, int y);
         void Open(unsigned int menuIndex);
       public:
-        MenuBar();
+        MenuBar(AppCUI::Controls::Control* parent = nullptr, int x =0, int y = 0);
 
         AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
         AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
         void RecomputePositions();
         void SetWidth(unsigned int value);
-        void Paint(AppCUI::Graphics::Renderer& renderer, int x = 0, int y = 0);        
+        void Paint(AppCUI::Graphics::Renderer& renderer);        
         bool OnMouseMove(int x, int y, bool & repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
         void Close();

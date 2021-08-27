@@ -459,6 +459,7 @@ struct MenuContext
     std::unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
     unsigned int ItemsCount;
     Menu* Parent;
+    AppCUI::Internal::MenuBar* Owner;
     AppCUI::Graphics::Clip ScreenClip;
     AppCUI::Application::Config* Cfg;
     unsigned int FirstVisibleItem;

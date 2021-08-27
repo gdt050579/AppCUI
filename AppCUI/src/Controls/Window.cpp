@@ -162,7 +162,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     }
     if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
     {
-        Members->menu = std::make_unique<AppCUI::Internal::MenuBar>();
+        Members->menu = std::make_unique<AppCUI::Internal::MenuBar>(this, 1, 1);
         Members->Margins.Top += 1;
         Members->menu->SetWidth(Members->Layout.Width - 2);
     }
@@ -279,9 +279,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     }
     // menu
     if (Members->menu)
-    {
-        Members->menu->Paint(renderer,1,1);
-    }
+        Members->menu->Paint(renderer);
         
 }
 bool Window::MaximizeRestore()
@@ -322,6 +320,11 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
+    if (Members->menu)
+    {
+        if (Members->menu->OnMousePressed(x, y, button))
+            return;
+    }
     if (((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None) && (Members->rCloseButton.Contains(x, y)))
     {
         Members->winButtonState = WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE;
@@ -400,6 +403,13 @@ bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 bool Window::OnMouseOver(int x, int y)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    if (Members->menu)
+    {
+        bool repaint;
+        if (Members->menu->OnMouseMove(x, y, repaint))
+            return true;
+    }
+
     if (((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None) && (Members->rCloseButton.Contains(x, y)))
     {
         if (Members->winButtonState == WINBUTTON_STATE_CLOSE)
@@ -477,11 +487,19 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
         RaiseEvent(Event::EVENT_WINDOW_ACCEPT);
         return true;
     }
+    // first we check menu hot keys
+    if (Members->menu)
+    {
+        if (Members->menu->OnKeyEvent(KeyCode))
+            return true;
+    }        
+    // check cntrols hot keys
     if ((((unsigned int) KeyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
     {
-        return ProcessHotKey(this, KeyCode);
+        if (ProcessHotKey(this, KeyCode))
+            return true;
     }
-
+    // key was not prcessed, pass it to my parent
     return false;
 }
 bool Window::Exit(int dialogResult)
@@ -496,14 +514,14 @@ bool Window::Exit(Dialogs::Result dialogResult)
 {
     return this->Exit(static_cast<int>(dialogResult));
 }
-int Window::Show()
+int  Window::Show()
 {
     CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
     CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     return Members->DialogResult;
 }
-int Window::GetDialogResult()
+int  Window::GetDialogResult()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     return Members->DialogResult;

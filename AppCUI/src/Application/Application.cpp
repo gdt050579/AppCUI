@@ -594,9 +594,9 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
         auto menuContext = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
         if (menuContext->OnKeyEvent(KeyCode))
             RepaintStatus |= REPAINT_STATUS_DRAW;
-        else if ((this->menu) && (this->menu->IsOpened())) // else if menubar is opened , pass the key to it
+        else if (menuContext->Owner)                                      
         {
-            if (this->menu->OnKeyEvent(KeyCode))
+            if (menuContext->Owner->OnKeyEvent(KeyCode))
                 RepaintStatus |= REPAINT_STATUS_DRAW;
         }        
         return;
@@ -690,11 +690,13 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
     bool processed = false;
     bool repaint   = false;
     // Process event in the following order:
-    // first the context menu, then the menu bar and then cmdbar
+    // first the context menu and its owner, then the menu bar and then cmdbar
     if (this->VisibleMenu)
     {
         auto* mnuC = ((MenuContext*) (this->VisibleMenu->Context));
         processed  = mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y, repaint);
+        if ((!processed) && (mnuC->Owner))
+            processed = mnuC->Owner->OnMouseMove(x, y, repaint);
     }
     // check menu bar
     if ((this->menu) && (!processed))
@@ -911,10 +913,13 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
 }
 void AppCUI::Internal::Application::CloseContextualMenu()
 {
+    if (this->VisibleMenu)
+    {
+        auto* mcx = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
+        if (mcx->Owner)
+            mcx->Owner->Close();
+    }
     this->VisibleMenu = nullptr;
-    // close menu bar as well
-    if (this->menu)
-        this->menu->Close();
     this->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* mnu)

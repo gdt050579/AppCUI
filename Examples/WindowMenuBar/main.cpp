@@ -22,6 +22,17 @@ class WindowMenuBarExample : public AppCUI::Controls::Window
         edit->AddCommandItem("&paste", 201, Key::Shift | Key::Insert);
         edit->AddCommandItem("&Cut", 202, Key::Shift | Key::Delete);
         edit->AddCommandItem("Special copy", 203, Key::Ctrl | Key::Alt | Key::Shift | Key::Insert);
+        edit->AddSeparator();
+        auto x = edit->AddSubMenu("Copy on location");
+        edit->GetSubMenu(x)->AddCommandItem("&1", 100, Key::Ctrl | Key::N1);
+        edit->GetSubMenu(x)->AddCommandItem("&2", 100, Key::Ctrl | Key::N2);
+        edit->GetSubMenu(x)->AddCommandItem("&3", 100, Key::Ctrl | Key::N3);
+        edit->GetSubMenu(x)->AddCommandItem("&4", 100, Key::Ctrl | Key::N4);
+        edit->GetSubMenu(x)->AddCommandItem("&5", 100, Key::Ctrl | Key::N5);
+        edit->GetSubMenu(x)->AddCommandItem("&6", 100, Key::Ctrl | Key::N6);
+        edit->GetSubMenu(x)->AddCommandItem("&7", 100, Key::Ctrl | Key::N7);
+        edit->GetSubMenu(x)->AddCommandItem("&8", 100, Key::Ctrl | Key::N8);
+        edit->GetSubMenu(x)->AddCommandItem("&9", 100, Key::Ctrl | Key::N9);
         Menu* help = this->AddMenu("&Help");
         help->AddCommandItem("&About", 300);
         help->AddCommandItem("Search &online", 301);
