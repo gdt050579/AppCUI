@@ -454,12 +454,17 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 
-    WriteTextParams params(
+    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |WriteTextFlags::FitTextToWidth,
+                           TextAlignament::Left);
+    WriteTextParams paramsSeparator(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |
-          WriteTextFlags::FitTextToWidth);
+          WriteTextFlags::FitTextToWidth | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+          TextAlignament::Center);
 
-    params.Align = TextAlignament::Left;
-    auto* cbc = &Members->Cfg->ComboBox.Normal;
+    paramsSeparator.Width = Members->Layout.Width - 7;
+    paramsSeparator.X     = 3;
+    paramsSeparator.Color = Members->Cfg->ComboBox.Inactive.Text;
+    auto* cbc = &Members->Cfg->ComboBox.Normal;  
     if (!this->IsEnabled())
         cbc = &Members->Cfg->ComboBox.Inactive;
     if (Members->Focused)
@@ -493,19 +498,24 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         {            
             if ((tr + Members->FirstVisibleItem)<itemsCount)
             {               
-                auto& i = Members->Items[tr + Members->FirstVisibleItem];
-                params.Y = tr + 2;
+                auto& i = Members->Items[tr + Members->FirstVisibleItem];                
                 if (i.Separator)
                 {
                     renderer.DrawHorizontalLineWithSpecialChar(
                           1,
                           tr + 2,
                           Members->Layout.Width - 2,
-                          SpecialChars::BoxVerticalSingleLine,
+                          SpecialChars::BoxHorizontalSingleLine,
                           Members->Cfg->ComboBox.Inactive.Text);
+                    if (i.Text.Len()>0)
+                    {
+                        paramsSeparator.Y = tr + 2;
+                        renderer.WriteText(i.Text, paramsSeparator);
+                    }
                 }
                 else
                 {
+                    params.Y = tr + 2;
                     renderer.WriteText(i.Text, params);
                 }                
             }
