@@ -2183,10 +2183,10 @@ namespace Application
         None = 0,
 
         // possible backends
-        FRONTEND_DEFAULT  = 0,
-        FRONTEND_SDL      = 1,
-        FRONTEND_TERMINAL = 2,
-        FRONTEND_WINDOWS  = 3,
+        FrontendDefault         = 0,
+        FrontendSDL             = 1,
+        FrontendTerminal        = 2,
+        FrontendWindowsConsole  = 3,
 
         // character size
         CHAR_SIZE_DEFAULT = 0,

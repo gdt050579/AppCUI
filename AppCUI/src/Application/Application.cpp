@@ -41,13 +41,13 @@ bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
     if (frontend)
     {
         if (String::Equals(frontend, "default", true))
-            flags |= Application::InitializationFlags::FRONTEND_DEFAULT;
+            flags |= Application::InitializationFlags::FrontendDefault;
         else if (String::Equals(frontend, "SDL", true))
-            flags |= Application::InitializationFlags::FRONTEND_SDL;
+            flags |= Application::InitializationFlags::FrontendSDL;
         else if (String::Equals(frontend, "terminal", true))
-            flags |= Application::InitializationFlags::FRONTEND_TERMINAL;
+            flags |= Application::InitializationFlags::FrontendTerminal;
         else if (String::Equals(frontend, "windows", true))
-            flags |= Application::InitializationFlags::FRONTEND_WINDOWS;
+            flags |= Application::InitializationFlags::FrontendWindowsConsole;
     }
 
     // character size
@@ -397,16 +397,16 @@ bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::Initia
     AppCUI::Application::InitializationFlags frontEnd = flags & 0xFF;
     switch (frontEnd)
     {
-    case AppCUI::Application::InitializationFlags::FRONTEND_DEFAULT:
+    case AppCUI::Application::InitializationFlags::FrontendDefault:
         this->FrontEnd = TerminalType::Default;
         break;
-    case AppCUI::Application::InitializationFlags::FRONTEND_SDL:
+    case AppCUI::Application::InitializationFlags::FrontendSDL:
         this->FrontEnd = TerminalType::SDL;
         break;
-    case AppCUI::Application::InitializationFlags::FRONTEND_TERMINAL:
+    case AppCUI::Application::InitializationFlags::FrontendTerminal:
         this->FrontEnd = TerminalType::Terminal;
         break;
-    case AppCUI::Application::InitializationFlags::FRONTEND_WINDOWS:
+    case AppCUI::Application::InitializationFlags::FrontendWindowsConsole:
         this->FrontEnd = TerminalType::Windows;
         break;
     default:
