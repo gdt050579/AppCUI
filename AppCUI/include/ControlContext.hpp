@@ -12,13 +12,13 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
-#define GATTR_ENABLE   0x000001
-#define GATTR_VISIBLE  0x000002
-#define GATTR_CHECKED  0x000004
-#define GATTR_TABSTOP  0x000008
-#define GATTR_VSCROLL  0x000010
-#define GATTR_HSCROLL  0x000020
-#define GATTR_EXPANDED 0x000040
+constexpr unsigned int GATTR_ENABLE   = 0x000001;
+constexpr unsigned int GATTR_VISIBLE  = 0x000002;
+constexpr unsigned int GATTR_CHECKED  = 0x000004;
+constexpr unsigned int GATTR_TABSTOP  = 0x000008;
+constexpr unsigned int GATTR_VSCROLL  = 0x000010;
+constexpr unsigned int GATTR_HSCROLL  = 0x000020;
+constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
 struct ControlContext
 {
@@ -96,9 +96,9 @@ struct ControlContext
     void PaintScrollbars(Graphics::Renderer& renderer);
 };
 
-#define WINDOW_DRAG_STATUS_NONE 0
-#define WINDOW_DRAG_STATUS_MOVE 1
-#define WINDOW_DRAG_STATUS_SIZE 2
+constexpr unsigned int WINDOW_DRAG_STATUS_NONE = 0;
+constexpr unsigned int WINDOW_DRAG_STATUS_MOVE = 1;
+constexpr unsigned int WINDOW_DRAG_STATUS_SIZE = 2;
 
 struct WindowControlContext : public ControlContext
 {
@@ -239,8 +239,8 @@ struct CanvasControlContext : public ControlContext
     int CanvasScrollX, CanvasScrollY;
 };
 
-#define MAX_LISTVIEW_COLUMNS     64
-#define MAX_LISTVIEW_HEADER_TEXT 32
+constexpr unsigned int MAX_LISTVIEW_COLUMNS     = 64;
+constexpr unsigned int MAX_LISTVIEW_HEADER_TEXT = 32;
 
 struct ListViewItem
 {
@@ -477,7 +477,8 @@ struct MenuMousePositionInfo
     bool IsOnUpButton;
     bool IsOnDownButton;
 };
-#define MAX_NUMBER_OF_MENU_ITEMS 256
+
+constexpr unsigned int MAX_NUMBER_OF_MENU_ITEMS = 256;
 struct MenuContext
 {
     // std::vector messes up with inter-items pointers when calling copy/move ctor

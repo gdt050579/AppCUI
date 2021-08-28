@@ -9,7 +9,11 @@ using namespace AppCUI::Graphics;
 namespace AppCUI::Controls
 {
 bool NumericSelector::Create(
-      Control* parent, long long minValue, long long maxValue, long long value, const std::string_view& layout)
+      Control* parent,
+      const long long minValue,
+      const long long maxValue,
+      long long value,
+      const std::string_view& layout)
 {
     CONTROL_INIT_CONTEXT(NumericSelectorControlContext);
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, false);
@@ -30,6 +34,18 @@ const long long NumericSelector::GetValue() const
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, 0);
     return Members->value;
+}
+
+const void NumericSelector::SetMinValue(const long long minValue)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+    Members->minValue = minValue;
+}
+
+const void NumericSelector::SetMaxValue(const long long maxValue)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+    Members->maxValue = maxValue;
 }
 
 void NumericSelector::Paint(Renderer& renderer)

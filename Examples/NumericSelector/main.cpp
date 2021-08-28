@@ -18,8 +18,11 @@ class SimpleWin : public AppCUI::Controls::Window
 
         n1.Create(this, 0, 100, 50, "x:1,y:1,w:36");
         n2.Create(this, -100, 100, 50, "x:1,y:3,w:36");
-        n3.Create(this, 0, 100, 50, "x:1,y:5,w:36");
+        n3.Create(this, 0, 0, 50, "x:1,y:5,w:36");
         n4.Create(this, 0, 100, 50, "x:1,y:7,w:36");
+
+        n3.SetMinValue(-50);
+        n3.SetMaxValue(50);
 
         n4.SetEnabled(false);
     }
