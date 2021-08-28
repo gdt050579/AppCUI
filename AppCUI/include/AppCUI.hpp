@@ -2119,6 +2119,8 @@ namespace Controls
         void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });      
         void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = {0,0});
     };
+
+
     class EXPORT NumericSelector : public Control
     {
       public:
@@ -2130,8 +2132,6 @@ namespace Controls
               const std::string_view& layout);
 
         const unsigned long long GetValue() const;
-        const void Enable();
-        const void Disable();
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;

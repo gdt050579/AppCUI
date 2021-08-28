@@ -36,18 +36,6 @@ const unsigned long long NumericSelector::GetValue() const
     return Members->value;
 }
 
-const void NumericSelector::Enable()
-{
-    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
-    Members->Flags |= GATTR_ENABLE;
-}
-
-const void NumericSelector::Disable()
-{
-    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
-    Members->Flags ^= GATTR_ENABLE;
-}
-
 void NumericSelector::Paint(Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );

@@ -21,7 +21,7 @@ class SimpleWin : public AppCUI::Controls::Window
         n3.Create(this, 0, 100, 50, "x:1,y:5,w:36");
         n4.Create(this, 0, 100, 50, "x:1,y:7,w:36");
 
-        n4.Disable();
+        n4.SetEnabled(false);
     }
 
     bool OnEvent(Control* sender, Event eventType, int controlID) override
