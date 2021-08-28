@@ -393,7 +393,7 @@ struct ComboBoxItem
     ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
-    ComboBoxItem(ComboBoxItem&&);
+    ComboBoxItem(ComboBoxItem&&) noexcept;
     ComboBoxItem& operator=(const ComboBoxItem&);
     ComboBoxItem& operator=(ComboBoxItem&&) noexcept;
 };

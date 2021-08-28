@@ -46,7 +46,7 @@ ComboBoxItem::ComboBoxItem(const ComboBoxItem& obj)
     this->Index     = obj.Index;
     //LOG_INFO("           after-copy   = %p", this->Text.GetBuffer());
 }
-ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj)
+ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept 
 {
     //LOG_INFO("ComBoxItem(move-ctor) at %p (from %p)", this, &obj);
     std::swap(this->Data, obj.Data);
@@ -76,19 +76,20 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 bool ComboBox_AddItem(ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { 0 })
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
-    unsigned int idx = (unsigned int) Members->Items.size();
-    CHECK(idx < 0xFFFF, false, "A maximum of 0xFFFF indexes can be stored in a combobox !");
+    unsigned int itemID = (unsigned int) Members->Items.size();
+    unsigned int indexID = Members->Indexes.Len();
+    CHECK(itemID < 0xFFFF, false, "A maximum of 0xFFFF indexes can be stored in a combobox !");
     if (!separator)
     {
         // only store available items (not separators)
-        CHECK(Members->Indexes.Push(idx), false, "Fail to add index: %u", idx);
+        CHECK(Members->Indexes.Push(itemID), false, "Fail to add index: %u", itemID);
     }
     else
     {
         // separators items don't have an index
-        idx = ComboBox::NO_ITEM_SELECTED;
+        indexID = ComboBox::NO_ITEM_SELECTED;
     }
-    Members->Items.push_back(ComboBoxItem(caption, userData, idx, separator));
+    Members->Items.push_back(ComboBoxItem(caption, userData, indexID, separator));
     return true;
 }
 
@@ -131,8 +132,8 @@ void ComboBox_SetCurrentIndex(ComboBox* control, unsigned int newIndex)
         }
         else
         {
-            if (cItem > Members->VisibleItemsCount)
-                Members->FirstVisibleItem = cItem - Members->VisibleItemsCount;
+            if ((cItem + 1) > Members->VisibleItemsCount)
+                Members->FirstVisibleItem = cItem + 1 - Members->VisibleItemsCount;
             else
                 Members->FirstVisibleItem = 0;
         }
@@ -337,13 +338,13 @@ bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
     {
     case Key::Up:
         if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Indexes.Len() > 0))
-            Members->CurentItemIndex = 0;
+            ComboBox_SetCurrentIndex(this, 0);
         else if (Members->CurentItemIndex > 0)
             ComboBox_SetCurrentIndex(this, Members->CurentItemIndex - 1);
         return true;
     case Key::Down:
         if ((Members->CurentItemIndex == ComboBox::NO_ITEM_SELECTED) && (Members->Indexes.Len() > 0))
-            Members->CurentItemIndex = 0;
+            ComboBox_SetCurrentIndex(this, 0);
         else if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
             ComboBox_SetCurrentIndex(this, Members->CurentItemIndex + 1);
         return true;
@@ -395,7 +396,7 @@ void ComboBox::OnExpandView(AppCUI::Graphics::Clip& expandedClip)
         if ((Members->FirstVisibleItem + Members->VisibleItemsCount)>=Members->Items.size())
         {
             if (Members->VisibleItemsCount < Members->Items.size())
-                Members->FirstVisibleItem = Members->Items.size() - Members->VisibleItemsCount;
+                Members->FirstVisibleItem = (unsigned int)(Members->Items.size() - Members->VisibleItemsCount);
             else
                 Members->FirstVisibleItem = 0;
         }
@@ -423,7 +424,9 @@ void ComboBox::OnHotKey()
 void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
-    ComboBox_SetCurrentIndex(this, ComboBox_MousePosToIndex(this, x, y));
+    unsigned int idx = ComboBox_MousePosToIndex(this, x, y);
+    if (idx != ComboBox::NO_ITEM_SELECTED)
+        ComboBox_SetCurrentIndex(this, idx);
     OnHotKey();
 }
 bool ComboBox::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
