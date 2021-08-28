@@ -32,7 +32,7 @@ class MyWin : public AppCUI::Controls::Window
         cb3.AddItem("Ducatti");
         
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
@@ -41,7 +41,7 @@ class MyWin : public AppCUI::Controls::Window
         }
         if (eventType == Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED)
         {
-            ComboBox* c = reinterpret_cast<ComboBox*>((void*)sender);
+            ComboBox* c = reinterpret_cast<ComboBox*>(sender);
             AppCUI::Utils::LocalUnicodeStringBuilder<128> temp;
             temp.Add(c->GetCurrentItemText());
             temp.Add(" => Index: ");

@@ -24,7 +24,7 @@ class MyWin : public AppCUI::Controls::Window
         r5.Create(this, u8"Math symbol (∫) &2", "x:30,y:2,w:25", RADIO_GROUP_ID_2);
         r6.Create(this, "&3rd option with\nmultiple lines", "x:30,y:3,w:20,h:2", RADIO_GROUP_ID_2);
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

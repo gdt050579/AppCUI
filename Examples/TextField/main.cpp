@@ -55,7 +55,7 @@ class MyWin : public AppCUI::Controls::Window
               HighlightNumberAndCapitalLetters);
         t5.SetHotKey('H');
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

@@ -92,7 +92,7 @@ class LogoWin : public AppCUI::Controls::Window
         CreateImage(viewInactive.GetCanvas());
         CreateImage(viewSmall.GetCanvas());
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

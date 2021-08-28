@@ -19,7 +19,7 @@ class MyWin : public AppCUI::Controls::Window
         b1.Create(this, "&Save", "x:1,y:1,w:9", BUTTON_ID_SHOW_SAVE);
         b2.Create(this, "&Open", "x:1,y:3,w:9", BUTTON_ID_SHOW_OPEN);
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

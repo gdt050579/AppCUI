@@ -41,7 +41,7 @@ class MyWin : public AppCUI::Controls::Window
         b1.Create(&pbottom, "&OK", "l:1,b:0,w:90%,h:2", 100);
         b2.Create(&pbottom, "&Cancel", "x:2,y:5,w:15", 102);
     }
-    bool OnEvent(const void* sender, AppCUI::Controls::Event eventType, int controlID) override
+    bool OnEvent(Control* sender, AppCUI::Controls::Event eventType, int controlID) override
     {
         if (eventType == AppCUI::Controls::Event::EVENT_WINDOW_CLOSE)
         {

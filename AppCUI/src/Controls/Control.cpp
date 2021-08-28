@@ -1234,7 +1234,7 @@ bool AppCUI::Controls::Control::OnMouseWheel(int x, int y, AppCUI::Input::MouseW
 void AppCUI::Controls::Control::OnHotKey()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(const void* sender, Event eventType, int controlID)
+bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control *sender, Event eventType, int controlID)
 {
     return false;
 }

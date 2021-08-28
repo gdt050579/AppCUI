@@ -27,7 +27,7 @@ class SimpleWin : public AppCUI::Controls::Window
               "[X]  button from the bottom-top corner.",
               "x:1,y:1,w:36,h:5");
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

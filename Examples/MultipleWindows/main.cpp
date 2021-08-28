@@ -11,7 +11,7 @@ class MyWin : public AppCUI::Controls::Window
     {
         this->Create(name, layout, WindowFlags::Sizeable);
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

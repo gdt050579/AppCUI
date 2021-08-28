@@ -3076,7 +3076,7 @@ const char* english_words[] = { "a",
 class MyDialog : public AppCUI::Controls::Window
 {
   public:
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
@@ -3132,9 +3132,8 @@ class SimpleListExample : public MyDialog
         lv.Create(
               this,
               "x:1,y:1,w:26,h:10",
-              hasCheckboxes
-                    ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
-                    : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
+              hasCheckboxes ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
+                            : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
         lv.AddColumn("", TextAlignament::Left, 30);
         lv.AddItem("Apple");
         lv.AddItem("Pinaple");
@@ -3433,7 +3432,7 @@ class MyWin : public AppCUI::Controls::Window
             win.Show();
         }
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

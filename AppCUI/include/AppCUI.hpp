@@ -1625,7 +1625,7 @@ namespace Controls
         virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
         
 
-        virtual bool OnEvent(const void* sender, Event eventType, int controlID);
+        virtual bool OnEvent(Control* sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
         virtual void OnUpdateScrollBars();
 

@@ -118,7 +118,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
         this->Create("TicTacToe", "a:c,w:20,h:18");
         game.Create(this, "x:2,y:1,w:14,h:14");
     }
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
