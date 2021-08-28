@@ -156,6 +156,7 @@ bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
     switch (direction)
     {
     case MouseWheel::Down:
+    case MouseWheel::Left:
         if (Members->minValue < Members->value)
         {
             Members->value--;
@@ -164,6 +165,7 @@ bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
         return true;
 
     case MouseWheel::Up:
+    case MouseWheel::Right:
         if (Members->maxValue > Members->value)
         {
             Members->value++;
