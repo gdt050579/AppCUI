@@ -750,6 +750,8 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
 
     if (MouseLockedControl != nullptr)
     {
+        if (this->ExpandedControl != this->MouseLockedControl)
+            this->PackControl(true);
         MouseLockedControl->SetFocus();
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
         if (cc->Handlers.OnMousePressedHandler != nullptr)
