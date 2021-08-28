@@ -387,9 +387,10 @@ struct ComboBoxItem
 {
     AppCUI::Graphics::CharacterBuffer Text;
     AppCUI::Controls::ItemData Data;
+    unsigned int Index;
     bool Separator;
     ComboBoxItem();
-    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, bool separator = false);
+    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&);
@@ -400,7 +401,9 @@ class ComboBoxControlContext : public ControlContext
 {
   public:
     std::vector<ComboBoxItem> Items;
-    unsigned int ExpandedHeight, FirstVisibleItem, CurentItemIndex, VisibleItems, HoveredIndexItem;
+    AppCUI::Utils::Array32 Indexes;
+    unsigned int ExpandedHeight, FirstVisibleItem, VisibleItemsCount, HoveredIndexItem;
+    unsigned int CurentItemIndex;
 };
 
 
