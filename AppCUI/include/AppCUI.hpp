@@ -1907,9 +1907,22 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
+    enum class ImageRendererMode: unsigned int
+    {
+        SmallBoxes,
+        LargeBoxes,
+        AsciiArt
+    };
     class EXPORT ImageViewer: public CanvasViewer
     {
-    
+      public:
+        bool Create(Control* parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              ViewerFlags flags = ViewerFlags::None);
+        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
     };
     enum class ListViewFlags : unsigned int
     {
