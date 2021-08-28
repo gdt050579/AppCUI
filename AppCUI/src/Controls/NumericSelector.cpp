@@ -57,13 +57,39 @@ const void NumericSelector::SetValue(const long long value)
 const void NumericSelector::SetMinValue(const long long minValue)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
-    Members->minValue = minValue;
+
+    if (minValue > Members->maxValue)
+    {
+        Members->minValue = Members->maxValue;
+    }
+    else
+    {
+        Members->minValue = minValue;
+    }
+
+    if (Members->minValue > Members->value)
+    {
+        Members->value = Members->minValue;
+    }
 }
 
 const void NumericSelector::SetMaxValue(const long long maxValue)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
-    Members->maxValue = maxValue;
+
+    if (maxValue < Members->minValue)
+    {
+        Members->maxValue = Members->minValue;
+    }
+    else
+    {
+        Members->maxValue = maxValue;
+    }
+
+    if (Members->value > Members->maxValue)
+    {
+        Members->value = Members->maxValue;
+    }
 }
 
 void NumericSelector::Paint(Renderer& renderer)
