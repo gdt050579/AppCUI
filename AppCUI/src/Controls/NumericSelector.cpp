@@ -58,38 +58,18 @@ const void NumericSelector::SetMinValue(const long long minValue)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
 
-    if (minValue > Members->maxValue)
-    {
-        Members->minValue = Members->maxValue;
-    }
-    else
-    {
-        Members->minValue = minValue;
-    }
-
-    if (Members->minValue > Members->value)
-    {
-        Members->value = Members->minValue;
-    }
+    Members->minValue = minValue;
+    Members->maxValue = std::max<>(minValue, Members->maxValue);
+    Members->value    = std::min<>(std::max<>(Members->value, minValue), Members->maxValue);
 }
 
 const void NumericSelector::SetMaxValue(const long long maxValue)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
 
-    if (maxValue < Members->minValue)
-    {
-        Members->maxValue = Members->minValue;
-    }
-    else
-    {
-        Members->maxValue = maxValue;
-    }
-
-    if (Members->value > Members->maxValue)
-    {
-        Members->value = Members->maxValue;
-    }
+    Members->maxValue = maxValue;
+    Members->minValue = std::min<>(maxValue, Members->minValue);
+    Members->value    = std::max<>(std::min<>(Members->value, maxValue), Members->minValue);
 }
 
 void NumericSelector::Paint(Renderer& renderer)
