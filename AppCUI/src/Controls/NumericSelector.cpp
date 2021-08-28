@@ -51,9 +51,13 @@ namespace AppCUI::Controls
         renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - 5, ' ', col);
     
         // TODO: find another way!
-        LocalString<128> tmp;
-        tmp.Format("%llu", Members->value);
-    
+        LocalString<256> tmp;
+        if (tmp.Format("%llu", Members->value) == nullptr)
+        {
+            LOG_ERROR("Conversion failed!");
+            return;
+        }
+
         renderer.WriteSingleLineText(Members->Layout.Width / 2, 0, tmp.GetText(), col, TextAlignament::Center);
         renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, " + ", col);
     }
@@ -65,18 +69,18 @@ namespace AppCUI::Controls
         {
         case Key::Left:
             if (Members->minValue < Members->value)
+            {
                 Members->value--;
-
-            // TODO: raise event value changed
-
+                this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            }
             return true;
     
         case Key::Right:
             if (Members->maxValue > Members->value)
+            {
                 Members->value++;
-            
-            // TODO: raise event value changed
-    
+                this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            }
             return true;
     
         default:
@@ -99,16 +103,18 @@ namespace AppCUI::Controls
             if (x < 4)
             {
                 if (Members->minValue < Members->value)
+                {
                     Members->value--;
-
-                // TODO: raise event value changed
+                    this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+                }
             }
             else if (x > this->GetWidth() - 4)
             {
                 if (Members->maxValue > Members->value)
+                {
                     Members->value++;
-
-                // TODO: raise event value changed
+                    this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+                }
             }
 
         default:
@@ -124,18 +130,18 @@ namespace AppCUI::Controls
         {
         case MouseWheel::Down:
             if (Members->minValue < Members->value)
+            {
                 Members->value--;
-
-            // TODO: raise event value changed
-
+                this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            }
             return true;
 
         case MouseWheel::Up:
             if (Members->maxValue > Members->value)
+            {
                 Members->value++;
-
-            // TODO: raise event value changed
-
+                this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            }
             return true;
 
         default:

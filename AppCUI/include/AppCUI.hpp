@@ -1471,6 +1471,7 @@ namespace Controls
         EVENT_COMBO_CLOSED,
         EVENT_TERMINATE_APPLICATION,
         EVENT_COMMAND,
+        EVENT_NUMERICSELECTOR_VALUE_CHANGED,
         EVENT_CUSTOM,
     };
     typedef unsigned int ItemHandle;
