@@ -5,26 +5,19 @@ using namespace AppCUI::Internal;
 
 WindowsTerminal::WindowsTerminal()
 {
-    ConsoleBuffer      = nullptr;
     ConsoleBufferCount = 0;
 }
 WindowsTerminal::~WindowsTerminal()
 {
-    if (ConsoleBuffer != nullptr)
-        delete[] ConsoleBuffer;
-    ConsoleBuffer      = nullptr;
     ConsoleBufferCount = 0;
 }
 bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int height)
 {
-    unsigned int newCount = ((width * height) | 0xFF) + 1;
+    const unsigned int newCount = ((width * height) | 0xFF) + 1;
     if (newCount <= ConsoleBufferCount)
         return true; // no need to resize
-    CHAR_INFO* temp = new CHAR_INFO[newCount];
-    CHECK(temp, false, "Fail to allocate: %d characters for a %dx%d sized terminal", newCount, width, height);
-    if (this->ConsoleBuffer)
-        delete[] this->ConsoleBuffer;
-    this->ConsoleBuffer      = temp;
+    this->ConsoleBuffer.reset(new CHAR_INFO[newCount]);
+    CHECK(ConsoleBuffer.get(), false, "Fail to allocate: %d characters for a %dx%d sized terminal", newCount, width, height);
     this->ConsoleBufferCount = newCount;
     return true;
 }
@@ -290,7 +283,7 @@ void WindowsTerminal::OnFlushToScreen()
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
     AppCUI::Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
     AppCUI::Graphics::Character* e = c + ((size_t) w * (size_t) h);
-    CHAR_INFO* d                  = this->ConsoleBuffer;
+    CHAR_INFO* d                  = this->ConsoleBuffer.get();
     while (c < e)
     {
         d->Char.UnicodeChar = c->Code;
@@ -298,20 +291,20 @@ void WindowsTerminal::OnFlushToScreen()
         d++;
         c++;
     }
-    WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer, winSize, { 0, 0 }, &sr);
+    WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
 bool WindowsTerminal::OnUpdateCursor()
 {
     if (this->ScreenCanvas.GetCursorVisibility())
     {
-        COORD c = { (SHORT) this->ScreenCanvas.GetCursorX(), (SHORT) this->ScreenCanvas.GetCursorY() };
+        const COORD c = { (SHORT) this->ScreenCanvas.GetCursorX(), (SHORT) this->ScreenCanvas.GetCursorY() };
         CHECK(SetConsoleCursorPosition(this->hstdOut, c), false, "SetConsoleCursorPosition failed !");
-        CONSOLE_CURSOR_INFO ci = { 10, TRUE };
+        const static CONSOLE_CURSOR_INFO ci = { 10, TRUE };
         CHECK(SetConsoleCursorInfo(this->hstdOut, &ci), false, "SetConsoleCursorInfo failed !");
     }
     else
     {
-        CONSOLE_CURSOR_INFO ci = { 10, FALSE };
+        const static CONSOLE_CURSOR_INFO ci = { 10, FALSE };
         CHECK(SetConsoleCursorInfo(this->hstdOut, &ci), false, "SetConsoleCursorInfo failed !");
     }
     return true;
@@ -423,10 +416,10 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 
 bool WindowsTerminal::IsEventAvailable()
 {
-    DWORD nrread;
+    DWORD eventsRead = 0;
     INPUT_RECORD ir;
 
-    if (PeekConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE)
+    if (PeekConsoleInput(this->hstdIn, &ir, 1, &eventsRead) == FALSE)
         return false;
-    return (nrread > 0);
+    return (eventsRead > 0);
 }

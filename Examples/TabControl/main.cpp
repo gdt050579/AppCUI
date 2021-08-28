@@ -74,7 +74,7 @@ class MyWin : public AppCUI::Controls::Window
     RadioBox tabTop, tabBottom, tabLeft, tabList;
     CheckBox cbTransparent, cbTabBar;
     Button btnShow;
-    ComboBox cbTabSize;
+    NumericSelector selector;
     Label lbTabSize;
 
   public:
@@ -92,12 +92,8 @@ class MyWin : public AppCUI::Controls::Window
         cbTabBar.Create(this, "Show tab bar with pages", "x:1,y:9,w:46");
 
         lbTabSize.Create(this, "Tabs &width", "x:1,y:11,w:10");
-        cbTabSize.Create(
-              this,
-              "x:14,y:11,w:32",
-              "Tiny (5 characters),Small (7 characters),Medium (10 characters),Normal (14 characters),Large (18 characters)");
-        cbTabSize.SetHotKey('W');
-        cbTabSize.SetCurentItemIndex(3);
+        selector.Create(this, 2, 18, 6, "x:14,y:11,w:32");
+        selector.SetHotKey('W');
 
         btnShow.Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
@@ -117,9 +113,7 @@ class MyWin : public AppCUI::Controls::Window
         if (cbTabBar.IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        unsigned int tabSizes[] = { 5, 7, 10, 14, 18 };
-
-        TabExampleWin tw(flags, tabSizes[cbTabSize.GetCurrentItemIndex()]);
+        TabExampleWin tw(flags, selector.GetValue());
         tw.Show();
     }
     bool OnEvent(Control* sender, Event eventType, int controlID) override

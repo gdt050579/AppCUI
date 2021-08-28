@@ -485,13 +485,6 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 
     // validez ca sunt ok
 
-    this->Layout.Format.AnchorLeft   = inf.a_left;
-    this->Layout.Format.AnchorRight  = inf.a_right;
-    this->Layout.Format.AnchorTop    = inf.a_top;
-    this->Layout.Format.AnchorBottom = inf.a_bottom;
-
-    unsigned int anch_flags =
-          inf.flags & (LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT | LAYOUT_FLAG_ANCH_LEFT);
     if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) != 0)
     {
         switch (inf.anchor)
@@ -539,7 +532,13 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         case Alignament::Center:
             break;
         };
-    }
+    }    
+
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+
     this->Layout.Format.PercentageMask = inf.percentagesMask;
     this->Layout.Format.Width          = inf.width;
     this->Layout.Format.Height         = inf.height;
@@ -547,6 +546,9 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
     this->Layout.Format.AnchorTop      = inf.a_top;
     this->Layout.Format.AnchorRight    = inf.a_right;
     this->Layout.Format.AnchorBottom   = inf.a_bottom;
+
+    const unsigned int anch_flags =
+          inf.flags & (LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT | LAYOUT_FLAG_ANCH_LEFT);
     switch (anch_flags)
     {
     case 0:

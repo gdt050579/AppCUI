@@ -13,7 +13,7 @@ namespace Internal
         HANDLE hstdIn;
         DWORD originalStdMode;
         DWORD stdMode;
-        CHAR_INFO* ConsoleBuffer;
+        std::unique_ptr<CHAR_INFO> ConsoleBuffer;
         unsigned int ConsoleBufferCount;
         AppCUI::Input::Key KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
         AppCUI::Input::Key shiftState;
