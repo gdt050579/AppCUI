@@ -2133,6 +2133,8 @@ namespace Controls
               const std::string_view& layout);
 
         const unsigned long long GetValue() const;
+        const void Enable();
+        const void Disable();
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
@@ -2380,6 +2382,13 @@ namespace Application
                 Graphics::ColorPair NameColor;
             } Normal, Hover, Pressed;
         } MenuBar;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair TextColor;
+            } Normal, Focused, Inactive, Hover;
+        } NumericSelector;
         void SetDarkTheme();
     };
 

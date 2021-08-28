@@ -185,7 +185,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ComboBox.Selection       = ColorPair{ Color::White, Color::DarkBlue };
     this->ComboBox.HoverOveItem    = ColorPair{ Color::DarkRed, Color::Silver };
 
-    this->Menu.Activ.Background      = ColorPair{ Color::Black, Color::White };
+    this->Menu.Activ.Background = ColorPair{ Color::Black, Color::White };
 
     this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
     this->Menu.Activ.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::White };
@@ -235,11 +235,16 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Menu.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
     this->Menu.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
 
-    this->MenuBar.BackgroundColor      = ColorPair{ Color::Black, Color::White };
-    this->MenuBar.Normal.HotKeyColor   = ColorPair{ Color::DarkRed, Color::White };
-    this->MenuBar.Normal.NameColor     = ColorPair{ Color::Black, Color::White };
-    this->MenuBar.Hover.HotKeyColor    = ColorPair{ Color::DarkRed, Color::Silver };
-    this->MenuBar.Hover.NameColor      = ColorPair{ Color::Black, Color::Silver };
-    this->MenuBar.Pressed.HotKeyColor  = ColorPair{ Color::White, Color::Magenta };
-    this->MenuBar.Pressed.NameColor    = ColorPair{ Color::Yellow, Color::Magenta };
+    this->MenuBar.BackgroundColor     = ColorPair{ Color::Black, Color::White };
+    this->MenuBar.Normal.HotKeyColor  = ColorPair{ Color::DarkRed, Color::White };
+    this->MenuBar.Normal.NameColor    = ColorPair{ Color::Black, Color::White };
+    this->MenuBar.Hover.HotKeyColor   = ColorPair{ Color::DarkRed, Color::Silver };
+    this->MenuBar.Hover.NameColor     = ColorPair{ Color::Black, Color::Silver };
+    this->MenuBar.Pressed.HotKeyColor = ColorPair{ Color::White, Color::Magenta };
+    this->MenuBar.Pressed.NameColor   = ColorPair{ Color::Yellow, Color::Magenta };
+
+    this->NumericSelector.Normal.TextColor     = ColorPair{ Color::Black, Color::Gray };
+    this->NumericSelector.Focused.TextColor    = ColorPair{ Color::Black, Color::White };
+    this->NumericSelector.Inactive.TextColor   = ColorPair{ Color::Gray, Color::Black };
+    this->NumericSelector.Hover.TextColor      = ColorPair{ Color::Black, Color::Yellow };
 }
