@@ -15,7 +15,7 @@ class SimpleWin : public AppCUI::Controls::Window
         n1.Create(this, 0, 100, 50, "x:1,y:1,w:36");
     }
 
-    bool OnEvent(const void* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
