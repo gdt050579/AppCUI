@@ -2143,6 +2143,7 @@ namespace Controls
               const std::string_view& layout);
 
         const long long GetValue() const;
+        const void SetValue(const long long value);
         const void SetMinValue(const long long minValue);
         const void SetMaxValue(const long long maxValue);
 

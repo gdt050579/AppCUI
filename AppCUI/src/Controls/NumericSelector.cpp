@@ -36,6 +36,24 @@ const long long NumericSelector::GetValue() const
     return Members->value;
 }
 
+const void NumericSelector::SetValue(const long long value)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+
+    if (value < Members->minValue)
+    {
+        Members->value = Members->minValue;
+    }
+    else if (value > Members->maxValue)
+    {
+        Members->value = Members->maxValue;
+    }
+    else
+    {
+        Members->value = value;
+    }
+}
+
 const void NumericSelector::SetMinValue(const long long minValue)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
@@ -52,41 +70,49 @@ void NumericSelector::Paint(Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
 
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
+                WriteTextFlags::FitTextToWidth,
+          TextAlignament::Center);
+    params.X     = Members->buttonPadding + 1;
+    params.Y     = 0;
+    params.Width = Members->Layout.Width - (Members->buttonPadding * 2) - 1;
+
     [&]()
     {
         const auto& nsCfg = Members->Cfg->NumericSelector;
 
         if (IsEnabled() == false)
         {
-            Members->textColor = nsCfg.Inactive.TextColor;
+            params.Color = nsCfg.Inactive.TextColor;
             return;
         }
 
         if (Members->MouseIsOver)
         {
-            Members->textColor = nsCfg.Hover.TextColor;
+            params.Color = nsCfg.Hover.TextColor;
             return;
         }
 
         if (Members->Focused)
         {
-            Members->textColor = nsCfg.Focused.TextColor;
+            params.Color = nsCfg.Focused.TextColor;
             return;
         }
 
-        Members->textColor = nsCfg.Normal.TextColor;
+        params.Color = nsCfg.Normal.TextColor;
     }();
 
-    renderer.WriteSingleLineText(0, 0, " - ", Members->textColor);
-    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - Members->buttonPadding - 1, ' ', Members->textColor);
+    renderer.WriteSingleLineText(0, 0, " - ", params.Color);
+    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - Members->buttonPadding - 1, ' ', params.Color);
 
     // TODO: find another way!
     LocalString<256> tmp;
     tmp.Format("%lld", Members->value);
 
-    renderer.WriteSingleLineText(
-          Members->Layout.Width / 2, 0, tmp.GetText(), Members->textColor, TextAlignament::Center);
-    renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", Members->textColor);
+    renderer.WriteText(tmp.GetText(), params);
+
+    renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", params.Color);
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)

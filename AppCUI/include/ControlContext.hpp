@@ -420,7 +420,6 @@ class NumericSelectorControlContext : public ControlContext
     long long value;
 
     const int buttonPadding = 4;
-    Graphics::ColorPair textColor{ Cfg->NumericSelector.Normal.TextColor };
 };
 
 enum class MenuItemType : unsigned int
