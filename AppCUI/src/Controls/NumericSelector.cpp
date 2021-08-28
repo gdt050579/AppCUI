@@ -10,9 +10,9 @@ namespace AppCUI::Controls
 {
 bool NumericSelector::Create(
       Control* parent,
-      unsigned long long minValue,
-      unsigned long long maxValue,
-      unsigned long long value,
+      const long long minValue,
+      const long long maxValue,
+      long long value,
       const std::string_view& layout)
 {
     CONTROL_INIT_CONTEXT(NumericSelectorControlContext);
@@ -30,47 +30,95 @@ bool NumericSelector::Create(
     return true;
 }
 
-const unsigned long long NumericSelector::GetValue() const
+const long long NumericSelector::GetValue() const
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, 0);
     return Members->value;
+}
+
+const void NumericSelector::SetValue(const long long value)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+
+    if (value < Members->minValue)
+    {
+        Members->value = Members->minValue;
+    }
+    else if (value > Members->maxValue)
+    {
+        Members->value = Members->maxValue;
+    }
+    else
+    {
+        Members->value = value;
+    }
+}
+
+const void NumericSelector::SetMinValue(const long long minValue)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+
+    Members->minValue = minValue;
+    Members->maxValue = std::max<>(minValue, Members->maxValue);
+    Members->value    = std::min<>(std::max<>(Members->value, minValue), Members->maxValue);
+}
+
+const void NumericSelector::SetMaxValue(const long long maxValue)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
+
+    Members->maxValue = maxValue;
+    Members->minValue = std::min<>(maxValue, Members->minValue);
+    Members->value    = std::max<>(std::min<>(Members->value, maxValue), Members->minValue);
 }
 
 void NumericSelector::Paint(Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, );
 
-    const auto& textColor = [&]()
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
+                WriteTextFlags::FitTextToWidth,
+          TextAlignament::Center);
+    params.X     = Members->buttonPadding + 1;
+    params.Y     = 0;
+    params.Width = Members->Layout.Width - (Members->buttonPadding * 2) - 1;
+
+    [&]()
     {
         const auto& nsCfg = Members->Cfg->NumericSelector;
 
         if (IsEnabled() == false)
         {
-            return nsCfg.Inactive.TextColor;
+            params.Color = nsCfg.Inactive.TextColor;
+            return;
         }
 
         if (Members->MouseIsOver)
         {
-            return nsCfg.Hover.TextColor;
+            params.Color = nsCfg.Hover.TextColor;
+            return;
         }
 
         if (Members->Focused)
         {
-            return nsCfg.Focused.TextColor;
+            params.Color = nsCfg.Focused.TextColor;
+            return;
         }
 
-        return nsCfg.Normal.TextColor;
+        params.Color = nsCfg.Normal.TextColor;
     }();
 
-    renderer.WriteSingleLineText(0, 0, " - ", textColor);
-    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - Members->buttonPadding - 1, ' ', textColor);
+    renderer.WriteSingleLineText(0, 0, " - ", params.Color);
+    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - Members->buttonPadding - 1, ' ', params.Color);
 
     // TODO: find another way!
     LocalString<256> tmp;
-    tmp.Format("%llu", Members->value);
+    tmp.Format("%lld", Members->value);
 
-    renderer.WriteSingleLineText(Members->Layout.Width / 2, 0, tmp.GetText(), textColor, TextAlignament::Center);
-    renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", textColor);
+    renderer.WriteText(tmp.GetText(), params);
+
+    renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", params.Color);
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)
@@ -140,6 +188,7 @@ bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
     switch (direction)
     {
     case MouseWheel::Down:
+    case MouseWheel::Left:
         if (Members->minValue < Members->value)
         {
             Members->value--;
@@ -148,6 +197,7 @@ bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
         return true;
 
     case MouseWheel::Up:
+    case MouseWheel::Right:
         if (Members->maxValue > Members->value)
         {
             Members->value++;
@@ -161,4 +211,15 @@ bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
 
     return false;
 }
+
+bool NumericSelector::OnMouseEnter()
+{
+    return true;
+}
+
+bool NumericSelector::OnMouseLeave()
+{
+    return true;
+}
+
 } // namespace AppCUI::Controls
