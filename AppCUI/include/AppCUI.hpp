@@ -1471,6 +1471,7 @@ namespace Controls
         EVENT_COMBO_CLOSED,
         EVENT_TERMINATE_APPLICATION,
         EVENT_COMMAND,
+        EVENT_NUMERICSELECTOR_VALUE_CHANGED,
         EVENT_CUSTOM,
     };
     typedef unsigned int ItemHandle;
@@ -2118,6 +2119,26 @@ namespace Controls
         void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });      
         void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = {0,0});
     };
+
+
+    class EXPORT NumericSelector : public Control
+    {
+      public:
+        bool Create(
+              Control* parent,
+              unsigned long long minValue,
+              unsigned long long maxValue,
+              unsigned long long value,
+              const std::string_view& layout);
+
+        const unsigned long long GetValue() const;
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+    };
+
 }; // namespace Controls
 namespace Dialogs
 {
@@ -2358,6 +2379,13 @@ namespace Application
                 Graphics::ColorPair NameColor;
             } Normal, Hover, Pressed;
         } MenuBar;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair TextColor;
+            } Normal, Focused, Inactive, Hover;
+        } NumericSelector;
         void SetDarkTheme();
     };
 

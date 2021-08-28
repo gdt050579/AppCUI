@@ -17,9 +17,7 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int) initData.FrontEnd);
     }
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
-    if (term->Init(initData) == false)
-    {
-        RETURNERROR(nullptr, "Fail to initialize the terminal !");
-    }
+    CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");
+
     return term;
 }

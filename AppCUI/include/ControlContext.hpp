@@ -406,6 +406,16 @@ class ComboBoxControlContext : public ControlContext
     unsigned int CurentItemIndex;
 };
 
+class NumericSelectorControlContext : public ControlContext
+{
+  public:
+    unsigned long long minValue;
+    unsigned long long maxValue;
+    unsigned long long value;
+
+    const unsigned int buttonPadding = 4;
+};
+
 
 enum class MenuItemType : unsigned int
 {
