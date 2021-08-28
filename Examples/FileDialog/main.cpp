@@ -10,17 +10,21 @@ using namespace AppCUI::Dialogs;
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Button b1, b2, b3, b4, b5;
+    Button b1, b2;
+    TextField l1, l2;
 
   public:
     MyWin()
     {
         this->Create("File example", "a:c,w:40,h:13");
         b1.Create(this, "&Save", "x:1,y:1,w:9", BUTTON_ID_SHOW_SAVE);
-        b2.Create(this, "&Open", "x:1,y:3,w:9", BUTTON_ID_SHOW_OPEN);
+        l1.Create(this, "", "x:12,y:1,w:24,h:4");
+        b2.Create(this, "&Open", "x:1,y:6,w:9", BUTTON_ID_SHOW_OPEN);
+        l2.Create(this, "", "x:12,y:6,w:24,h:4");
     }
     bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
+        
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
             Application::Close();
@@ -28,13 +32,21 @@ class MyWin : public AppCUI::Controls::Window
         }
         if (eventType == Event::EVENT_BUTTON_CLICKED)
         {
-            switch (controlID)
+            if (controlID == BUTTON_ID_SHOW_SAVE)
             {
-            case BUTTON_ID_SHOW_SAVE:
-                FileDialog::ShowOpenFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
-                break;
-            case BUTTON_ID_SHOW_OPEN:
-                break;
+                auto res = FileDialog::ShowSaveFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", "."); 
+                if (res.has_value())
+                    l1.SetText(res->u8string());
+                else
+                    l1.SetText("Command canceled !");
+            }
+            if (controlID == BUTTON_ID_SHOW_OPEN)
+            {
+                auto res = FileDialog::ShowOpenFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
+                if (res.has_value())
+                    l2.SetText(res->u8string());
+                else
+                    l2.SetText("Command canceled !");
             }
             return true;
         }
