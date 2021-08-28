@@ -442,7 +442,7 @@ bool ComboBox::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
                 Members->FirstVisibleItem--;
             return true;
         case AppCUI::Input::MouseWheel::Down:
-            if ((size_t)Members->FirstVisibleItem +1 < Members->Items.size())
+            if ((size_t)Members->FirstVisibleItem + (size_t)Members->VisibleItemsCount < Members->Items.size())
                 Members->FirstVisibleItem++;
             return true;
         }

@@ -371,7 +371,7 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
             UpdateCurrentFolder();
             UpdateFileList();
         }
-        else if (sender == & comboType)
+        else if (sender == &comboType)
         {
             UpdateCurrentExtensionFilter();
             UpdateFileList();
@@ -442,10 +442,17 @@ int FileDialogClass::Show(
 
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
-    if (_path.empty())
-        UpdateCurrentFolder();
-    else
-        lbPath.SetText(_path.u8string());
+    try
+    {
+        if (_path.empty())
+            lbPath.SetText(std::filesystem::absolute(".").u8string());
+        else
+            lbPath.SetText(std::filesystem::absolute(_path).u8string());        
+    }
+    catch (...)
+    {
+        lbPath.SetText(std::filesystem::absolute(".").u8string());
+    }
 
     this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
     if (this->comboType.GetItemsCount() > 0)
