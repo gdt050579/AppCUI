@@ -932,7 +932,13 @@ namespace OS
         void Close() override;
     };
 
-    EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists);
+    enum class SpecialFoldersType: unsigned int
+    {
+        All = 0,
+        Drives,
+        SpecialLocations
+    };
+    EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists, SpecialFoldersType type, bool clearVector);
 
 } // namespace OS
 namespace Graphics

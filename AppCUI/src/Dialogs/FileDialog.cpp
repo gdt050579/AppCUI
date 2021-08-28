@@ -410,13 +410,22 @@ int FileDialogClass::Show(
     comboDrive.Create(&wnd, "x:12,y:1,w:61");
     comboDrive.SetHotKey('L');
     // populate combo box with special folders and available drivers
-    AppCUI::OS::GetSpecialFolders(this->specialFolders);
-    for (unsigned int index = 0; index < this->specialFolders.size(); index++)
+    this->specialFolders.clear();
+    AppCUI::OS::GetSpecialFolders(this->specialFolders,SpecialFoldersType::Drives,false);
+    if (this->specialFolders.size() > 0)
     {
-        comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
+        comboDrive.AddSeparator("Drives");
+        for (unsigned int index = 0; index < this->specialFolders.size(); index++)
+            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
     }
-
-    comboDrive.SetCurentItemIndex(0);
+    auto lastSize = this->specialFolders.size();
+    AppCUI::OS::GetSpecialFolders(this->specialFolders, SpecialFoldersType::SpecialLocations, false);
+    if (this->specialFolders.size() > lastSize)
+    {
+        comboDrive.AddSeparator("Locations");
+        for (unsigned int index = lastSize; index < this->specialFolders.size(); index++)
+            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
+    }
     files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);
     files.AddColumn("&Size", TextAlignament::Right, 16);
@@ -439,6 +448,8 @@ int FileDialogClass::Show(
         lbPath.SetText(_path.u8string());
 
     this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
+    if (this->comboType.GetItemsCount() > 0)
+        this->comboType.AddSeparator();
     this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
     this->comboType.SetCurentItemIndex(0);
     UpdateCurrentExtensionFilter();
