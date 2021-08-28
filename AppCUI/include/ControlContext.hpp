@@ -412,6 +412,8 @@ class NumericSelectorControlContext : public ControlContext
     unsigned long long minValue;
     unsigned long long maxValue;
     unsigned long long value;
+
+    const unsigned int buttonPadding = 4;
 };
 
 

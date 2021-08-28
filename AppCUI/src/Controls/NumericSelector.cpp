@@ -3,11 +3,11 @@
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 
-namespace AppCUI::Controls
-{
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
+namespace AppCUI::Controls
+{
 bool NumericSelector::Create(
       Control* parent,
       unsigned long long minValue,
@@ -75,14 +75,14 @@ void NumericSelector::Paint(Renderer& renderer)
     }();
 
     renderer.WriteSingleLineText(0, 0, " - ", textColor);
-    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - 5, ' ', textColor);
+    renderer.DrawHorizontalLine(4, 0, Members->Layout.Width - Members->buttonPadding - 1, ' ', textColor);
 
     // TODO: find another way!
     LocalString<256> tmp;
     tmp.Format("%llu", Members->value);
 
     renderer.WriteSingleLineText(Members->Layout.Width / 2, 0, tmp.GetText(), textColor, TextAlignament::Center);
-    renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, " + ", textColor);
+    renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", textColor);
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)
@@ -123,7 +123,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
 
         // height is always 1 constrained - y doesn't matter
 
-        if (x < 4)
+        if (x < Members->buttonPadding)
         {
             if (Members->minValue < Members->value)
             {
@@ -131,7 +131,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
                 this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
             }
         }
-        else if (x > this->GetWidth() - 4)
+        else if (x > this->GetWidth() - Members->buttonPadding)
         {
             if (Members->maxValue > Members->value)
             {
