@@ -7,19 +7,21 @@ using namespace AppCUI::Controls;
 class MyWin : public AppCUI::Controls::Window
 {
     ComboBox cb1, cb2, cb3;
-    Label inf, col, inf2, inf3;
+    Label inf, inf2, inf3;
+    TextField col;
 
   public:
     MyWin()
     {
-        this->Create("ComboBox example", "a:c,w:60,h:11");
-        inf.Create(this, "Select a color", "x:1,y:1,w:15");
-        col.Create(this, "", "x:1,y:2,w:15");
+        this->Create("ComboBox example", "a:c,w:56,h:11");
+        inf.Create(this, "Select a color", "x:2,y:1,w:15");
         cb1.Create(this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
-        inf2.Create(this, "Select a word", "x:1,y:4,w:15");
-        cb2.Create(this, "x:22,y:4,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
-        inf3.Create(this, "Select a vehicle", "x:1,y:7,w:18");
-        cb3.Create(this, "x:22,y:7,w:30");
+        inf2.Create(this, "Select a word", "x:2,y:3,w:15");
+        cb2.Create(this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
+        inf3.Create(this, "Select a vehicle", "x:2,y:5,w:18");
+        cb3.Create(this, "x:22,y:5,w:30");
+        col.Create(this, "", "x:2,y:7,w:50");
+
         cb3.AddSeparator("Cars");
         cb3.AddItem("Mercedes");
         cb3.AddItem("Skoda");
@@ -39,8 +41,14 @@ class MyWin : public AppCUI::Controls::Window
         }
         if (eventType == Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED)
         {
-            // GDT: to rethink
-            //col.SetText(cb1.GetUnsafeCurrentItemText());
+            ComboBox* c = reinterpret_cast<ComboBox*>((void*)sender);
+            AppCUI::Utils::LocalUnicodeStringBuilder<128> temp;
+            temp.Add(c->GetCurrentItemText());
+            temp.Add(" => Index: ");
+            AppCUI::Utils::LocalString<32> value;
+            value.Format("%u", c->GetCurrentItemIndex());
+            temp.Add(value.GetText());
+            col.SetText(temp);
         }
         return false;
     }
