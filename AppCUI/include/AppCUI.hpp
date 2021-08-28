@@ -1907,7 +1907,10 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-
+    class EXPORT ImageViewer: public CanvasViewer
+    {
+    
+    };
     enum class ListViewFlags : unsigned int
     {
         None                          = 0,
