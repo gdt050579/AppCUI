@@ -2126,17 +2126,19 @@ namespace Controls
       public:
         bool Create(
               Control* parent,
-              unsigned long long minValue,
-              unsigned long long maxValue,
-              unsigned long long value,
+              long long minValue,
+              long long maxValue,
+              long long value,
               const std::string_view& layout);
 
-        const unsigned long long GetValue() const;
+        const long long GetValue() const;
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
     };
 
 }; // namespace Controls
