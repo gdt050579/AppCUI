@@ -4,8 +4,9 @@ using namespace AppCUI::OS;
 
 
 
-void AppCUI::OS::GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists)
+void AppCUI::OS::GetSpecialFoldersGetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists, SpecialFoldersType type, bool clearVector)
 {
-    specialFolderLists.clear();
-    // to be implemented
+	if (clearVector)
+		specialFolderLists.clear();
+	// to be implemented
 }
