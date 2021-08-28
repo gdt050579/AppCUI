@@ -1921,14 +1921,11 @@ namespace Controls
     };
     enum class ListViewItemType : unsigned short
     {
-        REGULAR             = 0,
-        HIGHLIGHT           = 1,
-        INACTIVE            = 2,
-        ERROR_INFORMATION   = 3,
-        WARNING_INFORMATION = 4,
-        COLOR_1             = 5,
-        COLOR_2             = 6,
-        COLOR_3             = 7
+        Normal             = 0,
+        Highlighted        = 1,
+        GrayedOut          = 2,
+        ErrorInformation   = 3,
+        WarningInformation = 4,
     };
     union ItemData
     {

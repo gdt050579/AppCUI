@@ -61,7 +61,7 @@ void ListViewColumn::SetWidth(unsigned int width)
 ListViewItem::ListViewItem()
 {
     this->Flags            = 0;
-    this->Type             = ListViewItemType::REGULAR;
+    this->Type             = ListViewItemType::Normal;
     this->ItemColor        = DefaultColorPair;
     this->Height           = 1;
     this->Data.UInt64Value = 0;
@@ -204,19 +204,19 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // select color based on item type
     switch (item->Type)
     {
-    case ListViewItemType::REGULAR:
+    case ListViewItemType::Normal:
         itemCol = item->ItemColor;
         break;
-    case ListViewItemType::HIGHLIGHT:
+    case ListViewItemType::Highlighted:
         itemCol = Cfg->ListView.Item.Highligheted;
         break;
-    case ListViewItemType::ERROR_INFORMATION:
+    case ListViewItemType::ErrorInformation:
         itemCol = Cfg->ListView.Item.Error;
         break;
-    case ListViewItemType::WARNING_INFORMATION:
+    case ListViewItemType::WarningInformation:
         itemCol = Cfg->ListView.Item.Warning;
         break;
-    case ListViewItemType::INACTIVE:
+    case ListViewItemType::GrayedOut:
         itemCol = Cfg->ListView.Item.Inactive;
         break;
     default:
@@ -475,7 +475,7 @@ bool ListViewControlContext::SetItemSelect(ItemHandle item, bool check)
 bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-    CHECK(i.Type == ListViewItemType::REGULAR,
+    CHECK(i.Type == ListViewItemType::Normal,
           false,
           "Item color only applies to regular item. Use SetItemType to change item type !");
     i.ItemColor = color;
