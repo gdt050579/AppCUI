@@ -371,7 +371,7 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
             UpdateCurrentFolder();
             UpdateFileList();
         }
-        else if (sender == & comboType)
+        else if (sender == &comboType)
         {
             UpdateCurrentExtensionFilter();
             UpdateFileList();
