@@ -173,6 +173,23 @@ namespace Internal
         bool OnKeyEvent(AppCUI::Input::Key keyCode);
     };
 
+    class ToolTip
+    {
+        AppCUI::Graphics::CharacterBuffer Text;
+        AppCUI::Application::Config* Cfg;
+        bool Visible;
+
+      public:
+        ToolTip();
+        void Show(const AppCUI::Utils::ConstString& text);
+        void Hide();
+        void Paint(AppCUI::Graphics::Renderer& renderer);
+        inline const bool IsVisible() const
+        {
+            return Visible;
+        }
+    };
+
     class DesktopControl : public AppCUI::Controls::Control
     {
       public:
