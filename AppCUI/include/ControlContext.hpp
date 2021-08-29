@@ -421,6 +421,11 @@ class NumericSelectorControlContext : public ControlContext
     long long value;
 
     const int buttonPadding = 4;
+    LocalString<256> stringValue;
+    bool intoInsertionMode       = false;
+    bool wasMinusPressed         = false;
+    long long insertionModevalue = 0;
+    bool wrongValueInserted      = false;
 };
 
 enum class MenuItemType : unsigned int

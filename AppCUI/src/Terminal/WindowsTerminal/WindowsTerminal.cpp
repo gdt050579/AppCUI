@@ -17,7 +17,12 @@ bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int heigh
     if (newCount <= ConsoleBufferCount)
         return true; // no need to resize
     this->ConsoleBuffer.reset(new CHAR_INFO[newCount]);
-    CHECK(ConsoleBuffer.get(), false, "Fail to allocate: %d characters for a %dx%d sized terminal", newCount, width, height);
+    CHECK(ConsoleBuffer.get(),
+          false,
+          "Fail to allocate: %d characters for a %dx%d sized terminal",
+          newCount,
+          width,
+          height);
     this->ConsoleBufferCount = newCount;
     return true;
 }
@@ -29,7 +34,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
           "Fail to create the original screen canvas of %d x %d size",
           width,
           height);
-    SMALL_RECT BufRect = { 0, 0, (SHORT)(width - 1), (SHORT)(height - 1) };
+    SMALL_RECT BufRect = { 0, 0, (SHORT) (width - 1), (SHORT) (height - 1) };
 
     // allocate memory for a console buffer
     CHAR_INFO* temp = new CHAR_INFO[width * height];
@@ -51,7 +56,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
                       y,
                       p->Char.UnicodeChar,
                       AppCUI::Graphics::ColorPair{ static_cast<AppCUI::Graphics::Color>(p->Attributes & 0x0F),
-                                                  static_cast<AppCUI::Graphics::Color>((p->Attributes & 0xF0) >> 4) });
+                                                   static_cast<AppCUI::Graphics::Color>((p->Attributes & 0xF0) >> 4) });
             }
         }
         delete[] temp;
@@ -99,10 +104,10 @@ bool WindowsTerminal::ComputeTerminalSize(
               initData.Height);
         rect.Left   = 0;
         rect.Top    = 0;
-        rect.Right  = (SHORT)(initData.Width - 1);
-        rect.Bottom = (SHORT)(initData.Height - 1);
-        coord.X     = (SHORT)(initData.Width);
-        coord.Y     = (SHORT)(initData.Height);
+        rect.Right  = (SHORT) (initData.Width - 1);
+        rect.Bottom = (SHORT) (initData.Height - 1);
+        coord.X     = (SHORT) (initData.Width);
+        coord.Y     = (SHORT) (initData.Height);
         CHECK(SetConsoleWindowInfo(this->hstdOut, TRUE, &rect),
               false,
               "Fail to resize the window to a %dx%d size (SetConsoleScreenBufferSize has the followin error code: %d)",
@@ -221,6 +226,12 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
     this->KeyTranslationMatrix[VK_END]    = AppCUI::Input::Key::End;
     this->KeyTranslationMatrix[VK_SPACE]  = AppCUI::Input::Key::Space;
 
+    // TODO: add these to SDL as well
+    this->KeyTranslationMatrix[VK_OEM_PLUS]   = AppCUI::Input::Key::Plus;
+    this->KeyTranslationMatrix[VK_OEM_COMMA]  = AppCUI::Input::Key::Comma;
+    this->KeyTranslationMatrix[VK_OEM_MINUS]  = AppCUI::Input::Key::Minus;
+    this->KeyTranslationMatrix[VK_OEM_PERIOD] = AppCUI::Input::Key::Period;
+
     this->shiftState = AppCUI::Input::Key::None;
 }
 bool WindowsTerminal::OnInit(const InitializationData& initData)
@@ -283,7 +294,7 @@ void WindowsTerminal::OnFlushToScreen()
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
     AppCUI::Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
     AppCUI::Graphics::Character* e = c + ((size_t) w * (size_t) h);
-    CHAR_INFO* d                  = this->ConsoleBuffer.get();
+    CHAR_INFO* d                   = this->ConsoleBuffer.get();
     while (c < e)
     {
         d->Char.UnicodeChar = c->Code;
@@ -362,8 +373,8 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         this->shiftState = eventShiftState;
         break;
     case MOUSE_EVENT:
-        evnt.mouseX = ir.Event.MouseEvent.dwMousePosition.X;
-        evnt.mouseY = ir.Event.MouseEvent.dwMousePosition.Y;
+        evnt.mouseX      = ir.Event.MouseEvent.dwMousePosition.X;
+        evnt.mouseY      = ir.Event.MouseEvent.dwMousePosition.Y;
         evnt.mouseButton = AppCUI::Input::MouseButton::None;
         if (ir.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
             evnt.mouseButton |= AppCUI::Input::MouseButton::Left;
@@ -374,26 +385,26 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 
         switch (ir.Event.MouseEvent.dwEventFlags)
         {
-            case 0:
-                if (ir.Event.MouseEvent.dwButtonState)
-                    evnt.eventType = SystemEventType::MouseDown;
-                else
-                    evnt.eventType = SystemEventType::MouseUp;
-                return;
-            case DOUBLE_CLICK:
+        case 0:
+            if (ir.Event.MouseEvent.dwButtonState)
                 evnt.eventType = SystemEventType::MouseDown;
-                evnt.mouseButton |= AppCUI::Input::MouseButton::DoubleClicked;
-                break;
-            case MOUSE_MOVED:
-                evnt.eventType = SystemEventType::MouseMove;
-                return;
-            case MOUSE_WHEELED:
-                evnt.eventType = SystemEventType::MouseWheel;
-                if (ir.Event.MouseEvent.dwButtonState >= 0x80000000)
-                    evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
-                else
-                    evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
-                return;
+            else
+                evnt.eventType = SystemEventType::MouseUp;
+            return;
+        case DOUBLE_CLICK:
+            evnt.eventType = SystemEventType::MouseDown;
+            evnt.mouseButton |= AppCUI::Input::MouseButton::DoubleClicked;
+            break;
+        case MOUSE_MOVED:
+            evnt.eventType = SystemEventType::MouseMove;
+            return;
+        case MOUSE_WHEELED:
+            evnt.eventType = SystemEventType::MouseWheel;
+            if (ir.Event.MouseEvent.dwButtonState >= 0x80000000)
+                evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+            else
+                evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+            return;
         }
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
