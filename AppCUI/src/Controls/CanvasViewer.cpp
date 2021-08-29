@@ -122,6 +122,40 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
     case Key::Left:
         Members->MoveScrollTo(Members->CanvasScrollX + 1, Members->CanvasScrollY);
         return true;
+
+    case Key::Ctrl | Key::Left :
+        Members->MoveScrollTo(0, Members->CanvasScrollY);
+        return true;
+    case Key::Ctrl | Key::Right:
+        Members->MoveScrollTo(-((int)Members->canvas.GetWidth()), Members->CanvasScrollY);
+        return true;
+    case Key::Ctrl | Key::Up:
+        Members->MoveScrollTo(Members->CanvasScrollX, 0);
+        return true;
+    case Key::Ctrl | Key::Down:
+        Members->MoveScrollTo(Members->CanvasScrollX, -((int) Members->canvas.GetHeight()));
+        return true;
+
+    case Key::Shift | Key::Left:
+        Members->MoveScrollTo(Members->CanvasScrollX + 20, Members->CanvasScrollY);
+        return true;
+    case Key::Shift | Key::Right:
+        Members->MoveScrollTo(Members->CanvasScrollX - 20, Members->CanvasScrollY);
+        return true;
+    case Key::Shift | Key::Up:
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY + 10);
+        return true;
+    case Key::Shift | Key::Down:
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY - 10);
+        return true;
+
+
+    case Key::Home:
+        Members->MoveScrollTo(0, 0);
+        return true;
+    case Key::End:
+        Members->MoveScrollTo(-((int) Members->canvas.GetWidth()), -((int) Members->canvas.GetHeight()));
+        return true;
     default:
         break;
     }
