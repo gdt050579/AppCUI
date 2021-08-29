@@ -4,10 +4,42 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
 
+inline unsigned int Channel_To_Index(unsigned int rgbChannelValue)
+{
+    if (rgbChannelValue <= 64)
+        return 0;
+    else if (rgbChannelValue < 192)
+        return 1;
+    return 2;
+}
 Color RGB_to_Color(unsigned int colorRGB)
 {
-
-    return Color::Black;
+    unsigned int r = Channel_To_Index(colorRGB & 0xFF);
+    unsigned int g = Channel_To_Index((colorRGB >> 8) & 0xFF);
+    unsigned int b = Channel_To_Index((colorRGB >> 16) & 0xFF);
+    // normalize
+    if ((r+g+b)==5) // one of the channels is "1", the rest are "2"
+    {
+        r = g = b = 2;
+    }
+    if ((r+g+b)==4)
+    {
+        if ((r == 1) || (g == 1) || (b==1)) // one of the channels is "2", the rest are "1"
+        {
+            r = g = b = 1;
+        }
+    }
+    // after this step, r,g,b can be a combination of "0" with either "1" or "2"
+    if ((r+g+b)<=3)
+    {
+        // darker colors
+        return static_cast<Color>(b | (g << 1) | (r << 2));
+    }
+    else
+    {
+        // lighter colors
+        return static_cast<Color>(((b >> 1) | (g) | (r << 1)) | 8);
+    }
 }
 bool Paint_SmallBoxes(Canvas& c, const AppCUI::Graphics::Image& img)
 {
