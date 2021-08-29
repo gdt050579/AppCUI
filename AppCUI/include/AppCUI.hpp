@@ -1910,6 +1910,10 @@ namespace Controls
     enum class ImageRendererMode: unsigned int
     {
         SmallBoxes,
+        SmallBoxex2x2,
+        SmallBoxex4x4,
+        SmallBoxex8x8,
+        SmallBoxex16x16,
         LargeBoxes,
         AsciiArt
     };
