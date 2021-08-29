@@ -208,7 +208,6 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)
         {
             Members->insertionModevalue /= 10;
         }
-        this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
         return true;
 
     case Key::N0:
@@ -240,8 +239,6 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)
             Members->insertionModevalue = Members->insertionModevalue * -1;
             Members->wasMinusPressed    = false;
         }
-
-        this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
     }
         return true;
     default:
