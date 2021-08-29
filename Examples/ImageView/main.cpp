@@ -1,4 +1,5 @@
 #include "AppCUI.hpp"
+#include <string.h>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
