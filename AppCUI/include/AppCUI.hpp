@@ -1266,8 +1266,8 @@ namespace Graphics
               unsigned char Green,
               unsigned char Blue,
               unsigned char Alpha = 255);
-        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0);
-        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color);
+        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
+        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
@@ -1907,7 +1907,23 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-
+    enum class ImageRendererMode: unsigned int
+    {
+        SmallBoxes,
+        LargeBoxes,
+        AsciiArt
+    };
+    class EXPORT ImageViewer: public CanvasViewer
+    {
+      public:
+        bool Create(Control* parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              ViewerFlags flags = ViewerFlags::None);
+        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
+    };
     enum class ListViewFlags : unsigned int
     {
         None                          = 0,

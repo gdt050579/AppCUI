@@ -6,6 +6,7 @@ target_sources(AppCUI PRIVATE
 	Control.cpp 
 	Label.cpp 
 	ListView.cpp
+	ImageViewer.cpp
 	NumericSelector.cpp
 	Panel.cpp 
 	RadioBox.cpp 
