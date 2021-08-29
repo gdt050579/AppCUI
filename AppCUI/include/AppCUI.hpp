@@ -1249,7 +1249,7 @@ namespace Graphics
 
     class EXPORT Image
     {
-        unsigned int* Pixels;
+        std::unique_ptr<unsigned int> Pixels;
         unsigned int Width;
         unsigned int Height;
 

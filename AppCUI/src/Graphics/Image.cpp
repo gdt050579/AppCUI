@@ -29,7 +29,7 @@ static const unsigned int _console_colors_[16] = {
 
 #define CHECK_INDEX(errorValue)                                                                                        \
     unsigned int* pixel;                                                                                               \
-    CHECK(Pixels != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");         \
+    CHECK(Pixels.get() != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");   \
     CHECK(x < Width,                                                                                                   \
           errorValue,                                                                                                  \
           "Invalid X (%d) value. It should be less than %d (the width of the image)",                                  \
@@ -40,7 +40,7 @@ static const unsigned int _console_colors_[16] = {
           "Invalid Y (%d) value. It should be less than %d (the height of the image)",                                 \
           y,                                                                                                           \
           Height);                                                                                                     \
-    pixel = &Pixels[y * Width + x];
+    pixel = (Pixels.get()+(y * Width + x));
 
 #define VALIDATE_CONSOLE_INDEX                                                                                         \
     CHECK(((unsigned int) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
@@ -48,29 +48,19 @@ static const unsigned int _console_colors_[16] = {
 Image::Image()
 {
     Width = Height = 0;
-    Pixels         = nullptr;
 }
 Image::~Image()
 {
-    if (Pixels)
-        delete Pixels;
     Width = Height = 0;
-    Pixels         = nullptr;
 }
 bool Image::Create(unsigned int width, unsigned int height)
 {
     CHECK(width > 0, false, "Invalid 'width' parameter (should be bigger than 0)");
     CHECK(height > 0, false, "Invalid 'height' parameter (should be bigger than 0)");
-    if (Pixels)
-    {
-        delete Pixels;
-        Pixels = nullptr;
-        Width = Height = 0;
-    }
-    Pixels = new unsigned int[width * height];
-    CHECK(Pixels != nullptr, false, "Unable to alocate space for an %d x %d image", width, height);
-    unsigned int* s = Pixels;
-    unsigned int* e = s + width * height;
+    Width = Height = 0;
+    Pixels.reset(new unsigned int[((size_t) width * (size_t) height)]);
+    unsigned int* s = Pixels.get();
+    unsigned int* e = s + ((size_t) Width * (size_t) Height);
     while (s < e)
     {
         (*s) = 0;
@@ -98,8 +88,8 @@ bool Image::SetPixel(unsigned int x, unsigned int y, const Color color)
 bool Image::Clear(unsigned int color)
 {
     CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
-    unsigned int* s = Pixels;
-    unsigned int* e = s + Width * Height;
+    unsigned int* s = Pixels.get();
+    unsigned int* e = s + ((size_t) Width * (size_t) Height);
     while (s < e)
     {
         (*s) = color;

@@ -6,6 +6,7 @@ using namespace AppCUI::Graphics;
 
 Color RGB_to_Color(unsigned int colorRGB)
 {
+
     return Color::Black;
 }
 bool Paint_SmallBoxes(Canvas& c, const AppCUI::Graphics::Image& img)
