@@ -56,6 +56,7 @@ bool Paint_SmallBoxes(Canvas& c, const AppCUI::Graphics::Image& img)
             c.WriteSpecialCharacter(x, py, SpecialChars::BlockUpperHalf, cp);
         }
     }
+    return true;
 }
 // ===================================================================================================
 bool ImageViewer::Create(Control* parent, const std::string_view& layout, ViewerFlags flags)
