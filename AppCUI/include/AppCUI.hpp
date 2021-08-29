@@ -2171,6 +2171,7 @@ namespace Controls
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
     };
 
 }; // namespace Controls

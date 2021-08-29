@@ -159,7 +159,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
 
         // height is always 1 constrained - y doesn't matter
 
-        if (x < Members->buttonPadding)
+        if (x < Members->buttonPadding) // "-" button
         {
             if (Members->minValue < Members->value)
             {
@@ -167,13 +167,32 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
                 this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
             }
         }
-        else if (x > this->GetWidth() - Members->buttonPadding)
+        else if (x > this->GetWidth() - Members->buttonPadding) // "+" button
         {
             if (Members->maxValue > Members->value)
             {
                 Members->value++;
                 this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
             }
+        }
+        else if (x >= Members->buttonPadding && x <= this->GetWidth() - Members->buttonPadding - 1) // text field
+        {
+            const long long& max = Members->maxValue;
+            const long long& min = Members->minValue;
+
+            const long long valueIntervalLength = max - min;
+
+            const long long& lowerBound = Members->buttonPadding;
+            const long long upperBound  = static_cast<long long>(this->GetWidth()) - Members->buttonPadding - 1LL;
+
+            const long long boundIntervalLength = upperBound - lowerBound;
+
+            const long long pointOnInterval = x - lowerBound;
+            const double ratio              = static_cast<double>(pointOnInterval) / boundIntervalLength;
+
+            Members->value = std::min<>(min + static_cast<long long>(valueIntervalLength * ratio), Members->maxValue);
+
+            this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
         }
 
     default:
@@ -220,6 +239,56 @@ bool NumericSelector::OnMouseEnter()
 bool NumericSelector::OnMouseLeave()
 {
     return true;
+}
+
+bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+{
+    CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, false);
+
+    switch (button)
+    {
+    case MouseButton::Left:
+
+        // height is always 1 constrained - y doesn't matter
+
+        if (x < Members->buttonPadding) // "-" button
+        {
+            Members->value = Members->minValue;
+            this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            return true;
+        }
+        else if (x > this->GetWidth() - Members->buttonPadding) // "+" button
+        {
+            Members->value = Members->maxValue;
+            this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            return true;
+        }
+        else if (x >= Members->buttonPadding && x <= this->GetWidth() - Members->buttonPadding - 1) // text field
+        {
+            const long long& max = Members->maxValue;
+            const long long& min = Members->minValue;
+
+            const long long valueIntervalLength = max - min;
+
+            const long long& lowerBound = Members->buttonPadding;
+            const long long upperBound  = static_cast<long long>(this->GetWidth()) - Members->buttonPadding - 1LL;
+
+            const long long boundIntervalLength = upperBound - lowerBound;
+
+            const long long pointOnInterval = x - lowerBound;
+            const double ratio              = static_cast<double>(pointOnInterval) / boundIntervalLength;
+
+            Members->value = std::min<>(min + static_cast<long long>(valueIntervalLength * ratio), Members->maxValue);
+
+            this->RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+            return true;
+        }
+
+    default:
+        break;
+    }
+
+    return false;
 }
 
 } // namespace AppCUI::Controls
