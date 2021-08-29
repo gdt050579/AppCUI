@@ -237,6 +237,7 @@ struct CanvasControlContext : public ControlContext
 {
     AppCUI::Graphics::Canvas canvas;
     int CanvasScrollX, CanvasScrollY;
+    void MoveScrollTo(int newX, int newY);
 };
 
 constexpr unsigned int MAX_LISTVIEW_COLUMNS     = 64;

@@ -4,6 +4,25 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
+void CanvasControlContext::MoveScrollTo(int newX, int newY)
+{
+    int imgWidth = canvas.GetWidth();
+    int imgHeight = canvas.GetHeight();
+    int viewWidth = Layout.Width;
+    int viewHeight = Layout.Height;
+
+    if ((newX + imgWidth) < viewWidth)
+        newX = viewWidth - imgWidth;
+    if ((newY + imgHeight) < viewHeight)
+        newY = viewHeight - imgHeight;
+
+    newX = std::min<>(newX, 0);
+    newY = std::min<>(newY, 0);
+
+    this->CanvasScrollX = newX;
+    this->CanvasScrollY = newY;
+}
+
 bool CanvasViewer::Create(
       Control* parent, const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
 {
@@ -92,20 +111,16 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
     switch (KeyCode)
     {
     case Key::Down:
-        Members->CanvasScrollY--;
-        if (Members->CanvasScrollY < -((int) (Members->canvas.GetHeight())))
-            Members->CanvasScrollY = -((int) (Members->canvas.GetHeight()));
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY - 1);
         return true;
     case Key::Up:
-        Members->CanvasScrollY = MINVALUE(Members->CanvasScrollY + 1, 0);
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY + 1);
         return true;
     case Key::Right:
-        Members->CanvasScrollX--;
-        if (Members->CanvasScrollX < -((int) (Members->canvas.GetWidth())))
-            Members->CanvasScrollX = -((int) (Members->canvas.GetWidth()));
+        Members->MoveScrollTo(Members->CanvasScrollX - 1, Members->CanvasScrollY);
         return true;
     case Key::Left:
-        Members->CanvasScrollX = MINVALUE(Members->CanvasScrollX + 1, 0);
+        Members->MoveScrollTo(Members->CanvasScrollX + 1, Members->CanvasScrollY);
         return true;
     default:
         break;
