@@ -6,10 +6,10 @@ using namespace AppCUI::Input;
 
 void CanvasControlContext::MoveScrollTo(int newX, int newY)
 {
-    int imgWidth = canvas.GetWidth();
-    int imgHeight = canvas.GetHeight();
-    int viewWidth = Layout.Width;
-    int viewHeight = Layout.Height;
+    const int imgWidth = canvas.GetWidth();
+    const int imgHeight = canvas.GetHeight();
+    const int viewWidth = Layout.Width;
+    const int viewHeight = Layout.Height;
 
     if ((newX + imgWidth) < viewWidth)
         newX = viewWidth - imgWidth;
