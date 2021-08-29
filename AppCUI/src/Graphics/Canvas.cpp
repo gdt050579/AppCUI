@@ -59,8 +59,8 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     if ((fillCharacter >= 0) && (fillCharacter <= 0xFFFF))
         chr = (unsigned short) (fillCharacter & 0xFFFF);
     // copy from Characters to tmp
-    unsigned int min_w = MINVALUE(this->Width, width);
-    unsigned int min_h = MINVALUE(this->Height, height);
+    unsigned int min_w = std::min<>(this->Width, width);
+    unsigned int min_h = std::min<>(this->Height, height);
     for (unsigned int y = 0; y < min_h; y++)
     {
         Character* p_temp    = tmp + (y * width);
@@ -122,8 +122,8 @@ void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
     if (clip.Visible)
     {
         // make sure that clipping coordonates are within screen coordonates
-        this->Clip.Left   = MAXVALUE(clip.ClipRect.X, 0);
-        this->Clip.Top    = MAXVALUE(clip.ClipRect.Y, 0);
+        this->Clip.Left   = std::max<>(clip.ClipRect.X, 0);
+        this->Clip.Top    = std::max<>(clip.ClipRect.Y, 0);
         this->Clip.Right  = clip.ClipRect.X + clip.ClipRect.Width - 1;
         this->Clip.Bottom = clip.ClipRect.Y + clip.ClipRect.Height - 1;
         if (this->Clip.Right >= (int) this->Width)
