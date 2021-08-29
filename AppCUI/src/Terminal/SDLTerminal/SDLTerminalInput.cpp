@@ -185,6 +185,25 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
             }
         }
         break;
+    case SDL_MOUSEWHEEL:
+        evnt.eventType = SystemEventType::MouseWheel;
+        if (e.wheel.y < 0)
+        {
+            evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+        }
+        else if (e.wheel.y > 0)
+        {
+            evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+        }
+        else if (e.wheel.x > 0)
+        {
+            evnt.mouseWheel = AppCUI::Input::MouseWheel::Right;
+        }
+        else if (e.wheel.x < 0)
+        {
+            evnt.mouseWheel = AppCUI::Input::MouseWheel::Left;
+        }
+        break;
     default:
         break;
     }
