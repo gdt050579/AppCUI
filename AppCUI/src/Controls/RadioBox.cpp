@@ -73,7 +73,7 @@ void AppCUI::Controls::RadioBox::OnHotKey()
         RaiseEvent(Event::EVENT_CHECKED_STATUS_CHANGED);
     }
 }
-bool AppCUI::Controls::RadioBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
+bool AppCUI::Controls::RadioBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
 {
     if (KeyCode == Key::Space)
     {

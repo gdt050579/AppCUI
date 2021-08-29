@@ -463,7 +463,7 @@ void Window::OnAfterResize(int newWidth, int newHeight)
         UpdateWindowsButtonsPoz(Members);
     }
 }
-bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
+bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);

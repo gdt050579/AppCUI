@@ -115,7 +115,7 @@ void NumericSelector::Paint(Renderer& renderer)
     renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
 }
 
-bool NumericSelector::OnKeyEvent(Key keyCode, char asciiCode)
+bool NumericSelector::OnKeyEvent(Key keyCode, char16_t UnicodeChar)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);

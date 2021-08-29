@@ -115,7 +115,7 @@ void CanvasViewer::OnUpdateScrollBars()
 
 }
 
-bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
+bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
 

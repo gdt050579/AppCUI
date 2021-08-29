@@ -113,7 +113,7 @@ class MyWin : public AppCUI::Controls::Window
         if (cbTabBar.IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        TabExampleWin tw(flags, selector.GetValue());
+        TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()));
         tw.Show();
     }
     bool OnEvent(Control* sender, Event eventType, int controlID) override

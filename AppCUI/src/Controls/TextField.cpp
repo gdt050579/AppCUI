@@ -101,7 +101,7 @@ void TextField_DeleteSelected(TextField* control)
     control->ClearSelection();
     Members->Modified = true;
 }
-void TextField_AddChar(TextField* control, char ch)
+void TextField_AddChar(TextField* control, char16_t ch)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
@@ -244,7 +244,7 @@ void TextField::ClearSelection()
     Members->Modified                                                             = true;
 }
 
-bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
 
@@ -316,9 +316,9 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
         return false;
     }
 
-    if (AsciiCode != 0)
+    if (UnicodeChar != 0)
     {
-        TextField_AddChar(this, AsciiCode);
+        TextField_AddChar(this, UnicodeChar);
         return true;
     }
 

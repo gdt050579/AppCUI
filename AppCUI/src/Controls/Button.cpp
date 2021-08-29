@@ -101,7 +101,7 @@ void Button::OnHotKey()
 {
     RaiseEvent(Event::EVENT_BUTTON_CLICKED);
 }
-bool Button::OnKeyEvent(Key KeyCode, char AsciiCode)
+bool Button::OnKeyEvent(Key KeyCode, char16_t UnicodeChar)
 {
     if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
     {
