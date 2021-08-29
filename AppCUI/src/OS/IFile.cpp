@@ -90,9 +90,9 @@ std::unique_ptr<char[]> IFile::ReadContentToBuffer(unsigned int& bufferSize)
 }
 bool IFile::Write(std::string_view text)
 {
-    return Write(reinterpret_cast<const void*>(text.data()), text.length());
+    return Write(reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()));
 }
 bool IFile::Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten)
 {
-    return Write(offset, reinterpret_cast<const void*>(text.data()), text.length(), bytesWritten);
+    return Write(offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);
 }

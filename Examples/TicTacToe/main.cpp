@@ -9,12 +9,12 @@ using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
 
-#define CELL_WITH_X 1
-#define CELL_WITH_O 2
+constexpr unsigned int CELL_WITH_X = 1;
+constexpr unsigned int CELL_WITH_O = 2;
 
-#define X_HAS_WON_EVENT 123
-#define O_HAS_WON_EVENT 321
-#define DRAW_GAME       444
+constexpr unsigned int X_HAS_WON_EVENT = 123;
+constexpr unsigned int O_HAS_WON_EVENT = 321;
+constexpr unsigned int DRAW_GAME       = 444;
 
 class TicTacToeTable : public UserControl
 {
@@ -81,8 +81,8 @@ class TicTacToeTable : public UserControl
     }
     void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
     {
-        int cell_x = std::min<>(x / 5, 2);
-        int cell_y = std::min<>(y / 5, 2);
+        const int cell_x = std::min<>(x / 5, 2);
+        const int cell_y = std::min<>(y / 5, 2);
         if (table[cell_y][cell_x] != 0)
             return;
         table[cell_y][cell_x] = currentPiece;
