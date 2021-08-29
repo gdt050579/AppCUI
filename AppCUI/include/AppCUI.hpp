@@ -1923,7 +1923,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-    enum class ImageRendererMode: unsigned int
+    enum class ImageRendererMode : unsigned int
     {
         SmallBoxes,
         SmallBoxex2x2,
@@ -1933,7 +1933,7 @@ namespace Controls
         LargeBoxes,
         AsciiArt
     };
-    class EXPORT ImageViewer: public CanvasViewer
+    class EXPORT ImageViewer : public CanvasViewer
     {
       public:
         bool Create(Control* parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);

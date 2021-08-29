@@ -56,12 +56,31 @@ bool SDLTerminal::initInput(const InitializationData& initData)
     KeyTranslation[SDL_SCANCODE_HOME]      = Key::Home;
     KeyTranslation[SDL_SCANCODE_END]       = Key::End;
     KeyTranslation[SDL_SCANCODE_SPACE]     = Key::Space;
-
+    KeyTranslation[SDL_SCANCODE_KP_PLUS]   = Key::Plus;
+    KeyTranslation[SDL_SCANCODE_KP_MINUS]  = Key::Minus;
+    KeyTranslation[SDL_SCANCODE_KP_COMMA]  = Key::Comma;
+    KeyTranslation[SDL_SCANCODE_COMMA]     = Key::Comma;
     return true;
 }
 
 void SDLTerminal::handleMouse(SystemEvent& evt, const SDL_Event& eSdl)
 {
+    if (eSdl.type == SDL_MOUSEBUTTONDOWN || eSdl.type == SDL_MOUSEBUTTONUP)
+    {
+        if (eSdl.button.button == SDL_BUTTON_LEFT)
+        {
+            evt.mouseButton = MouseButton::Left;
+        }
+        else if (eSdl.button.button == SDL_BUTTON_RIGHT)
+        {
+            evt.mouseButton = MouseButton::Right;
+        }
+        else if (eSdl.button.button == SDL_BUTTON_MIDDLE)
+        {
+            evt.mouseButton = MouseButton::Center;
+        }
+    }
+
     if (eSdl.type == SDL_MOUSEBUTTONDOWN)
     {
         evt.eventType = SystemEventType::MouseDown;
