@@ -331,7 +331,7 @@ void ComboBox::SetNoIndexSelected()
     RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
 }
 
-bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     switch (keyCode)

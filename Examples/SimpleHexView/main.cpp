@@ -43,7 +43,7 @@ class HexViewUserControl : public UserControl
         }
     }
 
-    bool OnKeyEvent(AppCUI::Input::Key keyCode, char /*AsciiCode*/) override
+    bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*AsciiCode*/) override
     {
         const std::uint64_t bufferSize = GetWidth() * GetHeight();
 

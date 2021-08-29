@@ -200,7 +200,7 @@ class TextAreaControlContext : public ControlContext
     void MoveEnd(bool selected);
     void MoveToStartOfTheFile(bool selected);
     void MoveToEndOfTheFile(bool selected);
-    void AddChar(char ch);
+    void AddChar(char16_t ch);
     void KeyDelete();
     void KeyBack();
     void CopyToClipboard();
@@ -212,7 +212,7 @@ class TextAreaControlContext : public ControlContext
 
     void SetToolTip(char* ss);
     void Paint(Graphics::Renderer& renderer);
-    bool OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode);
+    bool OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar);
     void OnAfterResize();
     void AnalyzeCurrentText();
     void SetSelection(unsigned int start, unsigned int end);
@@ -382,7 +382,7 @@ class ListViewControlContext : public ControlContext
     bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
-    bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
+    bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
     void SendMsg(Event eventType);
     bool Sort();
 

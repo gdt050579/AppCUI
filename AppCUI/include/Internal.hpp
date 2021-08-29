@@ -178,7 +178,7 @@ namespace Internal
       public:
         bool Create(unsigned int width, unsigned int height);
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
     };
 
     enum class TerminalType : unsigned int

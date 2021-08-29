@@ -127,7 +127,7 @@ void NumericSelector::Paint(Renderer& renderer)
     renderer.WriteSingleLineText(Members->Layout.Width + 1 - Members->buttonPadding, 0, " + ", params.Color);
 }
 
-bool NumericSelector::OnKeyEvent(Key keyCode, char AsciiCode)
+bool NumericSelector::OnKeyEvent(Key keyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(NumericSelectorControlContext, Members, false);
 

@@ -528,7 +528,7 @@ void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
     UPDATE_SELECTION;
 }
 
-void TextAreaControlContext::AddChar(char ch)
+void TextAreaControlContext::AddChar(char16_t ch)
 {
     if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
@@ -614,7 +614,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
 }
 
-bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
+bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
 {
     switch (KeyCode)
     {
@@ -709,9 +709,9 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCo
         PasteFromClipboard();
         return true;
     }
-    if (AsciiCode > 0)
+    if (UnicodeChar > 0)
     {
-        AddChar(AsciiCode);
+        AddChar(UnicodeChar);
         return true;
     }
     return false;
@@ -796,9 +796,9 @@ void TextArea::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
 }
-bool TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
-    return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
+    return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
 void TextArea::OnAfterResize(int newWidth, int newHeight)
 {

@@ -1197,7 +1197,7 @@ bool AppCUI::Controls::Control::IsInitialized()
     return CTRLC->Inited;
 }
 // Evenimente
-bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     return false;
 }

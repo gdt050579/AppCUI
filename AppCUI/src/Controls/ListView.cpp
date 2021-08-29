@@ -724,7 +724,7 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
 }
-bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
     ListViewItem* lvi;
@@ -757,7 +757,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
             UpdateColumnsWidth();
             return true;
         };
-        if ((AsciiCode > 0) || (keyCode != Key::None))
+        if ((UnicodeChar > 0) || (keyCode != Key::None))
         {
             Columns.ResizeModeEnabled = false;
             Columns.ResizeColumnIndex = INVALID_COLUMN_INDEX;
@@ -976,10 +976,10 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
                 }
             }
             // search mode
-            if (AsciiCode > 0)
+            if (UnicodeChar > 0)
             {
                 Filter.FilterModeEnabled = true;
-                Filter.SearchText.AddChar(AsciiCode);
+                Filter.SearchText.AddChar(UnicodeChar);
                 UpdateSearch(0);
                 return true;
             }
@@ -1337,9 +1337,9 @@ void ListView::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     Members->Paint(renderer);
 }
-bool ListView::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode)
+bool ListView::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
-    return WRAPPER->OnKeyEvent(keyCode, AsciiCode);
+    return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
 void ListView::OnUpdateScrollBars()
 {
