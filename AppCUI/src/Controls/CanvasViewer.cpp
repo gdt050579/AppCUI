@@ -100,8 +100,19 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
 void CanvasViewer::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
-    UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight());
-    UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth());
+    
+    // horizontal
+    if (Members->canvas.GetHeight()>(unsigned int)Members->Layout.Height)
+        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (unsigned int)Members->Layout.Height);
+    else
+        UpdateVScrollBar(-Members->CanvasScrollY, 0);
+
+    // vertical
+    if (Members->canvas.GetWidth() > (unsigned int) Members->Layout.Width)
+        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (unsigned int) Members->Layout.Width);
+    else
+        UpdateHScrollBar(-Members->CanvasScrollX, 0);
+
 }
 
 bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
