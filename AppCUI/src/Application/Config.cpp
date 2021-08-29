@@ -247,4 +247,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->NumericSelector.Focused.TextColor    = ColorPair{ Color::Black, Color::White };
     this->NumericSelector.Inactive.TextColor   = ColorPair{ Color::Gray, Color::Black };
     this->NumericSelector.Hover.TextColor      = ColorPair{ Color::Black, Color::Yellow };
+    this->NumericSelector.WrongValue.TextColor = ColorPair{ Color::Black, Color::Red };
 }

@@ -345,6 +345,10 @@ namespace Input
         N7,
         N8,
         N9,
+        Plus,
+        Comma,
+        Minus,
+        Period,
         Count, // must be the last
 
         // Modifier flas
@@ -2172,6 +2176,7 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnLoseFocus() override;
     };
 
 }; // namespace Controls
@@ -2421,7 +2426,7 @@ namespace Application
             struct
             {
                 Graphics::ColorPair TextColor;
-            } Normal, Focused, Inactive, Hover;
+            } Normal, Focused, Inactive, Hover, WrongValue;
         } NumericSelector;
         void SetDarkTheme();
     };
