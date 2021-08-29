@@ -226,6 +226,7 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
     this->KeyTranslationMatrix[VK_END]    = AppCUI::Input::Key::End;
     this->KeyTranslationMatrix[VK_SPACE]  = AppCUI::Input::Key::Space;
 
+    // TODO: add these to SDL as well
     this->KeyTranslationMatrix[VK_OEM_PLUS]   = AppCUI::Input::Key::Plus;
     this->KeyTranslationMatrix[VK_OEM_COMMA]  = AppCUI::Input::Key::Comma;
     this->KeyTranslationMatrix[VK_OEM_MINUS]  = AppCUI::Input::Key::Minus;
