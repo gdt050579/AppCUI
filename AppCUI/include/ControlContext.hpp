@@ -425,7 +425,8 @@ class NumericSelectorControlContext : public ControlContext
     bool intoInsertionMode       = false;
     bool wasMinusPressed         = false;
     long long insertionModevalue = 0;
-    bool wrongValueInserted      = false;
+    long long sliderPosition     = 0;
+    bool isMouseLeftClickPressed = false;
 };
 
 enum class MenuItemType : unsigned int

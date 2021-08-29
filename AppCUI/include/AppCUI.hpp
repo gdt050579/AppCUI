@@ -34,6 +34,15 @@
                 return (returnValue);                                                                                  \
             }                                                                                                          \
         }
+#    define CHECKRET(c, format, ...)                                                                         \
+        {                                                                                                              \
+            if (!(c))                                                                                                  \
+            {                                                                                                          \
+                AppCUI::Log::Report(                                                                                   \
+                      AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);      \
+                return;                                                                                                \
+            }                                                                                                          \
+        }
 #    define CHECKBK(c, format, ...)                                                                                    \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -73,6 +82,11 @@
         {                                                                                                              \
             if (!(c))                                                                                                  \
                 return (returnValue);                                                                                  \
+        }
+#    define CHECKRET(c, format, ...)                                                                                   \
+        {                                                                                                              \
+            if (!(c))                                                                                                  \
+                return;                                                                                                \
         }
 #    define RETURNERROR(returnValue, format, ...)                                                                      \
         {                                                                                                              \
@@ -1332,6 +1346,7 @@ namespace Graphics
               int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
         // Characters
+        bool GetCharacter(int x, int y, int& charCode, ColorPair& color);
         bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 
@@ -1546,7 +1561,7 @@ namespace Controls
         // coordonates
         int GetX();
         int GetY();
-        int GetWidth();
+        int GetWidth() const;
         int GetHeight();
         void GetSize(AppCUI::Graphics::Size& size);
         void GetClientSize(AppCUI::Graphics::Size& size);
@@ -1568,7 +1583,7 @@ namespace Controls
         void SetEnabled(bool value);
         void SetVisible(bool value);
         void SetChecked(bool value);
-        bool IsEnabled();
+        bool IsEnabled() const;
         bool IsVisible();
         bool IsChecked();
         bool HasFocus();
@@ -2168,10 +2183,19 @@ namespace Controls
         const void SetMinValue(const long long minValue);
         const void SetMaxValue(const long long maxValue);
 
+      private:
+        const bool IsValidValue(const long long value) const;
+        const bool IsValueInsertedWrong() const;
+        const bool GetRenderColor(Graphics::ColorPair& color) const;
+        const bool FormatTextField();
+        const bool IsOnPlusButton(const int x, const int y) const;
+        const bool IsOnMinusButton(const int x, const int y) const;
+        const bool IsOnTextField(const int x, const int y) const;
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char asciiCode) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;

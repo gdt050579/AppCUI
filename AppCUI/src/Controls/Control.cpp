@@ -852,7 +852,7 @@ int AppCUI::Controls::Control::GetY()
 {
     return CTRLC->Layout.Y;
 }
-int AppCUI::Controls::Control::GetWidth()
+int AppCUI::Controls::Control::GetWidth() const
 {
     return CTRLC->Layout.Width;
 }
@@ -906,7 +906,7 @@ bool AppCUI::Controls::Control::IsChecked()
 {
     return (((CTRLC->Flags) & GATTR_CHECKED) != 0);
 }
-bool AppCUI::Controls::Control::IsEnabled()
+bool AppCUI::Controls::Control::IsEnabled() const
 {
     return (((CTRLC->Flags) & GATTR_ENABLE) != 0);
 }

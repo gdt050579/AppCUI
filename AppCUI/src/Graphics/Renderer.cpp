@@ -113,7 +113,8 @@ inline void RenderSingleLineString(const T& text, DrawTextInfo& dti, const Write
     }
 }
 template <>
-inline void RenderSingleLineString<CharacterView>(const CharacterView& text, DrawTextInfo& dti, const WriteTextParams& params)
+inline void RenderSingleLineString<CharacterView>(
+      const CharacterView& text, DrawTextInfo& dti, const WriteTextParams& params)
 {
     const Character* ch = text.data() + dti.TextStart;
     if ((params.Flags & WriteTextFlags::OverwriteColors) != WriteTextFlags::None)
@@ -168,7 +169,7 @@ inline void RenderSingleLineString<CharacterView>(const CharacterView& text, Dra
         else
         {
             SET_CHARACTER_EX(dti.LeftMargin, ' ', NoColorPair);
-        }        
+        }
     }
     if (dti.RightMargin)
     {
@@ -194,7 +195,10 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     bool result    = false;
     bool textWrap  = false;
 
-    CHECK(text.length() < 0x00FFFFFF, false, "Text is too long: %z characters (should be smaller than 0x00FFFFFF)", (size_t)text.length());
+    CHECK(text.length() < 0x00FFFFFF,
+          false,
+          "Text is too long: %z characters (should be smaller than 0x00FFFFFF)",
+          (size_t) text.length());
 
     WriteTextParams singleLineParams;
     singleLineParams.Flags =
@@ -202,21 +206,19 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
                           WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin | WriteTextFlags::HighlightHotKey |
                           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
     singleLineParams.Flags |= WriteTextFlags::SingleLine;
-    singleLineParams.Align          = params.Align;
-    singleLineParams.Color          = params.Color;   
-    singleLineParams.HotKeyColor    = params.HotKeyColor;
-    singleLineParams.X              = params.X;
-    singleLineParams.Y              = params.Y;
-    singleLineParams.Width          = params.Width;
-    bool showHotKey                 = (params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None;
-
-
+    singleLineParams.Align       = params.Align;
+    singleLineParams.Color       = params.Color;
+    singleLineParams.HotKeyColor = params.HotKeyColor;
+    singleLineParams.X           = params.X;
+    singleLineParams.Y           = params.Y;
+    singleLineParams.Width       = params.Width;
+    bool showHotKey              = (params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None;
 
     if ((params.Flags & WriteTextFlags::WrapToWidth) != WriteTextFlags::None)
     {
         // Wrap to Width requires ClipToWidth as well for alignament
         singleLineParams.Flags |= WriteTextFlags::ClipToWidth;
-        textWrap = true; 
+        textWrap = true;
     }
 
     if (textWrap)
@@ -233,7 +235,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (unsigned int)(lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (unsigned int) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -305,7 +307,6 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
     return result;
 }
 
-
 Renderer::Renderer()
 {
     TranslateX = TranslateY = 0;
@@ -374,6 +375,40 @@ bool Renderer::WriteCharacter(int x, int y, int charCode, const ColorPair color)
     }
     return true;
 }
+
+bool Renderer::GetCharacter(int x, int y, int& charCode, ColorPair& color)
+{
+    CHECK_VISIBLE;
+    TRANSLATE_COORDONATES(x, y);
+
+    if ((x < Clip.Left) || (x > Clip.Right) || (y < Clip.Top) || (y > Clip.Bottom))
+    {
+        return false;
+    }
+    
+    const Character* p = this->OffsetRows[y] + x;
+
+    charCode = p->Code;
+
+    if (NO_TRANSPARENCY(color))
+    {
+        color = p->Color;
+    }
+    else
+    {
+        if (color.Foreground != AppCUI::Graphics::Color::Transparent)
+        {
+            color.Foreground = p->Color.Foreground;
+        }
+        if (color.Background != AppCUI::Graphics::Color::Transparent)
+        {
+            color.Background = p->Color.Background;
+        }
+    }
+
+    return true;
+}
+
 bool Renderer::WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color)
 {
     return WriteCharacter(x, y, SpecialCharacters[(unsigned int) charID], color);
@@ -741,7 +776,8 @@ bool Renderer::FillRectSize(int x, int y, unsigned int width, unsigned int heigh
     CHECK(((width > 0) && (height > 0)), false, "");
     return FillRect(x, y, x + ((int) width) - 1, y + ((int) height) - 1, charCode, color);
 }
-bool Renderer::DrawRectSize(int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine)
+bool Renderer::DrawRectSize(
+      int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine)
 {
     CHECK(((width > 0) && (height > 0)), false, "");
     return DrawRect(x, y, x + ((int) width) - 1, y + ((int) height) - 1, color, doubleLine);
@@ -877,14 +913,17 @@ bool Renderer::ResetClip()
     return true;
 }
 
-
-bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput)
+bool Renderer::_Compute_DrawTextInfo_SingleLine_(
+      const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput)
 {
     CHECK_VISIBLE;
     // check size
     if (charactersCount == 0)
         return false; // empty text, nothing to draw
-    CHECK(charactersCount<0x00FFFFFF,false,"String is too large (%z characters) - max allowed size is 0x00FFFFFF !",charactersCount);
+    CHECK(charactersCount < 0x00FFFFFF,
+          false,
+          "String is too large (%z characters) - max allowed size is 0x00FFFFFF !",
+          charactersCount);
 
     // translate coordonates
     int x = params.X + this->TranslateX;
@@ -901,13 +940,13 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
     switch (params.Align)
     {
     case TextAlignament::Left:
-        if ((params.Flags & (WriteTextFlags::FitTextToWidth|WriteTextFlags::ClipToWidth))!= WriteTextFlags::None)
+        if ((params.Flags & (WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth)) != WriteTextFlags::None)
         {
             if (charactersCount > params.Width)
             {
                 output->TextEnd = params.Width;
-                TextFit = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
-            }                
+                TextFit         = (params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None;
+            }
         }
         break;
     case TextAlignament::Right:
@@ -921,30 +960,30 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
                     output->TextEnd = params.Width;
-                    TextFit        = true;
+                    TextFit         = true;
                 }
                 else
                 {
-                    output->TextStart += (charactersCount - params.Width); 
-                }                                    
-            }                            
-        }            
+                    output->TextStart += (charactersCount - params.Width);
+                }
+            }
+        }
         else
         {
             x -= (int) (charactersCount - 1);
-        }            
+        }
         break;
     case TextAlignament::Center:
         if ((params.Flags & WriteTextFlags::ClipToWidth) != WriteTextFlags::None)
         {
             if (params.Width >= charactersCount)
-                x = x + (int) ((params.Width - charactersCount)/2); // entire string fits the width
+                x = x + (int) ((params.Width - charactersCount) / 2); // entire string fits the width
             else
             {
                 if ((params.Flags & WriteTextFlags::FitTextToWidth) != WriteTextFlags::None)
                 {
                     output->TextEnd = params.Width;
-                    TextFit        = true;
+                    TextFit         = true;
                 }
                 else
                 {
@@ -954,36 +993,35 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
                         output->TextEnd = charactersCount; // sanity check
                 }
             }
-                
         }
         else
-            x -= (int) (charactersCount/2);
+            x -= (int) (charactersCount / 2);
         break;
     default:
         RETURNERROR(false, "Unknown text align value: %d", params.Align);
     }
-    
+
     // Check clipping
     if (x > Clip.Right)
         return false; // outside the clipping area
-    if (x<Clip.Left)
+    if (x < Clip.Left)
     {
         if ((x + (int) (output->TextEnd - output->TextStart)) < Clip.Left)
             return false; // outside the clipping area
         output->TextStart += (Clip.Left - x);
         x = Clip.Left;
     }
-    if ((x + (int) (output->TextEnd - output->TextStart)) > (Clip.Right+1))
+    if ((x + (int) (output->TextEnd - output->TextStart)) > (Clip.Right + 1))
     {
-        output->TextEnd -= ((x + (int) (output->TextEnd - output->TextStart)) - (Clip.Right+1));
+        output->TextEnd -= ((x + (int) (output->TextEnd - output->TextStart)) - (Clip.Right + 1));
         if (output->TextEnd <= output->TextStart)
             return false; // nothing to draw (sanity check)
     }
-    
+
     // compute screen buffer pointers
     output->Start = this->OffsetRows[y] + x;
     output->End   = output->Start + (output->TextEnd - output->TextStart);
-    
+
     // hotkey
     if ((params.Flags & WriteTextFlags::HighlightHotKey) != WriteTextFlags::None)
     {
@@ -1009,14 +1047,14 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
     }
 
     // margins
-    output->LeftMargin = nullptr;
+    output->LeftMargin  = nullptr;
     output->RightMargin = nullptr;
     if (((params.Flags & WriteTextFlags::LeftMargin) != WriteTextFlags::None) && ((x - 1) >= Clip.Left))
-        output->LeftMargin = output->Start - 1;   
+        output->LeftMargin = output->Start - 1;
     if (((params.Flags & WriteTextFlags::RightMargin) != WriteTextFlags::None) &&
         ((x + output->TextEnd - output->TextStart) <= Clip.Right))
         output->RightMargin = output->End;
-    // all good 
+    // all good
     return true;
 }
 
@@ -1082,12 +1120,13 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
 bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors);
-    params.X = x;
-    params.Y = y;
+    params.X     = x;
+    params.Y     = y;
     params.Color = color;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
+bool Renderer::WriteSingleLineText(
+      int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors, align);
     params.X     = x;
@@ -1095,9 +1134,16 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
     params.Color = color;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
+bool Renderer::WriteSingleLineText(
+      int x,
+      int y,
+      const AppCUI::Utils::ConstString& text,
+      ColorPair color,
+      ColorPair hotKeyColor,
+      unsigned int hotKeyOffset)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1105,9 +1151,17 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
     params.HotKeyPosition = hotKeyOffset;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
+bool Renderer::WriteSingleLineText(
+      int x,
+      int y,
+      const AppCUI::Utils::ConstString& text,
+      ColorPair color,
+      ColorPair hotKeyColor,
+      unsigned int hotKeyOffset,
+      TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey, align);
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey, align);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1115,27 +1169,39 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
     params.HotKeyPosition = hotKeyOffset;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color)
+bool Renderer::WriteSingleLineText(
+      int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
-    params.X = x;
-    params.Y = y;
-    params.Color = color;
-    params.Width = width;
-    return WriteText(text, params);
-}
-bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
-{
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth, align);
     params.X     = x;
     params.Y     = y;
     params.Color = color;
     params.Width = width;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
+bool Renderer::WriteSingleLineText(
+      int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth);
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth, align);
+    params.X     = x;
+    params.Y     = y;
+    params.Color = color;
+    params.Width = width;
+    return WriteText(text, params);
+}
+bool Renderer::WriteSingleLineText(
+      int x,
+      int y,
+      unsigned int width,
+      const AppCUI::Utils::ConstString& text,
+      ColorPair color,
+      ColorPair hotKeyColor,
+      unsigned int hotKeyOffset)
+{
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
@@ -1144,9 +1210,20 @@ bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCU
     params.Width          = width;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset, TextAlignament align)
+bool Renderer::WriteSingleLineText(
+      int x,
+      int y,
+      unsigned int width,
+      const AppCUI::Utils::ConstString& text,
+      ColorPair color,
+      ColorPair hotKeyColor,
+      unsigned int hotKeyOffset,
+      TextAlignament align)
 {
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth, align);
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
+                WriteTextFlags::ClipToWidth,
+          align);
     params.X              = x;
     params.Y              = y;
     params.Color          = color;
