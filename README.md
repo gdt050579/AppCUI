@@ -62,6 +62,10 @@ If everything is installed properly, cmake will greet you with `[cmake] Have Cur
 
 ## Documentation 
 
-The project uses Sphinx as the main documentation engine. Sphinx sources can be located under `docs` folder. Local building is done with `make html`, after which the html page can be found in the `build` folder.
+The project uses Sphinx as the main documentation engine. Sphinx sources can be located under `docs` folder.
+
+Contributors can install sphinx using `pip install -r requirements.txt`, this will install Sphinx tooling and `sphinx-rtd-theme`. Local building is done with `make html`
+
+After the command executes successfully, the html pages can be found in the `build` folder.
 
 On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages` and then to `https://gdt050579.github.io/AppCUI/`
