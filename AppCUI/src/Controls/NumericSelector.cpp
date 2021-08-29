@@ -93,7 +93,6 @@ void NumericSelector::Paint(Renderer& renderer)
     else if (Members->intoInsertionMode && Members->wrongValueInserted)
     {
         params.Color = nsCfg.WrongValue.TextColor;
-        Members->wrongValueInserted;
     }
     else if (Members->Focused)
     {
