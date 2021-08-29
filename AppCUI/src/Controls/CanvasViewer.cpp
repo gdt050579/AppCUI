@@ -4,6 +4,25 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
+void CanvasControlContext::MoveScrollTo(int newX, int newY)
+{
+    const int imgWidth = canvas.GetWidth();
+    const int imgHeight = canvas.GetHeight();
+    const int viewWidth = Layout.Width;
+    const int viewHeight = Layout.Height;
+
+    if ((newX + imgWidth) < viewWidth)
+        newX = viewWidth - imgWidth;
+    if ((newY + imgHeight) < viewHeight)
+        newY = viewHeight - imgHeight;
+
+    newX = std::min<>(newX, 0);
+    newY = std::min<>(newY, 0);
+
+    this->CanvasScrollX = newX;
+    this->CanvasScrollY = newY;
+}
+
 bool CanvasViewer::Create(
       Control* parent, const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
 {
@@ -81,8 +100,19 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
 void CanvasViewer::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
-    UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight());
-    UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth());
+    
+    // horizontal
+    if (Members->canvas.GetHeight()>(unsigned int)Members->Layout.Height)
+        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (unsigned int)Members->Layout.Height);
+    else
+        UpdateVScrollBar(-Members->CanvasScrollY, 0);
+
+    // vertical
+    if (Members->canvas.GetWidth() > (unsigned int) Members->Layout.Width)
+        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (unsigned int) Members->Layout.Width);
+    else
+        UpdateHScrollBar(-Members->CanvasScrollX, 0);
+
 }
 
 bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
@@ -92,20 +122,50 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char AsciiCode)
     switch (KeyCode)
     {
     case Key::Down:
-        Members->CanvasScrollY--;
-        if (Members->CanvasScrollY < -((int) (Members->canvas.GetHeight())))
-            Members->CanvasScrollY = -((int) (Members->canvas.GetHeight()));
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY - 1);
         return true;
     case Key::Up:
-        Members->CanvasScrollY = MINVALUE(Members->CanvasScrollY + 1, 0);
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY + 1);
         return true;
     case Key::Right:
-        Members->CanvasScrollX--;
-        if (Members->CanvasScrollX < -((int) (Members->canvas.GetWidth())))
-            Members->CanvasScrollX = -((int) (Members->canvas.GetWidth()));
+        Members->MoveScrollTo(Members->CanvasScrollX - 1, Members->CanvasScrollY);
         return true;
     case Key::Left:
-        Members->CanvasScrollX = MINVALUE(Members->CanvasScrollX + 1, 0);
+        Members->MoveScrollTo(Members->CanvasScrollX + 1, Members->CanvasScrollY);
+        return true;
+
+    case Key::Ctrl | Key::Left :
+        Members->MoveScrollTo(0, Members->CanvasScrollY);
+        return true;
+    case Key::Ctrl | Key::Right:
+        Members->MoveScrollTo(-((int)Members->canvas.GetWidth()), Members->CanvasScrollY);
+        return true;
+    case Key::Ctrl | Key::Up:
+        Members->MoveScrollTo(Members->CanvasScrollX, 0);
+        return true;
+    case Key::Ctrl | Key::Down:
+        Members->MoveScrollTo(Members->CanvasScrollX, -((int) Members->canvas.GetHeight()));
+        return true;
+
+    case Key::Shift | Key::Left:
+        Members->MoveScrollTo(Members->CanvasScrollX + 20, Members->CanvasScrollY);
+        return true;
+    case Key::Shift | Key::Right:
+        Members->MoveScrollTo(Members->CanvasScrollX - 20, Members->CanvasScrollY);
+        return true;
+    case Key::Shift | Key::Up:
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY + 10);
+        return true;
+    case Key::Shift | Key::Down:
+        Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY - 10);
+        return true;
+
+
+    case Key::Home:
+        Members->MoveScrollTo(0, 0);
+        return true;
+    case Key::End:
+        Members->MoveScrollTo(-((int) Members->canvas.GetWidth()), -((int) Members->canvas.GetHeight()));
         return true;
     default:
         break;

@@ -120,12 +120,12 @@ bool Image::SetPixel(
     *pixel = COMPUTE_ARGB(Alpha, Red, Green, Blue);
     return true;
 }
-unsigned int Image::GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue)
+unsigned int Image::GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue) const
 {
     CHECK_INDEX(invalidIndexValue);
     return *pixel;
 }
-bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color)
+bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color) const
 {
     CHECK_INDEX(false);
     color = (*pixel);

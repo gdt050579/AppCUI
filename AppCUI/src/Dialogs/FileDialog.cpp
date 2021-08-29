@@ -423,8 +423,8 @@ int FileDialogClass::Show(
     if (this->specialFolders.size() > lastSize)
     {
         comboDrive.AddSeparator("Locations");
-        for (unsigned int index = lastSize; index < this->specialFolders.size(); index++)
-            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
+        for (auto index = lastSize; index < this->specialFolders.size(); index++)
+            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ (unsigned long long)index });
     }
     files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);

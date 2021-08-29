@@ -12,13 +12,13 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
-#define GATTR_ENABLE   0x000001
-#define GATTR_VISIBLE  0x000002
-#define GATTR_CHECKED  0x000004
-#define GATTR_TABSTOP  0x000008
-#define GATTR_VSCROLL  0x000010
-#define GATTR_HSCROLL  0x000020
-#define GATTR_EXPANDED 0x000040
+constexpr unsigned int GATTR_ENABLE   = 0x000001;
+constexpr unsigned int GATTR_VISIBLE  = 0x000002;
+constexpr unsigned int GATTR_CHECKED  = 0x000004;
+constexpr unsigned int GATTR_TABSTOP  = 0x000008;
+constexpr unsigned int GATTR_VSCROLL  = 0x000010;
+constexpr unsigned int GATTR_HSCROLL  = 0x000020;
+constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
 struct ControlContext
 {
@@ -96,9 +96,9 @@ struct ControlContext
     void PaintScrollbars(Graphics::Renderer& renderer);
 };
 
-#define WINDOW_DRAG_STATUS_NONE 0
-#define WINDOW_DRAG_STATUS_MOVE 1
-#define WINDOW_DRAG_STATUS_SIZE 2
+constexpr unsigned int WINDOW_DRAG_STATUS_NONE = 0;
+constexpr unsigned int WINDOW_DRAG_STATUS_MOVE = 1;
+constexpr unsigned int WINDOW_DRAG_STATUS_SIZE = 2;
 
 struct WindowControlContext : public ControlContext
 {
@@ -182,9 +182,14 @@ class TextAreaControlContext : public ControlContext
     void DeleteSelected();
     unsigned int GetLineStart(unsigned int lineIndex);
     bool GetLineRange(unsigned int lineIndex, unsigned int& start, unsigned int& end);
-    void DrawLineNumber(Graphics::Renderer& renderer, int lineIndex, int pozY, const Graphics::ColorPair lineNumberColor);
+    void DrawLineNumber(
+          Graphics::Renderer& renderer, int lineIndex, int pozY, const Graphics::ColorPair lineNumberColor);
     void DrawLine(
-          Graphics::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const Graphics::ColorPair textColor);
+          Graphics::Renderer& renderer,
+          unsigned int lineIndex,
+          int ofsX,
+          int pozY,
+          const Graphics::ColorPair textColor);
     void DrawToolTip();
 
     void MoveLeft(bool selected);
@@ -232,10 +237,11 @@ struct CanvasControlContext : public ControlContext
 {
     AppCUI::Graphics::Canvas canvas;
     int CanvasScrollX, CanvasScrollY;
+    void MoveScrollTo(int newX, int newY);
 };
 
-#define MAX_LISTVIEW_COLUMNS     64
-#define MAX_LISTVIEW_HEADER_TEXT 32
+constexpr unsigned int MAX_LISTVIEW_COLUMNS     = 64;
+constexpr unsigned int MAX_LISTVIEW_HEADER_TEXT = 32;
 
 struct ListViewItem
 {
@@ -373,7 +379,7 @@ class ListViewControlContext : public ControlContext
     bool MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex);
     void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
     bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
-    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction); 
+    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
     bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode);
@@ -390,7 +396,8 @@ struct ComboBoxItem
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
-    ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
+    ComboBoxItem(
+          const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&) noexcept;
@@ -409,13 +416,12 @@ class ComboBoxControlContext : public ControlContext
 class NumericSelectorControlContext : public ControlContext
 {
   public:
-    unsigned long long minValue;
-    unsigned long long maxValue;
-    unsigned long long value;
+    long long minValue;
+    long long maxValue;
+    long long value;
 
-    const unsigned int buttonPadding = 4;
+    const int buttonPadding = 4;
 };
-
 
 enum class MenuItemType : unsigned int
 {
@@ -439,31 +445,40 @@ struct MenuItem
     Menu* SubMenu;
 
     MenuItem(); // line
-    MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey); // commands
+    MenuItem(
+          MenuItemType type,
+          const AppCUI::Utils::ConstString& text,
+          int CommandID,
+          bool checked,
+          AppCUI::Input::Key shortcutKey);                           // commands
     MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj) = delete;
-    MenuItem(MenuItem&& obj) = delete;
+    MenuItem(MenuItem&& obj)      = delete;
     ~MenuItem();
-
 };
-enum class MousePressedResult: unsigned int
+enum class MousePressedResult : unsigned int
 {
-    None, Repaint, CheckParent, Activate
+    None,
+    Repaint,
+    CheckParent,
+    Activate
 };
 enum class MenuButtonState : unsigned char
 {
-    Normal, Hovered, Pressed
+    Normal,
+    Hovered,
+    Pressed
 };
-    
-    
-    struct MenuMousePositionInfo
+
+struct MenuMousePositionInfo
 {
     unsigned int ItemIndex;
     bool IsOnMenu;
     bool IsOnUpButton;
     bool IsOnDownButton;
 };
-#define MAX_NUMBER_OF_MENU_ITEMS    256
+
+constexpr unsigned int MAX_NUMBER_OF_MENU_ITEMS = 256;
 struct MenuContext
 {
     // std::vector messes up with inter-items pointers when calling copy/move ctor
@@ -485,7 +500,7 @@ struct MenuContext
     MenuContext();
     ItemHandle AddItem(std::unique_ptr<MenuItem> itm);
 
-public:
+  public:
     // methods
     void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
 
@@ -502,7 +517,7 @@ public:
 
     // mouse events
     void ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi);
-    bool OnMouseMove(int x, int y, bool & repaint);
+    bool OnMouseMove(int x, int y, bool& repaint);
     MousePressedResult OnMousePressed(int x, int y);
     bool IsOnMenu(int x, int y);
     bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
@@ -512,10 +527,13 @@ public:
     bool ProcessShortCut(AppCUI::Input::Key keyCode);
 
     // Show
-    void Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize);
+    void Show(
+          AppCUI::Controls::Menu* me,
+          AppCUI::Controls::Control* relativeControl,
+          int x,
+          int y,
+          const AppCUI::Graphics::Size& maxSize);
 };
-
-
 
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
@@ -537,7 +555,5 @@ public:
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
-
-
 
 #endif

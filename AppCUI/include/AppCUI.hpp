@@ -775,11 +775,10 @@ namespace Utils
         // Returns the name of the Key without modifiers
         static std::string_view GetKeyName(AppCUI::Input::Key keyCode);
         static std::string_view GetKeyModifierName(AppCUI::Input::Key keyCode);
-        static std::string_view GetKeyNamePadded(AppCUI::Input::Key keyCode);        
+        static std::string_view GetKeyNamePadded(AppCUI::Input::Key keyCode);
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
-        static AppCUI::Input::Key FromString(const std::string_view & stringRepresentation);
-        
+        static AppCUI::Input::Key FromString(const std::string_view& stringRepresentation);
     };
 
     class EXPORT IniValue
@@ -932,13 +931,16 @@ namespace OS
         void Close() override;
     };
 
-    enum class SpecialFoldersType: unsigned int
+    enum class SpecialFoldersType : unsigned int
     {
         All = 0,
         Drives,
         SpecialLocations
     };
-    EXPORT void GetSpecialFolders(std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists, SpecialFoldersType type, bool clearVector);
+    EXPORT void GetSpecialFolders(
+          std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
+          SpecialFoldersType type,
+          bool clearVector);
 
 } // namespace OS
 namespace Graphics
@@ -1187,7 +1189,7 @@ namespace Graphics
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
-        bool Insert(const AppCUI::Utils::ConstString& text, unsigned int position, const ColorPair color = NoColorPair);        
+        bool Insert(const AppCUI::Utils::ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
         bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
         bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
         void SetColor(const ColorPair color);
@@ -1237,7 +1239,7 @@ namespace Graphics
         {
             return AppCUI::Utils::CharacterView(Buffer, Count);
         }
-        inline AppCUI::Utils::CharacterView SubString(size_t start,size_t end) const
+        inline AppCUI::Utils::CharacterView SubString(size_t start, size_t end) const
         {
             if ((end > start) && (Buffer) && (end <= Count))
                 return AppCUI::Utils::CharacterView{ Buffer + start, end - start };
@@ -1264,8 +1266,8 @@ namespace Graphics
               unsigned char Green,
               unsigned char Blue,
               unsigned char Alpha = 255);
-        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0);
-        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color);
+        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
+        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
@@ -1307,7 +1309,8 @@ namespace Graphics
 
         void _Destroy();
         bool _ClearEntireSurface(int character, const ColorPair color);
-        bool _Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput);
+        bool _Compute_DrawTextInfo_SingleLine_(
+              const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput);
 
       public:
         // Horizontal lines
@@ -1630,7 +1633,6 @@ namespace Controls
         virtual bool OnMouseOver(int x, int y);
         virtual bool OnMouseLeave();
         virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
-        
 
         virtual bool OnEvent(Control* sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
@@ -1905,7 +1907,23 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-
+    enum class ImageRendererMode: unsigned int
+    {
+        SmallBoxes,
+        LargeBoxes,
+        AsciiArt
+    };
+    class EXPORT ImageViewer: public CanvasViewer
+    {
+      public:
+        bool Create(Control* parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
+        bool Create(
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              ViewerFlags flags = ViewerFlags::None);
+        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
+    };
     enum class ListViewFlags : unsigned int
     {
         None                          = 0,
@@ -2095,7 +2113,6 @@ namespace Controls
         virtual ~ComboBox();
     };
 
-
     class EXPORT Menu
     {
       public:
@@ -2105,9 +2122,20 @@ namespace Controls
         Menu(const Menu& obj) = delete;
         ~Menu();
 
-        ItemHandle AddCommandItem(const AppCUI::Utils::ConstString & text, int CommandID, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
-        ItemHandle AddCheckItem(const AppCUI::Utils::ConstString & text, int CommandID, bool checked = false, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
-        ItemHandle AddRadioItem(const AppCUI::Utils::ConstString & text, int CommandID, bool checked = false, AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddCommandItem(
+              const AppCUI::Utils::ConstString& text,
+              int CommandID,
+              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddCheckItem(
+              const AppCUI::Utils::ConstString& text,
+              int CommandID,
+              bool checked                   = false,
+              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddRadioItem(
+              const AppCUI::Utils::ConstString& text,
+              int CommandID,
+              bool checked                   = false,
+              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
         ItemHandle AddSeparator();
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
 
@@ -2116,27 +2144,32 @@ namespace Controls
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
-        void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });      
-        void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = {0,0});
+        void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
+        void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
     };
-
 
     class EXPORT NumericSelector : public Control
     {
       public:
         bool Create(
               Control* parent,
-              unsigned long long minValue,
-              unsigned long long maxValue,
-              unsigned long long value,
+              const long long minValue,
+              const long long maxValue,
+              long long value,
               const std::string_view& layout);
 
-        const unsigned long long GetValue() const;
+        const long long GetValue() const;
+        const void SetValue(const long long value);
+        const void SetMinValue(const long long minValue);
+        const void SetMaxValue(const long long maxValue);
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCode) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
     };
 
 }; // namespace Controls
@@ -2148,10 +2181,12 @@ namespace Dialogs
 
       public:
         static void ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static void ShowNotification( const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowNotification(
+              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static void ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
         static Result ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static Result ShowYesNoCancel( const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static Result ShowYesNoCancel(
+              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
     class EXPORT FileDialog
     {
@@ -2208,10 +2243,10 @@ namespace Application
         None = 0,
 
         // possible backends
-        FrontendDefault         = 0,
-        FrontendSDL             = 1,
-        FrontendTerminal        = 2,
-        FrontendWindowsConsole  = 3,
+        FrontendDefault        = 0,
+        FrontendSDL            = 1,
+        FrontendTerminal       = 2,
+        FrontendWindowsConsole = 3,
 
         // character size
         CHAR_SIZE_DEFAULT = 0,
@@ -2222,11 +2257,11 @@ namespace Application
         CHAR_SIZE_HUGE    = 0x00000500,
 
         // generic options
-        CommandBar     = 0x00010000,
-        Menu           = 0x00020000,
-        Maximized      = 0x00040000,
-        Fullscreen     = 0x00080000,
-        FixedSize      = 0x00100000,
+        CommandBar = 0x00010000,
+        Menu       = 0x00020000,
+        Maximized  = 0x00040000,
+        Fullscreen = 0x00080000,
+        FixedSize  = 0x00100000,
     };
 
     class EXPORT CommandBar
@@ -2369,7 +2404,7 @@ namespace Application
                     Graphics::ColorPair Normal, Hover, Inactive, Pressed;
                 } Button;
             } Activ, Parent;
-        } Menu; 
+        } Menu;
         struct
         {
             Graphics::ColorPair BackgroundColor;
