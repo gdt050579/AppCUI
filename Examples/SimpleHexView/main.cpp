@@ -72,7 +72,7 @@ class HexViewUserControl : public UserControl
     }
 
   private:
-    bool resetAll()
+    void resetAll()
     {
         fileData.clear();
         fileSize     = 0;
