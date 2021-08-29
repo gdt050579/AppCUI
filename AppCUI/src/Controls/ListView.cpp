@@ -4,14 +4,14 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-#define ITEM_FLAG_CHECKED    0x0001
-#define ITEM_FLAG_SELECTED   0x0002
-#define COLUMN_DONT_COPY     1
-#define COLUMN_DONT_FILTER   2
-#define INVALID_COLUMN_INDEX 0xFFFFFFFF
-#define MINIM_COLUMN_WIDTH   3
-#define MAXIM_COLUMN_WIDTH   256
-#define NO_HOTKEY_FOR_COLUMN 0xFFFFFFFF
+constexpr unsigned int ITEM_FLAG_CHECKED    = 0x0001;
+constexpr unsigned int ITEM_FLAG_SELECTED   = 0x0002;
+constexpr unsigned int COLUMN_DONT_COPY     = 1;
+constexpr unsigned int COLUMN_DONT_FILTER   = 2;
+constexpr unsigned int INVALID_COLUMN_INDEX = 0xFFFFFFFF;
+constexpr unsigned int MINIM_COLUMN_WIDTH   = 3;
+constexpr unsigned int MAXIM_COLUMN_WIDTH   = 256;
+constexpr unsigned int NO_HOTKEY_FOR_COLUMN = 0xFFFFFFFF;
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
@@ -53,8 +53,8 @@ bool ListViewColumn::SetAlign(TextAlignament align)
 }
 void ListViewColumn::SetWidth(unsigned int width)
 {
-    width       = MAXVALUE(width, MINIM_COLUMN_WIDTH);
-    width       = MINVALUE(width, MAXIM_COLUMN_WIDTH);
+    width       = std::max<>(width, MINIM_COLUMN_WIDTH);
+    width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
     this->Width = (unsigned char) width;
 }
 
@@ -839,7 +839,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char AsciiCo
             return true;
         case Key::Right:
             UpdateColumnsWidth();
-            Columns.XOffset          = MINVALUE(Columns.XOffset + 1, (int) Columns.TotalWidth);
+            Columns.XOffset          = std::min<>(Columns.XOffset + 1, (int) Columns.TotalWidth);
             Filter.FilterModeEnabled = false;
             return true;
         case Key::Home:

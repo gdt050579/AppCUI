@@ -123,7 +123,7 @@ void ComboBox_SetCurrentIndex(ComboBox* control, unsigned int newIndex)
 
     if (newIndex != ComboBox::NO_ITEM_SELECTED)
     {
-        newIndex = MINVALUE(newIndex, indexesCount - 1);
+        newIndex = std::min<>(newIndex, indexesCount - 1);
         // compute FirstVisibleItem
         unsigned int cItem = Members->Indexes.GetUInt32Array()[newIndex];
         if ((cItem >= Members->FirstVisibleItem) && (cItem < Members->FirstVisibleItem + Members->VisibleItemsCount))

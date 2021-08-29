@@ -609,8 +609,8 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
             if (w_right > 0)
                 w_right += 2;
         }
-        maxWidthLeft   = MAXVALUE(maxWidthLeft, w_left);
-        maxHotKeyWidth = MAXVALUE(maxHotKeyWidth, w_right);
+        maxWidthLeft   = std::max<>(maxWidthLeft, w_left);
+        maxHotKeyWidth = std::max<>(maxHotKeyWidth, w_right);
     }
     unsigned int BestWidth = maxWidthLeft + maxHotKeyWidth;
     BestWidth              = BestWidth | 1; // make sure it's not an odd number (this will help better position Arrow Up and Down)
@@ -631,20 +631,20 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
         return;
     }
     // adjust X and Y to be on the screen
-    x = MAXVALUE(x, 0);
-    y = MAXVALUE(y, 0);
-    x = MINVALUE(x, (int)appSize.Width);
-    y = MINVALUE(y, (int)appSize.Height);
+    x = std::max<>(x, 0);
+    y = std::max<>(y, 0);
+    x = std::min<>(x, (int) appSize.Width);
+    y = std::min<>(y, (int) appSize.Height);
 
     // validate max and min limits for menu width and height
-    auto maxWidthForCurrentScreen  = MAXVALUE((appSize.Width / 4), 37); // use a non-odd number (31 / 33 / 35 --> bigger them 30)
-    auto maxHeightForCurrentScreen = MAXVALUE((appSize.Height - 4), 5);  
+    auto maxWidthForCurrentScreen  = std::max<>((appSize.Width / 4), 37U); // use a non-odd number (31 / 33 / 35 --> bigger them 30)
+    auto maxHeightForCurrentScreen = std::max<>((appSize.Height - 4), 5U);  
     if (maxSize.Width >= 30)
-        maxWidthForCurrentScreen   = MINVALUE(maxWidthForCurrentScreen, (maxSize.Width|1));
+        maxWidthForCurrentScreen   = std::min<>(maxWidthForCurrentScreen, (maxSize.Width|1));
     if (maxSize.Height>=5)
-        maxHeightForCurrentScreen  = MINVALUE(maxHeightForCurrentScreen, maxSize.Height);
-    unsigned int menuWidth         = MINVALUE(BestWidth + 2, maxWidthForCurrentScreen);
-    unsigned int menuHeight        = MINVALUE(this->ItemsCount + 2, maxHeightForCurrentScreen);  
+        maxHeightForCurrentScreen  = std::min<>(maxHeightForCurrentScreen, maxSize.Height);
+    unsigned int menuWidth         = std::min<>(BestWidth + 2, maxWidthForCurrentScreen);
+    unsigned int menuHeight        = std::min<>(this->ItemsCount + 2, maxHeightForCurrentScreen);  
 
     // Set direction
     bool toLeft, toBottom;
@@ -663,9 +663,9 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* re
     {
         toBottom = y < (int) (appSize.Height / 2); // if y is closest to top edge - expand to top, otherwise to bottom
         if (toBottom)
-            menuHeight = MAXVALUE(appSize.Height - y, 5);
+            menuHeight = std::max<>(appSize.Height - y, 5U);
         else
-            menuHeight = MAXVALUE(y, 5); // y - 0 = y
+            menuHeight = std::max<>(y, 5); // y - 0 = y
     }
         
     VisibleItemsCount = menuHeight - 2;

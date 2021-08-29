@@ -429,8 +429,8 @@ bool Renderer::DrawHorizontalLine(int left, int y, int right, int charCode, cons
     TRANSLATE_X_COORDONATE(right);
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false;
-    left  = MAXVALUE(left, Clip.Left);
-    right = MINVALUE(right, Clip.Right);
+    left  = std::max<>(left, Clip.Left);
+    right = std::min<>(right, Clip.Right);
     if (left > right)
         return false;
     Character* p = this->OffsetRows[y] + left;
@@ -470,8 +470,8 @@ bool Renderer::DrawVerticalLine(int x, int top, int bottom, int charCode, const 
     TRANSLATE_Y_COORDONATE(bottom);
     if ((x < Clip.Left) || (x > Clip.Right))
         return false;
-    top    = MAXVALUE(top, Clip.Top);
-    bottom = MINVALUE(bottom, Clip.Bottom);
+    top    = std::max<>(top, Clip.Top);
+    bottom = std::min<>(bottom, Clip.Bottom);
     if (top > bottom)
         return false;
     Character* p = this->OffsetRows[top] + x;
@@ -510,10 +510,10 @@ bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, 
     TRANSLATE_COORDONATES(left, top);
     TRANSLATE_COORDONATES(right, bottom);
 
-    left   = MAXVALUE(left, Clip.Left);
-    top    = MAXVALUE(top, Clip.Top);
-    right  = MINVALUE(right, Clip.Right);
-    bottom = MINVALUE(bottom, Clip.Bottom);
+    left   = std::max<>(left, Clip.Left);
+    top    = std::max<>(top, Clip.Top);
+    right  = std::min<>(right, Clip.Right);
+    bottom = std::min<>(bottom, Clip.Bottom);
 
     if ((left > right) || (top > bottom))
         return false;
@@ -555,10 +555,10 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     int orig_top    = top;
     int orig_bottom = bottom;
 
-    left   = MAXVALUE(left, Clip.Left);
-    top    = MAXVALUE(top, Clip.Top);
-    right  = MINVALUE(right, Clip.Right);
-    bottom = MINVALUE(bottom, Clip.Bottom);
+    left   = std::max<>(left, Clip.Left);
+    top    = std::max<>(top, Clip.Top);
+    right  = std::min<>(right, Clip.Right);
+    bottom = std::min<>(bottom, Clip.Bottom);
 
     if ((left > right) || (top > bottom))
         return false;
@@ -863,10 +863,10 @@ bool Renderer::SetClipMargins(int leftMargin, int topMargin, int rightMargin, in
     if (!this->Clip.Visible)
         return false;
 
-    Clip.Left          = ClipCopy.Left + MAXVALUE(leftMargin, 0);
-    Clip.Top           = ClipCopy.Top + MAXVALUE(topMargin, 0);
-    Clip.Right         = ClipCopy.Right - MAXVALUE(rightMargin, 0);
-    Clip.Bottom        = ClipCopy.Bottom - MAXVALUE(bottomMargin, 0);
+    Clip.Left          = ClipCopy.Left + std::max<>(leftMargin, 0);
+    Clip.Top           = ClipCopy.Top + std::max<>(topMargin, 0);
+    Clip.Right         = ClipCopy.Right - std::max<>(rightMargin, 0);
+    Clip.Bottom        = ClipCopy.Bottom - std::max<>(bottomMargin, 0);
     this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
     return this->Clip.Visible;
 }
@@ -1003,7 +1003,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(const WriteTextParams& params, 
         unsigned int sz = (unsigned int) (output->TextEnd - output->TextStart);
         if (sz > 4)
         {
-            sz = MINVALUE(sz - 3, 3);
+            sz                   = std::min<>(sz - 3, 3U);
             output->FitCharStart = output->End - sz;
         }
     }

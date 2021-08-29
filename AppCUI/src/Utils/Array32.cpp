@@ -143,7 +143,7 @@ bool Array32::Create(unsigned int* vector, unsigned int vectorSize, unsigned int
     Destroy();
     CHECK(vector, false, "Expecting a valid (non-null) vector");
     CHECK(vectorSize > 0, false, "Expecting a valid (bigger than 0) vector size");
-    this->Count     = MINVALUE(elementsCount, vectorSize);
+    this->Count     = std::min<>(elementsCount, vectorSize);
     this->Allocated = vectorSize | ARRAY32_FLAG_STACK_BUFFER;
     this->Data      = vector;
     return true;

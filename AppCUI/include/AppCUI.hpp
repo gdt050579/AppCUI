@@ -128,9 +128,6 @@
         return f1 = static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2));                      \
     }
 
-#define MAXVALUE(x, y) ((x) > (y) ? (x) : (y))
-#define MINVALUE(x, y) ((x) < (y) ? (x) : (y))
-
 namespace AppCUI
 {
 namespace Graphics

@@ -81,8 +81,8 @@ class TicTacToeTable : public UserControl
     }
     void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
     {
-        int cell_x = MINVALUE(x / 5, 2);
-        int cell_y = MINVALUE(y / 5, 2);
+        int cell_x = std::min<>(x / 5, 2);
+        int cell_y = std::min<>(y / 5, 2);
         if (table[cell_y][cell_x] != 0)
             return;
         table[cell_y][cell_x] = currentPiece;
