@@ -60,3 +60,8 @@ For example: `cmake -DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/ncurses/6.2`
 If everything is installed properly, cmake will greet you with `[cmake] Have Curses`
 
 
+## Documentation 
+
+The project uses Sphinx as the main documentation engine. Sphinx sources can be located under `docs` folder. Local building is done with `make html`, after which the html page can be found in the `build` folder.
+
+On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages` and then to `https://gdt050579.github.io/AppCUI/`
