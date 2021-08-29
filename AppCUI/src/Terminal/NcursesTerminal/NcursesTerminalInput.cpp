@@ -138,7 +138,7 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
 
     if ((c >= 32) && (c <= 127))
     {
-        evt.asciiCode = c;
+        evt.unicodeCharacter = c;
         if (islower(c))
         {
             evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
@@ -179,7 +179,7 @@ void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
     evnt.eventType = SystemEventType::None;
     evnt.keyCode   = Key::None;
-    evnt.asciiCode = 0;
+    evnt.unicodeCharacter = 0;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;
     readFD.fd     = STDIN_FILENO;
