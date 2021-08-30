@@ -177,17 +177,16 @@ namespace Internal
     {
         AppCUI::Graphics::CharacterBuffer Text;
         AppCUI::Application::Config* Cfg;
+
+      public:
+        AppCUI::Graphics::Clip ScreenClip;
         bool Visible;
 
       public:
         ToolTipController();
-        bool Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect);
+        bool Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight);
         void Hide();
         void Paint(AppCUI::Graphics::Renderer& renderer);
-        inline const bool IsVisible() const
-        {
-            return Visible;
-        }
     };
 
     class DesktopControl : public AppCUI::Controls::Control

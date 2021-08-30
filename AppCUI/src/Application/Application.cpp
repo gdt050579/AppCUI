@@ -577,8 +577,13 @@ void AppCUI::Internal::Application::Paint()
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
     // draw ToolTip if exists
     // ToolTip must be the last to be drawn (top-most)
-    if (this->ToolTip.IsVisible())
+    if (this->ToolTip.Visible)
+    {
+        this->terminal->ScreenCanvas.SetAbsoluteClip(this->ToolTip.ScreenClip);
+        this->terminal->ScreenCanvas.SetTranslate(this->ToolTip.ScreenClip.ScreenPosition.X, this->ToolTip.ScreenClip.ScreenPosition.Y);
         this->ToolTip.Paint(this->terminal->ScreenCanvas);
+    }
+        
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
@@ -1141,7 +1146,7 @@ bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* contro
               Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);
     }
 
-    return this->ToolTip.Show(text, r);
+    return this->ToolTip.Show(text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 }
 void AppCUI::Internal::Application::Terminate()
 {
