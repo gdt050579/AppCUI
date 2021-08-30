@@ -1192,6 +1192,12 @@ bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& ca
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption, x, y);
 }
+void AppCUI::Controls::Control::HideToolTip()
+{
+    auto app = AppCUI::Application::GetApplication();
+    if (app)
+        app->ToolTip.Hide();
+}
 void AppCUI::Controls::Control::RaiseEvent(Event eventType)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
