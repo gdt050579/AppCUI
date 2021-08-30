@@ -56,10 +56,6 @@ bool SDLTerminal::initInput(const InitializationData& initData)
     KeyTranslation[SDL_SCANCODE_HOME]      = Key::Home;
     KeyTranslation[SDL_SCANCODE_END]       = Key::End;
     KeyTranslation[SDL_SCANCODE_SPACE]     = Key::Space;
-    KeyTranslation[SDL_SCANCODE_KP_PLUS]   = Key::Plus;
-    KeyTranslation[SDL_SCANCODE_KP_MINUS]  = Key::Minus;
-    KeyTranslation[SDL_SCANCODE_KP_COMMA]  = Key::Comma;
-    KeyTranslation[SDL_SCANCODE_COMMA]     = Key::Comma;
     return true;
 }
 
