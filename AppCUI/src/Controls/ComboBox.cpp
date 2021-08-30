@@ -500,7 +500,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         cbc = &Members->Cfg->ComboBox.Hover;
 
     auto itemsCount = Members->Items.size();
-    renderer.DrawHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc->Text);
+    renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc->Text);
     if (Members->CurentItemIndex < Members->Indexes.Len())
     {
         params.X     = 1;
@@ -527,7 +527,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
             auto& i = Members->Items[tr + Members->FirstVisibleItem];                
             if (i.Separator)
             {
-                renderer.DrawHorizontalLineWithSpecialChar(
+                renderer.FillHorizontalLineWithSpecialChar(
                         1,
                         tr + 2,
                         Members->Layout.Width - 2,
@@ -545,9 +545,9 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                 renderer.WriteText(i.Text, params);
                 // cursor or selection
                 if (i.Index == Members->CurentItemIndex)
-                    renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
+                    renderer.FillHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
                 else if (i.Index == Members->HoveredIndexItem)
-                    renderer.DrawHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
+                    renderer.FillHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
             }                           
         }
     }

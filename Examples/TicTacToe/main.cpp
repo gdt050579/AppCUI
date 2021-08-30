@@ -70,13 +70,13 @@ class TicTacToeTable : public UserControl
                 if (table[y][x] == CELL_WITH_O)
                     DrawO(renderer, x, y);
             }
-        renderer.DrawHorizontalLineWithSpecialChar(
+        renderer.FillHorizontalLineWithSpecialChar(
               0, 4, 13, SpecialChars::BoxHorizontalSingleLine, ColorPair{ Color::White, Color::Black });
-        renderer.DrawHorizontalLineWithSpecialChar(
+        renderer.FillHorizontalLineWithSpecialChar(
               0, 9, 13, SpecialChars::BoxHorizontalSingleLine, ColorPair{ Color::White, Color::Black });
-        renderer.DrawVerticalLineWithSpecialChar(
+        renderer.FillVerticalLineWithSpecialChar(
               4, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
-        renderer.DrawVerticalLineWithSpecialChar(
+        renderer.FillVerticalLineWithSpecialChar(
               9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
     void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
