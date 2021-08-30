@@ -20,7 +20,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
     {
         CHECK(Text.Set(text), false, "Fail to copy text");
         unsigned int sz = (Text.Len() / 2) + 1;
-        int cx          = objRect.GetCenterX();
+        const int cx    = objRect.GetCenterX();
         if (cx >= (screenWidth/2))
             sz = std::min<>(sz, (unsigned int) (screenWidth - cx));
         else 

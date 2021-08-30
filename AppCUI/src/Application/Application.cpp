@@ -923,7 +923,6 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
     Members->Flags -= (Members->Flags & GATTR_EXPANDED);
     // compute current positions
     ComputePositions();
-    // hide ToolTip
     this->ToolTip.Hide();
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
