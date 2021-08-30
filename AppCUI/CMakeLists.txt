@@ -19,7 +19,7 @@ if (SDL2_FOUND)
 
     # Add font used by SDL 
     include(CMakeRC)
-    set(FONT_NAME UbuntuMono.ttf)
+    set(FONT_NAME Courier.ttf)
     set(FONT_PATH resources/${FONT_NAME})
     target_compile_definitions(AppCUI PRIVATE FONT_PATH="${FONT_PATH}")
     cmrc_add_resource_library(font ${FONT_PATH})

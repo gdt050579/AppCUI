@@ -188,20 +188,20 @@ void SDLTerminal::OnFlushToScreen()
 
     SDL_RenderClear(renderer);
     AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const std::size_t width                 = ScreenCanvas.GetWidth();
-    const std::size_t height                = ScreenCanvas.GetHeight();
+    const std::size_t width                  = ScreenCanvas.GetWidth();
+    const std::size_t height                 = ScreenCanvas.GetHeight();
 
     for (std::size_t y = 0; y < height; y++)
     {
         for (std::size_t x = 0; x < width; x++)
         {
             AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
-            const int cuiFG               = static_cast<int>(ch.Color.Foreground);
-            const int cuiBG               = static_cast<int>(ch.Color.Background);
-            const SDL_Color& fg           = appcuiColorToSDLColor[cuiFG];
-            const SDL_Color& bg           = appcuiColorToSDLColor[cuiBG];
-            SDL_Surface* glyphSurface     = TTF_RenderGlyph_Shaded(font, ch.Code, fg, bg);
-            SDL_Texture* glyphTexture     = SDL_CreateTextureFromSurface(renderer, glyphSurface);
+            const int cuiFG                = static_cast<int>(ch.Color.Foreground);
+            const int cuiBG                = static_cast<int>(ch.Color.Background);
+            const SDL_Color& fg            = appcuiColorToSDLColor[cuiFG];
+            const SDL_Color& bg            = appcuiColorToSDLColor[cuiBG];
+            SDL_Surface* glyphSurface      = TTF_RenderGlyph_Shaded(font, ch.Code, fg, bg);
+            SDL_Texture* glyphTexture      = SDL_CreateTextureFromSurface(renderer, glyphSurface);
 
             int iFontCharWidth  = 0;
             int iFontCharHeight = 0;
