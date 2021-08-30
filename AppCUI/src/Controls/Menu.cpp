@@ -171,7 +171,7 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
             if (actualIndex == this->CurrentItem)
             {
                 itemCol = &col->Selected;
-                renderer.DrawHorizontalLine(1, tr, Width, ' ', col->Selected.Text);
+                renderer.FillHorizontalLine(1, tr, Width, ' ', col->Selected.Text);
             }
             else
                 itemCol = &col->Normal;
@@ -185,7 +185,7 @@ void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
         switch (item->Type)
         {
         case MenuItemType::Line:
-            renderer.DrawHorizontalLineWithSpecialChar(1, tr, this->Width, SpecialChars::BoxHorizontalSingleLine, col->Background);
+            renderer.DrawHorizontalLine(1, tr, this->Width, col->Background);
             break;
         case MenuItemType::Command:
             textParams.X = 2;

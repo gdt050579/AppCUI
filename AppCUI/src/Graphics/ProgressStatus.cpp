@@ -74,7 +74,7 @@ void ProgressStatus_Paint_Status()
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
 
-    canvas->DrawHorizontalLine(
+    canvas->FillHorizontalLine(
           2, 3, PROGRESS_STATUS_PANEL_WIDTH - 3, ' ', PSData.App->config.ProgressStatus.EmptyProgressBar);
     canvas->WriteSingleLineText(2, 2, PSData.Text, PSData.App->config.ProgressStatus.Text);
 
@@ -85,7 +85,7 @@ void ProgressStatus_Paint_Status()
               2,
               std::string_view(PSData.progressString,4),
               PSData.App->config.ProgressStatus.Percentage);
-        canvas->DrawHorizontalLine(
+        canvas->FillHorizontalLine(
               2,
               3,
               ((PSData.Progress * (PROGRESS_STATUS_PANEL_WIDTH - 4)) / 100) + 1,

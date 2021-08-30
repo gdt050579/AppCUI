@@ -72,7 +72,7 @@ void Button::Paint(Graphics::Renderer& renderer)
 
     if (pressed)
     {
-        renderer.DrawHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
+        renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
         if (sz > 0)
         {
             params.Color       = Members->Cfg->Button.Focused.TextColor;
@@ -83,7 +83,7 @@ void Button::Paint(Graphics::Renderer& renderer)
     }
     else
     {
-        renderer.DrawHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
+        renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
         if (sz > 0)
         {
             params.Color       = bc->TextColor;
@@ -91,7 +91,7 @@ void Button::Paint(Graphics::Renderer& renderer)
             params.X           = x ;
             renderer.WriteText(Members->Text, params);
         }
-        renderer.DrawHorizontalLineWithSpecialChar(
+        renderer.FillHorizontalLineWithSpecialChar(
               1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, ColorPair{ Color::Black, Color::Transparent });
         renderer.WriteSpecialCharacter(
               Members->Layout.Width - 1,
