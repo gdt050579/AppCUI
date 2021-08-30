@@ -136,6 +136,9 @@ void Button::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 }
 bool Button::OnMouseEnter()
 {
+    CREATE_CONTROL_CONTEXT(this, Members, false);
+    if ((int)Members->Text.Len() >= Members->Layout.Width)
+        this->ShowToolTip(Members->Text);
     return true;
 }
 bool Button::OnMouseLeave()
