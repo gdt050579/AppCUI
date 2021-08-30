@@ -80,7 +80,7 @@ namespace Internal
         AppCUI::Input::MouseButton mouseButton;
         AppCUI::Input::MouseWheel mouseWheel;
         AppCUI::Input::Key keyCode;
-        char asciiCode;
+        char16_t unicodeCharacter;
     };
  
 
@@ -268,7 +268,7 @@ namespace Internal
 
         void Destroy();
         void ComputePositions();
-        void ProcessKeyPress(AppCUI::Input::Key keyCode, int AsciiCode);
+        void ProcessKeyPress(AppCUI::Input::Key keyCode, char16_t unicodeCharacter);
         void ProcessShiftState(AppCUI::Input::Key ShiftState);
         void ProcessMenuMouseClick(AppCUI::Controls::Menu * mnu,int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);

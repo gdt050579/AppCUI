@@ -584,7 +584,7 @@ void AppCUI::Internal::Application::ComputePositions()
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
-void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, int AsciiCode)
+void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, char16_t unicodeCharacter)
 {
     Control* ctrl = nullptr;
 
@@ -616,7 +616,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
                       ->Handlers.OnKeyEventHandler(
                             ctrl,
                             KeyCode,
-                            AsciiCode,
+                            unicodeCharacter,
                             ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
             {
                 // if a key was handled --> repaint
@@ -625,7 +625,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
                 break;
             }
         }
-        if (ctrl->OnKeyEvent(KeyCode, AsciiCode))
+        if (ctrl->OnKeyEvent(KeyCode, unicodeCharacter))
         {
             // if a key was handled --> repaint
             found = true;
@@ -1010,7 +1010,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel);
             break;
         case SystemEventType::KeyPressed:
-            ProcessKeyPress(evnt.keyCode, evnt.asciiCode);
+            ProcessKeyPress(evnt.keyCode, evnt.unicodeCharacter);
             break;
         case SystemEventType::ShiftStateChanged:
             ProcessShiftState(evnt.keyCode);

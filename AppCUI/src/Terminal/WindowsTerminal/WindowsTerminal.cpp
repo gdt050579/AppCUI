@@ -327,11 +327,11 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     switch (ir.EventType)
     {
     case KEY_EVENT:
-        if ((ir.Event.KeyEvent.uChar.AsciiChar >= 32) && (ir.Event.KeyEvent.uChar.AsciiChar <= 127) &&
+        if ((ir.Event.KeyEvent.uChar.UnicodeChar >= 32) &&
             (ir.Event.KeyEvent.bKeyDown))
-            evnt.asciiCode = ir.Event.KeyEvent.uChar.AsciiChar;
+            evnt.unicodeCharacter = ir.Event.KeyEvent.uChar.AsciiChar;
         else
-            evnt.asciiCode = 0;
+            evnt.unicodeCharacter = 0;
         if (ir.Event.KeyEvent.wVirtualKeyCode < KEYTRANSLATION_MATRIX_SIZE)
             evnt.keyCode = KeyTranslationMatrix[ir.Event.KeyEvent.wVirtualKeyCode];
         else
@@ -348,13 +348,13 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         // if ALT or CTRL are pressed, clear the ascii code
         if ((((unsigned int) eventShiftState) &
              ((unsigned int) (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl))) != 0)
-            evnt.asciiCode = 0;
+            evnt.unicodeCharacter = 0;
 
         if (evnt.keyCode == AppCUI::Input::Key::None)
         {
             if (eventShiftState != this->shiftState)
                 evnt.eventType = SystemEventType::ShiftStateChanged;
-            else if ((evnt.asciiCode > 0) && (ir.Event.KeyEvent.bKeyDown))
+            else if ((evnt.unicodeCharacter > 0) && (ir.Event.KeyEvent.bKeyDown))
                 evnt.eventType = SystemEventType::KeyPressed;
             evnt.keyCode = eventShiftState;
         }

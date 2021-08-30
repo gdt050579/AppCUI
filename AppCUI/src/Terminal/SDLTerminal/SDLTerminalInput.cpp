@@ -124,20 +124,20 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 
     if (keyCode >= 32 && keyCode <= 127)
     {
-        evt.asciiCode = keyCode;
+        evt.unicodeCharacter = keyCode;
     }
 
     auto currentShiftState = getShiftState(keyModifiers);
 
     if (keyModifiers & (KMOD_ALT | KMOD_CTRL))
     {
-        evt.asciiCode = 0;
+        evt.unicodeCharacter = 0;
     }
     if (keyModifiers & KMOD_SHIFT)
     {
-        if (islower(evt.asciiCode))
+        if (islower(evt.unicodeCharacter))
         {
-            evt.asciiCode = toupper(evt.asciiCode);
+            evt.unicodeCharacter = toupper(evt.unicodeCharacter);
         }
     }
 
@@ -157,7 +157,7 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
     evnt.eventType = SystemEventType::None;
     evnt.keyCode   = Key::None;
-    evnt.asciiCode = 0;
+    evnt.unicodeCharacter = 0;
 
     SDL_Event e;
     // wait 30 ms max for the next event
