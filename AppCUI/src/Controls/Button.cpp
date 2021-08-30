@@ -21,12 +21,15 @@ void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
+          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
     auto* bc              = &Members->Cfg->Button.Normal;
     bool pressed          = false;
     params.Y              = 0;
     params.HotKeyPosition = Members->HotKeyOffset;
+    params.Width          = Members->Layout.Width - 1;
     // daca e disable
     if (!IsEnabled())
     {

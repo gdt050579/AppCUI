@@ -19,9 +19,9 @@ class ToolTipExampleWin : public AppCUI::Controls::Window
               "Hover the mouse over the Button, \nCheckbox, RadioBox and [X] button \nfrom the window to see a tool "
               "tip !",
               "x:1,y:1,w:36,h:3");
-        b1.Create(this, "Button with a long string caption", "x:1,y:5,w:5");
-        c1.Create(this, "An option with a long descriptions", "x:10,y:5,w:5");
-        r1.Create(this, "Select this option", "x:19,y:5,w:5", 100);
+        b1.Create(this, "Button with a long string caption", "x:1,y:5,w:7");
+        c1.Create(this, "An option with a long descriptions", "x:10,y:5,w:7");
+        r1.Create(this, "Select this option", "x:19,y:5,w:7", 100);
     }
     bool OnEvent(Control* sender, Event eventType, int controlID) override
     {
