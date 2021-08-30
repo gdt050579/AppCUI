@@ -428,6 +428,14 @@ class NumericSelectorControlContext : public ControlContext
     bool wrongValueInserted      = false;
     long long sliderPosition     = 0;
     bool isMouseLeftClickPressed = false;
+    
+    enum class IsMouseOn
+    {
+        None,
+        MinusButton,
+        TextField,
+        PlusButton
+    } isMouseOn{ IsMouseOn::None };
 };
 
 enum class MenuItemType : unsigned int

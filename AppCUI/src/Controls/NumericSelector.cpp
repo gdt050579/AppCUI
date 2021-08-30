@@ -113,6 +113,36 @@ void NumericSelector::Paint(Renderer& renderer)
     }
 
     renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
+
+    switch (cc->isMouseOn)
+    {
+    case NumericSelectorControlContext::IsMouseOn::MinusButton:
+        for (auto i = 0; i < cc->buttonPadding - 1; i++)
+        {
+            renderer.WriteCharacter(i, 0, -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        }
+        break;
+    case NumericSelectorControlContext::IsMouseOn::PlusButton:
+        for (auto i = GetWidth() - cc->buttonPadding + 1; i < GetWidth(); i++)
+        {
+            renderer.WriteCharacter(i, 0, -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        }
+        break;
+    case NumericSelectorControlContext::IsMouseOn::TextField:
+        if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
+        {
+            ShowToolTip(cc->stringValue.GetText());
+        }
+        else
+        {
+            HideToolTip();
+        }
+        break;
+    case NumericSelectorControlContext::IsMouseOn::None:
+    default:
+        break;
+    }
+    
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
@@ -282,6 +312,7 @@ void NumericSelector::OnLoseFocus()
 
     cc->intoInsertionMode  = false;
     cc->insertionModevalue = 0LL;
+    cc->isMouseOn          = NumericSelectorControlContext::IsMouseOn::None;
 }
 
 bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
@@ -315,6 +346,9 @@ bool NumericSelector::OnMouseEnter()
 
 bool NumericSelector::OnMouseLeave()
 {
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::None;
     return true;
 }
 
@@ -360,6 +394,29 @@ bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton butto
     return false;
 }
 
+bool NumericSelector::OnMouseOver(int x, int y)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    if (IsOnTextField(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::TextField;
+    }
+    else if (IsOnMinusButton(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::MinusButton;
+    }
+    else if (IsOnPlusButton(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::PlusButton;
+    }
+    else
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::None;
+    }
+    return true;
+}
+
 const bool NumericSelector::IsValidValue(const long long value) const
 {
     CHECK(Context != nullptr, false, "");
@@ -391,10 +448,6 @@ const bool NumericSelector::GetRenderColor(Graphics::ColorPair& color) const
     else if (cc->Focused)
     {
         color = nsCfg.Focused.TextColor;
-    }
-    else if (cc->MouseIsOver)
-    {
-        color = nsCfg.Hover.TextColor;
     }
     else
     {

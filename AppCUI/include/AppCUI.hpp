@@ -2200,6 +2200,7 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
     };
 
