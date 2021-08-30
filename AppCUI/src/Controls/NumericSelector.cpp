@@ -142,7 +142,6 @@ void NumericSelector::Paint(Renderer& renderer)
     default:
         break;
     }
-    
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
@@ -225,6 +224,57 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
     }
         return true;
+
+    case Key::Ctrl | Key::C:
+        AppCUI::OS::Clipboard::SetText(cc->stringValue.GetText());
+        return true;
+    case Key::Ctrl | Key::V:
+    {
+        AppCUI::Utils::UnicodeStringBuilder b{};
+        AppCUI::OS::Clipboard::GetText(b);
+        const std::string output(b);
+
+        if (output.empty())
+        {
+            SetValue(0);
+        }
+        else
+        {
+            try
+            {
+                cc->insertionModevalue = std::stoll(output);
+                cc->intoInsertionMode = true;
+            }
+            catch (std::invalid_argument)
+            {
+                LOG_ERROR("Invalid argument pasted: [%s]!", output.c_str());
+            }
+        }
+    }
+        return true;
+
+    case Key::PageUp:
+    {
+        const auto percentFive =
+              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 100.0 * 5.0), 1.0));
+        SetValue(cc->value + percentFive);
+    }
+        return true;
+    case Key::PageDown:
+    {
+        const auto percentFive =
+              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 100.0 * 5.0), 1.0));
+        SetValue(cc->value - percentFive);
+    }
+        return true;
+
+    case Key::Home:
+        SetValue(cc->minValue);
+        return true;
+    case Key::End:
+        SetValue(cc->maxValue);
+        return true;
+
     default:
         if (unicodeChar == u'+')
         {
