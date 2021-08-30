@@ -173,15 +173,15 @@ namespace Internal
         bool OnKeyEvent(AppCUI::Input::Key keyCode);
     };
 
-    class ToolTip
+    class ToolTipController
     {
         AppCUI::Graphics::CharacterBuffer Text;
         AppCUI::Application::Config* Cfg;
         bool Visible;
 
       public:
-        ToolTip();
-        void Show(const AppCUI::Utils::ConstString& text);
+        ToolTipController();
+        bool Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect);
         void Hide();
         void Paint(AppCUI::Graphics::Renderer& renderer);
         inline const bool IsVisible() const
@@ -268,6 +268,7 @@ namespace Internal
         bool Inited;
 
         DesktopControl Desktop;
+        ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
         
         AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
@@ -314,6 +315,7 @@ namespace Internal
               AppCUI::Controls::Control* sourceControl,
               AppCUI::Controls::Event eventType,
               int controlID);
+        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
     };
 } // namespace Internal
 namespace Application

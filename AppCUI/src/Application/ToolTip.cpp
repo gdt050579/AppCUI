@@ -3,20 +3,20 @@
 using namespace AppCUI::Internal;
 
 
-ToolTip::ToolTip()
+ToolTipController::ToolTipController()
 {
     this->Visible = false;
     this->Cfg     = AppCUI::Application::GetAppConfig();
 }
-void ToolTip::Show(const AppCUI::Utils::ConstString& text)
+bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect)
 {
-        
+    NOT_IMPLEMENTED(false);
 }
-void ToolTip::Hide()
+void ToolTipController::Hide()
 {
     this->Visible = false;
 }
-void ToolTip::Paint(AppCUI::Graphics::Renderer& renderer)
+void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     if (!Visible)
         return;

@@ -1180,6 +1180,12 @@ bool AppCUI::Controls::Control::SetFocus()
     // UpdateCommandBar(this);
     return true;
 }
+bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& caption)
+{
+    auto app = AppCUI::Application::GetApplication();
+    CHECK(app, false, "Application was not initialized !");
+    return app->SetToolTip(this, caption);
+}
 void AppCUI::Controls::Control::RaiseEvent(Event eventType)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);

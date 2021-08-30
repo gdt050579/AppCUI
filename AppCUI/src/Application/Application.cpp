@@ -575,6 +575,10 @@ void AppCUI::Internal::Application::Paint()
     // draw context menu
     if (this->VisibleMenu)
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
+    // draw ToolTip if exists
+    // ToolTip must be the last to be drawn (top-most)
+    if (this->ToolTip.IsVisible())
+        this->ToolTip.Paint(this->terminal->ScreenCanvas);
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
@@ -725,6 +729,8 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
 }
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {
+    // Hide ToolTip
+    this->ToolTip.Hide();
     // check contextual menus
     if (this->VisibleMenu)
     {
@@ -816,6 +822,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
         break;
     case MOUSE_LOCKED_OBJECT_CONTROL:
+        this->ToolTip.Hide();
         if (MouseLockedControl->OnMouseDrag(
                   x - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.X,
                   y - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.Y,
@@ -832,6 +839,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
         if (ctrl != this->MouseOverControl)
         {
+            this->ToolTip.Hide();
             if (this->MouseOverControl)
             {
                 if (this->MouseOverControl->OnMouseLeave())
@@ -910,6 +918,8 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
     Members->Flags -= (Members->Flags & GATTR_EXPANDED);
     // compute current positions
     ComputePositions();
+    // hide ToolTip
+    this->ToolTip.Hide();
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
 }
@@ -921,6 +931,7 @@ void AppCUI::Internal::Application::CloseContextualMenu()
         if (mcx->Owner)
             mcx->Owner->Close();
     }
+    this->ToolTip.Hide();
     this->VisibleMenu = nullptr;
     this->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
@@ -1096,6 +1107,23 @@ void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* contro
         }
         control = control->GetParent();
     }
+}
+bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
+{
+    CHECK(control, false, "Expecting a valid (non-null) control");
+    CREATE_CONTROL_CONTEXT(control, Members, false);
+    if (!(Members->Flags & GATTR_VISIBLE))
+        return false;
+    if (!Members->ScreenClip.Visible)
+        return false;
+    // all good
+    AppCUI::Graphics::Rect r;
+    r.Create(
+          Members->ScreenClip.ClipRect.X,
+          Members->ScreenClip.ClipRect.Y,
+          Members->ScreenClip.ClipRect.X + Members->ScreenClip.ClipRect.Width - 1,
+          Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);    
+    return this->ToolTip.Show(text, r);
 }
 void AppCUI::Internal::Application::Terminate()
 {
