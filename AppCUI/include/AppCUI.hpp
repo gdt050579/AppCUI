@@ -1534,7 +1534,9 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               bool computeHotKey = false);
-
+        bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
+        bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
+        void HideToolTip();
       public:
         Control();
         bool AddControl(Control* control);
@@ -2428,6 +2430,10 @@ namespace Application
                 Graphics::ColorPair TextColor;
             } Normal, Focused, Inactive, Hover, WrongValue;
         } NumericSelector;
+        struct
+        {
+            Graphics::ColorPair Text, Border;
+        } ToolTip;
         void SetDarkTheme();
     };
 

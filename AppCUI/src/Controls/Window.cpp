@@ -407,7 +407,10 @@ bool Window::OnMouseOver(int x, int y)
     {
         bool repaint;
         if (Members->menu->OnMouseMove(x, y, repaint))
+        {
+            HideToolTip();
             return true;
+        }
     }
 
     if (((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None) && (Members->rCloseButton.Contains(x, y)))
@@ -415,8 +418,11 @@ bool Window::OnMouseOver(int x, int y)
         if (Members->winButtonState == WINBUTTON_STATE_CLOSE)
             return false; // suntem deja pe buton
         Members->winButtonState = WINBUTTON_STATE_CLOSE;
+        ShowToolTip("Close window", (Members->rCloseButton.Left + Members->rCloseButton.Right)/2, Members->rCloseButton.Y);
         return true;
     }
+    // if I reach this point - tool tip should not be shown
+    HideToolTip();
     if ((Members->Flags & WindowFlags::Sizeable) != WindowFlags::None)
     {
         if (Members->rMaximizeButton.Contains(x, y))

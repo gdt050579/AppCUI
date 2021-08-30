@@ -173,6 +173,22 @@ namespace Internal
         bool OnKeyEvent(AppCUI::Input::Key keyCode);
     };
 
+    class ToolTipController
+    {
+        AppCUI::Graphics::CharacterBuffer Text;
+        AppCUI::Application::Config* Cfg;
+
+      public:
+        AppCUI::Graphics::Clip ScreenClip;
+        bool Visible;
+
+      public:
+        ToolTipController();
+        bool Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight);
+        void Hide();
+        void Paint(AppCUI::Graphics::Renderer& renderer);
+    };
+
     class DesktopControl : public AppCUI::Controls::Control
     {
       public:
@@ -251,6 +267,7 @@ namespace Internal
         bool Inited;
 
         DesktopControl Desktop;
+        ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
         
         AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
@@ -297,6 +314,8 @@ namespace Internal
               AppCUI::Controls::Control* sourceControl,
               AppCUI::Controls::Event eventType,
               int controlID);
+        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
+        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y);
     };
 } // namespace Internal
 namespace Application
