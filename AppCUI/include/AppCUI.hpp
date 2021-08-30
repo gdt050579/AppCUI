@@ -359,10 +359,6 @@ namespace Input
         N7,
         N8,
         N9,
-        Plus,
-        Comma,
-        Minus,
-        Period,
         Count, // must be the last
 
         // Modifier flas
@@ -1346,7 +1342,7 @@ namespace Graphics
               int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
 
         // Characters
-        bool GetCharacter(int x, int y, int& charCode, ColorPair& color);
+        bool GetCharacter(int x, int y, Character& c);
         bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 

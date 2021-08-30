@@ -105,17 +105,17 @@ void NumericSelector::Paint(Renderer& renderer)
 
     if (cc->isMouseLeftClickPressed)
     {
-        int charCode = 0;
-        ColorPair usedColor{};
-        renderer.GetCharacter(static_cast<int>(cc->sliderPosition + cc->buttonPadding), 0, charCode, usedColor);
-        usedColor.Background = cc->Cfg->NumericSelector.Hover.TextColor.Background;
-        renderer.WriteCharacter(static_cast<int>(cc->sliderPosition + cc->buttonPadding), 0, charCode, usedColor);
+        renderer.WriteCharacter(
+              static_cast<int>(cc->sliderPosition + cc->buttonPadding),
+              0,
+              -1,
+              cc->Cfg->NumericSelector.Hover.TextColor);
     }
 
     renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
 }
 
-bool NumericSelector::OnKeyEvent(Key keyCode, char16_t UnicodeChar)
+bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -145,20 +145,6 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t UnicodeChar)
             }
             cc->insertionModevalue = 0LL;
         }
-        return true;
-
-    case Key::Minus:
-        cc->intoInsertionMode  = true;
-        cc->wasMinusPressed    = true;
-        cc->insertionModevalue = 0LL;
-        cc->stringValue.Set("-");
-        return true;
-
-    case Key::Shift | Key::Plus:
-    case Key::Plus:
-        cc->intoInsertionMode  = true;
-        cc->wasMinusPressed    = false;
-        cc->insertionModevalue = 0LL;
         return true;
 
     case Key::Backspace:
@@ -210,6 +196,21 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t UnicodeChar)
     }
         return true;
     default:
+        if (unicodeChar == u'+')
+        {
+            cc->intoInsertionMode  = true;
+            cc->wasMinusPressed    = false;
+            cc->insertionModevalue = 0LL;
+            return true;
+        }
+        else if (unicodeChar == u'-')
+        {
+            cc->intoInsertionMode  = true;
+            cc->wasMinusPressed    = true;
+            cc->insertionModevalue = 0LL;
+            cc->stringValue.Set("-");
+            return true;
+        }
         break;
     }
 

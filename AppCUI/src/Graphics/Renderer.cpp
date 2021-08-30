@@ -376,7 +376,7 @@ bool Renderer::WriteCharacter(int x, int y, int charCode, const ColorPair color)
     return true;
 }
 
-bool Renderer::GetCharacter(int x, int y, int& charCode, ColorPair& color)
+bool Renderer::GetCharacter(int x, int y, Character& c)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, y);
@@ -388,21 +388,21 @@ bool Renderer::GetCharacter(int x, int y, int& charCode, ColorPair& color)
     
     const Character* p = this->OffsetRows[y] + x;
 
-    charCode = p->Code;
+    c.Code = p->Code;
 
-    if (NO_TRANSPARENCY(color))
+    if (NO_TRANSPARENCY(c.Color))
     {
-        color = p->Color;
+        c.Color = p->Color;
     }
     else
     {
-        if (color.Foreground != AppCUI::Graphics::Color::Transparent)
+        if (c.Color.Foreground != AppCUI::Graphics::Color::Transparent)
         {
-            color.Foreground = p->Color.Foreground;
+            c.Color.Foreground = p->Color.Foreground;
         }
-        if (color.Background != AppCUI::Graphics::Color::Transparent)
+        if (c.Color.Background != AppCUI::Graphics::Color::Transparent)
         {
-            color.Background = p->Color.Background;
+            c.Color.Background = p->Color.Background;
         }
     }
 
