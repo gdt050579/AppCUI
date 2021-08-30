@@ -34,7 +34,7 @@
                 return (returnValue);                                                                                  \
             }                                                                                                          \
         }
-#    define CHECKRET(c, format, ...)                                                                         \
+#    define CHECKRET(c, format, ...)                                                                                   \
         {                                                                                                              \
             if (!(c))                                                                                                  \
             {                                                                                                          \
@@ -1548,6 +1548,7 @@ namespace Controls
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
+
       public:
         Control();
         bool AddControl(Control* control);
@@ -1557,10 +1558,10 @@ namespace Controls
         bool IsInitialized();
 
         // coordonates
-        int GetX();
-        int GetY();
-        int GetWidth() const;
-        int GetHeight();
+        const int GetX() const;
+        const int GetY() const;
+        const int GetWidth() const;
+        const int GetHeight() const;
         void GetSize(AppCUI::Graphics::Size& size);
         void GetClientSize(AppCUI::Graphics::Size& size);
         void MoveTo(int newX, int newY);
@@ -1578,14 +1579,14 @@ namespace Controls
         void ClearHotKey();
 
         // status
-        void SetEnabled(bool value);
-        void SetVisible(bool value);
-        void SetChecked(bool value);
-        bool IsEnabled() const;
-        bool IsVisible();
-        bool IsChecked();
-        bool HasFocus();
-        bool IsMouseOver();
+        void SetEnabled(const bool value);
+        void SetVisible(const bool value);
+        void SetChecked(const bool value);
+        const bool IsEnabled() const;
+        const bool IsVisible() const;
+        const bool IsChecked() const;
+        const bool HasFocus() const;
+        const bool IsMouseOver() const;
 
         // childern and parent
         Control* GetParent();
@@ -2189,6 +2190,7 @@ namespace Controls
         const bool IsOnPlusButton(const int x, const int y) const;
         const bool IsOnMinusButton(const int x, const int y) const;
         const bool IsOnTextField(const int x, const int y) const;
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
