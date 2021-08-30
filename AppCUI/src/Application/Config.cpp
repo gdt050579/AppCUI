@@ -250,5 +250,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->NumericSelector.WrongValue.TextColor = ColorPair{ Color::Black, Color::Red };
 
     this->ToolTip.Border = ColorPair{ Color::Gray, Color::Black };
-    this->ToolTip.Text = ColorPair{ Color::Silver, Color::Black };
+    this->ToolTip.Text = ColorPair{ Color::Black, Color::Aqua };
 }

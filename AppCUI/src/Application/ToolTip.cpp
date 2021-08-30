@@ -25,7 +25,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
             sz = std::min<>(sz, (unsigned int) (screenWidth - cx));
         else 
             sz = std::min<>(sz, (unsigned int) cx);
-        ScreenClip.Set(cx - sz, objRect.GetTop() - 3, sz*2+1, 3);
+        ScreenClip.Set(cx - sz, objRect.GetTop() - 2, sz*2+1, 2);
         Visible = true;        
     }
     return Visible;
@@ -38,14 +38,17 @@ void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     if (!Visible)
         return;
-    renderer.Clear(' ', Cfg->ToolTip.Border);
-    renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, Cfg->ToolTip.Border, false);
+    //renderer.Clear(' ', Cfg->ToolTip.Text);
+    renderer.FillRect(0, 0, ScreenClip.ClipRect.Width, 0, ' ', Cfg->ToolTip.Text);
+    //renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, Cfg->ToolTip.Border, false);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
           WriteTextFlags::FitTextToWidth);
     params.X     = 1;
-    params.Y     = 1;
+    params.Y     = 0;
     params.Width = ScreenClip.ClipRect.Width - 2;
     params.Color = Cfg->ToolTip.Text;
     renderer.WriteText(this->Text, params);
+    renderer.WriteSpecialCharacter(
+          ScreenClip.ClipRect.Width / 2, 1, SpecialChars::ArrowDown, ColorPair{ Color::Aqua, Color::Black });
 }
