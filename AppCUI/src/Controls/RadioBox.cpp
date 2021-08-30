@@ -89,6 +89,9 @@ void AppCUI::Controls::RadioBox::OnMouseReleased(int x, int y, AppCUI::Input::Mo
 }
 bool AppCUI::Controls::RadioBox::OnMouseEnter()
 {
+    CREATE_CONTROL_CONTEXT(this, Members, false);
+    if ((int) Members->Text.Len() >= Members->Layout.Width)
+        this->ShowToolTip(Members->Text);
     return true;
 }
 bool AppCUI::Controls::RadioBox::OnMouseLeave()

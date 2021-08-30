@@ -575,6 +575,15 @@ void AppCUI::Internal::Application::Paint()
     // draw context menu
     if (this->VisibleMenu)
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
+    // draw ToolTip if exists
+    // ToolTip must be the last to be drawn (top-most)
+    if (this->ToolTip.Visible)
+    {
+        this->terminal->ScreenCanvas.SetAbsoluteClip(this->ToolTip.ScreenClip);
+        this->terminal->ScreenCanvas.SetTranslate(this->ToolTip.ScreenClip.ScreenPosition.X, this->ToolTip.ScreenClip.ScreenPosition.Y);
+        this->ToolTip.Paint(this->terminal->ScreenCanvas);
+    }
+        
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
@@ -725,6 +734,8 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
 }
 void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
 {
+    // Hide ToolTip
+    this->ToolTip.Hide();
     // check contextual menus
     if (this->VisibleMenu)
     {
@@ -816,6 +827,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
         break;
     case MOUSE_LOCKED_OBJECT_CONTROL:
+        this->ToolTip.Hide();
         if (MouseLockedControl->OnMouseDrag(
                   x - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.X,
                   y - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.Y,
@@ -832,6 +844,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
         if (ctrl != this->MouseOverControl)
         {
+            this->ToolTip.Hide();
             if (this->MouseOverControl)
             {
                 if (this->MouseOverControl->OnMouseLeave())
@@ -910,6 +923,7 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
     Members->Flags -= (Members->Flags & GATTR_EXPANDED);
     // compute current positions
     ComputePositions();
+    this->ToolTip.Hide();
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
 }
@@ -921,6 +935,7 @@ void AppCUI::Internal::Application::CloseContextualMenu()
         if (mcx->Owner)
             mcx->Owner->Close();
     }
+    this->ToolTip.Hide();
     this->VisibleMenu = nullptr;
     this->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
@@ -1096,6 +1111,41 @@ void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* contro
         }
         control = control->GetParent();
     }
+}
+bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
+{
+    return SetToolTip(control, text, -1, -1);
+}
+bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
+{
+    if (!control)
+        control = &this->Desktop;
+    CREATE_CONTROL_CONTEXT(control, Members, false);
+    if (!(Members->Flags & GATTR_VISIBLE))
+        return false;
+    if (!Members->ScreenClip.Visible)
+        return false;
+    // all good
+    AppCUI::Graphics::Rect r;
+    // compute point or rect
+    if ((x >= 0) && (y >= 0) && (x <= Members->ScreenClip.ClipRect.Width) && (y <= Members->ScreenClip.ClipRect.Height))
+    {
+        r.Create(
+              Members->ScreenClip.ClipRect.X + x,
+              Members->ScreenClip.ClipRect.Y + y,
+              Members->ScreenClip.ClipRect.X + x,
+              Members->ScreenClip.ClipRect.Y + y);
+    }
+    else
+    {
+        r.Create(
+              Members->ScreenClip.ClipRect.X,
+              Members->ScreenClip.ClipRect.Y,
+              Members->ScreenClip.ClipRect.X + Members->ScreenClip.ClipRect.Width - 1,
+              Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);
+    }
+
+    return this->ToolTip.Show(text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 }
 void AppCUI::Internal::Application::Terminate()
 {
