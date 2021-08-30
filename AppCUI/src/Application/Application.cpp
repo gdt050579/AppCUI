@@ -1110,7 +1110,12 @@ void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* contro
 }
 bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
 {
-    CHECK(control, false, "Expecting a valid (non-null) control");
+    return SetToolTip(control, text, -1, -1);
+}
+bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
+{
+    if (!control)
+        control = &this->Desktop;
     CREATE_CONTROL_CONTEXT(control, Members, false);
     if (!(Members->Flags & GATTR_VISIBLE))
         return false;
@@ -1118,11 +1123,24 @@ bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* contro
         return false;
     // all good
     AppCUI::Graphics::Rect r;
-    r.Create(
-          Members->ScreenClip.ClipRect.X,
-          Members->ScreenClip.ClipRect.Y,
-          Members->ScreenClip.ClipRect.X + Members->ScreenClip.ClipRect.Width - 1,
-          Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);    
+    // compute point or rect
+    if ((x >= 0) && (y >= 0) && (x <= Members->ScreenClip.ClipRect.Width) && (y <= Members->ScreenClip.ClipRect.Height))
+    {
+        r.Create(
+              Members->ScreenClip.ClipRect.X + x,
+              Members->ScreenClip.ClipRect.Y + y,
+              Members->ScreenClip.ClipRect.X + x,
+              Members->ScreenClip.ClipRect.Y + y);
+    }
+    else
+    {
+        r.Create(
+              Members->ScreenClip.ClipRect.X,
+              Members->ScreenClip.ClipRect.Y,
+              Members->ScreenClip.ClipRect.X + Members->ScreenClip.ClipRect.Width - 1,
+              Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);
+    }
+
     return this->ToolTip.Show(text, r);
 }
 void AppCUI::Internal::Application::Terminate()

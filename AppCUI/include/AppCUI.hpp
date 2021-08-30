@@ -1535,7 +1535,7 @@ namespace Controls
               const std::string_view& layout,
               bool computeHotKey = false);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
-
+        bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
       public:
         Control();
         bool AddControl(Control* control);

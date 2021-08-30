@@ -316,6 +316,7 @@ namespace Internal
               AppCUI::Controls::Event eventType,
               int controlID);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
+        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y);
     };
 } // namespace Internal
 namespace Application
