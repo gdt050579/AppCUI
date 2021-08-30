@@ -40,8 +40,6 @@ using namespace AppCUI::Utils;
 #define LAYOUT_MODE_LEFT         7
 #define LAYOUT_MODE_CENTER       8
 
-
-
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
 #define SET_LAYOUT_INFO(flag, field)                                                                                   \
@@ -323,16 +321,17 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
     }
     return true;
 }
-inline const unsigned char * SkipSpaces(const unsigned char * start, const unsigned char * end)
+inline const unsigned char* SkipSpaces(const unsigned char* start, const unsigned char* end)
 {
-    while ((start<end) && (__char_types__[*start] == CHAR_TYPE_SPACE))
+    while ((start < end) && (__char_types__[*start] == CHAR_TYPE_SPACE))
         start++;
     return start;
 }
-inline const unsigned char* ComputeValueHash(const unsigned char* start, const unsigned char* end, unsigned int& hashValue)
+inline const unsigned char* ComputeValueHash(
+      const unsigned char* start, const unsigned char* end, unsigned int& hashValue)
 {
     hashValue = 0;
-    while ((start<end) && (__char_types__[*start] == CHAR_TYPE_WORD))
+    while ((start < end) && (__char_types__[*start] == CHAR_TYPE_WORD))
     {
         hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
         start++;
@@ -342,7 +341,7 @@ inline const unsigned char* ComputeValueHash(const unsigned char* start, const u
 bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
     // format: key:value,[key:value],....
-    const unsigned char* p = (const unsigned char*) layout.data();
+    const unsigned char* p     = (const unsigned char*) layout.data();
     const unsigned char* p_end = p + layout.size();
     CHECK(p, false, "Expecting a valid (non-null) layout string !");
 
@@ -359,7 +358,7 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     int cnt;
 
     p = SkipSpaces(p, p_end); // skip initial spaces
-    while (p<p_end)
+    while (p < p_end)
     {
         // compute value name hash
         lkv.HashName = (const char*) p;
@@ -369,7 +368,7 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
         CHECK(p < p_end, false, "Premature end of layout string --> expecting a ':' or '=' after key");
         CHECK(__char_types__[*p] == CHAR_TYPE_EQ, false, "Expecting ':' or '=' character (%s)", p);
         p++;
-        p      = SkipSpaces(p, p_end);
+        p = SkipSpaces(p, p_end);
         CHECK(p < p_end, false, "Premature end of layout string --> expecting a value after ':' or '=' delimiter");
 
         // extract value
@@ -381,7 +380,9 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
         {
             lkv.IsNegative = true;
             p++;
-            CHECK(p < p_end, false, "Premature end of layout string --> expecting a value after '-' (minus) declatartor");
+            CHECK(p < p_end,
+                  false,
+                  "Premature end of layout string --> expecting a value after '-' (minus) declatartor");
         }
         if ((!lkv.IsNegative) && (__char_types__[*p] == CHAR_TYPE_WORD))
         {
@@ -390,16 +391,16 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
         }
         else
         {
-            while ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
+            while ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
             {
                 lkv.n1 = lkv.n1 * 10 + ((*p) - '0');
                 p++;
             }
-            if ((p<p_end) && ((*p) == '.'))
+            if ((p < p_end) && ((*p) == '.'))
             {
                 p++;
                 cnt = 0;
-                while ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
+                while ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
                 {
                     if (cnt < 2)
                     {
@@ -413,13 +414,13 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
             }
         }
         p = SkipSpaces(p, p_end);
-        if ((p<p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
+        if ((p < p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
         {
             lkv.ValueType = *p;
-            while ((p<p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
+            while ((p < p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
                 p++;
         }
-        if ((p<p_end) && (__char_types__[*p] == CHAR_TYPE_SEPARATOR))
+        if ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_SEPARATOR))
             p++;
         p = SkipSpaces(p, p_end);
         CHECK(ProcessLayoutKeyValueData(lkv, inf, Cfg), false, "Invalid layout params !");
@@ -532,7 +533,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         case Alignament::Center:
             break;
         };
-    }    
+    }
 
     this->Layout.Format.AnchorLeft   = inf.a_left;
     this->Layout.Format.AnchorRight  = inf.a_right;
@@ -750,7 +751,8 @@ AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption, const std::string_view& layout, bool computeHotKey)
+bool AppCUI::Controls::Control::Init(
+      Control* parent, const ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
     AppCUI::Utils::ConstStringObject captionObj(caption);
     CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
@@ -763,7 +765,9 @@ bool AppCUI::Controls::Control::Init(Control* parent, const ConstString& caption
     if (computeHotKey)
     {
         CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset , NoColorPair),false,"Fail to set text with UTF8 value");
+        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair),
+              false,
+              "Fail to set text with UTF8 value");
 
         if (CTRLC->HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
             this->SetHotKey(CTRLC->Text.GetBuffer()[CTRLC->HotKeyOffset].Code);
@@ -844,19 +848,19 @@ bool AppCUI::Controls::Control::RemoveControl(unsigned int index)
     CTRLC->CurrentControlIndex = 0;
     return true;
 }
-int AppCUI::Controls::Control::GetX()
+const int AppCUI::Controls::Control::GetX() const
 {
     return CTRLC->Layout.X;
 }
-int AppCUI::Controls::Control::GetY()
+const int AppCUI::Controls::Control::GetY() const
 {
     return CTRLC->Layout.Y;
 }
-int AppCUI::Controls::Control::GetWidth()
+const int AppCUI::Controls::Control::GetWidth() const
 {
     return CTRLC->Layout.Width;
 }
-int AppCUI::Controls::Control::GetHeight()
+const int AppCUI::Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
@@ -880,21 +884,21 @@ bool AppCUI::Controls::Control::IsMouseInControl(int x, int y)
 {
     return (x >= 0) && (y >= 0) && (x < (CTRLC->Layout.Width)) && (y < (CTRLC->Layout.Height));
 }
-void AppCUI::Controls::Control::SetChecked(bool value)
+void AppCUI::Controls::Control::SetChecked(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_CHECKED;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_CHECKED);
 }
-void AppCUI::Controls::Control::SetEnabled(bool value)
+void AppCUI::Controls::Control::SetEnabled(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_ENABLE;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_ENABLE);
 }
-void AppCUI::Controls::Control::SetVisible(bool value)
+void AppCUI::Controls::Control::SetVisible(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_VISIBLE;
@@ -902,23 +906,23 @@ void AppCUI::Controls::Control::SetVisible(bool value)
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_VISIBLE);
 }
 
-bool AppCUI::Controls::Control::IsChecked()
+const bool AppCUI::Controls::Control::IsChecked() const
 {
     return (((CTRLC->Flags) & GATTR_CHECKED) != 0);
 }
-bool AppCUI::Controls::Control::IsEnabled()
+const bool AppCUI::Controls::Control::IsEnabled() const
 {
     return (((CTRLC->Flags) & GATTR_ENABLE) != 0);
 }
-bool AppCUI::Controls::Control::IsVisible()
+const bool AppCUI::Controls::Control::IsVisible() const
 {
     return (((CTRLC->Flags) & GATTR_VISIBLE) != 0);
 }
-bool AppCUI::Controls::Control::HasFocus()
+const bool AppCUI::Controls::Control::HasFocus() const
 {
     return CTRLC->Focused;
 }
-bool AppCUI::Controls::Control::IsMouseOver()
+const bool AppCUI::Controls::Control::IsMouseOver() const
 {
     return CTRLC->MouseIsOver;
 }
@@ -1099,12 +1103,12 @@ bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
           "Invalid hot key - accepted values are ['A'-'Z'] and ['0'-'9']");
     if ((hotKey >= 'a') && (hotKey <= 'z'))
     {
-        CTRLC->HotKey = (Key)(((unsigned int) Key::Alt) | ((unsigned int) Key::A + (hotKey - 'a')));
+        CTRLC->HotKey = (Key) (((unsigned int) Key::Alt) | ((unsigned int) Key::A + (hotKey - 'a')));
         return true;
     }
     if ((hotKey >= '0') && (hotKey <= '9'))
     {
-        CTRLC->HotKey = (Key)(((unsigned int) Key::Alt) | ((unsigned int) Key::N0 + (hotKey - '0')));
+        CTRLC->HotKey = (Key) (((unsigned int) Key::Alt) | ((unsigned int) Key::N0 + (hotKey - '0')));
         return true;
     }
     return false;
@@ -1254,7 +1258,7 @@ bool AppCUI::Controls::Control::OnMouseWheel(int x, int y, AppCUI::Input::MouseW
 void AppCUI::Controls::Control::OnHotKey()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control *sender, Event eventType, int controlID)
+bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control* sender, Event eventType, int controlID)
 {
     return false;
 }
