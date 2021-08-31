@@ -110,8 +110,8 @@ class SimpleHexView : public AppCUI::Controls::Window
     SimpleHexView()
     {
         this->Create("SimpleHexView", "w:100%,h:100%");
-        btnOpenFile.Create(this, "Open File ...", "a:c,t:0,w:100%,h:1", COMMAND_ID_BTN_OPEN);
-        hexView.Create(this, "t:1,w:100%,h:100%");
+        btnOpenFile.Create(this, "Open File ...", "a:c,t:0,w:100%", COMMAND_ID_BTN_OPEN);
+        hexView.Create(this, "t:2,w:100%,h:100%");
     }
 
     bool OnEvent(Control* /*sender*/, Event eventType, int controlID) override

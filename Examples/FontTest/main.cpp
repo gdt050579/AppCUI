@@ -25,6 +25,7 @@ struct HexViewUserControl : public UserControl
     void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
+        constexpr ColorPair textColor  = ColorPair{ Color::White, Color::Transparent };
         const std::uint64_t height     = GetHeight();
         const std::uint64_t width      = GetWidth();
         const std::uint64_t bufferSize = height * width;
@@ -33,7 +34,7 @@ struct HexViewUserControl : public UserControl
         {
             const int y = i / width;
             const int x = i % width;
-            renderer.WriteCharacter(x, y, i, ColorPair{ Color::White, Color::Transparent });
+            renderer.WriteCharacter(x, y, i, textColor);
         }
 
         const int nextLine = 256 / width + 2;
@@ -47,6 +48,12 @@ struct HexViewUserControl : public UserControl
                   _special_characters_consolas_unicode_[i],
                   ColorPair{ Color::White, Color::Transparent });
         }
+        const auto russianText = u8"я текст на русском";
+        renderer.WriteSingleLineText(0, height - 1, russianText, textColor);
+        const auto romanianText = u8"vivat pălincă";
+        renderer.WriteSingleLineText(0, height - 2, romanianText, textColor);
+        const auto utf16text = u"ϟ i am decorated utf16 ϟ";
+        renderer.WriteSingleLineText(0, height - 3, utf16text, textColor);
     }
 };
 
