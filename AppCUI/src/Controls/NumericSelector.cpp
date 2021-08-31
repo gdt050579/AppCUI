@@ -113,6 +113,29 @@ void NumericSelector::Paint(Renderer& renderer)
     }
 
     renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
+
+    switch (cc->isMouseOn)
+    {
+    case NumericSelectorControlContext::IsMouseOn::MinusButton:
+        renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        break;
+    case NumericSelectorControlContext::IsMouseOn::PlusButton:
+        renderer.FillHorizontalLine(GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        break;
+    case NumericSelectorControlContext::IsMouseOn::TextField:
+        if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
+        {
+            ShowToolTip(cc->stringValue.GetText());
+        }
+        else
+        {
+            HideToolTip();
+        }
+        break;
+    case NumericSelectorControlContext::IsMouseOn::None:
+    default:
+        break;
+    }
 }
 
 bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
@@ -195,6 +218,58 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
     }
         return true;
+
+    case Key::Ctrl | Key::C:
+        AppCUI::OS::Clipboard::SetText(cc->stringValue.GetText());
+        return true;
+    case Key::Ctrl | Key::V:
+    {
+        LocalUnicodeStringBuilder<256> b{};
+        AppCUI::OS::Clipboard::GetText(b);
+        const std::string output(b);
+
+        if (output.empty())
+        {
+            SetValue(0);
+        }
+        else
+        {
+            const std::optional<long long> value = Number::ToUInt64(output);
+            if (value.has_value())
+            {
+                cc->insertionModevalue = value.value();
+                cc->intoInsertionMode = true;
+            }
+            else
+            {
+                LOG_ERROR("Invalid argument pasted: [%s]!", output.c_str());
+            }
+        }
+    }
+        return true;
+
+    case Key::PageUp:
+    {
+        const auto percentFive =
+              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+        SetValue(cc->value + percentFive);
+    }
+        return true;
+    case Key::PageDown:
+    {
+        const auto percentFive =
+            static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+        SetValue(cc->value - percentFive);
+    }
+        return true;
+
+    case Key::Home:
+        SetValue(cc->minValue);
+        return true;
+    case Key::End:
+        SetValue(cc->maxValue);
+        return true;
+
     default:
         if (unicodeChar == u'+')
         {
@@ -282,6 +357,7 @@ void NumericSelector::OnLoseFocus()
 
     cc->intoInsertionMode  = false;
     cc->insertionModevalue = 0LL;
+    cc->isMouseOn          = NumericSelectorControlContext::IsMouseOn::None;
 }
 
 bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
@@ -315,6 +391,9 @@ bool NumericSelector::OnMouseEnter()
 
 bool NumericSelector::OnMouseLeave()
 {
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::None;
     return true;
 }
 
@@ -360,6 +439,29 @@ bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton butto
     return false;
 }
 
+bool NumericSelector::OnMouseOver(int x, int y)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    if (IsOnTextField(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::TextField;
+    }
+    else if (IsOnMinusButton(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::MinusButton;
+    }
+    else if (IsOnPlusButton(x, y))
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::PlusButton;
+    }
+    else
+    {
+        cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::None;
+    }
+    return true;
+}
+
 const bool NumericSelector::IsValidValue(const long long value) const
 {
     CHECK(Context != nullptr, false, "");
@@ -391,10 +493,6 @@ const bool NumericSelector::GetRenderColor(Graphics::ColorPair& color) const
     else if (cc->Focused)
     {
         color = nsCfg.Focused.TextColor;
-    }
-    else if (cc->MouseIsOver)
-    {
-        color = nsCfg.Hover.TextColor;
     }
     else
     {

@@ -573,9 +573,9 @@ namespace Utils
     };
     class EXPORT UnicodeStringBuilder
     {
-        char16_t* Chars;
-        unsigned int Size;
-        unsigned int Allocated;
+        char16_t* chars;
+        unsigned int length;
+        unsigned int allocated;
 
         void Create(char16_t* localBuffer, size_t localBufferSize);
 
@@ -603,15 +603,15 @@ namespace Utils
 
         inline const unsigned int Len() const
         {
-            return Size;
+            return length;
         }
         inline const char16_t* GetString() const
         {
-            return Chars;
+            return chars;
         }
         inline std::u16string_view ToStringView() const
         {
-            return std::u16string_view{ Chars, (size_t) Size };
+            return std::u16string_view{ chars, (size_t) length };
         }
         inline operator std::string() const
         {
@@ -633,7 +633,7 @@ namespace Utils
         }
         inline operator std::u16string_view() const
         {
-            return std::u16string_view{ Chars, (size_t) Size };
+            return std::u16string_view{ chars, (size_t) length };
         }
         inline UnicodeStringBuilder& operator+=(const AppCUI::Utils::ConstString& text)
         {
@@ -2202,6 +2202,7 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
     };
 
