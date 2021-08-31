@@ -177,9 +177,14 @@ namespace Internal
     {
         AppCUI::Graphics::CharacterBuffer Text;
         AppCUI::Application::Config* Cfg;
+        AppCUI::Graphics::Rect TextRect;
+        AppCUI::Graphics::Point Arrow;
+        AppCUI::Graphics::SpecialChars ArrowChar;
+        AppCUI::Graphics::WriteTextParams TxParams;
 
       public:
         AppCUI::Graphics::Clip ScreenClip;
+
         bool Visible;
 
       public:
