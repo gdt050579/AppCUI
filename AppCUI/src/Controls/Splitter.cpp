@@ -126,14 +126,12 @@ void Splitter::Paint(Graphics::Renderer& renderer)
     if ((Members->Flags & GATTR_VERTICAL) != 0)
     {
         poz = Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
-        renderer.DrawVerticalLineWithSpecialChar(
-              poz, 0, Members->Layout.Height - 1, SpecialChars::BoxVerticalSingleLine, col);
+        renderer.DrawVerticalLine(poz, 0, Members->Layout.Height - 1, col);
     }
     else
     {
         poz = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
-        renderer.DrawHorizontalLineWithSpecialChar(
-              0, poz, Members->Layout.Width - 1, SpecialChars::BoxHorizontalSingleLine, col);
+        renderer.DrawHorizontalLine(0, poz, Members->Layout.Width - 1, col);
     }
 }
 bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)

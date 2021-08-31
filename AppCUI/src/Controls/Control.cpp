@@ -711,7 +711,7 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Height >= (int) (ScrollBars.TopMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
-            renderer.DrawVerticalLineWithSpecialChar(
+            renderer.FillVerticalLineWithSpecialChar(
                   x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
             renderer.WriteSpecialCharacter(x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows);
             renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
@@ -728,7 +728,7 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Width >= (int) (ScrollBars.LeftMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
-            renderer.DrawHorizontalLineWithSpecialChar(
+            renderer.FillHorizontalLineWithSpecialChar(
                   ScrollBars.LeftMargin, y, x - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar);
             renderer.WriteSpecialCharacter(ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows);
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);

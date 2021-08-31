@@ -111,8 +111,7 @@ void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Rendere
         x += column->Width;
         if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) ||
             (tr == Columns.HoverSeparatorColumnIndex))
-            renderer.DrawVerticalLineWithSpecialChar(
-                  x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, Cfg->ListView.ColumnHover.Separator);
+            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->ListView.ColumnHover.Separator);
         x++;
     }
 }
@@ -123,7 +122,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         defaultCol = &this->Cfg->ListView.ColumnInactive;
     auto* lvCol = defaultCol;
 
-    renderer.DrawHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
+    renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
 
     int x = 1 - Columns.XOffset;
 
@@ -138,12 +137,12 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
             if (tr == SortParams.ColumnIndex)
             {
                 lvCol = &this->Cfg->ListView.ColumnSort;
-                renderer.DrawHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
+                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
             }
             else if (tr == Columns.HoverColumnIndex)
             {
                 lvCol = &this->Cfg->ListView.ColumnHover;
-                renderer.DrawHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
+                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
             }
             else
                 lvCol = defaultCol;
@@ -175,8 +174,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            renderer.DrawVerticalLineWithSpecialChar(
-                  x, 1, Layout.Height, SpecialChars::BoxVerticalSingleLine, defaultCol->Separator);
+            renderer.DrawVerticalLine(x, 1, Layout.Height, defaultCol->Separator);
         }
         x++;
     }
@@ -273,9 +271,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
             else
-                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
             if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         }
@@ -283,7 +281,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
     else
@@ -291,10 +289,10 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         if (Flags & GATTR_ENABLE)
         {
             if (((Flags & ListViewFlags::HideCurrentItemWhenNotFocused) == ListViewFlags::None) && (currentItem))
-                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.DrawHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
         }
     }
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -303,7 +301,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         ColorPair col = this->Cfg->ListView.ColumnNormal.Separator;
         if (!(this->Flags & GATTR_ENABLE))
             col = this->Cfg->ListView.ColumnInactive.Separator;
-        renderer.DrawHorizontalLineWithSpecialChar(1, y, Layout.Width - 2, SpecialChars::BoxHorizontalSingleLine, col);
+        renderer.DrawHorizontalLine(1, y, Layout.Width - 2, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
@@ -362,7 +360,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         // search bar
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
-            renderer.DrawHorizontalLine(x_ofs, yPoz, 15, ' ', Cfg->ListView.FilterText);
+            renderer.FillHorizontalLine(x_ofs, yPoz, 15, ' ', Cfg->ListView.FilterText);
             unsigned int len = this->Filter.SearchText.Len();
             const char* txt  = this->Filter.SearchText.GetText();
             if (len < 12)

@@ -99,6 +99,7 @@ class HexViewUserControl : public UserControl
     uint64_t filePosition;
     uint64_t fileSize;
 };
+
 class SimpleHexView : public AppCUI::Controls::Window
 {
   private:

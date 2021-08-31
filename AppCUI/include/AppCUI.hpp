@@ -1325,14 +1325,16 @@ namespace Graphics
 
       public:
         // Horizontal lines
-        bool DrawHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
-        bool DrawHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
-        bool DrawHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
+        bool FillHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
+        bool FillHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
+        bool DrawHorizontalLine(int left, int y, int right, const ColorPair color, bool singleLine = true);
 
         // Vertical lines
-        bool DrawVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
-        bool DrawVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
-        bool DrawVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
+        bool FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
+        bool FillVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
+        bool DrawVerticalLine(int x, int top, int bottom, const ColorPair color, bool singleLine = true);
 
         // Rectangle
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);

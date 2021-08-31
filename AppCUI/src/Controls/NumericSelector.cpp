@@ -100,7 +100,7 @@ void NumericSelector::Paint(Renderer& renderer)
     CHECKRET(FormatTextField(), "");
 
     renderer.WriteSingleLineText(0, 0, " - ", color);
-    renderer.DrawHorizontalLine(cc->buttonPadding, 0, cc->Layout.Width - cc->buttonPadding - 1, ' ', color);
+    renderer.FillHorizontalLine(cc->buttonPadding, 0, cc->Layout.Width - cc->buttonPadding - 1, ' ', color);
     renderer.WriteText(cc->stringValue.GetText(), params);
 
     if (cc->isMouseLeftClickPressed)

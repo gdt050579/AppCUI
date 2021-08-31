@@ -171,7 +171,7 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-    renderer.DrawHorizontalLine(this->X, this->Y, this->X+ Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
+    renderer.FillHorizontalLine(this->X, this->Y, this->X+ Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin |
           WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,

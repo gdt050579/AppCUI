@@ -18,9 +18,9 @@ struct MyUserControl : public UserControl
 
         for (unsigned int tr = 2; tr < 24; tr += 2)
         {
-            renderer.DrawHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
-            renderer.DrawHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });
-            renderer.DrawHorizontalLine(45, tr, 52, '-', ColorPair{ Color::White, Color::DarkRed });
+            renderer.FillHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
+            renderer.FillHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });
+            renderer.FillHorizontalLine(45, tr, 52, '-', ColorPair{ Color::White, Color::DarkRed });
         }
             
         // first batch (direct write through WriteText function)
@@ -96,7 +96,7 @@ struct MyUserControl : public UserControl
         renderer.WriteSingleLineText(45, 20, 8, "12345678", NoColorPair, hkCP, 2, TextAlignament::Center);
         renderer.WriteSingleLineText(45, 22, 8, "123456789ABCD", NoColorPair, hkCP, 2, TextAlignament::Center);
 
-        renderer.DrawVerticalLineWithSpecialChar(
+        renderer.FillVerticalLineWithSpecialChar(
               60, 0, 26, SpecialChars::BoxVerticalDoubleLine, ColorPair{ Color::White, Color::DarkBlue });
 
         // multi line example

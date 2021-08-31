@@ -388,8 +388,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
             renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', col->LineNumbers);
         }
         lm += LINE_NUMBERS_WIDTH;
-        renderer.DrawVerticalLineWithSpecialChar(
-              lm - 1, 0, View.VisibleRowsCount, SpecialChars::BoxVerticalSingleLine, col->Border);
+        renderer.DrawVerticalLine(lm - 1, 0, View.VisibleRowsCount, col->Border);
     }
     renderer.SetClipMargins(lm, tm, rm, bm);
     for (unsigned int tr = 0; tr < View.VisibleLinesCount; tr++)

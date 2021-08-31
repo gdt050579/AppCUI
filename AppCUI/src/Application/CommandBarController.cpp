@@ -71,7 +71,7 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::
 }
 void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-    renderer.DrawHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
+    renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
     if (RecomputeScreenPos)
         ComputeScreenPos();
 
