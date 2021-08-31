@@ -88,7 +88,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
         auto bestX   = x;
         x            = std::min<>(x, screenWidth - bestWidth);
         x            = std::max<>(x, 0);
-        ScreenClip.Set(x, objRect.GetBottom() + (nrLines + 1), bestWidth, nrLines + 1);
+        ScreenClip.Set(x, objRect.GetBottom() + 1, bestWidth, nrLines+1);
         TextRect.Create(0, 1, bestWidth, nrLines, Alignament::TopLeft);
         Arrow.Set(bestWidth / 2 + (bestX - x), 0);
         TxParams.X     = 1;
