@@ -3,13 +3,13 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Graphics;
 
-
 ToolTipController::ToolTipController()
 {
     this->Visible = false;
     this->Cfg     = nullptr;
 }
-bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight)
+bool ToolTipController::Show(
+      const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight)
 {
     Visible = false;
     // update Cfg

@@ -13,11 +13,14 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
     AppCUI::Utils::ConstStringObject textObj(text);
     if (textObj.Encoding == StringEncoding::Ascii)
     {
-	// GDT: temporary fix - we can't guarantee that text is a NULL terminated string
-    	CHECK(SDL_SetClipboardText((const char *)textObj.Data) > 0, false, "Failed to set clipboard text: %s", SDL_GetError());
-    	return true;
+        // GDT: temporary fix - we can't guarantee that text is a NULL terminated string
+        CHECK(SDL_SetClipboardText((const char*) textObj.Data) > 0,
+              false,
+              "Failed to set clipboard text: %s",
+              SDL_GetError());
+        return true;
     }
-    NOT_IMPLEMENTED(false,"Support for UNICODE/UTF-8/Character is not implemented yet");
+    NOT_IMPLEMENTED(false, "Support for UNICODE/UTF-8/Character is not implemented yet");
 }
 
 bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)

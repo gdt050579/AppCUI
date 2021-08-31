@@ -1,12 +1,12 @@
-#include "Internal.hpp"
 #include "ControlContext.hpp"
+#include "Internal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-#define NO_ITEM_SELECTED    0xFFFFFFFF
+#define NO_ITEM_SELECTED 0xFFFFFFFF
 
 MenuBarItem::MenuBarItem()
 {
@@ -57,15 +57,15 @@ ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
     }
     this->ItemsCount++;
     RecomputePositions();
-    return ItemHandle{ this->ItemsCount-1 };
+    return ItemHandle{ this->ItemsCount - 1 };
 }
 void MenuBar::RecomputePositions()
 {
     int x = 0;
-    for (unsigned int tr=0;tr<this->ItemsCount;tr++)
+    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
     {
         Items[tr]->X = x;
-        x += (int)(2 + Items[tr]->Name.Len());
+        x += (int) (2 + Items[tr]->Name.Len());
     }
 }
 void MenuBar::SetWidth(unsigned int value)
@@ -73,7 +73,7 @@ void MenuBar::SetWidth(unsigned int value)
     Width = value;
     RecomputePositions();
 }
-bool MenuBar::OnMouseMove(int x, int y, bool & repaint)
+bool MenuBar::OnMouseMove(int x, int y, bool& repaint)
 {
     unsigned int idx = MousePositionToItem(x, y);
     if (idx != this->HoveredItem)
@@ -100,7 +100,7 @@ unsigned int MenuBar::MousePositionToItem(int x, int y)
         return NO_ITEM_SELECTED;
     for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
     {
-        if ((x >= Items[tr]->X) && (x < (Items[tr]->X + (int)Items[tr]->Name.Len() + 2)))
+        if ((x >= Items[tr]->X) && (x < (Items[tr]->X + (int) Items[tr]->Name.Len() + 2)))
             return tr;
     }
     return NO_ITEM_SELECTED;
@@ -113,9 +113,9 @@ void MenuBar::Open(unsigned int menuIndex)
         Items[menuIndex]->Mnu.Show(this->Parent, this->X + Items[menuIndex]->X, this->Y + 1);
         // set the owner
         ((MenuContext*) (Items[menuIndex]->Mnu.Context))->Owner = this;
-    }                
+    }
 }
-bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton /*button*/)
 {
     unsigned int idx = MousePositionToItem(x, y);
     if (idx != this->OpenedItem)
@@ -152,7 +152,9 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
             else
                 Open(0);
             return true;
-        }        
+        default:
+            break;
+        }
     }
     else
     {
@@ -171,10 +173,10 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
 }
 void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
 {
-    renderer.FillHorizontalLine(this->X, this->Y, this->X+ Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
+    renderer.FillHorizontalLine(this->X, this->Y, this->X + Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin |
-          WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
+                WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
           TextAlignament::Left);
     params.Y = this->Y;
 
@@ -198,7 +200,7 @@ void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
             params.Color       = Cfg->MenuBar.Normal.NameColor;
             params.HotKeyColor = Cfg->MenuBar.Normal.HotKeyColor;
         }
-        
+
         renderer.WriteText(Items[tr]->Name, params);
     }
 }

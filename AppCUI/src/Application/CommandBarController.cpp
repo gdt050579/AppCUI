@@ -4,17 +4,18 @@ using namespace AppCUI::Internal;
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
-CommandBarController::CommandBarController( unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg)
+CommandBarController::CommandBarController(
+      unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg)
 {
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
     CurrentVersion = 0xFFFFFFFF;
     Clear();
-    CurrentShiftKey  = AppCUI::Input::Key::None;
-    PressedField     = nullptr;
-    HoveredField     = nullptr;
-    LastCommand      = 0;
-    ShiftStatus      = std::string_view("", 0);
+    CurrentShiftKey = AppCUI::Input::Key::None;
+    PressedField    = nullptr;
+    HoveredField    = nullptr;
+    LastCommand     = 0;
+    ShiftStatus     = std::string_view("", 0);
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
 {
@@ -61,12 +62,12 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::
     CHECK(b->Name.Set(caption), false, "Fail to copy caption");
     CHECK(b->Name.Add(" "), false, "Fail to add extra step !");
 
-    b->Command               = Command;
-    b->KeyCode               = keyCode;
-    b->Version               = CurrentVersion;
-    b->KeyName               = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
-    HasKeys[shift]           = true;
-    RecomputeScreenPos       = true;
+    b->Command         = Command;
+    b->KeyCode         = keyCode;
+    b->Version         = CurrentVersion;
+    b->KeyName         = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
+    HasKeys[shift]     = true;
+    RecomputeScreenPos = true;
     return true;
 }
 void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
@@ -100,7 +101,8 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
             colCfg = &this->Cfg->CommandBar.Normal;
 
         renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor);
-        renderer.WriteSingleLineText(cmd->StartScreenPos + (int)cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
+        renderer.WriteSingleLineText(
+              cmd->StartScreenPos + (int) cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
 
         bi++;
     }
@@ -110,7 +112,7 @@ void CommandBarController::ComputeScreenPos()
     int startPoz;
     // validez shift state
     ShiftStatus = AppCUI::Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
-    startPoz         = (int) ShiftStatus.length();
+    startPoz    = (int) ShiftStatus.length();
     if (startPoz > 0)
         startPoz++;
 
