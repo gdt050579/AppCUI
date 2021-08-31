@@ -1128,13 +1128,32 @@ bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* contro
     // all good
     AppCUI::Graphics::Rect r;
     // compute point or rect
-    if ((x >= 0) && (y >= 0) && (x <= Members->ScreenClip.ClipRect.Width) && (y <= Members->ScreenClip.ClipRect.Height))
+    if ((x >= 0) && (y >= 0)) // point coordonates
     {
-        r.Create(
-              Members->ScreenClip.ClipRect.X + x,
-              Members->ScreenClip.ClipRect.Y + y,
-              Members->ScreenClip.ClipRect.X + x,
-              Members->ScreenClip.ClipRect.Y + y);
+        int w   = (int) Members->Layout.Width;
+        int h   = (int) Members->Layout.Height;
+
+
+        // recompute X and Y if object starts outside the screen
+        if ((w != Members->ScreenClip.ClipRect.Width) && (Members->ScreenClip.ClipRect.X == 0))
+            x += Members->ScreenClip.ClipRect.Width - w;
+
+        if ((h != Members->ScreenClip.ClipRect.Height) && (Members->ScreenClip.ClipRect.Y == 0))
+            y += Members->ScreenClip.ClipRect.Height - h;
+
+
+        if ((x < Members->ScreenClip.ClipRect.Width) && (y < Members->ScreenClip.ClipRect.Height) && (x>=0) && (y>=0))
+        {
+            r.Create(
+                  Members->ScreenClip.ClipRect.X + x,
+                  Members->ScreenClip.ClipRect.Y + y,
+                  Members->ScreenClip.ClipRect.X + x,
+                  Members->ScreenClip.ClipRect.Y + y);
+        }
+        else
+        {
+            return false; // nu se poate afisa
+        }
     }
     else
     {
