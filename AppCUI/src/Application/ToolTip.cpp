@@ -75,7 +75,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
         TxParams.X     = 1;
         TxParams.Y     = 0;
         TxParams.Color = Cfg->ToolTip.Text;
-        TxParams.Width = bestWidth;
+        TxParams.Width = bestWidth-2;
         ArrowChar      = SpecialChars::ArrowDown;
 
         Visible = true; 
