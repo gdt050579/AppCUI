@@ -117,10 +117,10 @@ void NumericSelector::Paint(Renderer& renderer)
     switch (cc->isMouseOn)
     {
     case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        renderer.DrawHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Hover.TextColor);
         break;
     case NumericSelectorControlContext::IsMouseOn::PlusButton:
-        renderer.DrawHorizontalLine(GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        renderer.FillHorizontalLine(GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Hover.TextColor);
         break;
     case NumericSelectorControlContext::IsMouseOn::TextField:
         if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)

@@ -65,8 +65,7 @@ struct DrawTextInfo
     Character* RightMargin;
 };
 
-//========================================================================================== Write text [single line]
-//====
+//============================================== Write text [single line] ===========================================
 template <typename T>
 inline void RenderSingleLineString(const T& text, DrawTextInfo& dti, const WriteTextParams& params)
 {
@@ -185,8 +184,7 @@ inline void RenderSingleLineString<CharacterView>(
     }
 }
 
-//========================================================================================== Write text [multi line]
-//====
+//============================================== Write text [multi line] ============================================
 template <typename T>
 inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params, Renderer& renderer)
 {
@@ -967,7 +965,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false; // outside clip rect -> exit
 
-    const auto output = reinterpret_cast<DrawTextInfo*>(drawTextInfoOutput);
+    const auto output    = reinterpret_cast<DrawTextInfo*>(drawTextInfoOutput);
     output->TextStart    = 0;
     output->TextEnd      = charactersCount;
     output->FitCharStart = nullptr;
