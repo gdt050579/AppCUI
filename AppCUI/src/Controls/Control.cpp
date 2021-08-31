@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
-#include <string.h>
 #include <cstring>
+#include <string.h>
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
@@ -848,19 +848,19 @@ bool AppCUI::Controls::Control::RemoveControl(unsigned int index)
     CTRLC->CurrentControlIndex = 0;
     return true;
 }
-const int AppCUI::Controls::Control::GetX() const
+int AppCUI::Controls::Control::GetX() const
 {
     return CTRLC->Layout.X;
 }
-const int AppCUI::Controls::Control::GetY() const
+int AppCUI::Controls::Control::GetY() const
 {
     return CTRLC->Layout.Y;
 }
-const int AppCUI::Controls::Control::GetWidth() const
+int AppCUI::Controls::Control::GetWidth() const
 {
     return CTRLC->Layout.Width;
 }
-const int AppCUI::Controls::Control::GetHeight() const
+int AppCUI::Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
@@ -906,23 +906,23 @@ void AppCUI::Controls::Control::SetVisible(const bool value)
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_VISIBLE);
 }
 
-const bool AppCUI::Controls::Control::IsChecked() const
+bool AppCUI::Controls::Control::IsChecked() const
 {
     return (((CTRLC->Flags) & GATTR_CHECKED) != 0);
 }
-const bool AppCUI::Controls::Control::IsEnabled() const
+bool AppCUI::Controls::Control::IsEnabled() const
 {
     return (((CTRLC->Flags) & GATTR_ENABLE) != 0);
 }
-const bool AppCUI::Controls::Control::IsVisible() const
+bool AppCUI::Controls::Control::IsVisible() const
 {
     return (((CTRLC->Flags) & GATTR_VISIBLE) != 0);
 }
-const bool AppCUI::Controls::Control::HasFocus() const
+bool AppCUI::Controls::Control::HasFocus() const
 {
     return CTRLC->Focused;
 }
-const bool AppCUI::Controls::Control::IsMouseOver() const
+bool AppCUI::Controls::Control::IsMouseOver() const
 {
     return CTRLC->MouseIsOver;
 }
