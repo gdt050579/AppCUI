@@ -1121,9 +1121,9 @@ namespace Graphics
         {
             return X + Width - 1;
         }
-        inline int GetBotom() const
+        inline int GetBottom() const
         {
-            return X + Height - 1;
+            return Y + Height - 1;
         }
     };
 
@@ -2459,7 +2459,7 @@ namespace Application
         } NumericSelector;
         struct
         {
-            Graphics::ColorPair Text, Border;
+            Graphics::ColorPair Text, Arrow;
         } ToolTip;
         void SetDarkTheme();
     };
