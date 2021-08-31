@@ -1119,7 +1119,7 @@ namespace Graphics
         {
             return X + Width - 1;
         }
-        inline int GetBotom() const
+        inline int GetBottom() const
         {
             return X + Height - 1;
         }

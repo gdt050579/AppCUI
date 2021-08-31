@@ -15,19 +15,73 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
     // update Cfg
     if (!this->Cfg)
         this->Cfg = AppCUI::Application::GetAppConfig();
-    // find best position
-    if (objRect.GetTop()>3)
+    CHECK(Text.Set(text), false, "Fail to copy text");
+    // compute best size
+    auto p        = Text.GetBuffer();
+    auto e        = p + Text.Len();
+    int nrLines   = 0;
+    int maxWidth  = screenWidth / 2;
+    int w         = 0;
+    int bestWidth = 0;
+    while (p<e)
     {
-        CHECK(Text.Set(text), false, "Fail to copy text");
-        unsigned int sz = (Text.Len() / 2) + 1;
-        const int cx    = objRect.GetCenterX();
-        if (cx >= (screenWidth/2))
-            sz = std::min<>(sz, (unsigned int) (screenWidth - cx));
-        else 
-            sz = std::min<>(sz, (unsigned int) cx);
-        ScreenClip.Set(cx - sz, objRect.GetTop() - 2, sz*2+1, 2);
-        Visible = true;        
+        if (p->Code ==NEW_LINE_CODE)
+        {
+            bestWidth = std::max<>(bestWidth, w);
+            p++;
+            w = 0;
+            if (p < e)
+                nrLines++;
+            continue;
+        }
+        p++;
+        w++;
+        if (w>=maxWidth)
+        {
+            bestWidth = maxWidth;
+            w         = 0;
+            if (p < e)
+                nrLines++;
+        }
     }
+    if (w>0)
+    {
+        bestWidth = std::max<>(bestWidth, w);
+        nrLines++;
+    }
+    // max number of lines must not be bigger than 25% of the height
+    nrLines   = std::min<>(nrLines, screenHeight / 4);
+    nrLines   = std::max<>(nrLines, 1);   // minimum one line  (sanity check)
+    bestWidth = std::max<>(bestWidth, 5); // minimum 5 chars width (sanity check)
+    bestWidth += 2; // one character padding (left & right)
+
+    // set TextParams
+    if (nrLines == 1)
+        TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+    else
+        TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
+
+    // find best position  (prefer on-top)
+    if (objRect.GetTop()>=(nrLines+1))
+    {
+        const int cx    = objRect.GetCenterX();
+        int x           = cx - bestWidth / 2;
+        auto bestX      = x;
+        x               = std::min<>(x, screenWidth - bestWidth);
+        x               = std::max<>(x, 0);
+        ScreenClip.Set(x, objRect.GetTop() - (nrLines+1), bestWidth, nrLines+1);
+        TextRect.Create(0, 0, bestWidth, nrLines, Alignament::TopLeft);
+        Arrow.Set(bestWidth / 2 + (bestX - x), nrLines);
+        TxParams.X     = 1;
+        TxParams.Y     = 0;
+        TxParams.Color = Cfg->ToolTip.Text;
+        TxParams.Width = bestWidth;
+        ArrowChar      = SpecialChars::ArrowDown;
+
+        Visible = true; 
+        return true;
+    }
+    // check bottom position
     return Visible;
 }
 void ToolTipController::Hide()
@@ -38,17 +92,8 @@ void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     if (!Visible)
         return;
-    //renderer.Clear(' ', Cfg->ToolTip.Text);
-    renderer.FillRect(0, 0, ScreenClip.ClipRect.Width, 0, ' ', Cfg->ToolTip.Text);
-    //renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, Cfg->ToolTip.Border, false);
-    WriteTextParams params(
-          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
-          WriteTextFlags::FitTextToWidth);
-    params.X     = 1;
-    params.Y     = 0;
-    params.Width = ScreenClip.ClipRect.Width - 2;
-    params.Color = Cfg->ToolTip.Text;
-    renderer.WriteText(this->Text, params);
-    renderer.WriteSpecialCharacter(
-          ScreenClip.ClipRect.Width / 2, 1, SpecialChars::ArrowDown, ColorPair{ Color::Aqua, Color::Black });
+    
+    renderer.FillRect(TextRect.GetLeft(), TextRect.GetTop(), TextRect.GetRight(), TextRect.GetBottom(), ' ', Cfg->ToolTip.Text);
+    renderer.WriteSpecialCharacter(Arrow.X, Arrow.Y, ArrowChar, ColorPair{ Color::Aqua, Color::Black });
+    renderer.WriteText(this->Text, TxParams);
 }
