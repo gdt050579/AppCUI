@@ -54,7 +54,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
     nrLines   = std::max<>(nrLines, 1);   // minimum one line  (sanity check)
     bestWidth = std::max<>(bestWidth, 5); // minimum 5 chars width (sanity check)
     bestWidth += 2; // one character padding (left & right)
-    nrLines = 2;
+    
     // set TextParams
     if (nrLines == 1)
         TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
@@ -79,6 +79,25 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
         ArrowChar      = SpecialChars::ArrowDown;
 
         Visible = true; 
+        return true;
+    }
+    if (objRect.GetBottom() + (nrLines + 1) <= screenHeight)
+    {
+        const int cx = objRect.GetCenterX();
+        int x        = cx - bestWidth / 2;
+        auto bestX   = x;
+        x            = std::min<>(x, screenWidth - bestWidth);
+        x            = std::max<>(x, 0);
+        ScreenClip.Set(x, objRect.GetBottom() + (nrLines + 1), bestWidth, nrLines + 1);
+        TextRect.Create(0, 1, bestWidth, nrLines, Alignament::TopLeft);
+        Arrow.Set(bestWidth / 2 + (bestX - x), 0);
+        TxParams.X     = 1;
+        TxParams.Y     = 1;
+        TxParams.Color = Cfg->ToolTip.Text;
+        TxParams.Width = bestWidth - 2;
+        ArrowChar      = SpecialChars::ArrowUp;
+
+        Visible = true;
         return true;
     }
     // check bottom position
