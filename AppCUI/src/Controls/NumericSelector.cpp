@@ -117,16 +117,10 @@ void NumericSelector::Paint(Renderer& renderer)
     switch (cc->isMouseOn)
     {
     case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        for (auto i = 0; i < cc->buttonPadding - 1; i++)
-        {
-            renderer.WriteCharacter(i, 0, -1, cc->Cfg->NumericSelector.Hover.TextColor);
-        }
+        renderer.DrawHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Hover.TextColor);
         break;
     case NumericSelectorControlContext::IsMouseOn::PlusButton:
-        for (auto i = GetWidth() - cc->buttonPadding + 1; i < GetWidth(); i++)
-        {
-            renderer.WriteCharacter(i, 0, -1, cc->Cfg->NumericSelector.Hover.TextColor);
-        }
+        renderer.DrawHorizontalLine(GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Hover.TextColor);
         break;
     case NumericSelectorControlContext::IsMouseOn::TextField:
         if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
@@ -230,7 +224,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         return true;
     case Key::Ctrl | Key::V:
     {
-        AppCUI::Utils::UnicodeStringBuilder b{};
+        LocalUnicodeStringBuilder<256> b{};
         AppCUI::OS::Clipboard::GetText(b);
         const std::string output(b);
 
@@ -240,12 +234,13 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
         else
         {
-            try
+            const std::optional<long long> value = Number::ToUInt64(output);
+            if (value.has_value())
             {
-                cc->insertionModevalue = std::stoll(output);
+                cc->insertionModevalue = value.value();
                 cc->intoInsertionMode = true;
             }
-            catch (std::invalid_argument)
+            else
             {
                 LOG_ERROR("Invalid argument pasted: [%s]!", output.c_str());
             }
@@ -256,14 +251,14 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
     case Key::PageUp:
     {
         const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 100.0 * 5.0), 1.0));
+              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value + percentFive);
     }
         return true;
     case Key::PageDown:
     {
         const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 100.0 * 5.0), 1.0));
+            static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value - percentFive);
     }
         return true;
