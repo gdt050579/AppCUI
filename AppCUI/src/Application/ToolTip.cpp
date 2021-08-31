@@ -54,7 +54,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
     nrLines   = std::max<>(nrLines, 1);   // minimum one line  (sanity check)
     bestWidth = std::max<>(bestWidth, 5); // minimum 5 chars width (sanity check)
     bestWidth += 2; // one character padding (left & right)
-
+    nrLines = 2;
     // set TextParams
     if (nrLines == 1)
         TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
@@ -95,5 +95,10 @@ void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
     
     renderer.FillRect(TextRect.GetLeft(), TextRect.GetTop(), TextRect.GetRight(), TextRect.GetBottom(), ' ', Cfg->ToolTip.Text);
     renderer.WriteSpecialCharacter(Arrow.X, Arrow.Y, ArrowChar, ColorPair{ Color::Aqua, Color::Black });
+    renderer.SetClipMargins(
+          TextRect.GetLeft(),
+          TextRect.GetTop(),
+          ScreenClip.ClipRect.Width - (TextRect.GetRight()+1),
+          ScreenClip.ClipRect.Height - (TextRect.GetBottom()+1));
     renderer.WriteText(this->Text, TxParams);
 }
