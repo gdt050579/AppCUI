@@ -81,7 +81,9 @@
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
+            {                                                                                                          \
                 return (returnValue);                                                                                  \
+            }                                                                                                          \
         }
 #    define CHECKRET(c, format, ...)                                                                                   \
         {                                                                                                              \
@@ -601,7 +603,7 @@ namespace Utils
         void ToString(std::u16string& output) const;
         void ToPath(std::filesystem::path& output) const;
 
-        inline const unsigned int Len() const
+        inline unsigned int Len() const
         {
             return length;
         }
@@ -1560,10 +1562,10 @@ namespace Controls
         bool IsInitialized();
 
         // coordonates
-        const int GetX() const;
-        const int GetY() const;
-        const int GetWidth() const;
-        const int GetHeight() const;
+        int GetX() const;
+        int GetY() const;
+        int GetWidth() const;
+        int GetHeight() const;
         void GetSize(AppCUI::Graphics::Size& size);
         void GetClientSize(AppCUI::Graphics::Size& size);
         void MoveTo(int newX, int newY);
@@ -1584,11 +1586,11 @@ namespace Controls
         void SetEnabled(const bool value);
         void SetVisible(const bool value);
         void SetChecked(const bool value);
-        const bool IsEnabled() const;
-        const bool IsVisible() const;
-        const bool IsChecked() const;
-        const bool HasFocus() const;
-        const bool IsMouseOver() const;
+        bool IsEnabled() const;
+        bool IsVisible() const;
+        bool IsChecked() const;
+        bool HasFocus() const;
+        bool IsMouseOver() const;
 
         // childern and parent
         Control* GetParent();
@@ -2179,19 +2181,19 @@ namespace Controls
               long long value,
               const std::string_view& layout);
 
-        const long long GetValue() const;
-        const void SetValue(const long long value);
-        const void SetMinValue(const long long minValue);
-        const void SetMaxValue(const long long maxValue);
+        long long GetValue() const;
+        void SetValue(const long long value);
+        void SetMinValue(const long long minValue);
+        void SetMaxValue(const long long maxValue);
 
       private:
-        const bool IsValidValue(const long long value) const;
-        const bool IsValueInsertedWrong() const;
-        const bool GetRenderColor(Graphics::ColorPair& color) const;
-        const bool FormatTextField();
-        const bool IsOnPlusButton(const int x, const int y) const;
-        const bool IsOnMinusButton(const int x, const int y) const;
-        const bool IsOnTextField(const int x, const int y) const;
+        bool IsValidValue(const long long value) const;
+        bool IsValueInsertedWrong() const;
+        bool GetRenderColor(Graphics::ColorPair& color) const;
+        bool FormatTextField();
+        bool IsOnPlusButton(const int x, const int y) const;
+        bool IsOnMinusButton(const int x, const int y) const;
+        bool IsOnTextField(const int x, const int y) const;
 
       public:
         void Paint(Graphics::Renderer& renderer) override;

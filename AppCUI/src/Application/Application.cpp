@@ -26,14 +26,15 @@ bool AppCUI::Application::Init(const std::filesystem::path& iniFilePath)
     auto AppCUISection = ini.GetSection("appcui");
     if (AppCUISection.Exists() == false)
     {
-        LOG_WARNING("Section [AppCUI] was not found in %s ==> using the default configuration", iniFilePath.string().c_str());
+        LOG_WARNING(
+              "Section [AppCUI] was not found in %s ==> using the default configuration", iniFilePath.string().c_str());
         return AppCUI::Application::Init(Application::InitializationFlags::None);
     }
     // we have the section ==> lets build up some parameters
     auto frontend     = AppCUISection.GetValue("frontend").ToString();
     auto terminalSize = AppCUISection.GetValue("size");
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
-    bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
+    // bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false); <- unused
     // analize values
     Application::InitializationFlags flags = Application::InitializationFlags::None;
 
@@ -149,12 +150,11 @@ AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstS
     CHECK(app, nullptr, "Application has not been initialized !");
     CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
     CHECK(app->menu, nullptr, "Application was not initialized with HAS_MENU option set up !");
-    ItemHandle itm = app->menu->AddMenu(name);
+    ItemHandle itm                 = app->menu->AddMenu(name);
     AppCUI::Controls::Menu* result = app->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
     return result;
 }
-
 
 AppCUI::Application::Config* AppCUI::Application::GetAppConfig()
 {
@@ -182,7 +182,6 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 {
     return app;
 }
-
 
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
@@ -268,8 +267,9 @@ void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& rendere
         PaintMenu(menuContext->Parent, renderer, false);
     // draw myself
     app->terminal->ScreenCanvas.SetAbsoluteClip(menuContext->ScreenClip);
-    app->terminal->ScreenCanvas.SetTranslate(menuContext->ScreenClip.ScreenPosition.X, menuContext->ScreenClip.ScreenPosition.Y);
-    menuContext->Paint(renderer,activ);
+    app->terminal->ScreenCanvas.SetTranslate(
+          menuContext->ScreenClip.ScreenPosition.X, menuContext->ScreenClip.ScreenPosition.Y);
+    menuContext->Paint(renderer, activ);
 }
 void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
 {
@@ -391,7 +391,8 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj)
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 
-bool AppCUI::Internal::InitializationData::BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
+bool AppCUI::Internal::InitializationData::BuildFrom(
+      AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     // front end
     AppCUI::Application::InitializationFlags frontEnd = flags & 0xFF;
@@ -503,7 +504,8 @@ void AppCUI::Internal::Application::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
 }
-bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
+bool AppCUI::Internal::Application::Init(
+      AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height)
 {
     LOG_INFO("Starting AppCUI ...");
     LOG_INFO("Flags           = %08X", (unsigned int) flags);
@@ -514,12 +516,15 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
     AppCUI::Internal::InitializationData initData;
     CHECK(initData.BuildFrom(flags, width, height), false, "Fail to create AppCUI initialization data !");
     CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
-    LOG_INFO("Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+    LOG_INFO(
+          "Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 
     // configur other objects and settings
-    if ((flags & AppCUI::Application::InitializationFlags::CommandBar) != AppCUI::Application::InitializationFlags::None)
+    if ((flags & AppCUI::Application::InitializationFlags::CommandBar) !=
+        AppCUI::Application::InitializationFlags::None)
     {
-        this->cmdBar = std::make_unique<AppCUI::Internal::CommandBarController>(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
+        this->cmdBar = std::make_unique<AppCUI::Internal::CommandBarController>(
+              this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
         this->CommandBarWrapper.Init(this->cmdBar.get());
     }
     // configure menu
@@ -531,7 +536,9 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationFlag
 
     this->config.SetDarkTheme();
 
-    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()), false, "Failed to create desktop !");
+    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
+          false,
+          "Failed to create desktop !");
 
     LoopStatus         = LOOP_STATUS_NORMAL;
     RepaintStatus      = REPAINT_STATUS_ALL;
@@ -571,7 +578,7 @@ void AppCUI::Internal::Application::Paint()
         this->cmdBar->Paint(this->terminal->ScreenCanvas);
     // draw menu bar
     if (this->menu)
-        this->menu->Paint(this->terminal->ScreenCanvas);        
+        this->menu->Paint(this->terminal->ScreenCanvas);
     // draw context menu
     if (this->VisibleMenu)
         PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
@@ -580,10 +587,10 @@ void AppCUI::Internal::Application::Paint()
     if (this->ToolTip.Visible)
     {
         this->terminal->ScreenCanvas.SetAbsoluteClip(this->ToolTip.ScreenClip);
-        this->terminal->ScreenCanvas.SetTranslate(this->ToolTip.ScreenClip.ScreenPosition.X, this->ToolTip.ScreenClip.ScreenPosition.Y);
+        this->terminal->ScreenCanvas.SetTranslate(
+              this->ToolTip.ScreenClip.ScreenPosition.X, this->ToolTip.ScreenClip.ScreenPosition.Y);
         this->ToolTip.Paint(this->terminal->ScreenCanvas);
     }
-        
 }
 void AppCUI::Internal::Application::ComputePositions()
 {
@@ -603,11 +610,11 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
         auto menuContext = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
         if (menuContext->OnKeyEvent(KeyCode))
             RepaintStatus |= REPAINT_STATUS_DRAW;
-        else if (menuContext->Owner)                                      
+        else if (menuContext->Owner)
         {
             if (menuContext->Owner->OnKeyEvent(KeyCode))
                 RepaintStatus |= REPAINT_STATUS_DRAW;
-        }        
+        }
         return;
     }
 
@@ -661,10 +668,10 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
 }
 void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y)
 {
-    auto* mcx = reinterpret_cast<MenuContext*>(mnu->Context);
+    auto* mcx                 = reinterpret_cast<MenuContext*>(mnu->Context);
     MousePressedResult result = MousePressedResult::None;
     if (mnu == this->VisibleMenu)
-    {        
+    {
         result = mcx->OnMousePressed(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y);
     }
     else
@@ -703,7 +710,8 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
     if (this->VisibleMenu)
     {
         auto* mnuC = ((MenuContext*) (this->VisibleMenu->Context));
-        processed  = mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y, repaint);
+        processed =
+              mnuC->OnMouseMove(x - mnuC->ScreenClip.ScreenPosition.X, y - mnuC->ScreenClip.ScreenPosition.Y, repaint);
         if ((!processed) && (mnuC->Owner))
             processed = mnuC->Owner->OnMouseMove(x, y, repaint);
     }
@@ -724,11 +732,10 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
                 RepaintStatus |= REPAINT_STATUS_DRAW;
             ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
         }
-        this->MouseOverControl = nullptr;  
+        this->MouseOverControl = nullptr;
     }
     if (repaint)
         RepaintStatus |= REPAINT_STATUS_DRAW;
-        
 
     return processed;
 }
@@ -747,7 +754,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
         RepaintStatus |= REPAINT_STATUS_DRAW;
         return;
     }
-    if ((this->cmdBar) &&  (this->cmdBar->OnMouseDown()))
+    if ((this->cmdBar) && (this->cmdBar->OnMouseDown()))
     {
         RepaintStatus |= REPAINT_STATUS_DRAW;
         MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
@@ -773,7 +780,8 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
                   button,
                   cc->Handlers.OnMousePressedHandlerContext);
         else
-            MouseLockedControl->OnMousePressed(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+            MouseLockedControl->OnMousePressed(
+                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -862,7 +870,8 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
                 // it is possible the OnMouseEnter might reset the MouseOverControl variable
                 ControlContext* cc = ((ControlContext*) (MouseOverControl->Context));
                 cc->MouseIsOver    = true;
-                if (MouseOverControl->OnMouseOver(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
+                if (MouseOverControl->OnMouseOver(
+                          x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
                     RepaintStatus |= REPAINT_STATUS_DRAW;
             }
         }
@@ -871,7 +880,8 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             if (this->MouseOverControl)
             {
                 ControlContext* cc = ((ControlContext*) (MouseOverControl->Context));
-                if (MouseOverControl->OnMouseOver(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
+                if (MouseOverControl->OnMouseOver(
+                          x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y))
                     RepaintStatus |= REPAINT_STATUS_DRAW;
             }
         }
@@ -883,7 +893,7 @@ void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::Mo
     if (this->VisibleMenu)
     {
         auto* mcx = reinterpret_cast<MenuContext*>(this->VisibleMenu->Context);
-        if (mcx->OnMouseWheel(x,y,direction))
+        if (mcx->OnMouseWheel(x, y, direction))
             RepaintStatus |= REPAINT_STATUS_DRAW;
         return;
     }
@@ -1083,7 +1093,11 @@ void AppCUI::Internal::Application::SendCommand(int command)
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
 }
-void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* control, AppCUI::Controls::Control* sourceControl, AppCUI::Controls::Event eventType, int controlID)
+void AppCUI::Internal::Application::RaiseEvent(
+      AppCUI::Controls::Control* control,
+      AppCUI::Controls::Control* sourceControl,
+      AppCUI::Controls::Event eventType,
+      int controlID)
 {
     while (control != nullptr)
     {
@@ -1112,11 +1126,13 @@ void AppCUI::Internal::Application::RaiseEvent(AppCUI::Controls::Control* contro
         control = control->GetParent();
     }
 }
-bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
+bool AppCUI::Internal::Application::SetToolTip(
+      AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
 {
     return SetToolTip(control, text, -1, -1);
 }
-bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
+bool AppCUI::Internal::Application::SetToolTip(
+      AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
 {
     if (!control)
         control = &this->Desktop;
@@ -1145,7 +1161,8 @@ bool AppCUI::Internal::Application::SetToolTip(AppCUI::Controls::Control* contro
               Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);
     }
 
-    return this->ToolTip.Show(text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+    return this->ToolTip.Show(
+          text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 }
 void AppCUI::Internal::Application::Terminate()
 {

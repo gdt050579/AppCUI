@@ -3,30 +3,30 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Graphics;
 
-
 ToolTipController::ToolTipController()
 {
     this->Visible = false;
     this->Cfg     = nullptr;
 }
-bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight)
+bool ToolTipController::Show(
+      const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int /*screenHeight*/)
 {
     Visible = false;
     // update Cfg
     if (!this->Cfg)
         this->Cfg = AppCUI::Application::GetAppConfig();
     // find best position
-    if (objRect.GetTop()>3)
+    if (objRect.GetTop() > 3)
     {
         CHECK(Text.Set(text), false, "Fail to copy text");
         unsigned int sz = (Text.Len() / 2) + 1;
         const int cx    = objRect.GetCenterX();
-        if (cx >= (screenWidth/2))
+        if (cx >= (screenWidth / 2))
             sz = std::min<>(sz, (unsigned int) (screenWidth - cx));
-        else 
+        else
             sz = std::min<>(sz, (unsigned int) cx);
-        ScreenClip.Set(cx - sz, objRect.GetTop() - 3, sz*2+1, 3);
-        Visible = true;        
+        ScreenClip.Set(cx - sz, objRect.GetTop() - 3, sz * 2 + 1, 3);
+        Visible = true;
     }
     return Visible;
 }
