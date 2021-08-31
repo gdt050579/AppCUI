@@ -81,6 +81,7 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
         Visible = true; 
         return true;
     }
+    // check bottom position
     if (objRect.GetBottom() + (nrLines + 1) <= screenHeight)
     {
         const int cx = objRect.GetCenterX();
@@ -100,8 +101,8 @@ bool ToolTipController::Show(const AppCUI::Utils::ConstString& text, AppCUI::Gra
         Visible = true;
         return true;
     }
-    // check bottom position
-    return Visible;
+    // no solution --> ToolTip will not be shown    
+    return false;
 }
 void ToolTipController::Hide()
 {
@@ -113,7 +114,7 @@ void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
         return;
     
     renderer.FillRect(TextRect.GetLeft(), TextRect.GetTop(), TextRect.GetRight(), TextRect.GetBottom(), ' ', Cfg->ToolTip.Text);
-    renderer.WriteSpecialCharacter(Arrow.X, Arrow.Y, ArrowChar, ColorPair{ Color::Aqua, Color::Black });
+    renderer.WriteSpecialCharacter(Arrow.X, Arrow.Y, ArrowChar, Cfg->ToolTip.Arrow);
     renderer.SetClipMargins(
           TextRect.GetLeft(),
           TextRect.GetTop(),

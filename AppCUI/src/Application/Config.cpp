@@ -249,6 +249,6 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->NumericSelector.Hover.TextColor      = ColorPair{ Color::Black, Color::Yellow };
     this->NumericSelector.WrongValue.TextColor = ColorPair{ Color::Black, Color::Red };
 
-    this->ToolTip.Border = ColorPair{ Color::Gray, Color::Black };
+    this->ToolTip.Arrow = ColorPair{ Color::Green, Color::Black };
     this->ToolTip.Text = ColorPair{ Color::Black, Color::Aqua };
 }

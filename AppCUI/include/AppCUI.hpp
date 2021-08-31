@@ -2457,7 +2457,7 @@ namespace Application
         } NumericSelector;
         struct
         {
-            Graphics::ColorPair Text, Border;
+            Graphics::ColorPair Text, Arrow;
         } ToolTip;
         void SetDarkTheme();
     };
