@@ -155,6 +155,11 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         return true;
 
     case Key::Escape:
+        if (cc->intoInsertionMode == false)
+        {
+            return false;
+        }
+
         cc->intoInsertionMode  = false;
         cc->insertionModevalue = 0LL;
         return true;
