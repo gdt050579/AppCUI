@@ -11,6 +11,10 @@
 #
 name: "CodeQL"
 
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
 on:
   push:
     branches: [ main ]
