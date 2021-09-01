@@ -53,8 +53,8 @@ jobs:
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v1
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -63,9 +63,22 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
-    #- run: |
-    #   make bootstrap
-    #   make release
+    env:
+      CC: gcc-10
+      CXX: g++-10
+      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Update
+      run: sudo apt-get update -y
+    - name: Install SDL2
+      run: sudo apt-get install libsdl2-dev -y
+    - name: Install SDL2ttf
+      run: sudo apt-get install libsdl2-ttf-dev -y
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
