@@ -1693,8 +1693,10 @@ namespace Controls
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseOver(int x, int y) override;
+        bool OnMouseOver(int x, int y) override;        
         bool OnMouseLeave() override;
+        bool OnEvent(Control* sender, Event eventType, int controlID) override;
+
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();

@@ -469,6 +469,28 @@ void Window::OnAfterResize(int newWidth, int newHeight)
         UpdateWindowsButtonsPoz(Members);
     }
 }
+bool Window::OnEvent(Control* sender, Event eventType, int controlID)
+{
+    if ((eventType == Event::EVENT_WINDOW_CLOSE) || (eventType == Event::EVENT_WINDOW_ACCEPT))
+    {
+        // check if current win is a modal dialog
+        auto app = AppCUI::Application::GetApplication();
+        if ((app->ModalControlsCount > 0) && (app->ModalControlsStack[app->ModalControlsCount - 1] == this))
+        {
+            if (eventType == Event::EVENT_WINDOW_CLOSE)
+                return Exit(AppCUI::Dialogs::Result::Cancel);
+            else
+                return Exit(AppCUI::Dialogs::Result::Ok);
+        }            
+        else
+        {
+            // top level window -> closing the app
+            Application::Close();
+            return true;
+        }
+    }
+    return false;
+}
 bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
 {
     Control* tmp;
