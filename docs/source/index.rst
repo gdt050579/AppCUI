@@ -10,7 +10,8 @@ This is a test page
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
+   layout
 
 
 
@@ -20,3 +21,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* :ref:`layout`
