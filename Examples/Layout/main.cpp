@@ -39,7 +39,8 @@ class MainWin : public AppCUI::Controls::Window
         // add list of layouts
         lst.AddItem("x:3,y:3,w:4,h:4", "A 4x4 character object that starts from (3,3)");
         lst.AddItem("x:2,y:2,w:75%,h:75%", "An object that has 75% of its parent for width and height and starts from (2,2)");
-
+        lst.AddItem("a:br,w:5,h:5", "An object located on the bottom right corner with size 5x5");
+        lst.AddItem("x:10,y:10,a:br,w:7,h:3", "An object with its right-bottom corner at (10,10) and size 5x5");
         b.Create(this, "&Show", "X:28,y:16,w:16", 1234);
         b.SetEnabled(lst.GetCurrentItem() != InvalidItemHandle);
     }
