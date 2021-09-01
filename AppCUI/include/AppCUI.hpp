@@ -1923,6 +1923,9 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };

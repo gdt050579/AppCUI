@@ -6,9 +6,9 @@ using namespace AppCUI::Input;
 
 void CanvasControlContext::MoveScrollTo(int newX, int newY)
 {
-    const int imgWidth = canvas.GetWidth();
-    const int imgHeight = canvas.GetHeight();
-    const int viewWidth = Layout.Width;
+    const int imgWidth   = canvas.GetWidth();
+    const int imgHeight  = canvas.GetHeight();
+    const int viewWidth  = Layout.Width;
     const int viewHeight = Layout.Height;
 
     if ((newX + imgWidth) < viewWidth)
@@ -45,6 +45,9 @@ bool CanvasViewer::Create(
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
     Members->CanvasScrollY             = 0;
+    Members->mouseDragX                = 0;
+    Members->mouseDragY                = 0;
+    Members->dragModeEnabled           = false;
     Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
     CHECK(Members->canvas.Create(canvasWidth, canvasHeight),
           false,
@@ -195,7 +198,28 @@ bool AppCUI::Controls::CanvasViewer::OnMouseLeave()
 {
     return true;
 }
-
+void AppCUI::Controls::CanvasViewer::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+{
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
+    Members->mouseDragX      = Members->CanvasScrollX - x;
+    Members->mouseDragY      = Members->CanvasScrollY - y;
+    Members->dragModeEnabled = true;
+}
+bool AppCUI::Controls::CanvasViewer::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+{
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
+    if (!Members->dragModeEnabled)
+        return false; // don't process
+    Members->MoveScrollTo(Members->mouseDragX + x, Members->mouseDragY + y);
+    return true;
+}
+void AppCUI::Controls::CanvasViewer::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+{
+    // last update
+    OnMouseDrag(x, y, button);
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
+    Members->dragModeEnabled = false;
+}
 Canvas* CanvasViewer::GetCanvas()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, nullptr);

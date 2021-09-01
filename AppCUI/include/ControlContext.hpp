@@ -236,7 +236,8 @@ struct TabControlContext : public ControlContext
 struct CanvasControlContext : public ControlContext
 {
     AppCUI::Graphics::Canvas canvas;
-    int CanvasScrollX, CanvasScrollY;
+    int CanvasScrollX, CanvasScrollY, mouseDragX, mouseDragY;
+    bool dragModeEnabled;
     void MoveScrollTo(int newX, int newY);
 };
 
