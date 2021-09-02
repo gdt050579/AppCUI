@@ -71,9 +71,21 @@ def CreateKeys():
 	s += "	if (hash>="+str(max(res)+1)+") return LAYOUT_KEY_NONE;\n";
 	s += "	retunr _layout_translate_map_[hash];\n"
 	s += "};\n"
-	print(s)
+	return s
 
-CreateKeys()	
+s =  "\n//========================================="
+s += "\n// THIS CODE WAS AUTOMATICALLY GENERATED !"
+s += "\n//========================================="
+s += "\n"
+s += "\n"+CreateKeys()
+s += "\n"
+s += "\n//========================================="
+s += "\n// END OF AUTOMATICALLY GENERATED CODE"
+s += "\n//========================================="
+s += "\n"
+
+print(s)
+
 	
 
 
