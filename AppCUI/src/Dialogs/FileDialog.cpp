@@ -401,9 +401,9 @@ int FileDialogClass::Show(
     //defaultFileName = fileName;
     openDialog      = open;
     if (open)
-        wnd.Create("Open", "w:78,h:23,a:c");
+        wnd.Create("Open", "w:78,h:23,d:c");
     else
-        wnd.Create("Save", "w:78,h:23,a:c");
+        wnd.Create("Save", "w:78,h:23,d:c");
     wnd.SetEventHandler(FileDialog_EventHandler, this);
     lbPath.Create(&wnd, "", "x:2,y:2,w:63");
     lbDrive.Create(&wnd, "&Location", "x:2,y:1,w:8");

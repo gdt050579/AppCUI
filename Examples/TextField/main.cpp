@@ -29,7 +29,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Text Field Example", "a:c,w:70,h:20");
+        this->Create("Text Field Example", "d:c,w:70,h:20");
         l1.Create(this, "&Normal text", "x:1,y:1,w:15");
         t1.Create(this, "a normal text", "x:19,y:1,w:48");
         t1.SetHotKey('N');

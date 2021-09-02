@@ -483,9 +483,11 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
         break;
     case LAYOUT_KEY_ALIGN:
         CHECK(HashToAlignament(l.StringValueHash, inf.align), false, "Fail to compute align value !");
+        inf.flags |= LAYOUT_FLAG_ALIGN;
         break;
     case LAYOUT_KEY_DOCK:
         CHECK(HashToAlignament(l.StringValueHash, inf.dock), false, "Fail to compute dock value !");
+        inf.flags |= LAYOUT_FLAG_DOCK;
         break;
     default:
         RETURNERROR(false, "Unknown key (hash:%08x) ==> %s", l.Hash, l.HashName);
@@ -505,7 +507,8 @@ inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsig
     while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
         // hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
-        hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((unsigned char) (~0x20))))));
+        // hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((unsigned char) (~0x20))))));
+        hashValue += ((*s) & ((unsigned char) (~0x20))) - ((unsigned char) 'A') + 1;
         hashValue += index;
         s++;
         index += 2;
@@ -711,7 +714,7 @@ bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignamen
     this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
     this->Layout.Format.Width          = inf.width;
     this->Layout.Format.Height         = inf.height;
-    this->Layout.Format.Align          = inf.align;
+    this->Layout.Format.Align          = anchor;
     this->Layout.Format.Anchor         = anchor;    
     // copy anchor to (X,Y)
     switch (anchor)
@@ -751,6 +754,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
     if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == (LAYOUT_FLAG_X | LAYOUT_FLAG_Y))
         return ProcessXYWHLayout(inf);
 
+    // Step 3 ==> check different types of anchors
     auto anchorFlags = inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM);
     switch (anchorFlags)
     {
@@ -778,36 +782,36 @@ bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
         this->Layout.Y = md.Y;
         break;
     case Alignament::Top:
-        this->Layout.X = md.X + md.ParentWidth / 2;
+        this->Layout.X = md.ParentWidth / 2;
         this->Layout.Y = md.Y;
         break;
     case Alignament::TopRight:
-        this->Layout.X = md.X + md.ParentWidth;
+        this->Layout.X = md.ParentWidth - md.X;
         this->Layout.Y = md.Y;
         break;
     case Alignament::Right:
-        this->Layout.X = md.X + md.ParentWidth;
-        this->Layout.Y = md.Y + md.ParentHeigh / 2;
+        this->Layout.X = md.ParentWidth - md.X;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
     case Alignament::BottomRight:
-        this->Layout.X = md.X + md.ParentWidth;
-        this->Layout.Y = md.Y + md.ParentHeigh;
+        this->Layout.X = md.ParentWidth - md.X;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
     case Alignament::Bottom:
-        this->Layout.X = md.X + md.ParentWidth / 2;
-        this->Layout.Y = md.Y + md.ParentHeigh;
+        this->Layout.X = md.ParentWidth / 2;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
     case Alignament::BottomLeft:
         this->Layout.X = md.X;
-        this->Layout.Y = md.Y + md.ParentHeigh;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
     case Alignament::Left:
         this->Layout.X = md.X;
-        this->Layout.Y = md.Y + md.ParentHeigh / 2;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
     case Alignament::Center:
-        this->Layout.X = md.X + md.ParentWidth / 2;
-        this->Layout.Y = md.Y + md.ParentHeigh / 2;
+        this->Layout.X = md.ParentWidth / 2;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
     default:
         RETURNERROR(false, "Invalid anchor value: %d", md.Anchor);

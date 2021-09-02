@@ -11,7 +11,7 @@ class SimpleWin : public AppCUI::Controls::Window
   public:
     SimpleWin()
     {
-        this->Create("UNICODE test ", "a:c,w:40,h:15");
+        this->Create("UNICODE test ", "d:c,w:40,h:15");
         l1.Create(
               this,
               u8"Words in German and French: \n - Déjà vu, Schön, Groß, Fähig\n\r"

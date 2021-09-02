@@ -35,7 +35,7 @@ bool CreateMessageBoxWindow(
     Button btnOK, btnCancel, btnYes, btnNo;
     Window wnd;
 
-    CHECK(wnd.Create(title, "a:c,w:60,h:10", flags), false, "");
+    CHECK(wnd.Create(title, "d:c,w:60,h:10", flags), false, "");
 
     switch (buttonsType)
     {
