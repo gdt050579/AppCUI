@@ -118,7 +118,7 @@ void CanvasViewer::OnUpdateScrollBars()
 
 }
 
-bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
 
@@ -175,7 +175,7 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
     }
     return false;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool AppCUI::Controls::CanvasViewer::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
 {
     switch (direction)
     {
@@ -198,14 +198,14 @@ bool AppCUI::Controls::CanvasViewer::OnMouseLeave()
 {
     return true;
 }
-void AppCUI::Controls::CanvasViewer::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void AppCUI::Controls::CanvasViewer::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     Members->mouseDragX      = Members->CanvasScrollX - x;
     Members->mouseDragY      = Members->CanvasScrollY - y;
     Members->dragModeEnabled = true;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool AppCUI::Controls::CanvasViewer::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
     if (!Members->dragModeEnabled)

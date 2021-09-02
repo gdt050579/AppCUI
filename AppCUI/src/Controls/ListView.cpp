@@ -990,7 +990,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
     }
     return false;
 }
-bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex)
+bool ListViewControlContext::MouseToHeader(int x, int, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex)
 {
     int xx                 = 1 - Columns.XOffset;
     ListViewColumn* column = this->Columns.List;
@@ -1017,7 +1017,7 @@ bool ListViewControlContext::MouseToHeader(int x, int y, unsigned int& HeaderInd
     HeaderIndex       = INVALID_COLUMN_INDEX;
     return false;
 }
-void ListViewControlContext::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void ListViewControlContext::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     Columns.ResizeModeEnabled         = false;
     Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
@@ -1069,7 +1069,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
             MoveTo(y + Items.FirstVisibleIndex);
     }
 }
-bool ListViewControlContext::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool ListViewControlContext::OnMouseDrag(int x, int, AppCUI::Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -1109,7 +1109,7 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
     }
     return false;
 }
-bool ListViewControlContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool ListViewControlContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
 {
     switch (direction)
     {

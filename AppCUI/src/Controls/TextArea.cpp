@@ -435,7 +435,7 @@ void TextAreaControlContext::MoveRight(bool selected)
 
     UPDATE_SELECTION;
 }
-void TextAreaControlContext::MoveTo(int newPoz, bool selected)
+void TextAreaControlContext::MoveTo(int, bool)
 {
 }
 void TextAreaControlContext::MoveUpDown(unsigned int times, bool moveUp, bool selected)
@@ -721,7 +721,7 @@ void TextAreaControlContext::OnAfterResize()
     ComputeVisibleLinesAndRows();
     UpdateLines();
 }
-void TextAreaControlContext::SetToolTip(char* ss)
+void TextAreaControlContext::SetToolTip(char*)
 {
     // toolTipInfo.Set(ss);
     // toolTipVisible=true;
@@ -799,7 +799,7 @@ bool TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
-void TextArea::OnAfterResize(int newWidth, int newHeight)
+void TextArea::OnAfterResize(int, int)
 {
     WRAPPER->OnAfterResize();
 }
@@ -812,7 +812,7 @@ void TextArea::OnFocus()
 {
     WRAPPER->SelAll();
 }
-void TextArea::OnAfterSetText(const AppCUI::Utils::ConstString& text)
+void TextArea::OnAfterSetText(const AppCUI::Utils::ConstString&)
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->AnalyzeCurrentText();

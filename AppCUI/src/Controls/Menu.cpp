@@ -335,7 +335,7 @@ bool MenuContext::IsOnMenu(int x, int y)
     ComputeMousePositionInfo(x, y, mpi);
     return mpi.IsOnMenu;
 }
-bool MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool MenuContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
 {
     if (this->VisibleItemsCount >= this->ItemsCount)
         return false; // nothing to scroll

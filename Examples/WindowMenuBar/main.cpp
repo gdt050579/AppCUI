@@ -39,7 +39,7 @@ class WindowMenuBarExample : public AppCUI::Controls::Window
         help->AddSeparator();
         help->AddCommandItem("Check for &updates", 302);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

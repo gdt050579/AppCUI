@@ -38,7 +38,7 @@ class MyWin : public AppCUI::Controls::Window
         cmd.SetCommand(Key::Ctrl | Key::Shift | Key::A, "Ctrl+Shift+A command!", COMMAND_ID_CTRL_SHIFT_A);
         return true;
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

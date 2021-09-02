@@ -26,6 +26,10 @@ elseif (UNIX)
     endif()
 endif()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+     add_compile_options(-Wall -Wno-switch) # -Wextra -pedantic)
+endif()
+
 if (NOT DEBUG_BUILD)
     if (MSVC)
         #add_compile_options(-O2)
@@ -33,7 +37,6 @@ if (NOT DEBUG_BUILD)
 	#string( REPLACE "/RTC1" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
     else()
         add_compile_options(-O3)
-        # add_compile_options(-Wall -Wextra -pedantic -Werror)
     endif()
 endif()
 

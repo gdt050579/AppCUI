@@ -20,7 +20,7 @@ class SimpleWin : public AppCUI::Controls::Window
         this->Create("Log Example", "a:c,w:40,h:10");
         l1.Create(this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

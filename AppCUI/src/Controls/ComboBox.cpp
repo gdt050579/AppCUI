@@ -10,7 +10,8 @@ using namespace AppCUI::Input;
           "Invalid index (%d) , should be smaller than %d",                                                            \
           (int) idx,                                                                                                   \
           (int) Members->Indexes.Len());                                                                               \
-    auto& i = Members->Items[Members->Indexes.GetUInt32Array()[idx]];
+    auto& i = Members->Items[Members->Indexes.GetUInt32Array()[idx]];                                                  \
+    static_cast<void>(i);
 
 static const ItemData null_combobox_item = { 0 };
 
@@ -93,7 +94,7 @@ bool ComboBox_AddItem(ComboBox* control, const AppCUI::Utils::ConstString& capti
     return true;
 }
 
-unsigned int ComboBox_MousePosToIndex(ComboBox* control, int x, int y)
+unsigned int ComboBox_MousePosToIndex(ComboBox* control, int, int y)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, ComboBox::NO_ITEM_SELECTED);
     if ((y > 1) && (y < (int) (2 + Members->VisibleItemsCount)))
@@ -112,7 +113,6 @@ void ComboBox_SetCurrentIndex(ComboBox* control, unsigned int newIndex)
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, );
     unsigned int old          = Members->CurentItemIndex;
     unsigned int indexesCount = (unsigned int) Members->Indexes.Len();
-    unsigned int itemsCount   = (unsigned int) Members->Items.size();
 
     if (indexesCount == 0)
     {
@@ -331,7 +331,7 @@ void ComboBox::SetNoIndexSelected()
     RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
 }
 
-bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     switch (keyCode)
@@ -421,7 +421,7 @@ void ComboBox::OnHotKey()
         RaiseEvent(Event::EVENT_COMBO_CLOSED);
     }
 }
-void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     unsigned int idx = ComboBox_MousePosToIndex(this, x, y);
@@ -429,7 +429,7 @@ void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         ComboBox_SetCurrentIndex(this, idx);
     OnHotKey();
 }
-bool ComboBox::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool ComboBox::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
 

@@ -357,7 +357,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         Members->dragOffsetY = y;
     }
 }
-void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
@@ -382,7 +382,7 @@ void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
     //		return;
     //}
 }
-bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
@@ -461,7 +461,7 @@ bool Window::OnBeforeResize(int newWidth, int newHeight)
     return (newWidth >= Members->MinWidth) && (newWidth <= Members->MaxWidth) && (newHeight >= Members->MinHeight) &&
            (newHeight <= Members->MaxHeight);
 }
-void Window::OnAfterResize(int newWidth, int newHeight)
+void Window::OnAfterResize(int, int)
 {
     WindowControlContext* Members = (WindowControlContext*) this->Context;
     if (Members)
@@ -469,7 +469,7 @@ void Window::OnAfterResize(int newWidth, int newHeight)
         UpdateWindowsButtonsPoz(Members);
     }
 }
-bool Window::OnEvent(Control* sender, Event eventType, int controlID)
+bool Window::OnEvent(Control*, Event eventType, int)
 {
     if ((eventType == Event::EVENT_WINDOW_CLOSE) || (eventType == Event::EVENT_WINDOW_ACCEPT))
     {
@@ -491,7 +491,7 @@ bool Window::OnEvent(Control* sender, Event eventType, int controlID)
     }
     return false;
 }
-bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);

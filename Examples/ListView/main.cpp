@@ -3076,7 +3076,7 @@ const char* english_words[] = { "a",
 class MyDialog : public AppCUI::Controls::Window
 {
   public:
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
@@ -3432,7 +3432,7 @@ class MyWin : public AppCUI::Controls::Window
             win.Show();
         }
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

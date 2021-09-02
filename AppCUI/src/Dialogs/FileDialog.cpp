@@ -121,7 +121,7 @@ unsigned int __compute_hash__(const char * start, const char * end)
     return hash;
 }
 int FileDialog_ListViewItemComparer(
-      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
+      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
 {
     unsigned long long v1 = control->GetItemData(item1)->UInt64Value;
     unsigned long long v2 = control->GetItemData(item2)->UInt64Value;
@@ -134,7 +134,7 @@ int FileDialog_ListViewItemComparer(
     return s1.CompareWith(s2, true);
 }
 bool FileDialog_EventHandler(
-      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* Context)
+      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void*)
 {
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }

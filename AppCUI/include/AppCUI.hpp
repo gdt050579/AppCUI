@@ -78,6 +78,7 @@
 #    define LOG_ERROR(format, ...)                                                                                     \
         AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
+inline void Unused(...) {}
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -101,7 +102,7 @@
         {                                                                                                              \
             return (returnValue);                                                                                      \
         }
-#    define LOG_INFO(format, ...)
+#    define LOG_INFO(format, ...) Unused(format, ##__VA_ARGS__);
 #    define LOG_WARNING(format, ...)
 #    define LOG_ERROR(format, ...)
 #endif
@@ -1693,7 +1694,7 @@ namespace Controls
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseOver(int x, int y) override;        
+        bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Control* sender, Event eventType, int controlID) override;
 

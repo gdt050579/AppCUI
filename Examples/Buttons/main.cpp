@@ -30,7 +30,7 @@ class MyWin : public AppCUI::Controls::Window
               "x:0,y:0,w:100%,h:100%");
         l2.Create(this, "", "x:1,y:10,w:56");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

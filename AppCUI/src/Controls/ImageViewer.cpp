@@ -49,7 +49,7 @@ Color RGB_to_Color(unsigned int colorRGB)
 }
 bool Paint_SmallBoxes(Canvas& c, const AppCUI::Graphics::Image& img)
 {
-    CHECK(c.Resize(img.GetWidth(), ((img.GetHeight() | 1 + 1) / 2)), false, "Fail to resize !");
+    CHECK(c.Resize(img.GetWidth(), (((img.GetHeight() | 1) + 1) / 2)), false, "Fail to resize !");
     unsigned int py = 0;
     for (unsigned int y = 0; y < img.GetHeight();y+=2,py++)
     {

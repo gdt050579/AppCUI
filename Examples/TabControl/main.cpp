@@ -57,7 +57,7 @@ class TabExampleWin : public AppCUI::Controls::Window
 
         tb.SetCurrentTabPage(0);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == CLOSE_BUTTON_ID))
         {
@@ -116,7 +116,7 @@ class MyWin : public AppCUI::Controls::Window
         TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()));
         tw.Show();
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

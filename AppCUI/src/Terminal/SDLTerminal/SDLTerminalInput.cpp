@@ -21,7 +21,7 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool SDLTerminal::initInput(const InitializationData& initData)
+bool SDLTerminal::initInput(const InitializationData&)
 {
     oldShiftState = Key::None;
 
@@ -165,8 +165,6 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     {
         return;
     }
-
-    volatile int j = __has_cpp_attribute(nodiscard);
 
     switch (e.type)
     {

@@ -63,7 +63,7 @@ bool NcursesTerminal::initInput()
     return true;
 }
 
-void NcursesTerminal::handleMouse(SystemEvent& evt, const int c)
+void NcursesTerminal::handleMouse(SystemEvent& evt, const int)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)

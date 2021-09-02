@@ -79,7 +79,7 @@ class TicTacToeTable : public UserControl
         renderer.FillVerticalLineWithSpecialChar(
               9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
-    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
+    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton) override
     {
         const int cell_x = std::min<>(x / 5, 2);
         const int cell_y = std::min<>(y / 5, 2);
@@ -118,7 +118,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
         this->Create("TicTacToe", "a:c,w:20,h:18");
         game.Create(this, "x:2,y:1,w:14,h:14");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

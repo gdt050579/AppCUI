@@ -240,7 +240,7 @@ bool HashToAlignament(unsigned int hash, Alignament& result)
     RETURNERROR(false, "Unknwon align hash: %08X", hash);
 }
 
-bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
+bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config*)
 {
     int value = 0;
     switch (l.ValueType)
@@ -815,7 +815,6 @@ bool AppCUI::Controls::Control::AddControl(Control* ctrl)
     if (OnBeforeAddControl(ctrl) == false)
         return false;
     // fac linkul
-    Control* oldParent                          = ((ControlContext*) (ctrl->Context))->Parent;
     CTRLC->Controls[CTRLC->ControlsCount++]     = ctrl;
     ((ControlContext*) (ctrl->Context))->Parent = this;
     OnAfterAddControl(ctrl);
@@ -1210,7 +1209,7 @@ void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
+void AppCUI::Controls::Control::Paint(Graphics::Renderer&)
 {
 }
 bool AppCUI::Controls::Control::IsInitialized()
@@ -1219,7 +1218,7 @@ bool AppCUI::Controls::Control::IsInitialized()
     return CTRLC->Inited;
 }
 // Evenimente
-bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key, char16_t)
 {
     return false;
 }
@@ -1229,17 +1228,17 @@ void AppCUI::Controls::Control::OnFocus()
 void AppCUI::Controls::Control::OnLoseFocus()
 {
 }
-void AppCUI::Controls::Control::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void AppCUI::Controls::Control::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
 }
-void AppCUI::Controls::Control::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void AppCUI::Controls::Control::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 {
 }
-bool AppCUI::Controls::Control::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool AppCUI::Controls::Control::OnMouseDrag(int, int, AppCUI::Input::MouseButton)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseOver(int x, int y)
+bool AppCUI::Controls::Control::OnMouseOver(int, int)
 {
     return false;
 }
@@ -1251,49 +1250,49 @@ bool AppCUI::Controls::Control::OnMouseLeave()
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool AppCUI::Controls::Control::OnMouseWheel(int, int, AppCUI::Input::MouseWheel)
 {
     return false;
 }
 void AppCUI::Controls::Control::OnHotKey()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control* sender, Event eventType, int controlID)
+bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control*, Event, int)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar)
+bool AppCUI::Controls::Control::OnUpdateCommandBar(AppCUI::Application::CommandBar&)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnBeforeResize(int newWidth, int newHeight)
+bool AppCUI::Controls::Control::OnBeforeResize(int, int)
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterResize(int newWidth, int newHeight)
+void AppCUI::Controls::Control::OnAfterResize(int, int)
 {
 }
 bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ctrl)
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip& expandedClip)
+void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
 {
 }
 void AppCUI::Controls::Control::OnPackView()
 {
 }
-void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control* ctrl)
+void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control*)
 {
     // daca e primul - setez si tab-ul
     if (CTRLC->ControlsCount == 1)
         CTRLC->CurrentControlIndex = 0;
 }
-bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString& text)
+bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString&)
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString& text)
+void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString&)
 {
 }
 void AppCUI::Controls::Control::OnUpdateScrollBars()
