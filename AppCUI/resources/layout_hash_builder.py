@@ -59,7 +59,7 @@ def CreateKeys():
 		s += "constexpr unsigned short LAYOUT_KEY_"+k.upper()+" = 0x%04X;\n"%(v);
 		v *= 2
 	s += "\n"
-	s += "constexpr unsignd short _layout_translate_map_["+str(max(res)+1)+"] = "
+	s += "constexpr unsigned short _layout_translate_map_["+str(max(res)+1)+"] = {"
 	for h in range(0,max(res)+1):
 		if h in res:
 			s += "LAYOUT_KEY_"+res[h].upper()+","
@@ -69,7 +69,7 @@ def CreateKeys():
 	s += "\n"; 
 	s += "inline unsigned short LayoutKeyToFlag(unsigned int hash) {\n";
 	s += "	if (hash>="+str(max(res)+1)+") return LAYOUT_KEY_NONE;\n";
-	s += "	retunr _layout_translate_map_[hash];\n"
+	s += "	return _layout_translate_map_[hash];\n"
 	s += "};\n"
 	return s
 
