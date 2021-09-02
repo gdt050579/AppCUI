@@ -763,7 +763,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
     case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP:
         return ProcessCornerAnchorLayout(inf, Alignament::TopRight);
     case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
-        return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
+        return ProcessCornerAnchorLayout(inf, Alignament::BottomRight);
     case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
         return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
     }
