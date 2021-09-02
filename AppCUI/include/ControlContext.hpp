@@ -20,6 +20,21 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
+struct LayoutInformation
+{
+    unsigned int flags;
+    unsigned int percentagesMask;
+    int x, y;
+    int width, height;
+    int a_left, a_top, a_right, a_bottom;
+    Alignament align, dock;
+};
+struct LayoutMetricData
+{
+    int ParentWidth, ParentHeigh;
+    int X, Y, Width, Height, AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
+    Alignament Align,Anchor;
+};
 enum class LayoutFormatMode: unsigned short
 {
     None,
@@ -40,6 +55,7 @@ struct ControlContext
             int Width, Height;
             int AnchorLeft, AnchorRight, AnchorTop, AnchorBottom, X, Y;
             unsigned short PercentageMask;
+            Alignament Align, Anchor;
             LayoutFormatMode LayoutMode;
         } Format;
         int X, Y;
@@ -100,7 +116,10 @@ struct ControlContext
 
     ControlContext();
 
+    bool ProcessDockedLayout(LayoutInformation& inf);
+    bool ProcessXYWHLayout(LayoutInformation& inf);
     bool UpdateLayoutFormat(const std::string_view& format);
+    bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 };

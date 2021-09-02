@@ -20,16 +20,6 @@ using namespace AppCUI::Utils;
 #define CHAR_TYPE_POINT     7
 #define CHAR_TYPE_MINUS     8
 
-#define LAYOUT_MODE_TOP_LEFT     0 // X,Y + W,H
-#define LAYOUT_MODE_TOP          1
-#define LAYOUT_MODE_TOP_RIGHT    2
-#define LAYOUT_MODE_RIGHT        3
-#define LAYOUT_MODE_BOTTOM_RIGHT 4
-#define LAYOUT_MODE_BOTTOM       5
-#define LAYOUT_MODE_BOTTOM_LEFT  6
-#define LAYOUT_MODE_LEFT         7
-#define LAYOUT_MODE_CENTER       8
-
 
 
 //=========================================
@@ -375,28 +365,11 @@ inline bool HashToAlignament(unsigned int hash, Alignament& align)
             inf.percentagesMask |= flag;                                                                               \
     }
 
-#define TRANSFER_MASK(fromBit, toBit)                                                                                  \
-    {                                                                                                                  \
-        if (inf.percentagesMask & fromBit)                                                                             \
-            inf.percentagesMask |= toBit;                                                                              \
-        else                                                                                                           \
-            inf.percentagesMask -= (inf.percentagesMask & toBit);                                                      \
-    }
 
-struct LayoutInformation
-{
-    unsigned int flags;
-    unsigned int percentagesMask;
-    int x, y;
-    int width, height;
-    int a_left, a_top, a_right, a_bottom;
-    Alignament align, dock;
-};
-struct LayoutMetricData
-{
-    int ParentWidth, ParentHeight;
-    unsigned int PercentagesMask;
-};
+#define TRANSLATE_VALUE(result,from,size,flag) \
+    if (this->Layout.Format.PercentageMask & flag) result = from * size / 10000; else result = from;
+
+
 struct LayoutKeyValueData
 {
     const char* HashName;
@@ -626,28 +599,7 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     }
     return true;
 }
-int ComputeXAxesValue(int formatValue, const LayoutMetricData& md, unsigned int layoutFlag)
-{
-    if (md.PercentagesMask & layoutFlag)
-    {
-        return (formatValue * md.ParentWidth) / 10000;
-    }
-    else
-    {
-        return formatValue;
-    }
-}
-int ComputeYAxesValue(int formatValue, const LayoutMetricData& md, unsigned int layoutFlag)
-{
-    if (md.PercentagesMask & layoutFlag)
-    {
-        return (formatValue * md.ParentHeight) / 10000;
-    }
-    else
-    {
-        return formatValue;
-    }
-}
+
 
 ControlContext::ControlContext()
 {
@@ -678,138 +630,147 @@ ControlContext::ControlContext()
     // curat automat
     memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
+bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
+{
+    // if dock is set --> X,Y, Left, Right, Top and Bottom should not be set
+    CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM | LAYOUT_FLAG_X |
+                        LAYOUT_FLAG_Y)) == 0,
+          false,
+          "When dock|d parameter is used, none of the position (x,y) or anchor (left,right,bottom,top) parameters can "
+          "be uesd");
+    // similar - align can not be used
+    CHECK((inf.flags & LAYOUT_FLAG_ALIGN) == 0,
+          false,
+          "When dock|d parameter is used, 'align' parameter can not be used !");
+    // if width is not set --> default it to 100%
+    if ((inf.flags & LAYOUT_FLAG_WIDTH)==0)
+    {
+        inf.width = 10000; // 100%
+        inf.percentagesMask |= LAYOUT_FLAG_WIDTH;
+    }
+    // if height is not set --> default it to 100%
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+    {
+        inf.height = 10000; // 100%
+        inf.percentagesMask |= LAYOUT_FLAG_HEIGHT;
+    }
+    
+    // set the layout (only width and height) will be copied (rest are 0)
+    this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width          = inf.width;
+    this->Layout.Format.Height         = inf.height;
+    this->Layout.Format.Align          = inf.dock;
+    this->Layout.Format.Anchor         = inf.dock;
+    this->Layout.Format.X              = 0;
+    this->Layout.Format.Y              = 0;
+    this->Layout.Format.PercentageMask = (inf.percentagesMask & (LAYOUT_FLAG_WIDTH | LAYOUT_FLAG_HEIGHT));
+
+    // all good
+    return true;
+}
+bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
+{
+    NOT_IMPLEMENTED(false);
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
 
     // check if layout params are OK
+    // Step 1 ==> if dock option is present
+    if (inf.flags & LAYOUT_FLAG_DOCK)
+        return ProcessDockedLayout(inf);
+    // Step 2 ==> check (X,Y) + (W,H) + (optional align)
+    if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == (LAYOUT_FLAG_X | LAYOUT_FLAG_Y))
+        return ProcessXYWHLayout(inf);
 
-    if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) != 0)
+
+    RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
+}
+bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
+{
+    this->Layout.Width  = md.Width;
+    this->Layout.Height = md.Height;
+    // compute (x,y) based on anchor
+    switch (md.Anchor)
     {
-        switch (inf.anchor)
-        {
-        case Alignament::TopLeft:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::Top:
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::TopRight:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::Right:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            break;
-        case Alignament::BottomRight:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::Bottom:
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::BottomLeft:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::Left:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            break;
-        case Alignament::Center:
-            break;
-        };
-    }
-
-    this->Layout.Format.AnchorLeft   = inf.a_left;
-    this->Layout.Format.AnchorRight  = inf.a_right;
-    this->Layout.Format.AnchorTop    = inf.a_top;
-    this->Layout.Format.AnchorBottom = inf.a_bottom;
-
-    this->Layout.Format.PercentageMask = inf.percentagesMask;
-    this->Layout.Format.Width          = inf.width;
-    this->Layout.Format.Height         = inf.height;
-    this->Layout.Format.AnchorLeft     = inf.a_left;
-    this->Layout.Format.AnchorTop      = inf.a_top;
-    this->Layout.Format.AnchorRight    = inf.a_right;
-    this->Layout.Format.AnchorBottom   = inf.a_bottom;
-
-    const unsigned int anch_flags =
-          inf.flags & (LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT | LAYOUT_FLAG_ANCH_LEFT);
-    switch (anch_flags)
-    {
-    case 0:
-        switch (inf.anchor)
-        {
-        case Alignament::TopLeft:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_LEFT;
-            break;
-        case Alignament::Top:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP;
-            break;
-        case Alignament::TopRight:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_RIGHT;
-            break;
-        case Alignament::Right:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_RIGHT;
-            break;
-        case Alignament::BottomRight:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_RIGHT;
-            break;
-        case Alignament::Bottom:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM;
-            break;
-        case Alignament::BottomLeft:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_LEFT;
-            break;
-        case Alignament::Left:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_LEFT;
-            break;
-        case Alignament::Center:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_CENTER;
-            break;
-        };
+    case Alignament::TopLeft:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_LEFT;
+    case Alignament::Top:
+        this->Layout.X = md.X + md.ParentWidth / 2;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP;
+    case Alignament::TopRight:
+        this->Layout.X = md.X + md.ParentWidth;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_RIGHT;
+    case Alignament::Right:
+        this->Layout.X = md.X + md.ParentWidth;
+        this->Layout.Y = md.Y + md.ParentHeigh / 2;
         break;
-    case LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_RIGHT;
+    case Alignament::BottomRight:
+        this->Layout.X = md.X + md.ParentWidth;
+        this->Layout.Y = md.Y + md.ParentHeigh;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_RIGHT;
+    case Alignament::Bottom:
+        this->Layout.X = md.X + md.ParentWidth / 2;
+        this->Layout.Y = md.Y + md.ParentHeigh;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM;
+    case Alignament::BottomLeft:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.Y + md.ParentHeigh;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_LEFT;
+    case Alignament::Left:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.Y + md.ParentHeigh / 2;
         break;
-    case LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_LEFT;
+    case Alignament::Center:
+        this->Layout.X = md.X + md.ParentWidth / 2;
+        this->Layout.Y = md.Y + md.ParentHeigh / 2;
         break;
     default:
-        RETURNERROR(false, "Invalid format: (%s) --> you have either missed or add to many values !");
-    }
+        RETURNERROR(false, "Invalid anchor value: %d", md.Anchor);
+    };
+    // align (x,y) from the current position based on Width/Height
+    switch (md.Align)
+    {
+    case Alignament::TopLeft:
+        // do nothing        
+        break;
+    case Alignament::Top:
+        this->Layout.X -= md.Width / 2;        
+        break;
+    case Alignament::TopRight:
+        this->Layout.X -= md.Width;
+        break;
+    case Alignament::Right:
+        this->Layout.X -= md.Width;
+        this->Layout.Y -= md.Height / 2;
+        break;
+    case Alignament::BottomRight:
+        this->Layout.X -= md.Width;
+        this->Layout.Y -= md.Height;
+        break;
+    case Alignament::Bottom:
+        this->Layout.X -= md.Width / 2;
+        this->Layout.Y -= md.Height;
+        break;
+    case Alignament::BottomLeft:
+        this->Layout.Y -= md.Height;
+        break;
+    case Alignament::Left:
+        this->Layout.Y -= md.Height / 2;
+        break;
+    case Alignament::Center:
+        this->Layout.X -= md.Width / 2;
+        this->Layout.Y -= md.Height / 2;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignament value: %d", md.Align);
+    };
     return true;
 }
 bool ControlContext::RecomputeLayout(Control* controlParent)
@@ -827,70 +788,32 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     {
         CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
     }
-    md.ParentWidth     = sz.Width;
-    md.ParentHeight    = sz.Height;
-    md.PercentagesMask = this->Layout.Format.PercentageMask;
+    // translate values - X Axes
+    TRANSLATE_VALUE(md.X, this->Layout.Format.X, sz.Width, LAYOUT_FLAG_X);
+    TRANSLATE_VALUE(md.AnchorLeft, this->Layout.Format.AnchorLeft, sz.Width, LAYOUT_FLAG_LEFT);
+    TRANSLATE_VALUE(md.AnchorRight, this->Layout.Format.AnchorRight, sz.Width, LAYOUT_FLAG_RIGHT);
+    TRANSLATE_VALUE(md.Width, this->Layout.Format.Width, sz.Width, LAYOUT_FLAG_WIDTH);
 
-    int a_l, a_r, a_t, a_b;
-    this->Layout.Width = ComputeXAxesValue(this->Layout.Format.Width, md, LAYOUT_FLAG_WIDTH);
-    if (this->Layout.Width < this->Layout.MinWidth)
-        this->Layout.Width = this->Layout.MinWidth;
-    if (this->Layout.Width > this->Layout.MaxWidth)
-        this->Layout.Width = this->Layout.MaxWidth;
+    // translate values - Y Axes
+    TRANSLATE_VALUE(md.Y, this->Layout.Format.Y, sz.Height, LAYOUT_FLAG_Y);
+    TRANSLATE_VALUE(md.AnchorTop, this->Layout.Format.AnchorTop, sz.Height, LAYOUT_FLAG_TOP);
+    TRANSLATE_VALUE(md.AnchorBottom, this->Layout.Format.AnchorBottom, sz.Height, LAYOUT_FLAG_BOTTOM);
+    TRANSLATE_VALUE(md.Height, this->Layout.Format.Height, sz.Height, LAYOUT_FLAG_HEIGHT);
 
-    this->Layout.Height = ComputeYAxesValue(this->Layout.Format.Height, md, LAYOUT_FLAG_HEIGHT);
-    if (this->Layout.Height < this->Layout.MinHeight)
-        this->Layout.Height = this->Layout.MinHeight;
-    if (this->Layout.Height > this->Layout.MaxHeight)
-        this->Layout.Height = this->Layout.MaxHeight;
+    // copy align & anchor
+    md.Align       = this->Layout.Format.Align;
+    md.Anchor      = this->Layout.Format.Anchor;
+    md.ParentWidth = sz.Width;
+    md.ParentHeigh = sz.Height;
 
-    a_l = ComputeXAxesValue(this->Layout.Format.AnchorLeft, md, LAYOUT_FLAG_ANCH_LEFT);
-    a_r = ComputeXAxesValue(this->Layout.Format.AnchorRight, md, LAYOUT_FLAG_ANCH_RIGHT);
-    a_t = ComputeYAxesValue(this->Layout.Format.AnchorTop, md, LAYOUT_FLAG_ANCH_TOP);
-    a_b = ComputeYAxesValue(this->Layout.Format.AnchorBottom, md, LAYOUT_FLAG_ANCH_BOTTOM);
-
+    // compute position
     switch (this->Layout.Format.LayoutMode)
     {
-    case LAYOUT_MODE_TOP_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_TOP:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_TOP_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    case LAYOUT_MODE_BOTTOM_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_BOTTOM:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_BOTTOM_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    case LAYOUT_MODE_CENTER:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    default:
-        RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.LayoutMode);
+        case LayoutFormatMode::PointAndSize:
+            return RecomputeLayout_PointAndSize(md);
+        default:
+            RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }
-    return true;
 }
 void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
 {
