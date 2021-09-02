@@ -958,7 +958,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned int
+    enum class Alignament : unsigned char
     {
         TopLeft = 0,
         Top,

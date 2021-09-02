@@ -20,16 +20,6 @@ using namespace AppCUI::Utils;
 #define CHAR_TYPE_POINT     7
 #define CHAR_TYPE_MINUS     8
 
-#define LAYOUT_FLAG_WIDTH       0x0001
-#define LAYOUT_FLAG_HEIGHT      0x0002
-#define LAYOUT_FLAG_ANCH_LEFT   0x0004
-#define LAYOUT_FLAG_ANCH_RIGHT  0x0008
-#define LAYOUT_FLAG_ANCH_TOP    0x0010
-#define LAYOUT_FLAG_ANCH_BOTTOM 0x0020
-#define LAYOUT_FLAG_ANCHOR      0x0040
-#define LAYOUT_FLAG_X           0x0100
-#define LAYOUT_FLAG_Y           0x0200
-
 #define LAYOUT_MODE_TOP_LEFT     0 // X,Y + W,H
 #define LAYOUT_MODE_TOP          1
 #define LAYOUT_MODE_TOP_RIGHT    2
@@ -39,6 +29,341 @@ using namespace AppCUI::Utils;
 #define LAYOUT_MODE_BOTTOM_LEFT  6
 #define LAYOUT_MODE_LEFT         7
 #define LAYOUT_MODE_CENTER       8
+
+
+
+//=========================================
+// THIS CODE WAS AUTOMATICALLY GENERATED !
+//=========================================
+
+constexpr unsigned char LAYOUT_KEY_NONE     = 0;
+constexpr unsigned short LAYOUT_KEY_X       = 1;
+constexpr unsigned short LAYOUT_FLAG_X      = 0x0001;
+constexpr unsigned short LAYOUT_KEY_Y       = 2;
+constexpr unsigned short LAYOUT_FLAG_Y      = 0x0002;
+constexpr unsigned short LAYOUT_KEY_LEFT    = 3;
+constexpr unsigned short LAYOUT_FLAG_LEFT   = 0x0004;
+constexpr unsigned short LAYOUT_KEY_RIGHT   = 4;
+constexpr unsigned short LAYOUT_FLAG_RIGHT  = 0x0008;
+constexpr unsigned short LAYOUT_KEY_TOP     = 5;
+constexpr unsigned short LAYOUT_FLAG_TOP    = 0x0010;
+constexpr unsigned short LAYOUT_KEY_BOTTOM  = 6;
+constexpr unsigned short LAYOUT_FLAG_BOTTOM = 0x0020;
+constexpr unsigned short LAYOUT_KEY_WIDTH   = 7;
+constexpr unsigned short LAYOUT_FLAG_WIDTH  = 0x0040;
+constexpr unsigned short LAYOUT_KEY_HEIGHT  = 8;
+constexpr unsigned short LAYOUT_FLAG_HEIGHT = 0x0080;
+constexpr unsigned short LAYOUT_KEY_ALIGN   = 9;
+constexpr unsigned short LAYOUT_FLAG_ALIGN  = 0x0100;
+constexpr unsigned short LAYOUT_KEY_DOCK    = 10;
+constexpr unsigned short LAYOUT_FLAG_DOCK   = 0x0200;
+
+constexpr unsigned char _layout_translate_map_[116] = {
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_ALIGN, LAYOUT_KEY_BOTTOM, LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_WIDTH,
+    LAYOUT_KEY_X,     LAYOUT_KEY_Y,     LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,   LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_ALIGN,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,
+    LAYOUT_KEY_WIDTH, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
+};
+
+inline unsigned char HashToLayoutKey(unsigned int hash)
+{
+    if (hash >= 116)
+        return LAYOUT_KEY_NONE;
+    return _layout_translate_map_[hash];
+};
+
+constexpr unsigned char _align_translate_map_[258] = { 0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Bottom,
+                                                       (unsigned char) Alignament::Center,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Left,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomLeft,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Right,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Top,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Left,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Top,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Right,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Center,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Bottom,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomRight };
+
+inline bool HashToAlignament(unsigned int hash, Alignament& align)
+{
+    if (hash >= 258)
+        return false;
+    auto ch = _align_translate_map_[hash];
+    if (ch == 0xFF)
+        return false;
+    align = static_cast<Alignament>(ch);
+    return true;
+};
+
+//=========================================
+// END OF AUTOMATICALLY GENERATED CODE
+//=========================================
+
+
+
 
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
@@ -65,7 +390,7 @@ struct LayoutInformation
     int x, y;
     int width, height;
     int a_left, a_top, a_right, a_bottom;
-    Alignament anchor;
+    Alignament align, dock;
 };
 struct LayoutMetricData
 {
@@ -128,117 +453,8 @@ unsigned char __char_types__[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER
 };
 
-#define HASH_KEYWORD_X            0x00000003
-#define HASH_KEYWORD_Y            0x00000002
-#define HASH_KEYWORD_ALIGN        0x000018BD
-#define HASH_KEYWORD_A            0x0000001A
-#define HASH_KEYWORD_ALIGNAMENT   0x0062ECD3
-#define HASH_KEYWORD_W            0x00000004
-#define HASH_KEYWORD_WIDTH        0x000001FF
-#define HASH_KEYWORD_H            0x00000013
-#define HASH_KEYWORD_HEIGHT       0x00005F8B
-#define HASH_KEYWORD_ANCH         0x00000623
-#define HASH_KEYWORD_ANCHOR       0x00006209
-#define HASH_KEYWORD_AN           0x00000065
-#define HASH_KEYWORD_ANC          0x0000018C
-#define HASH_KEYWORD_L            0x0000000F
-#define HASH_KEYWORD_LEFT         0x000002F3
-#define HASH_KEYWORD_AL           0x00000067
-#define HASH_KEYWORD_ANCHORLEFT   0x00620BF3
-#define HASH_KEYWORD_R            0x00000009
-#define HASH_KEYWORD_RIGHT        0x00000C8B
-#define HASH_KEYWORD_AR           0x00000061
-#define HASH_KEYWORD_ANCHORRIGHT  0x0188288B
-#define HASH_KEYWORD_T            0x00000007
-#define HASH_KEYWORD_TOP          0x0000004B
-#define HASH_KEYWORD_AT           0x0000006F
-#define HASH_KEYWORD_ANCHORTOP    0x0018820B
-#define HASH_KEYWORD_B            0x00000019
-#define HASH_KEYWORD_BOTTOM       0x0000698E
-#define HASH_KEYWORD_AB           0x00000071
-#define HASH_KEYWORD_ANCHORBOTTOM 0x0620F98E
-
-#define HASH_ALIGN_LEFT        0x000002F3
-#define HASH_ALIGN_L           0x0000000F
-#define HASH_ALIGN_TOP         0x0000004B
-#define HASH_ALIGN_T           0x00000007
-#define HASH_ALIGN_RIGHT       0x00000C8B
-#define HASH_ALIGN_R           0x00000009
-#define HASH_ALIGN_BOTTOM      0x0000698E
-#define HASH_ALIGN_B           0x00000019
-#define HASH_ALIGN_TOPLEFT     0x000049F3
-#define HASH_ALIGN_TL          0x00000013
-#define HASH_ALIGN_LEFTTOP     0x0000BC8B
-#define HASH_ALIGN_LT          0x0000003B
-#define HASH_ALIGN_TOPRIGHT    0x0001208B
-#define HASH_ALIGN_TR          0x00000015
-#define HASH_ALIGN_RIGHTTOP    0x0003228B
-#define HASH_ALIGN_RT          0x00000023
-#define HASH_ALIGN_BOTTOMRIGHT 0x01A6348B
-#define HASH_ALIGN_BR          0x0000006D
-#define HASH_ALIGN_RIGHTBOTTOM 0x00C8D98E
-#define HASH_ALIGN_RB          0x0000003D
-#define HASH_ALIGN_BOTTOMLEFT  0x00698CF3
-#define HASH_ALIGN_BL          0x0000006B
-#define HASH_ALIGN_LEFTBOTTOM  0x002F598E
-#define HASH_ALIGN_LB          0x00000025
-#define HASH_ALIGN_CENTER      0x00007561
-#define HASH_ALIGN_C           0x00000018
-
 // <xxx> (Arrow left, 3 character, Arrow right)
 #define MINIM_SCORLL_BAR_LENGTH 5
-
-bool HashToAlignament(unsigned int hash, Alignament& result)
-{
-    switch (hash)
-    {
-    case HASH_ALIGN_TOPLEFT:
-    case HASH_ALIGN_TL:
-    case HASH_ALIGN_LEFTTOP:
-    case HASH_ALIGN_LT:
-        result = Alignament::TopLeft;
-        return true;
-    case HASH_ALIGN_TOP:
-    case HASH_ALIGN_T:
-        result = Alignament::Top;
-        return true;
-    case HASH_ALIGN_TOPRIGHT:
-    case HASH_ALIGN_TR:
-    case HASH_ALIGN_RIGHTTOP:
-    case HASH_ALIGN_RT:
-        result = Alignament::TopRight;
-        return true;
-    case HASH_ALIGN_RIGHT:
-    case HASH_ALIGN_R:
-        result = Alignament::Right;
-        return true;
-    case HASH_ALIGN_BOTTOMRIGHT:
-    case HASH_ALIGN_BR:
-    case HASH_ALIGN_RIGHTBOTTOM:
-    case HASH_ALIGN_RB:
-        result = Alignament::BottomRight;
-        return true;
-    case HASH_ALIGN_BOTTOM:
-    case HASH_ALIGN_B:
-        result = Alignament::Bottom;
-        return true;
-    case HASH_ALIGN_BOTTOMLEFT:
-    case HASH_ALIGN_BL:
-    case HASH_ALIGN_LEFTBOTTOM:
-    case HASH_ALIGN_LB:
-        result = Alignament::BottomLeft;
-        return true;
-    case HASH_ALIGN_LEFT:
-    case HASH_ALIGN_L:
-        result = Alignament::Left;
-        return true;
-    case HASH_ALIGN_CENTER:
-    case HASH_ALIGN_C:
-        result = Alignament::Center;
-        return true;
-    }
-    RETURNERROR(false, "Unknwon align hash: %08X", hash);
-}
 
 bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
@@ -257,64 +473,43 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
         // percentage
         value = l.n1 * 100 + l.n2;
         break;
-    case 'u':
-    case 'U':
-        // units
-        CHECK(l.n2 == 0, false, "Units values can not be floating values !");
-        value       = l.n1;
-        l.ValueType = 'u';
-        break;
     default:
         RETURNERROR(false, "Invalid value format: %d (%c)", l.ValueType, l.ValueType);
     }
     if (l.IsNegative)
         value = -value;
-    switch (l.Hash)
+    unsigned char layoutKey = HashToLayoutKey(l.Hash);
+    switch (layoutKey)
     {
-    case HASH_KEYWORD_X:
+    case LAYOUT_KEY_X:
         SET_LAYOUT_INFO(LAYOUT_FLAG_X, x);
         break;
-    case HASH_KEYWORD_Y:
+    case LAYOUT_KEY_Y:
         SET_LAYOUT_INFO(LAYOUT_FLAG_Y, y);
         break;
-    case HASH_KEYWORD_W:
-    case HASH_KEYWORD_WIDTH:
+    case LAYOUT_KEY_LEFT:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_LEFT, a_left);
+        break;
+    case LAYOUT_KEY_RIGHT:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_RIGHT, a_right);
+        break;
+    case LAYOUT_KEY_TOP:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_TOP, a_top);
+        break;
+    case LAYOUT_KEY_BOTTOM:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_BOTTOM, a_bottom);
+        break;
+    case LAYOUT_KEY_WIDTH:
         SET_LAYOUT_INFO(LAYOUT_FLAG_WIDTH, width);
         break;
-    case HASH_KEYWORD_H:
-    case HASH_KEYWORD_HEIGHT:
+    case LAYOUT_KEY_HEIGHT:
         SET_LAYOUT_INFO(LAYOUT_FLAG_HEIGHT, height);
         break;
-    case HASH_KEYWORD_A:
-    case HASH_KEYWORD_AN:
-    case HASH_KEYWORD_ANC:
-    case HASH_KEYWORD_ANCH:
-    case HASH_KEYWORD_ANCHOR:
-        CHECK(HashToAlignament(l.StringValueHash, inf.anchor), false, "Fail to compute anchor value !");
+    case LAYOUT_KEY_ALIGN:
+        CHECK(HashToAlignament(l.StringValueHash, inf.align), false, "Fail to compute align value !");
         break;
-    case HASH_KEYWORD_L:
-    case HASH_KEYWORD_AL:
-    case HASH_KEYWORD_LEFT:
-    case HASH_KEYWORD_ANCHORLEFT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_LEFT, a_left);
-        break;
-    case HASH_KEYWORD_R:
-    case HASH_KEYWORD_AR:
-    case HASH_KEYWORD_RIGHT:
-    case HASH_KEYWORD_ANCHORRIGHT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_RIGHT, a_right);
-        break;
-    case HASH_KEYWORD_T:
-    case HASH_KEYWORD_AT:
-    case HASH_KEYWORD_TOP:
-    case HASH_KEYWORD_ANCHORTOP:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_TOP, a_top);
-        break;
-    case HASH_KEYWORD_B:
-    case HASH_KEYWORD_AB:
-    case HASH_KEYWORD_BOTTOM:
-    case HASH_KEYWORD_ANCHORBOTTOM:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_BOTTOM, a_bottom);
+    case LAYOUT_KEY_DOCK:
+        CHECK(HashToAlignament(l.StringValueHash, inf.dock), false, "Fail to compute dock value !");
         break;
     default:
         RETURNERROR(false, "Unknown key (hash:%08x) ==> %s", l.Hash, l.HashName);
@@ -327,16 +522,19 @@ inline const unsigned char* SkipSpaces(const unsigned char* start, const unsigne
         start++;
     return start;
 }
-inline const unsigned char* ComputeValueHash(
-      const unsigned char* start, const unsigned char* end, unsigned int& hashValue)
+inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsigned char* e, unsigned int& hashValue)
 {
     hashValue = 0;
-    while ((start < end) && (__char_types__[*start] == CHAR_TYPE_WORD))
+    unsigned int index = 0;
+    while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
-        hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
-        start++;
+        // hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
+        hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((unsigned char) (~0x20))))));
+        hashValue += index;
+        s++;
+        index += 2;
     }
-    return start;
+    return s;
 }
 bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
@@ -349,7 +547,8 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     inf.a_left = inf.a_bottom = inf.a_top = inf.a_right = 0;
     inf.width                                           = 1;
     inf.height                                          = 1;
-    inf.anchor                                          = Alignament::TopLeft;
+    inf.align                                           = Alignament::TopLeft;
+    inf.dock                                            = Alignament::TopLeft;
     inf.x                                               = 0;
     inf.y                                               = 0;
     inf.flags                                           = 0;
@@ -484,7 +683,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
 
-    // validez ca sunt ok
+    // check if layout params are OK
 
     if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) != 0)
     {

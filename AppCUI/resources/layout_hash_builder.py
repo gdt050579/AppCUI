@@ -24,9 +24,9 @@ align_values_reversed = {
 	"Top":"t,top",
 	"TopRight":"tr,rt,topright,righttop",
 	"Right":"r,right",
-	"BotomRight":"br,rb,bottomright,rightbottom",
+	"BottomRight":"br,rb,bottomright,rightbottom",
 	"Bottom":"b,bottom",
-	"BotomLeft":"bl,lb,bottomleft,leftbottom",
+	"BottomLeft":"bl,lb,bottomleft,leftbottom",
 	"Left":"l,left",
 	"Center":"c,center",
 }
@@ -103,7 +103,7 @@ def CreateAlignValues():
 	s += "constexpr unsigned char _align_translate_map_["+str(max(res)+1)+"] = {"
 	for h in range(0,max(res)+1):
 		if h in res:
-			s += "Alignament."+res[h]+","
+			s += "(unsigned char)Alignament::"+res[h]+","
 		else:
 			s += "0xFF,"
 	s = s[:-1] + "};\n"

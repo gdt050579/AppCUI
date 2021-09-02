@@ -20,6 +20,15 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
+enum class LayoutFormatMode: unsigned short
+{
+    None,
+    PointAndSize,
+    LeftRightAnchorsAndHeight,
+    TopBottomAnchorsAndWidth,
+    LeftTopRightBottomAnchors
+};
+
 struct ControlContext
 {
   public:
@@ -29,9 +38,9 @@ struct ControlContext
         struct
         {
             int Width, Height;
-            int AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
+            int AnchorLeft, AnchorRight, AnchorTop, AnchorBottom, X, Y;
             unsigned short PercentageMask;
-            unsigned char LayoutMode;
+            LayoutFormatMode LayoutMode;
         } Format;
         int X, Y;
         int Width, MinWidth, MaxWidth;
