@@ -360,9 +360,8 @@ inline bool HashToAlignament(unsigned int hash, Alignament& align)
 #define SET_LAYOUT_INFO(flag, field)                                                                                   \
     {                                                                                                                  \
         inf.flags |= flag;                                                                                             \
-        inf.field = value;                                                                                             \
-        if (l.ValueType == '%')                                                                                        \
-            inf.percentagesMask |= flag;                                                                               \
+        inf.field.Value = value;                                                                                       \
+        inf.field.Type = valueType;                                                                                    \
     }
 
 
@@ -432,19 +431,23 @@ unsigned char __char_types__[256] = {
 bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
     int value = 0;
+    LayoutValueType valueType;
     switch (l.ValueType)
     {
     case 0:
-    case 'p':
-    case 'P':
-        // pixels
-        CHECK(l.n2 == 0, false, "Pixel values can not be floating values !");
-        value       = l.n1;
-        l.ValueType = 'p';
+        // characters
+        CHECK(l.n2 == 0, false, "Character offset values can not be floating values !");
+        CHECK(l.n1 <= 30000, false, "A character offset must be smaller than 30000 (current value is: %d)", l.n1);
+        CHECK(l.n1 >= -30000, false, "A character offset must be bigger than -30000 (current value is: %d)", l.n1);
+        value     = l.n1;
+        valueType = LayoutValueType::CharacterOffset;
         break;
     case '%':
         // percentage
-        value = l.n1 * 100 + l.n2;
+        CHECK(l.n1 <= 300, false, "A percentage must be smaller than 300% (current value is: %d)", l.n1);
+        CHECK(l.n1 >= -300, false, "A percentage offset must be bigger than -300% (current value is: %d)", l.n1);
+        value     = l.n1 * 100 + l.n2;
+        valueType = LayoutValueType::Percentage;
         break;
     default:
         RETURNERROR(false, "Invalid value format: %d (%c)", l.ValueType, l.ValueType);
@@ -517,15 +520,18 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     CHECK(p, false, "Expecting a valid (non-null) layout string !");
 
     LayoutKeyValueData lkv;
-    inf.a_left = inf.a_bottom = inf.a_top = inf.a_right = 0;
-    inf.width                                           = 1;
-    inf.height                                          = 1;
-    inf.align                                           = Alignament::TopLeft;
-    inf.dock                                            = Alignament::TopLeft;
-    inf.x                                               = 0;
-    inf.y                                               = 0;
-    inf.flags                                           = 0;
-    inf.percentagesMask                                 = 0;
+    inf.a_left       = { 0, LayoutValueType::CharacterOffset };
+    inf.a_bottom     = { 0, LayoutValueType::CharacterOffset };
+    inf.a_top        = { 0, LayoutValueType::CharacterOffset };
+    inf.a_right      = { 0, LayoutValueType::CharacterOffset };
+    inf.x            = { 0, LayoutValueType::CharacterOffset };
+    inf.y            = { 0, LayoutValueType::CharacterOffset };
+    inf.width        = { 1, LayoutValueType::CharacterOffset };
+    inf.height       = { 1, LayoutValueType::CharacterOffset };
+    inf.align        = Alignament::TopLeft;
+    inf.dock         = Alignament::TopLeft;
+    inf.flags        = 0;
+
 
     int cnt;
 
@@ -644,45 +650,93 @@ bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
           "When dock|d parameter is used, 'align' parameter can not be used !");
     // if width is not set --> default it to 100%
     if ((inf.flags & LAYOUT_FLAG_WIDTH)==0)
-    {
-        inf.width = 10000; // 100%
-        inf.percentagesMask |= LAYOUT_FLAG_WIDTH;
-    }
+        inf.width      = { 10000, LayoutValueType::Percentage };
     // if height is not set --> default it to 100%
     if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
-    {
-        inf.height = 10000; // 100%
-        inf.percentagesMask |= LAYOUT_FLAG_HEIGHT;
-    }
+        inf.height = { 10000, LayoutValueType::Percentage };
     
     // set the layout (only width and height) will be copied (rest are 0)
-    this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
-    this->Layout.Format.Width          = inf.width;
-    this->Layout.Format.Height         = inf.height;
-    this->Layout.Format.Align          = inf.dock;
-    this->Layout.Format.Anchor         = inf.dock;
-    this->Layout.Format.X              = 0;
-    this->Layout.Format.Y              = 0;
-    this->Layout.Format.PercentageMask = (inf.percentagesMask & (LAYOUT_FLAG_WIDTH | LAYOUT_FLAG_HEIGHT));
+    this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width      = inf.width;
+    this->Layout.Format.Height     = inf.height;
+    this->Layout.Format.Align      = inf.dock;
+    this->Layout.Format.Anchor     = inf.dock;
+    this->Layout.Format.X          = { 0, LayoutValueType::CharacterOffset };
+    this->Layout.Format.Y          = { 0, LayoutValueType::CharacterOffset };
 
     // all good
     return true;
 }
 bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
 {
+    // it is assume that DOCK|D is not set (as it was process early in ProcessDockedLayout)
     // if X and Y are set --> Left, Right, Top and Bottom should not be set
     CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM)) == 0,
           false,
-          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can be used");
-    // similar - dock can not be used
-    CHECK((inf.flags & LAYOUT_FLAG_DOCK) == 0,
-          false,
-          "When (x,y) parameters are used, 'dock|d' parameter can not be used !");
+          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can be used");   
     // if align is not set --> default it to TopLeft
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::TopLeft;
-    //
-    NOT_IMPLEMENTED(false);
+    // if width is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        inf.width = { 1, LayoutValueType::CharacterOffset };
+    // if height is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        inf.height = { 1, LayoutValueType::CharacterOffset };
+    
+    this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.X          = inf.x;
+    this->Layout.Format.Y          = inf.y;
+    this->Layout.Format.Width      = inf.width;
+    this->Layout.Format.Height     = inf.height;
+    this->Layout.Format.Align      = inf.align;
+    this->Layout.Format.Anchor     = Alignament::TopLeft; // for (X,Y) anchor is always TopLeft
+
+    return true;
+}
+bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == 0,
+          false,
+          "When a corner anchor is being use (top,left,righ,bottom) , (X,Y) coordonates can not be used");
+    // if align is not set --> default it to TopLeft
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::TopLeft;
+    // if width is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        inf.width = { 1, LayoutValueType::CharacterOffset };
+    // if height is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        inf.height = { 1, LayoutValueType::CharacterOffset };
+    this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width          = inf.width;
+    this->Layout.Format.Height         = inf.height;
+    this->Layout.Format.Align          = inf.align;
+    this->Layout.Format.Anchor         = anchor;    
+    // copy anchor to (X,Y)
+    switch (anchor)
+    {
+    case Alignament::TopLeft:
+        this->Layout.Format.X = inf.a_left;
+        this->Layout.Format.Y = inf.a_top;
+        break;
+    case Alignament::TopRight:
+        this->Layout.Format.X = inf.a_right;
+        this->Layout.Format.Y = inf.a_top;
+        break;
+    case Alignament::BottomRight:
+        this->Layout.Format.X = inf.a_right;
+        this->Layout.Format.Y = inf.a_bottom;
+        break;
+    case Alignament::BottomLeft:
+        this->Layout.Format.X = inf.a_left;
+        this->Layout.Format.Y = inf.a_bottom;
+        break;
+    default:
+        RETURNERROR(false, "Invalid anchor value(%d) for ProcessCornerAnchorLayout (this is an internal error) !");
+    }
+
+    return true;
 }
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
@@ -697,6 +751,18 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
     if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == (LAYOUT_FLAG_X | LAYOUT_FLAG_Y))
         return ProcessXYWHLayout(inf);
 
+    auto anchorFlags = inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM);
+    switch (anchorFlags)
+    {
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP:
+        return ProcessCornerAnchorLayout(inf, Alignament::TopLeft);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP:
+        return ProcessCornerAnchorLayout(inf, Alignament::TopRight);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
+        return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
+        return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
+    }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
 }
@@ -800,23 +866,28 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     {
         CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
     }
-    // translate values - X Axes
-    TRANSLATE_VALUE(md.X, this->Layout.Format.X, sz.Width, LAYOUT_FLAG_X);
-    TRANSLATE_VALUE(md.AnchorLeft, this->Layout.Format.AnchorLeft, sz.Width, LAYOUT_FLAG_LEFT);
-    TRANSLATE_VALUE(md.AnchorRight, this->Layout.Format.AnchorRight, sz.Width, LAYOUT_FLAG_RIGHT);
-    TRANSLATE_VALUE(md.Width, this->Layout.Format.Width, sz.Width, LAYOUT_FLAG_WIDTH);
-
-    // translate values - Y Axes
-    TRANSLATE_VALUE(md.Y, this->Layout.Format.Y, sz.Height, LAYOUT_FLAG_Y);
-    TRANSLATE_VALUE(md.AnchorTop, this->Layout.Format.AnchorTop, sz.Height, LAYOUT_FLAG_TOP);
-    TRANSLATE_VALUE(md.AnchorBottom, this->Layout.Format.AnchorBottom, sz.Height, LAYOUT_FLAG_BOTTOM);
-    TRANSLATE_VALUE(md.Height, this->Layout.Format.Height, sz.Height, LAYOUT_FLAG_HEIGHT);
+    // translate values - X & Y Axes
+    md.X            = this->Layout.Format.X.ToInt(sz.Width);
+    md.Y            = this->Layout.Format.Y.ToInt(sz.Height);
+    md.AnchorLeft   = this->Layout.Format.AnchorLeft.ToInt(sz.Width);
+    md.AnchorTop    = this->Layout.Format.AnchorTop.ToInt(sz.Height);
+    md.AnchorRight  = this->Layout.Format.AnchorRight.ToInt(sz.Width);
+    md.AnchorBottom = this->Layout.Format.AnchorBottom.ToInt(sz.Height);
+    md.Width        = this->Layout.Format.Width.ToInt(sz.Width);
+    md.Height       = this->Layout.Format.Height.ToInt(sz.Height);
 
     // copy align & anchor
     md.Align       = this->Layout.Format.Align;
     md.Anchor      = this->Layout.Format.Anchor;
     md.ParentWidth = sz.Width;
     md.ParentHeigh = sz.Height;
+
+    // check Width / Height values
+    md.Width  = std::max<>(md.Width, this->Layout.MinWidth);
+    md.Width  = std::min<>(md.Width, this->Layout.MaxWidth);
+    md.Height = std::max<>(md.Height, this->Layout.MinHeight);
+    md.Height = std::min<>(md.Height, this->Layout.MaxHeight);
+
 
     // compute position
     switch (this->Layout.Format.LayoutMode)

@@ -20,21 +20,6 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
-struct LayoutInformation
-{
-    unsigned int flags;
-    unsigned int percentagesMask;
-    int x, y;
-    int width, height;
-    int a_left, a_top, a_right, a_bottom;
-    Alignament align, dock;
-};
-struct LayoutMetricData
-{
-    int ParentWidth, ParentHeigh;
-    int X, Y, Width, Height, AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
-    Alignament Align,Anchor;
-};
 enum class LayoutFormatMode: unsigned short
 {
     None,
@@ -43,7 +28,37 @@ enum class LayoutFormatMode: unsigned short
     TopBottomAnchorsAndWidth,
     LeftTopRightBottomAnchors
 };
-
+enum class LayoutValueType: unsigned short
+{
+    CharacterOffset = 0,
+    Percentage
+};
+struct LayoutValue
+{
+    short Value;
+    LayoutValueType Type;
+    inline int ToInt(int parentSize) const
+    {
+        if (Type == LayoutValueType::Percentage)
+            return ((int) Value * parentSize) / 10000;
+        else
+            return (int) Value;
+    }
+};
+struct LayoutInformation
+{
+    unsigned int flags;
+    LayoutValue x, y;
+    LayoutValue width, height;
+    LayoutValue a_left, a_top, a_right, a_bottom;
+    Alignament align, dock;
+};
+struct LayoutMetricData
+{
+    int ParentWidth, ParentHeigh;
+    int X, Y, Width, Height, AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
+    Alignament Align, Anchor;
+};
 struct ControlContext
 {
   public:
@@ -52,9 +67,8 @@ struct ControlContext
     {
         struct
         {
-            int Width, Height;
-            int AnchorLeft, AnchorRight, AnchorTop, AnchorBottom, X, Y;
-            unsigned short PercentageMask;
+            LayoutValue Width, Height;
+            LayoutValue AnchorLeft, AnchorRight, AnchorTop, AnchorBottom, X, Y;
             Alignament Align, Anchor;
             LayoutFormatMode LayoutMode;
         } Format;
@@ -118,6 +132,7 @@ struct ControlContext
 
     bool ProcessDockedLayout(LayoutInformation& inf);
     bool ProcessXYWHLayout(LayoutInformation& inf);
+    bool ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor);
     bool UpdateLayoutFormat(const std::string_view& format);
     bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
     bool RecomputeLayout(Control* parent);
