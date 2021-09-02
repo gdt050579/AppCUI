@@ -1174,7 +1174,7 @@ bool AppCUI::Controls::Control::SetFocus()
                 break;
             }
         }
-        if (((ControlContext*) (p->Context))->CurrentControlIndex == -1)
+        if (((ControlContext*) (p->Context))->CurrentControlIndex == static_cast<unsigned>(-1))
             return false;
         obj = p;
         p   = ((ControlContext*) (p->Context))->Parent;

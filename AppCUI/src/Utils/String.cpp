@@ -643,7 +643,7 @@ const char* AppCUI::Utils::String::Format(const char* format, ...)
 
 bool AppCUI::Utils::String::Truncate(unsigned int newText)
 {
-    if ((newText <= Size) && (newText >= 0))
+    if (newText <= Size)
     {
         Size       = newText;
         Text[Size] = 0;

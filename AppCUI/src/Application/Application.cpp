@@ -357,7 +357,7 @@ AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl)
     // altfel ma uit la copii lui
     if (Members->ControlsCount > 0)
     {
-        if ((Members->CurrentControlIndex >= 0) && (Members->CurrentControlIndex < Members->ControlsCount))
+        if (Members->CurrentControlIndex < Members->ControlsCount)
         {
             Control* c = GetFocusedControl(Members->Controls[Members->CurrentControlIndex]);
             if (c != nullptr)

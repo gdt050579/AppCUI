@@ -53,7 +53,7 @@ void TextField_MoveTo(TextField* control, int newPoz, bool selected)
     int c_width = C_WIDTH;
     if ((!selected) && (Members->Selection.Start != -1))
         control->ClearSelection();
-    if ((Members->Cursor.Pos == Members->Text.Len()) && (newPoz > Members->Cursor.Pos))
+    if ((static_cast<unsigned>(Members->Cursor.Pos) == Members->Text.Len()) && (newPoz > Members->Cursor.Pos))
         return;
 
     if ((selected) && (Members->Selection.Start == -1))
@@ -70,7 +70,7 @@ void TextField_MoveTo(TextField* control, int newPoz, bool selected)
         {
             Members->Cursor.Pos = newPoz = 0;
         }
-        if (Members->Cursor.Pos == Members->Text.Len())
+        if (static_cast<unsigned>(Members->Cursor.Pos) == Members->Text.Len())
             newPoz = Members->Cursor.Pos;
         if (Members->Cursor.Pos < Members->Cursor.StartOffset)
             Members->Cursor.StartOffset = Members->Cursor.Pos;

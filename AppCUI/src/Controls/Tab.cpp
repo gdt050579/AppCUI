@@ -117,7 +117,7 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
 
 
 
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
+    for (unsigned tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -130,7 +130,7 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
             params.Color       = this->Cfg->Tab.PageColor;
             params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
@@ -179,7 +179,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
             params.Color       = this->Cfg->Tab.PageColor;
             params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
@@ -220,7 +220,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
             params.Color       = this->Cfg->Tab.ListSelectedPageColor;
             params.HotKeyColor = this->Cfg->Tab.ListSelectedPageHotKey;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;

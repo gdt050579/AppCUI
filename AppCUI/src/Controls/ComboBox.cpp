@@ -297,7 +297,7 @@ bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, ItemData userD
 {
     CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
-    if ((Members->CurentItemIndex < 0) && (Members->Items.size() > 0))
+    if (Members->Items.size() > 0)
     {
         Members->CurentItemIndex  = 0;
         Members->FirstVisibleItem = 0;
