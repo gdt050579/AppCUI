@@ -670,6 +670,18 @@ bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
 }
 bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
 {
+    // if X and Y are set --> Left, Right, Top and Bottom should not be set
+    CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM)) == 0,
+          false,
+          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can be used");
+    // similar - dock can not be used
+    CHECK((inf.flags & LAYOUT_FLAG_DOCK) == 0,
+          false,
+          "When (x,y) parameters are used, 'dock|d' parameter can not be used !");
+    // if align is not set --> default it to TopLeft
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::TopLeft;
+    //
     NOT_IMPLEMENTED(false);
 }
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
