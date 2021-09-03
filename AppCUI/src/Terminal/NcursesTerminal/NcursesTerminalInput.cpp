@@ -28,7 +28,7 @@ bool NcursesTerminal::initInput()
     nonl();
     raw();
     meta(stdscr, TRUE);
-    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
     mouseinterval(0);
     set_escdelay(0);
 

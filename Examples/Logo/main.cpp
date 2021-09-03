@@ -30,7 +30,7 @@ class LogoWin : public AppCUI::Controls::Window
         {
             for (int x = 0; AppCuiLogo[y][x]; x++)
             {
-                SpecialChars sc;
+                SpecialChars sc{};
                 ColorPair col;
                 switch (AppCuiLogo[y][x])
                 {
