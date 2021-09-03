@@ -3094,7 +3094,7 @@ class MyListViewExample : public MyDialog
   public:
     MyListViewExample(ListViewFlags flags)
     {
-        this->Create("List View Example", "a:c,w:70,h:20");
+        this->Create("List View Example", "d:c,w:70,h:20");
         lv.Create(this, "x:1,y:1,w:66,h:16", flags);
         lv.AddColumn("&State", TextAlignament::Left, 15);
         lv.AddColumn("&Abrv", TextAlignament::Center, 4);
@@ -3128,7 +3128,7 @@ class SimpleListExample : public MyDialog
   public:
     SimpleListExample(bool hasCheckboxes)
     {
-        this->Create("Simple List Example", "a:c,w:30,h:14");
+        this->Create("Simple List Example", "d:c,w:30,h:14");
         lv.Create(
               this,
               "x:1,y:1,w:26,h:10",
@@ -3150,7 +3150,7 @@ class ColumnsExample : public MyDialog
   public:
     ColumnsExample()
     {
-        this->Create("Columns/Headers Example", "a:c,w:70,h:18");
+        this->Create("Columns/Headers Example", "d:c,w:70,h:18");
         lv.Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::Sortable);
         // columns
         lv.AddColumn("&Name", TextAlignament::Left, 30);
@@ -3179,7 +3179,7 @@ class ListViewWithColors : public MyDialog
   public:
     ListViewWithColors()
     {
-        this->Create("ListView with colors", "a:c,w:30,h:14");
+        this->Create("ListView with colors", "d:c,w:30,h:14");
         lv.Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::None);
         lv.AddColumn("Color", TextAlignament::Left, 10);
         lv.AddColumn("RGB", TextAlignament::Center, 10);
@@ -3206,7 +3206,7 @@ class ListViewWithTreeItems : public MyDialog
   public:
     ListViewWithTreeItems()
     {
-        this->Create("Simulated Process Tree", "a:c,w:60,h:14");
+        this->Create("Simulated Process Tree", "d:c,w:60,h:14");
         lv.Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::None);
         lv.AddColumn("Application", TextAlignament::Left, 20);
         lv.AddColumn("PID", TextAlignament::Right, 10);
@@ -3266,7 +3266,7 @@ class SearchAndFilter : public MyDialog
   public:
     SearchAndFilter()
     {
-        this->Create("Search/Filter Example", "a:c,w:74,h:20");
+        this->Create("Search/Filter Example", "d:c,w:74,h:20");
         pn1.Create(this, "Filter", "x:1,y:1,w:34,h:6");
         lb1.Create(
               &pn1,
@@ -3309,7 +3309,7 @@ class SelectionDemo : public MyDialog
   public:
     SelectionDemo()
     {
-        this->Create("Selection Example", "a:c,w:70,h:18");
+        this->Create("Selection Example", "d:c,w:70,h:18");
         lv.Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::AllowMultipleItemsSelection);
         lv.Reserve(3000);
         // columns
@@ -3362,7 +3362,7 @@ class MyWin : public AppCUI::Controls::Window
         rbSelect.Create(this, "Selection examples using a 3000 items list", "x:1,y:15,w:56", MY_GROUP);
 
         rbCustomizedListView.SetChecked(true);
-        btnShow.Create(this, "Show example", "l:19,b:0,w:21", SHOW_DEFAULT_EXAMPLE);
+        btnShow.Create(this, "Show example", "d:b,w:21", SHOW_DEFAULT_EXAMPLE);
 
         UpdateFeaturesEnableStatus();
     }

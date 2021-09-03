@@ -22,7 +22,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Command Bar Example", "a:c,w:60,h:10");
+        this->Create("Command Bar Example", "d:c,w:60,h:10");
         l1.Create(this, "", "x:1,y:2,w:56");
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override

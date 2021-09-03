@@ -115,7 +115,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
   public:
     TicTacToeWin()
     {
-        this->Create("TicTacToe", "a:c,w:20,h:18");
+        this->Create("TicTacToe", "d:c,w:20,h:18");
         game.Create(this, "x:2,y:1,w:14,h:14");
     }
     bool OnEvent(Control*, Event eventType, int controlID) override

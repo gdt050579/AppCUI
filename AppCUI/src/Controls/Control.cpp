@@ -20,58 +20,355 @@ using namespace AppCUI::Utils;
 #define CHAR_TYPE_POINT     7
 #define CHAR_TYPE_MINUS     8
 
-#define LAYOUT_FLAG_WIDTH       0x0001
-#define LAYOUT_FLAG_HEIGHT      0x0002
-#define LAYOUT_FLAG_ANCH_LEFT   0x0004
-#define LAYOUT_FLAG_ANCH_RIGHT  0x0008
-#define LAYOUT_FLAG_ANCH_TOP    0x0010
-#define LAYOUT_FLAG_ANCH_BOTTOM 0x0020
-#define LAYOUT_FLAG_ANCHOR      0x0040
-#define LAYOUT_FLAG_X           0x0100
-#define LAYOUT_FLAG_Y           0x0200
 
-#define LAYOUT_MODE_TOP_LEFT     0 // X,Y + W,H
-#define LAYOUT_MODE_TOP          1
-#define LAYOUT_MODE_TOP_RIGHT    2
-#define LAYOUT_MODE_RIGHT        3
-#define LAYOUT_MODE_BOTTOM_RIGHT 4
-#define LAYOUT_MODE_BOTTOM       5
-#define LAYOUT_MODE_BOTTOM_LEFT  6
-#define LAYOUT_MODE_LEFT         7
-#define LAYOUT_MODE_CENTER       8
+
+//=========================================
+// THIS CODE WAS AUTOMATICALLY GENERATED !
+//=========================================
+
+constexpr unsigned char LAYOUT_KEY_NONE     = 0;
+constexpr unsigned short LAYOUT_KEY_X       = 1;
+constexpr unsigned short LAYOUT_FLAG_X      = 0x0001;
+constexpr unsigned short LAYOUT_KEY_Y       = 2;
+constexpr unsigned short LAYOUT_FLAG_Y      = 0x0002;
+constexpr unsigned short LAYOUT_KEY_LEFT    = 3;
+constexpr unsigned short LAYOUT_FLAG_LEFT   = 0x0004;
+constexpr unsigned short LAYOUT_KEY_RIGHT   = 4;
+constexpr unsigned short LAYOUT_FLAG_RIGHT  = 0x0008;
+constexpr unsigned short LAYOUT_KEY_TOP     = 5;
+constexpr unsigned short LAYOUT_FLAG_TOP    = 0x0010;
+constexpr unsigned short LAYOUT_KEY_BOTTOM  = 6;
+constexpr unsigned short LAYOUT_FLAG_BOTTOM = 0x0020;
+constexpr unsigned short LAYOUT_KEY_WIDTH   = 7;
+constexpr unsigned short LAYOUT_FLAG_WIDTH  = 0x0040;
+constexpr unsigned short LAYOUT_KEY_HEIGHT  = 8;
+constexpr unsigned short LAYOUT_FLAG_HEIGHT = 0x0080;
+constexpr unsigned short LAYOUT_KEY_ALIGN   = 9;
+constexpr unsigned short LAYOUT_FLAG_ALIGN  = 0x0100;
+constexpr unsigned short LAYOUT_KEY_DOCK    = 10;
+constexpr unsigned short LAYOUT_FLAG_DOCK   = 0x0200;
+
+constexpr unsigned char _layout_translate_map_[116] = {
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_ALIGN, LAYOUT_KEY_BOTTOM, LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_WIDTH,
+    LAYOUT_KEY_X,     LAYOUT_KEY_Y,     LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,   LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_ALIGN,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,
+    LAYOUT_KEY_WIDTH, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
+    LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
+};
+
+inline unsigned char HashToLayoutKey(unsigned int hash)
+{
+    if (hash >= 116)
+        return LAYOUT_KEY_NONE;
+    return _layout_translate_map_[hash];
+};
+
+constexpr unsigned char _align_translate_map_[258] = { 0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Bottom,
+                                                       (unsigned char) Alignament::Center,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Left,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomLeft,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Right,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Top,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Left,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Top,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Right,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Center,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::Bottom,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::TopRight,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomLeft,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       0xFF,
+                                                       (unsigned char) Alignament::BottomRight };
+
+inline bool HashToAlignament(unsigned int hash, Alignament& align)
+{
+    if (hash >= 258)
+        return false;
+    auto ch = _align_translate_map_[hash];
+    if (ch == 0xFF)
+        return false;
+    align = static_cast<Alignament>(ch);
+    return true;
+};
+
+//=========================================
+// END OF AUTOMATICALLY GENERATED CODE
+//=========================================
+
+
+
 
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
 #define SET_LAYOUT_INFO(flag, field)                                                                                   \
     {                                                                                                                  \
         inf.flags |= flag;                                                                                             \
-        inf.field = value;                                                                                             \
-        if (l.ValueType == '%')                                                                                        \
-            inf.percentagesMask |= flag;                                                                               \
+        inf.field.Value = value;                                                                                       \
+        inf.field.Type = valueType;                                                                                    \
     }
 
-#define TRANSFER_MASK(fromBit, toBit)                                                                                  \
-    {                                                                                                                  \
-        if (inf.percentagesMask & fromBit)                                                                             \
-            inf.percentagesMask |= toBit;                                                                              \
-        else                                                                                                           \
-            inf.percentagesMask -= (inf.percentagesMask & toBit);                                                      \
-    }
 
-struct LayoutInformation
-{
-    unsigned int flags;
-    unsigned int percentagesMask;
-    int x, y;
-    int width, height;
-    int a_left, a_top, a_right, a_bottom;
-    Alignament anchor;
-};
-struct LayoutMetricData
-{
-    int ParentWidth, ParentHeight;
-    unsigned int PercentagesMask;
-};
+#define TRANSLATE_VALUE(result,from,size,flag) \
+    if (this->Layout.Format.PercentageMask & flag) result = from * size / 10000; else result = from;
+
+
 struct LayoutKeyValueData
 {
     const char* HashName;
@@ -128,193 +425,69 @@ unsigned char __char_types__[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER
 };
 
-#define HASH_KEYWORD_X            0x00000003
-#define HASH_KEYWORD_Y            0x00000002
-#define HASH_KEYWORD_ALIGN        0x000018BD
-#define HASH_KEYWORD_A            0x0000001A
-#define HASH_KEYWORD_ALIGNAMENT   0x0062ECD3
-#define HASH_KEYWORD_W            0x00000004
-#define HASH_KEYWORD_WIDTH        0x000001FF
-#define HASH_KEYWORD_H            0x00000013
-#define HASH_KEYWORD_HEIGHT       0x00005F8B
-#define HASH_KEYWORD_ANCH         0x00000623
-#define HASH_KEYWORD_ANCHOR       0x00006209
-#define HASH_KEYWORD_AN           0x00000065
-#define HASH_KEYWORD_ANC          0x0000018C
-#define HASH_KEYWORD_L            0x0000000F
-#define HASH_KEYWORD_LEFT         0x000002F3
-#define HASH_KEYWORD_AL           0x00000067
-#define HASH_KEYWORD_ANCHORLEFT   0x00620BF3
-#define HASH_KEYWORD_R            0x00000009
-#define HASH_KEYWORD_RIGHT        0x00000C8B
-#define HASH_KEYWORD_AR           0x00000061
-#define HASH_KEYWORD_ANCHORRIGHT  0x0188288B
-#define HASH_KEYWORD_T            0x00000007
-#define HASH_KEYWORD_TOP          0x0000004B
-#define HASH_KEYWORD_AT           0x0000006F
-#define HASH_KEYWORD_ANCHORTOP    0x0018820B
-#define HASH_KEYWORD_B            0x00000019
-#define HASH_KEYWORD_BOTTOM       0x0000698E
-#define HASH_KEYWORD_AB           0x00000071
-#define HASH_KEYWORD_ANCHORBOTTOM 0x0620F98E
-
-#define HASH_ALIGN_LEFT        0x000002F3
-#define HASH_ALIGN_L           0x0000000F
-#define HASH_ALIGN_TOP         0x0000004B
-#define HASH_ALIGN_T           0x00000007
-#define HASH_ALIGN_RIGHT       0x00000C8B
-#define HASH_ALIGN_R           0x00000009
-#define HASH_ALIGN_BOTTOM      0x0000698E
-#define HASH_ALIGN_B           0x00000019
-#define HASH_ALIGN_TOPLEFT     0x000049F3
-#define HASH_ALIGN_TL          0x00000013
-#define HASH_ALIGN_LEFTTOP     0x0000BC8B
-#define HASH_ALIGN_LT          0x0000003B
-#define HASH_ALIGN_TOPRIGHT    0x0001208B
-#define HASH_ALIGN_TR          0x00000015
-#define HASH_ALIGN_RIGHTTOP    0x0003228B
-#define HASH_ALIGN_RT          0x00000023
-#define HASH_ALIGN_BOTTOMRIGHT 0x01A6348B
-#define HASH_ALIGN_BR          0x0000006D
-#define HASH_ALIGN_RIGHTBOTTOM 0x00C8D98E
-#define HASH_ALIGN_RB          0x0000003D
-#define HASH_ALIGN_BOTTOMLEFT  0x00698CF3
-#define HASH_ALIGN_BL          0x0000006B
-#define HASH_ALIGN_LEFTBOTTOM  0x002F598E
-#define HASH_ALIGN_LB          0x00000025
-#define HASH_ALIGN_CENTER      0x00007561
-#define HASH_ALIGN_C           0x00000018
-
 // <xxx> (Arrow left, 3 character, Arrow right)
 #define MINIM_SCORLL_BAR_LENGTH 5
-
-bool HashToAlignament(unsigned int hash, Alignament& result)
-{
-    switch (hash)
-    {
-    case HASH_ALIGN_TOPLEFT:
-    case HASH_ALIGN_TL:
-    case HASH_ALIGN_LEFTTOP:
-    case HASH_ALIGN_LT:
-        result = Alignament::TopLeft;
-        return true;
-    case HASH_ALIGN_TOP:
-    case HASH_ALIGN_T:
-        result = Alignament::Top;
-        return true;
-    case HASH_ALIGN_TOPRIGHT:
-    case HASH_ALIGN_TR:
-    case HASH_ALIGN_RIGHTTOP:
-    case HASH_ALIGN_RT:
-        result = Alignament::TopRight;
-        return true;
-    case HASH_ALIGN_RIGHT:
-    case HASH_ALIGN_R:
-        result = Alignament::Right;
-        return true;
-    case HASH_ALIGN_BOTTOMRIGHT:
-    case HASH_ALIGN_BR:
-    case HASH_ALIGN_RIGHTBOTTOM:
-    case HASH_ALIGN_RB:
-        result = Alignament::BottomRight;
-        return true;
-    case HASH_ALIGN_BOTTOM:
-    case HASH_ALIGN_B:
-        result = Alignament::Bottom;
-        return true;
-    case HASH_ALIGN_BOTTOMLEFT:
-    case HASH_ALIGN_BL:
-    case HASH_ALIGN_LEFTBOTTOM:
-    case HASH_ALIGN_LB:
-        result = Alignament::BottomLeft;
-        return true;
-    case HASH_ALIGN_LEFT:
-    case HASH_ALIGN_L:
-        result = Alignament::Left;
-        return true;
-    case HASH_ALIGN_CENTER:
-    case HASH_ALIGN_C:
-        result = Alignament::Center;
-        return true;
-    }
-    RETURNERROR(false, "Unknwon align hash: %08X", hash);
-}
 
 bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config*)
 {
     int value = 0;
+    LayoutValueType valueType;
     switch (l.ValueType)
     {
     case 0:
-    case 'p':
-    case 'P':
-        // pixels
-        CHECK(l.n2 == 0, false, "Pixel values can not be floating values !");
-        value       = l.n1;
-        l.ValueType = 'p';
+        // characters
+        CHECK(l.n2 == 0, false, "Character offset values can not be floating values !");
+        CHECK(l.n1 <= 30000, false, "A character offset must be smaller than 30000 (current value is: %d)", l.n1);
+        CHECK(l.n1 >= -30000, false, "A character offset must be bigger than -30000 (current value is: %d)", l.n1);
+        value     = l.n1;
+        valueType = LayoutValueType::CharacterOffset;
         break;
     case '%':
         // percentage
-        value = l.n1 * 100 + l.n2;
-        break;
-    case 'u':
-    case 'U':
-        // units
-        CHECK(l.n2 == 0, false, "Units values can not be floating values !");
-        value       = l.n1;
-        l.ValueType = 'u';
+        CHECK(l.n1 <= 300, false, "A percentage must be smaller than 300% (current value is: %d)", l.n1);
+        CHECK(l.n1 >= -300, false, "A percentage offset must be bigger than -300% (current value is: %d)", l.n1);
+        value     = l.n1 * 100 + l.n2;
+        valueType = LayoutValueType::Percentage;
         break;
     default:
         RETURNERROR(false, "Invalid value format: %d (%c)", l.ValueType, l.ValueType);
     }
     if (l.IsNegative)
         value = -value;
-    switch (l.Hash)
+    unsigned char layoutKey = HashToLayoutKey(l.Hash);
+    switch (layoutKey)
     {
-    case HASH_KEYWORD_X:
+    case LAYOUT_KEY_X:
         SET_LAYOUT_INFO(LAYOUT_FLAG_X, x);
         break;
-    case HASH_KEYWORD_Y:
+    case LAYOUT_KEY_Y:
         SET_LAYOUT_INFO(LAYOUT_FLAG_Y, y);
         break;
-    case HASH_KEYWORD_W:
-    case HASH_KEYWORD_WIDTH:
+    case LAYOUT_KEY_LEFT:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_LEFT, a_left);
+        break;
+    case LAYOUT_KEY_RIGHT:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_RIGHT, a_right);
+        break;
+    case LAYOUT_KEY_TOP:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_TOP, a_top);
+        break;
+    case LAYOUT_KEY_BOTTOM:
+        SET_LAYOUT_INFO(LAYOUT_FLAG_BOTTOM, a_bottom);
+        break;
+    case LAYOUT_KEY_WIDTH:
         SET_LAYOUT_INFO(LAYOUT_FLAG_WIDTH, width);
         break;
-    case HASH_KEYWORD_H:
-    case HASH_KEYWORD_HEIGHT:
+    case LAYOUT_KEY_HEIGHT:
         SET_LAYOUT_INFO(LAYOUT_FLAG_HEIGHT, height);
         break;
-    case HASH_KEYWORD_A:
-    case HASH_KEYWORD_AN:
-    case HASH_KEYWORD_ANC:
-    case HASH_KEYWORD_ANCH:
-    case HASH_KEYWORD_ANCHOR:
-        CHECK(HashToAlignament(l.StringValueHash, inf.anchor), false, "Fail to compute anchor value !");
+    case LAYOUT_KEY_ALIGN:
+        CHECK(HashToAlignament(l.StringValueHash, inf.align), false, "Fail to compute align value !");
+        inf.flags |= LAYOUT_FLAG_ALIGN;
         break;
-    case HASH_KEYWORD_L:
-    case HASH_KEYWORD_AL:
-    case HASH_KEYWORD_LEFT:
-    case HASH_KEYWORD_ANCHORLEFT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_LEFT, a_left);
-        break;
-    case HASH_KEYWORD_R:
-    case HASH_KEYWORD_AR:
-    case HASH_KEYWORD_RIGHT:
-    case HASH_KEYWORD_ANCHORRIGHT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_RIGHT, a_right);
-        break;
-    case HASH_KEYWORD_T:
-    case HASH_KEYWORD_AT:
-    case HASH_KEYWORD_TOP:
-    case HASH_KEYWORD_ANCHORTOP:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_TOP, a_top);
-        break;
-    case HASH_KEYWORD_B:
-    case HASH_KEYWORD_AB:
-    case HASH_KEYWORD_BOTTOM:
-    case HASH_KEYWORD_ANCHORBOTTOM:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_ANCH_BOTTOM, a_bottom);
+    case LAYOUT_KEY_DOCK:
+        CHECK(HashToAlignament(l.StringValueHash, inf.dock), false, "Fail to compute dock value !");
+        inf.flags |= LAYOUT_FLAG_DOCK;
         break;
     default:
         RETURNERROR(false, "Unknown key (hash:%08x) ==> %s", l.Hash, l.HashName);
@@ -327,16 +500,20 @@ inline const unsigned char* SkipSpaces(const unsigned char* start, const unsigne
         start++;
     return start;
 }
-inline const unsigned char* ComputeValueHash(
-      const unsigned char* start, const unsigned char* end, unsigned int& hashValue)
+inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsigned char* e, unsigned int& hashValue)
 {
     hashValue = 0;
-    while ((start < end) && (__char_types__[*start] == CHAR_TYPE_WORD))
+    unsigned int index = 0;
+    while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
-        hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
-        start++;
+        // hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
+        // hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((unsigned char) (~0x20))))));
+        hashValue += ((*s) & ((unsigned char) (~0x20))) - ((unsigned char) 'A') + 1;
+        hashValue += index;
+        s++;
+        index += 2;
     }
-    return start;
+    return s;
 }
 bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
 {
@@ -346,14 +523,18 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     CHECK(p, false, "Expecting a valid (non-null) layout string !");
 
     LayoutKeyValueData lkv;
-    inf.a_left = inf.a_bottom = inf.a_top = inf.a_right = 0;
-    inf.width                                           = 1;
-    inf.height                                          = 1;
-    inf.anchor                                          = Alignament::TopLeft;
-    inf.x                                               = 0;
-    inf.y                                               = 0;
-    inf.flags                                           = 0;
-    inf.percentagesMask                                 = 0;
+    inf.a_left       = { 0, LayoutValueType::CharacterOffset };
+    inf.a_bottom     = { 0, LayoutValueType::CharacterOffset };
+    inf.a_top        = { 0, LayoutValueType::CharacterOffset };
+    inf.a_right      = { 0, LayoutValueType::CharacterOffset };
+    inf.x            = { 0, LayoutValueType::CharacterOffset };
+    inf.y            = { 0, LayoutValueType::CharacterOffset };
+    inf.width        = { 1, LayoutValueType::CharacterOffset };
+    inf.height       = { 1, LayoutValueType::CharacterOffset };
+    inf.align        = Alignament::TopLeft;
+    inf.dock         = Alignament::TopLeft;
+    inf.flags        = 0;
+
 
     int cnt;
 
@@ -427,28 +608,7 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     }
     return true;
 }
-int ComputeXAxesValue(int formatValue, const LayoutMetricData& md, unsigned int layoutFlag)
-{
-    if (md.PercentagesMask & layoutFlag)
-    {
-        return (formatValue * md.ParentWidth) / 10000;
-    }
-    else
-    {
-        return formatValue;
-    }
-}
-int ComputeYAxesValue(int formatValue, const LayoutMetricData& md, unsigned int layoutFlag)
-{
-    if (md.PercentagesMask & layoutFlag)
-    {
-        return (formatValue * md.ParentHeight) / 10000;
-    }
-    else
-    {
-        return formatValue;
-    }
-}
+
 
 ControlContext::ControlContext()
 {
@@ -479,140 +639,462 @@ ControlContext::ControlContext()
     // curat automat
     memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
+bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
+{
+    // if dock is set --> X,Y, Left, Right, Top and Bottom should not be set
+    CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM | LAYOUT_FLAG_X |
+                        LAYOUT_FLAG_Y)) == 0,
+          false,
+          "When dock|d parameter is used, none of the position (x,y) or anchor (left,right,bottom,top) parameters can "
+          "not be uesd");
+    // similar - align can not be used
+    CHECK((inf.flags & LAYOUT_FLAG_ALIGN) == 0,
+          false,
+          "When dock|d parameter is used, 'align' parameter can not be used !");
+    // if width is not set --> default it to 100%
+    if ((inf.flags & LAYOUT_FLAG_WIDTH)==0)
+        inf.width      = { 10000, LayoutValueType::Percentage };
+    // if height is not set --> default it to 100%
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        inf.height = { 10000, LayoutValueType::Percentage };
+    
+    // set the layout (only width and height) will be copied (rest are 0)
+    this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width      = inf.width;
+    this->Layout.Format.Height     = inf.height;
+    this->Layout.Format.Align      = inf.dock;
+    this->Layout.Format.Anchor     = inf.dock;
+    this->Layout.Format.X          = { 0, LayoutValueType::CharacterOffset };
+    this->Layout.Format.Y          = { 0, LayoutValueType::CharacterOffset };
+
+    // all good
+    return true;
+}
+bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
+{
+    // it is assume that DOCK|D is not set (as it was process early in ProcessDockedLayout)
+    // if X and Y are set --> Left, Right, Top and Bottom should not be set
+    CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM)) == 0,
+          false,
+          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can not be used");   
+    // if align is not set --> default it to TopLeft
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::TopLeft;
+    // if width is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        inf.width = { 1, LayoutValueType::CharacterOffset };
+    // if height is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        inf.height = { 1, LayoutValueType::CharacterOffset };
+    
+    this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.X          = inf.x;
+    this->Layout.Format.Y          = inf.y;
+    this->Layout.Format.Width      = inf.width;
+    this->Layout.Format.Height     = inf.height;
+    this->Layout.Format.Align      = inf.align;
+    this->Layout.Format.Anchor     = Alignament::TopLeft; // for (X,Y) anchor is always TopLeft
+
+    return true;
+}
+bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == 0,
+          false,
+          "When a corner anchor is being use (top,left,righ,bottom) , (X,Y) coordonates can not be used");
+    // if align is not set --> default it to TopLeft
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::TopLeft;
+    // if width is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        inf.width = { 1, LayoutValueType::CharacterOffset };
+    // if height is not present --> default it to 1 (character)
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        inf.height = { 1, LayoutValueType::CharacterOffset };
+    this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width          = inf.width;
+    this->Layout.Format.Height         = inf.height;
+    this->Layout.Format.Align          = anchor;
+    this->Layout.Format.Anchor         = anchor;    
+    // copy anchor to (X,Y)
+    switch (anchor)
+    {
+    case Alignament::TopLeft:
+        this->Layout.Format.X = inf.a_left;
+        this->Layout.Format.Y = inf.a_top;
+        break;
+    case Alignament::TopRight:
+        this->Layout.Format.X = inf.a_right;
+        this->Layout.Format.Y = inf.a_top;
+        break;
+    case Alignament::BottomRight:
+        this->Layout.Format.X = inf.a_right;
+        this->Layout.Format.Y = inf.a_bottom;
+        break;
+    case Alignament::BottomLeft:
+        this->Layout.Format.X = inf.a_left;
+        this->Layout.Format.Y = inf.a_bottom;
+        break;
+    default:
+        RETURNERROR(false, "Invalid anchor value(%d) for ProcessCornerAnchorLayout (this is an internal error) !");
+    }
+
+    return true;
+}
+bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
+{
+    // horizontal (left-right) are provided
+    CHECK((inf.flags & LAYOUT_FLAG_X) == 0,
+          false,
+          "When (left,right) parameters are used toghere, 'X' parameter can not be used");
+    CHECK((inf.flags & LAYOUT_FLAG_WIDTH) == 0,
+          false,
+          "When (left,right) parameters are used toghere, width can not be used as it is deduced from left-right "
+          "difference");
+    
+    // if "align" is not provided, it is defaulted to center
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::Center;
+    else
+    {
+        // check layout
+        CHECK((inf.align == Alignament::Top) || (inf.align == Alignament::Center) || (inf.align == Alignament::Bottom),
+              false,
+              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignament values are allowed !");
+    }
+
+    // if "height" is not provided, it is defaulted to 1
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        this->Layout.Format.Height = { 1, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.Height = inf.height;
+
+    // if "Y" is not provided, it is defaulted to 0
+    if ((inf.flags & LAYOUT_FLAG_Y) == 0)
+        this->Layout.Format.Y = { 0, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.Y = inf.y;
+
+    // construct de layout
+    this->Layout.Format.LayoutMode  = LayoutFormatMode::LeftRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft  = inf.a_left;
+    this->Layout.Format.AnchorRight = inf.a_right;
+    this->Layout.Format.Align       = inf.align;
+
+    // all good
+    return true;
+}
+bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
+{
+    // vertical (up-down) are provided
+    CHECK((inf.flags & LAYOUT_FLAG_Y) == 0,
+          false,
+          "When (top,down) parameters are used toghere, 'Y' parameter can not be used");
+    CHECK((inf.flags & LAYOUT_FLAG_HEIGHT) == 0,
+          false,
+          "When (top,down) parameters are used toghere, height can not be used as it is deduced from bottom-top "
+          "difference");
+
+    // if "align" is not provided, it is defaulted to center
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::Center;
+    else
+    {
+        // check layout
+        CHECK((inf.align == Alignament::Left) || (inf.align == Alignament::Center) || (inf.align == Alignament::Right),
+              false,
+              "When (top,down) are provided, only Left(l), Center(c) and Right(r) alignament values are allowed !");
+    }
+
+    // if "width" is not provided, it is defaulted to 1
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        this->Layout.Format.Width = { 1, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.Width = inf.width;
+
+    // if "X" is not provided, it is defaulted to 0
+    if ((inf.flags & LAYOUT_FLAG_X) == 0)
+        this->Layout.Format.X = { 0, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.X = inf.x;
+
+    // construct de layout
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    this->Layout.Format.Align        = inf.align;
+
+    // all good
+    return true;
+}
+bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
+          false,
+          "When (left,top,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
+          false,
+          "When (left,top,right) parameters are used together, height parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.Height       = inf.height;
+
+    return true;
+}
+bool ControlContext::ProcessLBRAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
+          false,
+          "When (left,bottom,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
+          false,
+          "When (left,bottom,right) parameters are used together, height parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftBottomRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.Height       = inf.height;
+
+    return true;
+}
+bool ControlContext::ProcessTLBAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
+          false,
+          "When (top,left,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
+          false,
+          "When (top,left,bottom) parameters are used together, width parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopLeftBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;    
+    this->Layout.Format.Width        = inf.width;
+
+    return true;
+}
+bool ControlContext::ProcessTRBAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
+          false,
+          "When (top,right,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
+          false,
+          "When (top,right,bottom) parameters are used together, width parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopRightBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    this->Layout.Format.Width        = inf.width;
+
+    return true;
+}
+bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT | LAYOUT_FLAG_WIDTH)) ==
+                0,
+          false,
+          "When (left,top,right,bottom) parameters are used together, 'X', 'Y', 'A', 'W' and 'H' parameters can not be used");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightBottomAnchors;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+
+    return true;
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
 
-    // validez ca sunt ok
+    // check if layout params are OK
+    // Step 1 ==> if dock option is present
+    if (inf.flags & LAYOUT_FLAG_DOCK)
+        return ProcessDockedLayout(inf);
+    // Step 2 ==> check (X,Y) + (W,H) + (optional align)
+    if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == (LAYOUT_FLAG_X | LAYOUT_FLAG_Y))
+        return ProcessXYWHLayout(inf);
 
-    if ((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) != 0)
+    // Step 3 ==> check different types of anchors
+    auto anchorFlags = inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM);
+    switch (anchorFlags)
     {
-        switch (inf.anchor)
-        {
-        case Alignament::TopLeft:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::Top:
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::TopRight:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            inf.a_top = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_TOP);
-            break;
-        case Alignament::Right:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            break;
-        case Alignament::BottomRight:
-            inf.a_right = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_RIGHT);
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::Bottom:
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::BottomLeft:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            inf.a_bottom = inf.y;
-            TRANSFER_MASK(LAYOUT_FLAG_Y, LAYOUT_FLAG_ANCH_BOTTOM);
-            break;
-        case Alignament::Left:
-            inf.a_left = inf.x;
-            TRANSFER_MASK(LAYOUT_FLAG_X, LAYOUT_FLAG_ANCH_LEFT);
-            break;
-        case Alignament::Center:
-            break;
-        };
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP:
+        return ProcessCornerAnchorLayout(inf, Alignament::TopLeft);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP:
+        return ProcessCornerAnchorLayout(inf, Alignament::TopRight);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
+        return ProcessCornerAnchorLayout(inf, Alignament::BottomRight);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
+        return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_LEFT:
+        return ProcessHorizontalParalelAnchors(inf);
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM:
+        return ProcessVerticalParalelAnchors(inf);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT:
+        return ProcessLTRAnchors(inf);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM | LAYOUT_FLAG_RIGHT:
+        return ProcessLBRAnchors(inf);
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
+        return ProcessTLBAnchors(inf);
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
+        return ProcessTRBAnchors(inf);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
+        return ProcessLTRBAnchors(inf);
     }
 
-    this->Layout.Format.AnchorLeft   = inf.a_left;
-    this->Layout.Format.AnchorRight  = inf.a_right;
-    this->Layout.Format.AnchorTop    = inf.a_top;
-    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
+}
+void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
+{
+    this->Layout.Width = (int) width;
+    this->Layout.Height = (int) heigh;
+    // check Width / Height values agains min...max values
+    this->Layout.Width  = std::max<>(this->Layout.Width, this->Layout.MinWidth);
+    this->Layout.Width  = std::min<>(this->Layout.Width, this->Layout.MaxWidth);
+    this->Layout.Height = std::max<>(this->Layout.Height, this->Layout.MinHeight);
+    this->Layout.Height = std::min<>(this->Layout.Height, this->Layout.MaxHeight);
+}
+bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
+{
+    SetControlSize(md.Width, md.Height);
 
-    this->Layout.Format.PercentageMask = inf.percentagesMask;
-    this->Layout.Format.Width          = inf.width;
-    this->Layout.Format.Height         = inf.height;
-    this->Layout.Format.AnchorLeft     = inf.a_left;
-    this->Layout.Format.AnchorTop      = inf.a_top;
-    this->Layout.Format.AnchorRight    = inf.a_right;
-    this->Layout.Format.AnchorBottom   = inf.a_bottom;
-
-    const unsigned int anch_flags =
-          inf.flags & (LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT | LAYOUT_FLAG_ANCH_LEFT);
-    switch (anch_flags)
+    // compute (x,y) based on anchor
+    switch (md.Anchor)
     {
-    case 0:
-        switch (inf.anchor)
-        {
-        case Alignament::TopLeft:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_LEFT;
-            break;
-        case Alignament::Top:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP;
-            break;
-        case Alignament::TopRight:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_RIGHT;
-            break;
-        case Alignament::Right:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_RIGHT;
-            break;
-        case Alignament::BottomRight:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_RIGHT;
-            break;
-        case Alignament::Bottom:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM;
-            break;
-        case Alignament::BottomLeft:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_LEFT;
-            break;
-        case Alignament::Left:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_LEFT;
-            break;
-        case Alignament::Center:
-            this->Layout.Format.LayoutMode = LAYOUT_MODE_CENTER;
-            break;
-        };
+    case Alignament::TopLeft:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_LEFT;
+    case Alignament::Top:
+        this->Layout.X = md.ParentWidth / 2;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP;
+    case Alignament::TopRight:
+        this->Layout.X = md.ParentWidth - md.X;
+        this->Layout.Y = md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_TOP | LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_TOP_RIGHT;
+    case Alignament::Right:
+        this->Layout.X = md.ParentWidth - md.X;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
-    case LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_RIGHT;
+    case Alignament::BottomRight:
+        this->Layout.X = md.ParentWidth - md.X;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_RIGHT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_RIGHT;
+    case Alignament::Bottom:
+        this->Layout.X = md.ParentWidth / 2;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM;
+    case Alignament::BottomLeft:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.ParentHeigh - md.Y;
         break;
-    case LAYOUT_FLAG_ANCH_BOTTOM | LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_BOTTOM_LEFT;
+    case Alignament::Left:
+        this->Layout.X = md.X;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
-    case LAYOUT_FLAG_ANCH_LEFT:
-        this->Layout.Format.LayoutMode = LAYOUT_MODE_LEFT;
+    case Alignament::Center:
+        this->Layout.X = md.ParentWidth / 2;
+        this->Layout.Y = md.ParentHeigh / 2;
         break;
     default:
-        RETURNERROR(false, "Invalid format: (%s) --> you have either missed or add to many values !");
-    }
+        RETURNERROR(false, "Invalid anchor value: %d", md.Anchor);
+    };
+    // align (x,y) from the current position based on Width/Height
+    switch (md.Align)
+    {
+    case Alignament::TopLeft:
+        // do nothing        
+        break;
+    case Alignament::Top:
+        this->Layout.X -= this->Layout.Width / 2;        
+        break;
+    case Alignament::TopRight:
+        this->Layout.X -= this->Layout.Width;
+        break;
+    case Alignament::Right:
+        this->Layout.X -= this->Layout.Width;
+        this->Layout.Y -= this->Layout.Height / 2;
+        break;
+    case Alignament::BottomRight:
+        this->Layout.X -= this->Layout.Width;
+        this->Layout.Y -= this->Layout.Height;
+        break;
+    case Alignament::Bottom:
+        this->Layout.X -= this->Layout.Width / 2;
+        this->Layout.Y -= this->Layout.Height;
+        break;
+    case Alignament::BottomLeft:
+        this->Layout.Y -= this->Layout.Height;
+        break;
+    case Alignament::Left:
+        this->Layout.Y -= this->Layout.Height / 2;
+        break;
+    case Alignament::Center:
+        this->Layout.X -= this->Layout.Width / 2;
+        this->Layout.Y -= this->Layout.Height / 2;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignament value: %d", md.Align);
+    };
     return true;
 }
+bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetricData& md)
+{
+    SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+
+    // convert to PointAndSize
+    this->Layout.X = md.AnchorLeft;
+    switch (md.Align)
+    {
+    case Alignament::Top:
+        this->Layout.Y = md.Y;
+        break;
+    case Alignament::Center:
+        this->Layout.Y = md.Y - this->Layout.Height / 2;
+        break;
+    case Alignament::Bottom:
+        this->Layout.Y = md.Y - this->Layout.Height;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignamet (%d) --> only Top, Center and Bottom are allowed !", md.Align);
+    }
+    
+    return true;
+}
+bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetricData& md)
+{
+    SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+
+    // convert to PointAndSize
+    this->Layout.Y = md.AnchorTop;
+    switch (md.Align)
+    {
+    case Alignament::Left:
+        this->Layout.X = md.X;
+        break;
+    case Alignament::Center:
+        this->Layout.X = md.X - this->Layout.Width / 2;
+        break;
+    case Alignament::Right:
+        this->Layout.X = md.X - this->Layout.Width;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignamet (%d) --> only Left, Center and Right are allowed !", md.Align);
+    }
+
+    return true;
+}
+
 bool ControlContext::RecomputeLayout(Control* controlParent)
 {
     LayoutMetricData md;
@@ -628,70 +1110,61 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     {
         CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
     }
-    md.ParentWidth     = sz.Width;
-    md.ParentHeight    = sz.Height;
-    md.PercentagesMask = this->Layout.Format.PercentageMask;
+    // translate values - X & Y Axes
+    md.X            = this->Layout.Format.X.ToInt(sz.Width);
+    md.Y            = this->Layout.Format.Y.ToInt(sz.Height);
+    md.AnchorLeft   = this->Layout.Format.AnchorLeft.ToInt(sz.Width);
+    md.AnchorTop    = this->Layout.Format.AnchorTop.ToInt(sz.Height);
+    md.AnchorRight  = this->Layout.Format.AnchorRight.ToInt(sz.Width);
+    md.AnchorBottom = this->Layout.Format.AnchorBottom.ToInt(sz.Height);
+    md.Width        = this->Layout.Format.Width.ToInt(sz.Width);
+    md.Height       = this->Layout.Format.Height.ToInt(sz.Height);
 
-    int a_l, a_r, a_t, a_b;
-    this->Layout.Width = ComputeXAxesValue(this->Layout.Format.Width, md, LAYOUT_FLAG_WIDTH);
-    if (this->Layout.Width < this->Layout.MinWidth)
-        this->Layout.Width = this->Layout.MinWidth;
-    if (this->Layout.Width > this->Layout.MaxWidth)
-        this->Layout.Width = this->Layout.MaxWidth;
+    // copy align & anchor
+    md.Align       = this->Layout.Format.Align;
+    md.Anchor      = this->Layout.Format.Anchor;
+    md.ParentWidth = sz.Width;
+    md.ParentHeigh = sz.Height;
 
-    this->Layout.Height = ComputeYAxesValue(this->Layout.Format.Height, md, LAYOUT_FLAG_HEIGHT);
-    if (this->Layout.Height < this->Layout.MinHeight)
-        this->Layout.Height = this->Layout.MinHeight;
-    if (this->Layout.Height > this->Layout.MaxHeight)
-        this->Layout.Height = this->Layout.MaxHeight;
 
-    a_l = ComputeXAxesValue(this->Layout.Format.AnchorLeft, md, LAYOUT_FLAG_ANCH_LEFT);
-    a_r = ComputeXAxesValue(this->Layout.Format.AnchorRight, md, LAYOUT_FLAG_ANCH_RIGHT);
-    a_t = ComputeYAxesValue(this->Layout.Format.AnchorTop, md, LAYOUT_FLAG_ANCH_TOP);
-    a_b = ComputeYAxesValue(this->Layout.Format.AnchorBottom, md, LAYOUT_FLAG_ANCH_BOTTOM);
-
+    // compute position
     switch (this->Layout.Format.LayoutMode)
     {
-    case LAYOUT_MODE_TOP_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_TOP:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_TOP_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = a_t;
-        break;
-    case LAYOUT_MODE_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    case LAYOUT_MODE_BOTTOM_RIGHT:
-        this->Layout.X = (md.ParentWidth - a_r) - this->Layout.Width;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_BOTTOM:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_BOTTOM_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = (md.ParentHeight - a_b) - this->Layout.Height;
-        break;
-    case LAYOUT_MODE_LEFT:
-        this->Layout.X = a_l;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    case LAYOUT_MODE_CENTER:
-        this->Layout.X = (md.ParentWidth - this->Layout.Width) / 2;
-        this->Layout.Y = (md.ParentHeight - this->Layout.Height) / 2;
-        break;
-    default:
-        RETURNERROR(false, "Unknwon mode: %d", this->Layout.Format.LayoutMode);
+        case LayoutFormatMode::PointAndSize:
+            return RecomputeLayout_PointAndSize(md);
+        case LayoutFormatMode::LeftRightAnchorsAndHeight:
+            return RecomputeLayout_LeftRightAnchorsAndHeight(md);
+        case LayoutFormatMode::TopBottomAnchorsAndWidth:
+            return RecomputeLayout_TopBottomAnchorsAndWidth(md);
+        case LayoutFormatMode::LeftTopRightAnchorsAndHeight:
+            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.AnchorTop;
+            return true;
+        case LayoutFormatMode::LeftBottomRightAnchorsAndHeight:
+            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.ParentHeigh - (md.AnchorBottom + this->Layout.Height);
+            return true;
+        case LayoutFormatMode::TopLeftBottomAnchorsAndWidth:
+            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.AnchorTop;
+            return true;
+        case LayoutFormatMode::TopRightBottomAnchorsAndWidth:
+            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+            this->Layout.X = md.ParentWidth - (md.AnchorRight + this->Layout.Width);
+            this->Layout.Y = md.AnchorTop;
+            return true;
+        case LayoutFormatMode::LeftTopRightBottomAnchors:
+            SetControlSize(
+                  md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.AnchorTop;
+            return true;
+        default:
+            RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }
-    return true;
 }
 void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
 {

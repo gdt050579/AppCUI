@@ -17,7 +17,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Button example", "a:c,w:60,h:20");
+        this->Create("Button example", "d:c,w:60,h:20");
         b1.Create(this, "Buton &1", "x:1,y:16,w:14", BUTTON_1_ID);
         b2.Create(this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
         b3.Create(this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID);

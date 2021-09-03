@@ -14,7 +14,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Checkbox example", "a:c,w:60,h:12");
+        this->Create("Checkbox example", "d:c,w:60,h:12");
         c1.Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
         c2.Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56");
         c2.SetEnabled(false);

@@ -21,7 +21,7 @@ class ContextMenuExample : public AppCUI::Controls::Window
   public:
     ContextMenuExample()
     {
-        this->Create("Context menu", "a:c,w:64,h:10");
+        this->Create("Context menu", "d:c,w:64,h:10");
         l1.Create(this, "Right click below to open a contextual menu", "x:1,y:1,w:62,h:2");
         ctxMenu.AddCommandItem("Command &1", 100);
         ctxMenu.AddCommandItem("Command &2", 200);

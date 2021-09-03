@@ -10,7 +10,7 @@ class WindowMenuBarExample : public AppCUI::Controls::Window
   public:
     WindowMenuBarExample()
     {
-        this->Create("Text", "a:c,w:40,h:10", WindowFlags::Menu);
+        this->Create("Text", "d:c,w:40,h:10", WindowFlags::Menu);
         Menu* files = this->AddMenu("&File");
         files->AddCommandItem("&Save", 100, Key::Ctrl | Key::S);
         files->AddCommandItem("Save All", 101);
