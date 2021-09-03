@@ -133,6 +133,7 @@ struct ControlContext
     bool ProcessDockedLayout(LayoutInformation& inf);
     bool ProcessXYWHLayout(LayoutInformation& inf);
     bool ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor);
+    bool ProcessHorizontalParalelAnchors(LayoutInformation& inf);
     bool UpdateLayoutFormat(const std::string_view& format);
     bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
     bool RecomputeLayout(Control* parent);

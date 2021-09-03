@@ -646,7 +646,7 @@ bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
                         LAYOUT_FLAG_Y)) == 0,
           false,
           "When dock|d parameter is used, none of the position (x,y) or anchor (left,right,bottom,top) parameters can "
-          "be uesd");
+          "not be uesd");
     // similar - align can not be used
     CHECK((inf.flags & LAYOUT_FLAG_ALIGN) == 0,
           false,
@@ -676,7 +676,7 @@ bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
     // if X and Y are set --> Left, Right, Top and Bottom should not be set
     CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM)) == 0,
           false,
-          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can be used");   
+          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can not be used");   
     // if align is not set --> default it to TopLeft
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::TopLeft;
@@ -741,6 +741,66 @@ bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignamen
 
     return true;
 }
+bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
+{
+    // horizontal (left-right) are provided
+    CHECK((inf.flags & LAYOUT_FLAG_X) == 0,
+          false,
+          "When (left,right) parameters are used toghere, 'X' parameter can not be used");
+    CHECK((inf.flags & LAYOUT_FLAG_WIDTH) == 0,
+          false,
+          "When (left,right) parameters are used toghere, width can not be used as it is deduced from left-right "
+          "difference");
+    
+    // if "align" is not provided, it is defaulted to center
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::Center;
+
+    // if "height" is not provided, it is defaulted to 100%
+    if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
+        this->Layout.Format.Height = { 10000, LayoutValueType::Percentage };
+    else
+        this->Layout.Format.Height = inf.height;
+
+    // consruct de layout
+    this->Layout.Format.LayoutMode  = LayoutFormatMode::LeftRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft  = inf.a_left;
+    this->Layout.Format.AnchorRight = inf.a_right;
+    this->Layout.Format.Align       = inf.align;
+
+    switch (inf.align)
+    {
+    case Alignament::Top:
+        // if "Y" is not provided, it is defaulted to 0
+        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
+            this->Layout.Format.Y = { 0, LayoutValueType::CharacterOffset };
+        else
+            this->Layout.Format.Y = inf.y;
+        break;
+    case Alignament::Center:
+        // if "Y" is not provided, it is defaulted to 50%
+        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
+            this->Layout.Format.Y = { 5000, LayoutValueType::Percentage };
+        else
+            this->Layout.Format.Y = inf.y;
+        break;
+    case Alignament::Bottom:
+        // if "Y" is not provided, it is defaulted to 100%
+        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
+            this->Layout.Format.Y = { 10000, LayoutValueType::Percentage };
+        else
+            this->Layout.Format.Y = inf.y;
+        break;
+    default:
+        RETURNERROR(
+              false,
+              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignament values are allowed !");
+
+    }
+
+    // all good
+    return true;
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
@@ -766,6 +826,9 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         return ProcessCornerAnchorLayout(inf, Alignament::BottomRight);
     case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
         return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
+    case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_LEFT:
+        return ProcessHorizontalParalelAnchors(inf);
+
     }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
