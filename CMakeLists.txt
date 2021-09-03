@@ -26,8 +26,21 @@ elseif (UNIX)
     endif()
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-     add_compile_options(-Wall -Wno-switch) # -Wextra -pedantic)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+     add_compile_options(-Wall -Wextra
+             -Wno-switch
+             -Wpointer-arith
+             -Wcast-qual
+             -Wredundant-decls
+             -Wctor-dtor-privacy
+             -Wwrite-strings
+             -Wdisabled-optimization
+             -Wzero-as-null-pointer-constant
+             -Wvla) # -pedantic
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
+    add_compile_options(-Wtrampolines -Wduplicated-cond -Wduplicated-branches -Wnull-dereference)
 endif()
 
 if (NOT DEBUG_BUILD)
