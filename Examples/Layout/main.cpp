@@ -72,7 +72,8 @@ class MainWin : public AppCUI::Controls::Window
         AddExample("t:1,l:2,b:3,w:4", "An object that has the following margins: top: 1 character, left: 2 characters, bottom: 3 characters, and width of 4 characters ");
         AddExample("t:1,r:2,b:3,w:4", "An object that has the following margins: top: 1 character, right: 2 characters, bottom: 3 characters, and width of 4 characters ");
         AddGroup("4 margins anchors");
-
+        AddExample("l:1,t:2,r:3,b:4", "An object that has the following margins: left: 1 character, top: 2 characters, right: 3 characters, bottom: 4 characters ");
+        AddExample("l:1,t:1,r:1,b:1", "An object that has the following margins: left: 1 character, top: 1 character, right: 1 character, bottom: 1 character ");
         b.Create(this, "&Show", "d:b,w:16", 1234);
         b.SetEnabled(false);
     }
