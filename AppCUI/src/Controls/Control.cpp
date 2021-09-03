@@ -861,6 +861,40 @@ bool ControlContext::ProcessLBRAnchors(LayoutInformation& inf)
 
     return true;
 }
+bool ControlContext::ProcessTLBAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
+          false,
+          "When (top,left,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
+          false,
+          "When (top,left,bottom) parameters are used together, width parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopLeftBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;    
+    this->Layout.Format.Width        = inf.width;
+
+    return true;
+}
+bool ControlContext::ProcessTRBAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
+          false,
+          "When (top,right,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
+          false,
+          "When (top,right,bottom) parameters are used together, width parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopRightBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    this->Layout.Format.Width        = inf.width;
+
+    return true;
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
@@ -894,6 +928,10 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         return ProcessLTRAnchors(inf);
     case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM | LAYOUT_FLAG_RIGHT:
         return ProcessLBRAnchors(inf);
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM:
+        return ProcessTLBAnchors(inf);
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_BOTTOM:
+        return ProcessTRBAnchors(inf);
     }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
@@ -1090,6 +1128,16 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
             SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
             this->Layout.X = md.AnchorLeft;
             this->Layout.Y = md.ParentHeigh - (md.AnchorBottom + this->Layout.Height);
+            return true;
+        case LayoutFormatMode::TopLeftBottomAnchorsAndWidth:
+            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.AnchorTop;
+            return true;
+        case LayoutFormatMode::TopRightBottomAnchorsAndWidth:
+            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+            this->Layout.X = md.ParentWidth - (md.AnchorRight + this->Layout.Width);
+            this->Layout.Y = md.AnchorTop;
             return true;
         default:
             RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
