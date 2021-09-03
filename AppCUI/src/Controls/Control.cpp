@@ -827,6 +827,23 @@ bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
     // all good
     return true;
 }
+bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_X | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
+          false,
+          "When (left,top,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
+          false,
+          "When (left,top,right) parameters are used together, height parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.Height       = inf.height;
+
+    return true;
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
@@ -856,6 +873,8 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         return ProcessHorizontalParalelAnchors(inf);
     case LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM:
         return ProcessVerticalParalelAnchors(inf);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT:
+        return ProcessLTRAnchors(inf);
     }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
@@ -1001,6 +1020,7 @@ bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetric
 
     return true;
 }
+
 bool ControlContext::RecomputeLayout(Control* controlParent)
 {
     LayoutMetricData md;
@@ -1042,6 +1062,11 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
             return RecomputeLayout_LeftRightAnchorsAndHeight(md);
         case LayoutFormatMode::TopBottomAnchorsAndWidth:
             return RecomputeLayout_TopBottomAnchorsAndWidth(md);
+        case LayoutFormatMode::LeftTopRightAnchorsAndHeight:
+            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.AnchorTop;
+            return true;
         default:
             RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }

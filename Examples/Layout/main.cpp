@@ -67,6 +67,9 @@ class MainWin : public AppCUI::Controls::Window
         AddExample("t:3,b:6,w:15,a:c,x:50%", "An object that has 3 character from top and 6 characters from bottom margin and it's center alligned with a width of 15 characters");
         AddExample("t:3,b:6,w:15,a:r,x:90%", "An object that has 3 character from top and 6 characters from bottom margin and it's right alligned with a width of 15 characters and 10% padding until right margin");
         AddGroup("3 margins anchors");
+        AddExample(
+              "l:1,t:2,r:3,h:4",
+              "An object that has the following margins: left: 1 character, top: 2 characters, right: 3 characters, and height of 4 characters ");
         AddGroup("4 margins anchors");
 
         b.Create(this, "&Show", "d:b,w:16", 1234);
