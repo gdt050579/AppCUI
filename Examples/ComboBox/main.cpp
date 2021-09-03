@@ -32,7 +32,7 @@ class MyWin : public AppCUI::Controls::Window
         cb3.AddItem("Ducatti");
         
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

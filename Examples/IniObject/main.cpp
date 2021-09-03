@@ -63,6 +63,8 @@ int main()
     LOG_INFO("Size is %dx%d", sz.Width, sz.Height);
 
     unsigned int value = Utils::Number::ToUInt32("12345678").value();
+    LOG_INFO("Number is %u", value);
     int x              = Utils::Number::ToInt32("-1").value();
+    LOG_INFO("Number is %d", x);
     return 0;
 }

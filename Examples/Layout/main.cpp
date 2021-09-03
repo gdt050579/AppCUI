@@ -77,7 +77,7 @@ class MainWin : public AppCUI::Controls::Window
         b.Create(this, "&Show", "d:b,w:16", 1234);
         b.SetEnabled(false);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

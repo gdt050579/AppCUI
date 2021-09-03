@@ -28,7 +28,7 @@ bool NcursesTerminal::initInput()
     nonl();
     raw();
     meta(stdscr, TRUE);
-    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
     mouseinterval(0);
     set_escdelay(0);
 
@@ -63,7 +63,7 @@ bool NcursesTerminal::initInput()
     return true;
 }
 
-void NcursesTerminal::handleMouse(SystemEvent& evt, const int c)
+void NcursesTerminal::handleMouse(SystemEvent& evt, const int)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)

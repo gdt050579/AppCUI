@@ -116,7 +116,7 @@ AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const std::string_view& s
         break;
     }
     auto *p = &_Key_Name[1];
-    for (int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
+    for (unsigned int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
     {
         if (Utils::String::Equals(key, p->data()))
         {

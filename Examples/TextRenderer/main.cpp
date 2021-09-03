@@ -138,7 +138,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
         this->Create("Single line strings", "d:c,w:100,h:26");
         uc.Create(this, "x:0,y:0,w:100%,h:100%");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

@@ -438,7 +438,8 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
 bool Renderer::Clear(int charCode, const ColorPair color)
 {
     CHECK_VISIBLE;
-    if ((Clip.Left == 0) && (Clip.Top == 0) && (Clip.Right + 1 == this->Width) && (Clip.Bottom + 1 == this->Height))
+    if ((Clip.Left == 0) && (Clip.Top == 0) && (static_cast<unsigned>(Clip.Right + 1) == this->Width) &&
+        (static_cast<unsigned>(Clip.Bottom + 1) == this->Height))
     {
         return _ClearEntireSurface(charCode, color);
     }
@@ -1086,7 +1087,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     if (((params.Flags & WriteTextFlags::LeftMargin) != WriteTextFlags::None) && ((x - 1) >= Clip.Left))
         output->LeftMargin = output->Start - 1;
     if (((params.Flags & WriteTextFlags::RightMargin) != WriteTextFlags::None) &&
-        ((x + output->TextEnd - output->TextStart) <= Clip.Right))
+        ((x + output->TextEnd - output->TextStart) <= static_cast<unsigned>(Clip.Right)))
         output->RightMargin = output->End;
     // all good
     return true;

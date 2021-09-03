@@ -240,7 +240,7 @@ void SDLTerminal::OnFlushToScreen()
             int iFontCharHeight = 0;
             const Uint16 text[] = { ch.Code, 0 };
             TTF_SizeUNICODE(font, text, &iFontCharWidth, &iFontCharHeight);
-            const std::size_t fontCharWidth  = static_cast<std::size_t>(iFontCharWidth);
+//            const std::size_t fontCharWidth  = static_cast<std::size_t>(iFontCharWidth);
             const std::size_t fontCharHeight = static_cast<std::size_t>(iFontCharHeight);
 
             SDL_Rect WindowRect;

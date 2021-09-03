@@ -76,7 +76,7 @@ bool IsKeyword(Graphics::Character* start, unsigned int size)
     }
     return false;
 }
-void PythonHighligh(Control* tx, Graphics::Character* chars, unsigned int charsCount, void* Context)
+void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
 {
     Graphics::Character* end   = chars + charsCount;
     Graphics::Character* start = nullptr;
@@ -163,7 +163,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
               TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
               PythonHighligh);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

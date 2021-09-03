@@ -166,7 +166,7 @@ namespace Ini
         inline bool SkipString(bool& multiLineFormat);
         inline void SkipSingleLineWord(BuffPtr& wordEnds);
 
-        void SetError(const char* message)
+        void SetError(const char*)
         {
         }
         bool AddSection(BuffPtr nameStart, BuffPtr nameEnd);
@@ -444,7 +444,7 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 //============================================================================= INI Section ===
 std::string_view IniSection::GetName() const
 {
-    CHECK(this->Data, nullptr, "");
+    CHECK(this->Data, "", "");
     return std::string_view{ ((AppCUI::Ini::Section*) Data)->Name.GetText(),
                              ((AppCUI::Ini::Section*) Data)->Name.Len() };
 }

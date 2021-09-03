@@ -22,7 +22,7 @@ class SimpleWin : public AppCUI::Controls::Window
               u8"--!--",
               "x:1,y:1,w:36,h:10");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

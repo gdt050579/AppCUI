@@ -233,7 +233,7 @@ bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
     {
         // radio menu item -> uncheck all items that are radioboxes
         unsigned int index = menuIndex;
-        while (((index >= 0) && (index < this->ItemsCount)) && (this->Items[index]->Type == MenuItemType::Radio))
+        while (((index < this->ItemsCount)) && (this->Items[index]->Type == MenuItemType::Radio))
         {
             this->Items[index]->Checked = false;
             index--;
@@ -269,8 +269,8 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
         mpi.ItemIndex = NO_MENUITEM_SELECTED;
     }
     mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < (int)this->Width + 2) && (y < (int)this->VisibleItemsCount + 2);
-    mpi.IsOnUpButton   = (y == 0) && (x == (1 + this->Width / 2));
-    mpi.IsOnDownButton = (y == ScreenClip.ClipRect.Height - 1) && (x == (1 + this->Width / 2));
+    mpi.IsOnUpButton   = (y == 0) && (static_cast<unsigned>(x) == (1 + this->Width / 2));
+    mpi.IsOnDownButton = (y == ScreenClip.ClipRect.Height - 1) && (static_cast<unsigned>(x) == (1 + this->Width / 2));
 }
 bool MenuContext::OnMouseMove(int x, int y, bool& repaint)
 {
@@ -335,7 +335,7 @@ bool MenuContext::IsOnMenu(int x, int y)
     ComputeMousePositionInfo(x, y, mpi);
     return mpi.IsOnMenu;
 }
-bool MenuContext::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool MenuContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
 {
     if (this->VisibleItemsCount >= this->ItemsCount)
         return false; // nothing to scroll

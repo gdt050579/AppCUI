@@ -4492,7 +4492,7 @@ class ImageWinViewer : public AppCUI::Controls::Window
         iv.Create(this, "x:0,y:0,w:100%,h:100%");
         iv.SetImage(img, ImageRendererMode::SmallBoxes);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
@@ -4513,7 +4513,7 @@ class MainWin : public AppCUI::Controls::Window
         this->Create("Image example", "d:c,w:40,h:10");
         dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:36", BTN_SHOW_DIZZY);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

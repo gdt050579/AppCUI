@@ -22,7 +22,7 @@ class MyWin : public AppCUI::Controls::Window
         b2.Create(this, "&Open", "x:1,y:6,w:9", BUTTON_ID_SHOW_OPEN);
         l2.Create(this, "", "x:12,y:6,w:24,h:4");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         
         if (eventType == Event::EVENT_WINDOW_CLOSE)

@@ -31,7 +31,7 @@ class SimpleWin : public AppCUI::Controls::Window
         n4.SetEnabled(false);
     }
 
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
