@@ -26,7 +26,10 @@ enum class LayoutFormatMode: unsigned short
     PointAndSize,
     LeftRightAnchorsAndHeight,
     TopBottomAnchorsAndWidth,
+
     LeftTopRightAnchorsAndHeight,
+    LeftBottomRightAnchorsAndHeight,
+
     LeftTopRightBottomAnchors
 };
 enum class LayoutValueType: unsigned short
@@ -137,6 +140,7 @@ struct ControlContext
     bool ProcessHorizontalParalelAnchors(LayoutInformation& inf);
     bool ProcessVerticalParalelAnchors(LayoutInformation& inf);
     bool ProcessLTRAnchors(LayoutInformation& inf);
+    bool ProcessLBRAnchors(LayoutInformation& inf);
     bool UpdateLayoutFormat(const std::string_view& format);
     void SetControlSize(unsigned int width, unsigned int heigh);
     bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);

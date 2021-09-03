@@ -829,7 +829,7 @@ bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
 }
 bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
 {
-    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_X | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
           false,
           "When (left,top,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
     CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
@@ -839,6 +839,23 @@ bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
     this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
     this->Layout.Format.AnchorLeft   = inf.a_left;
     this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorRight  = inf.a_right;
+    this->Layout.Format.Height       = inf.height;
+
+    return true;
+}
+bool ControlContext::ProcessLBRAnchors(LayoutInformation& inf)
+{
+    CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
+          false,
+          "When (left,bottom,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
+    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
+          false,
+          "When (left,bottom,right) parameters are used together, height parameter must also be specified");
+
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftBottomRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft   = inf.a_left;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
     this->Layout.Format.AnchorRight  = inf.a_right;
     this->Layout.Format.Height       = inf.height;
 
@@ -875,6 +892,8 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         return ProcessVerticalParalelAnchors(inf);
     case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_RIGHT:
         return ProcessLTRAnchors(inf);
+    case LAYOUT_FLAG_LEFT | LAYOUT_FLAG_BOTTOM | LAYOUT_FLAG_RIGHT:
+        return ProcessLBRAnchors(inf);
     }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
@@ -1066,6 +1085,11 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
             SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
             this->Layout.X = md.AnchorLeft;
             this->Layout.Y = md.AnchorTop;
+            return true;
+        case LayoutFormatMode::LeftBottomRightAnchorsAndHeight:
+            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+            this->Layout.X = md.AnchorLeft;
+            this->Layout.Y = md.ParentHeigh - (md.AnchorBottom + this->Layout.Height);
             return true;
         default:
             RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
