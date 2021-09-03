@@ -61,7 +61,9 @@ class MainWin : public AppCUI::Controls::Window
         AddExample("r:2,b:2,w:10,h:25%", "A 10x25% height object with its right bottom corner 2 characters away from parents right bottom corner");
         AddExample("l:2,b:2,w:10,h:25%", "A 10x25% height object with its left bottom corner 2 characters away from parents left bottom corner");
         AddGroup("Parallel margin anchors");
-        AddExample("r:2,l:2,h:25%,y:10,a:t", "An object that has 2 characters until his parent from both left and right marginm and it's allign on top of 10th Y character");
+        AddExample("r:2,l:2,h:25%,y:10,a:t", "An object that has 2 characters until his parent from both left and right margin and it's allign on top of 10th Y character");
+        AddExample("r:10,l:3,h:50%,y:50%", "An object that has 3 character from left and 10 characters right margin and it's center alligned with a height of 50%");
+        AddExample("r:5,l:20,h:4,y:100%,a:b", "An object that has 20 character from left and 3 characters right margin and it's bottom alligned with a height of 4 characters");
         AddGroup("3 margins anchors");
         AddGroup("4 margins anchors");
 

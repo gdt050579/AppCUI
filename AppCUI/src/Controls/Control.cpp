@@ -755,48 +755,31 @@ bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
     // if "align" is not provided, it is defaulted to center
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::Center;
+    else
+    {
+        // check layout
+        CHECK((inf.align == Alignament::Top) || (inf.align == Alignament::Center) || (inf.align == Alignament::Bottom),
+              false,
+              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignament values are allowed !");
+    }
 
-    // if "height" is not provided, it is defaulted to 100%
+    // if "height" is not provided, it is defaulted to 1
     if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
-        this->Layout.Format.Height = { 10000, LayoutValueType::Percentage };
+        this->Layout.Format.Height = { 1, LayoutValueType::CharacterOffset };
     else
         this->Layout.Format.Height = inf.height;
 
-    // consruct de layout
+    // if "Y" is not provided, it is defaulted to 0
+    if ((inf.flags & LAYOUT_FLAG_Y) == 0)
+        this->Layout.Format.Y = { 0, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.Y = inf.y;
+
+    // construct de layout
     this->Layout.Format.LayoutMode  = LayoutFormatMode::LeftRightAnchorsAndHeight;
     this->Layout.Format.AnchorLeft  = inf.a_left;
     this->Layout.Format.AnchorRight = inf.a_right;
     this->Layout.Format.Align       = inf.align;
-
-    switch (inf.align)
-    {
-    case Alignament::Top:
-        // if "Y" is not provided, it is defaulted to 0
-        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
-            this->Layout.Format.Y = { 0, LayoutValueType::CharacterOffset };
-        else
-            this->Layout.Format.Y = inf.y;
-        break;
-    case Alignament::Center:
-        // if "Y" is not provided, it is defaulted to 50%
-        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
-            this->Layout.Format.Y = { 5000, LayoutValueType::Percentage };
-        else
-            this->Layout.Format.Y = inf.y;
-        break;
-    case Alignament::Bottom:
-        // if "Y" is not provided, it is defaulted to 100%
-        if ((inf.flags & LAYOUT_FLAG_Y) == 0)
-            this->Layout.Format.Y = { 10000, LayoutValueType::Percentage };
-        else
-            this->Layout.Format.Y = inf.y;
-        break;
-    default:
-        RETURNERROR(
-              false,
-              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignament values are allowed !");
-
-    }
 
     // all good
     return true;
@@ -833,10 +816,20 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
 }
-bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
+void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
 {
-    this->Layout.Width  = md.Width;
-    this->Layout.Height = md.Height;
+    this->Layout.Width = (int) width;
+    this->Layout.Height = (int) heigh;
+    // check Width / Height values agains min...max values
+    this->Layout.Width  = std::max<>(this->Layout.Width, this->Layout.MinWidth);
+    this->Layout.Width  = std::min<>(this->Layout.Width, this->Layout.MaxWidth);
+    this->Layout.Height = std::max<>(this->Layout.Height, this->Layout.MinHeight);
+    this->Layout.Height = std::min<>(this->Layout.Height, this->Layout.MaxHeight);
+}
+bool ControlContext::RecomputeLayout_PointAndSize(LayoutMetricData& md)
+{
+    SetControlSize(md.Width, md.Height);
+
     // compute (x,y) based on anchor
     switch (md.Anchor)
     {
@@ -886,36 +879,59 @@ bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
         // do nothing        
         break;
     case Alignament::Top:
-        this->Layout.X -= md.Width / 2;        
+        this->Layout.X -= this->Layout.Width / 2;        
         break;
     case Alignament::TopRight:
-        this->Layout.X -= md.Width;
+        this->Layout.X -= this->Layout.Width;
         break;
     case Alignament::Right:
-        this->Layout.X -= md.Width;
-        this->Layout.Y -= md.Height / 2;
+        this->Layout.X -= this->Layout.Width;
+        this->Layout.Y -= this->Layout.Height / 2;
         break;
     case Alignament::BottomRight:
-        this->Layout.X -= md.Width;
-        this->Layout.Y -= md.Height;
+        this->Layout.X -= this->Layout.Width;
+        this->Layout.Y -= this->Layout.Height;
         break;
     case Alignament::Bottom:
-        this->Layout.X -= md.Width / 2;
-        this->Layout.Y -= md.Height;
+        this->Layout.X -= this->Layout.Width / 2;
+        this->Layout.Y -= this->Layout.Height;
         break;
     case Alignament::BottomLeft:
-        this->Layout.Y -= md.Height;
+        this->Layout.Y -= this->Layout.Height;
         break;
     case Alignament::Left:
-        this->Layout.Y -= md.Height / 2;
+        this->Layout.Y -= this->Layout.Height / 2;
         break;
     case Alignament::Center:
-        this->Layout.X -= md.Width / 2;
-        this->Layout.Y -= md.Height / 2;
+        this->Layout.X -= this->Layout.Width / 2;
+        this->Layout.Y -= this->Layout.Height / 2;
         break;
     default:
         RETURNERROR(false, "Invalid alignament value: %d", md.Align);
     };
+    return true;
+}
+bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(LayoutMetricData& md)
+{
+    SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+
+    // convert to PointAndSize
+    this->Layout.X = md.AnchorLeft;
+    switch (md.Align)
+    {
+    case Alignament::Top:
+        this->Layout.Y = md.Y;
+        break;
+    case Alignament::Center:
+        this->Layout.Y = md.Y - this->Layout.Height/2;
+        break;
+    case Alignament::Bottom:
+        this->Layout.Y = md.Y - this->Layout.Height / 2;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignamet (%d) --> only Top, Center and Bottom are allowed !", md.Align);
+    }
+    
     return true;
 }
 bool ControlContext::RecomputeLayout(Control* controlParent)
@@ -949,18 +965,14 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     md.ParentWidth = sz.Width;
     md.ParentHeigh = sz.Height;
 
-    // check Width / Height values
-    md.Width  = std::max<>(md.Width, this->Layout.MinWidth);
-    md.Width  = std::min<>(md.Width, this->Layout.MaxWidth);
-    md.Height = std::max<>(md.Height, this->Layout.MinHeight);
-    md.Height = std::min<>(md.Height, this->Layout.MaxHeight);
-
 
     // compute position
     switch (this->Layout.Format.LayoutMode)
     {
         case LayoutFormatMode::PointAndSize:
             return RecomputeLayout_PointAndSize(md);
+        case LayoutFormatMode::LeftRightAnchorsAndHeight:
+            return RecomputeLayout_LeftRightAnchorsAndHeight(md);
         default:
             RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }

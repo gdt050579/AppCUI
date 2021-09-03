@@ -135,7 +135,9 @@ struct ControlContext
     bool ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor);
     bool ProcessHorizontalParalelAnchors(LayoutInformation& inf);
     bool UpdateLayoutFormat(const std::string_view& format);
-    bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
+    void SetControlSize(unsigned int width, unsigned int heigh);
+    bool RecomputeLayout_PointAndSize(LayoutMetricData& md);
+    bool RecomputeLayout_LeftRightAnchorsAndHeight(LayoutMetricData& md);
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 };
