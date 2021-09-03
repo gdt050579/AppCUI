@@ -784,6 +784,49 @@ bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
     // all good
     return true;
 }
+bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
+{
+    // vertical (up-down) are provided
+    CHECK((inf.flags & LAYOUT_FLAG_Y) == 0,
+          false,
+          "When (top,down) parameters are used toghere, 'Y' parameter can not be used");
+    CHECK((inf.flags & LAYOUT_FLAG_HEIGHT) == 0,
+          false,
+          "When (top,down) parameters are used toghere, height can not be used as it is deduced from bottom-top "
+          "difference");
+
+    // if "align" is not provided, it is defaulted to center
+    if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
+        inf.align = Alignament::Center;
+    else
+    {
+        // check layout
+        CHECK((inf.align == Alignament::Left) || (inf.align == Alignament::Center) || (inf.align == Alignament::Right),
+              false,
+              "When (top,down) are provided, only Left(l), Center(c) and Right(r) alignament values are allowed !");
+    }
+
+    // if "width" is not provided, it is defaulted to 1
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        this->Layout.Format.Width = { 1, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.Width = inf.width;
+
+    // if "X" is not provided, it is defaulted to 0
+    if ((inf.flags & LAYOUT_FLAG_X) == 0)
+        this->Layout.Format.X = { 0, LayoutValueType::CharacterOffset };
+    else
+        this->Layout.Format.X = inf.x;
+
+    // construct de layout
+    this->Layout.Format.LayoutMode   = LayoutFormatMode::TopBottomAnchorsAndWidth;
+    this->Layout.Format.AnchorTop    = inf.a_top;
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
+    this->Layout.Format.Align        = inf.align;
+
+    // all good
+    return true;
+}
 bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 {
     LayoutInformation inf;
@@ -811,7 +854,8 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
         return ProcessCornerAnchorLayout(inf, Alignament::BottomLeft);
     case LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_LEFT:
         return ProcessHorizontalParalelAnchors(inf);
-
+    case LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM:
+        return ProcessVerticalParalelAnchors(inf);
     }
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
@@ -826,7 +870,7 @@ void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
     this->Layout.Height = std::max<>(this->Layout.Height, this->Layout.MinHeight);
     this->Layout.Height = std::min<>(this->Layout.Height, this->Layout.MaxHeight);
 }
-bool ControlContext::RecomputeLayout_PointAndSize(LayoutMetricData& md)
+bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
 {
     SetControlSize(md.Width, md.Height);
 
@@ -911,7 +955,7 @@ bool ControlContext::RecomputeLayout_PointAndSize(LayoutMetricData& md)
     };
     return true;
 }
-bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(LayoutMetricData& md)
+bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetricData& md)
 {
     SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
 
@@ -923,15 +967,38 @@ bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(LayoutMetricData&
         this->Layout.Y = md.Y;
         break;
     case Alignament::Center:
-        this->Layout.Y = md.Y - this->Layout.Height/2;
+        this->Layout.Y = md.Y - this->Layout.Height / 2;
         break;
     case Alignament::Bottom:
-        this->Layout.Y = md.Y - this->Layout.Height / 2;
+        this->Layout.Y = md.Y - this->Layout.Height;
         break;
     default:
         RETURNERROR(false, "Invalid alignamet (%d) --> only Top, Center and Bottom are allowed !", md.Align);
     }
     
+    return true;
+}
+bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetricData& md)
+{
+    SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+
+    // convert to PointAndSize
+    this->Layout.Y = md.AnchorTop;
+    switch (md.Align)
+    {
+    case Alignament::Left:
+        this->Layout.X = md.X;
+        break;
+    case Alignament::Center:
+        this->Layout.X = md.X - this->Layout.Width / 2;
+        break;
+    case Alignament::Right:
+        this->Layout.X = md.X - this->Layout.Width;
+        break;
+    default:
+        RETURNERROR(false, "Invalid alignamet (%d) --> only Left, Center and Right are allowed !", md.Align);
+    }
+
     return true;
 }
 bool ControlContext::RecomputeLayout(Control* controlParent)
@@ -973,6 +1040,8 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
             return RecomputeLayout_PointAndSize(md);
         case LayoutFormatMode::LeftRightAnchorsAndHeight:
             return RecomputeLayout_LeftRightAnchorsAndHeight(md);
+        case LayoutFormatMode::TopBottomAnchorsAndWidth:
+            return RecomputeLayout_TopBottomAnchorsAndWidth(md);
         default:
             RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }
