@@ -166,8 +166,6 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         return;
     }
 
-    volatile int j = __has_cpp_attribute(nodiscard);
-
     switch (e.type)
     {
     case SDL_QUIT:
