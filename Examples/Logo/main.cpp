@@ -80,7 +80,7 @@ class LogoWin : public AppCUI::Controls::Window
   public:
     LogoWin()
     {
-        this->Create("Canvas example", "a:c,w:80,h:22");
+        this->Create("Canvas example", "d:c,w:80,h:22");
         sp.Create(this, "x:0,y:0,w:100%,h:100%", true);
         viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 

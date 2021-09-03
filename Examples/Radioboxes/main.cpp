@@ -15,7 +15,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Radiobox example", "a:c,w:60,h:8");
+        this->Create("Radiobox example", "d:c,w:60,h:8");
         r1.Create(this, "&TCP connection", "x:1,y:1,w:15", RADIO_GROUP_ID_1);
         r2.Create(this, "&UDP connection", "x:1,y:2,w:15", RADIO_GROUP_ID_1);
         r3.Create(this, "&HTTP connection", "x:1,y:3,w:15", RADIO_GROUP_ID_1);

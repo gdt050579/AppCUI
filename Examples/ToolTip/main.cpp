@@ -34,7 +34,7 @@ class ToolTipExampleWin : public AppCUI::Controls::Window
   public:
     ToolTipExampleWin()
     {
-        this->Create("Tool tip example", "a:c,w:40,h:9");
+        this->Create("Tool tip example", "d:c,w:40,h:9");
         l1.Create(
               this,
               "Hover the mouse over the Button, \nCheckbox, RadioBox and [X] button \nfrom the window to see a tool "

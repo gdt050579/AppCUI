@@ -14,7 +14,7 @@ class SimpleWin : public AppCUI::Controls::Window
   public:
     SimpleWin()
     {
-        this->Create("NumericSelectorSample", "a:c,w:40,h:10");
+        this->Create("NumericSelectorSample", "d:c,w:40,h:10");
 
         n1.Create(this, 1, 5, 2, "x:1,y:1,w:36");
         n2.Create(this, -100, 1234567, 1234567, "x:1,y:3,w:15");
