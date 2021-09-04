@@ -1269,7 +1269,30 @@ bool Renderer::WriteSingleLineText(
 }
 
 //=========================================================================[IMAGE]===================
-Color _color_map_[] = {
+struct _RGB_Color_
+{
+    unsigned char Red, Green, Blue;
+    Color c;
+};
+static const _RGB_Color_ _console_colors_[16] = {
+    _RGB_Color_{ 0, 0, 0, Color::Black },        // Black
+    _RGB_Color_{ 0, 0, 128, Color::DarkBlue },   // DarkBlue
+    _RGB_Color_{ 0, 128, 0, Color::DarkGreen },  // DarkGreen
+    _RGB_Color_{ 0, 128, 128, Color::Teal },     // Teal
+    _RGB_Color_{ 128, 0, 0, Color::DarkRed },    // DarkRed
+    _RGB_Color_{ 128, 0, 128, Color::Magenta },  // Purple
+    _RGB_Color_{ 128, 128, 0, Color::Olive },    // Brown
+    _RGB_Color_{ 192, 192, 192, Color::Silver }, // LightGray
+    _RGB_Color_{ 128, 128, 128, Color::Gray },   // DarkGray
+    _RGB_Color_{ 0, 0, 255, Color::Blue },       // Blue
+    _RGB_Color_{ 0, 255, 0, Color::Green },      // Green
+    _RGB_Color_{ 0, 255, 255, Color::Aqua },     // Aqua
+    _RGB_Color_{ 255, 0, 0, Color::Red },        // Red
+    _RGB_Color_{ 255, 0, 255, Color::Pink },     // Pink
+    _RGB_Color_{ 255, 255, 0, Color::Yellow },   // Yellow
+    _RGB_Color_{ 255, 255, 255, Color::White },  // White
+};
+Color _color_map_16_[] = {
     /* 0*/ Color::Black,     // (0, 0, 0)
     /* 1*/ Color::DarkBlue,  // (0, 0, 1)
     /* 2*/ Color::Blue,      // (0, 0, 2)
@@ -1298,7 +1321,7 @@ Color _color_map_[] = {
     /*25*/ Color::Silver,    // (2, 2, 1) [Aprox]
     /*26*/ Color::White,     // (2, 2, 2)
 };
-inline unsigned int Channel_To_Index(unsigned int rgbChannelValue)
+inline unsigned int Channel_To_Index16(unsigned int rgbChannelValue)
 {
     if (rgbChannelValue <= 64)
         return 0;
@@ -1306,13 +1329,84 @@ inline unsigned int Channel_To_Index(unsigned int rgbChannelValue)
         return 1;
     return 2;
 }
-Color RGB_to_Color(unsigned int colorRGB)
+Color RGB_to_16Color(unsigned int colorRGB)
 {
-    unsigned int b = Channel_To_Index(colorRGB & 0xFF);         // blue channel
-    unsigned int g = Channel_To_Index((colorRGB >> 8) & 0xFF);  // green channel
-    unsigned int r = Channel_To_Index((colorRGB >> 16) & 0xFF); // red channel
-    return _color_map_[r * 9 + g * 3 + b];
+    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);        // blue channel
+    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF); // green channel
+    unsigned int r = Channel_To_Index16((colorRGB >> 16) & 0xFF); // red channel
+    return _color_map_16_[r * 9 + g * 3 + b];
 }
+
+inline unsigned int Channel_Diff(unsigned int v1, unsigned int v2)
+{
+    if (v1 > v2)
+        return v1 - v2;
+    else
+        return v2 - v1;
+}
+void PixelTo64Color(unsigned int colorRGB, Color& c, SpecialChars& ch)
+{
+    // linear search - not efficient but good enough for the first implementation
+    // in the future should be changed to a lookup table
+    unsigned int R        = (colorRGB >> 16) & 0xFF;
+    unsigned int G        = (colorRGB >> 8) & 0xFF;
+    unsigned int B        = (colorRGB) &0xFF;
+    unsigned int BestDiff = 0xFFFFFFFF;
+    for (unsigned int i = 0;i<16;i++)
+    {
+        unsigned int df = 0;
+        auto& cc        = _console_colors_[i];
+
+        // test 100%
+        df += Channel_Diff(R, cc.Red);
+        df += Channel_Diff(G, cc.Green);
+        df += Channel_Diff(B, cc.Blue);
+        if (df<BestDiff)
+        {
+            c = cc.c;
+            ch = SpecialChars::Block100;
+        }
+
+        // test 75%
+        df = 0;
+        df += Channel_Diff(R, (cc.Red / 4) * 3);
+        df += Channel_Diff(G, (cc.Green / 4) * 3);
+        df += Channel_Diff(B, (cc.Blue / 4) * 3);
+        if (df < BestDiff)
+        {
+            c  = cc.c;
+            ch = SpecialChars::Block75;
+            BestDiff = df;
+        }
+
+        // test 50%
+        df = 0;
+        df += Channel_Diff(R, cc.Red / 2);
+        df += Channel_Diff(G, cc.Green / 2);
+        df += Channel_Diff(B, cc.Blue / 2);
+        if (df < BestDiff)
+        {
+            c  = cc.c;
+            ch = SpecialChars::Block50;
+            BestDiff = df;
+        }
+
+        // test 25%
+        df = 0;
+        df += Channel_Diff(R, cc.Red / 4);
+        df += Channel_Diff(G, cc.Green / 4);
+        df += Channel_Diff(B, cc.Blue / 4);
+        if (df < BestDiff)
+        {
+            c  = cc.c;
+            ch = SpecialChars::Block50;
+            BestDiff = df;
+        }
+        if (BestDiff == 0)
+            return; // found a perfect match
+    }
+}
+
 
 void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
@@ -1328,12 +1422,33 @@ void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
         for (unsigned int img_x = 0; img_x < w; img_x += xStep, px++)
         {
             if (rap == 1)
-                cp = { RGB_to_Color(img.GetPixel(img_x, img_y)), RGB_to_Color(img.GetPixel(img_x, img_y + 1)) };
+                cp = { RGB_to_16Color(img.GetPixel(img_x, img_y)), RGB_to_16Color(img.GetPixel(img_x, img_y + 1)) };
             else
-                cp = { RGB_to_Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
-                       RGB_to_Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
+                cp = { RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
+                       RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
 
             r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
+        }
+    }
+}
+void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w     = img.GetWidth();
+    const auto h     = img.GetHeight();
+    int px           = 0;
+    Color cp         = Color::Black;
+    SpecialChars sc  = SpecialChars::Block100;
+    for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += rap, px+=2)
+        {            
+            if (rap == 1)
+                PixelTo64Color(img.GetPixel(img_x, img_y), cp, sc);
+            else
+                PixelTo64Color(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
+
+            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
         }
     }
 }
@@ -1377,10 +1492,13 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
         Paint_SmallBlocks(*this, img, x, y, rap);
         return true;
     case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
-        NOT_IMPLEMENTED(false);
+        Paint_LargeBlocks(*this, img, x, y, rap);
+        return true;
     case ImageRenderingMethod::AsciiArt:
         NOT_IMPLEMENTED(false);
     default:
-        NOT_IMPLEMENTED(false);
+        RETURNERROR(false, "Unknwon rendering method (%u) ", static_cast<unsigned int>(method));
     }
 }
+
+#undef COMPUTE_RGB
