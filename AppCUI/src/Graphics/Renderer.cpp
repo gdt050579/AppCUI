@@ -1267,3 +1267,123 @@ bool Renderer::WriteSingleLineText(
     params.Width          = width;
     return WriteText(text, params);
 }
+
+//=========================================================================[IMAGE]===================
+Color _color_map_[] = {
+    /* 0*/ Color::Black,     // (0, 0, 0)
+    /* 1*/ Color::DarkBlue,  // (0, 0, 1)
+    /* 2*/ Color::Blue,      // (0, 0, 2)
+    /* 3*/ Color::DarkGreen, // (0, 1, 0)
+    /* 4*/ Color::Teal,      // (0, 1, 1)
+    /* 5*/ Color::Teal,      // (0, 1, 2) [Aprox]
+    /* 6*/ Color::Green,     // (0, 2, 0)
+    /* 7*/ Color::Teal,      // (0, 2, 1) [Aprox]
+    /* 8*/ Color::Aqua,      // (0, 2, 2)
+    /* 9*/ Color::DarkRed,   // (1, 0, 0)
+    /*10*/ Color::Magenta,   // (1, 0, 1)
+    /*11*/ Color::Magenta,   // (1, 0, 2) [Aprox]
+    /*12*/ Color::Olive,     // (1, 1, 0)
+    /*13*/ Color::Gray,      // (1, 1, 1)
+    /*14*/ Color::Gray,      // (1, 1, 2) [Aprox]
+    /*15*/ Color::Olive,     // (1, 2, 0) [Aprox]
+    /*16*/ Color::Gray,      // (1, 2, 1) [Aprox]
+    /*17*/ Color::Silver,    // (1, 2, 2) [Aprox]
+    /*18*/ Color::Red,       // (2, 0, 0)
+    /*19*/ Color::Magenta,   // (2, 0, 1) [Aprox]
+    /*20*/ Color::Pink,      // (2, 0, 2)
+    /*21*/ Color::Olive,     // (2, 1, 0) [Aprox]
+    /*22*/ Color::Gray,      // (2, 1, 1) [Aprox]
+    /*23*/ Color::Silver,    // (2, 1, 2) [Aprox]
+    /*24*/ Color::Yellow,    // (2, 2, 0)
+    /*25*/ Color::Silver,    // (2, 2, 1) [Aprox]
+    /*26*/ Color::White,     // (2, 2, 2)
+};
+inline unsigned int Channel_To_Index(unsigned int rgbChannelValue)
+{
+    if (rgbChannelValue <= 64)
+        return 0;
+    else if (rgbChannelValue < 192)
+        return 1;
+    return 2;
+}
+Color RGB_to_Color(unsigned int colorRGB)
+{
+    unsigned int b = Channel_To_Index(colorRGB & 0xFF);         // blue channel
+    unsigned int g = Channel_To_Index((colorRGB >> 8) & 0xFF);  // green channel
+    unsigned int r = Channel_To_Index((colorRGB >> 16) & 0xFF); // red channel
+    return _color_map_[r * 9 + g * 3 + b];
+}
+void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w     = img.GetWidth();
+    const auto h     = img.GetHeight();
+    const auto xStep = rap;
+    const auto yStep = rap * 2;
+    int px           = 0;
+    ColorPair cp     = NoColorPair;
+    for (unsigned int img_y = 0; img_y < h; img_y += yStep, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += xStep, px++)
+        {
+            if (rap == 1)
+            {
+                cp = {
+                    RGB_to_Color(img.GetPixel(img_x, img_y)),
+                    RGB_to_Color(img.GetPixel(img_x, img_y + 1)),
+                };
+            }
+            else
+            {
+            }
+            r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
+        }
+    }
+}
+Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
+{
+    auto rap       = static_cast<unsigned int>(scale);
+    unsigned int w = img.GetWidth();
+    unsigned int h = img.GetHeight();
+
+    // sanity check
+    CHECK((rap >= 1) && (rap <= 10), Size(), "Invalid scale enum value");
+
+    switch (method)
+    {
+    case ImageRenderingMethod::PixelTo16ColorsSmallBlock:
+        w = w / rap;
+        h = h / (2 * rap);
+        break;
+    case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+        w = (w * 2) / rap;
+        h = h / rap;
+        break;
+    case ImageRenderingMethod::AsciiArt:
+        NOT_IMPLEMENTED(Size());
+    default:
+        NOT_IMPLEMENTED(Size());
+    };
+    w = std::max<>(w, 1U);
+    h = std::max<>(h, 1U);
+    return Size(w, h);
+}
+bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod method, ImageScaleMethod scale)
+{
+    auto rap       = static_cast<unsigned int>(scale);
+    // sanity check
+    CHECK((rap >= 1) && (rap <= 10), false, "Invalid scale enum value");
+
+    switch (method)
+    {
+    case ImageRenderingMethod::PixelTo16ColorsSmallBlock:
+        Paint_SmallBlocks(*this, img, x, y, rap);
+        return true;
+    case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+        NOT_IMPLEMENTED(false);
+    case ImageRenderingMethod::AsciiArt:
+        NOT_IMPLEMENTED(false);
+    default:
+        NOT_IMPLEMENTED(false);
+    }
+}

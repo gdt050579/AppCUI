@@ -4,6 +4,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Graphics;
 
 #define BTN_SHOW_DIZZY  1000
 
@@ -4490,7 +4491,7 @@ class ImageWinViewer : public AppCUI::Controls::Window
     {
         this->Create("Image view", "d:c,w:100%,h:100%");
         iv.Create(this, "x:0,y:0,w:100%,h:100%");
-        iv.SetImage(img, ImageRendererMode::SmallBoxes);
+        iv.SetImage(img, ImageRenderingMethod::PixelTo16ColorsSmallBlock, ImageScaleMethod::NoScale);
     }
     bool OnEvent(Control*, Event eventType, int) override
     {
