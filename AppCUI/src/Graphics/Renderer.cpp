@@ -1313,6 +1313,7 @@ Color RGB_to_Color(unsigned int colorRGB)
     unsigned int r = Channel_To_Index((colorRGB >> 16) & 0xFF); // red channel
     return _color_map_[r * 9 + g * 3 + b];
 }
+
 void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w     = img.GetWidth();

@@ -1298,6 +1298,7 @@ namespace Graphics
               unsigned char Alpha = 255);
         unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
         bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
+        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz);
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
