@@ -6,8 +6,10 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-#define BTN_SHOW_DIZZY  1000
-#define BTN_SHOW_GDT    1001
+#define BTN_SHOW_DIZZY          1000
+#define BTN_SHOW_GDT            1001
+#define BTN_SHOW_COLOR_PALETTE  1002
+
 
 // image taken from https://en.wikipedia.org/wiki/Treasure_Island_Dizzy#/media/File:Treasure_Island_Dizzy.png
 unsigned int dizzy_pixels[] = {
@@ -6557,7 +6559,7 @@ class ImageWinViewer : public AppCUI::Controls::Window
 
 class MainWin : public AppCUI::Controls::Window
 {
-    Button dizzy,gdt;
+    Button dizzy,gdt,colorPallete;
     ComboBox cbMethod;
     ComboBox cbScale;
     Label lbMethod;
@@ -6566,16 +6568,17 @@ class MainWin : public AppCUI::Controls::Window
   public:
     MainWin()
     {
-        this->Create("Image example", "d:c,w:50,h:11");
+        this->Create("Image example", "d:c,w:50,h:13");
         dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         gdt.Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
+        colorPallete.Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
 
-        lbMethod.Create(this, "Method", "x:1,y:5,w:6");
-        cbMethod.Create(this, "x:8,y:5,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+        lbMethod.Create(this, "Method", "l:1,b:3,w:6");
+        cbMethod.Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
         cbMethod.SetCurentItemIndex(0);
 
-        lbScale.Create(this, "Scale", "x:1,y:7,w:6");
-        cbScale.Create(this, "x:8,y:7,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
+        lbScale.Create(this, "Scale", "l:1,b:1,w:6");
+        cbScale.Create(this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
         cbScale.SetCurentItemIndex(0);
 
     }
@@ -6638,6 +6641,32 @@ class MainWin : public AppCUI::Controls::Window
                 AppCUI::Graphics::Image img;
                 img.Create(150, 150);                                          // 150x150 small icon with my face
                 memcpy(img.GetPixelsBuffer(), gdt_pixels, sizeof(gdt_pixels)); // direct memory copy
+                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                iwv.Show();
+                return true;
+            }
+            if (controlID == BTN_SHOW_COLOR_PALETTE)
+            {
+                AppCUI::Graphics::Image img;
+                img.Create(27, 27); // 27 = square of (9 x 9 x 9) ==> 9 = variantion on one channel (from 0 to 255)      
+                int x = 0;
+                int y = 0;
+                for (unsigned int r = 0; r <= 256; r += 32)
+                {
+                    for (unsigned int g = 0; g <= 256; g += 32)
+                    {
+                        for (unsigned int b = 0; b <= 256; b += 32)
+                        {
+                            img.SetPixel(x, y, std::min<>(r, 255U), std::min<>(g, 255U), std::min<>(b, 255U), 255);
+                            x++;
+                            if (x == img.GetWidth())
+                            {
+                                x = 0;
+                                y++;
+                            }
+                        }
+                    }
+                }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
                 return true;

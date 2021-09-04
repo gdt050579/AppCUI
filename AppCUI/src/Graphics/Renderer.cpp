@@ -1344,69 +1344,55 @@ inline unsigned int Channel_Diff(unsigned int v1, unsigned int v2)
     else
         return v2 - v1;
 }
-void PixelTo64Color(unsigned int colorRGB, Color& c, SpecialChars& ch)
+void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
 {
     // linear search - not efficient but good enough for the first implementation
     // in the future should be changed to a lookup table
     unsigned int R        = (colorRGB >> 16) & 0xFF;
     unsigned int G        = (colorRGB >> 8) & 0xFF;
     unsigned int B        = (colorRGB) &0xFF;
+
+    unsigned int composeR = 0;
+    unsigned int composeG = 0;
+    unsigned int composeB = 0;
+   
     unsigned int BestDiff = 0xFFFFFFFF;
-    for (unsigned int i = 0;i<16;i++)
+
+
+    for (unsigned int c1 = 0; c1 < 16; c1++)
     {
-        unsigned int df = 0;
-        auto& cc        = _console_colors_[i];
-
-        // test 100%
-        df += Channel_Diff(R, cc.Red);
-        df += Channel_Diff(G, cc.Green);
-        df += Channel_Diff(B, cc.Blue);
-        if (df<BestDiff)
+        for (unsigned int c2 = 0; c2 < 16; c2++)
         {
-            c = cc.c;
-            ch = SpecialChars::Block100;
-        }
+            unsigned int df = 0;
+            auto& cc1       = _console_colors_[c1];
+            auto& cc2       = _console_colors_[c2];
 
-        // test 75%
-        df = 0;
-        df += Channel_Diff(R, (cc.Red / 4) * 3);
-        df += Channel_Diff(G, (cc.Green / 4) * 3);
-        df += Channel_Diff(B, (cc.Blue / 4) * 3);
-        if (df < BestDiff)
-        {
-            c  = cc.c;
-            ch = SpecialChars::Block75;
-            BestDiff = df;
+            for (unsigned int proc = 1;proc<=4;proc*=2) // 25%,50%,100%
+            {
+                composeR = ((((unsigned int) cc1.Red) * proc) + (((unsigned int) cc2.Red) * (4 - proc))) / 4;
+                composeG = ((((unsigned int) cc1.Green) * proc) + (((unsigned int) cc2.Green) * (4 - proc))) / 4;
+                composeB = ((((unsigned int) cc1.Blue) * proc) + (((unsigned int) cc2.Blue) * (4 - proc))) / 4;
+                unsigned int df = 0;
+                df += Channel_Diff(R, composeR);
+                df += Channel_Diff(G, composeG);
+                df += Channel_Diff(B, composeB);
+                if (df < BestDiff)
+                {
+                    BestDiff = df;
+                    c        = ColorPair{ cc1.c, cc2.c };
+                    if (proc == 1)
+                        ch = SpecialChars::Block25;
+                    else if (proc == 2)
+                        ch = SpecialChars::Block50;
+                    else 
+                        ch = SpecialChars::Block100;
+                    if (BestDiff == 0)
+                        return; // found a perfect match
+                }
+            }
         }
-
-        // test 50%
-        df = 0;
-        df += Channel_Diff(R, cc.Red / 2);
-        df += Channel_Diff(G, cc.Green / 2);
-        df += Channel_Diff(B, cc.Blue / 2);
-        if (df < BestDiff)
-        {
-            c  = cc.c;
-            ch = SpecialChars::Block50;
-            BestDiff = df;
-        }
-
-        // test 25%
-        df = 0;
-        df += Channel_Diff(R, cc.Red / 4);
-        df += Channel_Diff(G, cc.Green / 4);
-        df += Channel_Diff(B, cc.Blue / 4);
-        if (df < BestDiff)
-        {
-            c  = cc.c;
-            ch = SpecialChars::Block50;
-            BestDiff = df;
-        }
-        if (BestDiff == 0)
-            return; // found a perfect match
     }
 }
-
 
 void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
@@ -1436,7 +1422,7 @@ void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
     const auto w     = img.GetWidth();
     const auto h     = img.GetHeight();
     int px           = 0;
-    Color cp         = Color::Black;
+    ColorPair cp     = NoColorPair;
     SpecialChars sc  = SpecialChars::Block100;
     for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
     {
@@ -1448,7 +1434,8 @@ void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
             else
                 PixelTo64Color(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
 
-            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            //r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
         }
     }
 }
