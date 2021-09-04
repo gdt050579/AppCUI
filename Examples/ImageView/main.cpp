@@ -9,6 +9,7 @@ using namespace AppCUI::Graphics;
 #define BTN_SHOW_DIZZY          1000
 #define BTN_SHOW_GDT            1001
 #define BTN_SHOW_COLOR_PALETTE  1002
+#define BTN_SHOW_COLOR_SCALES   1003
 
 
 // image taken from https://en.wikipedia.org/wiki/Treasure_Island_Dizzy#/media/File:Treasure_Island_Dizzy.png
@@ -6559,7 +6560,7 @@ class ImageWinViewer : public AppCUI::Controls::Window
 
 class MainWin : public AppCUI::Controls::Window
 {
-    Button dizzy,gdt,colorPallete;
+    Button dizzy,gdt,colorPallete, colorScales;
     ComboBox cbMethod;
     ComboBox cbScale;
     Label lbMethod;
@@ -6568,10 +6569,12 @@ class MainWin : public AppCUI::Controls::Window
   public:
     MainWin()
     {
-        this->Create("Image example", "d:c,w:50,h:13");
+        this->Create("Image example", "d:c,w:50,h:15");
         dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         gdt.Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
         colorPallete.Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
+        colorScales.Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
+
 
         lbMethod.Create(this, "Method", "l:1,b:3,w:6");
         cbMethod.Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
@@ -6665,6 +6668,23 @@ class MainWin : public AppCUI::Controls::Window
                                 y++;
                             }
                         }
+                    }
+                }
+                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                iwv.Show();
+                return true;
+            }
+            if (controlID == BTN_SHOW_COLOR_SCALES)
+            {
+                AppCUI::Graphics::Image img;
+                img.Create(16, 7); 
+                for (unsigned int bit = 1; bit<=7;bit++)
+                {
+                    for (unsigned int x = 0; x < 16; x++)
+                    {
+                        img.SetPixel(
+                              x, bit - 1, x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1));
+
                     }
                 }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());

@@ -1367,7 +1367,7 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
             auto& cc1       = _console_colors_[c1];
             auto& cc2       = _console_colors_[c2];
 
-            for (unsigned int proc = 1;proc<=4;proc*=2) // 25%,50%,100%
+            for (unsigned int proc = 1;proc<=4;proc++) // 25%,50%,75%.100%
             {
                 composeR = ((((unsigned int) cc1.Red) * proc) + (((unsigned int) cc2.Red) * (4 - proc))) / 4;
                 composeG = ((((unsigned int) cc1.Green) * proc) + (((unsigned int) cc2.Green) * (4 - proc))) / 4;
@@ -1376,7 +1376,7 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
                 df += Channel_Diff(R, composeR);
                 df += Channel_Diff(G, composeG);
                 df += Channel_Diff(B, composeB);
-                if (df < BestDiff)
+                if (df <= BestDiff)
                 {
                     BestDiff = df;
                     c        = ColorPair{ cc1.c, cc2.c };
@@ -1384,6 +1384,8 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
                         ch = SpecialChars::Block25;
                     else if (proc == 2)
                         ch = SpecialChars::Block50;
+                    else if (proc == 3)
+                        ch = SpecialChars::Block75;
                     else 
                         ch = SpecialChars::Block100;
                     if (BestDiff == 0)
