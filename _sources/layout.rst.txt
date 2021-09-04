@@ -16,7 +16,7 @@ Where key can be one of the following:
    * **y** --> "Y" coordonate
    * **w** or **width** --> the width of the control
    * **h** or **height** --> the height of the control
-   * **a** or **align** or **alignament** --> the aligmanet of the control with respect to the (X,Y) coordonates
+   * **a** or **align** --> the alignament of the control with respect to the (X,Y) coordonates
 
 Except for **align** key, the rest of the parameters can have two types of values:
 
