@@ -131,7 +131,7 @@ bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color) const
     color = (*pixel);
     return true;
 }
-unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz)
+unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
 {
     if ((x >= this->Width) || (y >= this->Height) || (sz==0))
         return 0;  // nothing to compute
@@ -164,10 +164,10 @@ unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, un
         sPtr += Width; // move to next line
         y++;
     }
-    const unsigned int sz = xSize * ySize;
-    const auto result_r   = sum_r / sz;
-    const auto result_g   = sum_g / sz;
-    const auto result_b   = sum_b / sz;
+    const unsigned int totalPixesl = xSize * ySize;
+    const auto result_r            = sum_r / totalPixesl;
+    const auto result_g            = sum_g / totalPixesl;
+    const auto result_b            = sum_b / totalPixesl;
     return COMPUTE_RGB(result_r, result_g, result_b);
 }
 #undef COMPUTE_RGB

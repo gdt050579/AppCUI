@@ -1328,15 +1328,11 @@ void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
         for (unsigned int img_x = 0; img_x < w; img_x += xStep, px++)
         {
             if (rap == 1)
-            {
-                cp = {
-                    RGB_to_Color(img.GetPixel(img_x, img_y)),
-                    RGB_to_Color(img.GetPixel(img_x, img_y + 1)),
-                };
-            }
+                cp = { RGB_to_Color(img.GetPixel(img_x, img_y)), RGB_to_Color(img.GetPixel(img_x, img_y + 1)) };
             else
-            {
-            }
+                cp = { RGB_to_Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
+                       RGB_to_Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
+
             r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
         }
     }
