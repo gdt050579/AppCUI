@@ -1267,3 +1267,227 @@ bool Renderer::WriteSingleLineText(
     params.Width          = width;
     return WriteText(text, params);
 }
+
+//=========================================================================[IMAGE]===================
+struct _RGB_Color_
+{
+    unsigned char Red, Green, Blue;
+    Color c;
+};
+static const _RGB_Color_ _console_colors_[16] = {
+    _RGB_Color_{ 0, 0, 0, Color::Black },        // Black
+    _RGB_Color_{ 0, 0, 128, Color::DarkBlue },   // DarkBlue
+    _RGB_Color_{ 0, 128, 0, Color::DarkGreen },  // DarkGreen
+    _RGB_Color_{ 0, 128, 128, Color::Teal },     // Teal
+    _RGB_Color_{ 128, 0, 0, Color::DarkRed },    // DarkRed
+    _RGB_Color_{ 128, 0, 128, Color::Magenta },  // Purple
+    _RGB_Color_{ 128, 128, 0, Color::Olive },    // Brown
+    _RGB_Color_{ 192, 192, 192, Color::Silver }, // LightGray
+    _RGB_Color_{ 128, 128, 128, Color::Gray },   // DarkGray
+    _RGB_Color_{ 0, 0, 255, Color::Blue },       // Blue
+    _RGB_Color_{ 0, 255, 0, Color::Green },      // Green
+    _RGB_Color_{ 0, 255, 255, Color::Aqua },     // Aqua
+    _RGB_Color_{ 255, 0, 0, Color::Red },        // Red
+    _RGB_Color_{ 255, 0, 255, Color::Pink },     // Pink
+    _RGB_Color_{ 255, 255, 0, Color::Yellow },   // Yellow
+    _RGB_Color_{ 255, 255, 255, Color::White },  // White
+};
+Color _color_map_16_[] = {
+    /* 0*/ Color::Black,     // (0, 0, 0)
+    /* 1*/ Color::DarkBlue,  // (0, 0, 1)
+    /* 2*/ Color::Blue,      // (0, 0, 2)
+    /* 3*/ Color::DarkGreen, // (0, 1, 0)
+    /* 4*/ Color::Teal,      // (0, 1, 1)
+    /* 5*/ Color::Teal,      // (0, 1, 2) [Aprox]
+    /* 6*/ Color::Green,     // (0, 2, 0)
+    /* 7*/ Color::Teal,      // (0, 2, 1) [Aprox]
+    /* 8*/ Color::Aqua,      // (0, 2, 2)
+    /* 9*/ Color::DarkRed,   // (1, 0, 0)
+    /*10*/ Color::Magenta,   // (1, 0, 1)
+    /*11*/ Color::Magenta,   // (1, 0, 2) [Aprox]
+    /*12*/ Color::Olive,     // (1, 1, 0)
+    /*13*/ Color::Gray,      // (1, 1, 1)
+    /*14*/ Color::Gray,      // (1, 1, 2) [Aprox]
+    /*15*/ Color::Olive,     // (1, 2, 0) [Aprox]
+    /*16*/ Color::Gray,      // (1, 2, 1) [Aprox]
+    /*17*/ Color::Silver,    // (1, 2, 2) [Aprox]
+    /*18*/ Color::Red,       // (2, 0, 0)
+    /*19*/ Color::Magenta,   // (2, 0, 1) [Aprox]
+    /*20*/ Color::Pink,      // (2, 0, 2)
+    /*21*/ Color::Olive,     // (2, 1, 0) [Aprox]
+    /*22*/ Color::Gray,      // (2, 1, 1) [Aprox]
+    /*23*/ Color::Silver,    // (2, 1, 2) [Aprox]
+    /*24*/ Color::Yellow,    // (2, 2, 0)
+    /*25*/ Color::Silver,    // (2, 2, 1) [Aprox]
+    /*26*/ Color::White,     // (2, 2, 2)
+};
+inline unsigned int Channel_To_Index16(unsigned int rgbChannelValue)
+{
+    if (rgbChannelValue <= 64)
+        return 0;
+    else if (rgbChannelValue < 192)
+        return 1;
+    return 2;
+}
+Color RGB_to_16Color(unsigned int colorRGB)
+{
+    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);        // blue channel
+    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF); // green channel
+    unsigned int r = Channel_To_Index16((colorRGB >> 16) & 0xFF); // red channel
+    return _color_map_16_[r * 9 + g * 3 + b];
+}
+
+inline unsigned int Channel_Diff(unsigned int v1, unsigned int v2)
+{
+    if (v1 > v2)
+        return v1 - v2;
+    else
+        return v2 - v1;
+}
+void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
+{
+    // linear search - not efficient but good enough for the first implementation
+    // in the future should be changed to a lookup table
+    unsigned int R        = (colorRGB >> 16) & 0xFF;
+    unsigned int G        = (colorRGB >> 8) & 0xFF;
+    unsigned int B        = (colorRGB) &0xFF;
+
+    unsigned int composeR = 0;
+    unsigned int composeG = 0;
+    unsigned int composeB = 0;
+   
+    unsigned int BestDiff = 0xFFFFFFFF;
+
+
+    for (unsigned int c1 = 0; c1 < 16; c1++)
+    {
+        for (unsigned int c2 = 0; c2 < 16; c2++)
+        {
+            unsigned int df = 0;
+            auto& cc1       = _console_colors_[c1];
+            auto& cc2       = _console_colors_[c2];
+
+            for (unsigned int proc = 1;proc<=4;proc++) // 25%,50%,75%.100%
+            {
+                composeR = ((((unsigned int) cc1.Red) * proc) + (((unsigned int) cc2.Red) * (4 - proc))) / 4;
+                composeG = ((((unsigned int) cc1.Green) * proc) + (((unsigned int) cc2.Green) * (4 - proc))) / 4;
+                composeB = ((((unsigned int) cc1.Blue) * proc) + (((unsigned int) cc2.Blue) * (4 - proc))) / 4;
+                unsigned int df = 0;
+                df += Channel_Diff(R, composeR);
+                df += Channel_Diff(G, composeG);
+                df += Channel_Diff(B, composeB);
+                if (df <= BestDiff)
+                {
+                    BestDiff = df;
+                    c        = ColorPair{ cc1.c, cc2.c };
+                    if (proc == 1)
+                        ch = SpecialChars::Block25;
+                    else if (proc == 2)
+                        ch = SpecialChars::Block50;
+                    else if (proc == 3)
+                        ch = SpecialChars::Block75;
+                    else 
+                        ch = SpecialChars::Block100;
+                    if (BestDiff == 0)
+                        return; // found a perfect match
+                }
+            }
+        }
+    }
+}
+
+void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w     = img.GetWidth();
+    const auto h     = img.GetHeight();
+    const auto xStep = rap;
+    const auto yStep = rap * 2;
+    int px           = 0;
+    ColorPair cp     = NoColorPair;
+    for (unsigned int img_y = 0; img_y < h; img_y += yStep, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += xStep, px++)
+        {
+            if (rap == 1)
+                cp = { RGB_to_16Color(img.GetPixel(img_x, img_y)), RGB_to_16Color(img.GetPixel(img_x, img_y + 1)) };
+            else
+                cp = { RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
+                       RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
+
+            r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
+        }
+    }
+}
+void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w     = img.GetWidth();
+    const auto h     = img.GetHeight();
+    int px           = 0;
+    ColorPair cp     = NoColorPair;
+    SpecialChars sc  = SpecialChars::Block100;
+    for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += rap, px+=2)
+        {            
+            if (rap == 1)
+                PixelTo64Color(img.GetPixel(img_x, img_y), cp, sc);
+            else
+                PixelTo64Color(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
+
+            //r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
+        }
+    }
+}
+Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
+{
+    auto rap       = static_cast<unsigned int>(scale);
+    unsigned int w = img.GetWidth();
+    unsigned int h = img.GetHeight();
+
+    // sanity check
+    CHECK((rap >= 1) && (rap <= 20), Size(), "Invalid scale enum value");
+
+    switch (method)
+    {
+    case ImageRenderingMethod::PixelTo16ColorsSmallBlock:
+        w = w / rap;
+        h = h / (2 * rap);
+        break;
+    case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+        w = (w * 2) / rap;
+        h = h / rap;
+        break;
+    case ImageRenderingMethod::AsciiArt:
+        NOT_IMPLEMENTED(Size());
+    default:
+        NOT_IMPLEMENTED(Size());
+    };
+    w = std::max<>(w, 1U);
+    h = std::max<>(h, 1U);
+    return Size(w, h);
+}
+bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod method, ImageScaleMethod scale)
+{
+    auto rap       = static_cast<unsigned int>(scale);
+    // sanity check
+    CHECK((rap >= 1) && (rap <= 20), false, "Invalid scale enum value");
+
+    switch (method)
+    {
+    case ImageRenderingMethod::PixelTo16ColorsSmallBlock:
+        Paint_SmallBlocks(*this, img, x, y, rap);
+        return true;
+    case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+        Paint_LargeBlocks(*this, img, x, y, rap);
+        return true;
+    case ImageRenderingMethod::AsciiArt:
+        NOT_IMPLEMENTED(false);
+    default:
+        RETURNERROR(false, "Unknwon rendering method (%u) ", static_cast<unsigned int>(method));
+    }
+}
+
+#undef COMPUTE_RGB

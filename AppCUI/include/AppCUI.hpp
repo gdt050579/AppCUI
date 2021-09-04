@@ -1261,6 +1261,22 @@ namespace Graphics
         }
     };
 
+    enum class ImageRenderingMethod: unsigned int
+    {
+        PixelTo16ColorsSmallBlock,
+        PixelTo64ColorsLargeBlock,
+        AsciiArt
+    };
+    enum class ImageScaleMethod : unsigned int
+    {
+        NoScale = 1,
+        Scale50  = 2,
+        Scale33  = 3,
+        Scale25  = 4,
+        Scale20  = 5,
+        Scale10  = 10,
+        Scale5   = 20
+    };
     class EXPORT Image
     {
         unsigned int* Pixels;
@@ -1282,6 +1298,7 @@ namespace Graphics
               unsigned char Alpha = 255);
         unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
         bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
+        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
@@ -1414,6 +1431,18 @@ namespace Graphics
         // Cursor
         void HideCursor();
         bool SetCursor(int x, int y);
+
+        // Images
+        bool DrawImage(
+              const Image& img,
+              int x,
+              int y,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale = ImageScaleMethod::NoScale);
+        Size ComputeRenderingSize(
+              const Image& img,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale      = ImageScaleMethod::NoScale);
     };
 
     class EXPORT Canvas : public Renderer
@@ -1932,16 +1961,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-    enum class ImageRendererMode : unsigned int
-    {
-        SmallBoxes,
-        SmallBoxex2x2,
-        SmallBoxex4x4,
-        SmallBoxex8x8,
-        SmallBoxex16x16,
-        LargeBoxes,
-        AsciiArt
-    };
+
     class EXPORT ImageViewer : public CanvasViewer
     {
       public:
@@ -1951,7 +1971,7 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
-        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
+        bool SetImage(const AppCUI::Graphics::Image& img, AppCUI::Graphics::ImageRenderingMethod method, AppCUI::Graphics::ImageScaleMethod scale);
     };
     enum class ListViewFlags : unsigned int
     {
