@@ -4487,11 +4487,11 @@ class ImageWinViewer : public AppCUI::Controls::Window
     ImageViewer iv;
 
   public:
-    ImageWinViewer(const AppCUI::Graphics::Image& img)
+    ImageWinViewer(const AppCUI::Graphics::Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
     {
         this->Create("Image view", "d:c,w:100%,h:100%");
         iv.Create(this, "x:0,y:0,w:100%,h:100%");
-        iv.SetImage(img, ImageRenderingMethod::PixelTo16ColorsSmallBlock, ImageScaleMethod::NoScale);
+        iv.SetImage(img, method, scale);
     }
     bool OnEvent(Control*, Event eventType, int) override
     {
@@ -4507,12 +4507,61 @@ class ImageWinViewer : public AppCUI::Controls::Window
 class MainWin : public AppCUI::Controls::Window
 {
     Button dizzy;
+    ComboBox cbMethod;
+    ComboBox cbScale;
+    Label lbMethod;
+    Label lbScale;
 
   public:
     MainWin()
     {
-        this->Create("Image example", "d:c,w:40,h:10");
-        dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:36", BTN_SHOW_DIZZY);
+        this->Create("Image example", "d:c,w:50,h:10");
+        dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
+        
+        lbMethod.Create(this, "Method", "x:1,y:3,w:6");
+        cbMethod.Create(this, "x:8,y:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+        cbMethod.SetCurentItemIndex(0);
+
+        lbScale.Create(this, "Scale", "x:1,y:5,w:6");
+        cbScale.Create(this, "x:8,y:5,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
+        cbScale.SetCurentItemIndex(0);
+
+    }
+    ImageRenderingMethod GetMethod()
+    {
+        auto i = cbMethod.GetCurrentItemIndex();
+        switch (i)
+        {
+        case 0:
+            return ImageRenderingMethod::PixelTo16ColorsSmallBlock;
+        case 1:
+            return ImageRenderingMethod::PixelTo64ColorsLargeBlock;
+        case 2:
+            return ImageRenderingMethod::AsciiArt;
+        default:
+            return ImageRenderingMethod::PixelTo16ColorsSmallBlock;
+        }
+    }
+    ImageScaleMethod GetScale()
+    {
+        auto i = cbScale.GetCurrentItemIndex();
+        switch (i)
+        {
+        case 0:
+            return ImageScaleMethod::NoScale;
+        case 1:
+            return ImageScaleMethod::Scale50;
+        case 2:
+            return ImageScaleMethod::Scale25;
+        case 3:
+            return ImageScaleMethod::Scale20;
+        case 4:
+            return ImageScaleMethod::Scale10;
+        case 5:
+            return ImageScaleMethod::Scale5;
+        default:
+            return ImageScaleMethod::NoScale;
+        }
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
@@ -4528,7 +4577,7 @@ class MainWin : public AppCUI::Controls::Window
                 AppCUI::Graphics::Image img;
                 img.Create(256,192); // ZX Spectrum screen size
                 memcpy(img.GetPixelsBuffer(), dizzy_pixels, sizeof(dizzy_pixels)); // direct memory copy
-                ImageWinViewer iwv(img);
+                ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
 
                 return true;

@@ -1344,7 +1344,7 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
     unsigned int h = img.GetHeight();
 
     // sanity check
-    CHECK((rap >= 1) && (rap <= 10), Size(), "Invalid scale enum value");
+    CHECK((rap >= 1) && (rap <= 20), Size(), "Invalid scale enum value");
 
     switch (method)
     {
@@ -1369,7 +1369,7 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
 {
     auto rap       = static_cast<unsigned int>(scale);
     // sanity check
-    CHECK((rap >= 1) && (rap <= 10), false, "Invalid scale enum value");
+    CHECK((rap >= 1) && (rap <= 20), false, "Invalid scale enum value");
 
     switch (method)
     {
