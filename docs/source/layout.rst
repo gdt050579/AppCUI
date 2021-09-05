@@ -9,14 +9,41 @@ Each control in AppCUI is created based on a layout rule that can be described a
 
 Where key can be one of the following:
 
-.. hlist::
-   :columns: 1
++---------+----------+--------------------------+----------------------------------------------------------+
+|| Key    || Alias   || Value type              || Description                                             |
+||        || (short) ||                         ||                                                         |
++=========+==========+==========================+==========================================================+
+| x       |          | numerical or percentage  | "X" coordonate                                           |
++---------+----------+--------------------------+----------------------------------------------------------+
+| y       |          | numerical or percentage  | "Y" coordonate                                           |
++---------+----------+--------------------------+----------------------------------------------------------+
+|| left   || l       || numerical or percentage || left anchor for the control                             |
+||        ||         ||                         || (the space between parent left margin and control)      |
++---------+----------+--------------------------+----------------------------------------------------------+
+|| right  || r       || numerical or percentage || right anchor for the control                            |
+||        ||         ||                         || (the space between parent right margin and control)     |
++---------+----------+--------------------------+----------------------------------------------------------+
+|| top    || t       || numerical or percentage || top anchor for the control                              |
+||        ||         ||                         || (the space between parent top margin and control)       |
++---------+----------+--------------------------+----------------------------------------------------------+
+|| bottom || b       || numerical or percentage || bottom anchor for the control                           |
+||        ||         ||                         || (the space between parent bottom margin and control)    |
++---------+----------+--------------------------+----------------------------------------------------------+
+| width   | w        | numerical or percentage  | the width of the control                                 |
++---------+----------+--------------------------+----------------------------------------------------------+
+| height  | h        | numerical or percentage  | the height of the control                                |
++---------+----------+--------------------------+----------------------------------------------------------+
+| dock    | d        | docking value            | the way the entire control is docked on its parent       |
++---------+----------+--------------------------+----------------------------------------------------------+
+| align   | a        | alignament value         | the way the entire control is aligne against a fix point |
++---------+----------+--------------------------+----------------------------------------------------------+
 
-   * **x** --> "X" coordonate
-   * **y** --> "Y" coordonate
-   * **w** or **width** --> the width of the control
-   * **h** or **height** --> the height of the control
-   * **a** or **align** --> the alignament of the control with respect to the (X,Y) coordonates
+**Remarks**: Key aliases can be use to provide a shorter format for a layout. In other words, the following two formats are identical: ``x:10,y:10,width:30,height:30`` and ``x:10,y:10,w:30,h:30``
+
+A numerical value is represented by an integera (positive and negative) number between **-30000** and **30000**. Example: ``x:100`` --> X will be 100. Using a value outside accepted interval (**[-30000..30000]**) will reject the layout.
+
+A percentage value is represented by a floating value (positive and negative) succeded by the character ``%`` between **-300%** and **300%**. Example: ``x:12.75%`` --> X will be converted to a numerical value that is equal to the width of its parent multiplied by ``0.1275``. Using a value outside accepted interval (**[-300%..300%]**) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.
+
 
 Except for **align** key, the rest of the parameters can have two types of values:
 
