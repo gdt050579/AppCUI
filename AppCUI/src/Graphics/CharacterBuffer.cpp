@@ -546,6 +546,39 @@ int  CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) c
 }
 
 
+std::optional<unsigned int> CharacterBuffer::FindNext(
+      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+{
+    CHECK(this->Buffer, std::nullopt, "Object not initialized ");
+    CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
+    if (startOffset >= this->Count)
+        return this->Count;
+    auto* p = this->Buffer + startOffset;
+    while ((startOffset < this->Count) && (shouldSkip(startOffset, *p)))
+    {
+        p++;
+        startOffset++;
+    }
+    return startOffset;
+}
+std::optional<unsigned int> CharacterBuffer::FindPrevious(
+      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+{
+    CHECK(this->Buffer, std::nullopt, "Object not initialized ");
+    CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
+    if (this->Count == 0)
+        return 0;
+    if (startOffset >= this->Count)
+        return this->Count - 1;
+    auto* p = this->Buffer + startOffset;
+    while ((startOffset > 0) && (shouldSkip(startOffset, *p)))
+    {
+        p--;
+        startOffset--;
+    }
+    return startOffset;
+}
+
 bool CharacterBuffer::ToString(std::string& output) const
 {
     CHECK(this->Buffer, false, "");
