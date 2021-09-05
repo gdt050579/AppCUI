@@ -70,13 +70,68 @@ Dock values can be one of the following
 
 **Remarks**: Dock value aliases can be use to provide a shorter format for a layout. In other words: ``dock:topleft`` is the same with ``dock::tl`` or ``dock::lt`` or ``d:tl``
 
+Align values have the same name as the docking ones, but they refer to the direction of width and height from a specific point (denoted by "X" and "Y" keys). Align parameter is used to compute top-left and bottom-right corner of a control that is described using a (X,Y) coordonate. The following table ilustrate how this values are computed:
 
++-------------+---------------------+------------------------+------------------------+
+| Value       | Alias               | Top-Left corner        | Bottom-Right corner    |
++=============+=====================+========================+========================+
+| topleft     | lefttop, tl, lt     | (x,y)                  | (x+width,y+height)     |
++-------------+---------------------+------------------------+------------------------+
+| top         | t                   | (x-width/2,y)          | (x+width/2,y+height)   |
++-------------+---------------------+------------------------+------------------------+
+| topright    | righttop, tr, rt    | (x-width,y)            | (x,y+height)           |
++-------------+---------------------+------------------------+------------------------+
+| right       | r                   | (x-width,y-height/2)   | (x,y+height/2)         |
++-------------+---------------------+------------------------+------------------------+
+| bottomright | rightbottom, br, rb | (x-width,y-height)     | (x,y)                  |
++-------------+---------------------+------------------------+------------------------+
+| bottom      | b                   | (x-width/2,y-height)   | (x+width/2,y)          |
++-------------+---------------------+------------------------+------------------------+
+| bottomleft  | leftbottom, lb, bl  | (x,y-height)           | (x+width,y)            |
++-------------+---------------------+------------------------+------------------------+
+| left        | l                   | (x,y-height/2)         | (x+width,y+height/2)   |
++-------------+---------------------+------------------------+------------------------+
+| center      | c                   | (x-width/2,y-height/2) | (x+width/2,y+height/2) |
++-------------+---------------------+------------------------+------------------------+
 
-Examples:
----------
+**Remarks**: Align value aliases can be use to provide a shorter format for a layout. In other words: ``align:center`` is the same with ``align::c`` or  ``a:c``
+
+Docking
+--------
+To dock a control inside its parent use ``d`` or ``dock`` key. 
+When docking a control, the following key can not be used: ``align``, ``x``, ``y``, ``left``, ``right``, ``top``, ``bottom``.
+**Width** and **height** should be used to specify the size of control. If not specified, they are defaulted to ``100%``.
+
++--------------------------------------+----------------------------------------------------------------+
+| Layout                               | Outcome                                                        |
++======================================+================================================================+
+| **d:c,w:10,h:5**                     | .. image:: pics/layout_dock_c_10_5.png                         |
++--------------------------------------+----------------------------------------------------------------+
+| **d:c,w:50%,h:75%**                  | .. image:: pics/layout_dock_c_50p_75p.png                      |
++--------------------------------------+----------------------------------------------------------------+
+|| **d:br,w:50%**                      | As ``height`` is not specified, it will be defaulted to 100%   |
+||                                     |                                                                |
+||                                     | .. image:: pics/layout_dock_br_50p.png                         |
++--------------------------------------+----------------------------------------------------------------+
+|| **d:c** or **d:tl** or **d:br** ... || As both ``width`` and ``height`` parameters are missing, they |
+||                                     || will be defaulted to **100%**. This means that curren control |
+||                                     || will ocupy its entire parent surface. This is the easyest way |
+||                                     || to make a control fill all of its parent surface.             |
+|                                      |                                                                |
+||                                     | .. image:: pics/layout_dock_fill.png                           |
++--------------------------------------+----------------------------------------------------------------+
+
+Using absolute offset
+---------------------
+In this mode parameters ``x`` and ``y`` must be used to specify a point from where the control will be constructed. 
+When using this more, parameters ``d``, ``left``, ``right``, ``top``, ``bottom`` can not be used. 
+If **width** or **height** are not specified , they will be defaulted to ``1 character`` (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
+If **align** is not specified, it will be defaulted to ``topleft`` 
+
+If ``x``, ``y``, ``width`` or ``height`` are provided using percentages, the control will automatically adjust its size if its parent size changes. 
 
 +--------------------------------+------------------------------------------------------------------------+
-| Layout                         | Result (2)                                                             |
+| Layout                         | Result                                                                 |
 +================================+========================================================================+
 | **x:5,y:5,w:10,h:10** or       |If no alignament is provided, top-left will be considered as a default. |
 |                                |                                                                        |
