@@ -86,7 +86,8 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Layout in AppCUI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#examples">Examples:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docking">Docking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-absolute-offset">Using absolute offset</a></li>
 </ul>
 </li>
 </ul>
@@ -359,8 +360,135 @@
 </tbody>
 </table>
 <p><strong>Remarks</strong>: Dock value aliases can be use to provide a shorter format for a layout. In other words: <code class="docutils literal notranslate"><span class="pre">dock:topleft</span></code> is the same with <code class="docutils literal notranslate"><span class="pre">dock::tl</span></code> or <code class="docutils literal notranslate"><span class="pre">dock::lt</span></code> or <code class="docutils literal notranslate"><span class="pre">d:tl</span></code></p>
-<div class="section" id="examples">
-<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Align values have the same name as the docking ones, but they refer to the direction of width and height from a specific point (denoted by “X” and “Y” keys). Align parameter is used to compute top-left and bottom-right corner of a control that is described using a (X,Y) coordonate. The following table ilustrate how this values are computed:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 26%" />
+<col style="width: 29%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Top-Left corner</p></th>
+<th class="head"><p>Bottom-Right corner</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>topleft</p></td>
+<td><p>lefttop, tl, lt</p></td>
+<td><p>(x,y)</p></td>
+<td><p>(x+width,y+height)</p></td>
+</tr>
+<tr class="row-odd"><td><p>top</p></td>
+<td><p>t</p></td>
+<td><p>(x-width/2,y)</p></td>
+<td><p>(x+width/2,y+height)</p></td>
+</tr>
+<tr class="row-even"><td><p>topright</p></td>
+<td><p>righttop, tr, rt</p></td>
+<td><p>(x-width,y)</p></td>
+<td><p>(x,y+height)</p></td>
+</tr>
+<tr class="row-odd"><td><p>right</p></td>
+<td><p>r</p></td>
+<td><p>(x-width,y-height/2)</p></td>
+<td><p>(x,y+height/2)</p></td>
+</tr>
+<tr class="row-even"><td><p>bottomright</p></td>
+<td><p>rightbottom, br, rb</p></td>
+<td><p>(x-width,y-height)</p></td>
+<td><p>(x,y)</p></td>
+</tr>
+<tr class="row-odd"><td><p>bottom</p></td>
+<td><p>b</p></td>
+<td><p>(x-width/2,y-height)</p></td>
+<td><p>(x+width/2,y)</p></td>
+</tr>
+<tr class="row-even"><td><p>bottomleft</p></td>
+<td><p>leftbottom, lb, bl</p></td>
+<td><p>(x,y-height)</p></td>
+<td><p>(x+width,y)</p></td>
+</tr>
+<tr class="row-odd"><td><p>left</p></td>
+<td><p>l</p></td>
+<td><p>(x,y-height/2)</p></td>
+<td><p>(x+width,y+height/2)</p></td>
+</tr>
+<tr class="row-even"><td><p>center</p></td>
+<td><p>c</p></td>
+<td><p>(x-width/2,y-height/2)</p></td>
+<td><p>(x+width/2,y+height/2)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Remarks</strong>: Align value aliases can be use to provide a shorter format for a layout. In other words: <code class="docutils literal notranslate"><span class="pre">align:center</span></code> is the same with <code class="docutils literal notranslate"><span class="pre">align::c</span></code> or  <code class="docutils literal notranslate"><span class="pre">a:c</span></code></p>
+<div class="section" id="docking">
+<h2>Docking<a class="headerlink" href="#docking" title="Permalink to this headline">¶</a></h2>
+<p>To dock a control inside its parent use <code class="docutils literal notranslate"><span class="pre">d</span></code> or <code class="docutils literal notranslate"><span class="pre">dock</span></code> key.
+When docking a control, the following key can not be used: <code class="docutils literal notranslate"><span class="pre">align</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code>.
+<strong>Width</strong> and <strong>height</strong> should be used to specify the size of control. If not specified, they are defaulted to <code class="docutils literal notranslate"><span class="pre">100%</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 63%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layout</p></th>
+<th class="head"><p>Outcome</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>d:c,w:10,h:5</strong></p></td>
+<td><img alt="_images/layout_dock_c_10_5.png" src="_images/layout_dock_c_10_5.png" />
+</td>
+</tr>
+<tr class="row-odd"><td><p><strong>d:c,w:50%,h:75%</strong></p></td>
+<td><img alt="_images/layout_dock_c_50p_75p.png" src="_images/layout_dock_c_50p_75p.png" />
+</td>
+</tr>
+<tr class="row-even"><td><div class="line-block">
+<div class="line"><strong>d:br,w:50%</strong></div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</td>
+<td><p>As <code class="docutils literal notranslate"><span class="pre">height</span></code> is not specified, it will be defaulted to 100%</p>
+<img alt="_images/layout_dock_br_50p.png" src="_images/layout_dock_br_50p.png" />
+</td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><strong>d:c</strong> or <strong>d:tl</strong> or <strong>d:br</strong> …</div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">As both <code class="docutils literal notranslate"><span class="pre">width</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> parameters are missing, they</div>
+<div class="line">will be defaulted to <strong>100%</strong>. This means that curren control</div>
+<div class="line">will ocupy its entire parent surface. This is the easyest way</div>
+<div class="line">to make a control fill all of its parent surface.</div>
+</div>
+<blockquote>
+<div><img alt="_images/layout_dock_fill.png" src="_images/layout_dock_fill.png" />
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="using-absolute-offset">
+<h2>Using absolute offset<a class="headerlink" href="#using-absolute-offset" title="Permalink to this headline">¶</a></h2>
+<p>In this mode parameters <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> must be used to specify a point from where the control will be constructed.
+When using this more, parameters <code class="docutils literal notranslate"><span class="pre">d</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code> can not be used.
+If <strong>width</strong> or <strong>height</strong> are not specified , they will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
+If <strong>align</strong> is not specified, it will be defaulted to <code class="docutils literal notranslate"><span class="pre">topleft</span></code></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code> or <code class="docutils literal notranslate"><span class="pre">height</span></code> are provided using percentages, the control will automatically adjust its size if its parent size changes.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 31%" />
@@ -368,7 +496,7 @@
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
-<th class="head"><p>Result (2)</p></th>
+<th class="head"><p>Result</p></th>
 </tr>
 </thead>
 <tbody>
