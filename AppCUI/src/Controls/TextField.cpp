@@ -80,6 +80,84 @@ void TextField_MoveTo(TextField* control, int newPoz, bool selected)
     if (selected)
         TextField_MoveSelTo(control, Members->Cursor.Pos);
 }
+bool __is_op__(unsigned int, Character ch)
+{
+    if ((ch.Code < 33) || (ch.Code >= 127))
+        return false;
+    if ((ch.Code >= '0') && (ch.Code <= '9'))
+        return false;
+    if ((ch.Code >= 'A') && (ch.Code <= 'Z'))
+        return false;
+    if ((ch.Code >= 'a') && (ch.Code <= 'z'))
+        return false;
+    return true;
+}
+bool __is_not_op__(unsigned int, Character ch)
+{
+    if ((ch == '\n') || (ch == '\r') || (ch == ' ') || (ch == '\t'))
+        return false;
+    return !__is_op__(0, ch);
+}
+void TextField_MoveToNextWord(TextField* control, bool selected)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    if (Members->Cursor.Pos >= (int)Members->Text.Len())
+        return;
+    auto currentChar                = Members->Text.GetBuffer()[Members->Cursor.Pos];
+    std::optional<unsigned int> res = std::nullopt;
+
+    if ((currentChar == ' ') || (currentChar == '\t'))
+    {
+        res = Members->Text.FindNext(
+              Members->Cursor.Pos, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    }
+    else if (__is_op__(0, currentChar))
+    {
+        res = Members->Text.FindNext(Members->Cursor.Pos, __is_op__);
+    }
+    else
+    {
+        res = Members->Text.FindNext(Members->Cursor.Pos, __is_not_op__);
+    }
+    // skip spaces if exists
+    if (res.has_value())
+        res = Members->Text.FindNext(
+              res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    if (res.has_value())
+        TextField_MoveTo(control, res.value(), selected);
+}
+void TextField_MoveToPreviousWord(TextField* control, bool selected)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    if (Members->Cursor.Pos == 0)
+        return;
+    auto startPoz                   = Members->Cursor.Pos - 1;
+    auto currentChar                = Members->Text.GetBuffer()[startPoz];
+    std::optional<unsigned int> res = std::nullopt;
+
+    if ((currentChar == ' ') || (currentChar == '\t'))
+    {
+        res = Members->Text.FindPrevious(
+              startPoz, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+        if (res.has_value())
+            startPoz = res.value();
+    }
+
+    currentChar = Members->Text.GetBuffer()[startPoz];
+    if (__is_op__(0, currentChar))
+        res = Members->Text.FindPrevious(startPoz, __is_op__);
+    else
+        res = Members->Text.FindPrevious(startPoz, __is_not_op__);
+
+    // set new pos
+    if (res.has_value())
+    {
+        if (res.value()>0)
+            TextField_MoveTo(control, res.value()+1, selected);
+        else
+            TextField_MoveTo(control, 0, selected);
+    }
+}
 void TextField_DeleteSelected(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
@@ -268,6 +346,12 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
     case Key::End:
         TextField_MoveTo(this, 0xFFFF, false);
         return true;
+    case Key::Ctrl | Key::Left:
+        TextField_MoveToPreviousWord(this, false);
+        return true;
+    case Key::Ctrl | Key::Right:
+        TextField_MoveToNextWord(this, false);
+        return true;
 
     case Key::Shift | Key::Left:
         TextField_MoveTo(this, Members->Cursor.Pos - 1, true);
@@ -286,6 +370,12 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
         return true;
     case Key::Shift | Key::End:
         TextField_MoveTo(this, 0xFFFF, true);
+        return true;
+    case Key::Shift | Key::Ctrl | Key::Left:
+        TextField_MoveToPreviousWord(this, true);
+        return true;
+    case Key::Shift | Key::Ctrl | Key::Right:
+        TextField_MoveToNextWord(this, true);
         return true;
 
     case Key::Backspace:

@@ -258,6 +258,8 @@ class TextAreaControlContext : public ControlContext
     void MoveTo(int newPoz, bool selected);
     void MoveHome(bool selected);
     void MoveEnd(bool selected);
+    void MoveToNextWord(bool selected);
+    void MoveToPreviousWord(bool selected);
     void MoveToStartOfTheFile(bool selected);
     void MoveToEndOfTheFile(bool selected);
     void AddChar(char16_t ch);

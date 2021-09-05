@@ -1216,6 +1216,10 @@ namespace Graphics
             return Find(text, ignoreCase) != -1;
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+        std::optional<unsigned int> FindNext(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
+        std::optional<unsigned int> FindPrevious(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;
