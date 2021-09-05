@@ -44,29 +44,33 @@ A numerical value is represented by an integera (positive and negative) number b
 
 A percentage value is represented by a floating value (positive and negative) succeded by the character ``%`` between **-300%** and **300%**. Example: ``x:12.75%`` --> X will be converted to a numerical value that is equal to the width of its parent multiplied by ``0.1275``. Using a value outside accepted interval (**[-300%..300%]**) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.
 
+Dock values can be one of the following
 
-Except for **align** key, the rest of the parameters can have two types of values:
++-------------+---------------------+---------------------------------+
+| Value       | Alias               | Representation                  |
++=============+=====================+=================================+
+| topleft     | lefttop, tl, lt     | .. image:: pics/layout_dock.png |
++-------------+---------------------+                                 |
+| top         | t                   |                                 |
++-------------+---------------------+                                 |
+| topright    | righttop, tr, rt    |                                 |
++-------------+---------------------+                                 |
+| right       | r                   |                                 |
++-------------+---------------------+                                 |
+| bottomright | rightbottom, br, rb |                                 |
++-------------+---------------------+                                 |
+| bottom      | b                   |                                 |
++-------------+---------------------+                                 |
+| bottomleft  | leftbottom, lb, bl  |                                 |
++-------------+---------------------+                                 |
+| left        | l                   |                                 |
++-------------+---------------------+                                 |
+| center      | c                   |                                 |
++-------------+---------------------+---------------------------------+
 
-.. hlist::
-   :columns: 1
+**Remarks**: Dock value aliases can be use to provide a shorter format for a layout. In other words: ``dock:topleft`` is the same with ``dock::tl`` or ``dock::lt`` or ``d:tl``
 
-   * **numerical** --> an integer (positive or negative) value : Ex:``x:100`` --> X will be 100
-   * **percentage** --> a floating (positive or negative) value that represent a percentage from the controls parent sizes : Ex:``x:50%,y:50%`` means (X,Y) will be at the center of current control's parent
 
-**align** key has the following values:
-
-.. hlist::
-   :columns: 1
-                   
-   * **tl** or **lt** or **top-left**
-   * **tc** or **ct** or **top-center** 
-   * **tr** or **rt** or **top-right**
-   * **rc** or **cr** or **right-center** 
-   * **rb** or **br** or **bottom-right** 
-   * **bc** or **cb** or **bottom-center** 
-   * **lb** or **bl** or **bottom-left** 
-   * **lc** or **cl** or **right-center** 
-   * **c** or **center**
 
 Examples:
 ---------
