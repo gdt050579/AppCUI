@@ -510,6 +510,128 @@ void TextAreaControlContext::MoveEnd(bool selected)
     }
     UPDATE_SELECTION;
 }
+bool __is_sign__(unsigned int, Character ch)
+{
+    switch(ch.Code)
+    {
+    case '!':
+    case '@':
+    case '#':
+    case '$':
+    case '%':
+    case '^':
+    case '&':
+    case '*':
+    case '(':
+    case ')':
+    case '_':
+    case '-':
+    case '+':
+    case '=':
+    case '`':
+    case '~':
+    case '[':
+    case ']':
+    case '{':
+    case '}':
+    case '\\':
+    case '|':
+    case ';':
+    case ':':
+    case '"':
+    case '\'':
+    case '<':
+    case ',':
+    case '>':
+    case '.':
+    case '?':
+    case '/':
+        return true;
+    default:
+        return false;
+    }
+}
+bool __is_not_sign(unsigned int, Character ch)
+{
+    if ((ch == '\n') || (ch == '\r') || (ch==' ') || (ch=='\t'))
+        return false;
+    return !__is_sign__(0, ch);
+}
+void TextAreaControlContext::MoveToPreviousWord(bool selected)
+{
+    CLEAR_SELECTION;
+    if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
+        return;
+    unsigned int start, end;
+    if (!GetLineRange(View.CurrentLine, start, end))
+        return;
+    if (View.CurrentPosition <= start)
+        return;
+    auto startPoz                   = View.CurrentPosition - 1;
+    auto currentChar                = this->Text.GetBuffer()[startPoz];
+    std::optional<unsigned int> res = std::nullopt;
+    
+    if ((currentChar == ' ') || (currentChar == '\t'))
+    {
+        res = this->Text.FindPrevious(
+              View.CurrentPosition-1, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+        if (res.has_value())
+            startPoz = res.value();
+    }
+    if (startPoz >= start)
+    {
+        currentChar = this->Text.GetBuffer()[startPoz];
+        if (__is_sign__(0, currentChar))
+        {
+            res = this->Text.FindPrevious(startPoz, __is_sign__);
+        }
+        else
+        {
+            res = this->Text.FindPrevious(startPoz, __is_not_sign);
+        }
+    }
+
+    // set new pos
+    if (res.has_value())
+    {
+        View.CurrentPosition  = res.value() + 1;
+        View.HorizontalOffset = 0;
+        UpdateViewXOffset();
+    }
+    UPDATE_SELECTION;
+}
+void TextAreaControlContext::MoveToNextWord(bool selected)
+{
+    CLEAR_SELECTION;
+    if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
+        return;
+    auto currentChar                = this->Text.GetBuffer()[View.CurrentPosition];
+    std::optional<unsigned int> res = std::nullopt;
+    if ((currentChar == ' ') || (currentChar == '\t'))
+    {
+        res = this->Text.FindNext(
+              View.CurrentPosition, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    }
+    else if (__is_sign__(0, currentChar))
+    {
+        res = this->Text.FindNext(View.CurrentPosition, __is_sign__);
+    }
+    else
+    {
+        res = this->Text.FindNext(View.CurrentPosition, __is_not_sign);
+    }
+    // skip spaces if exists
+    if (res.has_value())
+        res = this->Text.FindNext(res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    // set new pos
+    if (res.has_value())
+    {
+        View.CurrentPosition  = res.value();
+        View.HorizontalOffset = 0;
+        UpdateViewXOffset();
+    }
+    UPDATE_SELECTION;
+}
 void TextAreaControlContext::MoveToStartOfTheFile(bool selected)
 {
     CLEAR_SELECTION;
@@ -647,6 +769,12 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t Uni
     case Key::Ctrl | Key::End:
         MoveToEndOfTheFile(false);
         return true;
+    case Key::Ctrl | Key::Left:
+        MoveToPreviousWord(false);
+        return true;
+    case Key::Ctrl | Key::Right:
+        MoveToNextWord(false);
+        return true;
 
     case Key::Shift | Key::Left:
         MoveLeft(true);
@@ -677,6 +805,11 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t Uni
         return true;
     case Key::Shift | Key::Ctrl | Key::End:
         MoveToEndOfTheFile(true);
+        return true;
+    case Key::Shift | Key::Ctrl | Key::Left:
+        MoveToPreviousWord(true);
+    case Key::Shift | Key::Ctrl | Key::Right:
+        MoveToNextWord(true);
         return true;
 
     case Key::Tab:
