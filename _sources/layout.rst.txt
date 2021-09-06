@@ -185,3 +185,25 @@ where ``parentWidth`` is the width of control parent, and ``parentHeight`` the h
 +----------------------------+--------------------------------------+
 | **b:10%,l:50%,w:25%,h:10** | .. image:: pics/layout_anchor_bl.png |
 +----------------------------+--------------------------------------+
+
+
+Using Left-Right anchors
+************************
+
+When ``Left`` and ``right`` anchors are used together, there are several restrictions. First of all, ``width``  and ``x`` parameters can not be specified. Width is deduced as the difference between parents width and the sum of left and right anchors. Left anchor will also be considered the "x" value.
+However, ``height`` parameter should be specified (if not specified it will be defaulted to defaulted to ``1 character`` (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
+`align` paramter can also be specified , but only with the following values: **top**, **center** or **bottom**. If not specified it will be defaulted to **center**.
+
+**Examples**
+
++--------------------------------+----------------------------------------+
+| Layout                         | Result                                 |
++================================+========================================+
+| **l:10,r:20,h:20,y:80%,a:b**   | .. image:: pics/layout_anchor_lr_1.png |
++--------------------------------+----------------------------------------+
+| **l:10,r:20,h:100%,y:50%,a:c** | .. image:: pics/layout_anchor_lr_2.png |
++--------------------------------+----------------------------------------+
+| **l:10,r:20,h:50%,y:0,a:t**    | .. image:: pics/layout_anchor_lr_3.png |
++--------------------------------+----------------------------------------+
+
+
