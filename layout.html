@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#anchors">Anchors</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#corner-anchors">Corner anchors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-left-right-anchors">Using Left-Right anchors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-top-bottom-anchors">Using Top-Bottom anchors</a></li>
 </ul>
 </li>
 </ul>
@@ -601,7 +602,7 @@ If <strong>width</strong> or <strong>height</strong> are not specified , they wi
 <div class="section" id="using-left-right-anchors">
 <h3>Using Left-Right anchors<a class="headerlink" href="#using-left-right-anchors" title="Permalink to this headline">¶</a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">Left</span></code> and <code class="docutils literal notranslate"><span class="pre">right</span></code> anchors are used together, there are several restrictions. First of all, <code class="docutils literal notranslate"><span class="pre">width</span></code>  and <code class="docutils literal notranslate"><span class="pre">x</span></code> parameters can not be specified. Width is deduced as the difference between parents width and the sum of left and right anchors. Left anchor will also be considered the “x” value.
-However, <code class="docutils literal notranslate"><span class="pre">height</span></code> parameter should be specified (if not specified it will be defaulted to defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
+However, <code class="docutils literal notranslate"><span class="pre">height</span></code> parameter should be specified (if not specified it will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless a minimum height is specified for that controls - in which case that limit will be applied).
 <cite>align</cite> paramter can also be specified , but only with the following values: <strong>top</strong>, <strong>center</strong> or <strong>bottom</strong>. If not specified it will be defaulted to <strong>center</strong>.</p>
 <p><strong>Examples</strong></p>
 <table class="docutils align-default">
@@ -625,6 +626,38 @@ However, <code class="docutils literal notranslate"><span class="pre">height</sp
 </tr>
 <tr class="row-even"><td><p><strong>l:10,r:20,h:50%,y:0,a:t</strong></p></td>
 <td><img alt="_images/layout_anchor_lr_3.png" src="_images/layout_anchor_lr_3.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="using-top-bottom-anchors">
+<h3>Using Top-Bottom anchors<a class="headerlink" href="#using-top-bottom-anchors" title="Permalink to this headline">¶</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">top</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code> anchors are used together, there are several restrictions. First of all, <code class="docutils literal notranslate"><span class="pre">height</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> parameters can not be specified. Height is deduced as the difference between parents height and the sum of top and bottom anchors. Top anchor will also be considered the “y” value.
+However, <code class="docutils literal notranslate"><span class="pre">width</span></code> parameter should be specified (if not specified it will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless a minimum width is specified for that controls - in which case that limit will be applied).
+<cite>align</cite> paramter can also be specified , but only with the following values: <strong>left</strong>, <strong>center</strong> or <strong>right</strong>. If not specified it will be defaulted to <strong>center</strong>.</p>
+<p><strong>Examples</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 44%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layout</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>t:10,b:20,w:90,x:80%,a:r</strong></p></td>
+<td><img alt="_images/layout_anchor_tb_1.png" src="_images/layout_anchor_tb_1.png" />
+</td>
+</tr>
+<tr class="row-odd"><td><p><strong>t:10,b:20,w:100%,x:50%,a:c</strong></p></td>
+<td><img alt="_images/layout_anchor_tb_2.png" src="_images/layout_anchor_tb_2.png" />
+</td>
+</tr>
+<tr class="row-even"><td><p><strong>t:10,b:20,w:50%,x:0,a:l</strong></p></td>
+<td><img alt="_images/layout_anchor_tb_3.png" src="_images/layout_anchor_tb_3.png" />
 </td>
 </tr>
 </tbody>

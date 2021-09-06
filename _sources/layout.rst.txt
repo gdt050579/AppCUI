@@ -191,7 +191,7 @@ Using Left-Right anchors
 ************************
 
 When ``Left`` and ``right`` anchors are used together, there are several restrictions. First of all, ``width``  and ``x`` parameters can not be specified. Width is deduced as the difference between parents width and the sum of left and right anchors. Left anchor will also be considered the "x" value.
-However, ``height`` parameter should be specified (if not specified it will be defaulted to defaulted to ``1 character`` (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
+However, ``height`` parameter should be specified (if not specified it will be defaulted to ``1 character`` (unless a minimum height is specified for that controls - in which case that limit will be applied).
 `align` paramter can also be specified , but only with the following values: **top**, **center** or **bottom**. If not specified it will be defaulted to **center**.
 
 **Examples**
@@ -206,4 +206,21 @@ However, ``height`` parameter should be specified (if not specified it will be d
 | **l:10,r:20,h:50%,y:0,a:t**    | .. image:: pics/layout_anchor_lr_3.png |
 +--------------------------------+----------------------------------------+
 
+Using Top-Bottom anchors
+************************
 
+When ``top`` and ``bottom`` anchors are used together, there are several restrictions. First of all, ``height`` and ``y`` parameters can not be specified. Height is deduced as the difference between parents height and the sum of top and bottom anchors. Top anchor will also be considered the "y" value.
+However, ``width`` parameter should be specified (if not specified it will be defaulted to ``1 character`` (unless a minimum width is specified for that controls - in which case that limit will be applied).
+`align` paramter can also be specified , but only with the following values: **left**, **center** or **right**. If not specified it will be defaulted to **center**.
+
+**Examples**
+
++--------------------------------+----------------------------------------+
+| Layout                         | Result                                 |
++================================+========================================+
+| **t:10,b:20,w:90,x:80%,a:r**   | .. image:: pics/layout_anchor_tb_1.png |
++--------------------------------+----------------------------------------+
+| **t:10,b:20,w:100%,x:50%,a:c** | .. image:: pics/layout_anchor_tb_2.png |
++--------------------------------+----------------------------------------+
+| **t:10,b:20,w:50%,x:0,a:l**    | .. image:: pics/layout_anchor_tb_3.png |
++--------------------------------+----------------------------------------+
