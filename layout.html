@@ -88,6 +88,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Layout in AppCUI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#docking">Docking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-absolute-offset">Using absolute offset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anchors">Anchors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#corner-anchors">Corner anchors</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -523,6 +527,76 @@ If <strong>align</strong> is not specified, it will be defaulted to <code class=
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="anchors">
+<h2>Anchors<a class="headerlink" href="#anchors" title="Permalink to this headline">¶</a></h2>
+<p>Anchors (<code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>) represent the distance between the object and its parent margins. When one of the anchors is present, the <code class="docutils literal notranslate"><span class="pre">dock</span></code> key can not be used. Depending on the combination of anchors used, other keys may be unusable.</p>
+<img alt="_images/layout_anchors.png" src="_images/layout_anchors.png" />
+<div class="section" id="corner-anchors">
+<h3>Corner anchors<a class="headerlink" href="#corner-anchors" title="Permalink to this headline">¶</a></h3>
+<p>Corner anchors are cases when the following combinations of anchors are used toghether (<code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>), (<code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>), (<code class="docutils literal notranslate"><span class="pre">right</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>) and (<code class="docutils literal notranslate"><span class="pre">right</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>).
+When this combinations are used, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> keys can not be used. Using them will reject the layout.
+If <strong>width</strong> or <strong>height</strong> are not specified , they will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).</p>
+<p>The combination of anchors also decides how (top,left) and (right,bottom) corners of a control are computed, as follows:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 45%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Combonation</p></th>
+<th class="head"><p>Top-Left corner</p></th>
+<th class="head"><p>Bottom-Right corner</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>top</strong> and <strong>left</strong></p></td>
+<td><p>(left, top)</p></td>
+<td><p>(left+width, top+height)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>top</strong> and <strong>right</strong></p></td>
+<td><p>(parentWidth-right-width, top)</p></td>
+<td><p>(parentWidth-right, top+height)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>bottom</strong> and <strong>left</strong></p></td>
+<td><p>(left, parentHeight-bottom-height)</p></td>
+<td><p>(left+width, parentHeight-bottom)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>bottom</strong> and <strong>right</strong></p></td>
+<td><p>(parentWidth-right-width, parentHeight-bottom-height)</p></td>
+<td><p>(parentWidth-right, parentHeight-bottom)</p></td>
+</tr>
+</tbody>
+</table>
+<p>where <code class="docutils literal notranslate"><span class="pre">parentWidth</span></code> is the width of control parent, and <code class="docutils literal notranslate"><span class="pre">parentHeight</span></code> the height of control parent.</p>
+<p><strong>Examples</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layout</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>t:10,r:20,w:50,h:20</strong></p></td>
+<td><img alt="_images/layout_anchor_tl.png" src="_images/layout_anchor_tl.png" />
+</td>
+</tr>
+<tr class="row-odd"><td><p><strong>b:10,r:20,w:25%,h:10</strong></p></td>
+<td><img alt="_images/layout_anchor_br.png" src="_images/layout_anchor_br.png" />
+</td>
+</tr>
+<tr class="row-even"><td><p><strong>b:10%,l:50%,w:25%,h:10</strong></p></td>
+<td><img alt="_images/layout_anchor_bl.png" src="_images/layout_anchor_bl.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 
