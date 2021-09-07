@@ -36,24 +36,9 @@ bool ListViewColumn::SetName(const AppCUI::Utils::ConstString& text)
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
 
-    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset), false, "Fail to set name to column !");
-    if (this->HotKeyOffset != NO_HOTKEY_FOR_COLUMN)
-    {
-        // set the hot key
-        char16_t hotKey = Name.GetBuffer()[this->HotKeyOffset].Code;
-        if ((hotKey >= 'a') && (hotKey <= 'z'))
-        {
-            this->HotKeyCode = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::A + (hotKey - 'a')));
-        }
-        if ((hotKey >= 'A') && (hotKey <= 'Z'))
-        {
-            this->HotKeyCode = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::A + (hotKey - 'A')));
-        }
-        if ((hotKey >= '0') && (hotKey <= '9'))
-        {
-            this->HotKeyCode = (Key)(((unsigned int) Key::Ctrl) | ((unsigned int) Key::N0 + (hotKey - '0')));
-        }
-    }
+    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset, this->HotKeyCode, Key::Ctrl),
+          false,
+          "Fail to set name to column !");
 
     return true;
 }

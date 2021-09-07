@@ -25,7 +25,7 @@ MenuItem::MenuItem()
 MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int cmdID, bool checked, AppCUI::Input::Key shortcutKey)
 {
     Type = MenuItemType::Invalid;
-    if (Name.SetWithHotKey(text, HotKeyOffset))
+    if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
     {
         Type        = type;
         Enabled     = true;
@@ -33,44 +33,18 @@ MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, in
         SubMenu     = nullptr;
         CommandID   = cmdID;
         ShortcutKey = shortcutKey;
-        HotKey      = AppCUI::Input::Key::None;
-        if (HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
-        {
-            char16_t ch = Name.GetBuffer()[HotKeyOffset].Code;
-            if ((ch >= 'A') && (ch <= 'Z'))
-                HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'A'));
-            else if ((ch >= 'a') && (ch <= 'z'))
-                HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'a'));
-            else if ((ch >= '0') && (ch <= '9'))
-                HotKey = static_cast<Key>((unsigned int) Key::N0 + (ch - '0'));
-            else
-                HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET; // invalid hot key
-        }
     }
 }
 MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
 {
     Type = MenuItemType::Invalid;
-    if (Name.SetWithHotKey(text, HotKeyOffset))
+    if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
     {
         Type        = MenuItemType::SubMenu;
         Enabled     = true;
         Checked     = false;
         ShortcutKey = AppCUI::Input::Key::None;
-        HotKey      = AppCUI::Input::Key::None;
         SubMenu     = subMenu;
-        if (HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
-        {
-            char16_t ch = Name.GetBuffer()[HotKeyOffset].Code;
-            if ((ch >= 'A') && (ch <= 'Z'))
-                HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'A'));
-            else if ((ch >= 'a') && (ch <= 'z'))
-                HotKey = static_cast<Key>((unsigned int) Key::A + (ch - 'a'));
-            else if ((ch >= '0') && (ch <= '9'))
-                HotKey = static_cast<Key>((unsigned int) Key::N0 + (ch - '0'));
-            else
-                HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET; // invalid hot key
-        }
     }
 }
 

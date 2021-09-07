@@ -793,6 +793,8 @@ namespace Utils
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
         static AppCUI::Input::Key FromString(const std::string_view& stringRepresentation);
+
+        static AppCUI::Input::Key CreateHotKey(char16_t hotKey, AppCUI::Input::Key modifier = AppCUI::Input::Key::None);
     };
 
     class EXPORT IniValue
@@ -1199,6 +1201,8 @@ namespace Graphics
         bool SetWithHotKey(
               const AppCUI::Utils::ConstString& text,
               unsigned int& hotKeyCharacterPosition,
+              AppCUI::Input::Key & hotKey,
+              AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
               const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
