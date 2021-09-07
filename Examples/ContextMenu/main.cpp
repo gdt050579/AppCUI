@@ -87,12 +87,12 @@ class ContextMenuExample : public AppCUI::Controls::Window
   public:
     ContextMenuExample()
     {
-        this->Create("Context menu", "a:c,w:64,h:10");
+        this->Create("Context menu", "d:c,w:64,h:10");
         l1.Create(this, "Right click on the red-square below to view a context menu\nTIP: Use mouse wheel to scroll menus", "x:1,y:1,w:62,h:2");
         cb.Create(this, "Small contextual menu with scroll", "x:1,y:6,w:62");
         m.Create(this);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

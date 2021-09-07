@@ -31,6 +31,23 @@ elseif (UNIX)
     endif()
 endif()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+     add_compile_options(-Wall -Wextra
+             -Wno-switch
+             -Wpointer-arith
+             -Wcast-qual
+             -Wredundant-decls
+             -Wctor-dtor-privacy
+             -Wwrite-strings
+             -Wdisabled-optimization
+             -Wzero-as-null-pointer-constant
+             -Wvla) # -pedantic
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
+    add_compile_options(-Wtrampolines -Wduplicated-cond -Wduplicated-branches -Wnull-dereference)
+endif()
+
 if (NOT DEBUG_BUILD)
     if (MSVC)
         #add_compile_options(-O2)
@@ -38,7 +55,6 @@ if (NOT DEBUG_BUILD)
 	#string( REPLACE "/RTC1" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
     else()
         add_compile_options(-O3)
-        # add_compile_options(-Wall -Wextra -pedantic -Werror)
     endif()
 endif()
 
@@ -92,4 +108,5 @@ if(APPCUI_ENABLE_EXMPLES)
     add_subdirectory(Examples/SimpleHexView)
     add_subdirectory(Examples/ToolTip)
     add_subdirectory(Examples/FontTest)
+    add_subdirectory(Examples/Layout)
 endif()

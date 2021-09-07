@@ -20,6 +20,51 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
+enum class LayoutFormatMode: unsigned short
+{
+    None,
+    PointAndSize,
+    LeftRightAnchorsAndHeight,
+    TopBottomAnchorsAndWidth,
+
+    LeftTopRightAnchorsAndHeight,
+    LeftBottomRightAnchorsAndHeight,
+    TopLeftBottomAnchorsAndWidth,
+    TopRightBottomAnchorsAndWidth,
+
+    LeftTopRightBottomAnchors
+};
+enum class LayoutValueType: unsigned short
+{
+    CharacterOffset = 0,
+    Percentage
+};
+struct LayoutValue
+{
+    short Value;
+    LayoutValueType Type;
+    inline int ToInt(int parentSize) const
+    {
+        if (Type == LayoutValueType::Percentage)
+            return ((int) Value * parentSize) / 10000;
+        else
+            return (int) Value;
+    }
+};
+struct LayoutInformation
+{
+    unsigned int flags;
+    LayoutValue x, y;
+    LayoutValue width, height;
+    LayoutValue a_left, a_top, a_right, a_bottom;
+    Alignament align, dock;
+};
+struct LayoutMetricData
+{
+    int ParentWidth, ParentHeigh;
+    int X, Y, Width, Height, AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
+    Alignament Align, Anchor;
+};
 struct ControlContext
 {
   public:
@@ -28,10 +73,10 @@ struct ControlContext
     {
         struct
         {
-            int Width, Height;
-            int AnchorLeft, AnchorRight, AnchorTop, AnchorBottom;
-            unsigned short PercentageMask;
-            unsigned char LayoutMode;
+            LayoutValue Width, Height;
+            LayoutValue AnchorLeft, AnchorRight, AnchorTop, AnchorBottom, X, Y;
+            Alignament Align, Anchor;
+            LayoutFormatMode LayoutMode;
         } Format;
         int X, Y;
         int Width, MinWidth, MaxWidth;
@@ -91,7 +136,22 @@ struct ControlContext
 
     ControlContext();
 
+    bool ProcessDockedLayout(LayoutInformation& inf);
+    bool ProcessXYWHLayout(LayoutInformation& inf);
+    bool ProcessCornerAnchorLayout(LayoutInformation& inf, Alignament anchor);
+    bool ProcessHorizontalParalelAnchors(LayoutInformation& inf);
+    bool ProcessVerticalParalelAnchors(LayoutInformation& inf);
+    bool ProcessLTRAnchors(LayoutInformation& inf);
+    bool ProcessLBRAnchors(LayoutInformation& inf);
+    bool ProcessTLBAnchors(LayoutInformation& inf);
+    bool ProcessTRBAnchors(LayoutInformation& inf);
+    bool ProcessLTRBAnchors(LayoutInformation& inf);
     bool UpdateLayoutFormat(const std::string_view& format);
+    void SetControlSize(unsigned int width, unsigned int heigh);
+    bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
+    bool RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetricData& md);
+    bool RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetricData& md);
+
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 };
@@ -198,6 +258,8 @@ class TextAreaControlContext : public ControlContext
     void MoveTo(int newPoz, bool selected);
     void MoveHome(bool selected);
     void MoveEnd(bool selected);
+    void MoveToNextWord(bool selected);
+    void MoveToPreviousWord(bool selected);
     void MoveToStartOfTheFile(bool selected);
     void MoveToEndOfTheFile(bool selected);
     void AddChar(char16_t ch);

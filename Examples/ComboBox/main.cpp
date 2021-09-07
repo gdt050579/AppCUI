@@ -13,7 +13,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("ComboBox example", "a:c,w:56,h:11");
+        this->Create("ComboBox example", "d:c,w:56,h:11");
         inf.Create(this, "Select a color", "x:2,y:1,w:15");
         cb1.Create(this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
         inf2.Create(this, "Select a word", "x:2,y:3,w:15");
@@ -32,7 +32,7 @@ class MyWin : public AppCUI::Controls::Window
         cb3.AddItem("Ducatti");
         
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control* sender, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

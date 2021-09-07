@@ -6,7 +6,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
-void HighlightNumberAndCapitalLetters(Control* tx, Graphics::Character* chars, unsigned int charsCount, void* Context)
+void HighlightNumberAndCapitalLetters(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
 {
     Graphics::Character* end = chars + charsCount;
     while (chars < end)
@@ -29,7 +29,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Text Field Example", "a:c,w:70,h:20");
+        this->Create("Text Field Example", "d:c,w:70,h:20");
         l1.Create(this, "&Normal text", "x:1,y:1,w:15");
         t1.Create(this, "a normal text", "x:19,y:1,w:48");
         t1.SetHotKey('N');
@@ -55,7 +55,7 @@ class MyWin : public AppCUI::Controls::Window
               HighlightNumberAndCapitalLetters);
         t5.SetHotKey('H');
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

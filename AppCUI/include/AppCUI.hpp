@@ -78,6 +78,7 @@
 #    define LOG_ERROR(format, ...)                                                                                     \
         AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
+inline void Unused(...) {}
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -101,7 +102,7 @@
         {                                                                                                              \
             return (returnValue);                                                                                      \
         }
-#    define LOG_INFO(format, ...)
+#    define LOG_INFO(format, ...) Unused(format, ##__VA_ARGS__);
 #    define LOG_WARNING(format, ...)
 #    define LOG_ERROR(format, ...)
 #endif
@@ -792,6 +793,8 @@ namespace Utils
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
         static AppCUI::Input::Key FromString(const std::string_view& stringRepresentation);
+
+        static AppCUI::Input::Key CreateHotKey(char16_t hotKey, AppCUI::Input::Key modifier = AppCUI::Input::Key::None);
     };
 
     class EXPORT IniValue
@@ -958,7 +961,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned int
+    enum class Alignament : unsigned char
     {
         TopLeft = 0,
         Top,
@@ -1198,6 +1201,8 @@ namespace Graphics
         bool SetWithHotKey(
               const AppCUI::Utils::ConstString& text,
               unsigned int& hotKeyCharacterPosition,
+              AppCUI::Input::Key & hotKey,
+              AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
               const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
@@ -1215,6 +1220,10 @@ namespace Graphics
             return Find(text, ignoreCase) != -1;
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+        std::optional<unsigned int> FindNext(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
+        std::optional<unsigned int> FindPrevious(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;
@@ -1260,6 +1269,22 @@ namespace Graphics
         }
     };
 
+    enum class ImageRenderingMethod: unsigned int
+    {
+        PixelTo16ColorsSmallBlock,
+        PixelTo64ColorsLargeBlock,
+        AsciiArt
+    };
+    enum class ImageScaleMethod : unsigned int
+    {
+        NoScale = 1,
+        Scale50  = 2,
+        Scale33  = 3,
+        Scale25  = 4,
+        Scale20  = 5,
+        Scale10  = 10,
+        Scale5   = 20
+    };
     class EXPORT Image
     {
         unsigned int* Pixels;
@@ -1281,6 +1306,7 @@ namespace Graphics
               unsigned char Alpha = 255);
         unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
         bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
+        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
@@ -1413,6 +1439,18 @@ namespace Graphics
         // Cursor
         void HideCursor();
         bool SetCursor(int x, int y);
+
+        // Images
+        bool DrawImage(
+              const Image& img,
+              int x,
+              int y,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale = ImageScaleMethod::NoScale);
+        Size ComputeRenderingSize(
+              const Image& img,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale      = ImageScaleMethod::NoScale);
     };
 
     class EXPORT Canvas : public Renderer
@@ -1693,7 +1731,7 @@ namespace Controls
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseOver(int x, int y) override;        
+        bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Control* sender, Event eventType, int controlID) override;
 
@@ -1931,16 +1969,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-    enum class ImageRendererMode : unsigned int
-    {
-        SmallBoxes,
-        SmallBoxex2x2,
-        SmallBoxex4x4,
-        SmallBoxex8x8,
-        SmallBoxex16x16,
-        LargeBoxes,
-        AsciiArt
-    };
+
     class EXPORT ImageViewer : public CanvasViewer
     {
       public:
@@ -1950,7 +1979,7 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
-        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
+        bool SetImage(const AppCUI::Graphics::Image& img, AppCUI::Graphics::ImageRenderingMethod method, AppCUI::Graphics::ImageScaleMethod scale);
     };
     enum class ListViewFlags : unsigned int
     {

@@ -269,7 +269,7 @@ bool CharacterBuffer::Add(const AppCUI::Utils::ConstString& text, const ColorPai
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
-    // sz cand be fitted in 32 bits
+    // sz can be fitted in 32 bits
     this->Count += (unsigned int)sz;
     return true;
 }
@@ -278,11 +278,17 @@ bool CharacterBuffer::Set(const AppCUI::Utils::ConstString& text, const ColorPai
     this->Count = 0;
     return Add(text, color);
 }
-bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsigned int& hotKeyCharacterPosition,const ColorPair color)
+bool CharacterBuffer::SetWithHotKey(
+      const AppCUI::Utils::ConstString& text,
+      unsigned int& hotKeyCharacterPosition,
+      AppCUI::Input::Key& hotKey,      
+      AppCUI::Input::Key hotKeyModifier,
+      const ColorPair color)
 {
     AppCUI::Utils::ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
     hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    hotKey                  = AppCUI::Input::Key::None;
 
     if (textObj.Length == 0)
         return true; // nothing to do
@@ -309,8 +315,28 @@ bool CharacterBuffer::SetWithHotKey(const AppCUI::Utils::ConstString& text, unsi
     default:
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
     }
-    CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
-    this->Count += (unsigned int)sz;
+    if (sz>textObj.Length)
+    {
+        // reset values
+        hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+        hotKey                  = AppCUI::Input::Key::None;
+        RETURNERROR(false, "Internal error --> possible buffer overwrite !");
+    }
+    this->Count += (unsigned int) sz;
+    // sanity check
+    if ((hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET) && (hotKeyCharacterPosition >= this->Count))
+    {
+        // reset values
+        hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+        hotKey                  = AppCUI::Input::Key::None;
+    }
+    if (hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET)
+    {
+        hotKey = AppCUI::Utils::KeyUtils::CreateHotKey(this->Buffer[hotKeyCharacterPosition].Code, hotKeyModifier);
+        if (hotKey == AppCUI::Input::Key::None)
+            hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    }    
+    
     return true;
 }
 
@@ -545,6 +571,39 @@ int  CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) c
     return 0;
 }
 
+
+std::optional<unsigned int> CharacterBuffer::FindNext(
+      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+{
+    CHECK(this->Buffer, std::nullopt, "Object not initialized ");
+    CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
+    if (startOffset >= this->Count)
+        return this->Count;
+    auto* p = this->Buffer + startOffset;
+    while ((startOffset < this->Count) && (shouldSkip(startOffset, *p)))
+    {
+        p++;
+        startOffset++;
+    }
+    return startOffset;
+}
+std::optional<unsigned int> CharacterBuffer::FindPrevious(
+      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+{
+    CHECK(this->Buffer, std::nullopt, "Object not initialized ");
+    CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
+    if (this->Count == 0)
+        return 0;
+    if (startOffset >= this->Count)
+        return this->Count - 1;
+    auto* p = this->Buffer + startOffset;
+    while ((startOffset > 0) && (shouldSkip(startOffset, *p)))
+    {
+        p--;
+        startOffset--;
+    }
+    return startOffset;
+}
 
 bool CharacterBuffer::ToString(std::string& output) const
 {

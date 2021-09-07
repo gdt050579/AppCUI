@@ -96,7 +96,6 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
     params.Width = this->TabTitleSize - 2;
     params.Align = TextAlignament::Center;
     int poz      = 1;
-    int borderX  = -1;
 
     if (onTop)
         params.Y = 0;
@@ -117,7 +116,7 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
 
 
 
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
+    for (unsigned tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -130,7 +129,7 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
             params.Color       = this->Cfg->Tab.PageColor;
             params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
@@ -179,7 +178,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
             params.Color       = this->Cfg->Tab.PageColor;
             params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
@@ -220,7 +219,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
             params.Color       = this->Cfg->Tab.ListSelectedPageColor;
             params.HotKeyColor = this->Cfg->Tab.ListSelectedPageHotKey;
         }
-        else if (tr == this->HoveredTabIndex)
+        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
             params.Color       = this->Cfg->Tab.HoverColor;
             params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
@@ -262,7 +261,7 @@ bool TabPage::Create(Control* parent, const AppCUI::Utils::ConstString& caption)
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     return true;
 }
-bool TabPage::OnBeforeResize(int newWidth, int newHeight)
+bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
@@ -325,7 +324,7 @@ bool Tab::SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& n
     CHECK(Members->Controls[index]->SetText(name, true), false, "");
     return true;
 }
-void Tab::OnAfterResize(int newWidth, int newHeight)
+void Tab::OnAfterResize(int, int)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
 
@@ -368,13 +367,13 @@ bool Tab::OnMouseOver(int x, int y)
     }
     return false;
 }
-void Tab::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Tab::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)
         SetCurrentTabPage((unsigned int) Members->HoveredTabIndex);
 }
-bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
 {
     switch (keyCode)
     {

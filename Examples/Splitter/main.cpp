@@ -16,7 +16,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Splitter example", "a:c,w:60,h:10", WindowFlags::Sizeable);
+        this->Create("Splitter example", "d:c,w:60,h:10", WindowFlags::Sizeable);
         s2.Create(this, "x:0,y:0,w:100%,h:100%", false);
         s.Create(&s2, "x:0,y:0,w:100%,h:100%", true);
         s2.SetSecondPanelSize(2);
@@ -34,7 +34,7 @@ class MyWin : public AppCUI::Controls::Window
 
         b1.Create(&pbottom, "&Press me", "l:1,b:0,w:90%,h:2", 100);
     }
-    bool OnEvent(Control* sender, AppCUI::Controls::Event eventType, int controlID) override
+    bool OnEvent(Control*, AppCUI::Controls::Event eventType, int) override
     {
         if (eventType == AppCUI::Controls::Event::EVENT_WINDOW_CLOSE)
         {

@@ -14,7 +14,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Checkbox example", "a:c,w:60,h:12");
+        this->Create("Checkbox example", "d:c,w:60,h:12");
         c1.Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
         c2.Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56");
         c2.SetEnabled(false);
@@ -26,7 +26,7 @@ class MyWin : public AppCUI::Controls::Window
               A_CHECKBOX_ID);
         c3_info.Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

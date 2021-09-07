@@ -45,7 +45,7 @@ void NcursesTerminal::OnFlushToScreen()
         {
             const AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
 
-            cchar_t t = { 0, { ch.Code, 0 } };
+            cchar_t t = { 0, { ch.Code, 0 }, {} };
             colors.SetColor(ch.Color.Foreground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Foreground, ch.Color.Background);

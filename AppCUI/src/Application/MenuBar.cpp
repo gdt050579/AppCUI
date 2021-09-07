@@ -42,19 +42,10 @@ ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
     if (!Items[this->ItemsCount])
         Items[this->ItemsCount] = std::make_unique<MenuBarItem>();
     auto* i = Items[this->ItemsCount].get();
-    CHECK(i->Name.SetWithHotKey(name, i->HotKeyOffset), ItemHandle{ NO_ITEM_SELECTED }, "Fail to set Menu name");
-    if (i->HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
-    {
-        char16_t ch = i->Name.GetBuffer()[i->HotKeyOffset].Code;
-        if ((ch >= 'A') && (ch <= 'Z'))
-            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::A + (ch - 'A'));
-        else if ((ch >= 'a') && (ch <= 'z'))
-            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::A + (ch - 'a'));
-        else if ((ch >= '0') && (ch <= '9'))
-            i->HotKey = Key::Alt | static_cast<Key>((unsigned int) Key::N0 + (ch - '0'));
-        else
-            i->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET; // invalid hot key
-    }
+    CHECK(i->Name.SetWithHotKey(name, i->HotKeyOffset, i->HotKey, Key::Alt),
+          ItemHandle{ NO_ITEM_SELECTED },
+          "Fail to set Menu name");
+
     this->ItemsCount++;
     RecomputePositions();
     return ItemHandle{ this->ItemsCount - 1 };

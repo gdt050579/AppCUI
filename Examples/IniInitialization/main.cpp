@@ -20,14 +20,14 @@ class SimpleWin : public AppCUI::Controls::Window
   public:
     SimpleWin()
     {
-        this->Create("Test", "a:c,w:40,h:10");
+        this->Create("Test", "d:c,w:40,h:10");
         l1.Create(
               this,
               "This is a simple Window example that creates a 40x20 fixed window that  will close if you click on the "
               "[X]  button from the bottom-top corner.",
               "x:1,y:1,w:36,h:5");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

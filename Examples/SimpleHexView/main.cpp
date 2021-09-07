@@ -109,8 +109,8 @@ class SimpleHexView : public AppCUI::Controls::Window
   public:
     SimpleHexView()
     {
-        this->Create("SimpleHexView", "w:100%,h:100%");
-        btnOpenFile.Create(this, "Open File ...", "a:c,t:0,w:100%", COMMAND_ID_BTN_OPEN);
+        this->Create("SimpleHexView", "d:c,w:100%,h:100%");
+        btnOpenFile.Create(this, "Open File ...", "d:c,t:0,w:100%", COMMAND_ID_BTN_OPEN);
         hexView.Create(this, "t:2,w:100%,h:100%");
     }
 

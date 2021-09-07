@@ -16,7 +16,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Progress status", "a:c,w:70,h:9");
+        this->Create("Progress status", "d:c,w:70,h:9");
         but_odd.Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
         inf_odd.Create(
               this,
@@ -95,7 +95,7 @@ class MyWin : public AppCUI::Controls::Window
         }
     }
 
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {

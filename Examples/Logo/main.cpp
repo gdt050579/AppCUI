@@ -30,7 +30,7 @@ class LogoWin : public AppCUI::Controls::Window
         {
             for (int x = 0; AppCuiLogo[y][x]; x++)
             {
-                SpecialChars sc;
+                SpecialChars sc{};
                 ColorPair col;
                 switch (AppCuiLogo[y][x])
                 {
@@ -80,7 +80,7 @@ class LogoWin : public AppCUI::Controls::Window
   public:
     LogoWin()
     {
-        this->Create("Canvas example", "a:c,w:80,h:22");
+        this->Create("Canvas example", "d:c,w:80,h:22");
         sp.Create(this, "x:0,y:0,w:100%,h:100%", true);
         viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 
@@ -92,7 +92,7 @@ class LogoWin : public AppCUI::Controls::Window
         CreateImage(viewInactive.GetCanvas());
         CreateImage(viewSmall.GetCanvas());
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
         if (eventType == Event::EVENT_WINDOW_CLOSE)
         {
