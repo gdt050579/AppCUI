@@ -225,7 +225,7 @@ However, ``width`` parameter should be specified (if not specified it will be de
 | **t:10,b:20,w:50%,x:0,a:l**    | .. image:: pics/layout_anchor_tb_3.png |
 +--------------------------------+----------------------------------------+
 
-3-mergin anchors
+3-margin anchors
 ****************
 
 When using 3 of the 4 anchors, the following keys can not be used: ``x``, ``y``, ``align`` and ``dock``. Using them will reject the layout.
@@ -273,3 +273,21 @@ where ``parentWidth`` is the width of control parent, and ``parentHeight`` the h
 +----------------------------+---------------------------------------+
 | **r:10%,t:10,b:100,w:75%** | .. image:: pics/layout_anchor_trb.png |
 +----------------------------+---------------------------------------+
+
+4-margin anchors
+****************
+
+When all of the 4 anchors, the rest of the keys ( ``x``, ``y``, ``width``, ``height``, ``align`` and ``dock``) can not be used. Using them will reject the layout.
+
+**Example**
+
++-----------------------+----------------------------------------+
+| Layout                | Result                                 |
++=======================+========================================+
+| **l:10,t:5,r:30,b:5** | .. image:: pics/layout_anchor_tlbr.png |
++-----------------------+----------------------------------------+
+
+More examples
+-------------
+
+For more examples on how to use AppCUI layout model, check out our repository example: `Example <https://github.com/gdt050579/AppCUI/tree/main/Examples/Layout>`_

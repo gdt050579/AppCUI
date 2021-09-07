@@ -92,9 +92,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#corner-anchors">Corner anchors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-left-right-anchors">Using Left-Right anchors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-top-bottom-anchors">Using Top-Bottom anchors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mergin-anchors">3-mergin anchors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#margin-anchors">3-margin anchors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">4-margin anchors</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More examples</a></li>
 </ul>
 </li>
 </ul>
@@ -664,8 +666,8 @@ However, <code class="docutils literal notranslate"><span class="pre">width</spa
 </tbody>
 </table>
 </div>
-<div class="section" id="mergin-anchors">
-<h3>3-mergin anchors<a class="headerlink" href="#mergin-anchors" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="margin-anchors">
+<h3>3-margin anchors<a class="headerlink" href="#margin-anchors" title="Permalink to this headline">¶</a></h3>
 <p>When using 3 of the 4 anchors, the following keys can not be used: <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">align</span></code> and <code class="docutils literal notranslate"><span class="pre">dock</span></code>. Using them will reject the layout.
 Depending on the achors that are being used, either <code class="docutils literal notranslate"><span class="pre">width</span></code> or <code class="docutils literal notranslate"><span class="pre">height</span></code> are forbidden.
 The following table reflects these dependencies:</p>
@@ -760,6 +762,32 @@ The following table reflects these dependencies:</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="id1">
+<h3>4-margin anchors<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>When all of the 4 anchors, the rest of the keys ( <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">align</span></code> and <code class="docutils literal notranslate"><span class="pre">dock</span></code>) can not be used. Using them will reject the layout.</p>
+<p><strong>Example</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 63%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layout</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>l:10,t:5,r:30,b:5</strong></p></td>
+<td><img alt="_images/layout_anchor_tlbr.png" src="_images/layout_anchor_tlbr.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="more-examples">
+<h2>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
+<p>For more examples on how to use AppCUI layout model, check out our repository example: <a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples/Layout">Example</a></p>
 </div>
 </div>
 
