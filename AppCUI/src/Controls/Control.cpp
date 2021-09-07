@@ -1238,12 +1238,9 @@ bool AppCUI::Controls::Control::Init(
     if (computeHotKey)
     {
         CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair),
+        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, CTRLC->HotKey, Key::Alt, NoColorPair),
               false,
               "Fail to set text with UTF8 value");
-
-        if (CTRLC->HotKeyOffset != CharacterBuffer::INVALID_HOTKEY_OFFSET)
-            this->SetHotKey(CTRLC->Text.GetBuffer()[CTRLC->HotKeyOffset].Code);
     }
     else
     {
@@ -1513,7 +1510,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, NoColorPair) == false)
+        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset,CTRLC->HotKey,Key::Alt, NoColorPair) == false)
             return false;
     }
     else
@@ -1569,21 +1566,9 @@ void AppCUI::Controls::Control::ClearGroup()
 
 bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
 {
-    hotKey |= 0x20;
-    CHECK((((hotKey >= 'a') && (hotKey <= 'z')) || ((hotKey >= '0') && (hotKey <= '9'))),
-          false,
-          "Invalid hot key - accepted values are ['A'-'Z'] and ['0'-'9']");
-    if ((hotKey >= 'a') && (hotKey <= 'z'))
-    {
-        CTRLC->HotKey = (Key) (((unsigned int) Key::Alt) | ((unsigned int) Key::A + (hotKey - 'a')));
-        return true;
-    }
-    if ((hotKey >= '0') && (hotKey <= '9'))
-    {
-        CTRLC->HotKey = (Key) (((unsigned int) Key::Alt) | ((unsigned int) Key::N0 + (hotKey - '0')));
-        return true;
-    }
-    return false;
+    CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    CTRLC->HotKey       = AppCUI::Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
+    return CTRLC->HotKey != Key::None;
 }
 bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bottom)
 {
