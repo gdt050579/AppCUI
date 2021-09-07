@@ -40,7 +40,7 @@ Where key can be one of the following:
 
 **Remarks**: Key aliases can be use to provide a shorter format for a layout. In other words, the following two formats are identical: ``x:10,y:10,width:30,height:30`` and ``x:10,y:10,w:30,h:30``
 
-A numerical value is represented by an integera (positive and negative) number between **-30000** and **30000**. Example: ``x:100`` --> X will be 100. Using a value outside accepted interval (**[-30000..30000]**) will reject the layout.
+A numerical value is represented by an integer (positive and negative) number between **-30000** and **30000**. Example: ``x:100`` --> X will be 100. Using a value outside accepted interval (**[-30000..30000]**) will reject the layout.
 
 A percentage value is represented by a floating value (positive and negative) succeded by the character ``%`` between **-300%** and **300%**. Example: ``x:12.75%`` --> X will be converted to a numerical value that is equal to the width of its parent multiplied by ``0.1275``. Using a value outside accepted interval (**[-300%..300%]**) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.
 
@@ -68,7 +68,7 @@ Dock values can be one of the following
 | center      | c                   |                                 |
 +-------------+---------------------+---------------------------------+
 
-**Remarks**: Dock value aliases can be use to provide a shorter format for a layout. In other words: ``dock:topleft`` is the same with ``dock::tl`` or ``dock::lt`` or ``d:tl``
+**Remarks**: Dock value aliases can be use to provide a shorter format for a layout. In other words: ``dock:topleft`` is the same with ``dock:tl`` or ``dock:lt`` or ``d:tl``
 
 Align values have the same name as the docking ones, but they refer to the direction of width and height from a specific point (denoted by "X" and "Y" keys). Align parameter is used to compute top-left and bottom-right corner of a control that is described using a (X,Y) coordonate. The following table ilustrate how this values are computed:
 
@@ -94,7 +94,7 @@ Align values have the same name as the docking ones, but they refer to the direc
 | center      | c                   | (x-width/2,y-height/2) | (x+width/2,y+height/2) |
 +-------------+---------------------+------------------------+------------------------+
 
-**Remarks**: Align value aliases can be use to provide a shorter format for a layout. In other words: ``align:center`` is the same with ``align::c`` or  ``a:c``
+**Remarks**: Align value aliases can be use to provide a shorter format for a layout. In other words: ``align:center`` is the same with ``align:c`` or  ``a:c``
 
 Docking
 --------
