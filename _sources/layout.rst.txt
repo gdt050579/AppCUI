@@ -224,3 +224,52 @@ However, ``width`` parameter should be specified (if not specified it will be de
 +--------------------------------+----------------------------------------+
 | **t:10,b:20,w:50%,x:0,a:l**    | .. image:: pics/layout_anchor_tb_3.png |
 +--------------------------------+----------------------------------------+
+
+3-mergin anchors
+****************
+
+When using 3 of the 4 anchors, the following keys can not be used: ``x``, ``y``, ``align`` and ``dock``. Using them will reject the layout.
+Depending on the achors that are being used, either ``width`` or ``height`` are forbidden. 
+The following table reflects these dependencies:
+
++----------------------------------------+------------------------------------------+
+| Combination                            | Result                                   |
++========================================+==========================================+
+| **left** and **top** and **right**     | ``height`` is required                   |
+|                                        |                                          |
+| **left** and **bottom** and **right**  | ``width`` = parentWidth - (left+right)   |
++----------------------------------------+------------------------------------------+
+| **top** and **left** and **bottom**    | ``width`` is required                    |
+|                                        |                                          |
+| **top** and **right** and **bottom**   | ``height`` = parentHeight - (top+bottom) |
++----------------------------------------+------------------------------------------+
+
+The position of the control is also computed based on the combination of the 3 anchors selectd, as shown in the next table:
+
++---------------------------------------+------------------------------------+------------------------------------------+
+| Combonation                           | Top-Left corner                    | Bottom-Right corner                      |
++=======================================+====================================+==========================================+
+| **left** and **top** and **right**    | (left, top)                        | (parentWidth-right, top+height)          |
++---------------------------------------+------------------------------------+------------------------------------------+
+| **left** and **bottom** and **right** | (left, parentHeight-bottom-height) | (parentWidth-right, parentHeight-bottom) |
++---------------------------------------+------------------------------------+------------------------------------------+
+| **top** and **left** and **bottom**   | (left, top)                        | (left+width, parentHeight-bottom)        |
++---------------------------------------+------------------------------------+------------------------------------------+
+| **top** and **right** and **bottom**  | (parentWidth-right-width, top)     | (parentWidth-right, parentHeight-bottom) |
++---------------------------------------+------------------------------------+------------------------------------------+
+
+where ``parentWidth`` is the width of control parent, and ``parentHeight`` the height of control parent.
+
+**Examples**
+
++----------------------------+---------------------------------------+
+| Layout                     | Result                                |
++============================+=======================================+
+| **l:10,t:5,r:30,h:50%**    | .. image:: pics/layout_anchor_ltr.png |
++----------------------------+---------------------------------------+
+| **l:10,b:10,r:30,h:30**    | .. image:: pics/layout_anchor_lbr.png |
++----------------------------+---------------------------------------+
+| **l:10,t:10,b:100,w:50%**  | .. image:: pics/layout_anchor_tlb.png |
++----------------------------+---------------------------------------+
+| **r:10%,t:10,b:100,w:75%** | .. image:: pics/layout_anchor_trb.png |
++----------------------------+---------------------------------------+
