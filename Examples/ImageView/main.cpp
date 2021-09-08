@@ -6652,8 +6652,8 @@ class MainWin : public AppCUI::Controls::Window
             {
                 AppCUI::Graphics::Image img;
                 img.Create(27, 27); // 27 = square of (9 x 9 x 9) ==> 9 = variantion on one channel (from 0 to 255)      
-                int x = 0;
-                int y = 0;
+                unsigned int x = 0;
+                unsigned int y = 0;
                 for (unsigned int r = 0; r <= 256; r += 32)
                 {
                     for (unsigned int g = 0; g <= 256; g += 32)

@@ -1363,7 +1363,6 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
     {
         for (unsigned int c2 = 0; c2 < 16; c2++)
         {
-            unsigned int df = 0;
             auto& cc1       = _console_colors_[c1];
             auto& cc2       = _console_colors_[c2];
 
