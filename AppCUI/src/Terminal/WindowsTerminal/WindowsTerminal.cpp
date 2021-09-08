@@ -321,7 +321,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     AppCUI::Input::Key eventShiftState;
 
     evnt.eventType = SystemEventType::None;
-    if ((ReadConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+    if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
         return;
 
     switch (ir.EventType)
@@ -329,7 +329,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     case KEY_EVENT:
         if ((ir.Event.KeyEvent.uChar.UnicodeChar >= 32) &&
             (ir.Event.KeyEvent.bKeyDown))
-            evnt.unicodeCharacter = ir.Event.KeyEvent.uChar.AsciiChar;
+            evnt.unicodeCharacter = ir.Event.KeyEvent.uChar.UnicodeChar;
         else
             evnt.unicodeCharacter = 0;
         if (ir.Event.KeyEvent.wVirtualKeyCode < KEYTRANSLATION_MATRIX_SIZE)
