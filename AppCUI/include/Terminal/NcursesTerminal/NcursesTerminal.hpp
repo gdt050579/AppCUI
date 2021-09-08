@@ -56,7 +56,7 @@ namespace Internal
         TerminalMode mode;
 
       public:
-        virtual bool OnInit(const InitializationData& initData) override;
+        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
