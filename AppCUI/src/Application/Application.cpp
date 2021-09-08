@@ -1217,6 +1217,8 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     int gridWinWidth   = 0;
     int gridWinHeight  = 0;
 
+    if (desktopHeight < 2)
+        return; // size is to small to arrange anything 
     if (app->cmdBar)
         desktopHeight--;
     if (app->menu)
