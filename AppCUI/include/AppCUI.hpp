@@ -2334,6 +2334,15 @@ namespace Application
         FixedSize  = 0x00100000,
     };
 
+    enum class ArangeWindowsMethod
+    {
+        MaximizedAll,
+        Cascade,
+        Vertical,
+        Horizontal,
+        Grid
+    };
+
     class EXPORT CommandBar
     {
         void* Controller;
@@ -2519,6 +2528,7 @@ namespace Application
     EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);
     EXPORT void Repaint();
     EXPORT void RecomputeControlsLayout();
+    EXPORT void ArrangeWindows(ArangeWindowsMethod method);
     EXPORT void RaiseEvent(
           AppCUI::Controls::Control* control,
           AppCUI::Controls::Control* sourceControl,

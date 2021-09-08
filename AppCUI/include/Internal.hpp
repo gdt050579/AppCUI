@@ -321,6 +321,8 @@ namespace Internal
               int controlID);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y);
+
+        void ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method);
     };
 } // namespace Internal
 namespace Application

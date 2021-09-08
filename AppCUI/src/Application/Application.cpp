@@ -133,7 +133,11 @@ bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
         size.Height--;
     return true;
 }
-
+void AppCUI::Application::ArrangeWindows(ArangeWindowsMethod method)
+{
+    if (app)
+        app->ArrangeWindows(method);
+}
 void AppCUI::Application::Close()
 {
     if (app)
@@ -1193,4 +1197,74 @@ bool AppCUI::Internal::Application::Uninit()
     this->terminal->Uninit();
     this->Inited = false;
     return true;
+}
+void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
+{
+    auto winList       = this->Desktop.GetChildrenList();
+    auto winListCount  = this->Desktop.GetChildernCount();
+    auto desktopWidth  = this->terminal->ScreenCanvas.GetWidth();
+    auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
+    auto y             = 0;
+    auto x             = 0;
+
+    if (app->cmdBar)
+        desktopHeight--;
+    if (app->menu)
+    {
+        desktopHeight--;
+        y++;
+    }
+
+    if (winListCount == 0)
+        return; // nothing to arrange
+
+    // all good - resize all existing wins
+
+    // do the actual arrangement
+    switch (method)
+    {
+    case AppCUI::Application::ArangeWindowsMethod::MaximizedAll:
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            (*winList)->Resize(desktopWidth, desktopHeight);
+            winList++;
+            winListCount--;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Cascade:
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            (*winList)->Resize(desktopWidth, desktopHeight);
+            x++;
+            y++;
+            desktopWidth  = std::max<>(desktopWidth - 1, 10U);
+            desktopHeight = std::max<>(desktopHeight - 1, 10U);
+            winList++;
+            winListCount--;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Vertical:
+        int sz = desktopWidth / winListCount;
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            if (winListCount==1) // last one
+                sz = std::max<>(1, (int) desktopWidth - x);
+            (*winList)->Resize(sz, desktopHeight);
+            x += (*winList)->GetWidth();
+            winListCount--;
+            winList++;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Horizontal:
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Grid:
+        break;
+    default:
+        break;
+    }
+
+    this->RepaintStatus = REPAINT_STATUS_ALL;
 }
