@@ -1206,6 +1206,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
     auto y             = 0;
     auto x             = 0;
+    int tempSz         = 0;
 
     if (app->cmdBar)
         desktopHeight--;
@@ -1246,13 +1247,13 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         }
         break;
     case AppCUI::Application::ArangeWindowsMethod::Vertical:
-        int sz = desktopWidth / winListCount;
+        tempSz = desktopWidth / winListCount;
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
             if (winListCount==1) // last one
-                sz = std::max<>(1, (int) desktopWidth - x);
-            (*winList)->Resize(sz, desktopHeight);
+                tempSz = std::max<>(1, (int) desktopWidth - x);
+            (*winList)->Resize(tempSz, desktopHeight);
             x += (*winList)->GetWidth();
             winListCount--;
             winList++;
