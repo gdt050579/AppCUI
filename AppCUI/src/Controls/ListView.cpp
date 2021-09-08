@@ -4,14 +4,15 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-constexpr unsigned int ITEM_FLAG_CHECKED    = 0x0001;
-constexpr unsigned int ITEM_FLAG_SELECTED   = 0x0002;
-constexpr unsigned int COLUMN_DONT_COPY     = 1;
-constexpr unsigned int COLUMN_DONT_FILTER   = 2;
-constexpr unsigned int INVALID_COLUMN_INDEX = 0xFFFFFFFF;
-constexpr unsigned int MINIM_COLUMN_WIDTH   = 3;
-constexpr unsigned int MAXIM_COLUMN_WIDTH   = 256;
-constexpr unsigned int NO_HOTKEY_FOR_COLUMN = 0xFFFFFFFF;
+constexpr unsigned int ITEM_FLAG_CHECKED         = 0x0001;
+constexpr unsigned int ITEM_FLAG_SELECTED        = 0x0002;
+constexpr unsigned int COLUMN_DONT_COPY          = 1;
+constexpr unsigned int COLUMN_DONT_FILTER        = 2;
+constexpr unsigned int INVALID_COLUMN_INDEX      = 0xFFFFFFFF;
+constexpr unsigned int MINIM_COLUMN_WIDTH        = 3;
+constexpr unsigned int MAXIM_COLUMN_WIDTH        = 256;
+constexpr unsigned int NO_HOTKEY_FOR_COLUMN      = 0xFFFFFFFF;
+constexpr unsigned int LISTVIEW_SEARCH_BAR_WIDTH = 12;
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
@@ -364,9 +365,9 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         // search bar
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
-            renderer.FillHorizontalLine(x_ofs, yPoz, 15, ' ', Cfg->ListView.FilterText);
-            auto search_text = this->Filter.SearchText.ToStringView();
-            if (search_text.length() < 12)
+            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH+3, ' ', Cfg->ListView.FilterText);
+            const auto search_text = this->Filter.SearchText.ToStringView();
+            if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
             {
                 renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
@@ -374,9 +375,13 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
             }
             else
             {
-                renderer.WriteSingleLineText(3, yPoz, search_text.substr(search_text.length() - 12, 12), Cfg->ListView.FilterText);
+                renderer.WriteSingleLineText(
+                      3,
+                      yPoz,
+                      search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
+                      Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
-                    renderer.SetCursor(3 + 12, yPoz);
+                    renderer.SetCursor(3 + LISTVIEW_SEARCH_BAR_WIDTH, yPoz);
             }
             x_ofs = 17;
         }
@@ -1045,7 +1050,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
     if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) &&
         (y == (this->Layout.Height - 1)))
     {
-        if ((x >= 2) && (x <= 15))
+        if ((x >= 2) && (x <= (3+LISTVIEW_SEARCH_BAR_WIDTH)))
         {
             this->Filter.FilterModeEnabled = true;
             return;
