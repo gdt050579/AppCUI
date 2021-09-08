@@ -2,6 +2,7 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 #include "Terminal/TerminalFactory.hpp"
+#include <math.h>
 
 using namespace AppCUI;
 using namespace AppCUI::Utils;
