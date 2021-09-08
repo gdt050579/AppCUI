@@ -365,17 +365,16 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
             renderer.FillHorizontalLine(x_ofs, yPoz, 15, ' ', Cfg->ListView.FilterText);
-            unsigned int len = this->Filter.SearchText.Len();
-            const char* txt  = this->Filter.SearchText.GetText();
-            if (len < 12)
+            auto search_text = this->Filter.SearchText.ToStringView();
+            if (search_text.length() < 12)
             {
-                renderer.WriteSingleLineText(3, yPoz, std::string_view(txt, len), Cfg->ListView.FilterText);
+                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
-                    renderer.SetCursor(3 + len, yPoz);
+                    renderer.SetCursor((int)(3 + search_text.length()), yPoz);
             }
             else
             {
-                renderer.WriteSingleLineText(3, yPoz, std::string_view(txt + (len - 12), 12), Cfg->ListView.FilterText);
+                renderer.WriteSingleLineText(3, yPoz, search_text.substr(search_text.length() - 12, 12), Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor(3 + 12, yPoz);
             }
@@ -1217,7 +1216,7 @@ int ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colIn
     {
         if ((i = GetFilteredItem(startPoz)) != nullptr)
         {
-            if (i->SubItem[colIndex].Contains(Filter.SearchText.GetText(), true))
+            if (i->SubItem[colIndex].Contains(Filter.SearchText.ToStringView(), true))
                 return (int) startPoz;
         }
         startPoz++;
@@ -1247,7 +1246,7 @@ void ListViewControlContext::FilterItems()
             {
                 if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
                     continue;
-                if (lvi.SubItem[gr].Contains(this->Filter.SearchText.GetText(), true))
+                if (lvi.SubItem[gr].Contains(this->Filter.SearchText.ToStringView(), true))
                 {
                     isOK = true;
                     break;

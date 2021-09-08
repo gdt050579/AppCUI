@@ -598,12 +598,22 @@ namespace Utils
         bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
         bool Add(const AppCUI::Utils::ConstString& text);
         bool Add(const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        bool AddChar(char16_t ch);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
         void ToString(std::u16string& output) const;
         void ToPath(std::filesystem::path& output) const;
 
+        inline void Clear()
+        {
+            length = 0;
+        }
+        inline void Truncate(unsigned int newSize)
+        {
+            if (newSize < length)
+                length = newSize;
+        }
         inline unsigned int Len() const
         {
             return length;

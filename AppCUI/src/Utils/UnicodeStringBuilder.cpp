@@ -211,6 +211,13 @@ bool UnicodeStringBuilder::Add(const AppCUI::Graphics::CharacterBuffer& charBuff
     this->length += (unsigned int) charBuffer.Len();
     return true;
 }
+bool UnicodeStringBuilder::AddChar(char16_t ch)
+{
+    CHECK(Resize(this->length + 1), false, "Fail to resize buffer !");
+    this->chars[this->length] = ch;
+    this->length++;
+    return true;
+}
 void UnicodeStringBuilder::ToString(std::string& output) const
 {
     output.clear();

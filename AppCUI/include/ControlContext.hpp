@@ -370,7 +370,7 @@ class ListViewControlContext : public ControlContext
 
     struct
     {
-        Utils::String SearchText;
+        Utils::UnicodeStringBuilder SearchText;
         bool FilterModeEnabled;
     } Filter;
 
