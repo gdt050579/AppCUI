@@ -808,6 +808,7 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t Uni
         return true;
     case Key::Shift | Key::Ctrl | Key::Left:
         MoveToPreviousWord(true);
+        return true;
     case Key::Shift | Key::Ctrl | Key::Right:
         MoveToNextWord(true);
         return true;
