@@ -2,6 +2,7 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 #include "Terminal/TerminalFactory.hpp"
+#include <math.h>
 
 using namespace AppCUI;
 using namespace AppCUI::Utils;
@@ -133,7 +134,11 @@ bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
         size.Height--;
     return true;
 }
-
+void AppCUI::Application::ArrangeWindows(ArangeWindowsMethod method)
+{
+    if (app)
+        app->ArrangeWindows(method);
+}
 void AppCUI::Application::Close()
 {
     if (app)
@@ -1193,4 +1198,132 @@ bool AppCUI::Internal::Application::Uninit()
     this->terminal->Uninit();
     this->Inited = false;
     return true;
+}
+void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
+{
+    auto winList       = this->Desktop.GetChildrenList();
+    auto winListCount  = this->Desktop.GetChildernCount();
+    auto desktopWidth  = this->terminal->ScreenCanvas.GetWidth();
+    auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
+    auto y             = 0;
+    auto x             = 0;
+    int tempSz         = 0;
+    int gridX          = 0;
+    int gridY          = 0;
+    int gridWidth      = 0;
+    int gridHeight     = 0;
+    int gridRow        = 0;
+    int gridColumn     = 0;
+    int gridWinWidth   = 0;
+    int gridWinHeight  = 0;
+
+    if (desktopHeight < 2)
+        return; // size is to small to arrange anything 
+    if (app->cmdBar)
+        desktopHeight--;
+    if (app->menu)
+    {
+        desktopHeight--;
+        y++;
+    }
+
+    if (winListCount == 0)
+        return; // nothing to arrange
+
+    // all good - resize all existing wins
+
+    // do the actual arrangement
+    switch (method)
+    {
+    case AppCUI::Application::ArangeWindowsMethod::MaximizedAll:
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            (*winList)->Resize(desktopWidth, desktopHeight);
+            winList++;
+            winListCount--;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Cascade:
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            (*winList)->Resize(desktopWidth, desktopHeight);
+            x++;
+            y++;
+            desktopWidth  = std::max<>(desktopWidth - 1, 10U);
+            desktopHeight = std::max<>(desktopHeight - 1, 10U);
+            winList++;
+            winListCount--;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Vertical:
+        tempSz = desktopWidth / winListCount;
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            if (winListCount==1) // last one
+                tempSz = std::max<>(1, (int) desktopWidth - x);
+            (*winList)->Resize(tempSz, desktopHeight);
+            x += (*winList)->GetWidth();
+            winListCount--;
+            winList++;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Horizontal:
+        tempSz = desktopHeight / winListCount;
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            if (winListCount == 1) // last one
+                tempSz = std::max<>(1, (int) desktopHeight - y);
+            (*winList)->Resize(desktopWidth,tempSz);
+            y += (*winList)->GetHeight();
+            winListCount--;
+            winList++;
+        }
+        break;
+    case AppCUI::Application::ArangeWindowsMethod::Grid:
+        tempSz = (int) sqrt(winListCount);
+        tempSz = std::max<>(tempSz, 1);
+        gridX  = tempSz;
+        gridY  = tempSz; 
+        if ((gridY * gridX) < (int)winListCount)
+            gridX++; // more boxes on horizontal space
+        if ((gridY * gridX) < (int)winListCount)
+            gridY++; // more boxes on vertical space
+        gridWidth  = desktopWidth / gridX;
+        gridHeight = desktopHeight / gridY;
+        gridRow    = 0;
+        gridColumn = 0;
+        tempSz     = x;
+        while (winListCount > 0)
+        {
+            (*winList)->MoveTo(x, y);
+            gridWinWidth = gridWidth;
+            gridWinHeight = gridHeight;
+            if (((gridColumn+1)==gridX) || (winListCount==1)) // last column
+                gridWinWidth = std::max<>(1, (int) desktopWidth - x);
+            if ((gridRow + 1) == gridY) // last row
+                gridWinHeight = std::max<>(1, (int) desktopHeight - y);
+
+            (*winList)->Resize(gridWinWidth, gridWinHeight);
+            x += (*winList)->GetWidth();            
+            gridColumn++;
+            if (gridColumn >= gridX)
+            {
+                gridColumn = 0;
+                x          = tempSz; // restore original "X" value
+                y += (*winList)->GetHeight();
+                gridRow++;
+            }
+            winListCount--;
+            winList++;
+        }        
+        break;
+    default:
+        break;
+    }
+
+    this->RepaintStatus = REPAINT_STATUS_ALL;
 }
