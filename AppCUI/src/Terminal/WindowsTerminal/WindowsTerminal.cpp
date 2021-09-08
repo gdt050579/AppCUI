@@ -321,7 +321,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     AppCUI::Input::Key eventShiftState;
 
     evnt.eventType = SystemEventType::None;
-    if ((ReadConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+    if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
         return;
 
     switch (ir.EventType)
