@@ -12,6 +12,8 @@ CMRC_DECLARE(font);
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
+using namespace AppCUI::Application;
+
 namespace fs = std::filesystem;
 
 constexpr size_t NR_COLORS = 16;
@@ -131,28 +133,24 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
     size_t pixelHeight = DM.h / 2;
 
     Uint32 windowFlags = 0;
-    if (!initData.FixedSize)
+    if ((initData.Flags & InitializationFlags::FixedSize) != InitializationFlags::None)
     {
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_RESIZABLE;
     }
-    switch (initData.TermSize)
+    if ((initData.Flags & InitializationFlags::Maximized) != InitializationFlags::None)
     {
-    case TerminalSize::FullScreen:
-        windowFlags |= SDL_WindowFlags::SDL_WINDOW_FULLSCREEN;
-        pixelWidth  = DM.w;
-        pixelHeight = DM.h;
-        break;
-    case TerminalSize::Maximized:
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_MAXIMIZED;
         pixelWidth  = DM.w;
         pixelHeight = DM.h;
-        break;
-    case TerminalSize::CustomSize:
+    } else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None) 
+    {
+        windowFlags |= SDL_WindowFlags::SDL_WINDOW_FULLSCREEN;
+        pixelWidth  = DM.w;
+        pixelHeight = DM.h;
+    } else if ((initData.Width != 0) && (initData.Height != 0))
+    {
         pixelWidth  = charWidth * initData.Width;
         pixelHeight = charWidth * initData.Height;
-        break;
-    default:
-        break;
     }
 
     window = SDL_CreateWindow(
