@@ -2,6 +2,7 @@
 #include <string.h>
 
 using namespace AppCUI::Internal;
+using namespace AppCUI::Application;
 
 WindowsTerminal::WindowsTerminal()
 {
@@ -37,7 +38,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
     SMALL_RECT BufRect = { 0, 0, (SHORT) (width - 1), (SHORT) (height - 1) };
 
     // allocate memory for a console buffer
-    CHAR_INFO* temp = new CHAR_INFO[width * height];
+    CHAR_INFO* temp = new CHAR_INFO[(size_t)width * (size_t)height];
     CHECK(temp, false, "Fail to allocate %dx%d buffer to store the original screem buffer !", width, height);
 
     // make a copy of the original screem buffer into the canvas
@@ -75,7 +76,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
     return false;
 }
 bool WindowsTerminal::ComputeTerminalSize(
-      const InitializationData& initData,
+      const AppCUI::Application::InitializationData& initData,
       unsigned int currentWidth,
       unsigned int currentHeigh,
       unsigned int& resultedWidth,
@@ -86,14 +87,34 @@ bool WindowsTerminal::ComputeTerminalSize(
     SMALL_RECT rect;
 
     // analyze terminal size
-    switch (initData.TermSize)
+    if ((initData.Flags & InitializationFlags::Maximized) != InitializationFlags::None)
     {
-    case TerminalSize::Default:
-        // keep the existing size
+        // maximize window
+        CHECK(::ShowWindow(GetConsoleWindow(), SW_MAXIMIZE), false, "Fail to maximize the console !");
+        CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
+        resultedWidth  = csbi.dwSize.X;
+        resultedHeight = csbi.dwSize.Y;
+    }
+    else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None) 
+    {
+        CHECK(SetConsoleDisplayMode(this->hstdOut, CONSOLE_FULLSCREEN_MODE, &coord),
+              false,
+              "Fail to maximize the console ==> Error code: 0x%08X",
+              GetLastError());
+        CHECK(SetConsoleMode(this->hstdIn, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT),
+              false,
+              "Fail to set up input reader mode !");
+        resultedWidth  = coord.X;
+        resultedHeight = coord.Y;
+    }
+    else if ((initData.Width == 0) &&(initData.Height == 0))
+    {
+        // default
         resultedWidth  = currentWidth;
         resultedHeight = currentHeigh;
-        break;
-    case TerminalSize::CustomSize:
+    }    
+    else
+    {
         CHECK(initData.Width < 0xFFFF,
               false,
               "initData.Width has be smaller than 0xFFFF --> curently is: 0x08X",
@@ -104,10 +125,10 @@ bool WindowsTerminal::ComputeTerminalSize(
               initData.Height);
         rect.Left   = 0;
         rect.Top    = 0;
-        rect.Right  = (SHORT) (initData.Width - 1);
-        rect.Bottom = (SHORT) (initData.Height - 1);
-        coord.X     = (SHORT) (initData.Width);
-        coord.Y     = (SHORT) (initData.Height);
+        rect.Right  = (SHORT)(initData.Width - 1);
+        rect.Bottom = (SHORT)(initData.Height - 1);
+        coord.X     = (SHORT)(initData.Width);
+        coord.Y     = (SHORT)(initData.Height);
         CHECK(SetConsoleWindowInfo(this->hstdOut, TRUE, &rect),
               false,
               "Fail to resize the window to a %dx%d size (SetConsoleScreenBufferSize has the followin error code: %d)",
@@ -123,34 +144,15 @@ bool WindowsTerminal::ComputeTerminalSize(
               GetLastError());
         resultedWidth  = coord.X;
         resultedHeight = coord.Y;
-        break;
-    case TerminalSize::Maximized:
-        CHECK(::ShowWindow(GetConsoleWindow(), SW_MAXIMIZE), false, "Fail to maximize the console !");
-        CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
-        resultedWidth  = csbi.dwSize.X;
-        resultedHeight = csbi.dwSize.Y;
-        break;
-    case TerminalSize::FullScreen:
-        CHECK(SetConsoleDisplayMode(this->hstdOut, CONSOLE_FULLSCREEN_MODE, &coord),
-              false,
-              "Fail to maximize the console ==> Error code: 0x%08X",
-              GetLastError());
-        CHECK(SetConsoleMode(this->hstdIn, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT),
-              false,
-              "Fail to set up input reader mode !");
-        resultedWidth  = coord.X;
-        resultedHeight = coord.Y;
-        break;
-    default:
-        RETURNERROR(false, "Unknwon terminal size method: %d", (unsigned int) initData.TermSize);
     }
+
     // sanity check
     CHECK(resultedWidth > 0, false, "Something went wrong with windows API ==> resulted width is 0 !");
     CHECK(resultedHeight > 0, false, "Something went wrong with windows API ==> resulted height is 0 !");
 
     return true;
 }
-bool WindowsTerminal::ComputeCharacterSize(const InitializationData& initData)
+bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::InitializationData& initData)
 {
     if (initData.CharSize == CharacterSize::Default)
         return true; // leave the settings as they are
@@ -228,7 +230,7 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
 
     this->shiftState = AppCUI::Input::Key::None;
 }
-bool WindowsTerminal::OnInit(const InitializationData& initData)
+bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& initData)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
 

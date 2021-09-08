@@ -31,7 +31,11 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("TerminalSettings.log");
-    if (!Application::Init(50, 20, InitializationFlags::CHAR_SIZE_LARGE))
+    Application::InitializationData initData;
+    initData.Width = 50;
+    initData.Height = 20;
+    initData.CharSize = Application::CharacterSize::Large;
+    if (!Application::Init(initData))
         return 1;
     Application::AddWindow(new SimpleWin());
     Application::Run();

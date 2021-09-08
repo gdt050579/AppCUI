@@ -14,7 +14,7 @@ AbstractTerminal::~AbstractTerminal()
 {
 }
 
-bool AbstractTerminal::Init(const InitializationData& initData)
+bool AbstractTerminal::Init(const AppCUI::Application::InitializationData& initData)
 {
     return this->OnInit(initData);
 }

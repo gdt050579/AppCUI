@@ -23,16 +23,16 @@ namespace Internal
               unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY);
         void BuildKeyTranslationMatrix();
         bool ComputeTerminalSize(
-              const InitializationData& initData,
+              const AppCUI::Application::InitializationData& initData,
               unsigned int currentWidth,
               unsigned int currentHeigh,
               unsigned int& resultedWidth,
               unsigned int& resultedHeight);
-        bool ComputeCharacterSize(const InitializationData& initData);
+        bool ComputeCharacterSize(const AppCUI::Application::InitializationData& initData);
 
       public:
         WindowsTerminal();
-        virtual bool OnInit(const InitializationData& initData) override;
+        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
