@@ -22,12 +22,16 @@ namespace Internal
         bool CopyOriginalScreenBuffer(
               unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY);
         void BuildKeyTranslationMatrix();
-        bool ComputeTerminalSize(
+        bool ResizeConsoleScreenBufferSize(unsigned int width, unsigned int height);
+        bool ResizeConsoleWindowSize(unsigned int width, unsigned int height);
+        AppCUI::Graphics::Size FullScreenTerminal();
+        AppCUI::Graphics::Size MaximizeTerminal();
+        AppCUI::Graphics::Size ResizeTerminal(
+              const AppCUI::Application::InitializationData& initData, 
+              const AppCUI::Graphics::Size& currentSize);
+        AppCUI::Graphics::Size UpdateTerminalSize(
               const AppCUI::Application::InitializationData& initData,
-              unsigned int currentWidth,
-              unsigned int currentHeigh,
-              unsigned int& resultedWidth,
-              unsigned int& resultedHeight);
+              const AppCUI::Graphics::Size& currentSize);
         bool ComputeCharacterSize(const AppCUI::Application::InitializationData& initData);
 
       public:

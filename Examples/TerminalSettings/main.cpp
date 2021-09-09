@@ -33,8 +33,8 @@ int main()
     Log::ToFile("TerminalSettings.log");
     Application::InitializationData initData;
     initData.Width = 50;
-    initData.Height = 20;
-    initData.CharSize = Application::CharacterSize::Large;
+    initData.Height = 55;
+    initData.CharSize = Application::CharacterSize::Normal;
     if (!Application::Init(initData))
         return 1;
     Application::AddWindow(new SimpleWin());
