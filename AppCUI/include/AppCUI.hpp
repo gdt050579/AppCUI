@@ -2352,10 +2352,11 @@ namespace Application
         FrontendType Frontend;
         CharacterSize CharSize;
         InitializationFlags Flags;
+        std::string_view FontName;
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None)
+              Flags(InitializationFlags::None), FontName("")
         {
         }
     };

@@ -254,15 +254,15 @@ bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::Initializa
     cfi.dwFontSize.X = 0;
     cfi.nFont        = 0;
     cfi.FontFamily   = FF_DONTCARE;
-    cfi.FaceName[0]  = 'C';
-    cfi.FaceName[1]  = 'o';
-    cfi.FaceName[2]  = 'n';
-    cfi.FaceName[3]  = 's';
-    cfi.FaceName[4]  = 'o';
-    cfi.FaceName[5]  = 'a';
-    cfi.FaceName[6]  = 'a';
-    cfi.FaceName[7]  = 's';
-    cfi.FaceName[9]  = 0;
+    std::string_view fontName = initData.FontName;
+    if (fontName.size() == 0)
+        fontName = "Consolas"; // default font name
+    CHECK(fontName.size() < 32, false, "Invalid font name (should be less than 32 characters) !");
+    // copy the font name
+    for (size_t i = 0; i < fontName.size(); i++)
+        cfi.FaceName[i] = fontName[i];
+    cfi.FaceName[fontName.size()] = 0;
+
     switch (initData.CharSize)
     {
     case CharacterSize::Tiny:
