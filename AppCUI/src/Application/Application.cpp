@@ -132,12 +132,7 @@ bool AppCUI::Application::GetApplicationSize(AppCUI::Graphics::Size& size)
 bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    size.Width  = app->terminal->ScreenCanvas.GetWidth();
-    size.Height = app->terminal->ScreenCanvas.GetHeight();
-    if (app->cmdBar)
-        size.Height--;
-    if (app->menu)
-        size.Height--;
+    app->AppDesktop->GetClientSize(size);
     return true;
 }
 void AppCUI::Application::ArrangeWindows(ArangeWindowsMethod method)
@@ -1132,8 +1127,6 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
 {
     auto winList       = this->AppDesktop->GetChildrenList();
     auto winListCount  = this->AppDesktop->GetChildernCount();
-    auto desktopWidth  = this->terminal->ScreenCanvas.GetWidth();
-    auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
     auto y             = 0;
     auto x             = 0;
     int tempSz         = 0;
@@ -1146,18 +1139,13 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     int gridWinWidth   = 0;
     int gridWinHeight  = 0;
 
-    if (desktopHeight < 2)
-        return; // size is to small to arrange anything 
-    if (app->cmdBar)
-        desktopHeight--;
-    if (app->menu)
-    {
-        desktopHeight--;
-        y++;
-    }
+    AppCUI::Graphics::Size sz;
+    this->AppDesktop->GetClientSize(sz);
 
     if (winListCount == 0)
         return; // nothing to arrange
+    if ((sz.Width <= 1) || (sz.Height <= 1))
+        return; // size too small --> nothing to arrange
 
     // all good - resize all existing wins
 
@@ -1168,7 +1156,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            (*winList)->Resize(desktopWidth, desktopHeight);
+            (*winList)->Resize(sz.Width, sz.Height);
             winList++;
             winListCount--;
         }
@@ -1177,36 +1165,36 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            (*winList)->Resize(desktopWidth, desktopHeight);
+            (*winList)->Resize(sz.Width, sz.Height);
             x++;
             y++;
-            desktopWidth  = std::max<>(desktopWidth - 1, 10U);
-            desktopHeight = std::max<>(desktopHeight - 1, 10U);
+            sz.Width  = std::max<>(sz.Width - 1, 10U);
+            sz.Height = std::max<>(sz.Height - 1, 10U);
             winList++;
             winListCount--;
         }
         break;
     case AppCUI::Application::ArangeWindowsMethod::Vertical:
-        tempSz = desktopWidth / winListCount;
+        tempSz = sz.Width / winListCount;
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
             if (winListCount==1) // last one
-                tempSz = std::max<>(1, (int) desktopWidth - x);
-            (*winList)->Resize(tempSz, desktopHeight);
+                tempSz = std::max<>(1, ((int) sz.Width) - x);
+            (*winList)->Resize(tempSz, sz.Height);
             x += (*winList)->GetWidth();
             winListCount--;
             winList++;
         }
         break;
     case AppCUI::Application::ArangeWindowsMethod::Horizontal:
-        tempSz = desktopHeight / winListCount;
+        tempSz = sz.Height / winListCount;
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
             if (winListCount == 1) // last one
-                tempSz = std::max<>(1, (int) desktopHeight - y);
-            (*winList)->Resize(desktopWidth,tempSz);
+                tempSz = std::max<>(1, ((int) sz.Height) - y);
+            (*winList)->Resize(sz.Width, tempSz);
             y += (*winList)->GetHeight();
             winListCount--;
             winList++;
@@ -1221,8 +1209,8 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             gridX++; // more boxes on horizontal space
         if ((gridY * gridX) < (int)winListCount)
             gridY++; // more boxes on vertical space
-        gridWidth  = desktopWidth / gridX;
-        gridHeight = desktopHeight / gridY;
+        gridWidth  = sz.Width / gridX;
+        gridHeight = sz.Height / gridY;
         gridRow    = 0;
         gridColumn = 0;
         tempSz     = x;
@@ -1232,9 +1220,9 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             gridWinWidth = gridWidth;
             gridWinHeight = gridHeight;
             if (((gridColumn+1)==gridX) || (winListCount==1)) // last column
-                gridWinWidth = std::max<>(1, (int) desktopWidth - x);
+                gridWinWidth = std::max<>(1, ((int) sz.Width) - x);
             if ((gridRow + 1) == gridY) // last row
-                gridWinHeight = std::max<>(1, (int) desktopHeight - y);
+                gridWinHeight = std::max<>(1, ((int) sz.Height) - y);
 
             (*winList)->Resize(gridWinWidth, gridWinHeight);
             x += (*winList)->GetWidth();            
