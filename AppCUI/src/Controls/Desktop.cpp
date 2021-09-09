@@ -5,6 +5,28 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
+
+void GoToNextWindow(ControlContext* Members, int direction)
+{
+    if (Members->ControlsCount == 0)
+        return;
+
+    int start = Members->CurrentControlIndex;
+    if (start<0)
+    {
+        if (direction>0)
+            start = -1;
+        else
+            start = Members->ControlsCount;
+    }
+    start += direction;
+    if (start >= (int)Members->ControlsCount)
+        start = 0;
+    if (start < 0)
+        start = ((int)Members->ControlsCount) - 1;
+    if (start != (int)Members->CurrentControlIndex)
+        Members->Controls[start]->SetFocus();
+}
 bool Desktop::Create(unsigned int _width, unsigned int _height)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
@@ -25,10 +47,19 @@ void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
 }
 bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
-    if (keyCode == Key::Escape)
+    CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, false);
+    switch (keyCode)
     {
+    case Key::Escape:
         AppCUI::Application::Close();
         return true;
+    case Key::Ctrl | Key::Tab:
+        GoToNextWindow(Members, 1);
+        return true;
+    case Key::Ctrl | Key::Shift | Key::Tab:
+        GoToNextWindow(Members, -1);
+        return true;
     }
+
     return false;
 }
