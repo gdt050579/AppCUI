@@ -34,7 +34,7 @@ int main()
 {
     InitializationData initData;
     initData.CustomDesktop = new MyDeskop();
-    //initData.Flags         = InitializationFlags::CommandBar | InitializationFlags::Menu;
+    initData.Flags         = InitializationFlags::CommandBar | InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;
     Window* w = new Window();

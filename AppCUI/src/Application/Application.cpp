@@ -467,6 +467,12 @@ bool AppCUI::Internal::Application::Init(const AppCUI::Application::Initializati
     CHECK(this->AppDesktop->Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,
           "Failed to create desktop !");
+    if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
+        AppCUI::Application::InitializationFlags::None)
+        ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
+    if ((initData.Flags & AppCUI::Application::InitializationFlags::CommandBar) !=
+        AppCUI::Application::InitializationFlags::None)
+        ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
     LoopStatus         = LOOP_STATUS_NORMAL;
     RepaintStatus      = REPAINT_STATUS_ALL;
