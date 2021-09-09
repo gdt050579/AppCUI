@@ -4,7 +4,7 @@ target_sources(AppCUI PRIVATE
 	CheckBox.cpp
 	ComboBox.cpp 
 	Control.cpp
-        Desktop.cpp 
+	Desktop.cpp 
 	Label.cpp 
 	ListView.cpp
 	ImageViewer.cpp
