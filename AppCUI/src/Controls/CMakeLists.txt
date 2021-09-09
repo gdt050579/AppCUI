@@ -3,7 +3,8 @@ target_sources(AppCUI PRIVATE
 	CanvasViewer.cpp
 	CheckBox.cpp
 	ComboBox.cpp 
-	Control.cpp 
+	Control.cpp
+        Desktop.cpp 
 	Label.cpp 
 	ListView.cpp
 	ImageViewer.cpp

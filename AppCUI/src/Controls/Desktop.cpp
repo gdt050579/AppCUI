@@ -1,11 +1,11 @@
 ﻿#include "ControlContext.hpp"
-#include "Internal.hpp"
+#include "AppCUI.hpp"
 
-using namespace AppCUI::Internal;
+using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool DesktopControl::Create(unsigned int _width, unsigned int _height)
+bool Desktop::Create(unsigned int _width, unsigned int _height)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     AppCUI::Utils::LocalString<128> temp;
@@ -18,12 +18,12 @@ bool DesktopControl::Create(unsigned int _width, unsigned int _height)
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     return true;
 }
-void DesktopControl::Paint(AppCUI::Graphics::Renderer& renderer)
+void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);
 }
-bool DesktopControl::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
+bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
     if (keyCode == Key::Escape)
     {

@@ -154,7 +154,7 @@ bool AppCUI::Application::AddWindow(AppCUI::Controls::Window* wnd)
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
-    return app->Desktop.AddControl(wnd);
+    return app->AppDesktop->AddControl(wnd);
 }
 AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
 {
@@ -460,7 +460,11 @@ bool AppCUI::Internal::Application::Init(const AppCUI::Application::Initializati
 
     this->config.SetDarkTheme();
 
-    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
+    if (initData.CustomDesktop)
+        this->AppDesktop = initData.CustomDesktop;
+    else
+        this->AppDesktop = &this->DefaultDesktopControl;
+    CHECK(this->AppDesktop->Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,
           "Failed to create desktop !");
 
@@ -482,7 +486,7 @@ void AppCUI::Internal::Application::Paint()
 
     if (ModalControlsCount > 0)
     {
-        PaintControl(&Desktop, this->terminal->ScreenCanvas, false);
+        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, false);
         unsigned int tmp = ModalControlsCount - 1;
         for (unsigned int tr = 0; tr < tmp; tr++)
             PaintControl(ModalControlsStack[tr], this->terminal->ScreenCanvas, false);
@@ -491,7 +495,7 @@ void AppCUI::Internal::Application::Paint()
     }
     else
     {
-        PaintControl(&Desktop, this->terminal->ScreenCanvas, true);
+        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, true);
     }
 
     // clip to the entire screen
@@ -520,7 +524,7 @@ void AppCUI::Internal::Application::ComputePositions()
 {
     AppCUI::Graphics::Clip full;
     full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
-    ComputeControlLayout(full, &Desktop);
+    ComputeControlLayout(full, this->AppDesktop);
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
@@ -543,7 +547,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     }
 
     if (ModalControlsCount == 0)
-        ctrl = GetFocusedControl(&Desktop);
+        ctrl = GetFocusedControl(this->AppDesktop);
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
 
@@ -686,7 +690,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
     }
     // check controls
     if (ModalControlsCount == 0)
-        MouseLockedControl = CoordinatesToControl(&Desktop, x, y);
+        MouseLockedControl = CoordinatesToControl(this->AppDesktop, x, y);
     else
         MouseLockedControl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
 
@@ -771,7 +775,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             break;
 
         if (ModalControlsCount == 0)
-            ctrl = CoordinatesToControl(&Desktop, x, y);
+            ctrl = CoordinatesToControl(this->AppDesktop, x, y);
         else
             ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
         if (ctrl != this->MouseOverControl)
@@ -825,7 +829,7 @@ void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::Mo
         return;
     AppCUI::Controls::Control* ctrl;
     if (ModalControlsCount == 0)
-        ctrl = CoordinatesToControl(&Desktop, x, y);
+        ctrl = CoordinatesToControl(this->AppDesktop, x, y);
     else
         ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
     if (ctrl)
@@ -902,7 +906,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     }
     // update la acceleratori
     if (ModalControlsCount == 0)
-        UpdateCommandBar(GetFocusedControl(&Desktop));
+        UpdateCommandBar(GetFocusedControl(this->AppDesktop));
     else
         UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
 
@@ -938,7 +942,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             {
                 LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
                 this->terminal->ScreenCanvas.Resize(evnt.newWidth, evnt.newHeight);
-                this->Desktop.Resize(evnt.newWidth, evnt.newHeight);
+                this->AppDesktop->Resize(evnt.newWidth, evnt.newHeight);
                 if (this->cmdBar)
                     this->cmdBar->SetDesktopSize(evnt.newWidth, evnt.newHeight);
                 if (this->menu)
@@ -976,7 +980,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         if (ModalControlsCount > 0)
             ModalControlsCount--;
         if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(&Desktop));
+            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
         if (this->MouseOverControl)
@@ -1003,7 +1007,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
     Control* ctrl = nullptr;
 
     if (ModalControlsCount == 0)
-        ctrl = GetFocusedControl(&Desktop);
+        ctrl = GetFocusedControl(this->AppDesktop);
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
     if (ctrl != nullptr)
@@ -1012,7 +1016,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
         // refac si command bar-ul
         // update la acceleratori
         if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(&Desktop));
+            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
@@ -1059,7 +1063,7 @@ bool AppCUI::Internal::Application::SetToolTip(
       AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
 {
     if (!control)
-        control = &this->Desktop;
+        control = this->AppDesktop;
     CREATE_CONTROL_CONTEXT(control, Members, false);
     if (!(Members->Flags & GATTR_VISIBLE))
         return false;
@@ -1120,8 +1124,8 @@ bool AppCUI::Internal::Application::Uninit()
 }
 void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
 {
-    auto winList       = this->Desktop.GetChildrenList();
-    auto winListCount  = this->Desktop.GetChildernCount();
+    auto winList       = this->AppDesktop->GetChildrenList();
+    auto winListCount  = this->AppDesktop->GetChildernCount();
     auto desktopWidth  = this->terminal->ScreenCanvas.GetWidth();
     auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
     auto y             = 0;
