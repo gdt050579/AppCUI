@@ -192,14 +192,6 @@ namespace Internal
         void Paint(AppCUI::Graphics::Renderer& renderer);
     };
 
-    class DesktopControl : public AppCUI::Controls::Control
-    {
-      public:
-        bool Create(unsigned int width, unsigned int height);
-        void Paint(AppCUI::Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-    };
-
     class AbstractTerminal
     {
       protected:
@@ -234,7 +226,8 @@ namespace Internal
 
         bool Inited;
 
-        DesktopControl Desktop;
+        AppCUI::Controls::Desktop* AppDesktop;
+        AppCUI::Controls::Desktop DefaultDesktopControl;
         ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
         

@@ -4,7 +4,6 @@ target_sources(AppCUI PRIVATE
     CommandBar.cpp
     CommandBarController.cpp
     Config.cpp
-    Desktop.cpp
     MenuBar.cpp
     ToolTip.cpp
 )

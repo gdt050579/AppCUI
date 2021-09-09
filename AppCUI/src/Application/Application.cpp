@@ -132,12 +132,7 @@ bool AppCUI::Application::GetApplicationSize(AppCUI::Graphics::Size& size)
 bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    size.Width  = app->terminal->ScreenCanvas.GetWidth();
-    size.Height = app->terminal->ScreenCanvas.GetHeight();
-    if (app->cmdBar)
-        size.Height--;
-    if (app->menu)
-        size.Height--;
+    app->AppDesktop->GetClientSize(size);
     return true;
 }
 void AppCUI::Application::ArrangeWindows(ArangeWindowsMethod method)
@@ -154,7 +149,7 @@ bool AppCUI::Application::AddWindow(AppCUI::Controls::Window* wnd)
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
-    return app->Desktop.AddControl(wnd);
+    return app->AppDesktop->AddControl(wnd);
 }
 AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
 {
@@ -460,9 +455,19 @@ bool AppCUI::Internal::Application::Init(const AppCUI::Application::Initializati
 
     this->config.SetDarkTheme();
 
-    CHECK(Desktop.Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
+    if (initData.CustomDesktop)
+        this->AppDesktop = initData.CustomDesktop;
+    else
+        this->AppDesktop = &this->DefaultDesktopControl;
+    CHECK(this->AppDesktop->Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,
           "Failed to create desktop !");
+    if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
+        AppCUI::Application::InitializationFlags::None)
+        ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
+    if ((initData.Flags & AppCUI::Application::InitializationFlags::CommandBar) !=
+        AppCUI::Application::InitializationFlags::None)
+        ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
     LoopStatus         = LOOP_STATUS_NORMAL;
     RepaintStatus      = REPAINT_STATUS_ALL;
@@ -482,7 +487,7 @@ void AppCUI::Internal::Application::Paint()
 
     if (ModalControlsCount > 0)
     {
-        PaintControl(&Desktop, this->terminal->ScreenCanvas, false);
+        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, false);
         unsigned int tmp = ModalControlsCount - 1;
         for (unsigned int tr = 0; tr < tmp; tr++)
             PaintControl(ModalControlsStack[tr], this->terminal->ScreenCanvas, false);
@@ -491,7 +496,7 @@ void AppCUI::Internal::Application::Paint()
     }
     else
     {
-        PaintControl(&Desktop, this->terminal->ScreenCanvas, true);
+        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, true);
     }
 
     // clip to the entire screen
@@ -520,7 +525,7 @@ void AppCUI::Internal::Application::ComputePositions()
 {
     AppCUI::Graphics::Clip full;
     full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
-    ComputeControlLayout(full, &Desktop);
+    ComputeControlLayout(full, this->AppDesktop);
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
@@ -543,7 +548,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     }
 
     if (ModalControlsCount == 0)
-        ctrl = GetFocusedControl(&Desktop);
+        ctrl = GetFocusedControl(this->AppDesktop);
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
 
@@ -686,7 +691,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
     }
     // check controls
     if (ModalControlsCount == 0)
-        MouseLockedControl = CoordinatesToControl(&Desktop, x, y);
+        MouseLockedControl = CoordinatesToControl(this->AppDesktop, x, y);
     else
         MouseLockedControl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
 
@@ -771,7 +776,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
             break;
 
         if (ModalControlsCount == 0)
-            ctrl = CoordinatesToControl(&Desktop, x, y);
+            ctrl = CoordinatesToControl(this->AppDesktop, x, y);
         else
             ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
         if (ctrl != this->MouseOverControl)
@@ -825,7 +830,7 @@ void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::Mo
         return;
     AppCUI::Controls::Control* ctrl;
     if (ModalControlsCount == 0)
-        ctrl = CoordinatesToControl(&Desktop, x, y);
+        ctrl = CoordinatesToControl(this->AppDesktop, x, y);
     else
         ctrl = CoordinatesToControl(ModalControlsStack[ModalControlsCount - 1], x, y);
     if (ctrl)
@@ -902,7 +907,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     }
     // update la acceleratori
     if (ModalControlsCount == 0)
-        UpdateCommandBar(GetFocusedControl(&Desktop));
+        UpdateCommandBar(GetFocusedControl(this->AppDesktop));
     else
         UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
 
@@ -938,7 +943,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             {
                 LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
                 this->terminal->ScreenCanvas.Resize(evnt.newWidth, evnt.newHeight);
-                this->Desktop.Resize(evnt.newWidth, evnt.newHeight);
+                this->AppDesktop->Resize(evnt.newWidth, evnt.newHeight);
                 if (this->cmdBar)
                     this->cmdBar->SetDesktopSize(evnt.newWidth, evnt.newHeight);
                 if (this->menu)
@@ -976,7 +981,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         if (ModalControlsCount > 0)
             ModalControlsCount--;
         if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(&Desktop));
+            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
         if (this->MouseOverControl)
@@ -1003,7 +1008,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
     Control* ctrl = nullptr;
 
     if (ModalControlsCount == 0)
-        ctrl = GetFocusedControl(&Desktop);
+        ctrl = GetFocusedControl(this->AppDesktop);
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
     if (ctrl != nullptr)
@@ -1012,7 +1017,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
         // refac si command bar-ul
         // update la acceleratori
         if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(&Desktop));
+            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
         else
             UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
     }
@@ -1059,7 +1064,7 @@ bool AppCUI::Internal::Application::SetToolTip(
       AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
 {
     if (!control)
-        control = &this->Desktop;
+        control = this->AppDesktop;
     CREATE_CONTROL_CONTEXT(control, Members, false);
     if (!(Members->Flags & GATTR_VISIBLE))
         return false;
@@ -1120,10 +1125,8 @@ bool AppCUI::Internal::Application::Uninit()
 }
 void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
 {
-    auto winList       = this->Desktop.GetChildrenList();
-    auto winListCount  = this->Desktop.GetChildernCount();
-    auto desktopWidth  = this->terminal->ScreenCanvas.GetWidth();
-    auto desktopHeight = this->terminal->ScreenCanvas.GetHeight();
+    auto winList       = this->AppDesktop->GetChildrenList();
+    auto winListCount  = this->AppDesktop->GetChildernCount();
     auto y             = 0;
     auto x             = 0;
     int tempSz         = 0;
@@ -1136,18 +1139,13 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     int gridWinWidth   = 0;
     int gridWinHeight  = 0;
 
-    if (desktopHeight < 2)
-        return; // size is to small to arrange anything 
-    if (app->cmdBar)
-        desktopHeight--;
-    if (app->menu)
-    {
-        desktopHeight--;
-        y++;
-    }
+    AppCUI::Graphics::Size sz;
+    this->AppDesktop->GetClientSize(sz);
 
     if (winListCount == 0)
         return; // nothing to arrange
+    if ((sz.Width <= 1) || (sz.Height <= 1))
+        return; // size too small --> nothing to arrange
 
     // all good - resize all existing wins
 
@@ -1158,7 +1156,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            (*winList)->Resize(desktopWidth, desktopHeight);
+            (*winList)->Resize(sz.Width, sz.Height);
             winList++;
             winListCount--;
         }
@@ -1167,36 +1165,36 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            (*winList)->Resize(desktopWidth, desktopHeight);
+            (*winList)->Resize(sz.Width, sz.Height);
             x++;
             y++;
-            desktopWidth  = std::max<>(desktopWidth - 1, 10U);
-            desktopHeight = std::max<>(desktopHeight - 1, 10U);
+            sz.Width  = std::max<>(sz.Width - 1, 10U);
+            sz.Height = std::max<>(sz.Height - 1, 10U);
             winList++;
             winListCount--;
         }
         break;
     case AppCUI::Application::ArangeWindowsMethod::Vertical:
-        tempSz = desktopWidth / winListCount;
+        tempSz = sz.Width / winListCount;
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
             if (winListCount==1) // last one
-                tempSz = std::max<>(1, (int) desktopWidth - x);
-            (*winList)->Resize(tempSz, desktopHeight);
+                tempSz = std::max<>(1, ((int) sz.Width) - x);
+            (*winList)->Resize(tempSz, sz.Height);
             x += (*winList)->GetWidth();
             winListCount--;
             winList++;
         }
         break;
     case AppCUI::Application::ArangeWindowsMethod::Horizontal:
-        tempSz = desktopHeight / winListCount;
+        tempSz = sz.Height / winListCount;
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
             if (winListCount == 1) // last one
-                tempSz = std::max<>(1, (int) desktopHeight - y);
-            (*winList)->Resize(desktopWidth,tempSz);
+                tempSz = std::max<>(1, ((int) sz.Height) - y);
+            (*winList)->Resize(sz.Width, tempSz);
             y += (*winList)->GetHeight();
             winListCount--;
             winList++;
@@ -1211,8 +1209,8 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             gridX++; // more boxes on horizontal space
         if ((gridY * gridX) < (int)winListCount)
             gridY++; // more boxes on vertical space
-        gridWidth  = desktopWidth / gridX;
-        gridHeight = desktopHeight / gridY;
+        gridWidth  = sz.Width / gridX;
+        gridHeight = sz.Height / gridY;
         gridRow    = 0;
         gridColumn = 0;
         tempSz     = x;
@@ -1222,9 +1220,9 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             gridWinWidth = gridWidth;
             gridWinHeight = gridHeight;
             if (((gridColumn+1)==gridX) || (winListCount==1)) // last column
-                gridWinWidth = std::max<>(1, (int) desktopWidth - x);
+                gridWinWidth = std::max<>(1, ((int) sz.Width) - x);
             if ((gridRow + 1) == gridY) // last row
-                gridWinHeight = std::max<>(1, (int) desktopHeight - y);
+                gridWinHeight = std::max<>(1, ((int) sz.Height) - y);
 
             (*winList)->Resize(gridWinWidth, gridWinHeight);
             x += (*winList)->GetWidth();            

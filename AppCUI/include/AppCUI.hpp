@@ -2252,6 +2252,14 @@ namespace Controls
         void OnLoseFocus() override;
     };
 
+    class EXPORT Desktop : public Control
+    {
+      public:
+        bool Create(unsigned int screenWidth, unsigned int screenHeight);
+        void Paint(AppCUI::Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+    };
+
 }; // namespace Controls
 namespace Dialogs
 {
@@ -2353,10 +2361,11 @@ namespace Application
         CharacterSize CharSize;
         InitializationFlags Flags;
         std::string_view FontName;
+        AppCUI::Controls::Desktop* CustomDesktop;
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None), FontName("")
+              Flags(InitializationFlags::None), FontName(""), CustomDesktop(nullptr)
         {
         }
     };
