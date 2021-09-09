@@ -28,7 +28,7 @@ namespace Internal
         size_t charHeight;
 
       public:
-        virtual bool OnInit(const InitializationData& initData) override;
+        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
@@ -37,10 +37,10 @@ namespace Internal
         virtual void RestoreOriginalConsoleSettings() override;
 
       private:
-        bool initScreen(const InitializationData& initData);
-        bool initInput(const InitializationData& initData);
+        bool initScreen(const AppCUI::Application::InitializationData& initData);
+        bool initInput(const AppCUI::Application::InitializationData& initData);
 
-        bool initFont(const InitializationData& initData);
+        bool initFont(const AppCUI::Application::InitializationData& initData);
 
         void uninitScreen();
         void uninitInput();

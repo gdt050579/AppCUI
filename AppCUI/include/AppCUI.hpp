@@ -2322,27 +2322,46 @@ namespace Application
     {
         None = 0,
 
-        // possible backends
-        FrontendDefault        = 0,
-        FrontendSDL            = 1,
-        FrontendTerminal       = 2,
-        FrontendWindowsConsole = 3,
-
-        // character size
-        CHAR_SIZE_DEFAULT = 0,
-        CHAR_SIZE_TINY    = 0x00000100,
-        CHAR_SIZE_SMALL   = 0x00000200,
-        CHAR_SIZE_NORMAL  = 0x00000300,
-        CHAR_SIZE_LARGE   = 0x00000400,
-        CHAR_SIZE_HUGE    = 0x00000500,
-
-        // generic options
-        CommandBar = 0x00010000,
-        Menu       = 0x00020000,
-        Maximized  = 0x00040000,
-        Fullscreen = 0x00080000,
-        FixedSize  = 0x00100000,
+        CommandBar = 0x0001,
+        Menu       = 0x0002,
+        Maximized  = 0x0004,
+        Fullscreen = 0x0008,
+        FixedSize  = 0x0010,
     };
+
+    enum class CharacterSize: unsigned int
+    {
+        Default = 0,
+        Tiny,
+        Small,
+        Normal,
+        Large,
+        Huge
+    };
+    enum class FrontendType: unsigned int
+    {
+        Default = 0,
+        SDL = 1,
+        Terminal = 2,
+        WindowsConsole = 3
+    };
+
+    struct InitializationData
+    {
+        unsigned int Width, Height;
+        FrontendType Frontend;
+        CharacterSize CharSize;
+        InitializationFlags Flags;
+        std::string_view FontName;
+
+        InitializationData()
+            : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
+              Flags(InitializationFlags::None), FontName("")
+        {
+        }
+    };
+
+
 
     enum class ArangeWindowsMethod
     {
@@ -2523,10 +2542,7 @@ namespace Application
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(
-          unsigned int width,
-          unsigned int height,
-          Application::InitializationFlags flags = Application::InitializationFlags::None);
+    EXPORT bool Init(const InitializationData& initData);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(const std::filesystem::path& iniFilePath);
