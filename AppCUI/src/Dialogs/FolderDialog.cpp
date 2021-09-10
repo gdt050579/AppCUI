@@ -9,6 +9,7 @@ using namespace AppCUI::Dialogs;
 
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
 #    include <sys/stat.h>
+#    include <time.h>
 #endif
 
 namespace FolderDialogUtils
@@ -64,7 +65,7 @@ bool FolderDialog_EventHandler(Control* control, const void* sender, Event event
 void FolderDialogClass::OnClickedOnItem()
 {
     const unsigned int index{ static_cast<unsigned int>(folders.GetCurrentItem()) };
-    if (index == -1)
+    if (index == 0xFFFFFFFF)
     {
         return;
     }
@@ -93,7 +94,7 @@ void FolderDialogClass::OnClickedOnItem()
 void FolderDialogClass::OnCurrentItemChanged()
 {
     const unsigned int index{ folders.GetCurrentItem() };
-    if (index == -1)
+    if (index == 0xFFFFFFFF)
     {
         return;
     }
