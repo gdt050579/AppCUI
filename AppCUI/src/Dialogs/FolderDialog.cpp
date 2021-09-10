@@ -118,7 +118,7 @@ void FolderDialogClass::Validate()
         return;
     }
 
-    this->resultedPath = path.GetText();
+    path.GetText().ToPath(this->resultedPath);
 
     if (fName.GetText().Len() != 0)
     {
