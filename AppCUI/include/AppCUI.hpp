@@ -2331,11 +2331,12 @@ namespace Application
     {
         None = 0,
 
-        CommandBar = 0x0001,
-        Menu       = 0x0002,
-        Maximized  = 0x0004,
-        Fullscreen = 0x0008,
-        FixedSize  = 0x0010,
+        CommandBar       = 0x0001,
+        Menu             = 0x0002,
+        Maximized        = 0x0004,
+        Fullscreen       = 0x0008,
+        FixedSize        = 0x0010,
+        LoadSettingsFile = 0x0020,
     };
 
     enum class CharacterSize: unsigned int
@@ -2553,10 +2554,7 @@ namespace Application
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(const InitializationData& initData);
-
-    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(const std::filesystem::path& iniFilePath);
+    EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
