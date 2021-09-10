@@ -2212,6 +2212,7 @@ namespace Controls
     };
 
 }; // namespace Controls
+
 namespace Dialogs
 {
     class EXPORT MessageBox
@@ -2227,6 +2228,7 @@ namespace Dialogs
         static Result ShowYesNoCancel(
               const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
+
     class EXPORT FileDialog
     {
         FileDialog() = delete;
@@ -2242,7 +2244,23 @@ namespace Dialogs
               const std::filesystem::path& path);
     };
 
+    class EXPORT FolderDialog
+    {
+        FolderDialog() = delete;
+
+      public:
+        static std::optional<std::filesystem::path> ShowSaveFileWindow(
+              const AppCUI::Utils::ConstString& fileName,
+              std::string_view extensionFilter,
+              const std::filesystem::path& path);
+        static std::optional<std::filesystem::path> ShowOpenFileWindow(
+              const AppCUI::Utils::ConstString& fileName,
+              std::string_view extensionFilter,
+              const std::filesystem::path& path);
+    };
+
 } // namespace Dialogs
+
 namespace Log
 {
     enum class Severity : unsigned int
