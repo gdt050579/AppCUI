@@ -78,7 +78,9 @@
 #    define LOG_ERROR(format, ...)                                                                                     \
         AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
-inline void Unused(...) {}
+inline void Unused(...)
+{
+}
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -1211,9 +1213,9 @@ namespace Graphics
         bool SetWithHotKey(
               const AppCUI::Utils::ConstString& text,
               unsigned int& hotKeyCharacterPosition,
-              AppCUI::Input::Key & hotKey,
+              AppCUI::Input::Key& hotKey,
               AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
-              const ColorPair color = NoColorPair);
+              const ColorPair color             = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
@@ -1279,7 +1281,7 @@ namespace Graphics
         }
     };
 
-    enum class ImageRenderingMethod: unsigned int
+    enum class ImageRenderingMethod : unsigned int
     {
         PixelTo16ColorsSmallBlock,
         PixelTo64ColorsLargeBlock,
@@ -1288,12 +1290,12 @@ namespace Graphics
     enum class ImageScaleMethod : unsigned int
     {
         NoScale = 1,
-        Scale50  = 2,
-        Scale33  = 3,
-        Scale25  = 4,
-        Scale20  = 5,
-        Scale10  = 10,
-        Scale5   = 20
+        Scale50 = 2,
+        Scale33 = 3,
+        Scale25 = 4,
+        Scale20 = 5,
+        Scale10 = 10,
+        Scale5  = 20
     };
     class EXPORT Image
     {
@@ -1456,7 +1458,7 @@ namespace Graphics
               int x,
               int y,
               ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
-              ImageScaleMethod scale = ImageScaleMethod::NoScale);
+              ImageScaleMethod scale      = ImageScaleMethod::NoScale);
         Size ComputeRenderingSize(
               const Image& img,
               ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
@@ -1989,7 +1991,10 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
-        bool SetImage(const AppCUI::Graphics::Image& img, AppCUI::Graphics::ImageRenderingMethod method, AppCUI::Graphics::ImageScaleMethod scale);
+        bool SetImage(
+              const AppCUI::Graphics::Image& img,
+              AppCUI::Graphics::ImageRenderingMethod method,
+              AppCUI::Graphics::ImageScaleMethod scale);
     };
     enum class ListViewFlags : unsigned int
     {
@@ -2298,14 +2303,8 @@ namespace Dialogs
         FolderDialog() = delete;
 
       public:
-        static std::optional<std::filesystem::path> ShowSaveFileWindow(
-              const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
-              const std::filesystem::path& path);
         static std::optional<std::filesystem::path> ShowOpenFileWindow(
-              const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
-              const std::filesystem::path& path);
+              const AppCUI::Utils::ConstString& filename, const std::filesystem::path& path);
     };
 
 } // namespace Dialogs
@@ -2355,7 +2354,7 @@ namespace Application
         FixedSize  = 0x0010,
     };
 
-    enum class CharacterSize: unsigned int
+    enum class CharacterSize : unsigned int
     {
         Default = 0,
         Tiny,
@@ -2364,11 +2363,11 @@ namespace Application
         Large,
         Huge
     };
-    enum class FrontendType: unsigned int
+    enum class FrontendType : unsigned int
     {
-        Default = 0,
-        SDL = 1,
-        Terminal = 2,
+        Default        = 0,
+        SDL            = 1,
+        Terminal       = 2,
         WindowsConsole = 3
     };
 
@@ -2387,8 +2386,6 @@ namespace Application
         {
         }
     };
-
-
 
     enum class ArangeWindowsMethod
     {

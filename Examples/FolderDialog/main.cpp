@@ -5,60 +5,56 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
-constexpr unsigned int BUTTON_ID_SHOW_SAVE = 1;
-constexpr unsigned int BUTTON_ID_SHOW_OPEN = 2;
-
 class MyWin : public AppCUI::Controls::Window
 {
-    Button b1, b2;
-    TextField l1, l2;
+    enum class ControlIds : unsigned int
+    {
+        ButtonShowOpen = 1
+    };
+
+    Button open;
+    TextField currentFolder;
 
   public:
     MyWin()
     {
-        this->Create("Folder example", "a:c,w:40,h:13");
-        b1.Create(this, "&Save", "x:1,y:1,w:9", BUTTON_ID_SHOW_SAVE);
-        l1.Create(this, "", "x:12,y:1,w:24,h:4");
-        b2.Create(this, "&Open", "x:1,y:6,w:9", BUTTON_ID_SHOW_OPEN);
-        l2.Create(this, "", "x:12,y:6,w:24,h:4");
+        Create("File example", "d:c, w:120, h:20");
+        open.Create(this, "&Open", "x:0, y:0, w:12", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
+        currentFolder.Create(this, "", "x:13, y:0, h:1, w:100%");
+
+        currentFolder.SetText(std::filesystem::current_path().u8string());
     }
 
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::WindowClose)
+        switch (eventType)
         {
+        case Event::WindowClose:
             Application::Close();
             return true;
-        }
-        if (eventType == Event::ButtonClicked)
-        {
-            if (controlID == BUTTON_ID_SHOW_SAVE)
+        case Event::ButtonClicked:
+            switch (static_cast<ControlIds>(controlID))
             {
-                auto res = FileDialog::ShowSaveFileWindow(
-                      "", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
-                if (res.has_value())
-                    l1.SetText(res->u8string());
-                else
-                    l1.SetText("Command canceled !");
-            }
-            if (controlID == BUTTON_ID_SHOW_OPEN)
+            case ControlIds::ButtonShowOpen:
             {
-                auto res = FileDialog::ShowOpenFileWindow(
-                      "", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
+                const auto res = FolderDialog::ShowOpenFileWindow("", currentFolder.GetText());
                 if (res.has_value())
-                    l2.SetText(res->u8string());
-                else
-                    l2.SetText("Command canceled !");
+                {
+                    currentFolder.SetText(res->u8string());
+                }
+
+                return true;
             }
-            return true;
+            }
         }
+
         return false;
     }
 };
 
 int main()
 {
-    if (!Application::Init())
+    if (Application::Init() == false)
     {
         return 1;
     }
