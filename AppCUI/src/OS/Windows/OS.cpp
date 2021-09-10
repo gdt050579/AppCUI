@@ -71,7 +71,7 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderList& specialFolderList, Special
 }
 
 
-EXPORT std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
+std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
 {
     WCHAR path[1024];
     DWORD nrChars = GetModuleFileNameW(NULL, path, (sizeof(path)/sizeof(WCHAR)) - 1);
