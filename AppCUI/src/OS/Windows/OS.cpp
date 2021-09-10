@@ -69,3 +69,37 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderList& specialFolderList, Special
         AddSpecialFolder(FOLDERID_LocalVideos, "Local Videos", specialFolderList);
     }
 }
+
+
+std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
+{
+    WCHAR path[1024];
+    DWORD nrChars = GetModuleFileNameW(NULL, path, (sizeof(path)/sizeof(WCHAR)) - 1);
+    if (nrChars == 0)
+        return std::filesystem::path(); // empty path
+    if (nrChars <= ((sizeof(path) / sizeof(WCHAR)) - 1))
+    {
+        path[nrChars] = 0; // add the last NULL char
+        return std::filesystem::path(path);
+    }
+    // path is larger than 1024 character
+    try
+    {
+        WCHAR* tempPath = new WCHAR[(size_t)nrChars + 2];
+        nrChars         = GetModuleFileNameW(NULL, tempPath, nrChars + 1);
+        if (nrChars == 0)
+        {
+            delete[] tempPath;
+            return std::filesystem::path(); // empty path
+        }
+        tempPath[nrChars] = 0;
+        std::filesystem::path app_path(tempPath);
+        delete[] tempPath;
+        return app_path;
+    }
+    catch (...)
+    {
+        // exception -> return an empty path
+        return std::filesystem::path();
+    }    
+}

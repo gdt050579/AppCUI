@@ -50,7 +50,9 @@ int main()
         LOG_INFO("IniInitialization.ini created succesifully. Modify it and re-run this executable");
         return 0;
     }
-    if (!Application::Init("IniInitialization.ini"))
+    Application::InitializationData initData;
+    initData.Flags = Application::InitializationFlags::LoadSettingsFile;
+    if (!Application::Init(initData))
         return 1;
     Application::AddWindow(new SimpleWin());
     Application::Run();
