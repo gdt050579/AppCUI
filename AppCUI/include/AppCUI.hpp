@@ -2547,6 +2547,7 @@ namespace Application
     };
 
     EXPORT Config* GetAppConfig();
+    EXPORT AppCUI::Utils::IniObject* GetAppSettings();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
