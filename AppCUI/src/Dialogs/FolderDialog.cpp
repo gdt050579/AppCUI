@@ -164,15 +164,18 @@ void FolderDialogClass::UpdateFolderList()
                     continue;
                 }
 
+                char lastModifiedTimeBuffer[64]{ 0 };
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+                time_t ltime{ FolderDialogUtils::GetLastModifiedTime(fileEntry) };
+                struct tm newtime;
+                localtime_r(&ltime, &newtime); // TODO: errno treated
+                strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &newtime);
+#else
                 const time_t lastModifiedTime{ FolderDialogUtils::GetLastModifiedTime(fileEntry) };
                 tm t{};
-#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-                localtime_r(&t, &lastModifiedTime); // TODO: errno treated
-#else
                 localtime_s(&t, &lastModifiedTime); // TODO: errno treated
-#endif
-                char lastModifiedTimeBuffer[64]{ 0 };
                 std::strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#endif
 
                 const ItemHandle itemHandle = folders.AddItem(
                       reinterpret_cast<const char*>(fileEntry.path().filename().u8string().c_str()),
@@ -248,7 +251,7 @@ int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem
     if (this->specialFolders.size() > 0)
     {
         comboDrive.AddSeparator("Drives");
-        for (auto i = 0; i < this->specialFolders.size(); i++)
+        for (auto i = 0U; i < this->specialFolders.size(); i++)
         {
             comboDrive.AddItem(this->specialFolders[i].first.c_str(), ItemData{ static_cast<unsigned long long>(i) });
         }
