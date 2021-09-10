@@ -11,6 +11,7 @@ This is a test page
 .. toctree::
    :maxdepth: 2
 
+   initialization
    layout
 
 

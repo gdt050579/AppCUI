@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>AppCUI Initialization &mdash; AppCUI  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Layout in AppCUI" href="layout.html" />
+    <link rel="prev" title="Welcome to AppCUI’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AppCUI
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AppCUI Initialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#initializationdata-structure">InitializationData structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AppCUI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>AppCUI Initialization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/initialization.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="appcui-initialization">
+<h1>AppCUI Initialization<a class="headerlink" href="#appcui-initialization" title="Permalink to this headline">¶</a></h1>
+<p>AppCUI framework must be initilized using the following APIs:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">InitializationFlags</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">None</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">InitializationData</span><span class="o">&amp;</span> <span class="n">initData</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Where <strong>InitializationFlags</strong> is defined as follows:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">InitializationFlags</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
+<span class="p">{</span>
+    <span class="n">None</span>             <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+    <span class="n">CommandBar</span>       <span class="o">=</span> <span class="mh">0x0001</span><span class="p">,</span>
+    <span class="n">Menu</span>             <span class="o">=</span> <span class="mh">0x0002</span><span class="p">,</span>
+    <span class="n">Maximized</span>        <span class="o">=</span> <span class="mh">0x0004</span><span class="p">,</span>
+    <span class="n">Fullscreen</span>       <span class="o">=</span> <span class="mh">0x0008</span><span class="p">,</span>
+    <span class="n">FixedSize</span>        <span class="o">=</span> <span class="mh">0x0010</span><span class="p">,</span>
+    <span class="n">LoadSettingsFile</span> <span class="o">=</span> <span class="mh">0x0020</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Width:</p>
+<ul class="simple">
+<li><p><strong>CommandBar</strong> - if set, this flags specifies that a command bar (with shortcut keys) will be available to use</p></li>
+<li><p><strong>Menu</strong> - if set, am application maenu bar will be created and <code class="docutils literal notranslate"><span class="pre">Application::AddMenu(...)</span></code> can be used to add Menus and Sub-menus to it</p></li>
+<li><p><strong>Maximized</strong> - maximize AppCUI OS window. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.</p></li>
+<li><p><strong>Fullscreen</strong> - full screen mode. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.</p></li>
+<li><p><strong>FixedSize</strong> - if set, the AppCUI OS window can not change its size. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.</p></li>
+<li><p><strong>LoadSettingsFile</strong> - if set, a file with the same name as the main executable but with extension <code class="docutils literal notranslate"><span class="pre">.ini</span></code> will be search in the same folder as the main executable. If found, that file will be automatically loaded and its content will be available through <code class="docutils literal notranslate"><span class="pre">Application::GetAppSettings()</span></code> API. If a section named <code class="docutils literal notranslate"><span class="pre">[APPCUI]</span></code> exists in this file, the values described in this section will be used to initialized AppCUI envinronment. An example of such a ini file can be seen in the following example:</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[AppCUI]</span>
+<span class="na">Frontend</span> <span class="o">=</span> <span class="s">default      ; possible values: default,SDL, terminal, windows</span>
+<span class="na">Size</span> <span class="o">=</span> <span class="s">default          ; possible values: a size (width x height), maximized, fullscreen</span>
+<span class="na">CharacterSize</span> <span class="o">=</span> <span class="s">default ; possible values: default, tiny, small, normal, large, huge</span>
+<span class="na">Fixed</span> <span class="o">=</span> <span class="s">false           ; possible values: true or false</span>
+</pre></div>
+</div>
+<div class="section" id="initializationdata-structure">
+<h2>InitializationData structure<a class="headerlink" href="#initializationdata-structure" title="Permalink to this headline">¶</a></h2>
+<p><strong>InitializationData</strong> represent a struct that described all parameters needed to initialized AppCUI framework</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">InitializationData</span>
+<span class="p">{</span>
+   <span class="kt">unsigned</span> <span class="kt">int</span>                  <span class="n">Width</span><span class="p">,</span> <span class="n">Height</span><span class="p">;</span>
+   <span class="n">FrontendType</span>                  <span class="n">Frontend</span><span class="p">;</span>
+   <span class="n">CharacterSize</span>                 <span class="n">CharSize</span><span class="p">;</span>
+   <span class="n">InitializationFlags</span>           <span class="n">Flags</span><span class="p">;</span>
+   <span class="n">std</span><span class="o">::</span><span class="n">string_view</span>              <span class="n">FontName</span><span class="p">;</span>
+   <span class="n">AppCUI</span><span class="o">::</span><span class="n">Controls</span><span class="o">::</span><span class="n">Desktop</span><span class="o">*</span>    <span class="n">CustomDesktop</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>width <strong>FrontendType</strong> defined as follows:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">FrontendType</span><span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
+<span class="p">{</span>
+   <span class="n">Default</span>        <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="n">SDL</span>            <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="n">Terminal</span>       <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+   <span class="n">WindowsConsole</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>and <strong>CharacterSize</strong> defined as:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">CharacterSize</span><span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
+<span class="p">{</span>
+   <span class="n">Default</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="n">Tiny</span><span class="p">,</span>
+   <span class="n">Small</span><span class="p">,</span>
+   <span class="n">Normal</span><span class="p">,</span>
+   <span class="n">Large</span><span class="p">,</span>
+   <span class="n">Huge</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Quick intialization</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">()</span><span class="o">==</span><span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// Appcui failed to initialize</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Initialize from <strong>INI</strong> file</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">InitializationFlags</span><span class="o">::</span><span class="n">LoadSettingsFile</span><span class="p">)</span><span class="o">==</span><span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// Appcui failed to initialize</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Initialize from <strong>INI</strong> file but also specify that a Menu and Command bar will be used</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">InitializationFlags</span><span class="o">::</span><span class="n">LoadSettingsFile</span> <span class="o">|</span>
+                              <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">Menu</span> <span class="o">|</span>
+                              <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">CommandBar</span><span class="p">)</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// Appcui failed to initialize</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Full customized initialization (an SDL based application , with the size of <code class="docutils literal notranslate"><span class="pre">120x30</span></code> characters, using <strong>Consolas</strong> font (small size) and with a Menu and CommandBar.</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">InitializationData</span> <span class="n">initData</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Width</span>          <span class="o">=</span> <span class="mi">120</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Height</span>         <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">FrontendType</span>   <span class="o">=</span> <span class="n">Frontend</span><span class="o">::</span><span class="n">SDL</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">CharSize</span>       <span class="o">=</span> <span class="n">CharacterSize</span><span class="o">::</span><span class="n">Small</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">FontName</span>       <span class="o">=</span> <span class="s">&quot;Consolas&quot;</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Flags</span>          <span class="o">=</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">Menu</span> <span class="o">|</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">CommandBar</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">initData</span><span class="p">)</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// Appcui failed to initialize</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For more example check out our examples code:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples/IniInitialization">Initialization via INI file</a></p></li>
+<li><p><a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples/CustomDesktop">Custom desktop</a></p></li>
+<li><p><a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples/TerminalSettings">Terminal settings</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="layout.html" class="btn btn-neutral float-right" title="Layout in AppCUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to AppCUI’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Gavriluț Dragoș.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
