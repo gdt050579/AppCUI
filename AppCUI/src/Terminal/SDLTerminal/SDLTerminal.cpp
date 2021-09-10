@@ -4,7 +4,7 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
-bool SDLTerminal::OnInit(const InitializationData& initData)
+bool SDLTerminal::OnInit(const AppCUI::Application::InitializationData& initData)
 {
     if (!initScreen(initData))
         return false;

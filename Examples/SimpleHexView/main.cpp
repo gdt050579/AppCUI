@@ -109,20 +109,20 @@ class SimpleHexView : public AppCUI::Controls::Window
   public:
     SimpleHexView()
     {
-        this->Create("SimpleHexView", "w:100%,h:100%");
-        btnOpenFile.Create(this, "Open File ...", "a:c,t:0,w:100%", COMMAND_ID_BTN_OPEN);
+        this->Create("SimpleHexView", "d:c,w:100%,h:100%");
+        btnOpenFile.Create(this, "Open File ...", "d:c,t:0,w:100%", COMMAND_ID_BTN_OPEN);
         hexView.Create(this, "t:2,w:100%,h:100%");
     }
 
     bool OnEvent(Control* /*sender*/, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
 
-        if (eventType == Event::EVENT_BUTTON_CLICKED && controlID == COMMAND_ID_BTN_OPEN)
+        if (eventType == Event::ButtonClicked && controlID == COMMAND_ID_BTN_OPEN)
         {
             auto path = Dialogs::FileDialog::ShowOpenFileWindow("", "", ".");
             if (path.has_value())

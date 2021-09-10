@@ -6,7 +6,7 @@
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;
 
-bool NcursesTerminal::OnInit(const InitializationData& initData)
+bool NcursesTerminal::OnInit(const AppCUI::Application::InitializationData&)
 {
     if (!initScreen())
         return false;

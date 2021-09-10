@@ -58,9 +58,9 @@ void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 void AppCUI::Controls::CheckBox::OnHotKey()
 {
     SetChecked(!IsChecked());
-    RaiseEvent(Event::EVENT_CHECKED_STATUS_CHANGED);
+    RaiseEvent(Event::CheckedStatusChanged);
 }
-bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
 {
     if (KeyCode == Key::Space)
     {
@@ -69,7 +69,7 @@ bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t
     }
     return false;
 }
-void AppCUI::Controls::CheckBox::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void AppCUI::Controls::CheckBox::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();

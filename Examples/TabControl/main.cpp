@@ -28,12 +28,12 @@ class TabExampleWin : public AppCUI::Controls::Window
     {
         Utils::LocalString<256> temp;
         temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
-        this->Create("Tab Control Example", "a:c,w:60,h:20", WindowFlags::NoCloseButton);
+        this->Create("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton);
         // information panel
         p_inf.Create(this, "Informations", "x:1,y:1,w:56,h:5");
         inf.Create(&p_inf, temp.GetText(), "x:0,y:0,w:100%,h:100%");
 
-        btnClose.Create(this, "Close", "r:0,b:0,w:12", CLOSE_BUTTON_ID);
+        btnClose.Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
 
         tb.Create(this, "x:1,y:7,w:56,h:8", flags);
         tb.SetTabPageTitleSize(tabSize);
@@ -57,9 +57,9 @@ class TabExampleWin : public AppCUI::Controls::Window
 
         tb.SetCurrentTabPage(0);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == CLOSE_BUTTON_ID))
+        if ((eventType == Event::ButtonClicked) && (controlID == CLOSE_BUTTON_ID))
         {
             this->Exit(0);
             return true;
@@ -80,7 +80,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Tab example config", "a:c,w:50,h:17");
+        this->Create("Tab example config", "d:c,w:50,h:17");
         p.Create(this, "Tab mode", "x:1,y:1,w:46,h:6");
         tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
@@ -116,14 +116,14 @@ class MyWin : public AppCUI::Controls::Window
         TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()));
         tw.Show();
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == SHOW_TAB_BUTTON_ID))
+        if ((eventType == Event::ButtonClicked) && (controlID == SHOW_TAB_BUTTON_ID))
         {
             ShowTabControl();
             return true;

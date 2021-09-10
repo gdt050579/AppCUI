@@ -6,11 +6,11 @@ bool Clipboard::Clear()
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
+bool Clipboard::SetText(const AppCUI::Utils::ConstString&)
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
+bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder&)
 {
     NOT_IMPLEMENTED(false);
 }

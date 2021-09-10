@@ -10,7 +10,7 @@ class WindowMenuBarExample : public AppCUI::Controls::Window
   public:
     WindowMenuBarExample()
     {
-        this->Create("Text", "a:c,w:40,h:10", WindowFlags::Menu);
+        this->Create("Text", "d:c,w:40,h:10", WindowFlags::Menu);
         Menu* files = this->AddMenu("&File");
         files->AddCommandItem("&Save", 100, Key::Ctrl | Key::S);
         files->AddCommandItem("Save All", 101);
@@ -39,9 +39,9 @@ class WindowMenuBarExample : public AppCUI::Controls::Window
         help->AddSeparator();
         help->AddCommandItem("Check for &updates", 302);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;

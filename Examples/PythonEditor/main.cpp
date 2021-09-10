@@ -76,7 +76,7 @@ bool IsKeyword(Graphics::Character* start, unsigned int size)
     }
     return false;
 }
-void PythonHighligh(Control* tx, Graphics::Character* chars, unsigned int charsCount, void* Context)
+void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
 {
     Graphics::Character* end   = chars + charsCount;
     Graphics::Character* start = nullptr;
@@ -155,7 +155,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
   public:
     PythonEditorWin()
     {
-        this->Create("Python Editor", "a:c,w:40,h:20", WindowFlags::Sizeable);
+        this->Create("Python Editor", "d:c,w:40,h:20", WindowFlags::Sizeable);
         editor.Create(
               this,
               python_code,
@@ -163,9 +163,9 @@ class PythonEditorWin : public AppCUI::Controls::Window
               TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
               PythonHighligh);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;

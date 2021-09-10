@@ -28,7 +28,6 @@ struct HexViewUserControl : public UserControl
         constexpr ColorPair textColor  = ColorPair{ Color::White, Color::Transparent };
         const std::uint64_t height     = GetHeight();
         const std::uint64_t width      = GetWidth();
-        const std::uint64_t bufferSize = height * width;
 
         for (int i = 0; i < 256; i++)
         {
@@ -69,9 +68,9 @@ class FontTest : public AppCUI::Controls::Window
         hexView.Create(this, "w:100%,h:100%");
     }
 
-    bool OnEvent(Control* /*sender*/, Event eventType, int controlID) override
+    bool OnEvent(Control* /*sender*/, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;

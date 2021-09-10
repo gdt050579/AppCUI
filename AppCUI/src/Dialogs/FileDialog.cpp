@@ -121,7 +121,7 @@ unsigned int __compute_hash__(const char * start, const char * end)
     return hash;
 }
 int FileDialog_ListViewItemComparer(
-      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context)
+      ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
 {
     unsigned long long v1 = control->GetItemData(item1)->UInt64Value;
     unsigned long long v2 = control->GetItemData(item2)->UInt64Value;
@@ -134,7 +134,7 @@ int FileDialog_ListViewItemComparer(
     return s1.CompareWith(s2, true);
 }
 bool FileDialog_EventHandler(
-      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* Context)
+      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void*)
 {
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
@@ -353,19 +353,19 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
 {
     switch (eventType)
     {
-    case Event::EVENT_BUTTON_CLICKED:
+    case Event::ButtonClicked:
         if (controlID == (int) Dialogs::Result::Ok)
             Validate();
         else
             wnd.Exit(controlID);
         return true;
-    case Event::EVENT_WINDOW_CLOSE:
+    case Event::WindowClose:
         wnd.Exit(Dialogs::Result::Cancel);
         return true;
-    case Event::EVENT_WINDOW_ACCEPT:
+    case Event::WindowAccept:
         Validate();
         return true;
-    case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
+    case Event::ComboBoxSelectedItemChanged:
         if (sender == &comboDrive)
         {
             UpdateCurrentFolder();
@@ -377,14 +377,14 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
             UpdateFileList();
         }
         return true;
-    case Event::EVENT_TEXTFIELD_VALIDATE:
+    case Event::TextFieldValidate:
         UpdateFileList();
         files.SetFocus();
         return true;
-    case Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED:
+    case Event::ListViewCurrentItemChanged:
         OnCurrentItemChanged();
         return true;
-    case Event::EVENT_LISTVIEW_ITEM_CLICKED:
+    case Event::ListViewItemClicked:
         OnClickedOnItem();
         return true;
     }
@@ -401,9 +401,9 @@ int FileDialogClass::Show(
     //defaultFileName = fileName;
     openDialog      = open;
     if (open)
-        wnd.Create("Open", "w:78,h:23,a:c");
+        wnd.Create("Open", "w:78,h:23,d:c");
     else
-        wnd.Create("Save", "w:78,h:23,a:c");
+        wnd.Create("Save", "w:78,h:23,d:c");
     wnd.SetEventHandler(FileDialog_EventHandler, this);
     lbPath.Create(&wnd, "", "x:2,y:2,w:63");
     lbDrive.Create(&wnd, "&Location", "x:2,y:1,w:8");

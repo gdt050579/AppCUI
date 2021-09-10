@@ -357,7 +357,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         Members->dragOffsetY = y;
     }
 }
-void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
@@ -372,7 +372,7 @@ void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
     }
     if (Members->winButtonState == (WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE))
     {
-        RaiseEvent(Event::EVENT_WINDOW_CLOSE);
+        RaiseEvent(Event::WindowClose);
         return;
     }
     // if (Members->fnMouseReleaseHandler != nullptr)
@@ -382,7 +382,7 @@ void Window::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
     //		return;
     //}
 }
-bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
@@ -461,7 +461,7 @@ bool Window::OnBeforeResize(int newWidth, int newHeight)
     return (newWidth >= Members->MinWidth) && (newWidth <= Members->MaxWidth) && (newHeight >= Members->MinHeight) &&
            (newHeight <= Members->MaxHeight);
 }
-void Window::OnAfterResize(int newWidth, int newHeight)
+void Window::OnAfterResize(int, int)
 {
     WindowControlContext* Members = (WindowControlContext*) this->Context;
     if (Members)
@@ -469,7 +469,29 @@ void Window::OnAfterResize(int newWidth, int newHeight)
         UpdateWindowsButtonsPoz(Members);
     }
 }
-bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool Window::OnEvent(Control*, Event eventType, int)
+{
+    if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
+    {
+        // check if current win is a modal dialog
+        auto app = AppCUI::Application::GetApplication();
+        if ((app->ModalControlsCount > 0) && (app->ModalControlsStack[app->ModalControlsCount - 1] == this))
+        {
+            if (eventType == Event::WindowClose)
+                return Exit(AppCUI::Dialogs::Result::Cancel);
+            else
+                return Exit(AppCUI::Dialogs::Result::Ok);
+        }            
+        else
+        {
+            // top level window -> closing the app
+            Application::Close();
+            return true;
+        }
+    }
+    return false;
+}
+bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
@@ -487,10 +509,10 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
             tmp->SetFocus();
         return true;
     case Key::Escape:
-        RaiseEvent(Event::EVENT_WINDOW_CLOSE);
+        RaiseEvent(Event::WindowClose);
         return true;
     case Key::Enter:
-        RaiseEvent(Event::EVENT_WINDOW_ACCEPT);
+        RaiseEvent(Event::WindowAccept);
         return true;
     }
     // first we check menu hot keys

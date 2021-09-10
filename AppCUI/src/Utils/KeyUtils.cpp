@@ -1,6 +1,10 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
+using namespace AppCUI::Utils;
+using namespace AppCUI::Input;
+
+
 struct __KeyAndSize__
 {
     const char* Name;
@@ -116,7 +120,7 @@ AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const std::string_view& s
         break;
     }
     auto *p = &_Key_Name[1];
-    for (int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
+    for (unsigned int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
     {
         if (Utils::String::Equals(key, p->data()))
         {
@@ -127,4 +131,22 @@ AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const std::string_view& s
     if (code == 0)
         return AppCUI::Input::Key::None;
     return (AppCUI::Input::Key)((modifier << KEY_SHIFT_BITS) | code);
+}
+Key KeyUtils::CreateHotKey(char16_t hotKey, Key modifier)
+{
+    Key result = Key::None;
+    if ((hotKey >= 'a') && (hotKey <= 'z'))
+    {
+        result = static_cast<Key>(((unsigned int) Key::A) + (hotKey - 'a'));
+    } else if ((hotKey >= 'A') && (hotKey <= 'Z'))
+    {
+        result = static_cast<Key>(((unsigned int) Key::A) + (hotKey - 'A'));
+    } else if ((hotKey >= '0') && (hotKey <= '9'))
+    {
+        result = static_cast<Key>(((unsigned int) Key::N0) + (hotKey - '0'));
+    }
+    if (result == Key::None)
+        return Key::None;
+    result |= static_cast<Key>(((unsigned int) modifier) & ((unsigned int) (Key::Ctrl | Key::Alt | Key::Shift)));
+    return result;
 }

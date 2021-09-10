@@ -18,21 +18,21 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Message box example", "a:c,w:40,h:13");
+        this->Create("Message box example", "d:c,w:40,h:13");
         b1.Create(this, "Show an &error !", "x:1,y:1,w:36", BUTTON_ID_SHOW_ERROR);
         b2.Create(this, "Show an &notification", "x:1,y:3,w:36", BUTTON_ID_SHOW_NOTIFICATION);
         b3.Create(this, "Ask a &question", "x:1,y:5,w:36", BUTTON_ID_SHOW_QUESTION);
         b4.Create(this, "Ask a &Yes/No/Cancel question", "x:1,y:7,w:36", BUTTON_ID_SHOW_YNC_QUESTION);
         b5.Create(this, "Show a &warning !", "x:1,y:9,w:36", BUTTON_ID_SHOW_WARNING);
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_BUTTON_CLICKED)
+        if (eventType == Event::ButtonClicked)
         {
             switch (controlID)
             {

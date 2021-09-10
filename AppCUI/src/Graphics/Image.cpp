@@ -99,7 +99,7 @@ bool Image::Clear(unsigned int color)
 {
     CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
     unsigned int* s = Pixels;
-    unsigned int* e = s + Width * Height;
+    unsigned int* e = s + (size_t)Width * (size_t)Height;
     while (s < e)
     {
         (*s) = color;
@@ -131,6 +131,44 @@ bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color) const
     color = (*pixel);
     return true;
 }
+unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
+{
+    if ((x >= this->Width) || (y >= this->Height) || (sz==0))
+        return 0;  // nothing to compute
+    unsigned int e_x = x + sz;
+    unsigned int e_y = y + sz;
+    if (e_x >= this->Width)
+        e_x = this->Width;
+    if (e_y >= this->Height)
+        e_y = this->Height;
+    auto xSize         = e_x - x;
+    auto ySize         = e_y - y;
+    auto sPtr          = Pixels + (size_t) Width * (size_t) y + (size_t) x;
+    unsigned int sum_r = 0;
+    unsigned int sum_g = 0;
+    unsigned int sum_b = 0;
+    if ((xSize == 0) || (ySize == 0))
+        return 0; // nothing to compute (sanity check)
 
+    while (y<e_y)
+    {
+        unsigned int* p = sPtr;
+        unsigned int* e = p + (size_t)xSize;
+        while (p<e)
+        {
+            sum_r += ((*p) >> 16) & 0xFF;
+            sum_g += ((*p) >> 8) & 0xFF;
+            sum_b += (*p) & 0xFF;
+            p++;
+        }
+        sPtr += Width; // move to next line
+        y++;
+    }
+    const unsigned int totalPixesl = xSize * ySize;
+    const auto result_r            = sum_r / totalPixesl;
+    const auto result_g            = sum_g / totalPixesl;
+    const auto result_b            = sum_b / totalPixesl;
+    return COMPUTE_RGB(result_r, result_g, result_b);
+}
 #undef COMPUTE_RGB
 #undef COMPUTE_ARGB

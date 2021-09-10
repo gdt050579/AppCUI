@@ -34,7 +34,7 @@ class ToolTipExampleWin : public AppCUI::Controls::Window
   public:
     ToolTipExampleWin()
     {
-        this->Create("Tool tip example", "a:c,w:40,h:9");
+        this->Create("Tool tip example", "d:c,w:40,h:9");
         l1.Create(
               this,
               "Hover the mouse over the Button, \nCheckbox, RadioBox and [X] button \nfrom the window to see a tool "
@@ -45,9 +45,9 @@ class ToolTipExampleWin : public AppCUI::Controls::Window
         r1.Create(this, "Select this option", "x:19,y:5,w:7", 100);
         m.Create(this, "l:30,t:5,w:5,h:2");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;

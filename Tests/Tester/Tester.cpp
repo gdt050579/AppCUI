@@ -22,7 +22,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::Sizeable);
+        this->Create("Test", "d:c,w:50%,h:50%", WindowFlags::Sizeable);
         s2.Create(this, "x:0,y:0,w:100%,h:100%", false);
         s.Create(&s2, "x:0,y:0,w:100%,h:100%", true);
         pleft.Create(&s, "x:0,y:0,w:100%,h:100%");
@@ -41,9 +41,9 @@ class MyWin : public AppCUI::Controls::Window
         b1.Create(&pbottom, "&OK", "l:1,b:0,w:90%,h:2", 100);
         b2.Create(&pbottom, "&Cancel", "x:2,y:5,w:15", 102);
     }
-    bool OnEvent(Control* sender, AppCUI::Controls::Event eventType, int controlID) override
+    bool OnEvent(Control*, AppCUI::Controls::Event eventType, int) override
     {
-        if (eventType == AppCUI::Controls::Event::EVENT_WINDOW_CLOSE)
+        if (eventType == AppCUI::Controls::Event::WindowClose)
         {
             Application::Close();
             return true;
@@ -65,7 +65,7 @@ class MyWin2 : public AppCUI::Controls::Window
   public:
     MyWin2()
     {
-        this->Create("Test", "a:c,w:50%,h:50%", WindowFlags::None);
+        this->Create("Test", "d:c,w:50%,h:50%", WindowFlags::None);
         tx1.Create(this, "Salut", "x:1,y:1,w:30,h:3");
     }
 };

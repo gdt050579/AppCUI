@@ -1,5 +1,3 @@
-#pragma once
-
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 
@@ -57,7 +55,7 @@ void NumericSelector::SetValue(const long long value)
         cc->value = value;
     }
 
-    RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+    RaiseEvent(Event::NumericSelectorValueChanged);
 }
 
 void NumericSelector::SetMinValue(const long long minValue)
@@ -349,7 +347,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
     }
 }
 
-void NumericSelector::OnMouseReleased(int x, int y, MouseButton button)
+void NumericSelector::OnMouseReleased(int, int, MouseButton)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc               = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -366,7 +364,7 @@ void NumericSelector::OnLoseFocus()
     cc->isMouseOn          = NumericSelectorControlContext::IsMouseOn::None;
 }
 
-bool NumericSelector::OnMouseWheel(int x, int y, MouseWheel direction)
+bool NumericSelector::OnMouseWheel(int, int, MouseWheel direction)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -468,7 +466,7 @@ bool NumericSelector::OnMouseOver(int x, int y)
     return true;
 }
 
-bool NumericSelector::IsValidValue(const long long value) const
+bool NumericSelector::IsValidValue(const long long) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -528,21 +526,21 @@ bool NumericSelector::FormatTextField()
     return true;
 }
 
-bool NumericSelector::IsOnMinusButton(const int x, const int y) const
+bool NumericSelector::IsOnMinusButton(const int x, const int) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
     return (x < cc->buttonPadding);
 }
 
-bool NumericSelector::IsOnPlusButton(const int x, const int y) const
+bool NumericSelector::IsOnPlusButton(const int x, const int) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
     return (x > GetWidth() - cc->buttonPadding - 1);
 }
 
-bool NumericSelector::IsOnTextField(const int x, const int y) const
+bool NumericSelector::IsOnTextField(const int x, const int) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);

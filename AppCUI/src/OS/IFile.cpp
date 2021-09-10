@@ -5,11 +5,11 @@ using namespace AppCUI::OS;
 IFile::~IFile()
 {
 }
-bool IFile::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool IFile::ReadBuffer(void*, unsigned int, unsigned int&)
 {
     NOT_IMPLEMENTED(false);
 }
-bool IFile::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool IFile::WriteBuffer(const void*, unsigned int, unsigned int&)
 {
     NOT_IMPLEMENTED(false);
 }
@@ -21,11 +21,11 @@ unsigned long long IFile::GetCurrentPos()
 {
     NOT_IMPLEMENTED(0);
 }
-bool IFile::SetSize(unsigned long long newSize)
+bool IFile::SetSize(unsigned long long)
 {
     NOT_IMPLEMENTED(false);
 }
-bool IFile::SetCurrentPos(unsigned long long newPosition)
+bool IFile::SetCurrentPos(unsigned long long)
 {
     NOT_IMPLEMENTED(false);
 }

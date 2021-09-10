@@ -38,25 +38,25 @@ constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
 };
 
 // Mapping from AppCUI::Graphics::Color to ncurses colors but only with 8 base colors
-constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
-    /* Black */ COLOR_BLACK,
-    /* DarkBlue */ COLOR_BLUE,
-    /* DarkGreen */ COLOR_GREEN,
-    /* Teal */ COLOR_CYAN,
-    /* DarkRed */ COLOR_RED,
-    /* Magenta */ COLOR_MAGENTA,
-    /* Olive */ COLOR_YELLOW,
-    /* Silver */ COLOR_WHITE,
-
-    /* GRAY */ COLOR_WHITE,
-    /* Blue */ COLOR_BLUE,
-    /* Green */ COLOR_GREEN,
-    /* Aqua */ COLOR_CYAN,
-    /* Red */ COLOR_RED,
-    /* Pink */ COLOR_MAGENTA,
-    /* Yellow */ COLOR_YELLOW,
-    /* White */ COLOR_WHITE,
-};
+//constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
+//    /* Black */ COLOR_BLACK,
+//    /* DarkBlue */ COLOR_BLUE,
+//    /* DarkGreen */ COLOR_GREEN,
+//    /* Teal */ COLOR_CYAN,
+//    /* DarkRed */ COLOR_RED,
+//    /* Magenta */ COLOR_MAGENTA,
+//    /* Olive */ COLOR_YELLOW,
+//    /* Silver */ COLOR_WHITE,
+//
+//    /* GRAY */ COLOR_WHITE,
+//    /* Blue */ COLOR_BLUE,
+//    /* Green */ COLOR_GREEN,
+//    /* Aqua */ COLOR_CYAN,
+//    /* Red */ COLOR_RED,
+//    /* Pink */ COLOR_MAGENTA,
+//    /* Yellow */ COLOR_YELLOW,
+//    /* White */ COLOR_WHITE,
+//};
 
 // In ncurses, we have to declare the color we're gonna use
 // That means we have to say init_pair(1, COLOR_BLACK, COLOR_BLUE)

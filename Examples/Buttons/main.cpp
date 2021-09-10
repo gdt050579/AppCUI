@@ -17,7 +17,7 @@ class MyWin : public AppCUI::Controls::Window
   public:
     MyWin()
     {
-        this->Create("Button example", "a:c,w:60,h:20");
+        this->Create("Button example", "d:c,w:60,h:20");
         b1.Create(this, "Buton &1", "x:1,y:16,w:14", BUTTON_1_ID);
         b2.Create(this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
         b3.Create(this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID);
@@ -30,14 +30,14 @@ class MyWin : public AppCUI::Controls::Window
               "x:0,y:0,w:100%,h:100%");
         l2.Create(this, "", "x:1,y:10,w:56");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_BUTTON_CLICKED)
+        if (eventType == Event::ButtonClicked)
         {
             switch (controlID)
             {

@@ -102,9 +102,9 @@ void Button::Paint(Graphics::Renderer& renderer)
 }
 void Button::OnHotKey()
 {
-    RaiseEvent(Event::EVENT_BUTTON_CLICKED);
+    RaiseEvent(Event::ButtonClicked);
 }
-bool Button::OnKeyEvent(Key KeyCode, char16_t UnicodeChar)
+bool Button::OnKeyEvent(Key KeyCode, char16_t)
 {
     if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
     {
@@ -113,7 +113,7 @@ bool Button::OnKeyEvent(Key KeyCode, char16_t UnicodeChar)
     }
     return false;
 }
-bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 {
     if (IsChecked() == false)
         return false;
@@ -124,13 +124,13 @@ bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
     }
     return false;
 }
-void Button::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Button::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
 {
     SetChecked(false);
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-void Button::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void Button::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 {
     SetChecked(true);
 }

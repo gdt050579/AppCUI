@@ -11,16 +11,16 @@ class SimpleWin : public AppCUI::Controls::Window
   public:
     SimpleWin()
     {
-        this->Create("Test", "a:c,w:40,h:8");
+        this->Create("Test", "d:c,w:40,h:8");
         l1.Create(
               this,
               "This is a simple Terminal example\nthat creates a 40x8 fixed window on\na 50x20 terminal with "
               "different\ncharacter sizes.",
               "x:1,y:1,w:36,h:5");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
@@ -31,7 +31,11 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("TerminalSettings.log");
-    if (!Application::Init(50, 20, InitializationFlags::CHAR_SIZE_LARGE))
+    Application::InitializationData initData;
+    initData.Width = 120;
+    initData.Height = 80;
+    initData.CharSize = Application::CharacterSize::Normal;
+    if (!Application::Init(initData))
         return 1;
     Application::AddWindow(new SimpleWin());
     Application::Run();

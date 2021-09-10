@@ -8,14 +8,14 @@ using namespace AppCUI::Dialogs;
 #define MSGBOX_BUTTONS_YES_NO_CANCEL 3
 
 bool MessageBoxWindowEventHandler(
-      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* Context)
+      Control* control, const void*, AppCUI::Controls::Event eventType, int controlID, void*)
 {
     switch (eventType)
     {
-    case Event::EVENT_WINDOW_CLOSE:
+    case Event::WindowClose:
         ((Window*) control)->Exit(Result::Cancel);
         return true;
-    case Event::EVENT_BUTTON_CLICKED:
+    case Event::ButtonClicked:
         ((Window*) control)->Exit(controlID);
         return true;
     default:
@@ -35,7 +35,7 @@ bool CreateMessageBoxWindow(
     Button btnOK, btnCancel, btnYes, btnNo;
     Window wnd;
 
-    CHECK(wnd.Create(title, "a:c,w:60,h:10", flags), false, "");
+    CHECK(wnd.Create(title, "d:c,w:60,h:10", flags), false, "");
 
     switch (buttonsType)
     {

@@ -26,8 +26,6 @@
 #define MAX_COMMANDBAR_FIELD_NAME  24
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
-#define CURRENT_CONSOLE_WIDTH  0xFFFFFFFF
-#define CURRENT_CONSOLE_HEIGHT 0xFFFFFFFF
 
 #define NEW_LINE_CODE 10
 
@@ -194,49 +192,6 @@ namespace Internal
         void Paint(AppCUI::Graphics::Renderer& renderer);
     };
 
-    class DesktopControl : public AppCUI::Controls::Control
-    {
-      public:
-        bool Create(unsigned int width, unsigned int height);
-        void Paint(AppCUI::Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-    };
-
-    enum class TerminalType : unsigned int
-    {
-        Default = 0,
-        SDL,
-        Terminal,
-        Windows
-    };
-    enum class TerminalSize : unsigned int
-    {
-        Default = 0,
-        CustomSize,
-        Maximized,
-        FullScreen
-    };
-    enum class CharacterSize : unsigned int
-    {
-        Default = 0,
-        Tiny,
-        Small,
-        Normal,
-        Large,
-        Huge
-    };
-
-    struct InitializationData
-    {
-        unsigned int Width, Height;
-        TerminalType FrontEnd;
-        CharacterSize CharSize;
-        TerminalSize TermSize;
-        bool FixedSize;
-
-        bool BuildFrom(AppCUI::Application::InitializationFlags flags, unsigned int Width, unsigned int Height);
-    };
-
     class AbstractTerminal
     {
       protected:
@@ -247,17 +202,17 @@ namespace Internal
         AppCUI::Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
         bool Inited, LastCursorVisibility;
 
-        virtual bool OnInit(const InitializationData& initData)                  = 0;
-        virtual void RestoreOriginalConsoleSettings()                            = 0;
-        virtual void OnUninit()                                                  = 0;
-        virtual void OnFlushToScreen()                                           = 0;
-        virtual bool OnUpdateCursor()                                            = 0;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)         = 0;
-        virtual bool IsEventAvailable()                                          = 0;
+        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) = 0;
+        virtual void RestoreOriginalConsoleSettings()                                = 0;
+        virtual void OnUninit()                                                      = 0;
+        virtual void OnFlushToScreen()                                               = 0;
+        virtual bool OnUpdateCursor()                                                = 0;
+        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)             = 0;
+        virtual bool IsEventAvailable()                                              = 0;
 
         virtual ~AbstractTerminal();
 
-        bool Init(const InitializationData& initData);
+        bool Init(const AppCUI::Application::InitializationData& initData);
         void Uninit();
         void Update();
     };
@@ -271,7 +226,8 @@ namespace Internal
 
         bool Inited;
 
-        DesktopControl Desktop;
+        AppCUI::Controls::Desktop* AppDesktop;
+        AppCUI::Controls::Desktop DefaultDesktopControl;
         ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
         
@@ -310,7 +266,7 @@ namespace Internal
         void ShowContextualMenu(AppCUI::Controls::Menu* mnu);
 
         // Common implementations
-        bool Init(AppCUI::Application::InitializationFlags flags, unsigned int width, unsigned int height);
+        bool Init(const AppCUI::Application::InitializationData& initData);
         bool Uninit();
         bool ExecuteEventLoop(AppCUI::Controls::Control* control = nullptr);
         void Paint();
@@ -321,6 +277,8 @@ namespace Internal
               int controlID);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y);
+
+        void ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method);
     };
 } // namespace Internal
 namespace Application

@@ -134,7 +134,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         renderer.DrawHorizontalLine(0, poz, Members->Layout.Width - 1, col);
     }
 }
-bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if ((Members->Flags & GATTR_VERTICAL) != 0)
@@ -175,7 +175,7 @@ bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
     }
     return false;
 }
-void Splitter::OnAfterResize(int newWidth, int newHeight)
+void Splitter::OnAfterResize(int, int)
 {
     Splitter_ResizeComponents(this);
 }
@@ -189,17 +189,17 @@ bool Splitter::OnBeforeAddControl(Control* c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void Splitter::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->DragStatus = SPLITTER_DRAG_STATUS_MOVE;
 }
-void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Splitter::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->DragStatus = SPLITTER_DRAG_STATUS_NONE;
 }
-bool Splitter::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool Splitter::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->DragStatus == SPLITTER_DRAG_STATUS_MOVE)
@@ -224,7 +224,7 @@ bool Splitter::OnMouseLeave()
 {
     return true;
 }
-void Splitter::OnAfterAddControl(Control* c)
+void Splitter::OnAfterAddControl(Control*)
 {
     Splitter_ResizeComponents(this);
 }

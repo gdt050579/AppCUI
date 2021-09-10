@@ -78,6 +78,7 @@
 #    define LOG_ERROR(format, ...)                                                                                     \
         AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
+inline void Unused(...) {}
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -101,7 +102,7 @@
         {                                                                                                              \
             return (returnValue);                                                                                      \
         }
-#    define LOG_INFO(format, ...)
+#    define LOG_INFO(format, ...) Unused(format, ##__VA_ARGS__);
 #    define LOG_WARNING(format, ...)
 #    define LOG_ERROR(format, ...)
 #endif
@@ -597,12 +598,22 @@ namespace Utils
         bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
         bool Add(const AppCUI::Utils::ConstString& text);
         bool Add(const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        bool AddChar(char16_t ch);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
         void ToString(std::u16string& output) const;
         void ToPath(std::filesystem::path& output) const;
 
+        inline void Clear()
+        {
+            length = 0;
+        }
+        inline void Truncate(unsigned int newSize)
+        {
+            if (newSize < length)
+                length = newSize;
+        }
         inline unsigned int Len() const
         {
             return length;
@@ -792,6 +803,8 @@ namespace Utils
         static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
         static AppCUI::Input::Key FromString(const std::string_view& stringRepresentation);
+
+        static AppCUI::Input::Key CreateHotKey(char16_t hotKey, AppCUI::Input::Key modifier = AppCUI::Input::Key::None);
     };
 
     class EXPORT IniValue
@@ -958,7 +971,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned int
+    enum class Alignament : unsigned char
     {
         TopLeft = 0,
         Top,
@@ -1198,6 +1211,8 @@ namespace Graphics
         bool SetWithHotKey(
               const AppCUI::Utils::ConstString& text,
               unsigned int& hotKeyCharacterPosition,
+              AppCUI::Input::Key & hotKey,
+              AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
               const ColorPair color = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
@@ -1215,6 +1230,10 @@ namespace Graphics
             return Find(text, ignoreCase) != -1;
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+        std::optional<unsigned int> FindNext(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
+        std::optional<unsigned int> FindPrevious(
+              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;
@@ -1260,6 +1279,22 @@ namespace Graphics
         }
     };
 
+    enum class ImageRenderingMethod: unsigned int
+    {
+        PixelTo16ColorsSmallBlock,
+        PixelTo64ColorsLargeBlock,
+        AsciiArt
+    };
+    enum class ImageScaleMethod : unsigned int
+    {
+        NoScale = 1,
+        Scale50  = 2,
+        Scale33  = 3,
+        Scale25  = 4,
+        Scale20  = 5,
+        Scale10  = 10,
+        Scale5   = 20
+    };
     class EXPORT Image
     {
         unsigned int* Pixels;
@@ -1281,6 +1316,7 @@ namespace Graphics
               unsigned char Alpha = 255);
         unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
         bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
+        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
         bool Clear(unsigned int color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
@@ -1413,6 +1449,18 @@ namespace Graphics
         // Cursor
         void HideCursor();
         bool SetCursor(int x, int y);
+
+        // Images
+        bool DrawImage(
+              const Image& img,
+              int x,
+              int y,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale = ImageScaleMethod::NoScale);
+        Size ComputeRenderingSize(
+              const Image& img,
+              ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
+              ImageScaleMethod scale      = ImageScaleMethod::NoScale);
     };
 
     class EXPORT Canvas : public Renderer
@@ -1475,23 +1523,23 @@ namespace Controls
 {
     enum class Event : unsigned int
     {
-        EVENT_WINDOW_CLOSE,
-        EVENT_WINDOW_ACCEPT,
-        EVENT_BUTTON_CLICKED,
-        EVENT_CHECKED_STATUS_CHANGED,
-        EVENT_TEXT_CHANGED,
-        EVENT_TEXTFIELD_VALIDATE,
-        EVENT_TAB_CHANGED,
-        EVENT_LISTVIEW_CURRENTITEM_CHANGED,
-        EVENT_LISTVIEW_SELECTION_CHANGED,
-        EVENT_LISTVIEW_ITEM_CHECKED,
-        EVENT_LISTVIEW_ITEM_CLICKED,
-        EVENT_COMBOBOX_SELECTED_ITEM_CHANGED,
-        EVENT_COMBO_CLOSED,
-        EVENT_TERMINATE_APPLICATION,
-        EVENT_COMMAND,
-        EVENT_NUMERICSELECTOR_VALUE_CHANGED,
-        EVENT_CUSTOM,
+        WindowClose,
+        WindowAccept,
+        ButtonClicked,
+        CheckedStatusChanged,
+        TextChanged,
+        TextFieldValidate,
+        TabChanged,
+        ListViewCurrentItemChanged,
+        ListViewSelectionChanged,
+        ListViewItemChecked,
+        ListViewItemClicked,
+        ComboBoxSelectedItemChanged,
+        ComboBoxClosed,
+        TerminateApplication,
+        Command,
+        NumericSelectorValueChanged,
+        Custom,
     };
     typedef unsigned int ItemHandle;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
@@ -1695,6 +1743,8 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
+        bool OnEvent(Control* sender, Event eventType, int controlID) override;
+
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
@@ -1929,16 +1979,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
     };
-    enum class ImageRendererMode : unsigned int
-    {
-        SmallBoxes,
-        SmallBoxex2x2,
-        SmallBoxex4x4,
-        SmallBoxex8x8,
-        SmallBoxex16x16,
-        LargeBoxes,
-        AsciiArt
-    };
+
     class EXPORT ImageViewer : public CanvasViewer
     {
       public:
@@ -1948,7 +1989,7 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
-        bool SetImage(const AppCUI::Graphics::Image& img, ImageRendererMode mode);
+        bool SetImage(const AppCUI::Graphics::Image& img, AppCUI::Graphics::ImageRenderingMethod method, AppCUI::Graphics::ImageScaleMethod scale);
     };
     enum class ListViewFlags : unsigned int
     {
@@ -2211,6 +2252,14 @@ namespace Controls
         void OnLoseFocus() override;
     };
 
+    class EXPORT Desktop : public Control
+    {
+      public:
+        bool Create(unsigned int screenWidth, unsigned int screenHeight);
+        void Paint(AppCUI::Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+    };
+
 }; // namespace Controls
 
 namespace Dialogs
@@ -2299,26 +2348,55 @@ namespace Application
     {
         None = 0,
 
-        // possible backends
-        FrontendDefault        = 0,
-        FrontendSDL            = 1,
-        FrontendTerminal       = 2,
-        FrontendWindowsConsole = 3,
+        CommandBar = 0x0001,
+        Menu       = 0x0002,
+        Maximized  = 0x0004,
+        Fullscreen = 0x0008,
+        FixedSize  = 0x0010,
+    };
 
-        // character size
-        CHAR_SIZE_DEFAULT = 0,
-        CHAR_SIZE_TINY    = 0x00000100,
-        CHAR_SIZE_SMALL   = 0x00000200,
-        CHAR_SIZE_NORMAL  = 0x00000300,
-        CHAR_SIZE_LARGE   = 0x00000400,
-        CHAR_SIZE_HUGE    = 0x00000500,
+    enum class CharacterSize: unsigned int
+    {
+        Default = 0,
+        Tiny,
+        Small,
+        Normal,
+        Large,
+        Huge
+    };
+    enum class FrontendType: unsigned int
+    {
+        Default = 0,
+        SDL = 1,
+        Terminal = 2,
+        WindowsConsole = 3
+    };
 
-        // generic options
-        CommandBar = 0x00010000,
-        Menu       = 0x00020000,
-        Maximized  = 0x00040000,
-        Fullscreen = 0x00080000,
-        FixedSize  = 0x00100000,
+    struct InitializationData
+    {
+        unsigned int Width, Height;
+        FrontendType Frontend;
+        CharacterSize CharSize;
+        InitializationFlags Flags;
+        std::string_view FontName;
+        AppCUI::Controls::Desktop* CustomDesktop;
+
+        InitializationData()
+            : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
+              Flags(InitializationFlags::None), FontName(""), CustomDesktop(nullptr)
+        {
+        }
+    };
+
+
+
+    enum class ArangeWindowsMethod
+    {
+        MaximizedAll,
+        Cascade,
+        Vertical,
+        Horizontal,
+        Grid
     };
 
     class EXPORT CommandBar
@@ -2491,10 +2569,7 @@ namespace Application
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(
-          unsigned int width,
-          unsigned int height,
-          Application::InitializationFlags flags = Application::InitializationFlags::None);
+    EXPORT bool Init(const InitializationData& initData);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(const std::filesystem::path& iniFilePath);
@@ -2506,6 +2581,7 @@ namespace Application
     EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);
     EXPORT void Repaint();
     EXPORT void RecomputeControlsLayout();
+    EXPORT void ArrangeWindows(ArangeWindowsMethod method);
     EXPORT void RaiseEvent(
           AppCUI::Controls::Control* control,
           AppCUI::Controls::Control* sourceControl,

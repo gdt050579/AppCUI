@@ -79,7 +79,7 @@ class TicTacToeTable : public UserControl
         renderer.FillVerticalLineWithSpecialChar(
               9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
-    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override
+    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton) override
     {
         const int cell_x = std::min<>(x / 5, 2);
         const int cell_y = std::min<>(y / 5, 2);
@@ -99,12 +99,12 @@ class TicTacToeTable : public UserControl
         ValidateResult(0, 0, 1, 1, 2, 2, res);
         ValidateResult(0, 2, 1, 1, 2, 0, res);
         if (res == CELL_WITH_X)
-            this->RaiseEvent(Event::EVENT_CUSTOM, X_HAS_WON_EVENT);
+            this->RaiseEvent(Event::Custom, X_HAS_WON_EVENT);
         if (res == CELL_WITH_O)
-            this->RaiseEvent(Event::EVENT_CUSTOM, O_HAS_WON_EVENT);
+            this->RaiseEvent(Event::Custom, O_HAS_WON_EVENT);
         // check for draw
         if ((res == 0) && (totalPieces >= 9))
-            this->RaiseEvent(Event::EVENT_CUSTOM, DRAW_GAME);
+            this->RaiseEvent(Event::Custom, DRAW_GAME);
     }
 };
 
@@ -115,17 +115,17 @@ class TicTacToeWin : public AppCUI::Controls::Window
   public:
     TicTacToeWin()
     {
-        this->Create("TicTacToe", "a:c,w:20,h:18");
+        this->Create("TicTacToe", "d:c,w:20,h:18");
         game.Create(this, "x:2,y:1,w:14,h:14");
     }
-    bool OnEvent(Control* sender, Event eventType, int controlID) override
+    bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_CUSTOM)
+        if (eventType == Event::Custom)
         {
             switch (controlID)
             {
