@@ -57,7 +57,7 @@ struct FolderDialogClass
     void OnCurrentItemChanged();
 };
 
-bool FolderDialog_EventHandler(Control* control, const void* sender, Event eventType, int controlID, void* Context)
+bool FolderDialog_EventHandler(Control* control, const void* sender, Event eventType, int controlID, void* /* Context */)
 {
     return ((FolderDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
@@ -166,7 +166,11 @@ void FolderDialogClass::UpdateFolderList()
 
                 const time_t lastModifiedTime{ FolderDialogUtils::GetLastModifiedTime(fileEntry) };
                 tm t{};
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+                localtime_r(&t, &lastModifiedTime); // TODO: errno treated
+#else
                 localtime_s(&t, &lastModifiedTime); // TODO: errno treated
+#endif
                 char lastModifiedTimeBuffer[64]{ 0 };
                 std::strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 
@@ -266,7 +270,7 @@ int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem
     folders.AddColumn("&Size", TextAlignament::Right, 16);
     folders.AddColumn("&Modified", TextAlignament::Center, 20);
     folders.SetItemCompareFunction(
-          [](ListView* lv, ItemHandle i01, ItemHandle i02, unsigned int colIndex, void* ctx)
+          [](ListView* lv, ItemHandle i01, ItemHandle i02, unsigned int colIndex, void* /* ctx */)
           {
               const auto v1 = lv->GetItemData(i01)->UInt64Value;
               const auto v2 = lv->GetItemData(i02)->UInt64Value;
