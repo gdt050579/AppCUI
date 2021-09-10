@@ -29,12 +29,12 @@ class MyWin: public Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_COMMAND)
+        if (eventType == Event::Command)
         {
             switch (controlID)
             {

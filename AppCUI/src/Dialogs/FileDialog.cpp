@@ -353,19 +353,19 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
 {
     switch (eventType)
     {
-    case Event::EVENT_BUTTON_CLICKED:
+    case Event::ButtonClicked:
         if (controlID == (int) Dialogs::Result::Ok)
             Validate();
         else
             wnd.Exit(controlID);
         return true;
-    case Event::EVENT_WINDOW_CLOSE:
+    case Event::WindowClose:
         wnd.Exit(Dialogs::Result::Cancel);
         return true;
-    case Event::EVENT_WINDOW_ACCEPT:
+    case Event::WindowAccept:
         Validate();
         return true;
-    case Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED:
+    case Event::ComboBoxSelectedItemChanged:
         if (sender == &comboDrive)
         {
             UpdateCurrentFolder();
@@ -377,14 +377,14 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
             UpdateFileList();
         }
         return true;
-    case Event::EVENT_TEXTFIELD_VALIDATE:
+    case Event::TextFieldValidate:
         UpdateFileList();
         files.SetFocus();
         return true;
-    case Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED:
+    case Event::ListViewCurrentItemChanged:
         OnCurrentItemChanged();
         return true;
-    case Event::EVENT_LISTVIEW_ITEM_CLICKED:
+    case Event::ListViewItemClicked:
         OnClickedOnItem();
         return true;
     }

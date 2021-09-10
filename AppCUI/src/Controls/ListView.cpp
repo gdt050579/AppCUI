@@ -731,7 +731,7 @@ void ListViewControlContext::MoveTo(int index)
     if (rel >= vis)
         Items.FirstVisibleIndex = (index - vis) + 1;
     if (originalPoz != index)
-        SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
+        SendMsg(Event::ListViewCurrentItemChanged);
 }
 bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
@@ -788,38 +788,38 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
                 MoveTo(Items.CurentItemIndex - 1);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             case Key::Insert:
             case Key::Down | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
                 MoveTo(Items.CurentItemIndex + 1);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             case Key::PageUp | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
                 MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             case Key::PageDown | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
                 MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             case Key::Home | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, 0, !selected);
                 MoveTo(0);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             case Key::End | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
                 MoveTo(Items.Indexes.Len());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::EVENT_LISTVIEW_SELECTION_CHANGED);
+                SendMsg(Event::ListViewSelectionChanged);
                 return true;
             };
         }
@@ -883,7 +883,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
                     else
                         lvi->Flags |= ITEM_FLAG_CHECKED;
                 }
-                SendMsg(Event::EVENT_LISTVIEW_ITEM_CHECKED);
+                SendMsg(Event::ListViewItemChecked);
             }
             else
             {
@@ -902,7 +902,7 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             }
             return false;
         case Key::Enter:
-            SendMsg(Event::EVENT_LISTVIEW_ITEM_CLICKED);
+            SendMsg(Event::ListViewItemClicked);
             return true;
         case Key::Escape:
             if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
@@ -1070,7 +1070,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
         this->Filter.FilterModeEnabled = false;
         if (((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex) &&
             ((button & AppCUI::Input::MouseButton::DoubleClicked) != AppCUI::Input::MouseButton::None))
-            SendMsg(Event::EVENT_LISTVIEW_ITEM_CLICKED);
+            SendMsg(Event::ListViewItemClicked);
         else
             MoveTo(y + Items.FirstVisibleIndex);
     }
@@ -1263,7 +1263,7 @@ void ListViewControlContext::FilterItems()
     }
     this->Items.FirstVisibleIndex = 0;
     this->Items.CurentItemIndex   = 0;
-    SendMsg(Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED);
+    SendMsg(Event::ListViewCurrentItemChanged);
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
 {

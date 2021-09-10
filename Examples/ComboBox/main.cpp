@@ -34,12 +34,12 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control* sender, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED)
+        if (eventType == Event::ComboBoxSelectedItemChanged)
         {
             ComboBox* c = reinterpret_cast<ComboBox*>(sender);
             AppCUI::Utils::LocalUnicodeStringBuilder<128> temp;

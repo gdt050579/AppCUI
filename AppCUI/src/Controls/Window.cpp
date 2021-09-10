@@ -372,7 +372,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     }
     if (Members->winButtonState == (WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE))
     {
-        RaiseEvent(Event::EVENT_WINDOW_CLOSE);
+        RaiseEvent(Event::WindowClose);
         return;
     }
     // if (Members->fnMouseReleaseHandler != nullptr)
@@ -471,13 +471,13 @@ void Window::OnAfterResize(int, int)
 }
 bool Window::OnEvent(Control*, Event eventType, int)
 {
-    if ((eventType == Event::EVENT_WINDOW_CLOSE) || (eventType == Event::EVENT_WINDOW_ACCEPT))
+    if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
     {
         // check if current win is a modal dialog
         auto app = AppCUI::Application::GetApplication();
         if ((app->ModalControlsCount > 0) && (app->ModalControlsStack[app->ModalControlsCount - 1] == this))
         {
-            if (eventType == Event::EVENT_WINDOW_CLOSE)
+            if (eventType == Event::WindowClose)
                 return Exit(AppCUI::Dialogs::Result::Cancel);
             else
                 return Exit(AppCUI::Dialogs::Result::Ok);
@@ -509,10 +509,10 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
             tmp->SetFocus();
         return true;
     case Key::Escape:
-        RaiseEvent(Event::EVENT_WINDOW_CLOSE);
+        RaiseEvent(Event::WindowClose);
         return true;
     case Key::Enter:
-        RaiseEvent(Event::EVENT_WINDOW_ACCEPT);
+        RaiseEvent(Event::WindowAccept);
         return true;
     }
     // first we check menu hot keys

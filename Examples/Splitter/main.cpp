@@ -36,7 +36,7 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, AppCUI::Controls::Event eventType, int) override
     {
-        if (eventType == AppCUI::Controls::Event::EVENT_WINDOW_CLOSE)
+        if (eventType == AppCUI::Controls::Event::WindowClose)
         {
             Application::Close();
             return true;

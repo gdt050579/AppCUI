@@ -309,7 +309,7 @@ bool Tab::SetCurrentTabPage(unsigned int index)
         AppCUI::Application::RecomputeControlsLayout();
     }
     if (found)
-        this->RaiseEvent(Event::EVENT_TAB_CHANGED);
+        this->RaiseEvent(Event::TabChanged);
     return res;
 }
 Control* Tab::GetCurrentTab()

@@ -3078,7 +3078,7 @@ class MyDialog : public AppCUI::Controls::Window
   public:
     bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             this->Exit((int) Dialogs::Result::Ok);
             return true;
@@ -3434,17 +3434,17 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_CHECKED_STATUS_CHANGED)
+        if (eventType == Event::CheckedStatusChanged)
         {
             UpdateFeaturesEnableStatus();
             return true;
         }
-        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == SHOW_DEFAULT_EXAMPLE))
+        if ((eventType == Event::ButtonClicked) && (controlID == SHOW_DEFAULT_EXAMPLE))
         {
             ShowListView();
             return true;

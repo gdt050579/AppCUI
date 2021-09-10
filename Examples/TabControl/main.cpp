@@ -59,7 +59,7 @@ class TabExampleWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == CLOSE_BUTTON_ID))
+        if ((eventType == Event::ButtonClicked) && (controlID == CLOSE_BUTTON_ID))
         {
             this->Exit(0);
             return true;
@@ -118,12 +118,12 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if ((eventType == Event::EVENT_BUTTON_CLICKED) && (controlID == SHOW_TAB_BUTTON_ID))
+        if ((eventType == Event::ButtonClicked) && (controlID == SHOW_TAB_BUTTON_ID))
         {
             ShowTabControl();
             return true;

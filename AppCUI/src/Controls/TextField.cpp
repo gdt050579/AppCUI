@@ -20,7 +20,7 @@ void TextField_SendTextChangedEvent(TextField* control)
     {
         Members->Syntax.Handler(control, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
     }
-    control->RaiseEvent(Event::EVENT_TEXT_CHANGED);
+    control->RaiseEvent(Event::TextChanged);
 }
 
 void TextField_MoveSelTo(TextField* control, int poz)
@@ -400,7 +400,7 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
     case Key::Enter:
         if ((Members->Flags & TextFieldFlags::ProcessEnter) != TextFieldFlags::None) 
         {
-            RaiseEvent(Event::EVENT_TEXTFIELD_VALIDATE);
+            RaiseEvent(Event::TextFieldValidate);
             return true;
         }
         return false;

@@ -99,12 +99,12 @@ class TicTacToeTable : public UserControl
         ValidateResult(0, 0, 1, 1, 2, 2, res);
         ValidateResult(0, 2, 1, 1, 2, 0, res);
         if (res == CELL_WITH_X)
-            this->RaiseEvent(Event::EVENT_CUSTOM, X_HAS_WON_EVENT);
+            this->RaiseEvent(Event::Custom, X_HAS_WON_EVENT);
         if (res == CELL_WITH_O)
-            this->RaiseEvent(Event::EVENT_CUSTOM, O_HAS_WON_EVENT);
+            this->RaiseEvent(Event::Custom, O_HAS_WON_EVENT);
         // check for draw
         if ((res == 0) && (totalPieces >= 9))
-            this->RaiseEvent(Event::EVENT_CUSTOM, DRAW_GAME);
+            this->RaiseEvent(Event::Custom, DRAW_GAME);
     }
 };
 
@@ -120,12 +120,12 @@ class TicTacToeWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_CUSTOM)
+        if (eventType == Event::Custom)
         {
             switch (controlID)
             {

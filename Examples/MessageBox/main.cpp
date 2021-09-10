@@ -27,12 +27,12 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_BUTTON_CLICKED)
+        if (eventType == Event::ButtonClicked)
         {
             switch (controlID)
             {

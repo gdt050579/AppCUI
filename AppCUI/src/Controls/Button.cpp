@@ -102,7 +102,7 @@ void Button::Paint(Graphics::Renderer& renderer)
 }
 void Button::OnHotKey()
 {
-    RaiseEvent(Event::EVENT_BUTTON_CLICKED);
+    RaiseEvent(Event::ButtonClicked);
 }
 bool Button::OnKeyEvent(Key KeyCode, char16_t)
 {

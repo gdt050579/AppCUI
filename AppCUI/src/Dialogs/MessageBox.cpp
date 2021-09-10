@@ -12,10 +12,10 @@ bool MessageBoxWindowEventHandler(
 {
     switch (eventType)
     {
-    case Event::EVENT_WINDOW_CLOSE:
+    case Event::WindowClose:
         ((Window*) control)->Exit(Result::Cancel);
         return true;
-    case Event::EVENT_BUTTON_CLICKED:
+    case Event::ButtonClicked:
         ((Window*) control)->Exit(controlID);
         return true;
     default:

@@ -165,7 +165,7 @@ class PythonEditorWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;

@@ -28,12 +28,12 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if ((eventType == Event::EVENT_CHECKED_STATUS_CHANGED) && (controlID == A_CHECKBOX_ID))
+        if ((eventType == Event::CheckedStatusChanged) && (controlID == A_CHECKBOX_ID))
         {
             if (c3.IsChecked())
                 c3_info.SetText("3rd checkbox status: CHECKED");

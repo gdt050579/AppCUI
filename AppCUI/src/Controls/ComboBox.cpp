@@ -140,7 +140,7 @@ void ComboBox_SetCurrentIndex(ComboBox* control, unsigned int newIndex)
     }
     Members->CurentItemIndex = newIndex;
     if (old != newIndex)
-        control->RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
+        control->RaiseEvent(Event::ComboBoxSelectedItemChanged);
 }
 //====================================================================================================
 template <typename T>
@@ -328,7 +328,7 @@ void ComboBox::SetNoIndexSelected()
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     Members->CurentItemIndex  = ComboBox::NO_ITEM_SELECTED;
     Members->FirstVisibleItem = 0;
-    RaiseEvent(Event::EVENT_COMBOBOX_SELECTED_ITEM_CHANGED);
+    RaiseEvent(Event::ComboBoxSelectedItemChanged);
 }
 
 bool ComboBox::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
@@ -418,7 +418,7 @@ void ComboBox::OnHotKey()
     else
     {
         this->PackView();
-        RaiseEvent(Event::EVENT_COMBO_CLOSED);
+        RaiseEvent(Event::ComboBoxClosed);
     }
 }
 void ComboBox::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)

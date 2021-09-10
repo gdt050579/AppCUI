@@ -70,7 +70,7 @@ void AppCUI::Controls::RadioBox::OnHotKey()
     if (IsChecked() == false)
     {
         SetChecked(true);
-        RaiseEvent(Event::EVENT_CHECKED_STATUS_CHANGED);
+        RaiseEvent(Event::CheckedStatusChanged);
     }
 }
 bool AppCUI::Controls::RadioBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)

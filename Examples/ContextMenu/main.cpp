@@ -94,17 +94,17 @@ class ContextMenuExample : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_CHECKED_STATUS_CHANGED)
+        if (eventType == Event::CheckedStatusChanged)
         {
             m.smallMenu = cb.IsChecked();
             return true;
         }
-        if (eventType == Event::EVENT_COMMAND)
+        if (eventType == Event::Command)
         {
             switch (controlID)
             {

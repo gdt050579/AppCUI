@@ -55,7 +55,7 @@ void NumericSelector::SetValue(const long long value)
         cc->value = value;
     }
 
-    RaiseEvent(Event::EVENT_NUMERICSELECTOR_VALUE_CHANGED);
+    RaiseEvent(Event::NumericSelectorValueChanged);
 }
 
 void NumericSelector::SetMinValue(const long long minValue)

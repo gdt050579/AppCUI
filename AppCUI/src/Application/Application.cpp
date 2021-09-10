@@ -1013,7 +1013,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
     if (ctrl != nullptr)
     {
-        RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::EVENT_COMMAND, command);
+        RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::Command, command);
         // refac si command bar-ul
         // update la acceleratori
         if (ModalControlsCount == 0)

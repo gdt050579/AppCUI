@@ -79,12 +79,12 @@ class MainWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int) override
     {
-        if (eventType == Event::EVENT_WINDOW_CLOSE)
+        if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
-        if (eventType == Event::EVENT_BUTTON_CLICKED)
+        if (eventType == Event::ButtonClicked)
         {
             auto itm = lst.GetCurrentItem();
             if (itm != InvalidItemHandle)
@@ -94,7 +94,7 @@ class MainWin : public AppCUI::Controls::Window
                 return true;
             }
         }
-        if (eventType == Event::EVENT_LISTVIEW_CURRENTITEM_CHANGED)
+        if (eventType == Event::ListViewCurrentItemChanged)
         {            
             b.SetEnabled(lst.GetItemXOffset(lst.GetCurrentItem())==2);
             return true;

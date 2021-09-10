@@ -658,7 +658,7 @@ void TextAreaControlContext::AddChar(char16_t ch)
     {
         View.CurrentPosition++;
         UpdateLines();
-        SendMsg(Event::EVENT_TEXT_CHANGED);
+        SendMsg(Event::TextChanged);
     }
 }
 void TextAreaControlContext::KeyBack()
@@ -676,7 +676,7 @@ void TextAreaControlContext::KeyBack()
     {
         View.CurrentPosition--;
         UpdateLines();
-        SendMsg(Event::EVENT_TEXT_CHANGED);
+        SendMsg(Event::TextChanged);
     }
 }
 void TextAreaControlContext::KeyDelete()
@@ -691,7 +691,7 @@ void TextAreaControlContext::KeyDelete()
     if (Text.DeleteChar(View.CurrentPosition))
     {
         UpdateLines();
-        SendMsg(Event::EVENT_TEXT_CHANGED);
+        SendMsg(Event::TextChanged);
     }
 }
 bool TextAreaControlContext::HasSelection()
@@ -731,7 +731,7 @@ void TextAreaControlContext::PasteFromClipboard()
     {
         View.CurrentPosition += temp.Len();
         UpdateLines();
-        SendMsg(Event::EVENT_TEXT_CHANGED);
+        SendMsg(Event::TextChanged);
     }
 }
 
