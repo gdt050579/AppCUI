@@ -967,6 +967,7 @@ namespace OS
           std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
           SpecialFoldersType type,
           bool clearVector);
+    EXPORT std::filesystem::path GetCurrentApplicationPath();
 
 } // namespace OS
 namespace Graphics
