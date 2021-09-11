@@ -1254,6 +1254,11 @@ bool AppCUI::Controls::Control::Init(
         CHECK(parent->AddControl(this), false, "Unable to add control !");
     }
 
+    // Force a recompute layout on the entire app
+    auto app = AppCUI::Application::GetApplication();
+    if (app)
+        app->RepaintStatus = REPAINT_STATUS_ALL;
+
     return true;
 }
 

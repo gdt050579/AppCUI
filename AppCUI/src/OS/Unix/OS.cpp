@@ -10,3 +10,7 @@ void AppCUI::OS::GetSpecialFolders(std::vector<std::pair<std::string, std::files
 		specialFolderLists.clear();
 	// to be implemented
 }
+std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
+{
+	return std::filesystem::path();
+}

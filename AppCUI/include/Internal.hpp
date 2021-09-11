@@ -220,6 +220,7 @@ namespace Internal
     struct Application
     {
         AppCUI::Application::Config config;
+        AppCUI::Utils::IniObject settings;
         std::unique_ptr<AbstractTerminal> terminal;
         std::unique_ptr<CommandBarController> cmdBar;
         std::unique_ptr<MenuBar> menu;
@@ -266,7 +267,8 @@ namespace Internal
         void ShowContextualMenu(AppCUI::Controls::Menu* mnu);
 
         // Common implementations
-        bool Init(const AppCUI::Application::InitializationData& initData);
+        void LoadSettingsFile(AppCUI::Application::InitializationData& initData);
+        bool Init(AppCUI::Application::InitializationData& initData);
         bool Uninit();
         bool ExecuteEventLoop(AppCUI::Controls::Control* control = nullptr);
         void Paint();
