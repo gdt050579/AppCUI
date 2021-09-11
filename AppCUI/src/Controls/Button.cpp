@@ -4,15 +4,31 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool Button::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
+bool Button::Create(
+      Control* parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      int controlID,
+      ButtonFlags flags)
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);
-    Members->Layout.MaxHeight = 2;
-    Members->Layout.MinHeight = 2; // Exactly 2 characters
+    
     Members->Layout.MinWidth  = 4;
+    if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
+    {
+        Members->Layout.MinHeight = 1; // one character (flat button)
+        Members->Layout.MaxHeight = 1;
+    }
+    else
+    {
+        Members->Layout.MinHeight = 2; // Exactly 2 characters
+        Members->Layout.MaxHeight = 2;
+    }
+    
     CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
-    Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+
+    Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
     Members->Layout.Height = 2;
     SetControlID(controlID);
     return true;
@@ -91,13 +107,21 @@ void Button::Paint(Graphics::Renderer& renderer)
             params.X           = x ;
             renderer.WriteText(Members->Text, params);
         }
-        renderer.FillHorizontalLineWithSpecialChar(
-              1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, ColorPair{ Color::Black, Color::Transparent });
-        renderer.WriteSpecialCharacter(
-              Members->Layout.Width - 1,
-              0,
-              SpecialChars::BlockLowerHalf,
-              ColorPair{ Color::Black, Color::Transparent });
+        if (!(Members->Flags && ButtonFlags::Flat))
+        {
+            // if not flat --> draw button shaddow
+            renderer.FillHorizontalLineWithSpecialChar(
+                  1,
+                  1,
+                  Members->Layout.Width,
+                  SpecialChars::BlockUpperHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
+            renderer.WriteSpecialCharacter(
+                  Members->Layout.Width - 1,
+                  0,
+                  SpecialChars::BlockLowerHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
+        }
     }
 }
 void Button::OnHotKey()

@@ -11,6 +11,7 @@ using namespace AppCUI::Controls;
 class MyWin : public AppCUI::Controls::Window
 {
     Button b1, b2, b3;
+    Button fb1, fb2, fb3;
     Panel p1;
     Label l1, l2;
 
@@ -22,6 +23,12 @@ class MyWin : public AppCUI::Controls::Window
         b2.Create(this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
         b3.Create(this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID);
         b3.SetEnabled(false);
+
+        fb1.Create(this, "Flat Buton 1", "x:1,y:14,w:15", BUTTON_1_ID, ButtonFlags::Flat);
+        fb2.Create(this, "Flat Buton 2", "x:16,y:14,w:15", BUTTON_2_ID, ButtonFlags::Flat);
+        fb3.Create(this, "Inactive", "x:31,y:14,w:15", BUTTON_3_ID, ButtonFlags::Flat);
+        fb3.SetEnabled(false);
+
         p1.Create(this, "Information panel", "x:1,y:1,w:56,h:5");
         l1.Create(
               &p1,
