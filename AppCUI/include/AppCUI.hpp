@@ -1767,6 +1767,12 @@ namespace Controls
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
+    
+    enum class ButtonFlags : unsigned int
+    {
+        None = 0,
+        Flat = 0x000100,
+    };
     class EXPORT Button : public Control
     {
       public:
@@ -1774,7 +1780,8 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              int controlID = 0);
+              int controlID = 0,
+              ButtonFlags flags = ButtonFlags::None);
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -2583,6 +2590,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
