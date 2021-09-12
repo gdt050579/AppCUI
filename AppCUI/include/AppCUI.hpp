@@ -969,6 +969,7 @@ namespace OS
           std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
           SpecialFoldersType type,
           bool clearVector);
+    EXPORT std::filesystem::path GetCurrentApplicationPath();
 
 } // namespace OS
 namespace Graphics
@@ -1768,6 +1769,12 @@ namespace Controls
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
+    
+    enum class ButtonFlags : unsigned int
+    {
+        None = 0,
+        Flat = 0x000100,
+    };
     class EXPORT Button : public Control
     {
       public:
@@ -1775,7 +1782,8 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              int controlID = 0);
+              int controlID = 0,
+              ButtonFlags flags = ButtonFlags::None);
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -2347,11 +2355,12 @@ namespace Application
     {
         None = 0,
 
-        CommandBar = 0x0001,
-        Menu       = 0x0002,
-        Maximized  = 0x0004,
-        Fullscreen = 0x0008,
-        FixedSize  = 0x0010,
+        CommandBar       = 0x0001,
+        Menu             = 0x0002,
+        Maximized        = 0x0004,
+        Fullscreen       = 0x0008,
+        FixedSize        = 0x0010,
+        LoadSettingsFile = 0x0020,
     };
 
     enum class CharacterSize : unsigned int
@@ -2561,15 +2570,13 @@ namespace Application
     };
 
     EXPORT Config* GetAppConfig();
+    EXPORT AppCUI::Utils::IniObject* GetAppSettings();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(const InitializationData& initData);
-
-    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
-    EXPORT bool Init(const std::filesystem::path& iniFilePath);
+    EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
     EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
@@ -2598,6 +2605,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
