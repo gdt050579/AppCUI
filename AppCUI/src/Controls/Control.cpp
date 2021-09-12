@@ -1573,6 +1573,7 @@ bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
 {
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     CTRLC->HotKey       = AppCUI::Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
+    this->OnHotKeyChanged();
     return CTRLC->HotKey != Key::None;
 }
 bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bottom)
@@ -1718,6 +1719,9 @@ bool AppCUI::Controls::Control::OnMouseWheel(int, int, AppCUI::Input::MouseWheel
     return false;
 }
 void AppCUI::Controls::Control::OnHotKey()
+{
+}
+void AppCUI::Controls::Control::OnHotKeyChanged()
 {
 }
 bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control*, Event, int)

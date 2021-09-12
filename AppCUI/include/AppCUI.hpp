@@ -1694,6 +1694,7 @@ namespace Controls
         // Evenimente
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
         virtual void OnHotKey();
+        virtual void OnHotKeyChanged();
         virtual void OnFocus();
         virtual void OnLoseFocus();
 
