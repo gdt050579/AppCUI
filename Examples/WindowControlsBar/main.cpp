@@ -15,14 +15,25 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         this->SetHotKey('1');
         // add a TAG
         this->SetTag("TAG", "A tag is a small string\nthat explains what is the purpose\nof this window");
+        // add buttons;
+        auto cb = this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft);
+        cb.AddCommandItem("Close", 12345, "When you press this button the Window will close");
 
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Control*, Event eventType, int ID) override
     {
         if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
+        }
+        if (eventType == Event::Command)
+        {
+            if (ID == 12345)
+            {
+                Application::Close();
+                return true;
+            }
         }
         return false;
     }

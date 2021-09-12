@@ -1746,7 +1746,7 @@ namespace Controls
         TopBarFromRight    = 3,
         BottomBarFromRight = 4,        
     };
-    class WindowControlsBar
+    class EXPORT WindowControlsBar
     {
         void* Context;
         WindowControlsBarLayout Layout;

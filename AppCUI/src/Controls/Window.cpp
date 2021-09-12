@@ -131,7 +131,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowControlsBarLayout::TopBarFromLeft:
             btn->Y = 0; // TopBar
             btn->X = topLeft;
-            tmp = btn->Size + 2;
+            tmp    = topLeft + btn->Size + 1;
             if (tmp < topRight)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -141,7 +141,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowControlsBarLayout::TopBarFromRight:
             btn->Y = 0; // TopBar
             btn->X = topRight-btn->Size+1;
-            tmp = btn->X - 2;
+            tmp    = btn->X - 2;
             if (tmp > topLeft)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -151,7 +151,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowControlsBarLayout::BottomBarFromLeft:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomLeft;
-            tmp = btn->Size + 2;
+            tmp    = topLeft + btn->Size + 1;
             if (tmp < bottomRight)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -161,7 +161,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowControlsBarLayout::BottomBarFromRight:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomRight - btn->Size + 1;
-            tmp = btn->X - 2;
+            tmp    = btn->X - 2;
             if (tmp > bottomLeft)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -252,7 +252,7 @@ bool WindowButton::Init(
     AppCUI::Utils::ConstStringObject objName(name);
     CHECK(objName.Length > 0, false, "Expecting a valid item name (non-empty)");
     CHECK(this->Text.SetWithHotKey(name, this->HotKeyOffset, this->HotKey, Key::Alt), false, "Fail to create name !");
-    this->Size = this->Text.Len();
+    this->Size = this->Text.Len() + 2;
     // tool tip
     AppCUI::Utils::ConstStringObject objToolTip(toolTip);
     if (objToolTip.Length>0)
@@ -304,7 +304,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
         Members->WinButtons[Members->WinButtonsCount++].Init(
               WindowButtonType::WindowResize,
               WindowControlsBarLayout::BottomBarFromRight,
-              1,
+              3,
               "Click and drag to resize this window");
     }
     // hot key
@@ -433,6 +433,11 @@ void Window::Paint(Graphics::Renderer& renderer)
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, colorWindowButton);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
             break;
+        case WindowButtonType::Button:
+            renderer.WriteCharacter(btn->X, btn->Y, '[', c1);
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, c2);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', c1);
+            break;
         }
     }
 
@@ -544,6 +549,9 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
             return;
         case WindowButtonType::MaximizeRestoreButton:
             MaximizeRestore();
+            return;
+        case WindowButtonType::Button:
+            RaiseEvent(Event::Command, b.ID);
             return;
         }
     }
