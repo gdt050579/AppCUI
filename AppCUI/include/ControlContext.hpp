@@ -20,7 +20,7 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
-enum class LayoutFormatMode: unsigned short
+enum class LayoutFormatMode : unsigned short
 {
     None,
     PointAndSize,
@@ -34,7 +34,7 @@ enum class LayoutFormatMode: unsigned short
 
     LeftTopRightBottomAnchors
 };
-enum class LayoutValueType: unsigned short
+enum class LayoutValueType : unsigned short
 {
     CharacterOffset = 0,
     Percentage
@@ -491,7 +491,7 @@ class NumericSelectorControlContext : public ControlContext
     bool wrongValueInserted      = false;
     long long sliderPosition     = 0;
     bool isMouseLeftClickPressed = false;
-    
+
     enum class IsMouseOn
     {
         None,
@@ -499,6 +499,14 @@ class NumericSelectorControlContext : public ControlContext
         TextField,
         PlusButton
     } isMouseOn{ IsMouseOn::None };
+};
+
+class TreeControlContext : public ControlContext
+{
+  public:
+    bool expanded = false;
+    std::string value;
+    std::vector<Tree> children;
 };
 
 enum class MenuItemType : unsigned int

@@ -1769,7 +1769,7 @@ namespace Controls
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
-    
+
     enum class ButtonFlags : unsigned int
     {
         None = 0,
@@ -1782,7 +1782,7 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              int controlID = 0,
+              int controlID     = 0,
               ButtonFlags flags = ButtonFlags::None);
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -2271,6 +2271,20 @@ namespace Controls
         bool Create(unsigned int screenWidth, unsigned int screenHeight);
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+    };
+
+    class EXPORT Tree : public Control
+    {
+      public:
+        bool Create(Control* parent, const std::string_view& layout);
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+
+        void SetValue(const std::string_view& value);
+        const std::string_view GetValue() const;
+
+    private:
+        const bool IsExpandable() const;
     };
 
 }; // namespace Controls

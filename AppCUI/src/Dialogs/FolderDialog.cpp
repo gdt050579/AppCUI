@@ -172,8 +172,8 @@ void FolderDialogClass::UpdateFolderList()
             const time_t date{ FolderDialogUtils::GetLastModifiedTime(entry) };
             struct tm t;
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-            localtime_r(&lastModifiedTime, &t); // TODO: errno not treated
-            strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+            localtime_r(&date, &t); // TODO: errno not treated
+            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #else
             localtime_s(&t, &date); // TODO: errno not treated
             std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);

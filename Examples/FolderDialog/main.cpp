@@ -1,5 +1,7 @@
 #include "AppCUI.hpp"
 
+#include <cuchar>
+
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
@@ -16,6 +18,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
     TextField currentFolder;
     Splitter vertical;
     Splitter horizontal;
+    Tree tree;
 
   public:
     ExampleMainWindow()
@@ -23,8 +26,10 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         Create("Folder tree example", "d:c, w:80%, h:60%");
         open.Create(this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
         vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
-        horizontal.Create(this, "x:1%, y:10%, w:99%, h:20%", false);
+        horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+        tree.Create(this, "x:1%, y:20%, w:99%, h:20%");
+        tree.SetValue(std::filesystem::current_path().string());
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -42,7 +47,28 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 const auto res = FolderDialog::ShowOpenFileWindow("", currentFolder.GetText());
                 if (res.has_value())
                 {
-                    currentFolder.SetText(res->u8string());
+                    const auto value = res->u8string();
+
+                    currentFolder.SetText(value);
+
+                    std::string valueString;
+                    std::mbstate_t state{ 0 };
+                    char out[MB_LEN_MAX]{ 0 };
+                    for (const auto& c16 : value)
+                    {
+                        const std::size_t rc = std::c16rtomb(out, c16, &state);
+                        if (rc == static_cast<std::size_t>(-1))
+                        {
+                            continue;
+                        }
+
+                        for (const char c8 : std::string_view{ out, rc })
+                        {
+                            valueString += c8;
+                        }
+                    }
+
+                    tree.SetValue(valueString);
                 }
 
                 return true;
