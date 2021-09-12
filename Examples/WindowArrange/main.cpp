@@ -73,7 +73,12 @@ int main()
         char16_t hk = 0;
         if (tr < 10)
             hk = '0' + tr;
-        Application::AddWindow(new MyWin(winName,hk));
+        auto* w = new MyWin(winName, hk);
+        if (tr == 1)
+            w->SetTag("Data", "A window that contains\na lot of data ...");
+        if (tr == 2)
+            w->SetTag("Numbers", "Plenty of numbers ....");
+        Application::AddWindow(w);
     }    
     Application::Run();
     return 0;
