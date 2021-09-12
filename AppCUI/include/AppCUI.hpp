@@ -1758,6 +1758,7 @@ namespace Controls
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();

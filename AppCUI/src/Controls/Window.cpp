@@ -252,11 +252,14 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
               "Click and drag to resize this window");
     }
     // hot key
-    Members->WinButtons[Members->WinButtonsCount++].Init(
+    Members->WinButtons[Members->WinButtonsCount].Init(
           WindowButtonType::HotKeY,
           WindowButtonLayout::TopBarFromLeft,
           3,
           "Press Alt+xx to switch to this window");
+    // the button exists but it is hidden
+    Members->WinButtons[Members->WinButtonsCount].SetFlag(WindowButtonFlags::Hidden);
+    Members->WinButtonsCount++;
 
     UpdateWindowsButtonsPoz(Members);
 
@@ -356,6 +359,11 @@ void Window::Paint(Graphics::Renderer& renderer)
                     c1 = colorWindowButton;
                 renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::BoxBottomRightCornerSingleLine, c1);
             }
+            break;
+        case WindowButtonType::HotKeY:
+            renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), colorWindowButton);
+            renderer.WriteCharacter(btn->X+btn->Size, btn->Y, ']', colorTitle);
             break;
         }
     }
@@ -623,6 +631,32 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
     }
     // key was not prcessed, pass it to my parent
     return false;
+}
+void Window::OnHotKeyChanged()
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    // find hotkey win button
+    WindowButton* btnHotKey = nullptr;
+    for (unsigned int tr=0;tr<Members->WinButtonsCount;tr++)
+        if (Members->WinButtons[tr].Type == WindowButtonType::HotKeY)
+        {
+            btnHotKey = &Members->WinButtons[tr];
+            break;
+        }
+    // sanity check (in reality the pointer should always be valid)
+    if (!btnHotKey)
+        return; 
+
+    if (Members->HotKey == Key::None)
+    {
+        btnHotKey->SetFlag(WindowButtonFlags::Hidden);        
+    }
+    else
+    {
+        btnHotKey->Size = (int)(KeyUtils::GetKeyName(Members->HotKey).size() + 2);
+        btnHotKey->RemoveFlag(WindowButtonFlags::Hidden);
+    }
+    UpdateWindowsButtonsPoz(Members);
 }
 bool Window::Exit(int dialogResult)
 {
