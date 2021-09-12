@@ -57,7 +57,8 @@ struct FolderDialogClass
     void OnCurrentItemChanged();
 };
 
-bool FolderDialog_EventHandler(Control* control, const void* sender, Event eventType, int controlID, void* /* Context */)
+bool FolderDialog_EventHandler(
+      Control* control, const void* sender, Event eventType, int controlID, void* /* Context */)
 {
     return ((FolderDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
@@ -146,53 +147,50 @@ void FolderDialogClass::UpdateFolderList()
     folders.DeleteAllItems();
 
     std::string currentPath;
-    if (path.GetText().ToString(currentPath))
+    if (path.GetText().ToString(currentPath) == false)
     {
-        std::filesystem::path path{ currentPath };
-        if (path != path.root_path())
-        {
-            folders.AddItem("..", "UP-DIR");
-            folders.SetItemData(0, ItemData{ 0 });
-        }
-
-        try
-        {
-            for (const auto& fileEntry : std::filesystem::directory_iterator(path))
-            {
-                if (fileEntry.is_directory() == false)
-                {
-                    continue;
-                }
-
-                char lastModifiedTimeBuffer[64]{ 0 };
-#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-                time_t ltime{ FolderDialogUtils::GetLastModifiedTime(fileEntry) };
-                struct tm newtime;
-                localtime_r(&ltime, &newtime); // TODO: errno treated
-                strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &newtime);
-#else
-                const time_t lastModifiedTime{ FolderDialogUtils::GetLastModifiedTime(fileEntry) };
-                tm t{};
-                localtime_s(&t, &lastModifiedTime); // TODO: errno treated
-                std::strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &t);
-#endif
-
-                const ItemHandle itemHandle = folders.AddItem(
-                      reinterpret_cast<const char*>(fileEntry.path().filename().u8string().c_str()),
-                      "Folder",
-                      lastModifiedTimeBuffer);
-
-                folders.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-                folders.SetItemData(itemHandle, ItemData{ 1 });
-            }
-        }
-        catch (...)
-        {
-            // for the moment skip
-        }
-
-        folders.Sort();
+        return;
     }
+
+    const std::filesystem::path path{ currentPath };
+    if (path != path.root_path())
+    {
+        folders.AddItem("..", "UP-DIR");
+        folders.SetItemData(0, ItemData{ 0 });
+    }
+
+    try
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(path))
+        {
+            if (entry.is_directory() == false)
+            {
+                continue;
+            }
+
+            char dateBuffer[64]{ 0 };
+            const time_t date{ FolderDialogUtils::GetLastModifiedTime(entry) };
+            struct tm t;
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+            localtime_r(&lastModifiedTime, &t); // TODO: errno not treated
+            strftime(lastModifiedTimeBuffer, sizeof(lastModifiedTimeBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#else
+            localtime_s(&t, &date); // TODO: errno not treated
+            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#endif
+            const ItemHandle itemHandle = folders.AddItem(
+                  reinterpret_cast<const char*>(entry.path().filename().u8string().c_str()), "Folder", dateBuffer);
+
+            folders.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
+            folders.SetItemData(itemHandle, ItemData{ 1 });
+        }
+    }
+    catch (...)
+    {
+        // for the moment skip
+    }
+
+    folders.Sort();
 }
 
 bool FolderDialogClass::OnEventHandler(const void* sender, Event eventType, int controlID)
@@ -234,15 +232,14 @@ bool FolderDialogClass::OnEventHandler(const void* sender, Event eventType, int 
 
 int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem::path& _path)
 {
-    // defaultFileName = fileName;
     window.Create("Open", "w:78, h:23, d:c");
     window.SetEventHandler(FolderDialog_EventHandler, this);
 
-    path.Create(&window, "", "x:2,y:2,w:63");
+    path.Create(&window, "", "x:2, y:2, w:63");
 
-    drive.Create(&window, "&Location", "x:2,y:1,w:8");
+    drive.Create(&window, "&Location", "x:2, y:1, w:8");
 
-    comboDrive.Create(&window, "x:12,y:1,w:61");
+    comboDrive.Create(&window, "x:12, y:1, w:61");
     comboDrive.SetHotKey('L');
 
     // populate combo box with special folders and available drivers
@@ -268,7 +265,7 @@ int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem
         }
     }
 
-    folders.Create(&window, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
+    folders.Create(&window, "x:2, y:3, w:72, h:13", ListViewFlags::Sortable);
     folders.AddColumn("&Name", TextAlignament::Left, 31);
     folders.AddColumn("&Size", TextAlignament::Right, 16);
     folders.AddColumn("&Modified", TextAlignament::Center, 20);
@@ -296,8 +293,8 @@ int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem
           this);
     folders.Sort(0, true); // sort after the first column, ascendent
 
-    this->folderName.Create(&window, "Folder &Name", "x:2,y:17,w:11");
-    fName.Create(&window, folderName, "x:14,y:17,w:80%");
+    this->folderName.Create(&window, "Folder &Name", "x:2, y:17, w:11");
+    fName.Create(&window, folderName, "x:14, y:17, w:80%");
     fName.SetHotKey('N');
 
     ok.Create(&window, "&Ok", "x:25%, y:19, w:13", (int) Dialogs::Result::Ok);
@@ -305,9 +302,13 @@ int FolderDialogClass::Show(const ConstString& folderName, const std::filesystem
     try
     {
         if (_path.empty())
+        {
             path.SetText(std::filesystem::absolute(".").u8string());
+        }
         else
+        {
             path.SetText(std::filesystem::absolute(_path).u8string());
+        }
     }
     catch (...)
     {

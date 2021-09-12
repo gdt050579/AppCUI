@@ -5,7 +5,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
-class MyWin : public AppCUI::Controls::Window
+class ExampleMainWindow : public AppCUI::Controls::Window
 {
     enum class ControlIds : unsigned int
     {
@@ -14,15 +14,17 @@ class MyWin : public AppCUI::Controls::Window
 
     Button open;
     TextField currentFolder;
+    Splitter vertical;
+    Splitter horizontal;
 
   public:
-    MyWin()
+    ExampleMainWindow()
     {
-        Create("File example", "d:c, w:120, h:20");
-        open.Create(this, "&Open", "x:0, y:0, w:12", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
-        currentFolder.Create(this, "", "x:13, y:0, h:1, w:100%");
-
-        currentFolder.SetText(std::filesystem::current_path().u8string());
+        Create("Folder tree example", "d:c, w:80%, h:60%");
+        open.Create(this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
+        vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
+        horizontal.Create(this, "x:1%, y:10%, w:99%, h:20%", false);
+        currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -59,7 +61,7 @@ int main()
         return 1;
     }
 
-    Application::AddWindow(new MyWin());
+    Application::AddWindow(new ExampleMainWindow());
     Application::Run();
 
     return 0;
