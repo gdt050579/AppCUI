@@ -1,6 +1,7 @@
 #include "AppCUI.hpp"
 
 #include <cuchar>
+#include <climits>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
