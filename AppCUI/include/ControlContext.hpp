@@ -186,7 +186,7 @@ struct WindowButton
     int Size, X, Y, ID;
     unsigned int HotKeyOffset;
     Key HotKey;
-    WindowControlBarLayout Layout;
+    WindowControlsBarLayout Layout;
     WindowButtonType Type;
     WindowButtonFlags Flags;
     inline bool IsVisible() const
@@ -213,10 +213,10 @@ struct WindowButton
     {
         Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
     }
-    bool Init(WindowButtonType type, WindowControlBarLayout layout, unsigned char size, std::string_view toolTipText);
+    bool Init(WindowButtonType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText);
     bool Init(
           WindowButtonType type,
-          WindowControlBarLayout layout,
+          WindowControlsBarLayout layout,
           const AppCUI::Utils::ConstString& name,
           const AppCUI::Utils::ConstString& toolTip);
 };

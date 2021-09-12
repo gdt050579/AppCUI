@@ -1738,7 +1738,7 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlBarLayout: unsigned char
+    enum class WindowControlsBarLayout: unsigned char
     {
         None               = 0,
         TopBarFromLeft     = 1,
@@ -1746,11 +1746,11 @@ namespace Controls
         TopBarFromRight    = 3,
         BottomBarFromRight = 4,        
     };
-    class WindowControlBar
+    class WindowControlsBar
     {
         void* Context;
-        WindowControlBarLayout Layout;
-        WindowControlBar(void* ctx, WindowControlBarLayout layout) : Context(ctx), Layout(layout)
+        WindowControlsBarLayout Layout;
+        WindowControlsBar(void* ctx, WindowControlsBarLayout layout) : Context(ctx), Layout(layout)
         {
         }
 
@@ -1799,7 +1799,7 @@ namespace Controls
         bool IsWindowInResizeMode();
 
         Menu* AddMenu(const AppCUI::Utils::ConstString& name);
-        WindowControlBar GetControlBar(WindowControlBarLayout layout);
+        WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
     };
