@@ -1,8 +1,5 @@
 #include "AppCUI.hpp"
 
-#include <cuchar>
-#include <climits>
-
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
@@ -48,28 +45,8 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 const auto res = FolderDialog::ShowOpenFileWindow("", currentFolder.GetText());
                 if (res.has_value())
                 {
-                    const auto value = res->u8string();
-
-                    currentFolder.SetText(value);
-
-                    std::string valueString;
-                    std::mbstate_t state{};
-                    char out[MB_LEN_MAX]{};
-                    for (const auto& c16 : value)
-                    {
-                        const std::size_t rc = std::c16rtomb(out, c16, &state);
-                        if (rc == static_cast<std::size_t>(-1))
-                        {
-                            continue;
-                        }
-
-                        for (const char c8 : std::string_view{ out, rc })
-                        {
-                            valueString += c8;
-                        }
-                    }
-
-                    tree.SetValue(valueString);
+                    currentFolder.SetText(res->u8string());
+                    tree.SetValue(res->string());
                 }
 
                 return true;
