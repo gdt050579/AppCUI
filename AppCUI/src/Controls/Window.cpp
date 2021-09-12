@@ -140,7 +140,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowButtonLayout::TopBarFromRight:
             btn->Y = 0; // TopBar
             btn->X = topRight-btn->Size+1;
-            tmp = btn->X - 1;
+            tmp = btn->X - 2;
             if (tmp > topLeft)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -160,7 +160,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowButtonLayout::BottomBarFromRight:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomRight - btn->Size + 1;
-            tmp = btn->X - 1;
+            tmp = btn->X - 2;
             if (tmp > bottomLeft)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -240,7 +240,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     // hot key
     Members->WinButtons[Members->WinButtonsCount].Init(
           WindowButtonType::HotKeY,
-          WindowButtonLayout::TopBarFromLeft,
+          WindowButtonLayout::TopBarFromRight,
           3,
           "Press Alt+xx to switch to this window");
     // the button exists but it is hidden
