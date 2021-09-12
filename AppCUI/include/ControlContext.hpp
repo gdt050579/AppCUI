@@ -177,8 +177,7 @@ enum class WindowButtonType : unsigned char
     CloseButton,
     MaximizeRestoreButton,
     WindowResize,
-    Button,
-    Label,
+    Tag,
 };
 enum class WindowButtonFlags : unsigned char
 {

@@ -6,6 +6,7 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 constexpr unsigned char WINBUTTON_NONE = 0xFF;
+constexpr unsigned int MAX_TAG_CHARS   = 8U;
 
 
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
@@ -247,6 +248,13 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     Members->WinButtons[Members->WinButtonsCount].SetFlag(WindowButtonFlags::Hidden);
     Members->WinButtonsCount++;
 
+    // TAG
+    Members->WinButtons[Members->WinButtonsCount].Init(
+          WindowButtonType::Tag, WindowButtonLayout::TopBarFromLeft, 3, "");
+    // the button exists but it is hidden
+    Members->WinButtons[Members->WinButtonsCount].SetFlag(WindowButtonFlags::Hidden);
+    Members->WinButtonsCount++;
+
     UpdateWindowsButtonsPoz(Members);
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
@@ -349,6 +357,11 @@ void Window::Paint(Graphics::Renderer& renderer)
         case WindowButtonType::HotKeY:
             renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), colorWindowButton);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
+            break;
+        case WindowButtonType::Tag:
+            renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, colorWindowButton);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
             break;
         }
@@ -645,6 +658,32 @@ void Window::OnHotKeyChanged()
         btnHotKey->ToolTipText.Add(" to activate this window");
         btnHotKey->RemoveFlag(WindowButtonFlags::Hidden);
     }
+    UpdateWindowsButtonsPoz(Members);
+}
+void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    // find hotkey win button
+    WindowButton* b = nullptr;
+    for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++)
+        if (Members->WinButtons[tr].Type == WindowButtonType::Tag)
+        {
+            b = &Members->WinButtons[tr];
+            break;
+        }
+    // sanity check (in reality the pointer should always be valid)
+    if (!b)
+        return;
+    if (!b->ToolTipText.Set(toolTipText))
+        return;
+    if (!b->Text.Set(name))
+        return;
+    if (b->Text.Len() > MAX_TAG_CHARS)
+        if (!b->Text.Delete(MAX_TAG_CHARS, b->Text.Len()))
+            return;
+    // all good
+    b->Size = (int) (b->Text.Len() + 2);
+    b->RemoveFlag(WindowButtonFlags::Hidden);
     UpdateWindowsButtonsPoz(Members);
 }
 bool Window::Exit(int dialogResult)

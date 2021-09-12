@@ -1754,6 +1754,7 @@ namespace Controls
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
+        void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
