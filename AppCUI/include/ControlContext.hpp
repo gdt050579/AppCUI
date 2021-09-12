@@ -160,24 +160,81 @@ constexpr unsigned int WINDOW_DRAG_STATUS_NONE = 0;
 constexpr unsigned int WINDOW_DRAG_STATUS_MOVE = 1;
 constexpr unsigned int WINDOW_DRAG_STATUS_SIZE = 2;
 
+constexpr unsigned int MAX_WINDOW_BUTTONS = 32;
+
+enum class WindowButtonLayout : unsigned char
+{
+    None               = 0,
+    TopBarFromLeft     = 1,
+    BottomBarFromLeft  = 2,
+    TopBarFromRight    = 3,
+    BottomBarFromRight = 4,
+};
+enum class WindowButtonType : unsigned char
+{
+    None = 0,
+    HotKeY,
+    CloseButton,
+    MaximizeRestoreButton,
+    WindowResize,
+    Button,
+    Label,
+};
+enum class WindowButtonFlags : unsigned char
+{
+    None    = 0,
+    Visible = 0x01,
+    Hidden  = 0x02,
+};
+struct WindowControlContext;
+struct WindowButton
+{
+    AppCUI::Graphics::CharacterBuffer ToolTipText;
+    AppCUI::Graphics::CharacterBuffer Text;
+    int Size, X, Y, ID;
+    WindowButtonLayout Layout;
+    WindowButtonType Type;
+    WindowButtonFlags Flags;
+    inline bool IsVisible() const
+    {
+        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Visible) != 0;
+    }
+    inline bool IsHidden() const
+    {
+        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Hidden) != 0;
+    }
+    inline bool Contains(int x, int y) const
+    {
+        return (y == Y) && (x >= X) && (x < (X + Size)) && (IsVisible()) && (!IsHidden());
+    }
+    inline int CenterX() const
+    {
+        return X + Size / 2;
+    }
+    inline void SetFlag(WindowButtonFlags flg)
+    {
+        Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) | ((unsigned char) flg));
+    }
+    inline void RemoveFlag(WindowButtonFlags flg)
+    {
+        Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
+    }
+    bool Init(WindowButtonType type, WindowButtonLayout layout, unsigned char size, std::string_view toolTipText);
+};
 struct WindowControlContext : public ControlContext
 {
   public:
+    std::unique_ptr<AppCUI::Internal::MenuBar> menu;
     int oldPosX, oldPosY, oldW, oldH;
     int dragStatus, dragOffsetX, dragOffsetY;
     int MinWidth, MaxWidth, MinHeight, MaxHeight;
     int DialogResult;
-    struct
-    {
-        unsigned int Left, Right, Y;
-        inline bool Contains(unsigned int x, unsigned int y) const
-        {
-            return (y == Y) && (x >= Left) && (x <= Right);
-        }
-    } rCloseButton, rMaximizeButton, rResizeButton;
-    unsigned char winButtonState;
+    WindowButton WinButtons[MAX_WINDOW_BUTTONS];
+    unsigned int WinButtonsCount;
+    unsigned char CurrentWinButtom;
+    bool CurrentWinButtomPressed;
     bool Maximized;
-    std::unique_ptr<AppCUI::Internal::MenuBar> menu;
+    
 };
 
 class SplitterControlContext : public ControlContext

@@ -1205,6 +1205,10 @@ namespace Graphics
         {
             return Buffer != nullptr;
         }
+        inline bool IsEmpty() const
+        {
+            return (Buffer == nullptr) || (Count==0);
+        }
 
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);

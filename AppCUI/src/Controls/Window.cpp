@@ -5,11 +5,8 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-#define WINBUTTON_STATE_NONE     0
-#define WINBUTTON_STATE_CLOSE    1
-#define WINBUTTON_STATE_MAXIMIZE 2
-#define WINBUTTON_STATE_RESIZE   4
-#define WINBUTTON_STATE_CLICKED  32
+constexpr unsigned char WINBUTTON_NONE = 0xFF;
+
 
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
 {
@@ -114,23 +111,98 @@ bool ProcessHotKey(Control* ctrl, AppCUI::Input::Key KeyCode)
 }
 void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
 {
-    if ((wcc->Flags & WindowFlags::NoCloseButton) != WindowFlags::NoCloseButton)
+    for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++)
+        wcc->WinButtons[tr].RemoveFlag(WindowButtonFlags::Visible);
+
+    int topLeft     = 1;
+    int bottomLeft  = 1;
+    int topRight    = wcc->Layout.Width - 2;
+    int bottomRight = wcc->Layout.Width - 1;
+    int tmp;
+
+    auto* btn = wcc->WinButtons;
+    for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++,btn++)
     {
-        wcc->rCloseButton.Y     = 0;
-        wcc->rCloseButton.Left  = wcc->Layout.Width - 4;
-        wcc->rCloseButton.Right = wcc->Layout.Width - 2;
+        if (btn->IsHidden())
+            continue;
+        switch (btn->Layout)
+        {
+        case WindowButtonLayout::TopBarFromLeft:
+            btn->Y = 0; // TopBar
+            btn->X = topLeft;
+            tmp = btn->Size + 1;
+            if (tmp < topRight)
+            {
+                btn->SetFlag(WindowButtonFlags::Visible);
+                topLeft = tmp;
+            }
+            break;
+        case WindowButtonLayout::TopBarFromRight:
+            btn->Y = 0; // TopBar
+            btn->X = topRight-btn->Size+1;
+            tmp = btn->X - 1;
+            if (tmp > topLeft)
+            {
+                btn->SetFlag(WindowButtonFlags::Visible);
+                topRight = tmp;
+            }
+            break;
+        case WindowButtonLayout::BottomBarFromLeft:
+            btn->Y = wcc->Layout.Height - 1; // BottomBar
+            btn->X = bottomLeft;
+            tmp = btn->Size + 1;
+            if (tmp < bottomRight)
+            {
+                btn->SetFlag(WindowButtonFlags::Visible);
+                bottomLeft = tmp;
+            }
+            break;
+        case WindowButtonLayout::BottomBarFromRight:
+            btn->Y = wcc->Layout.Height - 1; // BottomBar
+            btn->X = bottomRight - btn->Size + 1;
+            tmp = btn->X - 1;
+            if (tmp > bottomLeft)
+            {
+                btn->SetFlag(WindowButtonFlags::Visible);
+                bottomRight = tmp;
+            }
+            break;
+        }
     }
-    if ((wcc->Flags & WindowFlags::Sizeable) == WindowFlags::Sizeable)
-    {
-        wcc->rMaximizeButton.Y     = 0;
-        wcc->rMaximizeButton.Left  = 1;
-        wcc->rMaximizeButton.Right = 3;
-        wcc->rResizeButton.Y       = wcc->Layout.Height - 1;
-        wcc->rResizeButton.Left    = wcc->Layout.Width - 1;
-        wcc->rResizeButton.Right   = wcc->rResizeButton.Left;
-    }
+
+    //if ((wcc->Flags & WindowFlags::NoCloseButton) != WindowFlags::NoCloseButton)
+    //{
+    //    wcc->rCloseButton.Y     = 0;
+    //    wcc->rCloseButton.Left  = wcc->Layout.Width - 4;
+    //    wcc->rCloseButton.Right = wcc->Layout.Width - 2;
+    //}
+    //if ((wcc->Flags & WindowFlags::Sizeable) == WindowFlags::Sizeable)
+    //{
+    //    wcc->rMaximizeButton.Y     = 0;
+    //    wcc->rMaximizeButton.Left  = 1;
+    //    wcc->rMaximizeButton.Right = 3;
+    //    wcc->rResizeButton.Y       = wcc->Layout.Height - 1;
+    //    wcc->rResizeButton.Left    = wcc->Layout.Width - 1;
+    //    wcc->rResizeButton.Right   = wcc->rResizeButton.Left;
+    //}
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
+}
+//=========================================================================================================================================================
+bool WindowButton::Init(WindowButtonType type, WindowButtonLayout layout, unsigned char size, std::string_view toolTipText)
+{
+    this->Type   = type;
+    this->Layout = layout;
+    this->Size   = size;
+    this->X      = 0;
+    this->Y      = 0;
+    this->Flags  = WindowButtonFlags::None;
+    this->ID     = -1;
+    if (!toolTipText.empty())
+    {
+        CHECK(this->ToolTipText.Set(toolTipText), false, "");
+    }
+    return true;
 }
 //=========================================================================================================================================================
 Window::~Window()
@@ -144,16 +216,48 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
-    Members->MinWidth =     12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, 
+    Members->MinWidth = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, 
                                 // title, OneSpaceRightPadding, close
                                 // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
-    Members->MinHeight      = 3;
-    Members->MaxWidth       = 100000;
-    Members->MaxHeight      = 100000;
-    Members->Maximized      = false;
-    Members->dragStatus     = WINDOW_DRAG_STATUS_NONE;
-    Members->DialogResult   = -1;
-    Members->winButtonState = WINBUTTON_STATE_NONE;
+    Members->MinHeight               = 3;
+    Members->MaxWidth                = 100000;
+    Members->MaxHeight               = 100000;
+    Members->Maximized               = false;
+    Members->dragStatus              = WINDOW_DRAG_STATUS_NONE;
+    Members->DialogResult            = -1;
+    Members->CurrentWinButtom        = WINBUTTON_NONE;
+    Members->CurrentWinButtomPressed = false;
+    Members->WinButtonsCount         = 0;
+
+    // init the buttons
+    if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
+    {
+        Members->WinButtons[Members->WinButtonsCount++].Init(
+              WindowButtonType::CloseButton,
+              WindowButtonLayout::TopBarFromRight,
+              3,
+              "Close window");
+    }
+    if ((Flags & WindowFlags::Sizeable) != WindowFlags::None)
+    {
+        Members->WinButtons[Members->WinButtonsCount++].Init(
+              WindowButtonType::MaximizeRestoreButton,
+              WindowButtonLayout::TopBarFromLeft,
+              3,
+              "Maximize or restore the size of this window");
+        Members->WinButtons[Members->WinButtonsCount++].Init(
+              WindowButtonType::WindowResize,
+              WindowButtonLayout::BottomBarFromRight,
+              1,
+              "Click and drag to resize this window");
+    }
+    // hot key
+    Members->WinButtons[Members->WinButtonsCount++].Init(
+          WindowButtonType::HotKeY,
+          WindowButtonLayout::TopBarFromLeft,
+          3,
+          "Press Alt+xx to switch to this window");
+
     UpdateWindowsButtonsPoz(Members);
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
@@ -207,75 +311,68 @@ void Window::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', colorWindow);
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
 
+    auto* btn = Members->WinButtons;
+    for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++, btn++)
+    {
+        if ((!btn->IsVisible()) || (btn->IsHidden()))
+            continue;
+        if (Members->CurrentWinButtom == tr)
+        {
+            if (Members->CurrentWinButtomPressed)
+            {
+                c1 = c2 = wcfg->ControlButtonHoverColor;
+            }
+            else
+            {
+                c1 = c2 = wcfg->ControlButtonPressedColor;
+            }
+        }
+        else
+        {
+            c1 = colorTitle;
+            c2 = colorWindowButton;
+        }
+        switch (btn->Type)
+        {
+        case WindowButtonType::CloseButton:
+            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
+            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c2);
+            break;
+        case WindowButtonType::MaximizeRestoreButton:
+            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
+            if (Members->Maximized)
+                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUpDown, c2);
+            else
+                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUp, c2);
+            break;
+        case WindowButtonType::WindowResize:
+            if (Members->Focused)
+            {
+                if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
+                    c1 = wcfg->ControlButtonPressedColor;
+                else if (Members->CurrentWinButtom == tr)
+                    c1 = wcfg->ControlButtonHoverColor;
+                else
+                    c1 = colorWindowButton;
+                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::BoxBottomRightCornerSingleLine, c1);
+            }
+            break;
+        }
+    }
+
+
     // Title
     if (Members->Layout.Width > 10)
     {
         WriteTextParams params(
               WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth |
-              WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+                    WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
               TextAlignament::Center);
         params.X     = 5;
         params.Y     = 0;
         params.Color = colorTitle;
         params.Width = Members->Layout.Width - 10;
         renderer.WriteText(Members->Text, params);
-    }
-    // close button
-    if ((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
-    {
-        switch (Members->winButtonState)
-        {
-        case WINBUTTON_STATE_CLOSE:
-            c1 = c2 = wcfg->ControlButtonHoverColor;
-            break;
-        case WINBUTTON_STATE_CLOSE | WINBUTTON_STATE_CLICKED:
-            c1 = c2 = wcfg->ControlButtonPressedColor;
-            break;
-        default:
-            c1 = colorTitle;
-            c2 = colorWindowButton;
-            break;
-        }
-        renderer.WriteSingleLineText(Members->rCloseButton.Left, Members->rCloseButton.Y, "[ ]", c1);
-        renderer.WriteCharacter(Members->rCloseButton.Left + 1, Members->rCloseButton.Y, 'x', c2);
-    }
-    // maximize button
-    if ((Members->Flags & WindowFlags::Sizeable) != WindowFlags::None)
-    {
-        switch (Members->winButtonState)
-        {
-        case WINBUTTON_STATE_MAXIMIZE:
-            c1 = c2 = wcfg->ControlButtonHoverColor;
-            break;
-        case WINBUTTON_STATE_MAXIMIZE | WINBUTTON_STATE_CLICKED:
-            c1 = c2 = wcfg->ControlButtonPressedColor;
-            break;
-        default:
-            c1 = colorTitle;
-            c2 = colorWindowButton;
-            break;
-        }
-        renderer.WriteSingleLineText(Members->rMaximizeButton.Left, Members->rMaximizeButton.Y, "[ ]", c1);
-        if (Members->Maximized)
-            renderer.WriteSpecialCharacter(
-                  Members->rMaximizeButton.Left + 1, Members->rMaximizeButton.Y, SpecialChars::ArrowUpDown, c2);
-        else
-            renderer.WriteSpecialCharacter(
-                  Members->rMaximizeButton.Left + 1, Members->rMaximizeButton.Y, SpecialChars::ArrowUp, c2);
-        if (Members->Focused)
-        {
-            if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
-                c1 = wcfg->ControlButtonPressedColor;
-            else if (Members->winButtonState == WINBUTTON_STATE_RESIZE)
-                c1 = wcfg->ControlButtonHoverColor;
-            else
-                c1 = colorWindowButton;
-            renderer.WriteSpecialCharacter(
-                  Members->rResizeButton.Left,
-                  Members->rResizeButton.Y,
-                  SpecialChars::BoxBottomRightCornerSingleLine,
-                  c1);
-        }
     }
     // menu
     if (Members->menu)
@@ -319,37 +416,32 @@ bool Window::CenterScreen()
 void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
+    Members->dragStatus              = WINDOW_DRAG_STATUS_NONE;
+    Members->CurrentWinButtomPressed = false; 
+
     if (Members->menu)
     {
         if (Members->menu->OnMousePressed(x, y, button))
             return;
     }
-    if (((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None) && (Members->rCloseButton.Contains(x, y)))
+
+    // win buttons
+    Members->CurrentWinButtom = WINBUTTON_NONE;
+    for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++)
     {
-        Members->winButtonState = WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE;
-        return;
-    }
-    if ((Members->Flags & WindowFlags::Sizeable) != WindowFlags::None)
-    {
-        if (Members->rMaximizeButton.Contains(x, y))
-        {
-            Members->winButtonState = WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_MAXIMIZE;
-            return;
-        }
-        if (Members->rResizeButton.Contains(x, y))
-        {
-            Members->dragStatus     = WINDOW_DRAG_STATUS_SIZE;
-            Members->winButtonState = WINBUTTON_STATE_NONE;
+        if (Members->WinButtons[tr].Contains(x, y))
+        {            
+            Members->CurrentWinButtom = tr; // set current button
+            Members->CurrentWinButtomPressed = true;
+            if (Members->WinButtons[tr].Type == WindowButtonType::WindowResize)
+                Members->dragStatus = WINDOW_DRAG_STATUS_SIZE; 
             return;
         }
     }
-    // if (Members->fnMousePressedHandler != nullptr)
-    //{
-    //	// daca vreau sa tratez eu evenimentul
-    //	if (Members->fnMousePressedHandler(this, x, y, butonState,Members->fnMouseHandlerContext))
-    //		return;
-    //}
+    // Hide tool tip
+    HideToolTip();
+
+
     if ((Members->Flags & WindowFlags::FixedPosition) == WindowFlags::None)
     {
         Members->dragStatus  = WINDOW_DRAG_STATUS_MOVE;
@@ -360,21 +452,26 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    Members->CurrentWinButtomPressed = false; 
     if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
     {
         Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
         return;
     }
-    if (Members->winButtonState == (WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_MAXIMIZE))
+    if (Members->CurrentWinButtom != WINBUTTON_NONE)
     {
-        MaximizeRestore();
-        return;
+        const auto &b = Members->WinButtons[Members->CurrentWinButtom];
+        switch (b.Type)
+        {
+        case WindowButtonType::CloseButton:
+            RaiseEvent(Event::WindowClose);
+            return;
+        case WindowButtonType::MaximizeRestoreButton:
+            MaximizeRestore();
+            return;
+        }
     }
-    if (Members->winButtonState == (WINBUTTON_STATE_CLICKED | WINBUTTON_STATE_CLOSE))
-    {
-        RaiseEvent(Event::WindowClose);
-        return;
-    }
+
     // if (Members->fnMouseReleaseHandler != nullptr)
     //{
     //	// daca vreau sa tratez eu evenimentul
@@ -413,44 +510,41 @@ bool Window::OnMouseOver(int x, int y)
         }
     }
 
-    if (((Members->Flags & WindowFlags::NoCloseButton) == WindowFlags::None) && (Members->rCloseButton.Contains(x, y)))
+    // check buttons
+    for (unsigned int tr=0;tr<Members->WinButtonsCount;tr++)
     {
-        if (Members->winButtonState == WINBUTTON_STATE_CLOSE)
-            return false; // suntem deja pe buton
-        Members->winButtonState = WINBUTTON_STATE_CLOSE;
-        ShowToolTip("Close window", (Members->rCloseButton.Left + Members->rCloseButton.Right)/2, Members->rCloseButton.Y);
-        return true;
+        if (Members->WinButtons[tr].Contains(x,y))
+        {
+            if (!Members->WinButtons[tr].ToolTipText.IsEmpty())
+            {
+                ShowToolTip(
+                      Members->WinButtons[tr].ToolTipText,
+                      Members->WinButtons[tr].CenterX(),
+                      Members->WinButtons[tr].Y);
+            }
+            else
+            {
+                HideToolTip();
+            }
+            Members->CurrentWinButtom = tr; // set current button
+            return true;
+        }
     }
-    // if I reach this point - tool tip should not be shown
+    // if I reach this point - tool tip should not be shown and there is no win button selected
     HideToolTip();
-    if ((Members->Flags & WindowFlags::Sizeable) != WindowFlags::None)
-    {
-        if (Members->rMaximizeButton.Contains(x, y))
-        {
-            if (Members->winButtonState == WINBUTTON_STATE_MAXIMIZE)
-                return false; // suntem deja pe buton
-            Members->winButtonState = WINBUTTON_STATE_MAXIMIZE;
-            return true;
-        }
-        if (Members->rResizeButton.Contains(x, y))
-        {
-            if (Members->winButtonState == WINBUTTON_STATE_RESIZE)
-                return false; // suntem deja pe buton
-            Members->winButtonState = WINBUTTON_STATE_RESIZE;
-            return true;
-        }
-    }
-    if (Members->winButtonState == WINBUTTON_STATE_NONE)
-        return false; // suntem deja in afara
-    Members->winButtonState = WINBUTTON_STATE_NONE;
+    
+    if (Members->CurrentWinButtom == WINBUTTON_NONE)
+        return false; // already outside any window button
+    Members->CurrentWinButtom = WINBUTTON_NONE;
     return true;
 }
 bool Window::OnMouseLeave()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    if (Members->winButtonState == WINBUTTON_STATE_NONE)
-        return false;
-    Members->winButtonState = WINBUTTON_STATE_NONE;
+    Members->CurrentWinButtomPressed = false; 
+    if (Members->CurrentWinButtom == WINBUTTON_NONE)
+        return false; // already outside any window button
+    Members->CurrentWinButtom = WINBUTTON_NONE;
     return true;
 }
 bool Window::OnBeforeResize(int newWidth, int newHeight)
