@@ -227,7 +227,6 @@ struct WindowControlContext : public ControlContext
     std::unique_ptr<AppCUI::Internal::MenuBar> menu;
     int oldPosX, oldPosY, oldW, oldH;
     int dragStatus, dragOffsetX, dragOffsetY;
-    int MinWidth, MaxWidth, MinHeight, MaxHeight;
     int DialogResult;
     WindowButton WinButtons[MAX_WINDOW_BUTTONS];
     unsigned int WinButtonsCount;

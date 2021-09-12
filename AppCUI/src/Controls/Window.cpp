@@ -130,7 +130,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowButtonLayout::TopBarFromLeft:
             btn->Y = 0; // TopBar
             btn->X = topLeft;
-            tmp = btn->Size + 1;
+            tmp = btn->Size + 2;
             if (tmp < topRight)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -150,7 +150,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         case WindowButtonLayout::BottomBarFromLeft:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomLeft;
-            tmp = btn->Size + 1;
+            tmp = btn->Size + 2;
             if (tmp < bottomRight)
             {
                 btn->SetFlag(WindowButtonFlags::Visible);
@@ -170,21 +170,6 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         }
     }
 
-    //if ((wcc->Flags & WindowFlags::NoCloseButton) != WindowFlags::NoCloseButton)
-    //{
-    //    wcc->rCloseButton.Y     = 0;
-    //    wcc->rCloseButton.Left  = wcc->Layout.Width - 4;
-    //    wcc->rCloseButton.Right = wcc->Layout.Width - 2;
-    //}
-    //if ((wcc->Flags & WindowFlags::Sizeable) == WindowFlags::Sizeable)
-    //{
-    //    wcc->rMaximizeButton.Y     = 0;
-    //    wcc->rMaximizeButton.Left  = 1;
-    //    wcc->rMaximizeButton.Right = 3;
-    //    wcc->rResizeButton.Y       = wcc->Layout.Height - 1;
-    //    wcc->rResizeButton.Left    = wcc->Layout.Width - 1;
-    //    wcc->rResizeButton.Right   = wcc->rResizeButton.Left;
-    //}
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
 }
@@ -212,16 +197,17 @@ Window::~Window()
 bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::string_view& layout, WindowFlags Flags)
 {
     CONTROL_INIT_CONTEXT(WindowControlContext);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    Members->Layout.MaxHeight = 200000;
+    Members->Layout.MaxWidth  = 200000;
+    Members->Layout.MinHeight = 3;
+    Members->Layout.MinWidth  = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding,
+                             // title, OneSpaceRightPadding, close
+                             // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
     CHECK(Init(nullptr, caption, layout, false), false, "Failed to create window !");
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
-    Members->MinWidth = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding, 
-                                // title, OneSpaceRightPadding, close
-                                // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
-    Members->MinHeight               = 3;
-    Members->MaxWidth                = 100000;
-    Members->MaxHeight               = 100000;
+
     Members->Maximized               = false;
     Members->dragStatus              = WINDOW_DRAG_STATUS_NONE;
     Members->DialogResult            = -1;
@@ -363,7 +349,7 @@ void Window::Paint(Graphics::Renderer& renderer)
         case WindowButtonType::HotKeY:
             renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), colorWindowButton);
-            renderer.WriteCharacter(btn->X+btn->Size, btn->Y, ']', colorTitle);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
             break;
         }
     }
@@ -560,8 +546,8 @@ bool Window::OnBeforeResize(int newWidth, int newHeight)
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     if ((Members->Flags & WindowFlags::Sizeable) == WindowFlags::None)
         return false;
-    return (newWidth >= Members->MinWidth) && (newWidth <= Members->MaxWidth) && (newHeight >= Members->MinHeight) &&
-           (newHeight <= Members->MaxHeight);
+    return (newWidth >= Members->Layout.MinWidth) && (newWidth <= Members->Layout.MaxWidth) &&
+           (newHeight >= Members->Layout.MinHeight) && (newHeight <= Members->Layout.MaxHeight);
 }
 void Window::OnAfterResize(int, int)
 {
@@ -654,6 +640,9 @@ void Window::OnHotKeyChanged()
     else
     {
         btnHotKey->Size = (int)(KeyUtils::GetKeyName(Members->HotKey).size() + 2);
+        btnHotKey->ToolTipText.Set("Press Alt+");
+        btnHotKey->ToolTipText.Add(KeyUtils::GetKeyName(Members->HotKey));
+        btnHotKey->ToolTipText.Add(" to activate this window");
         btnHotKey->RemoveFlag(WindowButtonFlags::Hidden);
     }
     UpdateWindowsButtonsPoz(Members);
