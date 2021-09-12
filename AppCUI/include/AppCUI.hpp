@@ -1552,6 +1552,8 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListView;
     class EXPORT Menu;
+    class EXPORT Window;
+
     namespace Handlers
     {
         typedef void (*AfterResizeHandler)(
@@ -1736,6 +1738,38 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
+    enum class WindowControlBarLayout: unsigned char
+    {
+        None               = 0,
+        TopBarFromLeft     = 1,
+        BottomBarFromLeft  = 2,
+        TopBarFromRight    = 3,
+        BottomBarFromRight = 4,        
+    };
+    class WindowControlBar
+    {
+        void* Context;
+        WindowControlBarLayout Layout;
+        WindowControlBar(void* ctx, WindowControlBarLayout layout) : Context(ctx), Layout(layout)
+        {
+        }
+
+      public:
+        ItemHandle AddCommandItem(
+              const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip = "");
+        ItemHandle AddRadioItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        ItemHandle AddCheckItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        void AddSeparator();
+        friend class Window;
+    };
     class EXPORT Window : public Control
     {
       public:
@@ -1765,6 +1799,7 @@ namespace Controls
         bool IsWindowInResizeMode();
 
         Menu* AddMenu(const AppCUI::Utils::ConstString& name);
+        WindowControlBar GetControlBar(WindowControlBarLayout layout);
 
         virtual ~Window();
     };

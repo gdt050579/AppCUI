@@ -128,7 +128,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
             continue;
         switch (btn->Layout)
         {
-        case WindowButtonLayout::TopBarFromLeft:
+        case WindowControlBarLayout::TopBarFromLeft:
             btn->Y = 0; // TopBar
             btn->X = topLeft;
             tmp = btn->Size + 2;
@@ -138,7 +138,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
                 topLeft = tmp;
             }
             break;
-        case WindowButtonLayout::TopBarFromRight:
+        case WindowControlBarLayout::TopBarFromRight:
             btn->Y = 0; // TopBar
             btn->X = topRight-btn->Size+1;
             tmp = btn->X - 2;
@@ -148,7 +148,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
                 topRight = tmp;
             }
             break;
-        case WindowButtonLayout::BottomBarFromLeft:
+        case WindowControlBarLayout::BottomBarFromLeft:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomLeft;
             tmp = btn->Size + 2;
@@ -158,7 +158,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
                 bottomLeft = tmp;
             }
             break;
-        case WindowButtonLayout::BottomBarFromRight:
+        case WindowControlBarLayout::BottomBarFromRight:
             btn->Y = wcc->Layout.Height - 1; // BottomBar
             btn->X = bottomRight - btn->Size + 1;
             tmp = btn->X - 2;
@@ -174,20 +174,92 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
 }
+
 //=========================================================================================================================================================
-bool WindowButton::Init(WindowButtonType type, WindowButtonLayout layout, unsigned char size, std::string_view toolTipText)
+ItemHandle AppCUI::Controls::WindowControlBar::AddCommandItem(
+      const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip)
 {
-    this->Type   = type;
-    this->Layout = layout;
-    this->Size   = size;
-    this->X      = 0;
-    this->Y      = 0;
-    this->Flags  = WindowButtonFlags::None;
-    this->ID     = -1;
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
+          InvalidItemHandle,
+          "Max number of items in a control bar was exceeded !");
+    auto* b = &Members->WinButtons[Members->WinButtonsCount];
+    CHECK(b->Init(WindowButtonType::Button, this->Layout, name, toolTip),
+          InvalidItemHandle,
+          "Fail to initialize item !");
+    b->ID = ID;
+    Members->WinButtonsCount++;
+    UpdateWindowsButtonsPoz(Members);
+    return true;
+}
+ItemHandle AppCUI::Controls::WindowControlBar::AddRadioItem(
+      const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
+          InvalidItemHandle,
+          "Max number of items in a control bar was exceeded !");
+    NOT_IMPLEMENTED(InvalidItemHandle);
+}
+ItemHandle AppCUI::Controls::WindowControlBar::AddCheckItem(
+      const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
+          InvalidItemHandle,
+          "Max number of items in a control bar was exceeded !");
+    NOT_IMPLEMENTED(InvalidItemHandle);
+}
+void AppCUI::Controls::WindowControlBar::AddSeparator()
+{
+    
+}
+//=========================================================================================================================================================
+bool WindowButton::Init(
+      WindowButtonType type, WindowControlBarLayout layout, unsigned char size, std::string_view toolTipText)
+{
+    this->Type         = type;
+    this->Layout       = layout;
+    this->Size         = size;
+    this->X            = 0;
+    this->Y            = 0;
+    this->Flags        = WindowButtonFlags::None;
+    this->ID           = -1;
+    this->HotKey       = Key::None;
+    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     if (!toolTipText.empty())
     {
         CHECK(this->ToolTipText.Set(toolTipText), false, "");
     }
+    return true;
+}
+bool WindowButton::Init(
+      WindowButtonType type,
+      WindowControlBarLayout layout,
+      const AppCUI::Utils::ConstString& name,
+      const AppCUI::Utils::ConstString& toolTip)
+{
+    this->Type         = type;
+    this->Layout       = layout;
+    this->Size         = 0;
+    this->X            = 0;
+    this->Y            = 0;
+    this->Flags        = WindowButtonFlags::None;
+    this->ID           = -1;
+    this->HotKey       = Key::None;
+    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    // name
+    AppCUI::Utils::ConstStringObject objName(name);
+    CHECK(objName.Length > 0, false, "Expecting a valid item name (non-empty)");
+    CHECK(this->Text.SetWithHotKey(name, this->HotKeyOffset, this->HotKey, Key::Alt), false, "Fail to create name !");
+    this->Size = this->Text.Len();
+    // tool tip
+    AppCUI::Utils::ConstStringObject objToolTip(toolTip);
+    if (objToolTip.Length>0)
+    {
+        CHECK(this->ToolTipText.Set(toolTip), false, "");
+    }
+    // all good
     return true;
 }
 //=========================================================================================================================================================
@@ -220,28 +292,25 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
     {
         Members->WinButtons[Members->WinButtonsCount++].Init(
-              WindowButtonType::CloseButton,
-              WindowButtonLayout::TopBarFromRight,
-              3,
-              "Close window");
+              WindowButtonType::CloseButton, WindowControlBarLayout::TopBarFromRight, 3, "Close window");
     }
     if ((Flags & WindowFlags::Sizeable) != WindowFlags::None)
     {
         Members->WinButtons[Members->WinButtonsCount++].Init(
               WindowButtonType::MaximizeRestoreButton,
-              WindowButtonLayout::TopBarFromLeft,
+              WindowControlBarLayout::TopBarFromLeft,
               3,
               "Maximize or restore the size of this window");
         Members->WinButtons[Members->WinButtonsCount++].Init(
               WindowButtonType::WindowResize,
-              WindowButtonLayout::BottomBarFromRight,
+              WindowControlBarLayout::BottomBarFromRight,
               1,
               "Click and drag to resize this window");
     }
     // hot key
     Members->WinButtons[Members->WinButtonsCount].Init(
           WindowButtonType::HotKeY,
-          WindowButtonLayout::TopBarFromRight,
+          WindowControlBarLayout::TopBarFromRight,
           3,
           "Press Alt+xx to switch to this window");
     // the button exists but it is hidden
@@ -250,7 +319,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
 
     // TAG
     Members->WinButtons[Members->WinButtonsCount].Init(
-          WindowButtonType::Tag, WindowButtonLayout::TopBarFromLeft, 3, "");
+          WindowButtonType::Tag, WindowControlBarLayout::TopBarFromLeft, 3, "");
     // the button exists but it is hidden
     Members->WinButtons[Members->WinButtonsCount].SetFlag(WindowButtonFlags::Hidden);
     Members->WinButtonsCount++;
@@ -724,4 +793,11 @@ Menu* Window::AddMenu(const AppCUI::Utils::ConstString& name)
     AppCUI::Controls::Menu* result = Members->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
     return result;
+}
+WindowControlBar Window::GetControlBar(WindowControlBarLayout layout)
+{
+    if ((this->Context) && (layout != WindowControlBarLayout::None))
+        return WindowControlBar(this->Context, layout);
+    else
+        return WindowControlBar(nullptr, WindowControlBarLayout::None);
 }

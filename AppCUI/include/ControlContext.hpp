@@ -160,16 +160,8 @@ constexpr unsigned int WINDOW_DRAG_STATUS_NONE = 0;
 constexpr unsigned int WINDOW_DRAG_STATUS_MOVE = 1;
 constexpr unsigned int WINDOW_DRAG_STATUS_SIZE = 2;
 
-constexpr unsigned int MAX_WINDOW_BUTTONS = 32;
+constexpr unsigned int MAX_WINDOWBAR_ITEMS = 32;
 
-enum class WindowButtonLayout : unsigned char
-{
-    None               = 0,
-    TopBarFromLeft     = 1,
-    BottomBarFromLeft  = 2,
-    TopBarFromRight    = 3,
-    BottomBarFromRight = 4,
-};
 enum class WindowButtonType : unsigned char
 {
     None = 0,
@@ -178,6 +170,7 @@ enum class WindowButtonType : unsigned char
     MaximizeRestoreButton,
     WindowResize,
     Tag,
+    Button
 };
 enum class WindowButtonFlags : unsigned char
 {
@@ -191,7 +184,9 @@ struct WindowButton
     AppCUI::Graphics::CharacterBuffer ToolTipText;
     AppCUI::Graphics::CharacterBuffer Text;
     int Size, X, Y, ID;
-    WindowButtonLayout Layout;
+    unsigned int HotKeyOffset;
+    Key HotKey;
+    WindowControlBarLayout Layout;
     WindowButtonType Type;
     WindowButtonFlags Flags;
     inline bool IsVisible() const
@@ -218,7 +213,12 @@ struct WindowButton
     {
         Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
     }
-    bool Init(WindowButtonType type, WindowButtonLayout layout, unsigned char size, std::string_view toolTipText);
+    bool Init(WindowButtonType type, WindowControlBarLayout layout, unsigned char size, std::string_view toolTipText);
+    bool Init(
+          WindowButtonType type,
+          WindowControlBarLayout layout,
+          const AppCUI::Utils::ConstString& name,
+          const AppCUI::Utils::ConstString& toolTip);
 };
 struct WindowControlContext : public ControlContext
 {
@@ -227,7 +227,7 @@ struct WindowControlContext : public ControlContext
     int oldPosX, oldPosY, oldW, oldH;
     int dragStatus, dragOffsetX, dragOffsetY;
     int DialogResult;
-    WindowButton WinButtons[MAX_WINDOW_BUTTONS];
+    WindowButton WinButtons[MAX_WINDOWBAR_ITEMS];
     unsigned int WinButtonsCount;
     unsigned char CurrentWinButtom;
     bool CurrentWinButtomPressed;
