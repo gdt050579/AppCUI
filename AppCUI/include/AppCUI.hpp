@@ -2284,7 +2284,7 @@ namespace Controls
         const std::string_view GetValue() const;
 
     private:
-        const bool IsExpandable() const;
+        bool IsExpandable() const;
     };
 
 }; // namespace Controls

@@ -71,7 +71,7 @@ const std::string_view Tree::GetValue() const
     return cc->value;
 }
 
-const bool Controls::Tree::IsExpandable() const
+bool Controls::Tree::IsExpandable() const
 {
     CHECK(Context != nullptr, "", "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

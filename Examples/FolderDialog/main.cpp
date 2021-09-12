@@ -53,8 +53,8 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                     currentFolder.SetText(value);
 
                     std::string valueString;
-                    std::mbstate_t state{ 0 };
-                    char out[MB_LEN_MAX]{ 0 };
+                    std::mbstate_t state{};
+                    char out[MB_LEN_MAX]{};
                     for (const auto& c16 : value)
                     {
                         const std::size_t rc = std::c16rtomb(out, c16, &state);
