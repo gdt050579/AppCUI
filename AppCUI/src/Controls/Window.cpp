@@ -777,6 +777,38 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         Members->dragOffsetY = y;
     }
 }
+bool Window::ProcessControlBarItem(unsigned int index)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CHECK(index < Members->WinButtonsCount, false, "");
+    auto& b = Members->WinButtons[index];
+    switch (b.Type)
+    {
+    case WindowButtonType::CloseButton:
+        RaiseEvent(Event::WindowClose);
+        return true;
+    case WindowButtonType::MaximizeRestoreButton:
+        MaximizeRestore();
+        return true;
+    case WindowButtonType::Button:
+        RaiseEvent(Event::Command, b.ID);
+        return true;
+    case WindowButtonType::Radio:
+        WindowRadioButtonClicked(
+              Members->WinButtons,
+              Members->WinButtons + Members->WinButtonsCount, &Members->WinButtons[index]);
+        RaiseEvent(Event::Command, b.ID);
+        return true;
+    case WindowButtonType::CheckBox:
+        if (b.IsChecked())
+            b.RemoveFlag(WindowButtonFlags::Checked);
+        else
+            b.SetFlag(WindowButtonFlags::Checked);
+        RaiseEvent(Event::Command, b.ID);
+        return true;
+    }
+    return false;
+}
 void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
@@ -788,33 +820,8 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     }
     if (Members->CurrentWinButtom != WINBUTTON_NONE)
     {
-        auto& b = Members->WinButtons[Members->CurrentWinButtom];
-        switch (b.Type)
-        {
-        case WindowButtonType::CloseButton:
-            RaiseEvent(Event::WindowClose);
-            return;
-        case WindowButtonType::MaximizeRestoreButton:
-            MaximizeRestore();
-            return;
-        case WindowButtonType::Button:
-            RaiseEvent(Event::Command, b.ID);
-            return;
-        case WindowButtonType::Radio:
-            WindowRadioButtonClicked(
-                  Members->WinButtons,
-                  Members->WinButtons + Members->WinButtonsCount,
-                  &Members->WinButtons[Members->CurrentWinButtom]);
-            RaiseEvent(Event::Command, b.ID);
-            return;
-        case WindowButtonType::CheckBox:
-            if (b.IsChecked())
-                b.RemoveFlag(WindowButtonFlags::Checked);
-            else
-                b.SetFlag(WindowButtonFlags::Checked);
-            RaiseEvent(Event::Command, b.ID);
-            return;
-        }
+        if (ProcessControlBarItem(Members->CurrentWinButtom))
+            return;        
     }
 
     // if (Members->fnMouseReleaseHandler != nullptr)
@@ -965,6 +972,17 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
     {
         if (ProcessHotKey(this, KeyCode))
             return true;
+        auto* b = Members->WinButtons;
+        auto* e = b + Members->WinButtonsCount;
+        while (b<e)
+        {
+            if (b->HotKey == KeyCode)
+            {
+                if (ProcessControlBarItem((unsigned int)(b - Members->WinButtons)))
+                    return true;
+            }
+            b++;
+        }
     }
     // key was not prcessed, pass it to my parent
     return false;

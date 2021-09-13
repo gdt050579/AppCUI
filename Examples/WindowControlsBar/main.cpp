@@ -42,8 +42,8 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         cb.AddRadioItem("&Green", 101, false);
         cb.AddRadioItem("&Blue", 102, id == '2');
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
-        cb.AddCheckItem("Option 1", 200, false, "Check this to enable option 1");
-        cb.AddCheckItem("Option 2", 201, false, "Check this to enable option 2");
+        cb.AddCheckItem("&Option 1", 200, false, "Check this to enable option 1");
+        cb.AddCheckItem("O&ption 2", 201, false, "Check this to enable option 2");
         itText = cb.AddTextItem("-1-");
     }
     bool OnEvent(Control*, Event eventType, int ID) override

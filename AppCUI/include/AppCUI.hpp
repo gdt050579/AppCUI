@@ -1777,6 +1777,7 @@ namespace Controls
     };
     class EXPORT Window : public Control
     {
+        bool ProcessControlBarItem(unsigned int index);
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
