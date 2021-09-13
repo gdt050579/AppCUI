@@ -510,7 +510,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             continue;
         bool fromLeft = (btn->Layout == WindowControlsBarLayout::TopBarFromLeft) ||
                         (btn->Layout == WindowControlsBarLayout::BottomBarFromLeft);
-        bool showChecked = false;
+        bool showChecked    = false;
         if (Members->CurrentWinButtom == tr)
         {
             // hover or pressed
@@ -532,23 +532,24 @@ void Window::Paint(Graphics::Renderer& renderer)
             else
                 c_i = &wcfg->ControlBar.Item.Normal;
         }
+        bool hoverOrPressed = (c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed);
         switch (btn->Type)
         {
         case WindowButtonType::CloseButton:
-            if ((c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed))
+            if (hoverOrPressed)
             {
                 c1 = c2 = c_i->Text;
             }
             else
             {
                 c1 = sepColor;
-                c2 = Members->Focused ? wcfg->ControlBar.CloseButton : c_i->Text; 
+                c2 = Members->Focused ? wcfg->ControlBar.CloseButton : c_i->Text;
             }
             renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
-            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c2);                            
+            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c2);
             break;
         case WindowButtonType::MaximizeRestoreButton:
-            if ((c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed))
+            if (hoverOrPressed)
                 renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c_i->Text);
             else
                 renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
@@ -563,20 +564,14 @@ void Window::Paint(Graphics::Renderer& renderer)
             break;
         case WindowButtonType::HotKeY:
             renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
-            if (Members->Focused)
-                renderer.WriteSingleLineText(
-                      btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), wcfg->ControlBar.Item.Focused.Text);
-            else
-                renderer.WriteSingleLineText(
-                      btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), wcfg->ControlBar.Item.Normal.Text);
+            c1 = Members->Focused ? wcfg->ControlBar.Item.Focused.Text : wcfg->ControlBar.Item.Normal.Text;
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), c1);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
             break;
         case WindowButtonType::Tag:
             renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
-            if (Members->Focused)
-                renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, wcfg->ControlBar.Tag);
-            else
-                renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, wcfg->ControlBar.Item.Normal.Text);
+            c1 = Members->Focused ? wcfg->ControlBar.Tag : wcfg->ControlBar.Item.Normal.Text;
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, c1);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
             break;
 
@@ -609,7 +604,11 @@ void Window::Paint(Graphics::Renderer& renderer)
             renderer.FillHorizontalLine(btn->X, btn->Y, btn->X + 1, ' ', c_i->HotKey);
             renderer.WriteSingleLineText(btn->X + 2, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
             if (btn->IsChecked())
-                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, c_i->Text);
+            {
+                c1 = Members->Focused & (!hoverOrPressed) ? wcfg->ControlBar.CheckMark : c_i->Text;
+                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, c1);
+            }
+
             if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
             else if (!fromLeft)

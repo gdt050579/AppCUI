@@ -2478,7 +2478,7 @@ namespace Application
                 {
                     Graphics::ColorPair Normal, Focused;
                 } Separators;
-                Graphics::ColorPair CloseButton, Tag;
+                Graphics::ColorPair CloseButton, Tag, CheckMark;
             } ControlBar;
             //Graphics::ColorPair ControlButtonColor;
             //Graphics::ColorPair ControlButtonInactiveColor;
