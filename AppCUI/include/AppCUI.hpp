@@ -2469,6 +2469,7 @@ namespace Application
             Graphics::ColorPair ControlButtonInactiveColor;
             Graphics::ColorPair ControlButtonHoverColor;
             Graphics::ColorPair ControlButtonPressedColor;
+            Graphics::ColorPair ControlButtonHotKeyColor;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {

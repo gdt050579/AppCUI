@@ -429,7 +429,7 @@ void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->Window;
-    ColorPair colorTitle, colorWindow, colorWindowButton, c1, c2;
+    ColorPair colorTitle, colorWindow, colorWindowButton, c1, c2, c3, colorHotKey;
     bool doubleLine;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
@@ -444,6 +444,7 @@ void Window::Paint(Graphics::Renderer& renderer)
         colorTitle        = wcfg->TitleActiveColor;
         colorWindow       = wcfg->ActiveColor;
         colorWindowButton = wcfg->ControlButtonColor;
+        colorHotKey       = wcfg->ControlButtonHotKeyColor;
         if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
         {
             colorWindow = wcfg->ControlButtonColor;
@@ -459,6 +460,7 @@ void Window::Paint(Graphics::Renderer& renderer)
         colorTitle        = wcfg->TitleInactiveColor;
         colorWindow       = wcfg->InactiveColor;
         colorWindowButton = wcfg->ControlButtonInactiveColor;
+        colorHotKey       = wcfg->TitleInactiveColor;
         doubleLine        = false;
     }
     renderer.Clear(' ', colorWindow);
@@ -475,17 +477,18 @@ void Window::Paint(Graphics::Renderer& renderer)
         {
             if (Members->CurrentWinButtomPressed)
             {
-                c1 = c2 = wcfg->ControlButtonHoverColor;
+                c1 = c2 = c3 = wcfg->ControlButtonHoverColor;
             }
             else
             {
-                c1 = c2 = wcfg->ControlButtonPressedColor;
+                c1 = c2 = c3 = wcfg->ControlButtonPressedColor;
             }
         }
         else
         {
             c1 = colorTitle;
             c2 = colorWindowButton;
+            c3 = colorHotKey;
         }
         switch (btn->Type)
         {
@@ -529,7 +532,7 @@ void Window::Paint(Graphics::Renderer& renderer)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '[', colorTitle);
             else if (fromLeft)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '|', colorTitle);
-            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c2);
+            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c2, c3, btn->HotKeyOffset);
             if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', colorTitle);
             else if (!fromLeft)

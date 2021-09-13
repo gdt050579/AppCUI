@@ -24,6 +24,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Window.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
     this->Window.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
     this->Window.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
+    this->Window.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkBlue };
+          
 
     this->DialogError.ActiveColor                = ColorPair{ Color::White, Color::DarkRed };
     this->DialogError.InactiveColor              = ColorPair{ Color::Silver, Color::DarkRed };
@@ -33,6 +35,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogError.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
     this->DialogError.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
     this->DialogError.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
+    this->DialogError.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkRed };
 
     this->DialogNotify.ActiveColor                = ColorPair{ Color::White, Color::DarkGreen };
     this->DialogNotify.InactiveColor              = ColorPair{ Color::Silver, Color::DarkGreen };
@@ -42,6 +45,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogNotify.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
     this->DialogNotify.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
     this->DialogNotify.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
+    this->DialogNotify.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkGreen };
 
     this->DialogWarning.ActiveColor                = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.InactiveColor              = ColorPair{ Color::Silver, Color::Olive };
@@ -51,6 +55,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogWarning.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
     this->DialogWarning.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
     this->DialogWarning.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
+    this->DialogWarning.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::Olive };
 
     this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };
