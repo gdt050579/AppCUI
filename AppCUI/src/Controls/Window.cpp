@@ -388,6 +388,33 @@ bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, 
     CHECK(b->ToolTipText.Set(caption), false, "");
     return true;
 }
+bool AppCUI::Controls::WindowControlsBar::IsItemChecked(ItemHandle itemHandle)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    return b->IsChecked();
+}
+bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bool value)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    if (b->Type == WindowButtonType::CheckBox)
+    {
+        if (value)
+            b->SetFlag(WindowButtonFlags::Checked);
+        else
+            b->RemoveFlag(WindowButtonFlags::Checked);
+        return true;
+    }
+    if (b->Type == WindowButtonType::Radio)
+    {
+        CHECK(value, false, "For radio buttom only 'true' can be used as a value");
+        WindowControlContext* Members = (WindowControlContext*) Context;
+        WindowRadioButtonClicked(Members->WinButtons, Members->WinButtons + Members->WinButtonsCount, b);
+        return true;
+    }
+    RETURNERROR(false, "This method can only be applied on Check and Radio items");
+}
 //=========================================================================================================================================================
 bool WindowButton::Init(
       WindowButtonType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText)

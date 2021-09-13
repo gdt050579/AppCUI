@@ -1771,6 +1771,8 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
         bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
         bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
+        bool IsItemChecked(ItemHandle itemHandle);
+        bool SetItemCheck(ItemHandle itemHandle, bool value);
         friend class Window;
     };
     class EXPORT Window : public Control
