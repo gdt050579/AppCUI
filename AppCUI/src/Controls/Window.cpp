@@ -251,6 +251,12 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
     if (bottom.RighGroup)
         bottom.RighGroup->SetFlag(WindowButtonFlags::LeftGroupMarker);
 
+    // set title space
+    wcc->TitleLeftMargin = top.Left + 1;
+    wcc->TitleMaxWidth   = top.Right - wcc->TitleLeftMargin;
+    if (wcc->TitleMaxWidth <= 2)
+        wcc->TitleMaxWidth = 0;
+
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
 }
@@ -298,7 +304,7 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
     b->ID = ID;
     Members->WinButtonsCount++;
     UpdateWindowsButtonsPoz(Members);
-    return Members->WinButtonsCount-1;
+    return Members->WinButtonsCount - 1;
 }
 ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
       const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
@@ -357,8 +363,8 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddTextItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->WinButtonsCount - 1;
 }
-WindowButton* GetWindowControlsBarItem(void * Context, ItemHandle itemHandle)
-{                             
+WindowButton* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
+{
     WindowControlContext* Members = (WindowControlContext*) Context;
     CHECK(Members, nullptr, "");
     unsigned int id = (unsigned int) itemHandle;
@@ -381,7 +387,8 @@ bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, con
     UpdateWindowsButtonsPoz((WindowControlContext*) Context);
     return true;
 }
-bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
+bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(
+      ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -692,16 +699,16 @@ void Window::Paint(Graphics::Renderer& renderer)
     }
 
     // Title
-    if (Members->Layout.Width > 10)
+    if (Members->TitleMaxWidth >= 2)
     {
         WriteTextParams params(
               WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth |
                     WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
               TextAlignament::Center);
-        params.X     = 5;
+        params.X     = Members->TitleLeftMargin;
         params.Y     = 0;
         params.Color = colorTitle;
-        params.Width = Members->Layout.Width - 10;
+        params.Width = Members->TitleMaxWidth;
         renderer.WriteText(Members->Text, params);
     }
     // menu
@@ -795,8 +802,7 @@ bool Window::ProcessControlBarItem(unsigned int index)
         return true;
     case WindowButtonType::Radio:
         WindowRadioButtonClicked(
-              Members->WinButtons,
-              Members->WinButtons + Members->WinButtonsCount, &Members->WinButtons[index]);
+              Members->WinButtons, Members->WinButtons + Members->WinButtonsCount, &Members->WinButtons[index]);
         RaiseEvent(Event::Command, b.ID);
         return true;
     case WindowButtonType::CheckBox:
@@ -821,7 +827,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     if (Members->CurrentWinButtom != WINBUTTON_NONE)
     {
         if (ProcessControlBarItem(Members->CurrentWinButtom))
-            return;        
+            return;
     }
 
     // if (Members->fnMouseReleaseHandler != nullptr)
@@ -974,11 +980,11 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
             return true;
         auto* b = Members->WinButtons;
         auto* e = b + Members->WinButtonsCount;
-        while (b<e)
+        while (b < e)
         {
             if (b->HotKey == KeyCode)
             {
-                if (ProcessControlBarItem((unsigned int)(b - Members->WinButtons)))
+                if (ProcessControlBarItem((unsigned int) (b - Members->WinButtons)))
                     return true;
             }
             b++;
