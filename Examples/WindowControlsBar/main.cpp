@@ -4,13 +4,26 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
+using namespace AppCUI::Graphics;
 
+class MyControl : public AppCUI::Controls::UserControl
+{
+  public:
+    Color back;
+    void Paint(AppCUI::Graphics::Renderer& renderer) override
+    {
+        renderer.Clear(' ', ColorPair{ Color::Black, back });
+    }
+};
 class WindowControlsBarExample : public AppCUI::Controls::Window
 {
+    MyControl m;
   public:
     WindowControlsBarExample()
     {
         this->Create("Test", "l:2,t:1,r:2,b:1", WindowFlags::Sizeable);
+        m.Create(this, "l:2,t:1,r:2,b:1");
+        m.back = Color::Black;
         // associated a hot key
         this->SetHotKey('1');
         // add a TAG
@@ -34,9 +47,22 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         }
         if (eventType == Event::Command)
         {
-            if (ID == 12345)
+            switch (ID)
             {
+            case 12345:
                 Application::Close();
+                return true;
+            case 12346:
+                this->CenterScreen();
+                return true;
+            case 100:
+                m.back = Color::Red;
+                return true;
+            case 101:
+                m.back = Color::Green;
+                return true;
+            case 102:
+                m.back = Color::Blue;
                 return true;
             }
         }
