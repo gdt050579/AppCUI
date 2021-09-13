@@ -18,7 +18,12 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         // add buttons;
         auto cb = this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft);
         cb.AddCommandItem("Close", 12345, "When you press this button the Window will close");
-
+        cb.AddCommandItem("Center", 12346, "When you press this button the Window will center to the screen");
+        cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight);
+        //cb.AddCommandItem("&Test", 12346);
+        cb.AddRadioItem("&Red", 100, false);
+        cb.AddRadioItem("&Green", 101, false);
+        cb.AddRadioItem("&Blue", 102, false);
     }
     bool OnEvent(Control*, Event eventType, int ID) override
     {

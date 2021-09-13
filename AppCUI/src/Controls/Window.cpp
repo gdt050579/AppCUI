@@ -8,6 +8,13 @@ using namespace AppCUI::Input;
 constexpr unsigned char WINBUTTON_NONE = 0xFF;
 constexpr unsigned int MAX_TAG_CHARS   = 8U;
 
+struct WindowControlBarLayoutData
+{
+    int Left, Right, Y;
+    WindowButton* LeftGroup;
+    WindowButton* RighGroup;
+};
+
 
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
 {
@@ -110,16 +117,108 @@ bool ProcessHotKey(Control* ctrl, AppCUI::Input::Key KeyCode)
     }
     return false;
 }
+void UpdateWindowButtonPos(WindowButton * b, WindowControlBarLayoutData & layout, bool fromLeft)
+{
+    int next;
+
+    bool partOfGroup    = (b->Type == WindowButtonType::Button) | (b->Type == WindowButtonType::Radio);
+    WindowButton* group = nullptr;
+    int extraX          = 0;
+
+    if (fromLeft)
+        group = layout.LeftGroup;
+    else
+        group = layout.RighGroup;
+
+    // analyze current group
+    if (partOfGroup)
+    {
+        if (group)
+        {
+            if (group->Type != b->Type)
+            {
+                if (fromLeft)
+                    group->SetFlag(WindowButtonFlags::RightGroupMarker); // new group, close previous one             
+                else
+                    group->SetFlag(WindowButtonFlags::LeftGroupMarker); // new group, close previous one             
+                group  = nullptr;
+                extraX = 2;
+            }
+        }
+        else
+            extraX = 1;
+    }
+    else
+    {
+        if (group)
+        {
+            if (fromLeft)
+                group->SetFlag(WindowButtonFlags::RightGroupMarker); // close previous one
+            else
+                group->SetFlag(WindowButtonFlags::LeftGroupMarker); // close previous one  
+            group = nullptr;
+        }
+    }
+    if (fromLeft)
+        layout.LeftGroup = group;
+    else
+        layout.RighGroup = group;
+
+    b->Y = layout.Y;
+    if (fromLeft)
+    {        
+        b->X = layout.Left + extraX;
+        next = b->X + b->Size + 1;
+        if (next < layout.Right)
+        {
+            b->SetFlag(WindowButtonFlags::Visible);
+            layout.Left = next;
+            if (partOfGroup)
+            {
+                if (layout.LeftGroup == nullptr)
+                    b->SetFlag(WindowButtonFlags::LeftGroupMarker);
+                else
+                    b->RemoveFlag(WindowButtonFlags::LeftGroupMarker);
+                layout.LeftGroup = b;
+            }
+        }
+    }
+    else
+    {
+        b->X = layout.Right - b->Size + 1;
+        b->X -= extraX;
+        next = b->X - 2;
+        if (next > layout.Left)
+        {
+            b->SetFlag(WindowButtonFlags::Visible);
+            layout.Right = next;
+            if (partOfGroup)
+            {
+                if (layout.RighGroup == nullptr)
+                    b->SetFlag(WindowButtonFlags::RightGroupMarker);
+                else
+                    b->RemoveFlag(WindowButtonFlags::RightGroupMarker);
+                layout.RighGroup = b;
+            }
+        }
+    }
+}
 void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
 {
     for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++)
         wcc->WinButtons[tr].RemoveFlag(WindowButtonFlags::Visible);
 
-    int topLeft     = 1;
-    int bottomLeft  = 1;
-    int topRight    = wcc->Layout.Width - 2;
-    int bottomRight = wcc->Layout.Width - 1;
-    int tmp;
+    WindowControlBarLayoutData top, bottom;
+    top.Left             = 1;
+    bottom.Left          = 1;
+    top.Y                = 0;
+    bottom.Y             = wcc->Layout.Height - 1;
+    top.Right            = wcc->Layout.Width - 2;
+    bottom.Right         = wcc->Layout.Width - 1;
+    top.LeftGroup        = nullptr;
+    top.RighGroup        = nullptr;
+    bottom.LeftGroup     = nullptr;
+    bottom.RighGroup     = nullptr;   
 
     auto* btn = wcc->WinButtons;
     for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++,btn++)
@@ -129,47 +228,28 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         switch (btn->Layout)
         {
         case WindowControlsBarLayout::TopBarFromLeft:
-            btn->Y = 0; // TopBar
-            btn->X = topLeft;
-            tmp    = topLeft + btn->Size + 1;
-            if (tmp < topRight)
-            {
-                btn->SetFlag(WindowButtonFlags::Visible);
-                topLeft = tmp;
-            }
+            UpdateWindowButtonPos(btn, top, true);
             break;
         case WindowControlsBarLayout::TopBarFromRight:
-            btn->Y = 0; // TopBar
-            btn->X = topRight-btn->Size+1;
-            tmp    = btn->X - 2;
-            if (tmp > topLeft)
-            {
-                btn->SetFlag(WindowButtonFlags::Visible);
-                topRight = tmp;
-            }
+            UpdateWindowButtonPos(btn, top, false);
             break;
         case WindowControlsBarLayout::BottomBarFromLeft:
-            btn->Y = wcc->Layout.Height - 1; // BottomBar
-            btn->X = bottomLeft;
-            tmp    = topLeft + btn->Size + 1;
-            if (tmp < bottomRight)
-            {
-                btn->SetFlag(WindowButtonFlags::Visible);
-                bottomLeft = tmp;
-            }
+            UpdateWindowButtonPos(btn, bottom, true);
             break;
         case WindowControlsBarLayout::BottomBarFromRight:
-            btn->Y = wcc->Layout.Height - 1; // BottomBar
-            btn->X = bottomRight - btn->Size + 1;
-            tmp    = btn->X - 2;
-            if (tmp > bottomLeft)
-            {
-                btn->SetFlag(WindowButtonFlags::Visible);
-                bottomRight = tmp;
-            }
+            UpdateWindowButtonPos(btn, bottom, false);
             break;
         }
     }
+    // group flags
+    if (top.LeftGroup)
+        top.LeftGroup->SetFlag(WindowButtonFlags::RightGroupMarker);
+    if (top.RighGroup)
+        top.RighGroup->SetFlag(WindowButtonFlags::LeftGroupMarker);
+    if (bottom.LeftGroup)
+        bottom.LeftGroup->SetFlag(WindowButtonFlags::RightGroupMarker);
+    if (bottom.RighGroup)
+        bottom.RighGroup->SetFlag(WindowButtonFlags::LeftGroupMarker);
 
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
@@ -199,7 +279,14 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
-    NOT_IMPLEMENTED(InvalidItemHandle);
+    auto* b = &Members->WinButtons[Members->WinButtonsCount];
+    CHECK(b->Init(WindowButtonType::Radio, this->Layout, name, toolTip),
+          InvalidItemHandle,
+          "Fail to initialize item !");
+    b->ID = ID;
+    Members->WinButtonsCount++;
+    UpdateWindowsButtonsPoz(Members);
+    return true;
 }
 ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
       const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
@@ -252,7 +339,7 @@ bool WindowButton::Init(
     AppCUI::Utils::ConstStringObject objName(name);
     CHECK(objName.Length > 0, false, "Expecting a valid item name (non-empty)");
     CHECK(this->Text.SetWithHotKey(name, this->HotKeyOffset, this->HotKey, Key::Alt), false, "Fail to create name !");
-    this->Size = this->Text.Len() + 2;
+    this->Size = this->Text.Len();
     // tool tip
     AppCUI::Utils::ConstStringObject objToolTip(toolTip);
     if (objToolTip.Length>0)
@@ -304,7 +391,7 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
         Members->WinButtons[Members->WinButtonsCount++].Init(
               WindowButtonType::WindowResize,
               WindowControlsBarLayout::BottomBarFromRight,
-              3,
+              1,
               "Click and drag to resize this window");
     }
     // hot key
@@ -382,6 +469,8 @@ void Window::Paint(Graphics::Renderer& renderer)
     {
         if ((!btn->IsVisible()) || (btn->IsHidden()))
             continue;
+        bool fromLeft = (btn->Layout == WindowControlsBarLayout::TopBarFromLeft) ||
+                        (btn->Layout == WindowControlsBarLayout::BottomBarFromLeft);
         if (Members->CurrentWinButtom == tr)
         {
             if (Members->CurrentWinButtomPressed)
@@ -433,10 +522,18 @@ void Window::Paint(Graphics::Renderer& renderer)
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, colorWindowButton);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
             break;
+
         case WindowButtonType::Button:
-            renderer.WriteCharacter(btn->X, btn->Y, '[', c1);
-            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, c2);
-            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', c1);
+        case WindowButtonType::Radio:
+            if ((unsigned char)btn->Flags & (unsigned char)WindowButtonFlags::LeftGroupMarker)
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', colorTitle);
+            else if (fromLeft)
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', colorTitle);
+            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c2);
+            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
+                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', colorTitle);
+            else if (!fromLeft)
+                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', colorTitle);
             break;
         }
     }
@@ -551,6 +648,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
             MaximizeRestore();
             return;
         case WindowButtonType::Button:
+        case WindowButtonType::Radio:
             RaiseEvent(Event::Command, b.ID);
             return;
         }

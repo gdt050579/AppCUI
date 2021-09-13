@@ -170,13 +170,17 @@ enum class WindowButtonType : unsigned char
     MaximizeRestoreButton,
     WindowResize,
     Tag,
-    Button
+    Button,
+    Radio
 };
 enum class WindowButtonFlags : unsigned char
 {
-    None    = 0,
-    Visible = 0x01,
-    Hidden  = 0x02,
+    None             = 0x00,
+    Visible          = 0x01,
+    Hidden           = 0x02,
+    Checked          = 0x04,
+    LeftGroupMarker  = 0x08,
+    RightGroupMarker = 0x10
 };
 struct WindowControlContext;
 struct WindowButton
