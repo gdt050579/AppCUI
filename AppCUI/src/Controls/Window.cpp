@@ -121,7 +121,7 @@ void UpdateWindowButtonPos(WindowButton* b, WindowControlBarLayoutData& layout, 
     int next;
 
     bool partOfGroup = (b->Type == WindowButtonType::Button) | (b->Type == WindowButtonType::Radio) |
-                       (b->Type == WindowButtonType::CheckBox);
+                       (b->Type == WindowButtonType::CheckBox) | (b->Type == WindowButtonType::Text);
     WindowButton* group = nullptr;
     int extraX          = 0;
 
@@ -341,8 +341,21 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
     UpdateWindowsButtonsPoz(Members);
     return true;
 }
-void AppCUI::Controls::WindowControlsBar::AddSeparator()
+ItemHandle AppCUI::Controls::WindowControlsBar::AddTextItem(
+      const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip)
 {
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
+          InvalidItemHandle,
+          "Max number of items in a control bar was exceeded !");
+    auto* b = &Members->WinButtons[Members->WinButtonsCount];
+    CHECK(b->Init(WindowButtonType::Text, this->Layout, caption, toolTip),
+          InvalidItemHandle,
+          "Fail to initialize item !");
+
+    Members->WinButtonsCount++;
+    UpdateWindowsButtonsPoz(Members);
+    return true;
 }
 //=========================================================================================================================================================
 bool WindowButton::Init(
@@ -510,7 +523,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             continue;
         bool fromLeft = (btn->Layout == WindowControlsBarLayout::TopBarFromLeft) ||
                         (btn->Layout == WindowControlsBarLayout::BottomBarFromLeft);
-        bool showChecked    = false;
+        bool showChecked = false;
         if (Members->CurrentWinButtom == tr)
         {
             // hover or pressed
@@ -533,6 +546,7 @@ void Window::Paint(Graphics::Renderer& renderer)
                 c_i = &wcfg->ControlBar.Item.Normal;
         }
         bool hoverOrPressed = (c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed);
+        bool drawSeparators = false;
         switch (btn->Type)
         {
         case WindowButtonType::CloseButton:
@@ -577,10 +591,6 @@ void Window::Paint(Graphics::Renderer& renderer)
 
         case WindowButtonType::Button:
         case WindowButtonType::Radio:
-            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::LeftGroupMarker)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
-            else if (fromLeft)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
             if (showChecked)
                 renderer.WriteSingleLineText(
                       btn->X,
@@ -591,16 +601,9 @@ void Window::Paint(Graphics::Renderer& renderer)
                       btn->HotKeyOffset);
             else
                 renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
-            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
-                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
-            else if (!fromLeft)
-                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
+            drawSeparators = true;
             break;
         case WindowButtonType::CheckBox:
-            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::LeftGroupMarker)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
-            else if (fromLeft)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
             renderer.FillHorizontalLine(btn->X, btn->Y, btn->X + 1, ' ', c_i->HotKey);
             renderer.WriteSingleLineText(btn->X + 2, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
             if (btn->IsChecked())
@@ -608,12 +611,25 @@ void Window::Paint(Graphics::Renderer& renderer)
                 c1 = Members->Focused & (!hoverOrPressed) ? wcfg->ControlBar.CheckMark : c_i->Text;
                 renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, c1);
             }
-
+            drawSeparators = true;
+            break;
+        case WindowButtonType::Text:
+            c1 = Members->Focused ? wcfg->ControlBar.Item.Focused.Text : wcfg->ControlBar.Item.Normal.Text;
+            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c1);
+            drawSeparators = true;
+            break;
+        }
+        // separators
+        if (drawSeparators)
+        {
+            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::LeftGroupMarker)
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
+            else if (fromLeft)
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
             if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
             else if (!fromLeft)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
-            break;
         }
     }
 

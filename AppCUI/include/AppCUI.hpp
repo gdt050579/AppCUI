@@ -1767,7 +1767,8 @@ namespace Controls
               int ID,
               bool checked,
               const AppCUI::Utils::ConstString& toolTip = std::string_view());
-        void AddSeparator();
+        ItemHandle AddTextItem(
+              const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
         friend class Window;
     };
     class EXPORT Window : public Control

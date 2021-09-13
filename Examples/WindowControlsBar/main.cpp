@@ -6,6 +6,8 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
+int value = 1;
+
 class MyControl : public AppCUI::Controls::UserControl
 {
   public:
@@ -32,6 +34,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         auto cb = this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft);
         cb.AddCommandItem("Close", 12345, "When you press this button the Window will close");
         cb.AddCommandItem("Center", 12346, "When you press this button the Window will center to the screen");
+        cb.AddCommandItem("+", 12347, "Increase the number from text item");
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight);
         cb.AddRadioItem("&Red", 100, false);
         cb.AddRadioItem("&Green", 101, false);
@@ -39,6 +42,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
         cb.AddCheckItem("Option 1", 200, false, "Check this to enable option 1");
         cb.AddCheckItem("Option 2", 201, false, "Check this to enable option 2");
+        cb.AddTextItem("-1-");
     }
     bool OnEvent(Control*, Event eventType, int ID) override
     {
@@ -56,6 +60,8 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
                 return true;
             case 12346:
                 this->CenterScreen();
+                return true;
+            case 12347:
                 return true;
             case 100:
                 m.back = Color::Red;
