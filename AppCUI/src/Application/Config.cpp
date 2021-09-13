@@ -16,46 +16,79 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->CommandBar.Pressed.KeyColor  = ColorPair{ Color::White, Color::Magenta };
     this->CommandBar.Pressed.NameColor = ColorPair{ Color::Yellow, Color::Magenta };
 
-    this->Window.ActiveColor                = ColorPair{ Color::White, Color::DarkBlue };
-    this->Window.InactiveColor              = ColorPair{ Color::Silver, Color::Black };
-    this->Window.TitleActiveColor           = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->Window.TitleInactiveColor         = ColorPair{ Color::Silver, Color::Black };
-    this->Window.ControlButtonColor         = ColorPair{ Color::Aqua, Color::DarkBlue };
-    this->Window.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
-    this->Window.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
-    this->Window.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
-    this->Window.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkBlue };
-          
+    this->Window.ActiveColor        = ColorPair{ Color::White, Color::DarkBlue };
+    this->Window.InactiveColor      = ColorPair{ Color::Silver, Color::Black };
+    this->Window.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->Window.TitleInactiveColor = ColorPair{ Color::Silver, Color::Black };
+
+    this->Window.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->Window.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::Black };
+    this->Window.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::Black };
+    this->Window.ControlBar.Item.Normal.HotKey  = ColorPair{ Color::Silver, Color::Black };
+    this->Window.ControlBar.Item.Focused.Text   = ColorPair{ Color::Aqua, Color::DarkBlue };
+    this->Window.ControlBar.Item.Focused.HotKey = ColorPair{ Color::White, Color::DarkBlue };
+    this->Window.ControlBar.Item.Hover.Text     = ColorPair{ Color::Black, Color::Aqua };
+    this->Window.ControlBar.Item.Hover.HotKey   = ColorPair{ Color::Black, Color::Aqua };
+    this->Window.ControlBar.Item.Pressed.Text   = ColorPair{ Color::Black, Color::Yellow };
+    this->Window.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
+    this->Window.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
+    this->Window.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
+
 
     this->DialogError.ActiveColor                = ColorPair{ Color::White, Color::DarkRed };
     this->DialogError.InactiveColor              = ColorPair{ Color::Silver, Color::DarkRed };
     this->DialogError.TitleActiveColor           = ColorPair{ Color::Yellow, Color::DarkRed };
     this->DialogError.TitleInactiveColor         = ColorPair{ Color::Silver, Color::DarkRed };
-    this->DialogError.ControlButtonColor         = ColorPair{ Color::Aqua, Color::DarkRed };
-    this->DialogError.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
-    this->DialogError.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
-    this->DialogError.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
-    this->DialogError.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkRed };
+
+    this->DialogError.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkRed };
+    this->DialogError.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::DarkRed };
+    this->DialogError.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::DarkRed };
+    this->DialogError.ControlBar.Item.Normal.HotKey  = ColorPair{ Color::Silver, Color::DarkRed };
+    this->DialogError.ControlBar.Item.Focused.Text   = ColorPair{ Color::Aqua, Color::DarkRed };
+    this->DialogError.ControlBar.Item.Focused.HotKey = ColorPair{ Color::White, Color::DarkRed };
+    this->DialogError.ControlBar.Item.Hover.Text     = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogError.ControlBar.Item.Hover.HotKey   = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogError.ControlBar.Item.Pressed.Text   = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogError.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogError.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
+    this->DialogError.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
+
 
     this->DialogNotify.ActiveColor                = ColorPair{ Color::White, Color::DarkGreen };
     this->DialogNotify.InactiveColor              = ColorPair{ Color::Silver, Color::DarkGreen };
     this->DialogNotify.TitleActiveColor           = ColorPair{ Color::Yellow, Color::DarkGreen };
     this->DialogNotify.TitleInactiveColor         = ColorPair{ Color::Silver, Color::DarkGreen };
-    this->DialogNotify.ControlButtonColor         = ColorPair{ Color::Aqua, Color::DarkGreen };
-    this->DialogNotify.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
-    this->DialogNotify.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
-    this->DialogNotify.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
-    this->DialogNotify.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::DarkGreen };
+
+    this->DialogNotify.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Item.Normal.HotKey  = ColorPair{ Color::Silver, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Item.Focused.Text   = ColorPair{ Color::Aqua, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Item.Focused.HotKey = ColorPair{ Color::White, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Item.Hover.Text     = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogNotify.ControlBar.Item.Hover.HotKey   = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogNotify.ControlBar.Item.Pressed.Text   = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogNotify.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogNotify.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
+    this->DialogNotify.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
 
     this->DialogWarning.ActiveColor                = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.InactiveColor              = ColorPair{ Color::Silver, Color::Olive };
     this->DialogWarning.TitleActiveColor           = ColorPair{ Color::Yellow, Color::Olive };
     this->DialogWarning.TitleInactiveColor         = ColorPair{ Color::Silver, Color::Olive };
-    this->DialogWarning.ControlButtonColor         = ColorPair{ Color::Aqua, Color::Olive };
-    this->DialogWarning.ControlButtonHoverColor    = ColorPair{ Color::Black, Color::Aqua };
-    this->DialogWarning.ControlButtonPressedColor  = ColorPair{ Color::Black, Color::Yellow };
-    this->DialogWarning.ControlButtonInactiveColor = ColorPair{ Color::Silver, Color::Black };
-    this->DialogWarning.ControlButtonHotKeyColor   = ColorPair{ Color::White, Color::Olive };
+
+    this->DialogWarning.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::Olive };
+    this->DialogWarning.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::Olive };
+    this->DialogWarning.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::Olive };
+    this->DialogWarning.ControlBar.Item.Normal.HotKey  = ColorPair{ Color::Silver, Color::Olive };
+    this->DialogWarning.ControlBar.Item.Focused.Text   = ColorPair{ Color::Aqua, Color::Olive };
+    this->DialogWarning.ControlBar.Item.Focused.HotKey = ColorPair{ Color::White, Color::Olive };
+    this->DialogWarning.ControlBar.Item.Hover.Text     = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogWarning.ControlBar.Item.Hover.HotKey   = ColorPair{ Color::Black, Color::Aqua };
+    this->DialogWarning.ControlBar.Item.Pressed.Text   = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogWarning.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
+    this->DialogWarning.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
+    this->DialogWarning.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
 
     this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };
@@ -255,5 +288,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->NumericSelector.WrongValue.TextColor = ColorPair{ Color::Black, Color::Red };
 
     this->ToolTip.Arrow = ColorPair{ Color::Green, Color::Black };
-    this->ToolTip.Text = ColorPair{ Color::Black, Color::Aqua };
+    this->ToolTip.Text  = ColorPair{ Color::Black, Color::Aqua };
 }

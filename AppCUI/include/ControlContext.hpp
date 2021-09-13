@@ -201,6 +201,10 @@ struct WindowButton
     {
         return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Hidden) != 0;
     }
+    inline bool IsChecked() const
+    {
+        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Checked) != 0;
+    }
     inline bool Contains(int x, int y) const
     {
         return (y == Y) && (x >= X) && (x < (X + Size)) && (IsVisible()) && (!IsHidden());

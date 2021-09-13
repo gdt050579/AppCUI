@@ -15,7 +15,6 @@ struct WindowControlBarLayoutData
     WindowButton* RighGroup;
 };
 
-
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
 {
     if (parent == nullptr)
@@ -117,7 +116,7 @@ bool ProcessHotKey(Control* ctrl, AppCUI::Input::Key KeyCode)
     }
     return false;
 }
-void UpdateWindowButtonPos(WindowButton * b, WindowControlBarLayoutData & layout, bool fromLeft)
+void UpdateWindowButtonPos(WindowButton* b, WindowControlBarLayoutData& layout, bool fromLeft)
 {
     int next;
 
@@ -138,9 +137,9 @@ void UpdateWindowButtonPos(WindowButton * b, WindowControlBarLayoutData & layout
             if (group->Type != b->Type)
             {
                 if (fromLeft)
-                    group->SetFlag(WindowButtonFlags::RightGroupMarker); // new group, close previous one             
+                    group->SetFlag(WindowButtonFlags::RightGroupMarker); // new group, close previous one
                 else
-                    group->SetFlag(WindowButtonFlags::LeftGroupMarker); // new group, close previous one             
+                    group->SetFlag(WindowButtonFlags::LeftGroupMarker); // new group, close previous one
                 group  = nullptr;
                 extraX = 2;
             }
@@ -155,7 +154,7 @@ void UpdateWindowButtonPos(WindowButton * b, WindowControlBarLayoutData & layout
             if (fromLeft)
                 group->SetFlag(WindowButtonFlags::RightGroupMarker); // close previous one
             else
-                group->SetFlag(WindowButtonFlags::LeftGroupMarker); // close previous one  
+                group->SetFlag(WindowButtonFlags::LeftGroupMarker); // close previous one
             group = nullptr;
         }
     }
@@ -166,7 +165,7 @@ void UpdateWindowButtonPos(WindowButton * b, WindowControlBarLayoutData & layout
 
     b->Y = layout.Y;
     if (fromLeft)
-    {        
+    {
         b->X = layout.Left + extraX;
         next = b->X + b->Size + 1;
         if (next < layout.Right)
@@ -209,19 +208,19 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
         wcc->WinButtons[tr].RemoveFlag(WindowButtonFlags::Visible);
 
     WindowControlBarLayoutData top, bottom;
-    top.Left             = 1;
-    bottom.Left          = 1;
-    top.Y                = 0;
-    bottom.Y             = wcc->Layout.Height - 1;
-    top.Right            = wcc->Layout.Width - 2;
-    bottom.Right         = wcc->Layout.Width - 1;
-    top.LeftGroup        = nullptr;
-    top.RighGroup        = nullptr;
-    bottom.LeftGroup     = nullptr;
-    bottom.RighGroup     = nullptr;   
+    top.Left         = 1;
+    bottom.Left      = 1;
+    top.Y            = 0;
+    bottom.Y         = wcc->Layout.Height - 1;
+    top.Right        = wcc->Layout.Width - 2;
+    bottom.Right     = wcc->Layout.Width - 1;
+    top.LeftGroup    = nullptr;
+    top.RighGroup    = nullptr;
+    bottom.LeftGroup = nullptr;
+    bottom.RighGroup = nullptr;
 
     auto* btn = wcc->WinButtons;
-    for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++,btn++)
+    for (unsigned int tr = 0; tr < wcc->WinButtonsCount; tr++, btn++)
     {
         if (btn->IsHidden())
             continue;
@@ -299,7 +298,6 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
 }
 void AppCUI::Controls::WindowControlsBar::AddSeparator()
 {
-    
 }
 //=========================================================================================================================================================
 bool WindowButton::Init(
@@ -342,7 +340,7 @@ bool WindowButton::Init(
     this->Size = this->Text.Len();
     // tool tip
     AppCUI::Utils::ConstStringObject objToolTip(toolTip);
-    if (objToolTip.Length>0)
+    if (objToolTip.Length > 0)
     {
         CHECK(this->ToolTipText.Set(toolTip), false, "");
     }
@@ -354,7 +352,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::string_view& layout, WindowFlags Flags)
+bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
 {
     CONTROL_INIT_CONTEXT(WindowControlContext);
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
@@ -362,8 +360,8 @@ bool Window::Create(const AppCUI::Utils::ConstString & caption, const std::strin
     Members->Layout.MaxWidth  = 200000;
     Members->Layout.MinHeight = 3;
     Members->Layout.MinWidth  = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding,
-                             // title, OneSpaceRightPadding, close
-                             // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
+                                    // title, OneSpaceRightPadding, close
+                                    // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
     CHECK(Init(nullptr, caption, layout, false), false, "Failed to create window !");
     CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
@@ -429,7 +427,7 @@ void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->Window;
-    ColorPair colorTitle, colorWindow, colorWindowButton, c1, c2, c3, colorHotKey;
+    ColorPair colorTitle, colorWindow;
     bool doubleLine;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
@@ -439,28 +437,20 @@ void Window::Paint(Graphics::Renderer& renderer)
     else if ((Members->Flags & WindowFlags::NotifyWindow) != WindowFlags::None)
         wcfg = &Members->Cfg->DialogNotify;
 
+    auto* c_i     = &wcfg->ControlBar.Item.Normal;
+    auto sepColor = wcfg->ControlBar.Separators.Normal;
+
     if (Members->Focused)
     {
+        sepColor          = wcfg->ControlBar.Separators.Focused;
         colorTitle        = wcfg->TitleActiveColor;
         colorWindow       = wcfg->ActiveColor;
-        colorWindowButton = wcfg->ControlButtonColor;
-        colorHotKey       = wcfg->ControlButtonHotKeyColor;
-        if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
-        {
-            colorWindow = wcfg->ControlButtonColor;
-            doubleLine  = false;
-        }
-        else
-        {
-            doubleLine = true;
-        }
+        doubleLine        = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE;
     }
     else
     {
         colorTitle        = wcfg->TitleInactiveColor;
         colorWindow       = wcfg->InactiveColor;
-        colorWindowButton = wcfg->ControlButtonInactiveColor;
-        colorHotKey       = wcfg->TitleInactiveColor;
         doubleLine        = false;
     }
     renderer.Clear(' ', colorWindow);
@@ -476,71 +466,72 @@ void Window::Paint(Graphics::Renderer& renderer)
         if (Members->CurrentWinButtom == tr)
         {
             if (Members->CurrentWinButtomPressed)
-            {
-                c1 = c2 = c3 = wcfg->ControlButtonHoverColor;
-            }
+                c_i = &wcfg->ControlBar.Item.Pressed;
             else
-            {
-                c1 = c2 = c3 = wcfg->ControlButtonPressedColor;
-            }
+                c_i = &wcfg->ControlBar.Item.Hover;
         }
         else
         {
-            c1 = colorTitle;
-            c2 = colorWindowButton;
-            c3 = colorHotKey;
+            if (Members->Focused)
+            {
+                if (btn->IsChecked())
+                    c_i = &wcfg->ControlBar.Item.Checked;
+                else
+                    c_i = &wcfg->ControlBar.Item.Focused;
+            }
+            else
+                c_i = &wcfg->ControlBar.Item.Normal;
         }
         switch (btn->Type)
         {
         case WindowButtonType::CloseButton:
-            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
-            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c2);
+            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
+            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c_i->Text);
             break;
         case WindowButtonType::MaximizeRestoreButton:
-            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
+            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
             if (Members->Maximized)
-                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUpDown, c2);
+                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUpDown, c_i->Text);
             else
-                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUp, c2);
+                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUp, c_i->Text);
             break;
         case WindowButtonType::WindowResize:
             if (Members->Focused)
-            {
-                if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
-                    c1 = wcfg->ControlButtonPressedColor;
-                else if (Members->CurrentWinButtom == tr)
-                    c1 = wcfg->ControlButtonHoverColor;
-                else
-                    c1 = colorWindowButton;
-                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::BoxBottomRightCornerSingleLine, c1);
-            }
+                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::BoxBottomRightCornerSingleLine, c_i->Text);
             break;
         case WindowButtonType::HotKeY:
-            renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
-            renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), colorWindowButton);
-            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
+            renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
+            if (Members->Focused)
+                renderer.WriteSingleLineText(
+                      btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), wcfg->ControlBar.Item.Focused.Text);
+            else
+                renderer.WriteSingleLineText(
+                      btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), wcfg->ControlBar.Item.Normal.Text);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
             break;
         case WindowButtonType::Tag:
-            renderer.WriteCharacter(btn->X, btn->Y, '[', colorTitle);
-            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, colorWindowButton);
-            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorTitle);
+            renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
+            if (Members->Focused)
+                renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, wcfg->ControlBar.Item.Focused.Text);
+            else
+                renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, wcfg->ControlBar.Item.Normal.Text);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
             break;
 
         case WindowButtonType::Button:
         case WindowButtonType::Radio:
-            if ((unsigned char)btn->Flags & (unsigned char)WindowButtonFlags::LeftGroupMarker)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', colorTitle);
+            if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::LeftGroupMarker)
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
             else if (fromLeft)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', colorTitle);
-            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c2, c3, btn->HotKeyOffset);
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
+            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
             if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::RightGroupMarker)
-                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', colorTitle);
+                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
             else if (!fromLeft)
-                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', colorTitle);
+                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
             break;
         }
     }
-
 
     // Title
     if (Members->Layout.Width > 10)
@@ -558,7 +549,6 @@ void Window::Paint(Graphics::Renderer& renderer)
     // menu
     if (Members->menu)
         Members->menu->Paint(renderer);
-        
 }
 bool Window::MaximizeRestore()
 {
@@ -598,7 +588,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus              = WINDOW_DRAG_STATUS_NONE;
-    Members->CurrentWinButtomPressed = false; 
+    Members->CurrentWinButtomPressed = false;
 
     if (Members->menu)
     {
@@ -611,17 +601,16 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++)
     {
         if (Members->WinButtons[tr].Contains(x, y))
-        {            
-            Members->CurrentWinButtom = tr; // set current button
+        {
+            Members->CurrentWinButtom        = tr; // set current button
             Members->CurrentWinButtomPressed = true;
             if (Members->WinButtons[tr].Type == WindowButtonType::WindowResize)
-                Members->dragStatus = WINDOW_DRAG_STATUS_SIZE; 
+                Members->dragStatus = WINDOW_DRAG_STATUS_SIZE;
             return;
         }
     }
     // Hide tool tip
     HideToolTip();
-
 
     if ((Members->Flags & WindowFlags::FixedPosition) == WindowFlags::None)
     {
@@ -633,7 +622,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    Members->CurrentWinButtomPressed = false; 
+    Members->CurrentWinButtomPressed = false;
     if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
     {
         Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
@@ -641,7 +630,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     }
     if (Members->CurrentWinButtom != WINBUTTON_NONE)
     {
-        const auto &b = Members->WinButtons[Members->CurrentWinButtom];
+        const auto& b = Members->WinButtons[Members->CurrentWinButtom];
         switch (b.Type)
         {
         case WindowButtonType::CloseButton:
@@ -696,9 +685,9 @@ bool Window::OnMouseOver(int x, int y)
     }
 
     // check buttons
-    for (unsigned int tr=0;tr<Members->WinButtonsCount;tr++)
+    for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++)
     {
-        if (Members->WinButtons[tr].Contains(x,y))
+        if (Members->WinButtons[tr].Contains(x, y))
         {
             if (!Members->WinButtons[tr].ToolTipText.IsEmpty())
             {
@@ -717,7 +706,7 @@ bool Window::OnMouseOver(int x, int y)
     }
     // if I reach this point - tool tip should not be shown and there is no win button selected
     HideToolTip();
-    
+
     if (Members->CurrentWinButtom == WINBUTTON_NONE)
         return false; // already outside any window button
     Members->CurrentWinButtom = WINBUTTON_NONE;
@@ -726,7 +715,7 @@ bool Window::OnMouseOver(int x, int y)
 bool Window::OnMouseLeave()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    Members->CurrentWinButtomPressed = false; 
+    Members->CurrentWinButtomPressed = false;
     if (Members->CurrentWinButtom == WINBUTTON_NONE)
         return false; // already outside any window button
     Members->CurrentWinButtom = WINBUTTON_NONE;
@@ -760,7 +749,7 @@ bool Window::OnEvent(Control*, Event eventType, int)
                 return Exit(AppCUI::Dialogs::Result::Cancel);
             else
                 return Exit(AppCUI::Dialogs::Result::Ok);
-        }            
+        }
         else
         {
             // top level window -> closing the app
@@ -799,7 +788,7 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
     {
         if (Members->menu->OnKeyEvent(KeyCode))
             return true;
-    }        
+    }
     // check cntrols hot keys
     if ((((unsigned int) KeyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
     {
@@ -814,7 +803,7 @@ void Window::OnHotKeyChanged()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find hotkey win button
     WindowButton* btnHotKey = nullptr;
-    for (unsigned int tr=0;tr<Members->WinButtonsCount;tr++)
+    for (unsigned int tr = 0; tr < Members->WinButtonsCount; tr++)
         if (Members->WinButtons[tr].Type == WindowButtonType::HotKeY)
         {
             btnHotKey = &Members->WinButtons[tr];
@@ -822,15 +811,15 @@ void Window::OnHotKeyChanged()
         }
     // sanity check (in reality the pointer should always be valid)
     if (!btnHotKey)
-        return; 
+        return;
 
     if (Members->HotKey == Key::None)
     {
-        btnHotKey->SetFlag(WindowButtonFlags::Hidden);        
+        btnHotKey->SetFlag(WindowButtonFlags::Hidden);
     }
     else
     {
-        btnHotKey->Size = (int)(KeyUtils::GetKeyName(Members->HotKey).size() + 2);
+        btnHotKey->Size = (int) (KeyUtils::GetKeyName(Members->HotKey).size() + 2);
         btnHotKey->ToolTipText.Set("Press Alt+");
         btnHotKey->ToolTipText.Add(KeyUtils::GetKeyName(Members->HotKey));
         btnHotKey->ToolTipText.Add(" to activate this window");
@@ -876,14 +865,14 @@ bool Window::Exit(Dialogs::Result dialogResult)
 {
     return this->Exit(static_cast<int>(dialogResult));
 }
-int  Window::Show()
+int Window::Show()
 {
     CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
     CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     return Members->DialogResult;
 }
-int  Window::GetDialogResult()
+int Window::GetDialogResult()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     return Members->DialogResult;

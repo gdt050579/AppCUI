@@ -2465,11 +2465,27 @@ namespace Application
             Graphics::ColorPair InactiveColor;
             Graphics::ColorPair TitleActiveColor;
             Graphics::ColorPair TitleInactiveColor;
-            Graphics::ColorPair ControlButtonColor;
-            Graphics::ColorPair ControlButtonInactiveColor;
-            Graphics::ColorPair ControlButtonHoverColor;
-            Graphics::ColorPair ControlButtonPressedColor;
-            Graphics::ColorPair ControlButtonHotKeyColor;
+            struct
+            {
+                struct
+                {
+                    struct
+                    {
+                        Graphics::ColorPair Text, HotKey;
+                    } Normal, Pressed, Hover, Checked, Focused;
+                } Item;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused;
+                } Separators;
+            } ControlBar;
+            //Graphics::ColorPair ControlButtonColor;
+            //Graphics::ColorPair ControlButtonInactiveColor;
+            //Graphics::ColorPair ControlButtonHoverColor;
+            //Graphics::ColorPair ControlButtonPressedColor;
+            //Graphics::ColorPair ControlButtonHotKeyColor;
+            //Graphics::ColorPair ControlButtonCheckedColor;
+            //Graphics::ColorPair ControlButtonCheckedHotKeyColor;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {

@@ -19,13 +19,13 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
 {
     MyControl m;
   public:
-    WindowControlsBarExample()
+    WindowControlsBarExample(char id)
     {
         this->Create("Test", "l:2,t:1,r:2,b:1", WindowFlags::Sizeable);
         m.Create(this, "l:2,t:1,r:2,b:1");
         m.back = Color::Black;
         // associated a hot key
-        this->SetHotKey('1');
+        this->SetHotKey(id);
         // add a TAG
         this->SetTag("TAG", "A tag is a small string\nthat explains what is the purpose\nof this window");
         // add buttons;
@@ -73,7 +73,9 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new WindowControlsBarExample());
+    Application::AddWindow(new WindowControlsBarExample('1'));
+    Application::AddWindow(new WindowControlsBarExample('2'));
+    Application::ArrangeWindows(ArangeWindowsMethod::Grid);
     Application::Run();
     return 0;
 }
