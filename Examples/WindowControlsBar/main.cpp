@@ -36,7 +36,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         //cb.AddCommandItem("&Test", 12346);
         cb.AddRadioItem("&Red", 100, false);
         cb.AddRadioItem("&Green", 101, false);
-        cb.AddRadioItem("&Blue", 102, false);
+        cb.AddRadioItem("&Blue", 102, id == '2');
     }
     bool OnEvent(Control*, Event eventType, int ID) override
     {

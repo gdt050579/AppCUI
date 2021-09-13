@@ -312,6 +312,11 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
           "Fail to initialize item !");
     b->ID = ID;
     Members->WinButtonsCount++;
+    if (checked)
+        WindowRadioButtonClicked(
+              Members->WinButtons,
+              Members->WinButtons + Members->WinButtonsCount,
+              Members->WinButtons + Members->WinButtonsCount - 1);
     UpdateWindowsButtonsPoz(Members);
     return true;
 }
