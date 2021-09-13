@@ -253,7 +253,35 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
     if (wcc->menu)
         wcc->menu->SetWidth(wcc->Layout.Width - 2);
 }
-
+void WindowRadioButtonClicked(WindowButton* start, WindowButton* end, WindowButton* current)
+{
+    // go back and disable check
+    auto p = current;
+    while (p >= start)
+    {
+        if (p->Layout == current->Layout)
+        {
+            if (p->Type == WindowButtonType::Radio)
+                p->RemoveFlag(WindowButtonFlags::Checked);
+            else
+                break;
+        }
+        p--;
+    }
+    p = current;
+    while (p < end)
+    {
+        if (p->Layout == current->Layout)
+        {
+            if (p->Type == WindowButtonType::Radio)
+                p->RemoveFlag(WindowButtonFlags::Checked);
+            else
+                break;
+        }
+        p++;
+    }
+    current->SetFlag(WindowButtonFlags::Checked);
+}
 //=========================================================================================================================================================
 ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
       const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip)
@@ -442,16 +470,16 @@ void Window::Paint(Graphics::Renderer& renderer)
 
     if (Members->Focused)
     {
-        sepColor          = wcfg->ControlBar.Separators.Focused;
-        colorTitle        = wcfg->TitleActiveColor;
-        colorWindow       = wcfg->ActiveColor;
-        doubleLine        = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE;
+        sepColor    = wcfg->ControlBar.Separators.Focused;
+        colorTitle  = wcfg->TitleActiveColor;
+        colorWindow = wcfg->ActiveColor;
+        doubleLine  = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE;
     }
     else
     {
-        colorTitle        = wcfg->TitleInactiveColor;
-        colorWindow       = wcfg->InactiveColor;
-        doubleLine        = false;
+        colorTitle  = wcfg->TitleInactiveColor;
+        colorWindow = wcfg->InactiveColor;
+        doubleLine  = false;
     }
     renderer.Clear(' ', colorWindow);
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
@@ -465,10 +493,16 @@ void Window::Paint(Graphics::Renderer& renderer)
                         (btn->Layout == WindowControlsBarLayout::BottomBarFromLeft);
         if (Members->CurrentWinButtom == tr)
         {
+            // hover or pressed
             if (Members->CurrentWinButtomPressed)
                 c_i = &wcfg->ControlBar.Item.Pressed;
             else
-                c_i = &wcfg->ControlBar.Item.Hover;
+            {
+                if ((Members->Focused) && (btn->IsChecked()))
+                    c_i = &wcfg->ControlBar.Item.Checked;
+                else
+                    c_i = &wcfg->ControlBar.Item.Hover;
+            }
         }
         else
         {
@@ -485,11 +519,17 @@ void Window::Paint(Graphics::Renderer& renderer)
         switch (btn->Type)
         {
         case WindowButtonType::CloseButton:
-            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
+            if ((c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed))
+                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c_i->Text);
+            else
+                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
             renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c_i->Text);
             break;
         case WindowButtonType::MaximizeRestoreButton:
-            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
+            if ((c_i == &wcfg->ControlBar.Item.Hover) || (c_i == &wcfg->ControlBar.Item.Pressed))
+                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c_i->Text);
+            else
+                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
             if (Members->Maximized)
                 renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUpDown, c_i->Text);
             else
@@ -640,7 +680,13 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
             MaximizeRestore();
             return;
         case WindowButtonType::Button:
+            RaiseEvent(Event::Command, b.ID);
+            return;
         case WindowButtonType::Radio:
+            WindowRadioButtonClicked(
+                  Members->WinButtons,
+                  Members->WinButtons + Members->WinButtonsCount,
+                  &Members->WinButtons[Members->CurrentWinButtom]);
             RaiseEvent(Event::Command, b.ID);
             return;
         }

@@ -31,8 +31,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Window.ControlBar.Item.Hover.HotKey   = ColorPair{ Color::Black, Color::Aqua };
     this->Window.ControlBar.Item.Pressed.Text   = ColorPair{ Color::Black, Color::Yellow };
     this->Window.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
-    this->Window.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
-    this->Window.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
+    this->Window.ControlBar.Item.Checked.Text   = ColorPair{ Color::Black, Color::Gray };
+    this->Window.ControlBar.Item.Checked.HotKey = ColorPair{ Color::White, Color::Gray };
 
 
     this->DialogError.ActiveColor                = ColorPair{ Color::White, Color::DarkRed };
