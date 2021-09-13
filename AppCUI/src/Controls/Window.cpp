@@ -120,7 +120,8 @@ void UpdateWindowButtonPos(WindowButton* b, WindowControlBarLayoutData& layout, 
 {
     int next;
 
-    bool partOfGroup    = (b->Type == WindowButtonType::Button) | (b->Type == WindowButtonType::Radio);
+    bool partOfGroup = (b->Type == WindowButtonType::Button) | (b->Type == WindowButtonType::Radio) |
+                       (b->Type == WindowButtonType::CheckBox);
     WindowButton* group = nullptr;
     int extraX          = 0;
 
@@ -327,7 +328,18 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
-    NOT_IMPLEMENTED(InvalidItemHandle);
+    auto* b = &Members->WinButtons[Members->WinButtonsCount];
+    CHECK(b->Init(WindowButtonType::CheckBox, this->Layout, name, toolTip),
+          InvalidItemHandle,
+          "Fail to initialize item !");
+    b->ID = ID;
+    Members->WinButtonsCount++;
+    if (checked)
+        b->SetFlag(WindowButtonFlags::Checked);
+    else
+        b->RemoveFlag(WindowButtonFlags::Checked);
+    UpdateWindowsButtonsPoz(Members);
+    return true;
 }
 void AppCUI::Controls::WindowControlsBar::AddSeparator()
 {
@@ -565,6 +577,7 @@ void Window::Paint(Graphics::Renderer& renderer)
 
         case WindowButtonType::Button:
         case WindowButtonType::Radio:
+        case WindowButtonType::CheckBox:
             if ((unsigned char) btn->Flags & (unsigned char) WindowButtonFlags::LeftGroupMarker)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
             else if (fromLeft)
@@ -675,7 +688,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     }
     if (Members->CurrentWinButtom != WINBUTTON_NONE)
     {
-        const auto& b = Members->WinButtons[Members->CurrentWinButtom];
+        auto& b = Members->WinButtons[Members->CurrentWinButtom];
         switch (b.Type)
         {
         case WindowButtonType::CloseButton:
@@ -692,6 +705,13 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
                   Members->WinButtons,
                   Members->WinButtons + Members->WinButtonsCount,
                   &Members->WinButtons[Members->CurrentWinButtom]);
+            RaiseEvent(Event::Command, b.ID);
+            return;
+        case WindowButtonType::CheckBox:
+            if (b.IsChecked())
+                b.RemoveFlag(WindowButtonFlags::Checked);
+            else
+                b.SetFlag(WindowButtonFlags::Checked);
             RaiseEvent(Event::Command, b.ID);
             return;
         }

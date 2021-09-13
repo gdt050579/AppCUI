@@ -171,7 +171,8 @@ enum class WindowButtonType : unsigned char
     WindowResize,
     Tag,
     Button,
-    Radio
+    Radio,
+    CheckBox
 };
 enum class WindowButtonFlags : unsigned char
 {
