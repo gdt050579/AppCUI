@@ -2481,15 +2481,8 @@ namespace Application
                 {
                     Graphics::ColorPair Normal, Focused;
                 } Separators;
-                Graphics::ColorPair CloseButton, Tag, CheckMark;
+                Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
             } ControlBar;
-            //Graphics::ColorPair ControlButtonColor;
-            //Graphics::ColorPair ControlButtonInactiveColor;
-            //Graphics::ColorPair ControlButtonHoverColor;
-            //Graphics::ColorPair ControlButtonPressedColor;
-            //Graphics::ColorPair ControlButtonHotKeyColor;
-            //Graphics::ColorPair ControlButtonCheckedColor;
-            //Graphics::ColorPair ControlButtonCheckedHotKeyColor;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {

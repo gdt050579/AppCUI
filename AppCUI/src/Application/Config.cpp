@@ -36,6 +36,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Window.ControlBar.CloseButton         = ColorPair{ Color::Red, Color::DarkBlue };
     this->Window.ControlBar.Tag                 = ColorPair{ Color::Green, Color::DarkBlue };
     this->Window.ControlBar.CheckMark           = ColorPair{ Color::White, Color::DarkBlue };
+    this->Window.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkBlue };
 
     this->DialogError.ActiveColor        = ColorPair{ Color::White, Color::DarkRed };
     this->DialogError.InactiveColor      = ColorPair{ Color::Silver, Color::DarkRed };
@@ -57,6 +58,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogError.ControlBar.CloseButton         = ColorPair{ Color::Yellow, Color::DarkRed };
     this->DialogError.ControlBar.Tag                 = ColorPair{ Color::Silver, Color::DarkRed };
     this->DialogError.ControlBar.CheckMark           = ColorPair{ Color::Green, Color::DarkRed };
+    this->DialogError.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkRed };
 
     this->DialogNotify.ActiveColor        = ColorPair{ Color::White, Color::DarkGreen };
     this->DialogNotify.InactiveColor      = ColorPair{ Color::Silver, Color::DarkGreen };
@@ -78,6 +80,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogNotify.ControlBar.CloseButton         = ColorPair{ Color::White, Color::DarkGreen };
     this->DialogNotify.ControlBar.Tag                 = ColorPair{ Color::Yellow, Color::DarkGreen };
     this->DialogNotify.ControlBar.CheckMark           = ColorPair{ Color::Silver, Color::DarkGreen };
+    this->DialogNotify.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkGreen };
 
     this->DialogWarning.ActiveColor        = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.InactiveColor      = ColorPair{ Color::Silver, Color::Olive };
@@ -99,6 +102,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CloseButton         = ColorPair{ Color::Red, Color::Olive };
     this->DialogWarning.ControlBar.Tag                 = ColorPair{ Color::Green, Color::Olive };
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
+    this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
     this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };

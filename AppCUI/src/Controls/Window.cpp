@@ -645,7 +645,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             drawSeparators = true;
             break;
         case WindowButtonType::Text:
-            c1 = Members->Focused ? wcfg->ControlBar.Item.Focused.Text : wcfg->ControlBar.Item.Normal.Text;
+            c1 = Members->Focused ? wcfg->ControlBar.Text : wcfg->ControlBar.Item.Normal.Text;
             renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c1);
             drawSeparators = true;
             break;
