@@ -1769,6 +1769,8 @@ namespace Controls
               const AppCUI::Utils::ConstString& toolTip = std::string_view());
         ItemHandle AddTextItem(
               const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
+        bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
+        bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
         friend class Window;
     };
     class EXPORT Window : public Control

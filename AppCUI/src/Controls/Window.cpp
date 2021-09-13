@@ -287,7 +287,7 @@ void WindowRadioButtonClicked(WindowButton* start, WindowButton* end, WindowButt
 ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
       const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip)
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
@@ -298,12 +298,12 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
     b->ID = ID;
     Members->WinButtonsCount++;
     UpdateWindowsButtonsPoz(Members);
-    return true;
+    return Members->WinButtonsCount-1;
 }
 ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
       const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
@@ -319,12 +319,12 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
               Members->WinButtons + Members->WinButtonsCount,
               Members->WinButtons + Members->WinButtonsCount - 1);
     UpdateWindowsButtonsPoz(Members);
-    return true;
+    return Members->WinButtonsCount - 1;
 }
 ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
       const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
@@ -339,12 +339,12 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
     else
         b->RemoveFlag(WindowButtonFlags::Checked);
     UpdateWindowsButtonsPoz(Members);
-    return true;
+    return Members->WinButtonsCount - 1;
 }
 ItemHandle AppCUI::Controls::WindowControlsBar::AddTextItem(
       const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip)
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->WinButtonsCount < MAX_WINDOWBAR_ITEMS,
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
@@ -355,6 +355,37 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddTextItem(
 
     Members->WinButtonsCount++;
     UpdateWindowsButtonsPoz(Members);
+    return Members->WinButtonsCount - 1;
+}
+WindowButton* GetWindowControlsBarItem(void * Context, ItemHandle itemHandle)
+{                             
+    WindowControlContext* Members = (WindowControlContext*) Context;
+    CHECK(Members, nullptr, "");
+    unsigned int id = (unsigned int) itemHandle;
+    CHECK(id < Members->WinButtonsCount, nullptr, "Invalid item index (%d/%d)", id, Members->WinButtonsCount);
+    auto* b = Members->WinButtons + id;
+    CHECK((b->Type == WindowButtonType::Button) || (b->Type == WindowButtonType::CheckBox) ||
+                (b->Type == WindowButtonType::Radio) || (b->Type == WindowButtonType::Text),
+          nullptr,
+          "");
+    return b;
+}
+bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    CHECK(b->Text.Set(caption), false, "");
+    b->Size = b->Text.Len();
+    if (b->Type == WindowButtonType::CheckBox)
+        b->Size += 2;
+    UpdateWindowsButtonsPoz((WindowControlContext*) Context);
+    return true;
+}
+bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    CHECK(b->ToolTipText.Set(caption), false, "");
     return true;
 }
 //=========================================================================================================================================================

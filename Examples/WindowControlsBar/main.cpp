@@ -20,6 +20,8 @@ class MyControl : public AppCUI::Controls::UserControl
 class WindowControlsBarExample : public AppCUI::Controls::Window
 {
     MyControl m;
+    ItemHandle itText;
+
   public:
     WindowControlsBarExample(char id)
     {
@@ -42,10 +44,11 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
         cb.AddCheckItem("Option 1", 200, false, "Check this to enable option 1");
         cb.AddCheckItem("Option 2", 201, false, "Check this to enable option 2");
-        cb.AddTextItem("-1-");
+        itText = cb.AddTextItem("-1-");
     }
     bool OnEvent(Control*, Event eventType, int ID) override
     {
+        Utils::LocalString<128> s;
         if (eventType == Event::WindowClose)
         {
             Application::Close();
@@ -62,6 +65,11 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
                 this->CenterScreen();
                 return true;
             case 12347:
+                value += 1;
+                s.Format("%d", value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft).SetItemText(itText, s.GetText());
+                s.Format("Dec:%d\nHex:%08X\nOct:%o", value, value, value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft).SetItemToolTip(itText, s.GetText());
                 return true;
             case 100:
                 m.back = Color::Red;
