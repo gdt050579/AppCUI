@@ -7,7 +7,9 @@ using namespace AppCUI::Input;
 
 void GoToNextWindow(ControlContext* Members, int direction)
 {
-    if (Members->ControlsCount == 0)
+    if (!Members)
+        return;
+    if ((Members->ControlsCount == 0) || (Members->Controls == nullptr))
         return;
 
     int start = Members->CurrentControlIndex;
@@ -59,21 +61,24 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
         GoToNextWindow(Members, -1);
         return true;
     }
-    // check cntrols hot keys
+    // check controls hot keys
     if ((((unsigned int) keyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
     {
         auto* b = Members->Controls;
         auto* e = b + Members->ControlsCount;
-        while (b < e)
+        if (b)
         {
-            ControlContext* winMembers = (ControlContext*) (*b)->Context;
-            if ((winMembers) && (winMembers->HotKey == keyCode))
+            while (b < e)
             {
-                if ((b - Members->Controls) != (size_t) Members->CurrentControlIndex)
-                    (*b)->SetFocus();
-                return true;
+                const auto winMembers = reinterpret_cast<ControlContext*>((*b)->Context);
+                if ((winMembers) && (winMembers->HotKey == keyCode))
+                {
+                    if ((b - Members->Controls) != (size_t) Members->CurrentControlIndex)
+                        (*b)->SetFocus();
+                    return true;
+                }
+                b++;
             }
-            b++;
         }
     }
     return false;
