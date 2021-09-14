@@ -300,17 +300,17 @@ bool CharacterBuffer::SetWithHotKey(
     switch (textObj.Encoding)
     {
     case StringEncoding::Ascii:
-        sz = CopyStringToCharBufferWidthHotKey<char>(this->Buffer + this->Count, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        sz = CopyStringToCharBufferWidthHotKey<char>(this->Buffer, (const char*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringEncoding::CharacterBuffer:
-        sz = CopyStringToCharBufferWidthHotKey<Character>(this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        sz = CopyStringToCharBufferWidthHotKey<Character>(this->Buffer, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringEncoding::Unicode16:
-        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
+        sz = CopyStringToCharBufferWidthHotKey<char16_t>(this->Buffer, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
         break;
     default:
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
@@ -322,7 +322,7 @@ bool CharacterBuffer::SetWithHotKey(
         hotKey                  = AppCUI::Input::Key::None;
         RETURNERROR(false, "Internal error --> possible buffer overwrite !");
     }
-    this->Count += (unsigned int) sz;
+    this->Count = (unsigned int) sz;
     // sanity check
     if ((hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET) && (hotKeyCharacterPosition >= this->Count))
     {

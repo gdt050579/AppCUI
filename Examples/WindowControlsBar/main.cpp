@@ -38,9 +38,9 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         cb.AddCommandItem("Center", 12346, "When you press this button the Window will center to the screen");
         cb.AddCommandItem("+", 12347, "Increase the number from text item");
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight);
-        cb.AddRadioItem("&Red", 100, false);
-        cb.AddRadioItem("&Green", 101, false);
-        cb.AddRadioItem("&Blue", 102, id == '2');
+        cb.AddSingleChoiceItem("&Red", 100, false);
+        cb.AddSingleChoiceItem("&Green", 101, false);
+        cb.AddSingleChoiceItem("&Blue", 102, id == '2');
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
         cb.AddCheckItem("&Option 1", 200, false, "Check this to enable option 1");
         cb.AddCheckItem("O&ption 2", 201, false, "Check this to enable option 2");

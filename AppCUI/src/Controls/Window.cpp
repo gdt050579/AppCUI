@@ -120,7 +120,7 @@ void UpdateWindowButtonPos(WindowBarItem* b, WindowControlBarLayoutData& layout,
 {
     int next;
 
-    bool partOfGroup = (b->Type == WindowBarItemType::Button) | (b->Type == WindowBarItemType::Radio) |
+    bool partOfGroup = (b->Type == WindowBarItemType::Button) | (b->Type == WindowBarItemType::SingleChoice) |
                        (b->Type == WindowBarItemType::CheckBox) | (b->Type == WindowBarItemType::Text);
     WindowBarItem* group = nullptr;
     int extraX           = 0;
@@ -268,7 +268,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     {
         if (p->Layout == current->Layout)
         {
-            if (p->Type == WindowBarItemType::Radio)
+            if (p->Type == WindowBarItemType::SingleChoice)
                 p->RemoveFlag(WindowBarItemFlags::Checked);
             else
                 break;
@@ -280,7 +280,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     {
         if (p->Layout == current->Layout)
         {
-            if (p->Type == WindowBarItemType::Radio)
+            if (p->Type == WindowBarItemType::SingleChoice)
                 p->RemoveFlag(WindowBarItemFlags::Checked);
             else
                 break;
@@ -306,7 +306,7 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->ControlBar.Count - 1;
 }
-ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
+ItemHandle AppCUI::Controls::WindowControlsBar::AddSingleChoiceItem(
       const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
@@ -314,7 +314,7 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddRadioItem(
           InvalidItemHandle,
           "Max number of items in a control bar was exceeded !");
     auto* b = &Members->ControlBar.Items[Members->ControlBar.Count];
-    CHECK(b->Init(WindowBarItemType::Radio, this->Layout, name, toolTip),
+    CHECK(b->Init(WindowBarItemType::SingleChoice, this->Layout, name, toolTip),
           InvalidItemHandle,
           "Fail to initialize item !");
     b->ID = ID;
@@ -371,7 +371,7 @@ WindowBarItem* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
     CHECK(id < Members->ControlBar.Count, nullptr, "Invalid item index (%d/%d)", id, Members->ControlBar.Count);
     auto* b = Members->ControlBar.Items + id;
     CHECK((b->Type == WindowBarItemType::Button) || (b->Type == WindowBarItemType::CheckBox) ||
-                (b->Type == WindowBarItemType::Radio) || (b->Type == WindowBarItemType::Text),
+                (b->Type == WindowBarItemType::SingleChoice) || (b->Type == WindowBarItemType::Text),
           nullptr,
           "");
     return b;
@@ -414,7 +414,7 @@ bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bo
             b->RemoveFlag(WindowBarItemFlags::Checked);
         return true;
     }
-    if (b->Type == WindowBarItemType::Radio)
+    if (b->Type == WindowBarItemType::SingleChoice)
     {
         CHECK(value, false, "For radio buttom only 'true' can be used as a value");
         WindowControlContext* Members = (WindowControlContext*) Context;
@@ -656,7 +656,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             break;
 
         case WindowBarItemType::Button:
-        case WindowBarItemType::Radio:
+        case WindowBarItemType::SingleChoice:
             if (showChecked)
                 renderer.WriteSingleLineText(
                       btn->X,
@@ -801,7 +801,7 @@ bool Window::ProcessControlBarItem(unsigned int index)
     case WindowBarItemType::Button:
         RaiseEvent(Event::Command, b.ID);
         return true;
-    case WindowBarItemType::Radio:
+    case WindowBarItemType::SingleChoice:
         WindowRadioButtonClicked(
               Members->ControlBar.Items,
               Members->ControlBar.Items + Members->ControlBar.Count,

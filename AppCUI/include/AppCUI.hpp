@@ -1757,7 +1757,7 @@ namespace Controls
       public:
         ItemHandle AddCommandItem(
               const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip = "");
-        ItemHandle AddRadioItem(
+        ItemHandle AddSingleChoiceItem(
               const AppCUI::Utils::ConstString& name,
               int ID,
               bool checked,

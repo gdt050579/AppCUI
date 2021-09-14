@@ -171,7 +171,7 @@ enum class WindowBarItemType : unsigned char
     WindowResize,
     Tag,
     Button,
-    Radio,
+    SingleChoice,
     CheckBox,
     Text
 };
