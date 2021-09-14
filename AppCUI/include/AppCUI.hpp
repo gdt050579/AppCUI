@@ -2346,7 +2346,13 @@ namespace Dialogs
               std::string_view extensionFilter,
               const std::filesystem::path& path);
     };
+    class EXPORT WindowManager
+    {
+        WindowManager() = delete;
 
+      public:
+          static void Show();
+    };
 } // namespace Dialogs
 namespace Log
 {

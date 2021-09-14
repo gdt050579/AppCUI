@@ -60,6 +60,9 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
     case Key::Ctrl | Key::Shift | Key::Tab:
         GoToNextWindow(Members, -1);
         return true;
+    case Key::Alt | Key::N0:
+        AppCUI::Dialogs::WindowManager::Show();
+        return true;
     }
     // check controls hot keys
     if ((((unsigned int) keyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
