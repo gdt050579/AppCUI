@@ -14,9 +14,11 @@ using namespace AppCUI::Input;
 class MyWin: public Window
 {
   public:
-    MyWin(std::string_view name)
+    MyWin(std::string_view name, char16_t hotKey)
     {
         this->Create(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable);
+        this->SetHotKey(hotKey);
+
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {
@@ -68,7 +70,15 @@ int main()
     {
         winName[4] = '0' + tr / 10;
         winName[5] = '0' + tr % 10;
-        Application::AddWindow(new MyWin(winName));
+        char16_t hk = 0;
+        if (tr < 10)
+            hk = '0' + tr;
+        auto* w = new MyWin(winName, hk);
+        if (tr == 1)
+            w->SetTag("Data", "A window that contains\na lot of data ...");
+        if (tr == 2)
+            w->SetTag("Numbers", "Plenty of numbers ....");
+        Application::AddWindow(w);
     }    
     Application::Run();
     return 0;

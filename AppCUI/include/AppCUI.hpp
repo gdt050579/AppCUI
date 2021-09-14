@@ -1205,6 +1205,10 @@ namespace Graphics
         {
             return Buffer != nullptr;
         }
+        inline bool IsEmpty() const
+        {
+            return (Buffer == nullptr) || (Count==0);
+        }
 
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
@@ -1548,6 +1552,8 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListView;
     class EXPORT Menu;
+    class EXPORT Window;
+
     namespace Handlers
     {
         typedef void (*AfterResizeHandler)(
@@ -1690,6 +1696,7 @@ namespace Controls
         // Evenimente
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
         virtual void OnHotKey();
+        virtual void OnHotKeyChanged();
         virtual void OnFocus();
         virtual void OnLoseFocus();
 
@@ -1731,8 +1738,46 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
+    enum class WindowControlsBarLayout: unsigned char
+    {
+        None               = 0,
+        TopBarFromLeft     = 1,
+        BottomBarFromLeft  = 2,
+        TopBarFromRight    = 3,
+        BottomBarFromRight = 4,        
+    };
+    class EXPORT WindowControlsBar
+    {
+        void* Context;
+        WindowControlsBarLayout Layout;
+        WindowControlsBar(void* ctx, WindowControlsBarLayout layout) : Context(ctx), Layout(layout)
+        {
+        }
+
+      public:
+        ItemHandle AddCommandItem(
+              const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip = "");
+        ItemHandle AddSingleChoiceItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        ItemHandle AddCheckItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        ItemHandle AddTextItem(
+              const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
+        bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
+        bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
+        bool IsItemChecked(ItemHandle itemHandle);
+        bool SetItemCheck(ItemHandle itemHandle, bool value);
+        friend class Window;
+    };
     class EXPORT Window : public Control
     {
+        bool ProcessControlBarItem(unsigned int index);
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
@@ -1749,15 +1794,18 @@ namespace Controls
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
+        void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
         Menu* AddMenu(const AppCUI::Utils::ConstString& name);
+        WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
     };
@@ -2423,10 +2471,21 @@ namespace Application
             Graphics::ColorPair InactiveColor;
             Graphics::ColorPair TitleActiveColor;
             Graphics::ColorPair TitleInactiveColor;
-            Graphics::ColorPair ControlButtonColor;
-            Graphics::ColorPair ControlButtonInactiveColor;
-            Graphics::ColorPair ControlButtonHoverColor;
-            Graphics::ColorPair ControlButtonPressedColor;
+            struct
+            {
+                struct
+                {
+                    struct
+                    {
+                        Graphics::ColorPair Text, HotKey;
+                    } Normal, Pressed, Hover, Checked, Focused;
+                } Item;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused;
+                } Separators;
+                Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
+            } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {

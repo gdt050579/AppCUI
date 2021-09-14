@@ -5,26 +5,25 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-
 void GoToNextWindow(ControlContext* Members, int direction)
 {
     if (Members->ControlsCount == 0)
         return;
 
     int start = Members->CurrentControlIndex;
-    if (start<0)
+    if (start < 0)
     {
-        if (direction>0)
+        if (direction > 0)
             start = -1;
         else
             start = Members->ControlsCount;
     }
     start += direction;
-    if (start >= (int)Members->ControlsCount)
+    if (start >= (int) Members->ControlsCount)
         start = 0;
     if (start < 0)
-        start = ((int)Members->ControlsCount) - 1;
-    if (start != (int)Members->CurrentControlIndex)
+        start = ((int) Members->ControlsCount) - 1;
+    if (start != (int) Members->CurrentControlIndex)
         Members->Controls[start]->SetFocus();
 }
 bool Desktop::Create(unsigned int _width, unsigned int _height)
@@ -60,6 +59,22 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
         GoToNextWindow(Members, -1);
         return true;
     }
-
+    // check cntrols hot keys
+    if ((((unsigned int) keyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
+    {
+        auto* b = Members->Controls;
+        auto* e = b + Members->ControlsCount;
+        while (b < e)
+        {
+            ControlContext* winMembers = (ControlContext*) (*b)->Context;
+            if ((winMembers) && (winMembers->HotKey == keyCode))
+            {
+                if ((b - Members->Controls) != (size_t) Members->CurrentControlIndex)
+                    (*b)->SetFocus();
+                return true;
+            }
+            b++;
+        }
+    }
     return false;
 }
