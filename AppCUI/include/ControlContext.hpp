@@ -162,7 +162,7 @@ constexpr unsigned int WINDOW_DRAG_STATUS_SIZE = 2;
 
 constexpr unsigned int MAX_WINDOWBAR_ITEMS = 32;
 
-enum class WindowButtonType : unsigned char
+enum class WindowBarItemType : unsigned char
 {
     None = 0,
     HotKeY,
@@ -175,7 +175,7 @@ enum class WindowButtonType : unsigned char
     CheckBox,
     Text
 };
-enum class WindowButtonFlags : unsigned char
+enum class WindowBarItemFlags : unsigned char
 {
     None             = 0x00,
     Visible          = 0x01,
@@ -185,7 +185,7 @@ enum class WindowButtonFlags : unsigned char
     RightGroupMarker = 0x10
 };
 struct WindowControlContext;
-struct WindowButton
+struct WindowBarItem
 {
     AppCUI::Graphics::CharacterBuffer ToolTipText;
     AppCUI::Graphics::CharacterBuffer Text;
@@ -193,19 +193,19 @@ struct WindowButton
     unsigned int HotKeyOffset;
     Key HotKey;
     WindowControlsBarLayout Layout;
-    WindowButtonType Type;
-    WindowButtonFlags Flags;
+    WindowBarItemType Type;
+    WindowBarItemFlags Flags;
     inline bool IsVisible() const
     {
-        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Visible) != 0;
+        return (((unsigned char) Flags) & (unsigned char) WindowBarItemFlags::Visible) != 0;
     }
     inline bool IsHidden() const
     {
-        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Hidden) != 0;
+        return (((unsigned char) Flags) & (unsigned char) WindowBarItemFlags::Hidden) != 0;
     }
     inline bool IsChecked() const
     {
-        return (((unsigned char) Flags) & (unsigned char) WindowButtonFlags::Checked) != 0;
+        return (((unsigned char) Flags) & (unsigned char) WindowBarItemFlags::Checked) != 0;
     }
     inline bool Contains(int x, int y) const
     {
@@ -215,17 +215,17 @@ struct WindowButton
     {
         return X + Size / 2;
     }
-    inline void SetFlag(WindowButtonFlags flg)
+    inline void SetFlag(WindowBarItemFlags flg)
     {
-        Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) | ((unsigned char) flg));
+        Flags = static_cast<WindowBarItemFlags>(((unsigned char) Flags) | ((unsigned char) flg));
     }
-    inline void RemoveFlag(WindowButtonFlags flg)
+    inline void RemoveFlag(WindowBarItemFlags flg)
     {
-        Flags = static_cast<WindowButtonFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
+        Flags = static_cast<WindowBarItemFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
     }
-    bool Init(WindowButtonType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText);
+    bool Init(WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText);
     bool Init(
-          WindowButtonType type,
+          WindowBarItemType type,
           WindowControlsBarLayout layout,
           const AppCUI::Utils::ConstString& name,
           const AppCUI::Utils::ConstString& toolTip);
@@ -238,12 +238,14 @@ struct WindowControlContext : public ControlContext
     int dragStatus, dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
     int DialogResult;
-    WindowButton WinButtons[MAX_WINDOWBAR_ITEMS];
-    unsigned int WinButtonsCount;
-    unsigned char CurrentWinButtom;
-    bool CurrentWinButtomPressed;
-    bool Maximized;
-    
+    struct
+    {
+        WindowBarItem Items[MAX_WINDOWBAR_ITEMS];
+        unsigned int Count;
+        unsigned char Current;
+        bool IsCurrentItemPressed;
+    } ControlBar;
+    bool Maximized;    
 };
 
 class SplitterControlContext : public ControlContext
