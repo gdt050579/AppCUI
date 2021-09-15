@@ -227,6 +227,7 @@ namespace Internal
         std::unique_ptr<AbstractTerminal> terminal;
         std::unique_ptr<CommandBarController> cmdBar;
         std::unique_ptr<MenuBar> menu;
+        std::vector<AppCUI::Controls::Control*> toDelete;
 
         AppCUI::Controls::Desktop* AppDesktop;
         AppCUI::Controls::Desktop DefaultDesktopControl;

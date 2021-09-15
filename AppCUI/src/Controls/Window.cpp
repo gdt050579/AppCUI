@@ -939,8 +939,9 @@ bool Window::OnEvent(Control*, Event eventType, int)
         }
         else
         {
+            app->AppDesktop->RemoveControl(this);
             // top level window -> closing the app
-            Application::Close();
+            // Application::Close();
             return true;
         }
     }

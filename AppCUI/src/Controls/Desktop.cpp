@@ -89,5 +89,5 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
 void Desktop::OnControlRemoved(AppCUI::Controls::Control* ctrl)
 {
     if (ctrl)
-        delete ctrl;
+        Application::GetApplication()->toDelete.push_back(ctrl);
 }

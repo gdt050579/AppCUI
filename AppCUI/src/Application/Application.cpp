@@ -123,7 +123,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
 {
     if (ctrl == nullptr)
         return;
-    CREATE_CONTROL_CONTEXT(ctrl, Members, );
+    CREATE_CONTROL_CONTEXT(ctrl, Members, );    
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
     // draw myself
@@ -188,7 +188,8 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     {
         for (int tr = 1; tr < cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
-        PaintControl(Members->Controls[idx], renderer, true);
+        if ((idx >= 0) && (idx < Members->ControlsCount))
+            PaintControl(Members->Controls[idx], renderer, true);
     }
 }
 void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& renderer, bool activ)
@@ -939,6 +940,22 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
 
     while (LoopStatus == LOOP_STATUS_NORMAL)
     {
+        if (!toDelete.empty())
+        {
+            for (auto c : toDelete)
+            {
+                // delete any potential references
+                if (this->MouseLockedControl == c)
+                    this->MouseLockedControl = nullptr;
+                if (this->MouseOverControl == c)
+                    this->MouseOverControl = nullptr;
+                if (this->ExpandedControl == c)
+                    this->ExpandedControl = nullptr;
+                delete c;
+            }
+                
+            toDelete.clear();
+        }
         if (RepaintStatus != REPAINT_STATUS_NONE)
         {
             if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
