@@ -6,6 +6,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
 int winID = 1;
+std::string_view tags[8] = { "Random", "General", "Mathematics", "Computer", "Logic", "Fast", "Wind", "Help" };
 
 class WindowExample : public AppCUI::Controls::Window
 {
@@ -17,6 +18,8 @@ class WindowExample : public AppCUI::Controls::Window
         this->Create(name, "d:c,w:40,h:10", WindowFlags::Sizeable);
         b.Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
         my_name = name;
+        if (winID % 5 != 0)
+            this->SetTag(tags[winID % 8], "bla bla bla");
     }
     bool OnEvent(Control* c, Event eventType, int id) override
     {

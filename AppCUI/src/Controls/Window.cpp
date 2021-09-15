@@ -1043,7 +1043,7 @@ void Window::OnHotKeyChanged()
 void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    // find hotkey win button
+    // find tag win button
     WindowBarItem* b = nullptr;
     for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
@@ -1066,6 +1066,23 @@ void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils:
     b->RemoveFlag(WindowBarItemFlags::Hidden);
     UpdateWindowsButtonsPoz(Members);
 }
+const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, CharacterBuffer());
+    // find tag win button
+    WindowBarItem* b = nullptr;
+    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+        if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
+        {
+            b = &Members->ControlBar.Items[tr];
+            break;
+        }
+    // sanity check (in reality the pointer should always be valid)
+    if (!b)
+        return CharacterBuffer();
+    return b->Text;
+}
+
 bool Window::Exit(int dialogResult)
 {
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");

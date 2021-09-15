@@ -1797,6 +1797,7 @@ namespace Controls
         int GetDialogResult();
         bool MaximizeRestore();
         void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
+        const AppCUI::Graphics::CharacterBuffer& GetTag();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
@@ -2081,6 +2082,9 @@ namespace Controls
         ItemData(unsigned long long value) : UInt64Value(value)
         {
         }
+        ItemData(void* p) : Pointer(p)
+        {
+        }
     };
     class EXPORT ListView : public Control
     {
@@ -2221,7 +2225,7 @@ namespace Controls
         bool SetItemUserData(unsigned int index, ItemData userData);
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { 0 });
+        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 

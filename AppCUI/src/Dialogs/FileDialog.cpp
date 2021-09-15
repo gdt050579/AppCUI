@@ -295,7 +295,7 @@ void FileDialogClass::UpdateFileList()
         if (p != p.root_path())
         {
             files.AddItem("..", "UP-DIR");
-            files.SetItemData(0, 0);
+            files.SetItemData(0, ItemData{ nullptr });
         }
         char size[32];
         char time_rep[64];

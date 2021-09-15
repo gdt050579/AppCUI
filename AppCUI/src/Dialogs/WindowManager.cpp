@@ -13,7 +13,7 @@ constexpr int BUTTON_ID_CANCEL = 10002;
 struct WinItemInfo
 {
     ItemHandle Referal;
-    const Window* wnd;
+    Window* wnd;
     bool added;
 };
 
@@ -24,15 +24,55 @@ class InternalWindowManager : public AppCUI::Controls::Window
 
   public:
     bool Create();
-    bool AddItem(const Window* w, unsigned int offsetX);
+    bool AddItem(Window* w, unsigned int offsetX);
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
+    bool OnEvent(Control* c, Event eventType, int id) override;
+    void GoToSelectedItem();
 };
 
-bool InternalWindowManager::AddItem(const Window* w, unsigned int offsetX)
+void InternalWindowManager::GoToSelectedItem()
+{
+    auto data = lst.GetItemData(lst.GetCurrentItem());
+    if ((!data) || (!data->Pointer))
+        return;
+    (reinterpret_cast<Window*>(data->Pointer))->SetFocus();
+}
+bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
+{
+    if (Window::OnEvent(c, eventType, id))
+        return true;
+    if (eventType == Event::ButtonClicked)
+    {
+        switch (id)
+        {
+        case BUTTON_ID_GOTO:
+            GoToSelectedItem();
+            Exit(Result::Ok);
+            return true;
+        case BUTTON_ID_DELETE:
+            return true;
+        case BUTTON_ID_CANCEL:
+            Exit(Result::Cancel);
+            return true;
+        }
+    }
+    if (eventType == Event::ListViewItemClicked)
+    {
+        GoToSelectedItem();
+        Exit(Result::Ok);
+        return true;
+    }
+    return false;
+}
+
+bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
 {
     const auto Members = reinterpret_cast<WindowControlContext*>(w->Context);
-    auto i             = lst.AddItem(Members->Text);
+    auto i             = lst.AddItem(Members->Text,(CharacterView)w->GetTag());
     lst.SetItemXOffset(i, offsetX);
+    lst.SetItemData(i, ItemData(w));
+    if (w->HasFocus())
+        lst.SetItemType(i, ListViewItemType::Highlighted);
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
@@ -49,7 +89,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 bool InternalWindowManager::Create()
 {
     CHECK(Window::Create("Window manager", "d:c,w:70,h:20"), false, "");
-    CHECK(lst.Create(this, "l:1,t:1,r:1,b:3"), false, "");
+    CHECK(lst.Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
     CHECK(lst.AddColumn("Window caption", TextAlignament::Left, 50), false, "");
     CHECK(lst.AddColumn("TAG", TextAlignament::Left, 20), false, "");
     CHECK(btnGoTo.Create(this, "&Goto", "l:15,b:0,w:11", BUTTON_ID_GOTO), false, "");
