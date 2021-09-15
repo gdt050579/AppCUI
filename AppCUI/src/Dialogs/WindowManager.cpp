@@ -80,11 +80,7 @@ bool InternalWindowManager::Create()
         for (auto i : rel)
         {
             if (rel.contains(i.second.Referal))
-            {
-                // the referal was not added
-                if (!rel[i.second.Referal].added)
-                    continue;
-            }
+                continue;
             // add this item
             Process(rel, i.first, 0);
         }

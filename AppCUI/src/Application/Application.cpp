@@ -69,15 +69,25 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
     auto ptrWin = wnd.release();
-    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");    
-    auto resultHandle = ItemHandle{ app->LastWindowID };
+    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");
+    auto resultHandle     = ItemHandle{ app->LastWindowID };
     const auto winMembers = reinterpret_cast<WindowControlContext*>(ptrWin->Context);
     CHECK(winMembers, InvalidItemHandle, "Invalid members !");
-    winMembers->windowItemHandle = resultHandle;
+    winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
-    app->LastWindowID = (app->LastWindowID + 1) % 0x7FFFFFFF;
+    app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
     CHECK(app->AppDesktop->AddControl(ptrWin), InvalidItemHandle, "Fail to add window to desktop !");
+    ptrWin->SetFocus();
     return resultHandle;
+}
+ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, Window* referalWindow)
+{
+    if (!referalWindow)
+        return AppCUI::Application::AddWindow(std::move(wnd), InvalidItemHandle);
+    const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
+    if (!winMembers)
+        return AppCUI::Application::AddWindow(std::move(wnd), InvalidItemHandle);
+    return AppCUI::Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
 }
 AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
 {
@@ -126,7 +136,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
 {
     if (ctrl == nullptr)
         return;
-    CREATE_CONTROL_CONTEXT(ctrl, Members, );    
+    CREATE_CONTROL_CONTEXT(ctrl, Members, );
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
     // draw myself
@@ -371,7 +381,7 @@ void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::Initia
     }
     appPath.replace_extension(".ini");
     LOG_INFO("Initializing AppCUI using: %s", appPath.string().c_str());
-    
+
     if (this->settings.CreateFromFile(appPath) == false)
     {
         LOG_WARNING("Fail to load ini file: %s ==> using default configuration", appPath.string().c_str());
@@ -444,22 +454,21 @@ void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::Initia
     if (fixedWindows)
         initData.Flags |= AppCUI::Application::InitializationFlags::FixedSize;
 
-    // all good 
+    // all good
 }
 bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData& initData)
 {
     CHECK(!this->Inited, false, "Application has already been initialized !");
 
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::LoadSettingsFile)
-        != AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & AppCUI::Application::InitializationFlags::LoadSettingsFile) !=
+        AppCUI::Application::InitializationFlags::None)
     {
-        LoadSettingsFile(initData);    
+        LoadSettingsFile(initData);
     }
 
     LOG_INFO("Starting AppCUI ...");
     LOG_INFO("Flags           = %08X", (unsigned int) initData.Flags);
     LOG_INFO("Requested Size  = %d x %d", initData.Width, initData.Height);
-    
 
     // create the frontend
     CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
@@ -955,7 +964,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 if (this->ExpandedControl == c)
                     this->ExpandedControl = nullptr;
                 delete c;
-            }    
+            }
             toDelete.clear();
         }
         if (RepaintStatus != REPAINT_STATUS_NONE)
@@ -1121,9 +1130,8 @@ bool AppCUI::Internal::Application::SetToolTip(
     // compute point or rect
     if ((x >= 0) && (y >= 0)) // point coordonates
     {
-        int w   = (int) Members->Layout.Width;
-        int h   = (int) Members->Layout.Height;
-
+        int w = (int) Members->Layout.Width;
+        int h = (int) Members->Layout.Height;
 
         // recompute X and Y if object starts outside the screen
         if ((w != Members->ScreenClip.ClipRect.Width) && (Members->ScreenClip.ClipRect.X == 0))
@@ -1132,8 +1140,8 @@ bool AppCUI::Internal::Application::SetToolTip(
         if ((h != Members->ScreenClip.ClipRect.Height) && (Members->ScreenClip.ClipRect.Y == 0))
             y += Members->ScreenClip.ClipRect.Height - h;
 
-
-        if ((x < Members->ScreenClip.ClipRect.Width) && (y < Members->ScreenClip.ClipRect.Height) && (x>=0) && (y>=0))
+        if ((x < Members->ScreenClip.ClipRect.Width) && (y < Members->ScreenClip.ClipRect.Height) && (x >= 0) &&
+            (y >= 0))
         {
             r.Create(
                   Members->ScreenClip.ClipRect.X + x,
@@ -1171,19 +1179,19 @@ bool AppCUI::Internal::Application::Uninit()
 }
 void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
 {
-    auto winList       = this->AppDesktop->GetChildrenList();
-    auto winListCount  = this->AppDesktop->GetChildernCount();
-    auto y             = 0;
-    auto x             = 0;
-    int tempSz         = 0;
-    int gridX          = 0;
-    int gridY          = 0;
-    int gridWidth      = 0;
-    int gridHeight     = 0;
-    int gridRow        = 0;
-    int gridColumn     = 0;
-    int gridWinWidth   = 0;
-    int gridWinHeight  = 0;
+    auto winList      = this->AppDesktop->GetChildrenList();
+    auto winListCount = this->AppDesktop->GetChildernCount();
+    auto y            = 0;
+    auto x            = 0;
+    int tempSz        = 0;
+    int gridX         = 0;
+    int gridY         = 0;
+    int gridWidth     = 0;
+    int gridHeight    = 0;
+    int gridRow       = 0;
+    int gridColumn    = 0;
+    int gridWinWidth  = 0;
+    int gridWinHeight = 0;
 
     AppCUI::Graphics::Size sz;
     this->AppDesktop->GetClientSize(sz);
@@ -1225,7 +1233,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            if (winListCount==1) // last one
+            if (winListCount == 1) // last one
                 tempSz = std::max<>(1, ((int) sz.Width) - x);
             (*winList)->Resize(tempSz, sz.Height);
             x += (*winList)->GetWidth();
@@ -1250,10 +1258,10 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         tempSz = (int) sqrt(winListCount);
         tempSz = std::max<>(tempSz, 1);
         gridX  = tempSz;
-        gridY  = tempSz; 
-        if ((gridY * gridX) < (int)winListCount)
+        gridY  = tempSz;
+        if ((gridY * gridX) < (int) winListCount)
             gridX++; // more boxes on horizontal space
-        if ((gridY * gridX) < (int)winListCount)
+        if ((gridY * gridX) < (int) winListCount)
             gridY++; // more boxes on vertical space
         gridWidth  = sz.Width / gridX;
         gridHeight = sz.Height / gridY;
@@ -1263,15 +1271,15 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
-            gridWinWidth = gridWidth;
+            gridWinWidth  = gridWidth;
             gridWinHeight = gridHeight;
-            if (((gridColumn+1)==gridX) || (winListCount==1)) // last column
+            if (((gridColumn + 1) == gridX) || (winListCount == 1)) // last column
                 gridWinWidth = std::max<>(1, ((int) sz.Width) - x);
             if ((gridRow + 1) == gridY) // last row
                 gridWinHeight = std::max<>(1, ((int) sz.Height) - y);
 
             (*winList)->Resize(gridWinWidth, gridWinHeight);
-            x += (*winList)->GetWidth();            
+            x += (*winList)->GetWidth();
             gridColumn++;
             if (gridColumn >= gridX)
             {
@@ -1282,7 +1290,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             }
             winListCount--;
             winList++;
-        }        
+        }
         break;
     default:
         break;

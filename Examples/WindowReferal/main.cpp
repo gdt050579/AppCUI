@@ -26,7 +26,7 @@ class WindowExample : public AppCUI::Controls::Window
         {
             AppCUI::Utils::LocalString<128> tmp;
             tmp.Format("%s_%d", my_name.c_str(), winID++);
-            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()));
+            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()),this);
             return true;
         }
         return false;
