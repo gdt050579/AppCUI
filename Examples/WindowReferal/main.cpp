@@ -76,15 +76,15 @@ int main()
     initData.Flags         = InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;
-    auto m = Application::AddMenu("Windows");
-    m->AddCommandItem("&New", 12345);
+    auto m = Application::AddMenu("&Windows");
+    m->AddCommandItem("&New", 12345, Key::F1);
     m->AddSeparator();
     m->AddCommandItem("Arrange &horizontally", 12346);
     m->AddCommandItem("Arrange &vertically", 12347);
     m->AddCommandItem("&Cascade", 12348);
-    m->AddCommandItem("&Fit", 12349);
+    m->AddCommandItem("&Fit", 12349, Key::F5);
     m->AddSeparator();
-    m->AddCommandItem("E&xit", 12350);
+    m->AddCommandItem("E&xit", 12350,Key::F10);
 
     Application::Run();
     return 0;
