@@ -69,9 +69,12 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
     auto ptrWin = wnd.release();
-    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");
-    ptrWin->SetControlID(app->LastWindowID);
+    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");    
     auto resultHandle = ItemHandle{ app->LastWindowID };
+    const auto winMembers = reinterpret_cast<WindowControlContext*>(ptrWin->Context);
+    CHECK(winMembers, InvalidItemHandle, "Invalid members !");
+    winMembers->windowItemHandle = resultHandle;
+    winMembers->referalItemHandle = referal;
     app->LastWindowID = (app->LastWindowID + 1) % 0x7FFFFFFF;
     CHECK(app->AppDesktop->AddControl(ptrWin), InvalidItemHandle, "Fail to add window to desktop !");
     return resultHandle;
@@ -952,8 +955,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 if (this->ExpandedControl == c)
                     this->ExpandedControl = nullptr;
                 delete c;
-            }
-                
+            }    
             toDelete.clear();
         }
         if (RepaintStatus != REPAINT_STATUS_NONE)

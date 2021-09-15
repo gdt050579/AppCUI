@@ -234,6 +234,8 @@ struct WindowControlContext : public ControlContext
 {
   public:
     std::unique_ptr<AppCUI::Internal::MenuBar> menu;
+    AppCUI::Controls::ItemHandle referalItemHandle;
+    AppCUI::Controls::ItemHandle windowItemHandle;
     int oldPosX, oldPosY, oldW, oldH;
     int dragStatus, dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;

@@ -6,7 +6,7 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
-constexpr unsigned int MAX_TAG_CHARS   = 8U;
+constexpr unsigned int MAX_TAG_CHARS       = 8U;
 
 struct WindowControlBarLayoutData
 {
@@ -380,7 +380,7 @@ bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, con
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
-    
+
     CHECK(b->Text.SetWithHotKey(caption, b->HotKeyOffset, b->HotKey, Key::Alt), false, "");
     b->Size = b->Text.Len();
     if (b->Type == WindowBarItemType::CheckBox)
@@ -498,6 +498,8 @@ bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string
     Members->ControlBar.Current              = NO_CONTROLBAR_ITEM;
     Members->ControlBar.IsCurrentItemPressed = false;
     Members->ControlBar.Count                = 0;
+    Members->referalItemHandle               = InvalidItemHandle;
+    Members->windowItemHandle                = InvalidItemHandle;
 
     // init the buttons
     if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
@@ -939,7 +941,7 @@ void Window::RemoveMe()
     app->AppDesktop->RemoveControl(this);
 }
 bool Window::OnEvent(Control*, Event eventType, int)
-    {
+{
     if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
     {
         // check if current win is a modal dialog
@@ -1110,3 +1112,4 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
+
