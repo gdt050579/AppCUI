@@ -2,6 +2,10 @@
 #include "ControlContext.hpp"
 #include <map>
 
+#ifdef MessageBox
+#    undef MessageBox
+#endif
+
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Graphics;
@@ -28,8 +32,23 @@ class InternalWindowManager : public AppCUI::Controls::Window
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
     bool OnEvent(Control* c, Event eventType, int id) override;
     void GoToSelectedItem();
+    void RemoveCurrentWindow();
 };
 
+void InternalWindowManager::RemoveCurrentWindow()
+{
+    auto i = lst.GetCurrentItem();
+    if (i == InvalidItemHandle)
+        return;
+    LocalUnicodeStringBuilder<256> tmp;
+    tmp.Add("Kill ");
+    tmp.Add(lst.GetItemText(i,0));
+    tmp.Add(" ?");
+    if (MessageBox::ShowOkCancel("Terminate",tmp.ToStringView())==Result::Ok)
+    {
+        
+    }
+}
 void InternalWindowManager::GoToSelectedItem()
 {
     auto data = lst.GetItemData(lst.GetCurrentItem());
@@ -50,6 +69,8 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
             Exit(Result::Ok);
             return true;
         case BUTTON_ID_DELETE:
+            RemoveCurrentWindow();
+            Exit(Result::Ok);
             return true;
         case BUTTON_ID_CANCEL:
             Exit(Result::Cancel);
