@@ -90,8 +90,6 @@ bool InternalWindowManager::Create()
         }
     }
 
-    
-
     return true;
 }
 
