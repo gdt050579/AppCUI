@@ -6,6 +6,7 @@
 
 using namespace AppCUI;
 using namespace AppCUI::Utils;
+using namespace AppCUI::Controls;
 
 AppCUI::Internal::Application* app = nullptr;
 
@@ -63,11 +64,17 @@ void AppCUI::Application::Close()
     if (app)
         app->Terminate();
 }
-bool AppCUI::Application::AddWindow(AppCUI::Controls::Window* wnd)
+ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandle referal)
 {
-    CHECK(app, false, "Application has not been initialized !");
-    CHECK(app->Inited, false, "Application has not been corectly initialized !");
-    return app->AppDesktop->AddControl(wnd);
+    CHECK(app, InvalidItemHandle, "Application has not been initialized !");
+    CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
+    auto ptrWin = wnd.release();
+    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");
+    ptrWin->SetControlID(app->LastWindowID);
+    auto resultHandle = ItemHandle{ app->LastWindowID };
+    app->LastWindowID = (app->LastWindowID + 1) % 0x7FFFFFFF;
+    CHECK(app->AppDesktop->AddControl(ptrWin), InvalidItemHandle, "Fail to add window to desktop !");
+    return resultHandle;
 }
 AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
 {
@@ -329,6 +336,7 @@ AppCUI::Internal::Application::Application()
     this->ExpandedControl    = nullptr;
     this->VisibleMenu        = nullptr;
     this->ModalControlsCount = 0;
+    this->LastWindowID       = 0;
     this->LoopStatus         = LOOP_STATUS_NORMAL;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
@@ -492,6 +500,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     MouseLockedControl = nullptr;
     MouseOverControl   = nullptr;
     ModalControlsCount = 0;
+    LastWindowID       = 0;
 
     this->Inited = true;
     LOG_INFO("AppCUI initialized succesifully");

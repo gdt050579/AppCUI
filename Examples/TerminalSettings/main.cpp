@@ -37,7 +37,7 @@ int main()
     initData.CharSize = Application::CharacterSize::Normal;
     if (!Application::Init(initData))
         return 1;
-    Application::AddWindow(new SimpleWin());
+    Application::AddWindow(std::make_unique<SimpleWin>());
     Application::Run();
     return 0;
 }

@@ -89,8 +89,8 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new WindowControlsBarExample('1'));
-    Application::AddWindow(new WindowControlsBarExample('2'));
+    Application::AddWindow(std::make_unique<WindowControlsBarExample>('1'));
+    Application::AddWindow(std::make_unique<WindowControlsBarExample>('2'));
     Application::ArrangeWindows(ArangeWindowsMethod::Grid);
     Application::Run();
     return 0;

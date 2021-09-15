@@ -26,7 +26,6 @@
 #define MAX_COMMANDBAR_FIELD_NAME  24
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
-
 #define NEW_LINE_CODE 10
 
 #define SET_CHARACTER_EX(ptrCharInfo, value, color)                                                                    \
@@ -41,7 +40,7 @@
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            if (color != AppCUI::Graphics::Color::NoColor)                                                              \
+            if (color != AppCUI::Graphics::Color::NoColor)                                                             \
             {                                                                                                          \
                 unsigned int temp_color = color;                                                                       \
                 if (color & 256)                                                                                       \
@@ -80,7 +79,6 @@ namespace Internal
         AppCUI::Input::Key keyCode;
         char16_t unicodeCharacter;
     };
- 
 
     struct CommandBarField
     {
@@ -156,15 +154,16 @@ namespace Internal
 
         unsigned int MousePositionToItem(int x, int y);
         void Open(unsigned int menuIndex);
+
       public:
-        MenuBar(AppCUI::Controls::Control* parent = nullptr, int x =0, int y = 0);
+        MenuBar(AppCUI::Controls::Control* parent = nullptr, int x = 0, int y = 0);
 
         AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
         AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
         void RecomputePositions();
         void SetWidth(unsigned int value);
-        void Paint(AppCUI::Graphics::Renderer& renderer);        
-        bool OnMouseMove(int x, int y, bool & repaint);
+        void Paint(AppCUI::Graphics::Renderer& renderer);
+        bool OnMouseMove(int x, int y, bool& repaint);
         bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
         void Close();
         bool IsOpened();
@@ -187,7 +186,11 @@ namespace Internal
 
       public:
         ToolTipController();
-        bool Show(const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight);
+        bool Show(
+              const AppCUI::Utils::ConstString& text,
+              AppCUI::Graphics::Rect& objRect,
+              int screenWidth,
+              int screenHeight);
         void Hide();
         void Paint(AppCUI::Graphics::Renderer& renderer);
     };
@@ -225,13 +228,11 @@ namespace Internal
         std::unique_ptr<CommandBarController> cmdBar;
         std::unique_ptr<MenuBar> menu;
 
-        bool Inited;
-
         AppCUI::Controls::Desktop* AppDesktop;
         AppCUI::Controls::Desktop DefaultDesktopControl;
         ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
-        
+
         AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
         AppCUI::Controls::Control* MouseLockedControl;
         AppCUI::Controls::Control* MouseOverControl;
@@ -242,6 +243,9 @@ namespace Internal
         unsigned int RepaintStatus;
         int MouseLockedObject;
 
+        unsigned int LastWindowID;
+        bool Inited;
+
         Application();
         ~Application();
 
@@ -249,7 +253,7 @@ namespace Internal
         void ComputePositions();
         void ProcessKeyPress(AppCUI::Input::Key keyCode, char16_t unicodeCharacter);
         void ProcessShiftState(AppCUI::Input::Key ShiftState);
-        void ProcessMenuMouseClick(AppCUI::Controls::Menu * mnu,int x, int y);
+        void ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);
         void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
         void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
@@ -285,7 +289,7 @@ namespace Internal
 } // namespace Internal
 namespace Application
 {
-    AppCUI::Internal::Application* GetApplication();    
+    AppCUI::Internal::Application* GetApplication();
 }
 namespace Utils
 {
@@ -295,7 +299,7 @@ namespace Utils
         unsigned int Length;
     };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
-}
+} // namespace Utils
 namespace Log
 {
     void Unit(); // needed to release some alocation buffers
