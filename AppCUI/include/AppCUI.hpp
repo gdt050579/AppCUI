@@ -1717,6 +1717,7 @@ namespace Controls
         virtual void OnAfterResize(int newWidth, int newHeight);
         virtual bool OnBeforeAddControl(Control* ctrl);
         virtual void OnAfterAddControl(Control* ctrl);
+        virtual void OnControlRemoved(Control* ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
         virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
@@ -2314,6 +2315,7 @@ namespace Controls
         bool Create(unsigned int screenWidth, unsigned int screenHeight);
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
     };
 
 }; // namespace Controls
