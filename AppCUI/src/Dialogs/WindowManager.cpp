@@ -1,4 +1,5 @@
-#include "AppCUI.hpp"
+#include "Internal.hpp"
+#include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
@@ -26,6 +27,14 @@ bool InternalWindowManager::Create()
     CHECK(btnGoTo.Create(this, "&Goto", "l:15,b:0,w:11", BUTTON_ID_GOTO), false, "");
     CHECK(btnDelete.Create(this, "&Delete", "l:27,b:0,w:11", BUTTON_ID_DELETE), false, "");
     CHECK(btnCancel.Create(this, "&Cancel", "l:39,b:0,w:11", BUTTON_ID_CANCEL), false, "");
+    
+    // add all existing windows
+    auto* app = AppCUI::Application::GetApplication();
+    CHECK(app, false, "");
+    CHECK(app->AppDesktop, false, "");
+    CHECK(app->AppDesktop->Context, false, "");
+    const auto desktopMembers = reinterpret_cast<ControlContext*>(app->AppDesktop->Context);
+    
 
     return true;
 }
