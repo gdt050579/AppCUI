@@ -5,24 +5,46 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
+int winID = 1;
+
 class WindowExample : public AppCUI::Controls::Window
 {
+    Button b;
+    std::string my_name;
   public:
-    WindowExample()
+    WindowExample(std::string_view name)
     {
-        this->Create("Text", "d:c,w:40,h:10", WindowFlags::Menu);
+        this->Create(name, "d:c,w:40,h:10", WindowFlags::Sizeable);
+        b.Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
+        my_name = name;
+    }
+    bool OnEvent(Control* c, Event eventType, int id) override
+    {
+        if (Window::OnEvent(c, eventType, id))
+            return true;
+        if ((eventType == Event::ButtonClicked) && (id == 1234))
+        {
+            AppCUI::Utils::LocalString<128> tmp;
+            tmp.Format("%s_%d", my_name.c_str(), winID++);
+            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()));
+            return true;
+        }
+        return false;
     }
 };
-class MyDesktop: public Desktop
+class MyDesktop : public Desktop
 {
   public:
-    bool OnEvent(Control*, Event eventType, int  id) override
+    bool OnEvent(Control*, Event eventType, int id) override
     {
+        AppCUI::Utils::LocalString<128> tmp;
         if (eventType == Event::Command)
         {
             switch (id)
             {
             case 12345:
+                tmp.Format("Win_%d", winID++);
+                Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()));
                 return true;
             case 12346:
                 Application::ArrangeWindows(ArangeWindowsMethod::Horizontal);
@@ -46,7 +68,10 @@ class MyDesktop: public Desktop
 };
 int main()
 {
-    if (!Application::Init(InitializationFlags::Menu))
+    InitializationData initData;
+    initData.CustomDesktop = new MyDesktop();
+    initData.Flags         = InitializationFlags::Menu;
+    if (!Application::Init(initData))
         return 1;
     auto m = Application::AddMenu("Windows");
     m->AddCommandItem("&New", 12345);
@@ -57,7 +82,7 @@ int main()
     m->AddCommandItem("&Fit", 12349);
     m->AddSeparator();
     m->AddCommandItem("E&xit", 12350);
-    
+
     Application::Run();
     return 0;
 }

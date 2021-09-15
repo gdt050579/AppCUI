@@ -1056,6 +1056,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
         ctrl = GetFocusedControl(this->AppDesktop);
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
+
     if (ctrl != nullptr)
     {
         RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::Command, command);
