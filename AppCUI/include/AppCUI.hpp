@@ -1791,6 +1791,7 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Control* sender, Event eventType, int controlID) override;
+        void RemoveMe();
 
         int Show();
         int GetDialogResult();

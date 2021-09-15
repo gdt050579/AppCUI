@@ -924,8 +924,22 @@ void Window::OnAfterResize(int, int)
         UpdateWindowsButtonsPoz(Members);
     }
 }
-bool Window::OnEvent(Control*, Event eventType, int)
+void Window::RemoveMe()
 {
+    auto app = AppCUI::Application::GetApplication();
+    if (!app)
+        return;
+    // check if I am part of the modal stack
+    for (auto i = 0; i < app->ModalControlsCount; i++)
+        if (app->ModalControlsStack[i] == this)
+            return;
+    if (!app->AppDesktop)
+        return;
+    // all good -> I am a top level window --> remove me
+    app->AppDesktop->RemoveControl(this);
+}
+bool Window::OnEvent(Control*, Event eventType, int)
+    {
     if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
     {
         // check if current win is a modal dialog
@@ -939,9 +953,7 @@ bool Window::OnEvent(Control*, Event eventType, int)
         }
         else
         {
-            app->AppDesktop->RemoveControl(this);
-            // top level window -> closing the app
-            // Application::Close();
+            RemoveMe();
             return true;
         }
     }
