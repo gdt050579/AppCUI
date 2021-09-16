@@ -28,6 +28,7 @@ class InternalWindowManager : public AppCUI::Controls::Window
     ListView lst;
     Button btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
     std::map<ItemHandle, WinItemInfo> rel;
+    ItemHandle focusedItem;
 
   public:
     bool Create();
@@ -191,7 +192,11 @@ bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
     lst.SetItemXOffset(i, offsetX);
     lst.SetItemData(i, ItemData(w));
     if (w->HasFocus())
+    {
         lst.SetItemType(i, ListViewItemType::Highlighted);
+        this->focusedItem = i;
+    }
+        
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
@@ -225,6 +230,7 @@ bool InternalWindowManager::Create()
     const auto desktopMembers = reinterpret_cast<ControlContext*>(app->AppDesktop->Context);
     auto wnd                  = desktopMembers->Controls;
     auto wEnd                 = wnd + desktopMembers->ControlsCount;
+    this->focusedItem         = InvalidItemHandle;
 
     if (wnd)
     {
@@ -244,6 +250,9 @@ bool InternalWindowManager::Create()
             Process(rel, i.first, 0);
         }
     }
+
+    if (this->focusedItem != InvalidItemHandle)
+        lst.SetCurrentItem(this->focusedItem);
 
     UpdateButtonsStatus();
 
