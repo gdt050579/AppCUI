@@ -6699,7 +6699,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new MainWin());
+    Application::AddWindow(std::make_unique<MainWin>());
     Application::Run();
     return 0;
 }

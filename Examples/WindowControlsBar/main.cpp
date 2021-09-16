@@ -46,14 +46,11 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         cb.AddCheckItem("O&ption 2", 201, false, "Check this to enable option 2");
         itText = cb.AddTextItem("-1-");
     }
-    bool OnEvent(Control*, Event eventType, int ID) override
+    bool OnEvent(Control* sender, Event eventType, int ID) override
     {
         Utils::LocalString<128> s;
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
+        if (Window::OnEvent(sender, eventType, ID))
             return true;
-        }
         if (eventType == Event::Command)
         {
             switch (ID)
@@ -89,8 +86,8 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new WindowControlsBarExample('1'));
-    Application::AddWindow(new WindowControlsBarExample('2'));
+    Application::AddWindow(std::make_unique<WindowControlsBarExample>('1'));
+    Application::AddWindow(std::make_unique<WindowControlsBarExample>('2'));
     Application::ArrangeWindows(ArangeWindowsMethod::Grid);
     Application::Run();
     return 0;

@@ -1311,6 +1311,7 @@ bool AppCUI::Controls::Control::RemoveControl(unsigned int index)
           CTRLC->ControlsCount - 1);
     Control** lst = CTRLC->Controls;
     CHECK(lst != nullptr, false, "Expecting a non-nullptr list of control !");
+    this->OnControlRemoved(lst[index]);
     unsigned int count = CTRLC->ControlsCount;
     index++;
     while (index < count)
@@ -1742,6 +1743,9 @@ void AppCUI::Controls::Control::OnAfterResize(int, int)
 bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ctrl)
 {
     return (ctrl != nullptr);
+}
+void AppCUI::Controls::Control::OnControlRemoved(AppCUI::Controls::Control*)
+{
 }
 void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
 {

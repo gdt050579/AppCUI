@@ -6,7 +6,7 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
-constexpr unsigned int MAX_TAG_CHARS   = 8U;
+constexpr unsigned int MAX_TAG_CHARS       = 8U;
 
 struct WindowControlBarLayoutData
 {
@@ -380,7 +380,7 @@ bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, con
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
-    
+
     CHECK(b->Text.SetWithHotKey(caption, b->HotKeyOffset, b->HotKey, Key::Alt), false, "");
     b->Size = b->Text.Len();
     if (b->Type == WindowBarItemType::CheckBox)
@@ -498,6 +498,8 @@ bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string
     Members->ControlBar.Current              = NO_CONTROLBAR_ITEM;
     Members->ControlBar.IsCurrentItemPressed = false;
     Members->ControlBar.Count                = 0;
+    Members->referalItemHandle               = InvalidItemHandle;
+    Members->windowItemHandle                = InvalidItemHandle;
 
     // init the buttons
     if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
@@ -924,6 +926,20 @@ void Window::OnAfterResize(int, int)
         UpdateWindowsButtonsPoz(Members);
     }
 }
+void Window::RemoveMe()
+{
+    auto app = AppCUI::Application::GetApplication();
+    if (!app)
+        return;
+    // check if I am part of the modal stack
+    for (auto i = 0; i < app->ModalControlsCount; i++)
+        if (app->ModalControlsStack[i] == this)
+            return;
+    if (!app->AppDesktop)
+        return;
+    // all good -> I am a top level window --> remove me
+    app->AppDesktop->RemoveControl(this);
+}
 bool Window::OnEvent(Control*, Event eventType, int)
 {
     if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
@@ -939,8 +955,7 @@ bool Window::OnEvent(Control*, Event eventType, int)
         }
         else
         {
-            // top level window -> closing the app
-            Application::Close();
+            RemoveMe();
             return true;
         }
     }
@@ -1028,7 +1043,7 @@ void Window::OnHotKeyChanged()
 void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    // find hotkey win button
+    // find tag win button
     WindowBarItem* b = nullptr;
     for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
@@ -1051,6 +1066,23 @@ void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils:
     b->RemoveFlag(WindowBarItemFlags::Hidden);
     UpdateWindowsButtonsPoz(Members);
 }
+const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, CharacterBuffer());
+    // find tag win button
+    WindowBarItem* b = nullptr;
+    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+        if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
+        {
+            b = &Members->ControlBar.Items[tr];
+            break;
+        }
+    // sanity check (in reality the pointer should always be valid)
+    if (!b)
+        return CharacterBuffer();
+    return b->Text;
+}
+
 bool Window::Exit(int dialogResult)
 {
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
@@ -1097,3 +1129,4 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
+

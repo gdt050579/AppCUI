@@ -59,7 +59,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new ToolTipExampleWin());
+    Application::AddWindow(std::make_unique<ToolTipExampleWin>());
     Application::Run();
     return 0;
 }

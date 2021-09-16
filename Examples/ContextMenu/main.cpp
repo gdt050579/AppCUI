@@ -126,7 +126,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new ContextMenuExample());
+    Application::AddWindow(std::make_unique<ContextMenuExample>());
     Application::Run();
     return 0;
 }

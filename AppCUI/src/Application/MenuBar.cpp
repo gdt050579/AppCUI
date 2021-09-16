@@ -157,7 +157,7 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
                 Open(tr);
                 return true;
             }
-        }
+        }        
     }
     // nothing to process
     return false;

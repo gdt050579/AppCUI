@@ -1717,6 +1717,7 @@ namespace Controls
         virtual void OnAfterResize(int newWidth, int newHeight);
         virtual bool OnBeforeAddControl(Control* ctrl);
         virtual void OnAfterAddControl(Control* ctrl);
+        virtual void OnControlRemoved(Control* ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
         virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
@@ -1790,11 +1791,13 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Control* sender, Event eventType, int controlID) override;
+        void RemoveMe();
 
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
         void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
+        const AppCUI::Graphics::CharacterBuffer& GetTag();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
@@ -2079,6 +2082,9 @@ namespace Controls
         ItemData(unsigned long long value) : UInt64Value(value)
         {
         }
+        ItemData(void* p) : Pointer(p)
+        {
+        }
     };
     class EXPORT ListView : public Control
     {
@@ -2219,7 +2225,7 @@ namespace Controls
         bool SetItemUserData(unsigned int index, ItemData userData);
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { 0 });
+        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
@@ -2314,6 +2320,7 @@ namespace Controls
         bool Create(unsigned int screenWidth, unsigned int screenHeight);
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
     };
 
 }; // namespace Controls
@@ -2346,7 +2353,13 @@ namespace Dialogs
               std::string_view extensionFilter,
               const std::filesystem::path& path);
     };
+    class EXPORT WindowManager
+    {
+        WindowManager() = delete;
 
+      public:
+          static void Show();
+    };
 } // namespace Dialogs
 namespace Log
 {
@@ -2623,7 +2636,11 @@ namespace Application
     EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
-    EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
+    EXPORT AppCUI::Controls::ItemHandle AddWindow(
+          std::unique_ptr<AppCUI::Controls::Window> wnd,
+          AppCUI::Controls::ItemHandle referal = AppCUI::Controls::InvalidItemHandle);
+    EXPORT AppCUI::Controls::ItemHandle AddWindow(
+          std::unique_ptr<AppCUI::Controls::Window> wnd, AppCUI::Controls::Window* referalWindow);
     EXPORT AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name);
     EXPORT bool GetApplicationSize(AppCUI::Graphics::Size& size);
     EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);

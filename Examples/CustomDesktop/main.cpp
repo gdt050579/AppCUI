@@ -37,10 +37,9 @@ int main()
     initData.Flags         = InitializationFlags::CommandBar | InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;
-    Window* w = new Window();
+    auto w = std::make_unique<Window>();
     w->Create("Test", "d:c,w:20,h:5", WindowFlags::Sizeable);
-    Application::AddWindow(w);
+    Application::AddWindow(std::move(w));
     Application::Run();
-    delete w;
     return 0;
 }

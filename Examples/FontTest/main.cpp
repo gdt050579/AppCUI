@@ -83,9 +83,7 @@ int main()
 {
     if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
-    auto window = new FontTest();
-    Application::AddWindow(window);
+    Application::AddWindow(std::make_unique<FontTest>());
     Application::Run();
-    delete window;
     return 0;
 }

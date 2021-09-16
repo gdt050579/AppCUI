@@ -106,7 +106,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new LogoWin());
+    Application::AddWindow(std::make_unique<LogoWin>());
     Application::Run();
     return 0;
 }
