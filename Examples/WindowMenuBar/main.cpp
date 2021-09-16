@@ -53,7 +53,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new WindowMenuBarExample());
+    Application::AddWindow(std::make_unique<WindowMenuBarExample>());
     Application::Run();
     return 0;
 }

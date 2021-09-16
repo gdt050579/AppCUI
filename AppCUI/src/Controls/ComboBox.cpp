@@ -13,7 +13,7 @@ using namespace AppCUI::Input;
     auto& i = Members->Items[Members->Indexes.GetUInt32Array()[idx]];                                                  \
     static_cast<void>(i);
 
-static const ItemData null_combobox_item = { 0 };
+static const ItemData null_combobox_item = { nullptr };
 
 AppCUI::Graphics::CharacterBuffer __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
 
@@ -21,7 +21,7 @@ ComboBoxItem::ComboBoxItem()
 {
     this->Separator = false;
     this->Index     = ComboBox::NO_ITEM_SELECTED;
-    this->Data      = { 0 };
+    this->Data      = { nullptr };
 }
 ComboBoxItem::ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator)
 {
@@ -74,7 +74,8 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
     return *this;
 }
 
-bool ComboBox_AddItem(ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { 0 })
+bool ComboBox_AddItem(
+      ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { nullptr })
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
     unsigned int itemID = (unsigned int) Members->Items.size();
@@ -306,7 +307,7 @@ bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, ItemData userD
 }
 bool ComboBox::AddSeparator(const AppCUI::Utils::ConstString& caption)
 {
-    return ComboBox_AddItem(this, caption, true, { 0 });
+    return ComboBox_AddItem(this, caption, true, { nullptr });
 }
 void ComboBox::DeleteAllItems()
 {

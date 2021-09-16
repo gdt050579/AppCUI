@@ -149,7 +149,7 @@ int main()
 {
     if (!Application::Init(Application::InitializationFlags::CommandBar))
         return 1;
-    Application::AddWindow(new TicTacToeWin());
+    Application::AddWindow(std::make_unique<TicTacToeWin>());
     Application::Run();
     return 0;
 }

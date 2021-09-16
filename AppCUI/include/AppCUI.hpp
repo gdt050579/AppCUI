@@ -1207,6 +1207,10 @@ namespace Graphics
         {
             return Buffer != nullptr;
         }
+        inline bool IsEmpty() const
+        {
+            return (Buffer == nullptr) || (Count==0);
+        }
 
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
@@ -1550,6 +1554,8 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListView;
     class EXPORT Menu;
+    class EXPORT Window;
+
     namespace Handlers
     {
         typedef void (*AfterResizeHandler)(
@@ -1692,6 +1698,7 @@ namespace Controls
         // Evenimente
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
         virtual void OnHotKey();
+        virtual void OnHotKeyChanged();
         virtual void OnFocus();
         virtual void OnLoseFocus();
 
@@ -1712,6 +1719,7 @@ namespace Controls
         virtual void OnAfterResize(int newWidth, int newHeight);
         virtual bool OnBeforeAddControl(Control* ctrl);
         virtual void OnAfterAddControl(Control* ctrl);
+        virtual void OnControlRemoved(Control* ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
         virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
@@ -1733,8 +1741,46 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
+    enum class WindowControlsBarLayout: unsigned char
+    {
+        None               = 0,
+        TopBarFromLeft     = 1,
+        BottomBarFromLeft  = 2,
+        TopBarFromRight    = 3,
+        BottomBarFromRight = 4,        
+    };
+    class EXPORT WindowControlsBar
+    {
+        void* Context;
+        WindowControlsBarLayout Layout;
+        WindowControlsBar(void* ctx, WindowControlsBarLayout layout) : Context(ctx), Layout(layout)
+        {
+        }
+
+      public:
+        ItemHandle AddCommandItem(
+              const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip = "");
+        ItemHandle AddSingleChoiceItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        ItemHandle AddCheckItem(
+              const AppCUI::Utils::ConstString& name,
+              int ID,
+              bool checked,
+              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+        ItemHandle AddTextItem(
+              const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
+        bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
+        bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
+        bool IsItemChecked(ItemHandle itemHandle);
+        bool SetItemCheck(ItemHandle itemHandle, bool value);
+        friend class Window;
+    };
     class EXPORT Window : public Control
     {
+        bool ProcessControlBarItem(unsigned int index);
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
@@ -1747,19 +1793,24 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Control* sender, Event eventType, int controlID) override;
+        void RemoveMe();
 
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
+        void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
+        const AppCUI::Graphics::CharacterBuffer& GetTag();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
         Menu* AddMenu(const AppCUI::Utils::ConstString& name);
+        WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
     };
@@ -2036,6 +2087,9 @@ namespace Controls
         ItemData(unsigned long long value) : UInt64Value(value)
         {
         }
+        ItemData(void* p) : Pointer(p)
+        {
+        }
     };
     class EXPORT ListView : public Control
     {
@@ -2176,7 +2230,7 @@ namespace Controls
         bool SetItemUserData(unsigned int index, ItemData userData);
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { 0 });
+        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
@@ -2271,6 +2325,7 @@ namespace Controls
         bool Create(unsigned int screenWidth, unsigned int screenHeight);
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
     };
 
     class EXPORT Tree : public Control
@@ -2319,7 +2374,13 @@ namespace Dialogs
               std::string_view extensionFilter,
               const std::filesystem::path& path);
     };
+    class EXPORT WindowManager
+    {
+        WindowManager() = delete;
 
+      public:
+          static void Show();
+    };
     class EXPORT FolderDialog
     {
         FolderDialog() = delete;
@@ -2452,10 +2513,21 @@ namespace Application
             Graphics::ColorPair InactiveColor;
             Graphics::ColorPair TitleActiveColor;
             Graphics::ColorPair TitleInactiveColor;
-            Graphics::ColorPair ControlButtonColor;
-            Graphics::ColorPair ControlButtonInactiveColor;
-            Graphics::ColorPair ControlButtonHoverColor;
-            Graphics::ColorPair ControlButtonPressedColor;
+            struct
+            {
+                struct
+                {
+                    struct
+                    {
+                        Graphics::ColorPair Text, HotKey;
+                    } Normal, Pressed, Hover, Checked, Focused;
+                } Item;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused;
+                } Separators;
+                Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
+            } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
         struct
         {
@@ -2593,7 +2665,11 @@ namespace Application
     EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
-    EXPORT bool AddWindow(AppCUI::Controls::Window* wnd);
+    EXPORT AppCUI::Controls::ItemHandle AddWindow(
+          std::unique_ptr<AppCUI::Controls::Window> wnd,
+          AppCUI::Controls::ItemHandle referal = AppCUI::Controls::InvalidItemHandle);
+    EXPORT AppCUI::Controls::ItemHandle AddWindow(
+          std::unique_ptr<AppCUI::Controls::Window> wnd, AppCUI::Controls::Window* referalWindow);
     EXPORT AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name);
     EXPORT bool GetApplicationSize(AppCUI::Graphics::Size& size);
     EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);

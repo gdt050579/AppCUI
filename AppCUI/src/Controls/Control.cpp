@@ -1311,6 +1311,7 @@ bool AppCUI::Controls::Control::RemoveControl(unsigned int index)
           CTRLC->ControlsCount - 1);
     Control** lst = CTRLC->Controls;
     CHECK(lst != nullptr, false, "Expecting a non-nullptr list of control !");
+    this->OnControlRemoved(lst[index]);
     unsigned int count = CTRLC->ControlsCount;
     index++;
     while (index < count)
@@ -1573,6 +1574,7 @@ bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
 {
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     CTRLC->HotKey       = AppCUI::Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
+    this->OnHotKeyChanged();
     return CTRLC->HotKey != Key::None;
 }
 bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bottom)
@@ -1720,6 +1722,9 @@ bool AppCUI::Controls::Control::OnMouseWheel(int, int, AppCUI::Input::MouseWheel
 void AppCUI::Controls::Control::OnHotKey()
 {
 }
+void AppCUI::Controls::Control::OnHotKeyChanged()
+{
+}
 bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control*, Event, int)
 {
     return false;
@@ -1738,6 +1743,9 @@ void AppCUI::Controls::Control::OnAfterResize(int, int)
 bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ctrl)
 {
     return (ctrl != nullptr);
+}
+void AppCUI::Controls::Control::OnControlRemoved(AppCUI::Controls::Control*)
+{
 }
 void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
 {

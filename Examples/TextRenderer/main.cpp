@@ -128,12 +128,12 @@ struct MyUserControl : public UserControl
     }
 };
 
-class TicTacToeWin : public AppCUI::Controls::Window
+class MyWin : public AppCUI::Controls::Window
 {
     MyUserControl uc;
 
   public:
-    TicTacToeWin()
+    MyWin()
     {
         this->Create("Single line strings", "d:c,w:100,h:26");
         uc.Create(this, "x:0,y:0,w:100%,h:100%");
@@ -152,7 +152,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(new TicTacToeWin());
+    Application::AddWindow(std::make_unique<MyWin>());
     Application::Run();
     return 0;
 }

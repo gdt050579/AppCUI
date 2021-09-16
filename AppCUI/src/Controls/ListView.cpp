@@ -365,13 +365,13 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         // search bar
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
-            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH+3, ' ', Cfg->ListView.FilterText);
+            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->ListView.FilterText);
             const auto search_text = this->Filter.SearchText.ToStringView();
             if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
             {
                 renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->ListView.FilterText);
                 if (Filter.FilterModeEnabled)
-                    renderer.SetCursor((int)(3 + search_text.length()), yPoz);
+                    renderer.SetCursor((int) (3 + search_text.length()), yPoz);
             }
             else
             {
@@ -1050,7 +1050,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
     if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) &&
         (y == (this->Layout.Height - 1)))
     {
-        if ((x >= 2) && (x <= (3+LISTVIEW_SEARCH_BAR_WIDTH)))
+        if ((x >= 2) && (x <= (3 + LISTVIEW_SEARCH_BAR_WIDTH)))
         {
             this->Filter.FilterModeEnabled = true;
             return;
@@ -1634,11 +1634,11 @@ unsigned int ListView::GetItemsCount()
     }
     return 0;
 }
-unsigned int ListView::GetCurrentItem()
+ItemHandle ListView::GetCurrentItem()
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
-    if (lvcc->Items.CurentItemIndex < 0)
-        return -1;
+    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int)lvcc->Items.Indexes.Len()))
+        return InvalidItemHandle;
     unsigned int* indexes = lvcc->Items.Indexes.GetUInt32Array();
     return indexes[lvcc->Items.CurentItemIndex];
 }

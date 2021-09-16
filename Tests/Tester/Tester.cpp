@@ -73,7 +73,7 @@ int main()
 {
     if (!Application::Init(Application::InitializationFlags::CommandBar))
         return 1;
-    Application::AddWindow(new MyWin());
+    Application::AddWindow(std::make_unique<MyWin>());
     Application::Run();
     Application::Close();
 }

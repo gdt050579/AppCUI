@@ -3457,7 +3457,7 @@ int main()
 {
     if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
-    Application::AddWindow(new MyWin());
+    Application::AddWindow(std::make_unique<MyWin>());
     Application::Run();
     return 0;
 }

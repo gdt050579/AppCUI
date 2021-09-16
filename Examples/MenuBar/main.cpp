@@ -79,7 +79,7 @@ int main()
 {
     if (!Application::Init(InitializationFlags::Menu | InitializationFlags::CommandBar))
         return 1;
-    Application::AddWindow(new ContextMenuExample());
+    Application::AddWindow(std::make_unique<ContextMenuExample>());
     BuildAppMenu();
     Application::Run();
     return 0;

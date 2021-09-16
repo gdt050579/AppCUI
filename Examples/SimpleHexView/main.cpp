@@ -139,9 +139,8 @@ int main()
 {
     if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
-    auto window = new SimpleHexView();
-    Application::AddWindow(window);
+    auto window = std::make_unique<SimpleHexView>();
+    Application::AddWindow(std::move(window));
     Application::Run();
-    delete window;
     return 0;
 }
