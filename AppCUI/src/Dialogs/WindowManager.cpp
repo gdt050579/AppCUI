@@ -36,8 +36,10 @@ class InternalWindowManager : public AppCUI::Controls::Window
     bool OnEvent(Control* c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
+    bool RemoveCurrentWindowAndDescendents();
     bool CloseAll();
     void UpdateButtonsStatus();
+    void CloseDescendants(ItemHandle id);
 };
 
 void InternalWindowManager::UpdateButtonsStatus()
@@ -68,6 +70,15 @@ void InternalWindowManager::UpdateButtonsStatus()
         }
     }
 }
+void InternalWindowManager::CloseDescendants(ItemHandle id)
+{
+    rel[id].wnd->RemoveMe();
+    for (auto itm : rel)
+    {
+        if (itm.second.Referal == id)
+            CloseDescendants(itm.first);
+    }
+}
 bool InternalWindowManager::RemoveCurrentWindow()
 {
     auto i = lst.GetCurrentItem();
@@ -82,6 +93,30 @@ bool InternalWindowManager::RemoveCurrentWindow()
         auto data = lst.GetItemData(i);
         if ((data) && (data->Pointer))
             (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+        return true;
+    }
+    return false;
+}
+bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
+{
+    auto i = lst.GetCurrentItem();
+    if (i == InvalidItemHandle)
+        return false;
+    LocalUnicodeStringBuilder<256> tmp;
+    tmp.Add("Close ");
+    tmp.Add(lst.GetItemText(i, 0));
+    tmp.Add(" and all of its descendants ?");
+    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
+    {
+        auto data = lst.GetItemData(i);
+        if ((data) && (data->Pointer))
+        {
+            auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
+            if (Members)
+            {
+                CloseDescendants(Members->windowItemHandle);
+            }
+        }
         return true;
     }
     return false;
@@ -120,6 +155,10 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
             return true;
         case BUTTON_ID_CLOSE:
             if (RemoveCurrentWindow())
+                Exit(Result::Ok);
+            return true;
+        case BUTTON_ID_CLOSE_DESC:
+            if (RemoveCurrentWindowAndDescendents())
                 Exit(Result::Ok);
             return true;
         case BUTTON_ID_CLOSE_ALL:
