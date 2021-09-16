@@ -10,9 +10,11 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Graphics;
 
-constexpr int BUTTON_ID_GOTO   = 10000;
-constexpr int BUTTON_ID_DELETE = 10001;
-constexpr int BUTTON_ID_CANCEL = 10002;
+constexpr int BUTTON_ID_GOTO       = 10000;
+constexpr int BUTTON_ID_CLOSE      = 10001;
+constexpr int BUTTON_ID_CLOSE_ALL  = 10002;
+constexpr int BUTTON_ID_CLOSE_DESC = 10003;
+constexpr int BUTTON_ID_CANCEL     = 10004;
 
 struct WinItemInfo
 {
@@ -24,7 +26,7 @@ struct WinItemInfo
 class InternalWindowManager : public AppCUI::Controls::Window
 {
     ListView lst;
-    Button btnGoTo, btnDelete, btnCancel;
+    Button btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
 
   public:
     bool Create();
@@ -32,22 +34,25 @@ class InternalWindowManager : public AppCUI::Controls::Window
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
     bool OnEvent(Control* c, Event eventType, int id) override;
     void GoToSelectedItem();
-    void RemoveCurrentWindow();
+    bool RemoveCurrentWindow();
 };
 
-void InternalWindowManager::RemoveCurrentWindow()
+bool InternalWindowManager::RemoveCurrentWindow()
 {
     auto i = lst.GetCurrentItem();
     if (i == InvalidItemHandle)
-        return;
+        return false;
     LocalUnicodeStringBuilder<256> tmp;
-    tmp.Add("Kill ");
-    tmp.Add(lst.GetItemText(i,0));
+    tmp.Add("Close ");
+    tmp.Add(lst.GetItemText(i, 0));
     tmp.Add(" ?");
-    if (MessageBox::ShowOkCancel("Terminate",tmp.ToStringView())==Result::Ok)
+    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        
+        auto data = lst.GetItemData(i);
+        (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+        return true;
     }
+    return false;
 }
 void InternalWindowManager::GoToSelectedItem()
 {
@@ -68,9 +73,9 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
             GoToSelectedItem();
             Exit(Result::Ok);
             return true;
-        case BUTTON_ID_DELETE:
-            RemoveCurrentWindow();
-            Exit(Result::Ok);
+        case BUTTON_ID_CLOSE:
+            if (RemoveCurrentWindow())            
+                Exit(Result::Ok);
             return true;
         case BUTTON_ID_CANCEL:
             Exit(Result::Cancel);
@@ -89,7 +94,7 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
 bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
 {
     const auto Members = reinterpret_cast<WindowControlContext*>(w->Context);
-    auto i             = lst.AddItem(Members->Text,(CharacterView)w->GetTag());
+    auto i             = lst.AddItem(Members->Text, (CharacterView) w->GetTag());
     lst.SetItemXOffset(i, offsetX);
     lst.SetItemData(i, ItemData(w));
     if (w->HasFocus())
@@ -109,13 +114,15 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 }
 bool InternalWindowManager::Create()
 {
-    CHECK(Window::Create("Window manager", "d:c,w:70,h:20"), false, "");
+    CHECK(Window::Create("Window manager", "d:c,w:72,h:20"), false, "");
     CHECK(lst.Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
-    CHECK(lst.AddColumn("Window caption", TextAlignament::Left, 50), false, "");
-    CHECK(lst.AddColumn("TAG", TextAlignament::Left, 20), false, "");
-    CHECK(btnGoTo.Create(this, "&Goto", "l:15,b:0,w:11", BUTTON_ID_GOTO), false, "");
-    CHECK(btnDelete.Create(this, "&Delete", "l:27,b:0,w:11", BUTTON_ID_DELETE), false, "");
-    CHECK(btnCancel.Create(this, "&Cancel", "l:39,b:0,w:11", BUTTON_ID_CANCEL), false, "");
+    CHECK(lst.AddColumn("Window caption", TextAlignament::Left, 56), false, "");
+    CHECK(lst.AddColumn("TAG", TextAlignament::Left, 8), false, "");
+    CHECK(btnGoTo.Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
+    CHECK(btnClose.Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
+    CHECK(btnCloseDescendands.Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC), false, "");
+    CHECK(btnCloseAll.Create(this, "Close &All", "l:43,b:0,w:13", BUTTON_ID_CLOSE_ALL), false, "");
+    CHECK(btnCancel.Create(this, "Cancel", "l:57,b:0,w:13", BUTTON_ID_CANCEL), false, "");
 
     // add all existing windows
     auto* app = AppCUI::Application::GetApplication();
@@ -126,9 +133,8 @@ bool InternalWindowManager::Create()
     auto wnd                  = desktopMembers->Controls;
     auto wEnd                 = wnd + desktopMembers->ControlsCount;
 
-    
     if (wnd)
-    {      
+    {
         std::map<ItemHandle, WinItemInfo> rel;
         while (wnd < wEnd)
         {
