@@ -27,6 +27,7 @@ class InternalWindowManager : public AppCUI::Controls::Window
 {
     ListView lst;
     Button btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
+    std::map<ItemHandle, WinItemInfo> rel;
 
   public:
     bool Create();
@@ -36,8 +37,37 @@ class InternalWindowManager : public AppCUI::Controls::Window
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
     bool CloseAll();
+    void UpdateButtonsStatus();
 };
 
+void InternalWindowManager::UpdateButtonsStatus()
+{
+    btnCloseAll.SetEnabled(lst.GetItemsCount() > 0);
+    auto i = lst.GetCurrentItem();
+    btnGoTo.SetEnabled(i != InvalidItemHandle);
+    btnClose.SetEnabled(i != InvalidItemHandle);
+    btnCloseDescendands.SetEnabled(false);
+    if (i != InvalidItemHandle)
+    {
+        auto data = lst.GetItemData(i);
+        if ((data) && (data->Pointer))
+        {
+            auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
+            if (Members)
+            {
+                // check if there is at least one descendent
+                for (auto itm : rel)
+                {
+                    if (itm.second.Referal == Members->windowItemHandle)
+                    {
+                        btnCloseDescendands.SetEnabled(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 bool InternalWindowManager::RemoveCurrentWindow()
 {
     auto i = lst.GetCurrentItem();
@@ -61,7 +91,7 @@ bool InternalWindowManager::CloseAll()
     if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
         return false;
     unsigned int count = lst.GetItemsCount();
-    for (unsigned int tr=0;tr<count;tr++)
+    for (unsigned int tr = 0; tr < count; tr++)
     {
         auto data = lst.GetItemData(tr);
         if ((data) && (data->Pointer))
@@ -89,7 +119,7 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
             Exit(Result::Ok);
             return true;
         case BUTTON_ID_CLOSE:
-            if (RemoveCurrentWindow())            
+            if (RemoveCurrentWindow())
                 Exit(Result::Ok);
             return true;
         case BUTTON_ID_CLOSE_ALL:
@@ -105,6 +135,11 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
     {
         GoToSelectedItem();
         Exit(Result::Ok);
+        return true;
+    }
+    if (eventType == Event::ListViewCurrentItemChanged)
+    {
+        UpdateButtonsStatus();
         return true;
     }
     return false;
@@ -154,7 +189,6 @@ bool InternalWindowManager::Create()
 
     if (wnd)
     {
-        std::map<ItemHandle, WinItemInfo> rel;
         while (wnd < wEnd)
         {
             const auto winMembers             = reinterpret_cast<WindowControlContext*>((*wnd)->Context);
@@ -171,6 +205,8 @@ bool InternalWindowManager::Create()
             Process(rel, i.first, 0);
         }
     }
+
+    UpdateButtonsStatus();
 
     return true;
 }
