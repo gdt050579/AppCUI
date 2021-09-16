@@ -35,6 +35,7 @@ class InternalWindowManager : public AppCUI::Controls::Window
     bool OnEvent(Control* c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
+    bool CloseAll();
 };
 
 bool InternalWindowManager::RemoveCurrentWindow()
@@ -49,10 +50,24 @@ bool InternalWindowManager::RemoveCurrentWindow()
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
         auto data = lst.GetItemData(i);
-        (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+        if ((data) && (data->Pointer))
+            (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
         return true;
     }
     return false;
+}
+bool InternalWindowManager::CloseAll()
+{
+    if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
+        return false;
+    unsigned int count = lst.GetItemsCount();
+    for (unsigned int tr=0;tr<count;tr++)
+    {
+        auto data = lst.GetItemData(tr);
+        if ((data) && (data->Pointer))
+            (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+    }
+    return true;
 }
 void InternalWindowManager::GoToSelectedItem()
 {
@@ -75,6 +90,10 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
             return true;
         case BUTTON_ID_CLOSE:
             if (RemoveCurrentWindow())            
+                Exit(Result::Ok);
+            return true;
+        case BUTTON_ID_CLOSE_ALL:
+            if (CloseAll())
                 Exit(Result::Ok);
             return true;
         case BUTTON_ID_CANCEL:
