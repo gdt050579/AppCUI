@@ -50,26 +50,27 @@ void InternalWindowManager::UpdateButtonsStatus()
     btnGoTo.SetEnabled(i != InvalidItemHandle);
     btnClose.SetEnabled(i != InvalidItemHandle);
     btnCloseDescendands.SetEnabled(false);
-    if (i != InvalidItemHandle)
+    if (i == InvalidItemHandle)
+        return;
+    
+    auto data = lst.GetItemData(i);
+    if ((data) && (data->Pointer))
     {
-        auto data = lst.GetItemData(i);
-        if ((data) && (data->Pointer))
+        auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
+        if (Members)
         {
-            auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
-            if (Members)
+            // check if there is at least one descendent
+            for (auto itm : rel)
             {
-                // check if there is at least one descendent
-                for (auto itm : rel)
+                if (itm.second.Referal == Members->windowItemHandle)
                 {
-                    if (itm.second.Referal == Members->windowItemHandle)
-                    {
-                        btnCloseDescendands.SetEnabled(true);
-                        break;
-                    }
+                    btnCloseDescendands.SetEnabled(true);
+                    break;
                 }
             }
         }
     }
+    
 }
 void InternalWindowManager::CloseDescendants(ItemHandle id)
 {
@@ -104,29 +105,29 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
     if (i == InvalidItemHandle)
         return false;
     LocalUnicodeStringBuilder<256> tmp;
-    tmp.Add("Close ");
-    tmp.Add(lst.GetItemText(i, 0));
-    tmp.Add(" and all of its descendants ?");
-    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
+    CHECK(tmp.Add("Close "), false, "");
+    CHECK(tmp.Add(lst.GetItemText(i, 0)), false, "");
+    CHECK(tmp.Add(" and all of its descendants ?"), false, "");
+    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) != Result::Ok)
+        return false;
+
+    auto data = lst.GetItemData(i);
+    if ((data) && (data->Pointer))
     {
-        auto data = lst.GetItemData(i);
-        if ((data) && (data->Pointer))
+        auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
+        if (Members)
         {
-            auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
-            if (Members)
-            {
-                CloseDescendants(Members->windowItemHandle);
-            }
+            CloseDescendants(Members->windowItemHandle);
         }
-        return true;
     }
-    return false;
+    return true;
+
 }
 bool InternalWindowManager::CloseAll()
 {
     if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
         return false;
-    unsigned int count = lst.GetItemsCount();
+    const unsigned int count = lst.GetItemsCount();
     for (unsigned int tr = 0; tr < count; tr++)
     {
         auto data = lst.GetItemData(tr);
@@ -237,9 +238,12 @@ bool InternalWindowManager::Create()
         while (wnd < wEnd)
         {
             const auto winMembers             = reinterpret_cast<WindowControlContext*>((*wnd)->Context);
-            rel[winMembers->windowItemHandle] = { winMembers->referalItemHandle,
-                                                  reinterpret_cast<Window*>(*wnd),
-                                                  false };
+            if (winMembers)
+            {
+                rel[winMembers->windowItemHandle] = { winMembers->referalItemHandle,
+                                                      reinterpret_cast<Window*>(*wnd),
+                                                      false };
+            }
             wnd++;
         }
         for (auto i : rel)
