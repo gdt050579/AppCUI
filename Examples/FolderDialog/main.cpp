@@ -27,7 +27,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree.Create(this, "x:1%, y:20%, w:99%, h:20%");
-        tree.SetValue(std::filesystem::current_path().string());
+        tree.AddItem(InvalidItemHandle, std::filesystem::current_path().string());
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -46,7 +46,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 if (res.has_value())
                 {
                     currentFolder.SetText(res->u8string());
-                    tree.SetValue(res->string());
+                    tree.AddItem(InvalidItemHandle, res->string());
                 }
 
                 return true;

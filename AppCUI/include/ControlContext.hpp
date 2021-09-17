@@ -5,6 +5,7 @@
 #include "Internal.hpp"
 #include <string.h>
 #include <vector>
+#include <map>
 
 using namespace AppCUI;
 using namespace AppCUI::Graphics;
@@ -247,7 +248,7 @@ struct WindowControlContext : public ControlContext
         unsigned char Current;
         bool IsCurrentItemPressed;
     } ControlBar;
-    bool Maximized;    
+    bool Maximized;
 };
 
 class SplitterControlContext : public ControlContext
@@ -571,12 +572,26 @@ class NumericSelectorControlContext : public ControlContext
     } isMouseOn{ IsMouseOn::None };
 };
 
+struct TreeItem
+{
+    ItemHandle parent{ InvalidItemHandle };
+    ItemHandle handle{ InvalidItemHandle };
+    std::string value;
+};
+
+class TreeItemView
+{
+  public:
+    ItemHandle handle;
+    bool expanded{ false };
+};
+
 class TreeControlContext : public ControlContext
 {
   public:
-    bool expanded = false;
-    std::string value;
-    std::vector<Tree> children;
+    std::map<ItemHandle, TreeItem> items;
+    std::map<ItemHandle, TreeItemView> view;
+    ItemHandle nextItemHandle{ 1ULL };
 };
 
 enum class MenuItemType : unsigned int

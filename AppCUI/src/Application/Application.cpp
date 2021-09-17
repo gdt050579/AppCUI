@@ -227,16 +227,16 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
         Members->PaintScrollbars(renderer);
     }
 
-    int cnt = Members->ControlsCount;
-    int idx = Members->CurrentControlIndex;
+    const unsigned int cnt = Members->ControlsCount;
+    unsigned int idx = Members->CurrentControlIndex;
     if ((!focused) || (idx < 0))
     {
-        for (int tr = 1; tr <= cnt; tr++)
+        for (unsigned int tr = 1; tr <= cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
     }
     else
     {
-        for (int tr = 1; tr < cnt; tr++)
+        for (unsigned int tr = 1; tr < cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
         if ((idx >= 0) && (idx < Members->ControlsCount))
             PaintControl(Members->Controls[idx], renderer, true);

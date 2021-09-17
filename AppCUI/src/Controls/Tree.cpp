@@ -25,29 +25,40 @@ void Tree::Paint(Graphics::Renderer& renderer)
     // TODO: move these (context, cfg, etc)
     char plus[]             = " + ";
     char minus[]            = " - ";
-    char nothing[]          = "   ";
+    char nothing[]          = " * ";
     const auto colorPlus    = ColorPair{ Color::Green, Color::White };
     const auto colorMinus   = ColorPair{ Color::Red, Color::White };
-    const auto colorNothing = ColorPair{ Color::White, Color::White };
+    const auto colorNothing = ColorPair{ Color::Black, Color::White };
     const auto colorText    = ColorPair{ Color::White, Color::Black };
 
-    if (IsExpandable())
+    for (const auto& item : cc->items)
     {
-        if (cc->expanded)
+        if (item.second.parent == InvalidItemHandle)
         {
-            renderer.WriteSingleLineText(0, 0, minus, colorMinus);
+            if (IsExpandable(item.second.handle))
+            {
+                if (cc->view[item.second.handle].expanded)
+                {
+                    renderer.WriteSingleLineText(0, 0, minus, colorMinus);
+                    // TODO:
+                }
+                else
+                {
+                    renderer.WriteSingleLineText(0, 0, plus, colorPlus);
+                }
+            }
+            else
+            {
+                renderer.WriteSingleLineText(0, 0, nothing, colorNothing);
+            }
+
+            renderer.WriteSingleLineText(4, 0, item.second.value, colorText);
         }
         else
         {
-            renderer.WriteSingleLineText(0, 0, plus, colorPlus);
+            // TODO: here or if (cc->view[item.second.handle].expanded)
         }
     }
-    else
-    {
-        renderer.WriteSingleLineText(0, 0, nothing, colorNothing);
-    }
-
-    renderer.WriteSingleLineText(4, 0, cc->value, colorText);
 }
 
 bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
@@ -55,28 +66,68 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
     return false;
 }
 
-void Tree::SetValue(const std::string_view& value)
+const ItemHandle Tree::AddItem(const ItemHandle parent, const std::string_view& value)
 {
-    CHECKRET(Context != nullptr, "");
+    CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    cc->value = value;
+    const TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
+    cc->items[ti.handle] = ti;
+
+    const TreeItemView tiv{ ti.handle, false };
+    cc->view[ti.handle] = tiv;
+
+    return ti.handle;
 }
 
-const std::string_view Tree::GetValue() const
+bool Tree::RemoveItem(const ItemHandle handle)
 {
     CHECK(Context != nullptr, "", "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    return cc->value;
+    // delete element
+    const auto it = cc->items.find(handle);
+    if (it != cc->items.end())
+    {
+        cc->items.erase(it);
+    }
+
+    // delete children
+    for (auto it = cc->items.cbegin(); it != cc->items.cend();)
+    {
+        if (it->second.parent == handle)
+        {
+            it = cc->items.erase(it++);
+        }
+    }
+
+    return true;
 }
 
-bool Controls::Tree::IsExpandable() const
+bool Tree::IsExpandable(const ItemHandle handle) const
 {
     CHECK(Context != nullptr, "", "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    return cc->children.size() > 0;
+    for (const auto& item : cc->items)
+    {
+        if (item.second.parent == handle)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const ItemHandle Tree::GetHandleForNewItem() const
+{
+    CHECK(Context != nullptr, InvalidItemHandle, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    const auto current = cc->nextItemHandle;
+    cc->nextItemHandle++;
+    return current;
 }
 
 } // namespace AppCUI::Controls

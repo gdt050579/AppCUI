@@ -932,7 +932,7 @@ void Window::RemoveMe()
     if (!app)
         return;
     // check if I am part of the modal stack
-    for (auto i = 0; i < app->ModalControlsCount; i++)
+    for (auto i = 0U; i < app->ModalControlsCount; i++)
         if (app->ModalControlsStack[i] == this)
             return;
     if (!app->AppDesktop)
@@ -1068,19 +1068,19 @@ void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils:
 }
 const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, CharacterBuffer());
+    static CharacterBuffer cb{};
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, cb);
+
     // find tag win button
-    WindowBarItem* b = nullptr;
     for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    {
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {
-            b = &Members->ControlBar.Items[tr];
-            break;
+            return Members->ControlBar.Items[tr].Text;
         }
-    // sanity check (in reality the pointer should always be valid)
-    if (!b)
-        return CharacterBuffer();
-    return b->Text;
+    }
+
+    return cb;
 }
 
 bool Window::Exit(int dialogResult)

@@ -2336,11 +2336,12 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
 
-        void SetValue(const std::string_view& value);
-        const std::string_view GetValue() const;
+        const ItemHandle AddItem(const ItemHandle parent, const std::string_view& value);
+        bool RemoveItem(const ItemHandle handle);
 
-    private:
-        bool IsExpandable() const;
+      private:
+        const ItemHandle GetHandleForNewItem() const;
+        bool IsExpandable(const ItemHandle handle) const;
     };
 
 }; // namespace Controls

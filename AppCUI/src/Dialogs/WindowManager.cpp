@@ -52,7 +52,7 @@ void InternalWindowManager::UpdateButtonsStatus()
     btnCloseDescendands.SetEnabled(false);
     if (i == InvalidItemHandle)
         return;
-    
+
     auto data = lst.GetItemData(i);
     if ((data) && (data->Pointer))
     {
@@ -70,7 +70,6 @@ void InternalWindowManager::UpdateButtonsStatus()
             }
         }
     }
-    
 }
 void InternalWindowManager::CloseDescendants(ItemHandle id)
 {
@@ -121,7 +120,6 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
         }
     }
     return true;
-
 }
 bool InternalWindowManager::CloseAll()
 {
@@ -197,7 +195,7 @@ bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
         lst.SetItemType(i, ListViewItemType::Highlighted);
         this->focusedItem = i;
     }
-        
+
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
@@ -205,7 +203,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
     AddItem(rel[id].wnd, offsetX);
     rel[id].added = true;
     // search for all children
-    for (auto i : rel)
+    for (const auto& i : rel)
     {
         if (i.second.Referal == id)
             Process(rel, i.first, offsetX + 2);
@@ -237,7 +235,7 @@ bool InternalWindowManager::Create()
     {
         while (wnd < wEnd)
         {
-            const auto winMembers             = reinterpret_cast<WindowControlContext*>((*wnd)->Context);
+            const auto winMembers = reinterpret_cast<WindowControlContext*>((*wnd)->Context);
             if (winMembers)
             {
                 rel[winMembers->windowItemHandle] = { winMembers->referalItemHandle,
@@ -246,7 +244,7 @@ bool InternalWindowManager::Create()
             }
             wnd++;
         }
-        for (auto i : rel)
+        for (const auto& i : rel)
         {
             if (rel.contains(i.second.Referal))
                 continue;
