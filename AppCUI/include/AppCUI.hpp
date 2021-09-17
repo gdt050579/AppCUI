@@ -1209,7 +1209,7 @@ namespace Graphics
         }
         inline bool IsEmpty() const
         {
-            return (Buffer == nullptr) || (Count==0);
+            return (Buffer == nullptr) || (Count == 0);
         }
 
         bool Set(const CharacterBuffer& obj);
@@ -1741,13 +1741,13 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlsBarLayout: unsigned char
+    enum class WindowControlsBarLayout : unsigned char
     {
         None               = 0,
         TopBarFromLeft     = 1,
         BottomBarFromLeft  = 2,
         TopBarFromRight    = 3,
-        BottomBarFromRight = 4,        
+        BottomBarFromRight = 4,
     };
     class EXPORT WindowControlsBar
     {
@@ -1781,6 +1781,7 @@ namespace Controls
     class EXPORT Window : public Control
     {
         bool ProcessControlBarItem(unsigned int index);
+
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
@@ -2379,7 +2380,7 @@ namespace Dialogs
         WindowManager() = delete;
 
       public:
-          static void Show();
+        static void Show();
     };
     class EXPORT FolderDialog
     {
@@ -2430,12 +2431,13 @@ namespace Application
     {
         None = 0,
 
-        CommandBar       = 0x0001,
-        Menu             = 0x0002,
-        Maximized        = 0x0004,
-        Fullscreen       = 0x0008,
-        FixedSize        = 0x0010,
-        LoadSettingsFile = 0x0020,
+        CommandBar          = 0x0001,
+        Menu                = 0x0002,
+        Maximized           = 0x0004,
+        Fullscreen          = 0x0008,
+        FixedSize           = 0x0010,
+        LoadSettingsFile    = 0x0020,
+        AutoHotKeyForWindow = 0x0040,
     };
 
     enum class CharacterSize : unsigned int
