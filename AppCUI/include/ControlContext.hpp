@@ -592,6 +592,16 @@ class TreeControlContext : public ControlContext
     std::map<ItemHandle, TreeItem> items;
     std::map<ItemHandle, TreeItemView> view;
     ItemHandle nextItemHandle{ 1ULL };
+
+    // TODO: move these (context, cfg, etc)
+    const char* plus             = " + ";
+    const char* minus            = " - ";
+    const char* nothing          = " * ";
+    const ColorPair colorPlus    = ColorPair{ Color::Green, Color::White };
+    const ColorPair colorMinus   = ColorPair{ Color::Red, Color::White };
+    const ColorPair colorNothing = ColorPair{ Color::Black, Color::White };
+    const ColorPair colorText    = ColorPair{ Color::White, Color::Black };
+    const ColorPair colorBorder  = ColorPair{ Color::Transparent, Color::White };
 };
 
 enum class MenuItemType : unsigned int

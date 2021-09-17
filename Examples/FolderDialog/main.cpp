@@ -26,7 +26,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
-        tree.Create(this, "x:1%, y:20%, w:99%, h:20%");
+        tree.Create(this, "x:1%, y:20%, w:99%, h:75%");
         tree.AddItem(InvalidItemHandle, std::filesystem::current_path().string());
     }
 

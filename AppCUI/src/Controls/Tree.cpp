@@ -9,12 +9,60 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
 
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
     cc->Layout.MinHeight = 1;
-    cc->Layout.MaxHeight = 1;
-    cc->Layout.MinWidth  = 10;
+    cc->Layout.MaxHeight = 200000;
+    cc->Layout.MinWidth  = 4;
     CHECK(Init(parent, "", layout, true), false, "Failed to create tree!");
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
     return true;
+}
+
+void Tree::RecursiveItemPainting(Graphics::Renderer& renderer, const ItemHandle ih, WriteTextParams& wtp) const
+{
+    CHECKRET(Context != nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    for (const auto& it : cc->items)
+    {
+        const auto& item = it.second;
+
+        if (item.parent == ih)
+        {
+            if (IsExpandable(item.handle))
+            {
+                if (cc->view[item.handle].expanded)
+                {
+                    wtp.Color = cc->colorMinus;
+                    renderer.WriteText(cc->minus, wtp);
+                }
+                else
+                {
+                    wtp.Color = cc->colorPlus;
+                    renderer.WriteText(cc->plus, wtp);
+                }
+            }
+            else
+            {
+                wtp.Color = cc->colorNothing;
+                renderer.WriteText(cc->nothing, wtp);
+            }
+
+            wtp.X += 4;
+            wtp.Color = cc->colorText;
+
+            renderer.WriteText(item.value, wtp);
+
+            wtp.Y++;
+
+            if (IsExpandable(item.handle))
+            {
+                if (cc->view[item.handle].expanded)
+                {
+                    RecursiveItemPainting(renderer, item.handle, wtp);
+                }
+            }
+        }
+    }
 }
 
 void Tree::Paint(Graphics::Renderer& renderer)
@@ -22,43 +70,14 @@ void Tree::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    // TODO: move these (context, cfg, etc)
-    char plus[]             = " + ";
-    char minus[]            = " - ";
-    char nothing[]          = " * ";
-    const auto colorPlus    = ColorPair{ Color::Green, Color::White };
-    const auto colorMinus   = ColorPair{ Color::Red, Color::White };
-    const auto colorNothing = ColorPair{ Color::Black, Color::White };
-    const auto colorText    = ColorPair{ Color::White, Color::Black };
+    const auto flags = WriteTextFlags::LeftMargin | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth |
+                       WriteTextFlags::OverwriteColors;
+    WriteTextParams wtp{ flags };
+    wtp.X     = 0;
+    wtp.Y     = 0;
+    wtp.Width = cc->Layout.Width;
 
-    for (const auto& item : cc->items)
-    {
-        if (item.second.parent == InvalidItemHandle)
-        {
-            if (IsExpandable(item.second.handle))
-            {
-                if (cc->view[item.second.handle].expanded)
-                {
-                    renderer.WriteSingleLineText(0, 0, minus, colorMinus);
-                    // TODO:
-                }
-                else
-                {
-                    renderer.WriteSingleLineText(0, 0, plus, colorPlus);
-                }
-            }
-            else
-            {
-                renderer.WriteSingleLineText(0, 0, nothing, colorNothing);
-            }
-
-            renderer.WriteSingleLineText(4, 0, item.second.value, colorText);
-        }
-        else
-        {
-            // TODO: here or if (cc->view[item.second.handle].expanded)
-        }
-    }
+    RecursiveItemPainting(renderer, InvalidItemHandle, wtp);
 }
 
 bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
