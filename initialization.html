@@ -78,14 +78,15 @@
 <p>Where <strong>InitializationFlags</strong> is defined as follows:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">InitializationFlags</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
 <span class="p">{</span>
-    <span class="n">None</span>             <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">None</span>                <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-    <span class="n">CommandBar</span>       <span class="o">=</span> <span class="mh">0x0001</span><span class="p">,</span>
-    <span class="n">Menu</span>             <span class="o">=</span> <span class="mh">0x0002</span><span class="p">,</span>
-    <span class="n">Maximized</span>        <span class="o">=</span> <span class="mh">0x0004</span><span class="p">,</span>
-    <span class="n">Fullscreen</span>       <span class="o">=</span> <span class="mh">0x0008</span><span class="p">,</span>
-    <span class="n">FixedSize</span>        <span class="o">=</span> <span class="mh">0x0010</span><span class="p">,</span>
-    <span class="n">LoadSettingsFile</span> <span class="o">=</span> <span class="mh">0x0020</span><span class="p">,</span>
+    <span class="n">CommandBar</span>          <span class="o">=</span> <span class="mh">0x0001</span><span class="p">,</span>
+    <span class="n">Menu</span>                <span class="o">=</span> <span class="mh">0x0002</span><span class="p">,</span>
+    <span class="n">Maximized</span>           <span class="o">=</span> <span class="mh">0x0004</span><span class="p">,</span>
+    <span class="n">Fullscreen</span>          <span class="o">=</span> <span class="mh">0x0008</span><span class="p">,</span>
+    <span class="n">FixedSize</span>           <span class="o">=</span> <span class="mh">0x0010</span><span class="p">,</span>
+    <span class="n">LoadSettingsFile</span>    <span class="o">=</span> <span class="mh">0x0020</span><span class="p">,</span>
+    <span class="n">AutoHotKeyForWindow</span> <span class="o">=</span> <span class="mh">0x0040</span><span class="p">,</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -97,6 +98,7 @@
 <li><p><strong>Fullscreen</strong> - full screen mode. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.</p></li>
 <li><p><strong>FixedSize</strong> - if set, the AppCUI OS window can not change its size. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.</p></li>
 <li><p><strong>LoadSettingsFile</strong> - if set, a file with the same name as the main executable but with extension <code class="docutils literal notranslate"><span class="pre">.ini</span></code> will be search in the same folder as the main executable. If found, that file will be automatically loaded and its content will be available through <code class="docutils literal notranslate"><span class="pre">Application::GetAppSettings()</span></code> API. If a section named <code class="docutils literal notranslate"><span class="pre">[APPCUI]</span></code> exists in this file, the values described in this section will be used to initialized AppCUI envinronment. An example of such a ini file can be seen in the following example:</p></li>
+<li><p><strong>AutoHotKeyForWindow</strong> - if set, any new window that is being added in the application, will automatically be assign with a hotkey (from Alt+1 to Alt+9) if that hotkey is not being used by another window and if the window that is currently being added does not already have a hot key associated.</p></li>
 </ul>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[AppCUI]</span>
 <span class="na">Frontend</span> <span class="o">=</span> <span class="s">default      ; possible values: default,SDL, terminal, windows</span>
