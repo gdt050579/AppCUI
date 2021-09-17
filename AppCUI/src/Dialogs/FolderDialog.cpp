@@ -156,7 +156,7 @@ void FolderDialogClass::UpdateFolderList()
     if (path != path.root_path())
     {
         folders.AddItem("..", "UP-DIR");
-        folders.SetItemData(0, ItemData{ 0 });
+        folders.SetItemData(0, ItemData{ 0ULL });
     }
 
     try

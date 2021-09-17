@@ -65,7 +65,7 @@ int main()
         return 1;
     }
 
-    Application::AddWindow(new ExampleMainWindow());
+    Application::AddWindow(std::make_unique<ExampleMainWindow>());
     Application::Run();
 
     return 0;
