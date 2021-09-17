@@ -76,7 +76,8 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
     winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
     app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
-    if (ptrWin->GetHotKey() == Key::None)
+    if (((app->InitFlags & InitializationFlags::AutoHotKeyForWindow) != InitializationFlags::None) &&
+        (ptrWin->GetHotKey() == Key::None))
     {
         // compute a possible hot key
         bool v[10] = {
@@ -105,7 +106,7 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
         }
         // find first visible ID
-        for (unsigned int tr=1;tr<10;tr++)
+        for (unsigned int tr = 1; tr < 10; tr++)
             if (!v[tr])
             {
                 ptrWin->SetHotKey('0' + tr);
@@ -390,6 +391,7 @@ AppCUI::Internal::Application::Application()
     this->LoopStatus         = LOOP_STATUS_NORMAL;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    this->InitFlags          = AppCUI::Application::InitializationFlags::None;
 }
 AppCUI::Internal::Application::~Application()
 {
@@ -550,6 +552,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     MouseOverControl   = nullptr;
     ModalControlsCount = 0;
     LastWindowID       = 0;
+    InitFlags          = initData.Flags;
 
     this->Inited = true;
     LOG_INFO("AppCUI initialized succesifully");

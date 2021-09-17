@@ -244,6 +244,7 @@ namespace Internal
         unsigned int RepaintStatus;
         int MouseLockedObject;
 
+        AppCUI::Application::InitializationFlags InitFlags;
         unsigned int LastWindowID;
         bool Inited;
 
