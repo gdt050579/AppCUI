@@ -78,7 +78,9 @@
 #    define LOG_ERROR(format, ...)                                                                                     \
         AppCUI::Log::Report(AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
-inline void Unused(...) {}
+inline void Unused(...)
+{
+}
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -1207,7 +1209,7 @@ namespace Graphics
         }
         inline bool IsEmpty() const
         {
-            return (Buffer == nullptr) || (Count==0);
+            return (Buffer == nullptr) || (Count == 0);
         }
 
         bool Set(const CharacterBuffer& obj);
@@ -1216,9 +1218,9 @@ namespace Graphics
         bool SetWithHotKey(
               const AppCUI::Utils::ConstString& text,
               unsigned int& hotKeyCharacterPosition,
-              AppCUI::Input::Key & hotKey,
+              AppCUI::Input::Key& hotKey,
               AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
-              const ColorPair color = NoColorPair);
+              const ColorPair color             = NoColorPair);
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
@@ -1284,7 +1286,7 @@ namespace Graphics
         }
     };
 
-    enum class ImageRenderingMethod: unsigned int
+    enum class ImageRenderingMethod : unsigned int
     {
         PixelTo16ColorsSmallBlock,
         PixelTo64ColorsLargeBlock,
@@ -1293,12 +1295,12 @@ namespace Graphics
     enum class ImageScaleMethod : unsigned int
     {
         NoScale = 1,
-        Scale50  = 2,
-        Scale33  = 3,
-        Scale25  = 4,
-        Scale20  = 5,
-        Scale10  = 10,
-        Scale5   = 20
+        Scale50 = 2,
+        Scale33 = 3,
+        Scale25 = 4,
+        Scale20 = 5,
+        Scale10 = 10,
+        Scale5  = 20
     };
     class EXPORT Image
     {
@@ -1461,7 +1463,7 @@ namespace Graphics
               int x,
               int y,
               ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
-              ImageScaleMethod scale = ImageScaleMethod::NoScale);
+              ImageScaleMethod scale      = ImageScaleMethod::NoScale);
         Size ComputeRenderingSize(
               const Image& img,
               ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
@@ -1739,13 +1741,13 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlsBarLayout: unsigned char
+    enum class WindowControlsBarLayout : unsigned char
     {
         None               = 0,
         TopBarFromLeft     = 1,
         BottomBarFromLeft  = 2,
         TopBarFromRight    = 3,
-        BottomBarFromRight = 4,        
+        BottomBarFromRight = 4,
     };
     class EXPORT WindowControlsBar
     {
@@ -1779,6 +1781,7 @@ namespace Controls
     class EXPORT Window : public Control
     {
         bool ProcessControlBarItem(unsigned int index);
+
       public:
         bool Create(
               const AppCUI::Utils::ConstString& caption,
@@ -1818,7 +1821,7 @@ namespace Controls
         bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
-    
+
     enum class ButtonFlags : unsigned int
     {
         None = 0,
@@ -1831,7 +1834,7 @@ namespace Controls
               Control* parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
-              int controlID = 0,
+              int controlID     = 0,
               ButtonFlags flags = ButtonFlags::None);
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -2048,7 +2051,10 @@ namespace Controls
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
-        bool SetImage(const AppCUI::Graphics::Image& img, AppCUI::Graphics::ImageRenderingMethod method, AppCUI::Graphics::ImageScaleMethod scale);
+        bool SetImage(
+              const AppCUI::Graphics::Image& img,
+              AppCUI::Graphics::ImageRenderingMethod method,
+              AppCUI::Graphics::ImageScaleMethod scale);
     };
     enum class ListViewFlags : unsigned int
     {
@@ -2358,7 +2364,7 @@ namespace Dialogs
         WindowManager() = delete;
 
       public:
-          static void Show();
+        static void Show();
     };
 } // namespace Dialogs
 namespace Log
@@ -2399,15 +2405,16 @@ namespace Application
     {
         None = 0,
 
-        CommandBar       = 0x0001,
-        Menu             = 0x0002,
-        Maximized        = 0x0004,
-        Fullscreen       = 0x0008,
-        FixedSize        = 0x0010,
-        LoadSettingsFile = 0x0020,
+        CommandBar          = 0x0001,
+        Menu                = 0x0002,
+        Maximized           = 0x0004,
+        Fullscreen          = 0x0008,
+        FixedSize           = 0x0010,
+        LoadSettingsFile    = 0x0020,
+        AutoHotKeyForWindow = 0x0040,
     };
 
-    enum class CharacterSize: unsigned int
+    enum class CharacterSize : unsigned int
     {
         Default = 0,
         Tiny,
@@ -2416,11 +2423,11 @@ namespace Application
         Large,
         Huge
     };
-    enum class FrontendType: unsigned int
+    enum class FrontendType : unsigned int
     {
-        Default = 0,
-        SDL = 1,
-        Terminal = 2,
+        Default        = 0,
+        SDL            = 1,
+        Terminal       = 2,
         WindowsConsole = 3
     };
 
@@ -2439,8 +2446,6 @@ namespace Application
         {
         }
     };
-
-
 
     enum class ArangeWindowsMethod
     {

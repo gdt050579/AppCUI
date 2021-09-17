@@ -76,6 +76,42 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
     winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
     app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
+    if (ptrWin->GetHotKey() == Key::None)
+    {
+        // compute a possible hot key
+        bool v[10] = {
+            false, false, false, false, false, false, false, false, false, false,
+        };
+        // iterate from all top level windows and see if a hot-key is being associated
+        auto winList          = app->AppDesktop->GetChildrenList();
+        const auto endWinList = winList + app->AppDesktop->GetChildernCount();
+        if (winList)
+        {
+            for (; winList < endWinList; winList++)
+            {
+                if ((!(*winList)) || (!((*winList)->Context)))
+                    continue;
+                auto h_key = (*winList)->GetHotKey();
+                if ((h_key & Key::Alt) != Key::None)
+                {
+                    h_key = h_key & ~((unsigned int) Key::Alt);
+                    // Alt+0 will not be considered
+                    if ((((unsigned int) h_key) > ((unsigned int) Key::N0)) &&
+                        (((unsigned int) h_key) <= ((unsigned int) Key::N9)))
+                    {
+                        v[((unsigned int) h_key) - ((unsigned int) Key::N0)] = true;
+                    }
+                }
+            }
+        }
+        // find first visible ID
+        for (unsigned int tr=1;tr<10;tr++)
+            if (!v[tr])
+            {
+                ptrWin->SetHotKey('0' + tr);
+                break;
+            }
+    }
     CHECK(app->AppDesktop->AddControl(ptrWin), InvalidItemHandle, "Fail to add window to desktop !");
     ptrWin->SetFocus();
     return resultHandle;
