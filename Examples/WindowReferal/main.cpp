@@ -73,7 +73,7 @@ int main()
 {
     InitializationData initData;
     initData.CustomDesktop = new MyDesktop();
-    initData.Flags         = InitializationFlags::Menu;
+    initData.Flags         = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
     if (!Application::Init(initData))
         return 1;
     auto m = Application::AddMenu("&Windows");

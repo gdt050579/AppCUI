@@ -14,14 +14,15 @@ Where **InitializationFlags** is defined as follows:
 
     enum class InitializationFlags : unsigned int
     {
-        None             = 0,       
+        None                = 0,       
 
-        CommandBar       = 0x0001, 
-        Menu             = 0x0002,
-        Maximized        = 0x0004,
-        Fullscreen       = 0x0008,
-        FixedSize        = 0x0010,
-        LoadSettingsFile = 0x0020,
+        CommandBar          = 0x0001,
+        Menu                = 0x0002,
+        Maximized           = 0x0004,
+        Fullscreen          = 0x0008,
+        FixedSize           = 0x0010,
+        LoadSettingsFile    = 0x0020,
+        AutoHotKeyForWindow = 0x0040,
     };
 
 Width:
@@ -32,6 +33,7 @@ Width:
 * **Fullscreen** - full screen mode. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.
 * **FixedSize** - if set, the AppCUI OS window can not change its size. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.
 * **LoadSettingsFile** - if set, a file with the same name as the main executable but with extension ``.ini`` will be search in the same folder as the main executable. If found, that file will be automatically loaded and its content will be available through ``Application::GetAppSettings()`` API. If a section named ``[APPCUI]`` exists in this file, the values described in this section will be used to initialized AppCUI envinronment. An example of such a ini file can be seen in the following example:
+* **AutoHotKeyForWindow** - if set, any new window that is being added in the application, will automatically be assign with a hotkey (from Alt+1 to Alt+9) if that hotkey is not being used by another window and if the window that is currently being added does not already have a hot key associated.
 
 .. code-block:: ini
 
