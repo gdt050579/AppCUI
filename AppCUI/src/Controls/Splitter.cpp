@@ -12,6 +12,19 @@ using namespace AppCUI::Input;
 
 constexpr int MIN_SPLITTER_SIZE = 4;
 
+constexpr int NO_TOOLTIP_TEXT             = -1;
+constexpr int SPLITTER_TOOLTIPTEXT_DRAG   = 0;
+constexpr int SPLITTER_TOOLTIPTEXT_RIGHT  = 1;
+constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
+constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
+constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
+
+constexpr std::string_view splitterToolTipTexts[] = { "Drag to resize panels",
+                                                      "Click to maximize right panel",
+                                                      "Click to maximize bottom panel",
+                                                      "Click to maximize left panel",
+                                                      "Click to maximize top panel" };
+
 SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Members, int x, int y, bool pressed)
 {
     int v = 0;
@@ -144,11 +157,10 @@ void Splitter::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
 
-    ColorPair c1, c2, col;
+    ColorPair c1  = Members->Cfg->Splitter.Buttons.Normal;
+    ColorPair c2  = Members->Cfg->Splitter.Buttons.Normal;
+    ColorPair col = Members->Cfg->Splitter.NormalColor;
     unsigned int poz;
-
-    c1 = c2 = Members->Cfg->Splitter.Buttons.Normal;
-    col     = Members->Cfg->Splitter.NormalColor;
 
     switch (Members->mouseStatus)
     {
@@ -285,36 +297,31 @@ bool Splitter::OnMouseOver(int x, int y)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     auto res = MousePozToSplitterMouseStatus(Members, x, y, false);
-    if (res != Members->mouseStatus)
+    if (res == Members->mouseStatus)
+        return false;
+
+    Members->mouseStatus = res;
+    int toolTipTextID    = NO_TOOLTIP_TEXT;
+
+    switch (Members->mouseStatus)
     {
-        Members->mouseStatus = res;
-        switch (Members->mouseStatus)
-        {
-        case SplitterMouseStatus::OnBar:
-            ShowToolTip("Drag to resize panels",x,y);
-            break;
-        case SplitterMouseStatus::OnButton1:
-            if (Members->Flags & GATTR_VERTICAL)
-                ShowToolTip("Click to maximize right panel", x, y);
-            else
-                ShowToolTip("Click to maximize bottom panel", x, y);
-            break;
-        case SplitterMouseStatus::OnButton2:
-            if (Members->Flags & GATTR_VERTICAL)
-                ShowToolTip("Click to maximize left panel", x, y);
-            else
-                ShowToolTip("Click to maximize top panel", x, y);
-            break;
-        }
-        return true;
+    case SplitterMouseStatus::OnBar:
+        toolTipTextID = SPLITTER_TOOLTIPTEXT_DRAG;
+        break;
+    case SplitterMouseStatus::OnButton1:
+        toolTipTextID = Members->Flags & GATTR_VERTICAL ? SPLITTER_TOOLTIPTEXT_RIGHT : SPLITTER_TOOLTIPTEXT_BOTTOM;
+        break;
+    case SplitterMouseStatus::OnButton2:
+        toolTipTextID = Members->Flags & GATTR_VERTICAL ? SPLITTER_TOOLTIPTEXT_LEFT : SPLITTER_TOOLTIPTEXT_TOP;
     }
-    return false;
+    if (toolTipTextID != NO_TOOLTIP_TEXT)
+        ShowToolTip(splitterToolTipTexts[toolTipTextID], x, y);
+    return true;
 }
 bool Splitter::OnMouseEnter()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     Members->mouseStatus = SplitterMouseStatus::None;
-    //Members->mouseStatus = MousePozToSplitterMouseStatus(Members, 0, 0, false);
     return true;
 }
 bool Splitter::OnMouseLeave()

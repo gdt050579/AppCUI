@@ -250,7 +250,7 @@ struct WindowControlContext : public ControlContext
     bool Maximized;    
 };
 
-enum class SplitterMouseStatus: unsigned int
+enum class SplitterMouseStatus: unsigned char
 {
     None = 0,
     OnButton1,
