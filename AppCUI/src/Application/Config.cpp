@@ -129,9 +129,12 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->StateControl.Inactive.HotKeyColor      = ColorPair{ Color::Gray, Color::Transparent };
     this->StateControl.Inactive.StateSymbolColor = ColorPair{ Color::Gray, Color::Transparent };
 
-    this->Splitter.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Splitter.ClickColor  = ColorPair{ Color::White, Color::Magenta };
-    this->Splitter.HoverColor  = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Splitter.NormalColor     = ColorPair{ Color::Silver, Color::Transparent };
+    this->Splitter.ClickColor      = ColorPair{ Color::White, Color::Magenta };
+    this->Splitter.HoverColor      = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Splitter.Buttons.Normal  = ColorPair{ Color::White, Color::Transparent };
+    this->Splitter.Buttons.Hover   = ColorPair{ Color::Aqua, Color::Transparent };
+    this->Splitter.Buttons.Clicked = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Panel.TextColor   = ColorPair{ Color::White, Color::Transparent };

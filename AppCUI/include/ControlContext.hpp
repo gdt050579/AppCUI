@@ -250,11 +250,21 @@ struct WindowControlContext : public ControlContext
     bool Maximized;    
 };
 
+enum class SplitterMouseStatus: unsigned char
+{
+    None = 0,
+    OnButton1,
+    OnButton2,
+    OnBar,
+    ClickOnButton1,
+    ClickOnButton2,
+    Drag
+};
 class SplitterControlContext : public ControlContext
 {
   public:
     int SecondPanelSize;
-    unsigned int DragStatus;
+    SplitterMouseStatus mouseStatus;
 };
 class TextFieldControlContext : public ControlContext
 {

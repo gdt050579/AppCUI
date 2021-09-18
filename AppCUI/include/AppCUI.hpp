@@ -1891,6 +1891,7 @@ namespace Controls
         void OnAfterAddControl(Control* ctrl) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2527,6 +2528,11 @@ namespace Application
         struct
         {
             Graphics::ColorPair NormalColor, ClickColor, HoverColor;
+            struct
+            {
+                Graphics::ColorPair Normal, Hover, Clicked;
+            } Buttons;
+            
         } Splitter;
         struct
         {
