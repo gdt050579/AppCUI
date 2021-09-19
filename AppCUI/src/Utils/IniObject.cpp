@@ -736,6 +736,14 @@ IniSection IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
+std::vector<IniSection> IniObject::GetSections()
+{
+    std::vector<IniSection> res;
+    res.reserve(WRAPPER->Sections.size());
+    for (auto & s : WRAPPER->Sections)
+        res.push_back(IniSection(s.second.get()));
+    return res;
+}
 IniValue IniObject::GetValue(std::string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
