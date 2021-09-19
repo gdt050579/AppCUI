@@ -756,6 +756,7 @@ IniSection IniObject::GetSection(std::string_view name)
 }
 std::vector<IniSection> IniObject::GetSections() const
 {
+    VALIDATE_INITED(std::vector<IniSection>());
     std::vector<IniSection> res;
     res.reserve(WRAPPER->Sections.size());
     for (auto & s : WRAPPER->Sections)
