@@ -147,6 +147,8 @@ inline void Unused(...)
         return f1 = static_cast<type>(static_cast<basic_type>(f1) | static_cast<basic_type>(f2));                      \
     }
 
+#define ARRAY_LEN(x) std::extent<decltype(x)>::value
+
 namespace AppCUI
 {
 namespace Graphics
