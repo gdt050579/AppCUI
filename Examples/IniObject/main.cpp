@@ -67,9 +67,15 @@ int main()
     int x              = Utils::Number::ToInt32("-1").value();
     LOG_INFO("Number is %d", x);
 
+    LOG_INFO("List all sections:");
     for (auto s : ini.GetSections())
     {
-        LOG_INFO("Section: %s", s.GetName().data());
+        LOG_INFO("- Section: %s", s.GetName().data());
+    }
+    LOG_INFO("List all values for section: Values");
+    for (auto v : ini.GetSection("Values").GetValues())
+    {
+        LOG_INFO("- Value: %s", v.AsString().value());    
     }
     return 0;
 }

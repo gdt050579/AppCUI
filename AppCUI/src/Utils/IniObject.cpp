@@ -457,7 +457,21 @@ IniValue IniSection::GetValue(std::string_view keyName)
     // all good -> value exists
     return IniValue(&value->second);
 }
+std::vector<IniValue> IniSection::GetValues()
+{
+    CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
 
+    std::vector<IniValue> res;
+    AppCUI::Ini::Section* sect = ((AppCUI::Ini::Section*) Data);
+
+    res.reserve(sect->Keys.size());
+    for (auto&v: sect->Keys)
+    {
+        res.push_back(IniValue(&v.second));
+    }
+
+    return res;
+}
 //============================================================================= INI Value ===
 std::optional<unsigned long long> IniValue::AsUInt64()
 {
