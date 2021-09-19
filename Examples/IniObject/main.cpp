@@ -66,5 +66,10 @@ int main()
     LOG_INFO("Number is %u", value);
     int x              = Utils::Number::ToInt32("-1").value();
     LOG_INFO("Number is %d", x);
+
+    for (auto s : ini.GetSections())
+    {
+        LOG_INFO("Section: %s", s.GetName().data());
+    }
     return 0;
 }
