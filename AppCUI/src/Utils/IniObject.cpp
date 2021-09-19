@@ -457,29 +457,43 @@ IniValue IniSection::GetValue(std::string_view keyName)
     // all good -> value exists
     return IniValue(&value->second);
 }
+std::vector<IniValue> IniSection::GetValues() const
+{
+    CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
 
+    std::vector<IniValue> res;
+    auto sect = ((AppCUI::Ini::Section*) Data);
+
+    res.reserve(sect->Keys.size());
+    for (auto&v: sect->Keys)
+    {
+        res.push_back(IniValue(&v.second));
+    }
+
+    return res;
+}
 //============================================================================= INI Value ===
-std::optional<unsigned long long> IniValue::AsUInt64()
+std::optional<unsigned long long> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt64(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
-std::optional<long long> IniValue::AsInt64()
+std::optional<long long> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt64(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
-std::optional<unsigned int> IniValue::AsUInt32()
+std::optional<unsigned int> IniValue::AsUInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
-std::optional<int> IniValue::AsInt32()
+std::optional<int> IniValue::AsInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
-std::optional<bool> IniValue::AsBool()
+std::optional<bool> IniValue::AsBool() const
 {
     VALIDATE_VALUE(std::nullopt);
     unsigned int len = value->KeyValue.Len();
@@ -518,7 +532,7 @@ std::optional<bool> IniValue::AsBool()
           std::nullopt,
           "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-std::optional<AppCUI::Input::Key> IniValue::AsKey()
+std::optional<AppCUI::Input::Key> IniValue::AsKey() const
 {
     VALIDATE_VALUE(std::nullopt);
     Key k = KeyUtils::FromString(std::string_view{ value->KeyValue.GetText(), value->KeyValue.Len() });
@@ -526,17 +540,17 @@ std::optional<AppCUI::Input::Key> IniValue::AsKey()
         return std::nullopt;
     return k;
 }
-std::optional<const char*> IniValue::AsString()
+std::optional<const char*> IniValue::AsString() const
 {
     VALIDATE_VALUE(std::nullopt);
     return value->KeyValue.GetText();
 }
-std::optional<std::string_view> IniValue::AsStringView()
+std::optional<std::string_view> IniValue::AsStringView() const
 {
     VALIDATE_VALUE(std::nullopt);
     return std::string_view(value->KeyValue.GetText(), value->KeyValue.Len());
 }
-std::optional<Graphics::Size> IniValue::AsSize()
+std::optional<Graphics::Size> IniValue::AsSize() const
 {
     VALIDATE_VALUE(std::nullopt);
     const char* start = value->KeyValue.GetText();
@@ -574,18 +588,18 @@ std::optional<Graphics::Size> IniValue::AsSize()
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
     return AppCUI::Graphics::Size(width, height);
 }
-std::optional<float> IniValue::AsFloat()
+std::optional<float> IniValue::AsFloat() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToFloat(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
-std::optional<double> IniValue::AsDouble()
+std::optional<double> IniValue::AsDouble() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToDouble(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
 }
 
-unsigned long long IniValue::ToUInt64(unsigned long long defaultValue)
+unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -593,7 +607,7 @@ unsigned long long IniValue::ToUInt64(unsigned long long defaultValue)
     else
         return defaultValue;
 }
-unsigned int IniValue::ToUInt32(unsigned int defaultValue)
+unsigned int IniValue::ToUInt32(unsigned int defaultValue) const
 {
     auto result = this->AsUInt32();
     if (result.has_value())
@@ -601,7 +615,7 @@ unsigned int IniValue::ToUInt32(unsigned int defaultValue)
     else
         return defaultValue;
 }
-long long IniValue::ToInt64(long long defaultValue)
+long long IniValue::ToInt64(long long defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -609,7 +623,7 @@ long long IniValue::ToInt64(long long defaultValue)
     else
         return defaultValue;
 }
-int IniValue::ToInt32(int defaultValue)
+int IniValue::ToInt32(int defaultValue) const
 {
     auto result = this->AsInt32();
     if (result.has_value())
@@ -617,7 +631,7 @@ int IniValue::ToInt32(int defaultValue)
     else
         return defaultValue;
 }
-bool IniValue::ToBool(bool defaultValue)
+bool IniValue::ToBool(bool defaultValue) const
 {
     auto result = this->AsBool();
     if (result.has_value())
@@ -625,7 +639,7 @@ bool IniValue::ToBool(bool defaultValue)
     else
         return defaultValue;
 }
-AppCUI::Input::Key IniValue::ToKey(AppCUI::Input::Key defaultValue)
+AppCUI::Input::Key IniValue::ToKey(AppCUI::Input::Key defaultValue) const
 {
     auto result = this->AsKey();
     if (result.has_value())
@@ -633,12 +647,12 @@ AppCUI::Input::Key IniValue::ToKey(AppCUI::Input::Key defaultValue)
     else
         return defaultValue;
 }
-const char* IniValue::ToString(const char* defaultValue)
+const char* IniValue::ToString(const char* defaultValue) const
 {
     VALIDATE_VALUE(defaultValue);
     return value->KeyValue.GetText();
 }
-std::string_view IniValue::ToStringView(std::string_view defaultValue)
+std::string_view IniValue::ToStringView(std::string_view defaultValue) const
 {
     auto result = this->AsStringView();
     if (result.has_value())
@@ -646,7 +660,7 @@ std::string_view IniValue::ToStringView(std::string_view defaultValue)
     else
         return defaultValue;
 }
-AppCUI::Graphics::Size IniValue::ToSize(AppCUI::Graphics::Size defaultValue)
+AppCUI::Graphics::Size IniValue::ToSize(AppCUI::Graphics::Size defaultValue) const
 {
     auto result = this->AsSize();
     if (result.has_value())
@@ -654,7 +668,7 @@ AppCUI::Graphics::Size IniValue::ToSize(AppCUI::Graphics::Size defaultValue)
     else
         return defaultValue;
 }
-float IniValue::ToFloat(float defaultValue)
+float IniValue::ToFloat(float defaultValue) const
 {
     auto result = this->AsFloat();
     if (result.has_value())
@@ -662,7 +676,7 @@ float IniValue::ToFloat(float defaultValue)
     else
         return defaultValue;
 }
-double IniValue::ToDouble(double defaultValue)
+double IniValue::ToDouble(double defaultValue) const
 {
     auto result = this->AsDouble();
     if (result.has_value())
@@ -670,7 +684,11 @@ double IniValue::ToDouble(double defaultValue)
     else
         return defaultValue;
 }
-
+std::string_view IniValue::GetName() const
+{
+    VALIDATE_VALUE(std::string_view());
+    return std::string_view(value->KeyName.GetText(), value->KeyName.Len());
+}
 //============================================================================= INI Object ===
 IniObject::IniObject()
 {
@@ -718,7 +736,7 @@ bool IniObject::Create()
     return true;
 }
 
-bool IniObject::HasSection(std::string_view name)
+bool IniObject::HasSection(std::string_view name) const
 {
     VALIDATE_INITED(false);
     // null-strings or empty strings refer to the Default section that always exists
@@ -735,6 +753,14 @@ IniSection IniObject::GetSection(std::string_view name)
     if (result == WRAPPER->Sections.cend())
         return IniSection();
     return IniSection(result->second.get());
+}
+std::vector<IniSection> IniObject::GetSections() const
+{
+    std::vector<IniSection> res;
+    res.reserve(WRAPPER->Sections.size());
+    for (auto & s : WRAPPER->Sections)
+        res.push_back(IniSection(s.second.get()));
+    return res;
 }
 IniValue IniObject::GetValue(std::string_view valuePath)
 {
