@@ -821,29 +821,29 @@ namespace Utils
         }
         IniValue(void* data) : Data(data){};
 
-        std::optional<unsigned long long> AsUInt64();
-        std::optional<long long> AsInt64();
-        std::optional<unsigned int> AsUInt32();
-        std::optional<int> AsInt32();
-        std::optional<bool> AsBool();
-        std::optional<AppCUI::Input::Key> AsKey();
-        std::optional<const char*> AsString();
-        std::optional<std::string_view> AsStringView();
-        std::optional<Graphics::Size> AsSize();
-        std::optional<float> AsFloat();
-        std::optional<double> AsDouble();
+        std::optional<unsigned long long> AsUInt64() const;
+        std::optional<long long> AsInt64() const;
+        std::optional<unsigned int> AsUInt32() const;
+        std::optional<int> AsInt32() const;
+        std::optional<bool> AsBool() const;
+        std::optional<AppCUI::Input::Key> AsKey() const;
+        std::optional<const char*> AsString() const;
+        std::optional<std::string_view> AsStringView() const;
+        std::optional<Graphics::Size> AsSize() const;
+        std::optional<float> AsFloat() const;
+        std::optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0);
-        unsigned int ToUInt32(unsigned int defaultValue = 0);
-        long long ToInt64(long long defaultValue = -1);
-        int ToInt32(int defaultValue = -1);
-        bool ToBool(bool defaultValue = false);
-        AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None);
-        const char* ToString(const char* defaultValue = nullptr);
-        std::string_view ToStringView(std::string_view defaultValue = std::string_view{});
-        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size());
-        float ToFloat(float defaultValue = 0.0f);
-        double ToDouble(double defaultValue = 0.0);
+        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
+        long long ToInt64(long long defaultValue = -1) const;
+        int ToInt32(int defaultValue = -1) const;
+        bool ToBool(bool defaultValue = false) const;
+        AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None) const;
+        const char* ToString(const char* defaultValue = nullptr) const;
+        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
+        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size()) const;
+        float ToFloat(float defaultValue = 0.0f) const;
+        double ToDouble(double defaultValue = 0.0) const;
 
         std::string_view GetName() const;
     };
@@ -863,7 +863,7 @@ namespace Utils
         }
         std::string_view GetName() const;
         IniValue GetValue(std::string_view keyName);
-        std::vector<IniValue> GetValues();
+        std::vector<IniValue> GetValues() const;
     };
     class EXPORT IniObject
     {
@@ -878,10 +878,10 @@ namespace Utils
         bool CreateFromFile(const std::filesystem::path& fileName);
         bool Create();
 
-        bool HasSection(std::string_view name);
+        bool HasSection(std::string_view name) const;
         IniSection GetSection(std::string_view name);
         IniValue GetValue(std::string_view valuePath);
-        std::vector<IniSection> GetSections();
+        std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
     };
 
