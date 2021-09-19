@@ -844,6 +844,8 @@ namespace Utils
         AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size());
         float ToFloat(float defaultValue = 0.0f);
         double ToDouble(double defaultValue = 0.0);
+
+        std::string_view GetName() const;
     };
     class EXPORT IniSection
     {

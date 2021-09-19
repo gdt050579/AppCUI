@@ -75,7 +75,7 @@ int main()
     LOG_INFO("List all values for section: Values");
     for (auto v : ini.GetSection("Values").GetValues())
     {
-        LOG_INFO("- Value: %s", v.AsString().value());    
+        LOG_INFO("- %s = %s", v.GetName().data(), v.AsString().value());    
     }
     return 0;
 }

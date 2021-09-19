@@ -684,7 +684,11 @@ double IniValue::ToDouble(double defaultValue)
     else
         return defaultValue;
 }
-
+std::string_view IniValue::GetName() const
+{
+    VALIDATE_VALUE(std::string_view());
+    return std::string_view(value->KeyName.GetText(), value->KeyName.Len());
+}
 //============================================================================= INI Object ===
 IniObject::IniObject()
 {
