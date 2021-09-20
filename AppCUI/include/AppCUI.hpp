@@ -472,7 +472,7 @@ namespace Utils
               unsigned int* resultedDestinationSize = nullptr);
         static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);        
         static bool StartsWith(const char* sir, const char* text, bool ignoreCase = false);
-        static bool StartsWith(const std::string_view& sir1, const std::string_view& sir2, bool ignoreCase = false);
+        static bool StartsWith(std::string_view sir1, std::string_view sir2, bool ignoreCase = false);
         static bool EndsWith(
               const char* sir,
               const char* text,

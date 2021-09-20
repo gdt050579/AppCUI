@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-const unsigned char __lower_case_table__[256] = {
+const unsigned char string_lowercase_table[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -120,7 +120,7 @@ bool AppCUI::Utils::String::Equals(const char* sir1, const char* sir2, bool igno
     VALIDATE_STRINGS_TO_COMPARE;
     if (ignoreCase)
     {
-        while ((*p1) && (*p2) && ((__lower_case_table__[*p1]) == (__lower_case_table__[*p2])))
+        while ((*p1) && (*p2) && ((string_lowercase_table[*p1]) == (string_lowercase_table[*p2])))
         {
             p1++;
             p2++;
@@ -143,7 +143,7 @@ bool AppCUI::Utils::String::StartsWith(const char* sir1, const char* sir2, bool 
 
     if (ignoreCase)
     {
-        while ((*p1) && (*p2) && ((__lower_case_table__[*p1]) == (__lower_case_table__[*p2])))
+        while ((*p1) && (*p2) && ((string_lowercase_table[*p1]) == (string_lowercase_table[*p2])))
         {
             p1++;
             p2++;
@@ -160,7 +160,7 @@ bool AppCUI::Utils::String::StartsWith(const char* sir1, const char* sir2, bool 
         return (*p2) == 0;
     }
 }
-bool AppCUI::Utils::String::StartsWith(const std::string_view& sir1, const std::string_view& sir2, bool ignoreCase)
+bool AppCUI::Utils::String::StartsWith(std::string_view sir1,std::string_view sir2, bool ignoreCase)
 {
     auto p1   = (const unsigned char*) sir1.data();
     auto p2   = (const unsigned char*) sir2.data();
@@ -173,7 +173,7 @@ bool AppCUI::Utils::String::StartsWith(const std::string_view& sir1, const std::
     {
         while (p2 < p2_e)
         {
-            if (__lower_case_table__[*p2] != __lower_case_table__[*p1])
+            if (string_lowercase_table[*p2] != string_lowercase_table[*p1])
                 return false;
             p2++;
             p1++;
@@ -204,7 +204,7 @@ bool AppCUI::Utils::String::EndsWith(
     p1 += (sir2Size - sir1Size);
     if (ignoreCase)
     {
-        while ((*p1) && (*p2) && ((__lower_case_table__[*p1]) == (__lower_case_table__[*p2])))
+        while ((*p1) && (*p2) && ((string_lowercase_table[*p1]) == (string_lowercase_table[*p2])))
         {
             p1++;
             p2++;
@@ -236,14 +236,14 @@ bool AppCUI::Utils::String::Contains(const char* sir, const char* textToFind, bo
 
     if (ignoreCase)
     {
-        char_to_find = __lower_case_table__[*p_find];
+        char_to_find = string_lowercase_table[*p_find];
         while (*p_sir)
         {
-            if (__lower_case_table__[*p_sir] == char_to_find)
+            if (string_lowercase_table[*p_sir] == char_to_find)
             {
                 ps = p_sir;
                 pf = p_find;
-                for (; (*pf) && (*ps) && (__lower_case_table__[*ps] == __lower_case_table__[*pf]); pf++, ps++)
+                for (; (*pf) && (*ps) && (string_lowercase_table[*ps] == string_lowercase_table[*pf]); pf++, ps++)
                     ;
                 if (!(*pf))
                     return true;
@@ -274,14 +274,14 @@ int AppCUI::Utils::String::Compare(const char* sir1, const char* sir2, bool igno
     VALIDATE_STRINGS_TO_COMPARE;
     if (ignoreCase)
     {
-        while ((*p1) && (*p2) && ((__lower_case_table__[*p1]) == (__lower_case_table__[*p2])))
+        while ((*p1) && (*p2) && ((string_lowercase_table[*p1]) == (string_lowercase_table[*p2])))
         {
             p1++;
             p2++;
         }
-        if (__lower_case_table__[*p1] < __lower_case_table__[*p2])
+        if (string_lowercase_table[*p1] < string_lowercase_table[*p2])
             return -1;
-        if (__lower_case_table__[*p1] > __lower_case_table__[*p2])
+        if (string_lowercase_table[*p1] > string_lowercase_table[*p2])
             return 1;
         return 0;
     }
