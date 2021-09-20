@@ -133,7 +133,7 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
     size_t pixelHeight = DM.h / 2;
 
     Uint32 windowFlags = 0;
-    if ((initData.Flags & InitializationFlags::FixedSize) != InitializationFlags::None)
+    if ((initData.Flags & InitializationFlags::FixedSize) == InitializationFlags::None)
     {
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_RESIZABLE;
     }
@@ -142,12 +142,14 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_MAXIMIZED;
         pixelWidth  = DM.w;
         pixelHeight = DM.h;
-    } else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None) 
+    }
+    else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None)
     {
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_FULLSCREEN;
         pixelWidth  = DM.w;
         pixelHeight = DM.h;
-    } else if ((initData.Width != 0) && (initData.Height != 0))
+    }
+    else if ((initData.Width != 0) && (initData.Height != 0))
     {
         pixelWidth  = charWidth * initData.Width;
         pixelHeight = charWidth * initData.Height;
@@ -238,7 +240,6 @@ void SDLTerminal::OnFlushToScreen()
             int iFontCharHeight = 0;
             const Uint16 text[] = { ch.Code, 0 };
             TTF_SizeUNICODE(font, text, &iFontCharWidth, &iFontCharHeight);
-//            const std::size_t fontCharWidth  = static_cast<std::size_t>(iFontCharWidth);
             const std::size_t fontCharHeight = static_cast<std::size_t>(iFontCharHeight);
 
             SDL_Rect WindowRect;
