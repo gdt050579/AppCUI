@@ -160,6 +160,38 @@ bool AppCUI::Utils::String::StartsWith(const char* sir1, const char* sir2, bool 
         return (*p2) == 0;
     }
 }
+bool AppCUI::Utils::String::StartsWith(const std::string_view& sir1, const std::string_view& sir2, bool ignoreCase)
+{
+    auto p1   = (const unsigned char*) sir1.data();
+    auto p2   = (const unsigned char*) sir2.data();
+    auto p1_e = p1 + sir1.length();
+    auto p2_e = p2 + sir2.length();
+    CHECK(p1, false, "");
+    CHECK(p2, false, "");
+    CHECK(sir1.length() >= sir2.length(), false, "");
+    if (ignoreCase)
+    {
+        while (p2 < p2_e)
+        {
+            if (__lower_case_table__[*p2] != __lower_case_table__[*p1])
+                return false;
+            p2++;
+            p1++;
+        }
+        return true;
+    }
+    else
+    {
+        while (p2 < p2_e)
+        {
+            if ((*p2) != (*p1))
+                return false;
+            p2++;
+            p1++;
+        }
+        return true;
+    }
+}
 bool AppCUI::Utils::String::EndsWith(
       const char* sir1, const char* sir2, bool ignoreCase, unsigned int sir1Size, unsigned int sir2Size)
 {
