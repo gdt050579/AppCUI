@@ -13,8 +13,8 @@ bool Button::Create(
 {
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);
-    
-    Members->Layout.MinWidth  = 4;
+
+    Members->Layout.MinWidth = 4;
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
         Members->Layout.MinHeight = 1; // one character (flat button)
@@ -25,7 +25,7 @@ bool Button::Create(
         Members->Layout.MinHeight = 2; // Exactly 2 characters
         Members->Layout.MaxHeight = 2;
     }
-    
+
     CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
 
     Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
@@ -41,11 +41,12 @@ void Button::Paint(Graphics::Renderer& renderer)
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
-    auto* bc              = &Members->Cfg->Button.Normal;
+    const auto* bc        = &Members->Cfg->Button.Normal;
     bool pressed          = false;
     params.Y              = 0;
-    params.HotKeyPosition = Members->HotKeyOffset;
-    params.Width          = Members->Layout.Width - 1;
+    params.HotKeyPosition = Members->HotKeyOffset;    
+    params.Align          = TextAlignament::Center;
+
     // daca e disable
     if (!IsEnabled())
     {
@@ -66,63 +67,50 @@ void Button::Paint(Graphics::Renderer& renderer)
             }
         }
     }
-    // draw
-    int x;
-    int sz = (int) Members->Text.Len();
-    if (Members->Layout.Width >= 4)
+
+    if (Members->Flags && ButtonFlags::Flat)
     {
-        if (sz > Members->Layout.Width - 3)
+        renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', bc->TextColor);
+        params.Color       = bc->TextColor;
+        params.HotKeyColor = bc->HotKeyColor;
+        params.X           = 0;
+        params.Width       = Members->Layout.Width;
+        renderer.WriteText(Members->Text, params);
+    }
+    else
+    {
+        params.Width = Members->Layout.Width - 1;
+        if (pressed)
         {
-            x  = 0;
-            sz = Members->Layout.Width - 3;
+            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
+            params.Color       = Members->Cfg->Button.Focused.TextColor;
+            params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
+            params.X           = 1;
+            renderer.WriteText(Members->Text, params);
         }
         else
         {
-            x = (Members->Layout.Width - 1 - sz) >> 1;
-        }
-    }
-    else
-    {
-        sz = 0;
-    }
+            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
 
-    if (pressed)
-    {
-        renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
-        if (sz > 0)
-        {
-            params.Color       = Members->Cfg->Button.Focused.TextColor;
-            params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
-            params.X           = x + 1;            
-            renderer.WriteText(Members->Text, params);
-        }
-    }
-    else
-    {
-        renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
-        if (sz > 0)
-        {
             params.Color       = bc->TextColor;
             params.HotKeyColor = bc->HotKeyColor;
-            params.X           = x ;
+            params.X           = 0;
             renderer.WriteText(Members->Text, params);
-        }
-        if (!(Members->Flags && ButtonFlags::Flat))
-        {
-            // if not flat --> draw button shaddow
+
             renderer.FillHorizontalLineWithSpecialChar(
-                  1,
-                  1,
-                  Members->Layout.Width,
-                  SpecialChars::BlockUpperHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
+                    1,
+                    1,
+                    Members->Layout.Width,
+                    SpecialChars::BlockUpperHalf,
+                    ColorPair{ Color::Black, Color::Transparent });
             renderer.WriteSpecialCharacter(
-                  Members->Layout.Width - 1,
-                  0,
-                  SpecialChars::BlockLowerHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
+                    Members->Layout.Width - 1,
+                    0,
+                    SpecialChars::BlockLowerHalf,
+                    ColorPair{ Color::Black, Color::Transparent });
         }
     }
+
 }
 void Button::OnHotKey()
 {
@@ -161,7 +149,7 @@ void Button::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 bool Button::OnMouseEnter()
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
-    if ((int)Members->Text.Len() >= Members->Layout.Width)
+    if ((int) Members->Text.Len() >= Members->Layout.Width)
         this->ShowToolTip(Members->Text);
     return true;
 }
