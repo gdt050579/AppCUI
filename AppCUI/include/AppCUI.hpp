@@ -812,6 +812,43 @@ namespace Utils
         static AppCUI::Input::Key CreateHotKey(char16_t hotKey, AppCUI::Input::Key modifier = AppCUI::Input::Key::None);
     };
 
+    class EXPORT IniValueArray
+    {
+        const char* text;
+        unsigned int len;
+
+      public:
+        IniValueArray() : text(nullptr), len(0)
+        {
+        }
+        IniValueArray(std::string_view obj)
+            : text(obj.data()), len((unsigned int)obj.size()) { }
+
+        std::optional<unsigned long long> AsUInt64() const;
+        std::optional<long long> AsInt64() const;
+        std::optional<unsigned int> AsUInt32() const;
+        std::optional<int> AsInt32() const;
+        std::optional<bool> AsBool() const;
+        std::optional<AppCUI::Input::Key> AsKey() const;
+        inline std::optional<const char*> AsString() const { return text; }
+        inline std::optional<std::string_view> AsStringView() const { return std::string_view(text,len); };
+        std::optional<Graphics::Size> AsSize() const;
+        std::optional<float> AsFloat() const;
+        std::optional<double> AsDouble() const;
+
+        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
+        long long ToInt64(long long defaultValue = -1) const;
+        int ToInt32(int defaultValue = -1) const;
+        bool ToBool(bool defaultValue = false) const;
+        AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None) const;
+        const char* ToString(const char* defaultValue = nullptr) const;
+        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
+        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size()) const;
+        float ToFloat(float defaultValue = 0.0f) const;
+        double ToDouble(double defaultValue = 0.0) const;
+
+    };
     class EXPORT IniValue
     {
         void* Data;
@@ -845,6 +882,10 @@ namespace Utils
         AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
+
+        bool IsArray() const;
+        unsigned int GetArrayCount() const;
+        IniValueArray operator[](int index) const;
 
         std::string_view GetName() const;
     };
