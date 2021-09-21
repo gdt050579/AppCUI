@@ -140,12 +140,14 @@ namespace Ini
     {
         ExpectingKeyOrSection,
         ExpectingEQ,
-        ExpectingValue
+        ExpectingValue,
+        ExpectingArray
     };
     struct Value
     {
         std::string KeyName;
         std::string KeyValue;
+        std::vector<std::string> KeyValues;
     };
     struct Section
     {
@@ -167,20 +169,24 @@ namespace Ini
         unsigned int CurrentKeyNameLen;
 
         inline void SkipSpaces();
+        inline void SkipArrayDelimiters();
         inline void SkipNewLine();
         inline void SkipWord();
         inline void SkipCurrentLine();
         inline bool SkipString(bool& multiLineFormat);
         inline void SkipSingleLineWord(BuffPtr& wordEnds);
+        inline void SkipArrayWord(BuffPtr& wordEnds);
 
         void SetError(const char*)
         {
         }
         bool AddSection(BuffPtr nameStart, BuffPtr nameEnd);
         bool AddValue(BuffPtr valueStart, BuffPtr valueEnd);
+        bool AddArrayValue(AppCUI::Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd);
         bool ParseState_ExpectingKeyOrSection();
         bool ParseState_ExpectingEQ();
         bool ParseState_ExpectingValue();
+        bool ParseState_ExpectingArray();
 
         bool Parse(BuffPtr bufferStart, BuffPtr bufferEnd);
         void Clear();
@@ -210,6 +216,21 @@ void AppCUI::Ini::Parser::SkipSpaces()
     while ((current < end) && (__char_type__[*current] == CHAR_TYPE_SPACE))
         current++;
 }
+void AppCUI::Ini::Parser::SkipArrayDelimiters()
+{
+    while ((current < end) &&
+           ((__char_type__[*current] == CHAR_TYPE_SPACE) || (__char_type__[*current] == CHAR_TYPE_NEW_LINE)))
+        current++;
+    if (current < end)
+    {
+        if ((*current) == ',')
+            current++;
+        // skip other spaces or new lines
+        while ((current < end) &&
+               ((__char_type__[*current] == CHAR_TYPE_SPACE) || (__char_type__[*current] == CHAR_TYPE_NEW_LINE)))
+            current++;
+    }
+}
 void AppCUI::Ini::Parser::SkipNewLine()
 {
     while ((current < end) && (__char_type__[*current] == CHAR_TYPE_NEW_LINE))
@@ -226,6 +247,23 @@ void AppCUI::Ini::Parser::SkipCurrentLine()
         current++;
 }
 void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
+{
+    // asume it starts with a valid character (not a space)
+    // we'll have to parse until we find a comment or a new line
+    // skip spaces from the end (word will be trimmed)
+    BuffPtr p_start = current;
+    while ((current < end) && (!(__char_type__[*current] & CHAR_TYPE_COMMENT_OR_NL)))
+        current++;
+    if (current < end)
+    {
+        // remove the ending spaces
+        wordEnds = current - 1;
+        while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
+            wordEnds--;
+        wordEnds++;
+    }
+}
+void AppCUI::Ini::Parser::SkipArrayWord(BuffPtr& wordEnds)
 {
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a comment or a new line
@@ -336,7 +374,12 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting '=' after a key !");
     PARSER_CHECK(__char_type__[*current] == CHAR_TYPE_EQ, false, "Expecting '=' after a key !");
     current++; // skip '=' character
-    state = ParseState::ExpectingValue;
+    SkipSpaces();
+    PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
+    if ((*current) == '[')
+        state = ParseState::ExpectingArray;
+    else
+        state = ParseState::ExpectingValue;
     return true;
 }
 bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
@@ -344,6 +387,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
     bool multiLineString;
     BuffPtr valueStart, valueEnd;
     SkipSpaces();
+    // sanity check
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
     switch (__char_type__[*current])
     {
@@ -372,6 +416,57 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
     default:
         SetError("Expecting a value (a string, a number, etc)");
         RETURNERROR(false, "Expecting a value (a string, a number, etc)");
+    }
+    return true;
+}
+bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
+{
+    bool multiLineString;
+    BuffPtr valueStart, valueEnd;
+    // it is assume that current points to a '[' character
+    current++;
+    // sanity check
+    PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '[' character !");
+    // all good --> create the value
+    auto& value       = CurrentSection->Keys[this->CurrentKeyHash];
+    value.KeyName     = std::string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
+    CurrentKeyNamePtr = nullptr;
+    CurrentKeyNameLen = 0;
+    // value is created and is empy
+    while (true)
+    {
+        switch (__char_type__[*current])
+        {
+        case CHAR_TYPE_STRING:
+            valueStart = current;
+            CHECK(SkipString(multiLineString), false, "Fail parsing a string buffer !");
+            if (multiLineString)
+            {
+                CHECK(AddArrayValue(value, valueStart + 3, current - 3), false, "Fail to add multi-line string");
+            }
+            else
+            {
+                CHECK(AddArrayValue(value, valueStart + 1, current - 1), false, "Fail to add single-line string");
+            }
+            SkipArrayDelimiters();
+            break;
+        case CHAR_TYPE_WORD:
+        case CHAR_TYPE_NUMBER:
+        case CHAR_TYPE_OTHER:
+            valueStart = current;
+            SkipArrayWord(valueEnd);
+            CHECK(AddArrayValue(value, valueStart, valueEnd), false, "Fail to add word value");
+            SkipArrayDelimiters();
+            break;
+        case CHAR_TYPE_SECTION_END:
+            current++;
+            state = ParseState::ExpectingKeyOrSection;
+            return true;
+        default:
+            SetError("Expecting a value (a string, a number, etc)");
+            RETURNERROR(false, "Expecting a value (a string, a number, etc)");
+        }
+        PARSER_CHECK(current < end, false, "Premature end of INI file: expecting ']' character !");
     }
     return true;
 }
@@ -408,6 +503,9 @@ bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
         case AppCUI::Ini::ParseState::ExpectingValue:
             CHECK(ParseState_ExpectingValue(), false, "");
             break;
+        case AppCUI::Ini::ParseState::ExpectingArray:
+            CHECK(ParseState_ExpectingArray(), false, "");
+            break;
         default:
             RETURNERROR(false, "Internal error -> state (%d) was not implemented", (unsigned int) state);
             break;
@@ -443,7 +541,13 @@ bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
     CurrentKeyNameLen = 0;
     return true;
 }
-
+bool AppCUI::Ini::Parser::AddArrayValue(AppCUI::Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd)
+{
+    CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
+    value.KeyValues.push_back(
+          std::string(std::string_view((const char*) valueStart, (unsigned int) (valueEnd - valueStart))));
+    return true;
+}
 //============================================================================= INI Section ===
 std::string_view IniSection::GetName() const
 {
