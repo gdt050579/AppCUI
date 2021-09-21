@@ -580,32 +580,10 @@ std::vector<IniValue> IniSection::GetValues() const
     return res;
 }
 //============================================================================= INI Value ===
-std::optional<unsigned long long> IniValue::AsUInt64() const
+
+std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
 {
-    VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt64(static_cast<std::string_view>(value->KeyValue));
-}
-std::optional<long long> IniValue::AsInt64() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt64(static_cast<std::string_view>(value->KeyValue));
-}
-std::optional<unsigned int> IniValue::AsUInt32() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt32(static_cast<std::string_view>(value->KeyValue));
-}
-std::optional<int> IniValue::AsInt32() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt32(static_cast<std::string_view>(value->KeyValue));
-}
-std::optional<bool> IniValue::AsBool() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    auto len = (unsigned int) value->KeyValue.length();
-    auto txt = value->KeyValue.c_str();
-    auto v   = 0U;
+    auto v = 0U;    
     switch (len)
     {
     case 1:
@@ -642,35 +620,14 @@ std::optional<bool> IniValue::AsBool() const
     default:
         break;
     }
-    RETURNERROR(
-          std::nullopt,
-          "Key value (%s) can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+    RETURNERROR(std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-std::optional<AppCUI::Input::Key> IniValue::AsKey() const
+std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
 {
-    VALIDATE_VALUE(std::nullopt);
-    Key k = KeyUtils::FromString((static_cast<std::string_view>(value->KeyValue)));
-    if (k == Key::None)
-        return std::nullopt;
-    return k;
-}
-std::optional<const char*> IniValue::AsString() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    return value->KeyValue.c_str();
-}
-std::optional<std::string_view> IniValue::AsStringView() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    return static_cast<std::string_view>(value->KeyValue);
-}
-std::optional<Graphics::Size> IniValue::AsSize() const
-{
-    VALIDATE_VALUE(std::nullopt);
-    const char* start = value->KeyValue.c_str();
-    const char* end   = start + value->KeyValue.size();
+    const char* start = txt;
+    const char* end   = start + len;
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(value->KeyValue.size() >= 3,
+    CHECK(len >= 3,
           std::nullopt,
           "Value (%s) is too small (expecting at least 3 chars <width>x<height>",
           start);
@@ -701,6 +658,56 @@ std::optional<Graphics::Size> IniValue::AsSize() const
     CHECK(width > 0, std::nullopt, "Width must be bigger than 0");
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
     return AppCUI::Graphics::Size(width, height);
+}
+
+
+std::optional<unsigned long long> IniValue::AsUInt64() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToUInt64(static_cast<std::string_view>(value->KeyValue));
+}
+std::optional<long long> IniValue::AsInt64() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToInt64(static_cast<std::string_view>(value->KeyValue));
+}
+std::optional<unsigned int> IniValue::AsUInt32() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToUInt32(static_cast<std::string_view>(value->KeyValue));
+}
+std::optional<int> IniValue::AsInt32() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return Number::ToInt32(static_cast<std::string_view>(value->KeyValue));
+}
+std::optional<bool> IniValue::AsBool() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return IniValue_ToBool(value->KeyValue.c_str(), (unsigned int) value->KeyValue.length());
+}
+std::optional<AppCUI::Input::Key> IniValue::AsKey() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    Key k = KeyUtils::FromString((static_cast<std::string_view>(value->KeyValue)));
+    if (k == Key::None)
+        return std::nullopt;
+    return k;
+}
+std::optional<const char*> IniValue::AsString() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return value->KeyValue.c_str();
+}
+std::optional<std::string_view> IniValue::AsStringView() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return static_cast<std::string_view>(value->KeyValue);
+}
+std::optional<Graphics::Size> IniValue::AsSize() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return IniValue_ToSize(value->KeyValue.c_str(), (unsigned int) value->KeyValue.size());
 }
 std::optional<float> IniValue::AsFloat() const
 {
@@ -798,10 +805,155 @@ double IniValue::ToDouble(double defaultValue) const
     else
         return defaultValue;
 }
+
 std::string_view IniValue::GetName() const
 {
     VALIDATE_VALUE(std::string_view());
     return (static_cast<std::string_view>(value->KeyName));
+}
+
+bool IniValue::IsArray() const
+{
+    VALIDATE_VALUE(false);
+    return value->KeyValues.size() > 0;
+}
+unsigned int IniValue::GetArrayCount() const
+{
+    VALIDATE_VALUE(0);
+    return value->KeyValues.size();
+}
+IniValueArray IniValue::operator[](int index) const
+{
+    VALIDATE_VALUE(IniValueArray());
+    if ((index < 0) || (index >= value->KeyValues.size()))
+        return IniValueArray();
+
+    return IniValueArray((std::string_view) value->KeyValues[index]);
+}
+//============================================================================= INI Array Value ===
+std::optional<unsigned long long> IniValueArray::AsUInt64() const
+{
+    return Number::ToUInt64(std::string_view(text,len));
+}
+std::optional<long long> IniValueArray::AsInt64() const
+{
+    return Number::ToInt64(std::string_view(text, len));
+}
+std::optional<unsigned int> IniValueArray::AsUInt32() const
+{
+    return Number::ToUInt32(std::string_view(text, len));
+}
+std::optional<int> IniValueArray::AsInt32() const
+{
+    return Number::ToInt32(std::string_view(text, len));
+}
+std::optional<bool> IniValueArray::AsBool() const
+{
+    return IniValue_ToBool(text,len);
+}
+std::optional<AppCUI::Input::Key> IniValueArray::AsKey() const
+{
+    Key k = KeyUtils::FromString(std::string_view(text, len));
+    if (k == Key::None)
+        return std::nullopt;
+    return k;
+}
+std::optional<Graphics::Size> IniValueArray::AsSize() const
+{
+    return IniValue_ToSize(text, len);
+}
+std::optional<float> IniValueArray::AsFloat() const
+{
+    return Number::ToFloat(std::string_view(text, len));
+}
+std::optional<double> IniValueArray::AsDouble() const
+{    
+    return Number::ToDouble(std::string_view(text, len));
+}
+
+unsigned long long IniValueArray::ToUInt64(unsigned long long defaultValue) const
+{
+    auto result = this->AsUInt64();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+unsigned int IniValueArray::ToUInt32(unsigned int defaultValue) const
+{
+    auto result = this->AsUInt32();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+long long IniValueArray::ToInt64(long long defaultValue) const
+{
+    auto result = this->AsInt64();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+int IniValueArray::ToInt32(int defaultValue) const
+{
+    auto result = this->AsInt32();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+bool IniValueArray::ToBool(bool defaultValue) const
+{
+    auto result = this->AsBool();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+AppCUI::Input::Key IniValueArray::ToKey(AppCUI::Input::Key defaultValue) const
+{
+    auto result = this->AsKey();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+const char* IniValueArray::ToString(const char* defaultValue) const
+{
+    return text;
+}
+std::string_view IniValueArray::ToStringView(std::string_view defaultValue) const
+{
+    auto result = this->AsStringView();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+AppCUI::Graphics::Size IniValueArray::ToSize(AppCUI::Graphics::Size defaultValue) const
+{
+    auto result = this->AsSize();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+float IniValueArray::ToFloat(float defaultValue) const
+{
+    auto result = this->AsFloat();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
+}
+double IniValueArray::ToDouble(double defaultValue) const
+{
+    auto result = this->AsDouble();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultValue;
 }
 //============================================================================= INI Object ===
 IniObject::IniObject()

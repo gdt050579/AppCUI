@@ -27,6 +27,9 @@ MultiLineString = """
 Shortcut = Ctrl+Alt+F5
 hexBuffer = hex:"00 20 FF 30"
 
+[Arrays]
+primeNumbers = [1,2,3,5,7,11,13,17,19]
+
 )INI";
 
 int main()
@@ -80,5 +83,7 @@ int main()
     }
 
     LOG_INFO("Hex buffer: %s", ini.GetSection("Strings").GetValue("hexBuffer").ToStringView().data());
+
+    LOG_INFO("Prime nubers: %d", ini.GetSection("Arrays").GetValue("primeNumbers").GetArrayCount());
     return 0;
 }
