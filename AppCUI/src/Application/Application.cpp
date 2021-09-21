@@ -238,7 +238,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     {
         for (unsigned int tr = 1; tr < cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
-        if ((idx >= 0) && (idx < Members->ControlsCount))
+        if ((idx >= 0) && (idx < cnt))
             PaintControl(Members->Controls[idx], renderer, true);
     }
 }

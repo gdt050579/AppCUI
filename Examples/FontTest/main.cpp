@@ -25,9 +25,9 @@ struct HexViewUserControl : public UserControl
     void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
-        constexpr ColorPair textColor  = ColorPair{ Color::White, Color::Transparent };
-        const std::uint64_t height     = GetHeight();
-        const std::uint64_t width      = GetWidth();
+        constexpr ColorPair textColor = ColorPair{ Color::White, Color::Transparent };
+        const std::uint64_t height    = GetHeight();
+        const std::uint64_t width     = GetWidth();
 
         for (int i = 0; i < 256; i++)
         {
@@ -64,8 +64,8 @@ class FontTest : public AppCUI::Controls::Window
   public:
     FontTest()
     {
-        this->Create("FontTest", "w:100%,h:100%");
-        hexView.Create(this, "w:100%,h:100%");
+        this->Create("FontTest", "x:0,y:0,w:100%,h:100%");
+        hexView.Create(this, "x:0,y:0,w:100%,h:100%");
     }
 
     bool OnEvent(Control* /*sender*/, Event eventType, int) override
@@ -81,7 +81,7 @@ class FontTest : public AppCUI::Controls::Window
 
 int main()
 {
-    if (!Application::Init(InitializationFlags::CommandBar))
+    if (!Application::Init())
         return 1;
     Application::AddWindow(std::make_unique<FontTest>());
     Application::Run();

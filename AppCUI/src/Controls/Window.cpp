@@ -7,6 +7,7 @@ using namespace AppCUI::Input;
 
 constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
 constexpr unsigned int MAX_TAG_CHARS       = 8U;
+const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
 {
@@ -1068,9 +1069,7 @@ void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils:
 }
 const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
 {
-    static CharacterBuffer cb{};
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, cb);
-
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
     // find tag win button
     for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
     {
@@ -1080,7 +1079,7 @@ const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
         }
     }
 
-    return cb;
+    return tempReferenceChBuf;
 }
 
 bool Window::Exit(int dialogResult)
@@ -1129,4 +1128,3 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
-
