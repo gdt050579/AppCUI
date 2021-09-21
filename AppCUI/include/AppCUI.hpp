@@ -848,6 +848,11 @@ namespace Utils
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
 
+        inline bool HasValue() const
+        {
+            return text != nullptr;
+        }
+
     };
     class EXPORT IniValue
     {
@@ -888,6 +893,11 @@ namespace Utils
         IniValueArray operator[](int index) const;
 
         std::string_view GetName() const;
+
+        inline bool HasValue() const
+        {
+            return Data != nullptr;
+        }
     };
     class EXPORT IniSection
     {
