@@ -17,10 +17,13 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
     return true;
 }
 
-void Tree::RecursiveItemPainting(Graphics::Renderer& renderer, const ItemHandle ih, WriteTextParams& wtp) const
+void Tree::RecursiveItemPainting(
+      Graphics::Renderer& renderer, const ItemHandle ih, WriteTextParams& wtp, const unsigned int offset) const
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    wtp.X += offset;
 
     for (const auto& it : cc->items)
     {
@@ -28,29 +31,58 @@ void Tree::RecursiveItemPainting(Graphics::Renderer& renderer, const ItemHandle 
 
         if (item.parent == ih)
         {
+            // TODO: remove constants and create functions
             if (IsExpandable(item.handle))
             {
                 if (cc->view[item.handle].expanded)
                 {
+                    wtp.Color = cc->colorText;
+                    renderer.WriteText(cc->openBracket, wtp);
+                    wtp.X += 2;
+
                     wtp.Color = cc->colorMinus;
                     renderer.WriteText(cc->minus, wtp);
+                    wtp.X += 2;
+
+                    wtp.Color = cc->colorText;
+                    renderer.WriteText(cc->closeBracket, wtp);
+                    wtp.X += 2;
                 }
                 else
                 {
+                    wtp.Color = cc->colorText;
+                    renderer.WriteText(cc->openBracket, wtp);
+                    wtp.X += 2;
+
                     wtp.Color = cc->colorPlus;
                     renderer.WriteText(cc->plus, wtp);
+                    wtp.X += 2;
+
+                    wtp.Color = cc->colorText;
+                    renderer.WriteText(cc->closeBracket, wtp);
+                    wtp.X += 2;
                 }
             }
             else
             {
+                wtp.Color = cc->colorText;
+                renderer.WriteText(cc->openBracket, wtp);
+                wtp.X += 2;
+
                 wtp.Color = cc->colorNothing;
                 renderer.WriteText(cc->nothing, wtp);
+                wtp.X += 2;
+
+                wtp.Color = cc->colorText;
+                renderer.WriteText(cc->closeBracket, wtp);
+                wtp.X += 2;
             }
 
-            wtp.X += 4;
             wtp.Color = cc->colorText;
 
             renderer.WriteText(item.value, wtp);
+
+            wtp.X -= cc->offset;
 
             wtp.Y++;
 
@@ -58,11 +90,13 @@ void Tree::RecursiveItemPainting(Graphics::Renderer& renderer, const ItemHandle 
             {
                 if (cc->view[item.handle].expanded)
                 {
-                    RecursiveItemPainting(renderer, item.handle, wtp);
+                    RecursiveItemPainting(renderer, item.handle, wtp, cc->offset);
                 }
             }
         }
     }
+
+    wtp.X -= offset;
 }
 
 void Tree::Paint(Graphics::Renderer& renderer)
@@ -77,7 +111,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
     wtp.Y     = 0;
     wtp.Width = cc->Layout.Width;
 
-    RecursiveItemPainting(renderer, InvalidItemHandle, wtp);
+    RecursiveItemPainting(renderer, InvalidItemHandle, wtp, 0);
 }
 
 bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)

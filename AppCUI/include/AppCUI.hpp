@@ -2342,7 +2342,11 @@ namespace Controls
       private:
         const ItemHandle GetHandleForNewItem() const;
         bool IsExpandable(const ItemHandle handle) const;
-        void RecursiveItemPainting(Graphics::Renderer& renderer, const ItemHandle ih, AppCUI::Graphics::WriteTextParams& wtp) const;
+        void RecursiveItemPainting(
+              Graphics::Renderer& renderer,
+              const ItemHandle ih,
+              AppCUI::Graphics::WriteTextParams& wtp,
+              const unsigned int offset) const;
     };
 
 }; // namespace Controls

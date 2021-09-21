@@ -594,13 +594,16 @@ class TreeControlContext : public ControlContext
     ItemHandle nextItemHandle{ 1ULL };
 
     // TODO: move these (context, cfg, etc)
-    const char* plus             = " + ";
-    const char* minus            = " - ";
-    const char* nothing          = " * ";
-    const ColorPair colorPlus    = ColorPair{ Color::Green, Color::White };
-    const ColorPair colorMinus   = ColorPair{ Color::Red, Color::White };
-    const ColorPair colorNothing = ColorPair{ Color::Black, Color::White };
-    const ColorPair colorText    = ColorPair{ Color::White, Color::Black };
+    const char* plus             = "+";
+    const char* minus            = "-";
+    const char* nothing          = "*";
+    const char* openBracket      = "[";
+    const char* closeBracket     = "]";
+    const unsigned int offset    = 6;
+    const ColorPair colorPlus    = ColorPair{ Color::Green, Color::Transparent };
+    const ColorPair colorMinus   = ColorPair{ Color::Red, Color::Transparent };
+    const ColorPair colorNothing = ColorPair{ Color::Black, Color::Transparent };
+    const ColorPair colorText    = ColorPair{ Color::White, Color::Transparent };
     const ColorPair colorBorder  = ColorPair{ Color::Transparent, Color::White };
 };
 
