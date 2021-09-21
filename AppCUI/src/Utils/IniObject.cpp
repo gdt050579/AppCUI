@@ -44,7 +44,7 @@ using BuffPtr = const unsigned char*;
         RETURNERROR(returnValue, errorMessage);                                                                        \
     }
 
-const unsigned char __lower_case_table_for_hashing__[256] = {
+const unsigned char Ini_LoweCaseTable[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -58,7 +58,7 @@ const unsigned char __lower_case_table_for_hashing__[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-unsigned char __char_type__[256] = {
+unsigned char Ini_Char_Type[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
@@ -200,7 +200,7 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
     unsigned long long hash = 0xcbf29ce484222325ULL;
     while (p_start < p_end)
     {
-        hash = hash ^ (__lower_case_table_for_hashing__[*p_start]);
+        hash = hash ^ (Ini_LoweCaseTable[*p_start]);
         hash = hash * 0x00000100000001B3ULL;
         p_start++;
     }
@@ -213,13 +213,13 @@ unsigned long long __compute_hash__(std::string_view text)
 
 void AppCUI::Ini::Parser::SkipSpaces()
 {
-    while ((current < end) && (__char_type__[*current] == CHAR_TYPE_SPACE))
+    while ((current < end) && (Ini_Char_Type[*current] == CHAR_TYPE_SPACE))
         current++;
 }
 void AppCUI::Ini::Parser::SkipArrayDelimiters()
 {
     while ((current < end) &&
-           ((__char_type__[*current] == CHAR_TYPE_SPACE) || (__char_type__[*current] == CHAR_TYPE_NEW_LINE)))
+           ((Ini_Char_Type[*current] == CHAR_TYPE_SPACE) || (Ini_Char_Type[*current] == CHAR_TYPE_NEW_LINE)))
         current++;
     if (current < end)
     {
@@ -227,23 +227,23 @@ void AppCUI::Ini::Parser::SkipArrayDelimiters()
             current++;
         // skip other spaces or new lines
         while ((current < end) &&
-               ((__char_type__[*current] == CHAR_TYPE_SPACE) || (__char_type__[*current] == CHAR_TYPE_NEW_LINE)))
+               ((Ini_Char_Type[*current] == CHAR_TYPE_SPACE) || (Ini_Char_Type[*current] == CHAR_TYPE_NEW_LINE)))
             current++;
     }
 }
 void AppCUI::Ini::Parser::SkipNewLine()
 {
-    while ((current < end) && (__char_type__[*current] == CHAR_TYPE_NEW_LINE))
+    while ((current < end) && (Ini_Char_Type[*current] == CHAR_TYPE_NEW_LINE))
         current++;
 }
 void AppCUI::Ini::Parser::SkipWord()
 {
-    while ((current < end) && (__char_type__[*current] & CHAR_TYPE_WORD_OR_NUMBER))
+    while ((current < end) && (Ini_Char_Type[*current] & CHAR_TYPE_WORD_OR_NUMBER))
         current++;
 }
 void AppCUI::Ini::Parser::SkipCurrentLine()
 {
-    while ((current < end) && (__char_type__[*current] != CHAR_TYPE_NEW_LINE))
+    while ((current < end) && (Ini_Char_Type[*current] != CHAR_TYPE_NEW_LINE))
         current++;
 }
 void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
@@ -252,13 +252,13 @@ void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
     // we'll have to parse until we find a comment or a new line
     // skip spaces from the end (word will be trimmed)
     BuffPtr p_start = current;
-    while ((current < end) && (!(__char_type__[*current] & CHAR_TYPE_COMMENT_OR_NL)))
+    while ((current < end) && (!(Ini_Char_Type[*current] & CHAR_TYPE_COMMENT_OR_NL)))
         current++;
     if (current < end)
     {
         // remove the ending spaces
         wordEnds = current - 1;
-        while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
+        while ((wordEnds > p_start) && (Ini_Char_Type[*wordEnds] == CHAR_TYPE_SPACE))
             wordEnds--;
         wordEnds++;
     }
@@ -269,7 +269,7 @@ void AppCUI::Ini::Parser::SkipArrayWord()
     // we'll have to parse until we find a space, a terminator or a new line
     
     BuffPtr p_start = current;
-    while (current < end) { auto type = __char_type__[*current];
+    while (current < end) { auto type = Ini_Char_Type[*current];
         if ((type == CHAR_TYPE_SPACE) || (type == CHAR_TYPE_NEW_LINE) || (type == CHAR_TYPE_SECTION_END))
             break;
         if ((*current) == ',')
@@ -305,7 +305,7 @@ bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
     else
     {
         current++;
-        while ((current < end) && ((*current) != currentChar) && (__char_type__[*current] != CHAR_TYPE_NEW_LINE))
+        while ((current < end) && ((*current) != currentChar) && (Ini_Char_Type[*current] != CHAR_TYPE_NEW_LINE))
             current++;
         PARSER_CHECK((current < end) && ((*current) == currentChar), false, "Premature end of a string !");
         current++;
@@ -318,7 +318,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
 
     while (current < end)
     {
-        switch (__char_type__[*current])
+        switch (Ini_Char_Type[*current])
         {
         case CHAR_TYPE_SPACE:
             SkipSpaces();
@@ -334,7 +334,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
             SkipSpaces();
             PARSER_CHECK(current < end, false, "Premature end of INI section!");
             PARSER_CHECK(
-                  __char_type__[*current] == CHAR_TYPE_WORD,
+                  Ini_Char_Type[*current] == CHAR_TYPE_WORD,
                   false,
                   "Expecting a valid name for a section (should start with a letter and be followed by letters, "
                   "number, underline or point)");
@@ -343,7 +343,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
             nameEnd = current;
             SkipSpaces();
             PARSER_CHECK(current < end, false, "Premature end of INI section!");
-            PARSER_CHECK(__char_type__[*current] == CHAR_TYPE_SECTION_END, false, "Expecting a section delimiter ']'");
+            PARSER_CHECK(Ini_Char_Type[*current] == CHAR_TYPE_SECTION_END, false, "Expecting a section delimiter ']'");
             current++;
             // all good - we have a section name ==> add-it to the map
             return AddSection(nameStart, nameEnd);
@@ -369,7 +369,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
 {
     SkipSpaces();
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting '=' after a key !");
-    PARSER_CHECK(__char_type__[*current] == CHAR_TYPE_EQ, false, "Expecting '=' after a key !");
+    PARSER_CHECK(Ini_Char_Type[*current] == CHAR_TYPE_EQ, false, "Expecting '=' after a key !");
     current++; // skip '=' character
     SkipSpaces();
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
@@ -386,7 +386,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
     SkipSpaces();
     // sanity check
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '=' character !");
-    switch (__char_type__[*current])
+    switch (Ini_Char_Type[*current])
     {
     case CHAR_TYPE_STRING:
         valueStart = current;
@@ -432,7 +432,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
     // value is created and is empy
     while (true)
     {
-        switch (__char_type__[*current])
+        switch (Ini_Char_Type[*current])
         {
         case CHAR_TYPE_STRING:
             valueStart = current;
