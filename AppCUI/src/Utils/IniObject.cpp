@@ -125,6 +125,13 @@ unsigned char __char_type__[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER
 };
 
+constexpr unsigned int INI_VALUE_ON    = 0x6E6FU;
+constexpr unsigned int INI_VALUE_OFF   = 0x66666FU;
+constexpr unsigned int INI_VALUE_YES   = 0x736579U;
+constexpr unsigned int INI_VALUE_NO    = 0x6F6EU;
+constexpr unsigned int INI_VALUE_TRUE  = 0x65757274U;
+constexpr unsigned int INI_VALUE_FALSE = 0x736C6166;
+
 namespace AppCUI
 {
 namespace Ini
@@ -137,8 +144,8 @@ namespace Ini
     };
     struct Value
     {
-        AppCUI::Utils::String KeyName;
-        AppCUI::Utils::String KeyValue;
+        std::string KeyName;
+        std::string KeyValue;
     };
     struct Section
     {
@@ -429,13 +436,9 @@ bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 {
     CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
-    auto& value = CurrentSection->Keys[this->CurrentKeyHash];
-    CHECK(value.KeyValue.Set((const char*) valueStart, (unsigned int) (valueEnd - valueStart)),
-          false,
-          "Fail to add key-value pair (value)");
-    CHECK(value.KeyName.Set((const char*) CurrentKeyNamePtr, CurrentKeyNameLen),
-          false,
-          "Fail to add key-value pair (name)");
+    auto& value       = CurrentSection->Keys[this->CurrentKeyHash];
+    value.KeyValue    = std::string_view((const char*) valueStart, (unsigned int) (valueEnd - valueStart));
+    value.KeyName     = std::string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
     CurrentKeyNamePtr = nullptr;
     CurrentKeyNameLen = 0;
     return true;
@@ -465,7 +468,7 @@ std::vector<IniValue> IniSection::GetValues() const
     auto sect = ((AppCUI::Ini::Section*) Data);
 
     res.reserve(sect->Keys.size());
-    for (auto&v: sect->Keys)
+    for (auto& v : sect->Keys)
     {
         res.push_back(IniValue(&v.second));
     }
@@ -476,53 +479,60 @@ std::vector<IniValue> IniSection::GetValues() const
 std::optional<unsigned long long> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt64(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToUInt64(static_cast<std::string_view>(value->KeyValue));
 }
 std::optional<long long> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt64(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToInt64(static_cast<std::string_view>(value->KeyValue));
 }
 std::optional<unsigned int> IniValue::AsUInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToUInt32(static_cast<std::string_view>(value->KeyValue));
 }
 std::optional<int> IniValue::AsInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt32(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToInt32(static_cast<std::string_view>(value->KeyValue));
 }
 std::optional<bool> IniValue::AsBool() const
 {
     VALIDATE_VALUE(std::nullopt);
-    unsigned int len = value->KeyValue.Len();
+    auto len = (unsigned int) value->KeyValue.length();
+    auto txt = value->KeyValue.c_str();
+    auto v   = 0U;
     switch (len)
     {
     case 1:
-        if ((*(value->KeyValue.GetText())) == '1')
+        if ((*txt) == '1')
             return true;
-        if ((*(value->KeyValue.GetText())) == '0')
+        if ((*txt) == '0')
             return false;
         break;
     case 2:
-        if (value->KeyValue.Equals("on", true))
+        v = (*((const unsigned short*) txt)) | 0x2020;
+        if (v == INI_VALUE_ON)
             return true;
-        if (value->KeyValue.Equals("no", true))
+        if (v == INI_VALUE_NO)
             return false;
         break;
     case 3:
-        if (value->KeyValue.Equals("yes", true))
+        // in fact there are 4 bytes (3 for the text followed by 0)
+        v = (*((const unsigned int*) txt)) | 0x202020;
+        if (v == INI_VALUE_YES)
             return true;
-        if (value->KeyValue.Equals("off", true))
+        if (v == INI_VALUE_OFF)
             return false;
         break;
     case 4:
-        if (value->KeyValue.Equals("true", true))
+        v = (*((const unsigned int*) txt)) | 0x20202020;
+        if (v == INI_VALUE_TRUE)
             return true;
         break;
     case 5:
-        if (value->KeyValue.Equals("false", true))
+        v = (*((const unsigned int*) txt)) | 0x20202020;
+        if ((v == INI_VALUE_FALSE) && ((txt[4] | 0x20) == 'e'))
             return false;
         break;
     default:
@@ -535,7 +545,7 @@ std::optional<bool> IniValue::AsBool() const
 std::optional<AppCUI::Input::Key> IniValue::AsKey() const
 {
     VALIDATE_VALUE(std::nullopt);
-    Key k = KeyUtils::FromString(std::string_view{ value->KeyValue.GetText(), value->KeyValue.Len() });
+    Key k = KeyUtils::FromString((static_cast<std::string_view>(value->KeyValue)));
     if (k == Key::None)
         return std::nullopt;
     return k;
@@ -543,20 +553,20 @@ std::optional<AppCUI::Input::Key> IniValue::AsKey() const
 std::optional<const char*> IniValue::AsString() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return value->KeyValue.GetText();
+    return value->KeyValue.c_str();
 }
 std::optional<std::string_view> IniValue::AsStringView() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return std::string_view(value->KeyValue.GetText(), value->KeyValue.Len());
+    return static_cast<std::string_view>(value->KeyValue);
 }
 std::optional<Graphics::Size> IniValue::AsSize() const
 {
     VALIDATE_VALUE(std::nullopt);
-    const char* start = value->KeyValue.GetText();
-    const char* end   = start + value->KeyValue.Len();
+    const char* start = value->KeyValue.c_str();
+    const char* end   = start + value->KeyValue.size();
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(value->KeyValue.Len() >= 3,
+    CHECK(value->KeyValue.size() >= 3,
           std::nullopt,
           "Value (%s) is too small (expecting at least 3 chars <width>x<height>",
           start);
@@ -591,12 +601,12 @@ std::optional<Graphics::Size> IniValue::AsSize() const
 std::optional<float> IniValue::AsFloat() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToFloat(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToFloat((static_cast<std::string_view>(value->KeyValue)));
 }
 std::optional<double> IniValue::AsDouble() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToDouble(std::string(value->KeyValue.GetText(), value->KeyValue.Len()));
+    return Number::ToDouble((static_cast<std::string_view>(value->KeyValue)));
 }
 
 unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
@@ -650,7 +660,7 @@ AppCUI::Input::Key IniValue::ToKey(AppCUI::Input::Key defaultValue) const
 const char* IniValue::ToString(const char* defaultValue) const
 {
     VALIDATE_VALUE(defaultValue);
-    return value->KeyValue.GetText();
+    return value->KeyValue.c_str();
 }
 std::string_view IniValue::ToStringView(std::string_view defaultValue) const
 {
@@ -687,7 +697,7 @@ double IniValue::ToDouble(double defaultValue) const
 std::string_view IniValue::GetName() const
 {
     VALIDATE_VALUE(std::string_view());
-    return std::string_view(value->KeyName.GetText(), value->KeyName.Len());
+    return (static_cast<std::string_view>(value->KeyName));
 }
 //============================================================================= INI Object ===
 IniObject::IniObject()
@@ -718,7 +728,7 @@ bool IniObject::CreateFromString(std::string_view text)
     CHECK(WRAPPER->Parse(start, end), false, "Fail to parser buffer !");
     return true;
 }
-bool IniObject::CreateFromFile(const std::filesystem::path & fileName)
+bool IniObject::CreateFromFile(const std::filesystem::path& fileName)
 {
     AppCUI::OS::File f;
     unsigned int bufferSize;
@@ -759,7 +769,7 @@ std::vector<IniSection> IniObject::GetSections() const
     VALIDATE_INITED(std::vector<IniSection>());
     std::vector<IniSection> res;
     res.reserve(WRAPPER->Sections.size());
-    for (auto & s : WRAPPER->Sections)
+    for (auto& s : WRAPPER->Sections)
         res.push_back(IniSection(s.second.get()));
     return res;
 }
