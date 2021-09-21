@@ -84,6 +84,11 @@ int main()
 
     LOG_INFO("Hex buffer: %s", ini.GetSection("Strings").GetValue("hexBuffer").ToStringView().data());
 
-    LOG_INFO("Prime nubers: %d", ini.GetSection("Arrays").GetValue("primeNumbers").GetArrayCount());
+    auto av = ini.GetSection("Arrays").GetValue("primeNumbers");
+    LOG_INFO("Prime nubers: %d", av.GetArrayCount());
+    for (unsigned int tr = 0; tr < av.GetArrayCount();tr++)
+    {
+        LOG_INFO(" - %d", av[tr].ToUInt32());
+    }
     return 0;
 }

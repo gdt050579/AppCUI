@@ -175,7 +175,7 @@ namespace Ini
         inline void SkipCurrentLine();
         inline bool SkipString(bool& multiLineFormat);
         inline void SkipSingleLineWord(BuffPtr& wordEnds);
-        inline void SkipArrayWord(BuffPtr& wordEnds);
+        inline void SkipArrayWord();
 
         void SetError(const char*)
         {
@@ -263,21 +263,18 @@ void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
         wordEnds++;
     }
 }
-void AppCUI::Ini::Parser::SkipArrayWord(BuffPtr& wordEnds)
+void AppCUI::Ini::Parser::SkipArrayWord()
 {
     // asume it starts with a valid character (not a space)
-    // we'll have to parse until we find a comment or a new line
-    // skip spaces from the end (word will be trimmed)
+    // we'll have to parse until we find a space, a terminator or a new line
+    
     BuffPtr p_start = current;
-    while ((current < end) && (!(__char_type__[*current] & CHAR_TYPE_COMMENT_OR_NL)))
+    while (current < end) { auto type = __char_type__[*current];
+        if ((type == CHAR_TYPE_SPACE) || (type == CHAR_TYPE_NEW_LINE) || (type == CHAR_TYPE_SECTION_END))
+            break;
+        if ((*current) == ',')
+            break;
         current++;
-    if (current < end)
-    {
-        // remove the ending spaces
-        wordEnds = current - 1;
-        while ((wordEnds > p_start) && (__char_type__[*wordEnds] == CHAR_TYPE_SPACE))
-            wordEnds--;
-        wordEnds++;
     }
 }
 bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
@@ -422,7 +419,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
 bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
 {
     bool multiLineString;
-    BuffPtr valueStart, valueEnd;
+    BuffPtr valueStart;
     // it is assume that current points to a '[' character
     current++;
     // sanity check
@@ -454,8 +451,8 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
         case CHAR_TYPE_NUMBER:
         case CHAR_TYPE_OTHER:
             valueStart = current;
-            SkipArrayWord(valueEnd);
-            CHECK(AddArrayValue(value, valueStart, valueEnd), false, "Fail to add word value");
+            SkipArrayWord();
+            CHECK(AddArrayValue(value, valueStart, current), false, "Fail to add word value");
             SkipArrayDelimiters();
             break;
         case CHAR_TYPE_SECTION_END:
@@ -820,7 +817,7 @@ bool IniValue::IsArray() const
 unsigned int IniValue::GetArrayCount() const
 {
     VALIDATE_VALUE(0);
-    return value->KeyValues.size();
+    return (unsigned int)value->KeyValues.size();
 }
 IniValueArray IniValue::operator[](int index) const
 {
