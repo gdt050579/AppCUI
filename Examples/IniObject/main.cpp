@@ -25,6 +25,7 @@ MultiLineString = """
     Example
 """
 Shortcut = Ctrl+Alt+F5
+hexBuffer = hex:"00 20 FF 30"
 
 )INI";
 
@@ -77,5 +78,7 @@ int main()
     {
         LOG_INFO("- %s = %s", v.GetName().data(), v.AsString().value());    
     }
+
+    LOG_INFO("Hex buffer: %s", ini.GetSection("Strings").GetValue("hexBuffer").ToStringView().data());
     return 0;
 }
