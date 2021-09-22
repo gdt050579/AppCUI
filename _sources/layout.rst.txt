@@ -229,20 +229,21 @@ However, ``width`` parameter should be specified (if not specified it will be de
 ****************
 
 When using 3 of the 4 anchors, the following keys can not be used: ``x``, ``y``, ``align`` and ``dock``. Using them will reject the layout.
-Depending on the achors that are being used, either ``width`` or ``height`` are forbidden. 
 The following table reflects these dependencies:
 
-+----------------------------------------+------------------------------------------+
-| Combination                            | Result                                   |
-+========================================+==========================================+
-| **left** and **top** and **right**     | ``height`` is required                   |
-|                                        |                                          |
-| **left** and **bottom** and **right**  | ``width`` = parentWidth - (left+right)   |
-+----------------------------------------+------------------------------------------+
-| **top** and **left** and **bottom**    | ``width`` is required                    |
-|                                        |                                          |
-| **top** and **right** and **bottom**   | ``height`` = parentHeight - (top+bottom) |
-+----------------------------------------+------------------------------------------+
++----------------------------------------+---------------------------------------------+
+| Combination                            | Result                                      |
++========================================+=============================================+
+| **left** and **top** and **right**     | ``height`` optional (see remarks)           |
+|                                        |                                             |
+| **left** and **bottom** and **right**  | ``width`` = parentWidth - (left+right)      |
++----------------------------------------+---------------------------------------------+
+| **top** and **left** and **bottom**    | ``width`` optional (see remarks)            |
+|                                        |                                             |
+| **top** and **right** and **bottom**   | ``height`` = parentHeight - (top+bottom)    |
++----------------------------------------+---------------------------------------------+
+
+**Remarks** if ``height`` or ``width`` are not present and can not be computed as a different betweem two margins, they are defaulted to value 1. If limits are present (min Width or min Height) those limits are applied. This is usually usefull for controls that have a fixed width or height (e.g. a button, a combobox).
 
 The position of the control is also computed based on the combination of the 3 anchors selectd, as shown in the next table:
 
