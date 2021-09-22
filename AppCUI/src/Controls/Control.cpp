@@ -831,10 +831,10 @@ bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
 {
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
           false,
-          "When (left,top,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
-    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
-          false,
-          "When (left,top,right) parameters are used together, height parameter must also be specified");
+          "When (left,top,right) parameters are used together, 'X', 'Y' and 'A' parameters can not be used");
+
+    if (!(inf.flags & LAYOUT_FLAG_HEIGHT))
+        inf.height = { 1, LayoutValueType::CharacterOffset };
 
     this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
     this->Layout.Format.AnchorLeft   = inf.a_left;
@@ -848,10 +848,10 @@ bool ControlContext::ProcessLBRAnchors(LayoutInformation& inf)
 {
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
           false,
-          "When (left,bottom,right) parameters are used together, 'X', 'Y' 'A' and 'W' parameters can not be used");
-    CHECK(inf.flags & LAYOUT_FLAG_HEIGHT,
-          false,
-          "When (left,bottom,right) parameters are used together, height parameter must also be specified");
+          "When (left,bottom,right) parameters are used together, 'X', 'Y' and 'A' parameters can not be used");
+    
+    if (!(inf.flags & LAYOUT_FLAG_HEIGHT))
+        inf.height = { 1, LayoutValueType::CharacterOffset };
 
     this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftBottomRightAnchorsAndHeight;
     this->Layout.Format.AnchorLeft   = inf.a_left;
@@ -865,10 +865,10 @@ bool ControlContext::ProcessTLBAnchors(LayoutInformation& inf)
 {
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
           false,
-          "When (top,left,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
-    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
-          false,
-          "When (top,left,bottom) parameters are used together, width parameter must also be specified");
+          "When (top,left,bottom) parameters are used together, 'X', 'Y' and 'A' parameters can not be used");
+
+    if (!(inf.flags & LAYOUT_FLAG_WIDTH))
+        inf.width = { 1, LayoutValueType::CharacterOffset };
 
     this->Layout.Format.LayoutMode   = LayoutFormatMode::TopLeftBottomAnchorsAndWidth;
     this->Layout.Format.AnchorTop    = inf.a_top;
@@ -882,10 +882,10 @@ bool ControlContext::ProcessTRBAnchors(LayoutInformation& inf)
 {
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT)) == 0,
           false,
-          "When (top,right,bottom) parameters are used together, 'X', 'Y' 'A' and 'H' parameters can not be used");
-    CHECK(inf.flags & LAYOUT_FLAG_WIDTH,
-          false,
-          "When (top,right,bottom) parameters are used together, width parameter must also be specified");
+          "When (top,right,bottom) parameters are used together, 'X', 'Y' and 'H' parameters can not be used");
+
+    if (!(inf.flags & LAYOUT_FLAG_WIDTH))
+        inf.width = { 1, LayoutValueType::CharacterOffset };
 
     this->Layout.Format.LayoutMode   = LayoutFormatMode::TopRightBottomAnchorsAndWidth;
     this->Layout.Format.AnchorTop    = inf.a_top;
