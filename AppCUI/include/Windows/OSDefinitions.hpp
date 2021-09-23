@@ -1,5 +1,4 @@
-#ifndef _OS_DEFINITIONS_AND_INCLUDES_
-#define _OS_DEFINITIONS_AND_INCLUDES_
+#pragma once
 
 #include <windows.h>
 #include <Shlobj.h>
@@ -22,4 +21,3 @@
 #define GET_CHARACTER_VALUE(ptrCharInfo) ((ptrCharInfo)->Char.UnicodeChar)
 #define KEYTRANSLATION_MATRIX_SIZE       256
 
-#endif

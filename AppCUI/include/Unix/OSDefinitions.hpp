@@ -1,5 +1,4 @@
-#ifndef _OS_DEFINITIONS_AND_INCLUDES_
-#define _OS_DEFINITIONS_AND_INCLUDES_
+#pragma once
 
 #include <iostream>
 #include <string.h>
@@ -33,4 +32,3 @@ typedef struct
 #define GET_CHARACTER_COLOR(ptrCharInfo) ((ptrCharInfo)->characterColor)
 #define GET_CHARACTER_VALUE(ptrCharInfo) ((ptrCharInfo)->characterCode)
 
-#endif

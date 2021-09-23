@@ -1,5 +1,5 @@
-#ifndef _TERMINAL_FACTORY_INCLUDED_
-#define _TERMINAL_FACTORY_INCLUDED_
+#pragma once
+
 #include "Internal.hpp"
 #include <memory>
 
@@ -11,4 +11,3 @@ namespace Internal
 }
 } // namespace AppCUI
 
-#endif // _TERMINAL_FACTORY_INCLUDED_
