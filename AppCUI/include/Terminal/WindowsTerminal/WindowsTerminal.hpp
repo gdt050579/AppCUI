@@ -1,5 +1,4 @@
-#ifndef _WINDOWS_TERMINAL_INCLUDED_
-#define _WINDOWS_TERMINAL_INCLUDED_
+#pragma once
 
 #include "Internal.hpp"
 
@@ -48,4 +47,3 @@ namespace Internal
 } // namespace Internal
 } // namespace AppCUI
 
-#endif // _WINDOWS_TERMINAL_INCLUDED_

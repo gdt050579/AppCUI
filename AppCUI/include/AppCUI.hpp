@@ -1,5 +1,4 @@
-#ifndef __APPCUI_MAIN_HEADER__
-#define __APPCUI_MAIN_HEADER__
+#pragma once
 
 #include "Features.hpp"
 #include <filesystem>
@@ -2741,4 +2740,3 @@ ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
 
-#endif
