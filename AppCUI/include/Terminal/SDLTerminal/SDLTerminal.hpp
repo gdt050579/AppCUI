@@ -1,5 +1,4 @@
-#ifndef _SDL_TERMINAL_INCLUDED_
-#define _SDL_TERMINAL_INCLUDED_
+#pragma once
 
 #include "Internal.hpp"
 #include "SDL.h"
@@ -52,4 +51,3 @@ namespace Internal
 } // namespace Internal
 } // namespace AppCUI
 
-#endif // _SDL_TERMINAL_INCLUDED_

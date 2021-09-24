@@ -1,5 +1,4 @@
-#ifndef __CONTROL_STANDARD_MEMBERS__
-#define __CONTROL_STANDARD_MEMBERS__
+#pragma once
 
 #include "AppCUI.hpp"
 #include "Internal.hpp"
@@ -744,4 +743,3 @@ struct MenuContext
         Context = nullptr;                                                                                             \
     }
 
-#endif

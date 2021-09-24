@@ -1,7 +1,5 @@
-#ifndef __APPCUI_MAIN_HEADER__
-#define __APPCUI_MAIN_HEADER__
+#pragma once
 
-#include "Features.hpp"
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -9,6 +7,24 @@
 #include <string_view>
 #include <variant>
 #include <vector>
+
+
+// https://en.cppreference.com/w/cpp/feature_test
+#if defined(__has_cpp_attribute)
+#    define HAS_CPP_ATTR(attr) __has_cpp_attribute(attr)
+#else
+#    define HAS_CPP_ATTR (0)
+#endif
+
+#define NODISCARD_CPP17 201603L
+#define NODISCARD_CPP19 201907L
+#if HAS_CPP_ATTR(nodiscard) == NODISCARD_CPP17
+#    define NODISCARD(msg) [[nodiscard]]
+#elif HAS_CPP_ATTR(nodiscard) == NODISCARD_CPP19
+#    define NODISCARD(msg) [[nodiscard(msg)]]
+#else
+#    define NODISCARD(msg)
+#endif
 
 #ifdef BUILD_AS_DYNAMIC_LIB
 #    ifdef BUILD_FOR_WINDOWS
@@ -848,6 +864,11 @@ namespace Utils
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
 
+        inline bool HasValue() const
+        {
+            return text != nullptr;
+        }
+
     };
     class EXPORT IniValue
     {
@@ -888,6 +909,11 @@ namespace Utils
         IniValueArray operator[](int index) const;
 
         std::string_view GetName() const;
+
+        inline bool HasValue() const
+        {
+            return Data != nullptr;
+        }
     };
     class EXPORT IniSection
     {
@@ -2764,4 +2790,3 @@ ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
 
-#endif

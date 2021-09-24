@@ -1,5 +1,4 @@
-#ifndef __APPCUI_INTERNAL_HEADER__
-#define __APPCUI_INTERNAL_HEADER__
+#pragma once
 
 #include "AppCUI.hpp"
 #include "OSDefinitions.hpp"
@@ -308,4 +307,3 @@ namespace Log
 }
 } // namespace AppCUI
 
-#endif
