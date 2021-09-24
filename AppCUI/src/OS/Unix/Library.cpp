@@ -13,7 +13,7 @@ bool Library::Load(const std::filesystem::path & path)
     CHECK(this->libraryHandle, false, "Fail to load library: %s [dlerror=%s]", path.generic_string().c_str(),dlerror());
     return true;
 }
-void* Library::GetFunction(const char * functionName)
+void* Library::GetFunction(const char * functionName) const
 {
     CHECK(this->libraryHandle, nullptr, "Library was not loaded --> have you call Load(...) first ?");
     CHECK(functionName, nullptr, "Expecting a valid (non-null) function name !");

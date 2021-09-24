@@ -1044,7 +1044,12 @@ namespace OS
       public:
         Library();
         bool Load(const std::filesystem::path& path);
-        void* GetFunction(const char* functionName);
+        void* GetFunction(const char* functionName) const;
+        template <typename T>
+        inline T GetFunction(const char* functionName) const
+        {
+            return reinterpret_cast<T>(GetFunction(functionName));
+        }
     };
 
     enum class SpecialFoldersType : unsigned int
