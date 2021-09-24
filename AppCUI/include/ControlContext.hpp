@@ -251,7 +251,7 @@ struct WindowControlContext : public ControlContext
     bool Maximized;
 };
 
-enum class SplitterMouseStatus: unsigned char
+enum class SplitterMouseStatus : unsigned char
 {
     None = 0,
     OnButton1,
@@ -604,17 +604,11 @@ class TreeControlContext : public ControlContext
     ItemHandle nextItemHandle{ 1ULL };
 
     // TODO: move these (context, cfg, etc)
-    const char* plus             = "+";
-    const char* minus            = "-";
-    const char* nothing          = "*";
-    const char* openBracket      = "[";
-    const char* closeBracket     = "]";
-    const unsigned int offset    = 6;
-    const ColorPair colorPlus    = ColorPair{ Color::Green, Color::Transparent };
-    const ColorPair colorMinus   = ColorPair{ Color::Red, Color::Transparent };
-    const ColorPair colorNothing = ColorPair{ Color::Black, Color::Transparent };
-    const ColorPair colorText    = ColorPair{ Color::White, Color::Transparent };
-    const ColorPair colorBorder  = ColorPair{ Color::Transparent, Color::White };
+    const unsigned int offset          = 2;
+    const ColorPair colorTriangleRight = ColorPair{ Color::Green, Color::Transparent };
+    const ColorPair colorTriangleDown  = ColorPair{ Color::Red, Color::Transparent };
+    const ColorPair colorCircleFiled   = ColorPair{ Color::Black, Color::Transparent };
+    const ColorPair colorText          = ColorPair{ Color::White, Color::Transparent };
 };
 
 enum class MenuItemType : unsigned int

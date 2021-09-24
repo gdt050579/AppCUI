@@ -2387,6 +2387,7 @@ namespace Controls
 
         const ItemHandle AddItem(const ItemHandle parent, const std::string_view& value);
         bool RemoveItem(const ItemHandle handle);
+        bool ClearItems();
 
       private:
         const ItemHandle GetHandleForNewItem() const;

@@ -29,69 +29,44 @@ void Tree::RecursiveItemPainting(
     {
         const auto& item = it.second;
 
-        if (item.parent == ih)
+        if (item.parent != ih)
         {
-            // TODO: remove constants and create functions
-            if (IsExpandable(item.handle))
+            continue;
+        }
+
+        if (IsExpandable(item.handle))
+        {
+            if (cc->view[item.handle].expanded)
             {
-                if (cc->view[item.handle].expanded)
-                {
-                    wtp.Color = cc->colorText;
-                    renderer.WriteText(cc->openBracket, wtp);
-                    wtp.X += 2;
-
-                    wtp.Color = cc->colorMinus;
-                    renderer.WriteText(cc->minus, wtp);
-                    wtp.X += 2;
-
-                    wtp.Color = cc->colorText;
-                    renderer.WriteText(cc->closeBracket, wtp);
-                    wtp.X += 2;
-                }
-                else
-                {
-                    wtp.Color = cc->colorText;
-                    renderer.WriteText(cc->openBracket, wtp);
-                    wtp.X += 2;
-
-                    wtp.Color = cc->colorPlus;
-                    renderer.WriteText(cc->plus, wtp);
-                    wtp.X += 2;
-
-                    wtp.Color = cc->colorText;
-                    renderer.WriteText(cc->closeBracket, wtp);
-                    wtp.X += 2;
-                }
+                wtp.Color = cc->colorTriangleDown;
+                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
             }
             else
             {
-                wtp.Color = cc->colorText;
-                renderer.WriteText(cc->openBracket, wtp);
-                wtp.X += 2;
-
-                wtp.Color = cc->colorNothing;
-                renderer.WriteText(cc->nothing, wtp);
-                wtp.X += 2;
-
-                wtp.Color = cc->colorText;
-                renderer.WriteText(cc->closeBracket, wtp);
-                wtp.X += 2;
+                wtp.Color = cc->colorTriangleRight;
+                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
             }
+        }
+        else
+        {
+            wtp.Color = cc->colorCircleFiled;
+            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
+        }
 
-            wtp.Color = cc->colorText;
+        wtp.X += 2;
+        wtp.Color = cc->colorText;
 
-            renderer.WriteText(item.value, wtp);
+        renderer.WriteText(item.value, wtp);
 
-            wtp.X -= cc->offset;
+        wtp.X -= cc->offset;
 
-            wtp.Y++;
+        wtp.Y++;
 
-            if (IsExpandable(item.handle))
+        if (IsExpandable(item.handle))
+        {
+            if (cc->view[item.handle].expanded)
             {
-                if (cc->view[item.handle].expanded)
-                {
-                    RecursiveItemPainting(renderer, item.handle, wtp, cc->offset);
-                }
+                RecursiveItemPainting(renderer, item.handle, wtp, cc->offset);
             }
         }
     }
@@ -127,7 +102,7 @@ const ItemHandle Tree::AddItem(const ItemHandle parent, const std::string_view& 
     const TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
     cc->items[ti.handle] = ti;
 
-    const TreeItemView tiv{ ti.handle, false };
+    const TreeItemView tiv{ ti.handle, true };
     cc->view[ti.handle] = tiv;
 
     return ti.handle;
@@ -135,7 +110,7 @@ const ItemHandle Tree::AddItem(const ItemHandle parent, const std::string_view& 
 
 bool Tree::RemoveItem(const ItemHandle handle)
 {
-    CHECK(Context != nullptr, "", "");
+    CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     // delete element
@@ -148,18 +123,44 @@ bool Tree::RemoveItem(const ItemHandle handle)
     // delete children
     for (auto it = cc->items.cbegin(); it != cc->items.cend();)
     {
+        // delete child in view
+        const auto itv = cc->view.find(it->second.parent);
+        if (itv != cc->view.end())
+        {
+            cc->view.erase(itv);
+        }
+
+        // delete child in items
         if (it->second.parent == handle)
         {
             it = cc->items.erase(it++);
         }
     }
 
+    // delete element in view
+    const auto itv = cc->view.find(handle);
+    if (itv != cc->view.end())
+    {
+        cc->view.erase(itv);
+    }
+
+    return true;
+}
+
+bool Tree::ClearItems()
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    cc->items.clear();
+    cc->view.clear();
+
     return true;
 }
 
 bool Tree::IsExpandable(const ItemHandle handle) const
 {
-    CHECK(Context != nullptr, "", "");
+    CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     for (const auto& item : cc->items)

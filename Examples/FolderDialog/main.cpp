@@ -27,7 +27,8 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree.Create(this, "x:1%, y:20%, w:99%, h:75%");
-
+        
+        tree.ClearItems();
         PopulateTree(InvalidItemHandle, std::filesystem::current_path().string());
     }
 
@@ -47,6 +48,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 if (res.has_value())
                 {
                     currentFolder.SetText(res->u8string());
+                    tree.ClearItems();
                     PopulateTree(InvalidItemHandle, res->string());
                 }
 
