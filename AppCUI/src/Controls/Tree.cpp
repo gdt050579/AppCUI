@@ -17,10 +17,10 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
     return true;
 }
 
-void Tree::RecursiveItemPainting(
+bool Tree::RecursiveItemPainting(
       Graphics::Renderer& renderer, const ItemHandle ih, WriteTextParams& wtp, const unsigned int offset) const
 {
-    CHECKRET(Context != nullptr, "");
+    CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     wtp.X += offset;
@@ -66,12 +66,16 @@ void Tree::RecursiveItemPainting(
         {
             if (cc->view[item.handle].expanded)
             {
-                RecursiveItemPainting(renderer, item.handle, wtp, cc->offset);
+                CHECK(RecursiveItemPainting(renderer, item.handle, wtp, cc->offset), false, "");
             }
         }
     }
 
     wtp.X -= offset;
+
+    CHECK(static_cast<unsigned int>(wtp.Y) < this->GetHeight(), false, "Performance improvement - don't draw hidden objects.");
+
+    return true;
 }
 
 void Tree::Paint(Graphics::Renderer& renderer)
@@ -154,6 +158,8 @@ bool Tree::ClearItems()
 
     cc->items.clear();
     cc->view.clear();
+
+    cc->nextItemHandle = 1ULL;
 
     return true;
 }

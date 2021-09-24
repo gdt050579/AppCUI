@@ -8,7 +8,6 @@
 #include <variant>
 #include <vector>
 
-
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
 #    define HAS_CPP_ATTR(attr) __has_cpp_attribute(attr)
@@ -486,7 +485,7 @@ namespace Utils
               unsigned int maxDestinationSize,
               unsigned int sourceSize               = 0xFFFFFFFF,
               unsigned int* resultedDestinationSize = nullptr);
-        static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);        
+        static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);
         static bool StartsWith(const char* sir, const char* text, bool ignoreCase = false);
         static bool StartsWith(std::string_view sir1, std::string_view sir2, bool ignoreCase = false);
         static bool EndsWith(
@@ -837,8 +836,9 @@ namespace Utils
         IniValueArray() : text(nullptr), len(0)
         {
         }
-        IniValueArray(std::string_view obj)
-            : text(obj.data()), len((unsigned int)obj.size()) { }
+        IniValueArray(std::string_view obj) : text(obj.data()), len((unsigned int) obj.size())
+        {
+        }
 
         std::optional<unsigned long long> AsUInt64() const;
         std::optional<long long> AsInt64() const;
@@ -846,8 +846,14 @@ namespace Utils
         std::optional<int> AsInt32() const;
         std::optional<bool> AsBool() const;
         std::optional<AppCUI::Input::Key> AsKey() const;
-        inline std::optional<const char*> AsString() const { return text; }
-        inline std::optional<std::string_view> AsStringView() const { return std::string_view(text,len); };
+        inline std::optional<const char*> AsString() const
+        {
+            return text;
+        }
+        inline std::optional<std::string_view> AsStringView() const
+        {
+            return std::string_view(text, len);
+        };
         std::optional<Graphics::Size> AsSize() const;
         std::optional<float> AsFloat() const;
         std::optional<double> AsDouble() const;
@@ -868,7 +874,6 @@ namespace Utils
         {
             return text != nullptr;
         }
-
     };
     class EXPORT IniValue
     {
@@ -2418,7 +2423,7 @@ namespace Controls
       private:
         const ItemHandle GetHandleForNewItem() const;
         bool IsExpandable(const ItemHandle handle) const;
-        void RecursiveItemPainting(
+        bool RecursiveItemPainting(
               Graphics::Renderer& renderer,
               const ItemHandle ih,
               AppCUI::Graphics::WriteTextParams& wtp,
@@ -2464,15 +2469,6 @@ namespace Dialogs
       public:
         static void Show();
     };
-    class EXPORT FolderDialog
-    {
-        FolderDialog() = delete;
-
-      public:
-        static std::optional<std::filesystem::path> ShowOpenFileWindow(
-              const AppCUI::Utils::ConstString& filename, const std::filesystem::path& path);
-    };
-
 } // namespace Dialogs
 
 namespace Log
@@ -2639,7 +2635,7 @@ namespace Application
             {
                 Graphics::ColorPair Normal, Hover, Clicked;
             } Buttons;
-            
+
         } Splitter;
         struct
         {
@@ -2789,4 +2785,3 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
-

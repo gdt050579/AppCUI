@@ -27,7 +27,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree.Create(this, "x:1%, y:20%, w:99%, h:75%");
-        
+
         tree.ClearItems();
         PopulateTree(InvalidItemHandle, std::filesystem::current_path().string());
     }
@@ -44,7 +44,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             {
             case ControlIds::ButtonShowOpen:
             {
-                const auto res = FolderDialog::ShowOpenFileWindow("", currentFolder.GetText());
+                const auto res = FileDialog::ShowOpenFileWindow("", "", currentFolder.GetText());
                 if (res.has_value())
                 {
                     currentFolder.SetText(res->u8string());
@@ -62,16 +62,29 @@ class ExampleMainWindow : public AppCUI::Controls::Window
 
     bool PopulateTree(const ItemHandle handle, const std::string& path)
     {
-        const ItemHandle ih = tree.AddItem(handle, path);
+        const auto fsPath = std::filesystem::path(path);
 
-        const auto rdi = std::filesystem::directory_iterator(path);
+        const ItemHandle ih = tree.AddItem(handle, fsPath.filename().string());
+
+        if (std::filesystem::is_directory(fsPath) == false)
+        {
+            return true;
+        }
+
+        const auto rdi = std::filesystem::directory_iterator(fsPath);
         for (const auto& p : rdi)
         {
             if (p.is_directory())
             {
                 PopulateTree(ih, p.path().string());
             }
+            else
+            {
+                tree.AddItem(handle, p.path().filename().string());
+            }
         }
+
+        return true;
     }
 };
 

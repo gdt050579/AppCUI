@@ -4,7 +4,6 @@
 
 #define ALL_FILES_INDEX 0xFFFFFFFF
 
-
 using namespace AppCUI;
 using namespace AppCUI::OS;
 using namespace AppCUI::Utils;
@@ -53,13 +52,13 @@ struct FileDialogClass
     std::filesystem::path resultedPath;
     bool openDialog;
 
-    bool ProcessExtensionFilter(const char* start, const char *end);
+    bool ProcessExtensionFilter(const char* start, const char* end);
 
     int Show(
           bool open,
           const AppCUI::Utils::ConstString& fileName,
           std::string_view extensionFilter,
-          const std::filesystem::path & _path);
+          const std::filesystem::path& _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
     void UpdateFileList();
@@ -69,7 +68,7 @@ struct FileDialogClass
     void OnCurrentItemChanged();
 };
 
-const char * SkipSpaces(const char * start, const char * end)
+const char* SkipSpaces(const char* start, const char* end)
 {
     while ((start < end) && (((*start) == ' ') || ((*start) == '\t')))
         start++;
@@ -103,10 +102,10 @@ void ConvertSizeToString(unsigned long long size, char result[32])
         result[poz--] = ' ';
     }
 }
-unsigned int __compute_hash__(const char * start, const char * end)
+unsigned int __compute_hash__(const char* start, const char* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned int hash = 0x811c9dc5;
+    unsigned int hash            = 0x811c9dc5;
     const unsigned char* p_start = (const unsigned char*) start;
     const unsigned char* p_end   = (const unsigned char*) end;
     while (p_start < p_end)
@@ -149,7 +148,7 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
     const char* p = start;
     const char* n;
     const char* end_array;
-    while (p<end)
+    while (p < end)
     {
         p = SkipSpaces(p, end);
         n = SkipUntilChar(p, end, ':');
@@ -157,7 +156,7 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
         CHECK(temp.Set(p, (unsigned int) (n - p)), false, "Fail to copy name into a string !");
         p = SkipSpaces(n + 1, end);
         CHECK(p < end, false, "Premature end of formated string (an extension must follow ':' delimiter)");
-        if ((*p) =='[')
+        if ((*p) == '[')
         {
             // we have a list of extensions
             tempSet.clear();
@@ -185,14 +184,14 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
         else
         {
             // we have one extension
-            n = SkipUntilChar(p,end,',');
+            n = SkipUntilChar(p, end, ',');
             CHECK(n > p, false, "Expecting a valid format (name:ext): an extension must have at least one character");
             // add extension to set
             CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
                   false,
                   "Fail to add item to combo-box ");
             tempSet.clear();
-            tempSet.insert(__compute_hash__(p,n));
+            tempSet.insert(__compute_hash__(p, n));
             this->extensions.push_back(tempSet);
             p = n + 1;
         }
@@ -205,7 +204,7 @@ void FileDialogClass::OnClickedOnItem()
     int index = files.GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value = (int) files.GetItemData(index)->UInt32Value;
+    unsigned int value      = (int) files.GetItemData(index)->UInt32Value;
     std::filesystem::path p = lbPath.GetText();
     if (value == 0)
     {
@@ -225,14 +224,25 @@ void FileDialogClass::OnClickedOnItem()
 }
 void FileDialogClass::OnCurrentItemChanged()
 {
-    int index = files.GetCurrentItem();
+    const int index = files.GetCurrentItem();
     if (index < 0)
+    {
         return;
-    unsigned int value = files.GetItemData(index)->UInt32Value;
-    if (value == 2)
+    }
+    
+    const unsigned int value = files.GetItemData(index)->UInt32Value;
+    if (value == 1)
+    {
         txName.SetText(files.GetItemText(index, 0));
+    }
+    else if (value == 2)
+    {
+        txName.SetText(files.GetItemText(index, 0));
+    }
     else
+    {
         txName.SetText(""); // default value
+    }
 }
 void FileDialogClass::Validate()
 {
@@ -241,9 +251,9 @@ void FileDialogClass::Validate()
     if (lbPath.GetText().Len() == 0)
         return;
 
-    this->resultedPath = (std::filesystem::path)lbPath.GetText();
+    this->resultedPath = (std::filesystem::path) lbPath.GetText();
     this->resultedPath /= txName.GetText();
-    
+
     bool exists = std::filesystem::exists(this->resultedPath);
     if (openDialog)
     {
@@ -298,38 +308,51 @@ void FileDialogClass::UpdateFileList()
             files.SetItemData(0, ItemData{ nullptr });
         }
         char size[32];
-        char time_rep[64];
         ItemHandle itemHandle;
         try
         {
             for (const auto& fileEntry : std::filesystem::directory_iterator(p))
             {
                 if (fileEntry.is_directory())
-                    Utils::String::Set(size, "Folder", 32, 6);
-                else
                 {
-                    // check filter first
-                    if (extFilter)
+                    Utils::String::Set(size, "Folder", 32, 6);
+                }
+                else
+                {                    
+                    if (extFilter) // check filter first
                     {
                         // a filter is set - let's check the extention
-                        auto ext_u8         = fileEntry.path().extension().u8string();
-                        const char* ext     = (const char*) ext_u8.c_str();
-                        const char* ext_end = ext + ext_u8.size();
+                        auto u8Ext         = fileEntry.path().extension().u8string();
+                        auto ext           = reinterpret_cast<const char*>(u8Ext.c_str());
+                        const char* extEnd = ext + u8Ext.size();
                         if ((ext != nullptr) && ((*ext) == '.'))
+                        {
                             ext++;
-                        unsigned int hash = __compute_hash__(ext, ext_end);
-                        if (!extFilter->contains(hash))
-                            continue; // extension is filtered
+                        }
+
+                        const unsigned int hash = __compute_hash__(ext, extEnd);
+                        if (extFilter->contains(hash) == false)
+                        { // extension is filtered
+                            continue;
+                        }
                     }
-                    ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+
+                    ConvertSizeToString(static_cast<unsigned long long>(fileEntry.file_size()), size);
                 }
-                    
 
-                auto lastModifiedTime = getLastModifiedTime(fileEntry);
-                std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
+                char dateBuffer[64]{ 0 };
+                const time_t date{ getLastModifiedTime(fileEntry) };
+                struct tm t;
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+                localtime_r(&date, &t); // TODO: errno not treated
+                strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#else
+                localtime_s(&t, &date); // TODO: errno not treated
+                std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#endif
 
-                itemHandle =
-                      this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, time_rep);
+                itemHandle = this->files.AddItem(
+                      (const char*) fileEntry.path().filename().u8string().c_str(), size, dateBuffer);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
@@ -394,12 +417,11 @@ int FileDialogClass::Show(
       bool open,
       const AppCUI::Utils::ConstString& fileName,
       std::string_view extensionFilter,
-      const std::filesystem::path & _path)
+      const std::filesystem::path& _path)
 {
-
-    extFilter       = nullptr;
-    //defaultFileName = fileName;
-    openDialog      = open;
+    extFilter = nullptr;
+    // defaultFileName = fileName;
+    openDialog = open;
     if (open)
         wnd.Create("Open", "w:78,h:23,d:c");
     else
@@ -411,7 +433,7 @@ int FileDialogClass::Show(
     comboDrive.SetHotKey('L');
     // populate combo box with special folders and available drivers
     this->specialFolders.clear();
-    AppCUI::OS::GetSpecialFolders(this->specialFolders,SpecialFoldersType::Drives,false);
+    AppCUI::OS::GetSpecialFolders(this->specialFolders, SpecialFoldersType::Drives, false);
     if (this->specialFolders.size() > 0)
     {
         comboDrive.AddSeparator("Drives");
@@ -424,7 +446,7 @@ int FileDialogClass::Show(
     {
         comboDrive.AddSeparator("Locations");
         for (auto index = lastSize; index < this->specialFolders.size(); index++)
-            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ (unsigned long long)index });
+            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ (unsigned long long) index });
     }
     files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);
@@ -447,7 +469,7 @@ int FileDialogClass::Show(
         if (_path.empty())
             lbPath.SetText(std::filesystem::absolute(".").u8string());
         else
-            lbPath.SetText(std::filesystem::absolute(_path).u8string());        
+            lbPath.SetText(std::filesystem::absolute(_path).u8string());
     }
     catch (...)
     {
@@ -466,7 +488,7 @@ int FileDialogClass::Show(
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, extensionFilter, path);
@@ -475,7 +497,7 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, extensionFilter, path);
