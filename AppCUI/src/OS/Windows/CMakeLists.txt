@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE File.cpp OS.cpp)
+target_sources(AppCUI PRIVATE File.cpp OS.cpp Library.cpp)
