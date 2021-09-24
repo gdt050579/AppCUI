@@ -585,22 +585,20 @@ struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
-    std::string value;
-};
-
-class TreeItemView
-{
-  public:
-    ItemHandle handle;
+    std::u16string value;
     bool expanded{ false };
+    ItemData data{};
+    unsigned int columns = 1;
 };
 
 class TreeControlContext : public ControlContext
 {
   public:
     std::map<ItemHandle, TreeItem> items;
-    std::map<ItemHandle, TreeItemView> view;
+    std::vector<ItemHandle> itemsDrew;
     ItemHandle nextItemHandle{ 1ULL };
+    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
+    unsigned int maxItemsToDraw = 0;
 
     // TODO: move these (context, cfg, etc)
     const unsigned int offset          = 2;
@@ -608,6 +606,7 @@ class TreeControlContext : public ControlContext
     const ColorPair colorTriangleDown  = ColorPair{ Color::Red, Color::Transparent };
     const ColorPair colorCircleFiled   = ColorPair{ Color::Black, Color::Transparent };
     const ColorPair colorText          = ColorPair{ Color::White, Color::Transparent };
+    const ColorPair colorTextSelected  = ColorPair{ Color::Black, Color::Gray };
 };
 
 enum class MenuItemType : unsigned int
@@ -742,4 +741,3 @@ struct MenuContext
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
-

@@ -25,7 +25,7 @@ struct WinItemInfo
 
 class InternalWindowManager : public AppCUI::Controls::Window
 {
-    ListView lst;
+    Tree tree;
     Button btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
     std::map<ItemHandle, WinItemInfo> rel;
     ItemHandle focusedItem;
@@ -45,22 +45,21 @@ class InternalWindowManager : public AppCUI::Controls::Window
 
 void InternalWindowManager::UpdateButtonsStatus()
 {
-    btnCloseAll.SetEnabled(lst.GetItemsCount() > 0);
-    auto i = lst.GetCurrentItem();
+    auto i = tree.GetCurrentItem();
     btnGoTo.SetEnabled(i != InvalidItemHandle);
     btnClose.SetEnabled(i != InvalidItemHandle);
     btnCloseDescendands.SetEnabled(false);
     if (i == InvalidItemHandle)
         return;
 
-    auto data = lst.GetItemData(i);
+    auto data = tree.GetItemData(i);
     if ((data) && (data->Pointer))
     {
         auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
         if (Members)
         {
             // check if there is at least one descendent
-            for (auto itm : rel)
+            for (const auto& itm : rel)
             {
                 if (itm.second.Referal == Members->windowItemHandle)
                 {
@@ -74,7 +73,7 @@ void InternalWindowManager::UpdateButtonsStatus()
 void InternalWindowManager::CloseDescendants(ItemHandle id)
 {
     rel[id].wnd->RemoveMe();
-    for (auto itm : rel)
+    for (const auto& itm : rel)
     {
         if (itm.second.Referal == id)
             CloseDescendants(itm.first);
@@ -82,35 +81,39 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
 }
 bool InternalWindowManager::RemoveCurrentWindow()
 {
-    auto i = lst.GetCurrentItem();
-    if (i == InvalidItemHandle)
+    const auto current = tree.GetCurrentItem();
+    if (current == InvalidItemHandle)
         return false;
+
     LocalUnicodeStringBuilder<256> tmp;
     tmp.Add("Close ");
-    tmp.Add(lst.GetItemText(i, 0));
+    tmp.Add(tree.GetItemText(current));
     tmp.Add(" ?");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        auto data = lst.GetItemData(i);
+        auto data = tree.GetItemData(current);
         if ((data) && (data->Pointer))
             (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
         return true;
     }
+    tree.RemoveItem(current);
+
     return false;
 }
 bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
 {
-    auto i = lst.GetCurrentItem();
+    auto i = tree.GetCurrentItem();
     if (i == InvalidItemHandle)
         return false;
+
     LocalUnicodeStringBuilder<256> tmp;
     CHECK(tmp.Add("Close "), false, "");
-    CHECK(tmp.Add(lst.GetItemText(i, 0)), false, "");
+    CHECK(tmp.Add(tree.GetItemText(i)), false, "");
     CHECK(tmp.Add(" and all of its descendants ?"), false, "");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) != Result::Ok)
         return false;
 
-    auto data = lst.GetItemData(i);
+    auto data = tree.GetItemData(i);
     if ((data) && (data->Pointer))
     {
         auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
@@ -119,24 +122,31 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
             CloseDescendants(Members->windowItemHandle);
         }
     }
+
+    tree.RemoveItem(i);
+
     return true;
 }
 bool InternalWindowManager::CloseAll()
 {
     if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
         return false;
-    const unsigned int count = lst.GetItemsCount();
-    for (unsigned int tr = 0; tr < count; tr++)
+
+    const size_t count = tree.GetItemsCount();
+    for (size_t tr = 0; tr < count; tr++)
     {
-        auto data = lst.GetItemData(tr);
+        auto data = tree.GetItemData(tr);
         if ((data) && (data->Pointer))
             (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
     }
+
+    tree.ClearItems();
+
     return true;
 }
 void InternalWindowManager::GoToSelectedItem()
 {
-    auto data = lst.GetItemData(lst.GetCurrentItem());
+    auto data = tree.GetItemData(tree.GetCurrentItem());
     if ((!data) || (!data->Pointer))
         return;
     (reinterpret_cast<Window*>(data->Pointer))->SetFocus();
@@ -186,16 +196,8 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
 
 bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
 {
-    const auto Members = reinterpret_cast<WindowControlContext*>(w->Context);
-    auto i             = lst.AddItem(Members->Text, (CharacterView) w->GetTag());
-    lst.SetItemXOffset(i, offsetX);
-    lst.SetItemData(i, ItemData(w));
-    if (w->HasFocus())
-    {
-        lst.SetItemType(i, ListViewItemType::Highlighted);
-        this->focusedItem = i;
-    }
-
+    const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
+    const auto i   = tree.AddItem(wcc->referalItemHandle, std::u16string(wcc->Text), w);
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
@@ -212,9 +214,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 bool InternalWindowManager::Create()
 {
     CHECK(Window::Create("Window manager", "d:c,w:72,h:20"), false, "");
-    CHECK(lst.Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
-    CHECK(lst.AddColumn("Window caption", TextAlignament::Left, 56), false, "");
-    CHECK(lst.AddColumn("TAG", TextAlignament::Left, 8), false, "");
+    CHECK(tree.Create(this, "l:1,t:1,r:1,b:3"), false, "");
     CHECK(btnGoTo.Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
     CHECK(btnClose.Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
     CHECK(btnCloseDescendands.Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC), false, "");
@@ -252,9 +252,6 @@ bool InternalWindowManager::Create()
             Process(rel, i.first, 0);
         }
     }
-
-    if (this->focusedItem != InvalidItemHandle)
-        lst.SetCurrentItem(this->focusedItem);
 
     UpdateButtonsStatus();
 

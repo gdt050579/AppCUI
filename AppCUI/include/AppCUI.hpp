@@ -2429,13 +2429,19 @@ namespace Controls
         bool Create(Control* parent, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnFocus() override;
 
-        const ItemHandle AddItem(const ItemHandle parent, const std::string_view& value);
+        ItemHandle AddItem(const ItemHandle parent, const std::u16string_view& value, void* data = nullptr);
         bool RemoveItem(const ItemHandle handle);
         bool ClearItems();
+        ItemHandle GetCurrentItem();
+        const std::u16string_view GetItemText(const ItemHandle handle);
+        ItemData* GetItemData(const ItemHandle handle);
+        ItemData* GetItemData(const size_t index);
+        size_t GetItemsCount();
 
       private:
-        const ItemHandle GetHandleForNewItem() const;
+        ItemHandle GetHandleForNewItem() const;
         bool IsExpandable(const ItemHandle handle) const;
         bool RecursiveItemPainting(
               Graphics::Renderer& renderer,

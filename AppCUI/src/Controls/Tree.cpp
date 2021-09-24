@@ -14,6 +14,8 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
     CHECK(Init(parent, "", layout, true), false, "Failed to create tree!");
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
+    cc->maxItemsToDraw = this->GetHeight() - 2;
+
     return true;
 }
 
@@ -27,16 +29,18 @@ bool Tree::RecursiveItemPainting(
 
     for (const auto& it : cc->items)
     {
-        const auto& item = it.second;
+        auto& item = it.second;
 
         if (item.parent != ih)
         {
             continue;
         }
 
+        CHECK(cc->itemsDrew.size() < cc->maxItemsToDraw, false, "Performance improvement - don't draw hidden objects.");
+
         if (IsExpandable(item.handle))
         {
-            if (cc->view[item.handle].expanded)
+            if (item.expanded)
             {
                 wtp.Color = cc->colorTriangleDown;
                 renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
@@ -53,8 +57,15 @@ bool Tree::RecursiveItemPainting(
             renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
         }
 
-        wtp.X += 2;
-        wtp.Color = cc->colorText;
+        wtp.X += cc->offset;
+        if (item.handle == cc->currentSelectedItemHandle)
+        {
+            wtp.Color = cc->colorTextSelected;
+        }
+        else
+        {
+            wtp.Color = cc->colorText;
+        }
 
         renderer.WriteText(item.value, wtp);
 
@@ -62,9 +73,11 @@ bool Tree::RecursiveItemPainting(
 
         wtp.Y++;
 
+        cc->itemsDrew.emplace_back(item.handle);
+
         if (IsExpandable(item.handle))
         {
-            if (cc->view[item.handle].expanded)
+            if (item.expanded)
             {
                 CHECK(RecursiveItemPainting(renderer, item.handle, wtp, cc->offset), false, "");
             }
@@ -72,8 +85,6 @@ bool Tree::RecursiveItemPainting(
     }
 
     wtp.X -= offset;
-
-    CHECK(static_cast<unsigned int>(wtp.Y) < this->GetHeight(), false, "Performance improvement - don't draw hidden objects.");
 
     return true;
 }
@@ -83,31 +94,100 @@ void Tree::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
+    renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->colorText, false);
+
     const auto flags = WriteTextFlags::LeftMargin | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth |
                        WriteTextFlags::OverwriteColors;
     WriteTextParams wtp{ flags };
-    wtp.X     = 0;
-    wtp.Y     = 0;
+    wtp.X     = 1; // 0  is for border
+    wtp.Y     = 1; // 0  is for border
     wtp.Width = cc->Layout.Width;
 
+    cc->itemsDrew.clear();
     RecursiveItemPainting(renderer, InvalidItemHandle, wtp, 0);
 }
 
 bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
 {
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    switch (keyCode)
+    {
+    case Key::Up:
+        if (cc->itemsDrew.size() > 0)
+        {
+            if (cc->itemsDrew[0] == cc->currentSelectedItemHandle)
+            {
+                cc->currentSelectedItemHandle = cc->itemsDrew[cc->itemsDrew.size() - 1];
+            }
+            else
+            {
+                const auto it         = find(cc->itemsDrew.begin(), cc->itemsDrew.end(), cc->currentSelectedItemHandle);
+                const long long index = it - cc->itemsDrew.begin();
+                cc->currentSelectedItemHandle = cc->itemsDrew[index - 1];
+            }
+
+            return true;
+        }
+        break;
+    case Key::Down:
+        if (cc->itemsDrew.size() > 0)
+        {
+            if (cc->itemsDrew[cc->itemsDrew.size() - 1] == cc->currentSelectedItemHandle)
+            {
+                cc->currentSelectedItemHandle = cc->itemsDrew[0];
+            }
+            else
+            {
+                const auto it         = find(cc->itemsDrew.begin(), cc->itemsDrew.end(), cc->currentSelectedItemHandle);
+                const long long index = it - cc->itemsDrew.begin();
+                cc->currentSelectedItemHandle = cc->itemsDrew[index + 1];
+            }
+
+            return true;
+        }
+        break;
+    case Key::Space:
+        if (cc->itemsDrew.size() > 0)
+        {
+            cc->items[cc->currentSelectedItemHandle].expanded = !cc->items[cc->currentSelectedItemHandle].expanded;
+        }
+        return true;
+    default:
+        break;
+    }
+
     return false;
 }
 
-const ItemHandle Tree::AddItem(const ItemHandle parent, const std::string_view& value)
+void Tree::OnFocus()
+{
+    CHECKRET(Context != nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    if (cc->itemsDrew.size() > 0)
+    {
+        if (cc->currentSelectedItemHandle == InvalidItemHandle)
+        {
+            cc->currentSelectedItemHandle = cc->itemsDrew[0];
+        }
+    }
+}
+
+ItemHandle Tree::AddItem(const ItemHandle parent, const std::u16string_view& value, void* data)
 {
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    const TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
+    TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
+    ti.data = ItemData(data);
     cc->items[ti.handle] = ti;
 
-    const TreeItemView tiv{ ti.handle, true };
-    cc->view[ti.handle] = tiv;
+    if (cc->items.size() == 1)
+    {
+        cc->currentSelectedItemHandle = ti.handle;
+    }
 
     return ti.handle;
 }
@@ -127,25 +207,11 @@ bool Tree::RemoveItem(const ItemHandle handle)
     // delete children
     for (auto it = cc->items.cbegin(); it != cc->items.cend();)
     {
-        // delete child in view
-        const auto itv = cc->view.find(it->second.parent);
-        if (itv != cc->view.end())
-        {
-            cc->view.erase(itv);
-        }
-
         // delete child in items
         if (it->second.parent == handle)
         {
             it = cc->items.erase(it++);
         }
-    }
-
-    // delete element in view
-    const auto itv = cc->view.find(handle);
-    if (itv != cc->view.end())
-    {
-        cc->view.erase(itv);
     }
 
     return true;
@@ -157,11 +223,65 @@ bool Tree::ClearItems()
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     cc->items.clear();
-    cc->view.clear();
 
     cc->nextItemHandle = 1ULL;
 
+    cc->currentSelectedItemHandle = InvalidItemHandle;
+
     return true;
+}
+
+ItemHandle Tree::GetCurrentItem()
+{
+    CHECK(Context != nullptr, InvalidItemHandle, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    return cc->currentSelectedItemHandle;
+}
+
+const std::u16string_view Tree::GetItemText(const ItemHandle handle)
+{
+    CHECK(Context != nullptr, u"", "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    const auto it = cc->items.find(handle);
+    if (it != cc->items.end())
+    {
+        return it->second.value;
+    }
+
+    return u"";
+}
+
+ItemData* Tree::GetItemData(const ItemHandle handle)
+{
+    CHECK(Context != nullptr, nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    const auto it = cc->items.find(handle);
+    if (it != cc->items.end())
+    {
+        return &it->second.data;
+    }
+
+    return nullptr;
+}
+
+ItemData* Tree::GetItemData(const size_t index)
+{
+    CHECK(Context != nullptr, nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    auto it = cc->items.begin();
+    std::advance(it, index);
+    return &it->second.data;
+}
+
+size_t Tree::GetItemsCount()
+{
+    CHECK(Context != nullptr, 0, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    return cc->items.size();
 }
 
 bool Tree::IsExpandable(const ItemHandle handle) const
@@ -180,7 +300,7 @@ bool Tree::IsExpandable(const ItemHandle handle) const
     return false;
 }
 
-const ItemHandle Tree::GetHandleForNewItem() const
+ItemHandle Tree::GetHandleForNewItem() const
 {
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

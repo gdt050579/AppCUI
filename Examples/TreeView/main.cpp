@@ -26,10 +26,10 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
-        tree.Create(this, "x:1%, y:20%, w:99%, h:75%");
+        tree.Create(this, "x:1%, y:20%, w:99%, h:85%");
 
         tree.ClearItems();
-        PopulateTree(InvalidItemHandle, std::filesystem::current_path().string());
+        PopulateTree(InvalidItemHandle, std::filesystem::current_path().u16string());
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -49,7 +49,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 {
                     currentFolder.SetText(res->u8string());
                     tree.ClearItems();
-                    PopulateTree(InvalidItemHandle, res->string());
+                    PopulateTree(InvalidItemHandle, res->u16string());
                 }
 
                 return true;
@@ -60,11 +60,11 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         return false;
     }
 
-    bool PopulateTree(const ItemHandle handle, const std::string& path)
+    bool PopulateTree(const ItemHandle handle, const std::u16string& path)
     {
         const auto fsPath = std::filesystem::path(path);
 
-        const ItemHandle ih = tree.AddItem(handle, fsPath.filename().string());
+        const ItemHandle ih = tree.AddItem(handle, fsPath.filename().u16string());
 
         if (std::filesystem::is_directory(fsPath) == false)
         {
@@ -76,11 +76,11 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         {
             if (p.is_directory())
             {
-                PopulateTree(ih, p.path().string());
+                PopulateTree(ih, p.path().u16string());
             }
             else
             {
-                tree.AddItem(handle, p.path().filename().string());
+                tree.AddItem(handle, p.path().filename().u16string());
             }
         }
 
