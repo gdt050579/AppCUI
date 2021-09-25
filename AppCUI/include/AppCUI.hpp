@@ -2430,9 +2430,12 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        void OnUpdateScrollBars() override;
 
-        ItemHandle AddItem(const ItemHandle parent, const std::u16string_view& value, void* data = nullptr);
-        bool RemoveItem(const ItemHandle handle);
+        ItemHandle AddItem(const ItemHandle parent, const std::u16string_view& value, void* data = nullptr, bool process = false);
+        bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
         const std::u16string_view GetItemText(const ItemHandle handle);
@@ -2442,12 +2445,16 @@ namespace Controls
 
       private:
         ItemHandle GetHandleForNewItem() const;
-        bool IsExpandable(const ItemHandle handle) const;
         bool RecursiveItemPainting(
               Graphics::Renderer& renderer,
               const ItemHandle ih,
               AppCUI::Graphics::WriteTextParams& wtp,
               const unsigned int offset) const;
+        bool MoveUp();
+        bool MoveDown();
+        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
+        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
+        bool ToggleExpandRecursive(const ItemHandle handle) const;
     };
 
 }; // namespace Controls

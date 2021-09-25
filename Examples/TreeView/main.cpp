@@ -21,7 +21,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
   public:
     ExampleMainWindow()
     {
-        Create("Folder tree example", "d:c, w:80%, h:60%");
+        Create("Tree view example", "d:c, w:80%, h:60%");
         open.Create(this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
         vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
@@ -71,17 +71,24 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             return true;
         }
 
-        const auto rdi = std::filesystem::directory_iterator(fsPath);
-        for (const auto& p : rdi)
+        try
         {
-            if (p.is_directory())
+            const auto rdi = std::filesystem::directory_iterator(fsPath);
+            for (const auto& p : rdi)
             {
-                PopulateTree(ih, p.path().u16string());
+                if (p.is_directory())
+                {
+                    PopulateTree(ih, p.path().u16string());
+                }
+                else
+                {
+                    tree.AddItem(handle, p.path().filename().u16string());
+                }
             }
-            else
-            {
-                tree.AddItem(handle, p.path().filename().u16string());
-            }
+        }
+        catch (std::exception e)
+        {
+            LOG_ERROR("%s", e.what());
         }
 
         return true;

@@ -586,9 +586,11 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::u16string value;
-    bool expanded{ false };
     ItemData data{};
-    unsigned int columns = 1;
+    bool expanded              = false;
+    unsigned int columns       = 1;
+    unsigned int startOffset   = 0;
+    std::vector<ItemHandle> children;
 };
 
 class TreeControlContext : public ControlContext
@@ -596,9 +598,13 @@ class TreeControlContext : public ControlContext
   public:
     std::map<ItemHandle, TreeItem> items;
     std::vector<ItemHandle> itemsDrew;
+    std::vector<ItemHandle> itemsToDrew;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
-    unsigned int maxItemsToDraw = 0;
+    unsigned int maxItemsToDraw  = 0;
+    unsigned int offsetTopToDraw = 0;
+    unsigned int offsetBotToDraw = 0;
+    bool notProcessed            = true;
 
     // TODO: move these (context, cfg, etc)
     const unsigned int offset          = 2;
