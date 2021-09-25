@@ -4,6 +4,19 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
+class EmptyExmple : public AppCUI::Controls::Window
+{
+    Splitter s;
+    Splitter s2;
+
+  public:
+    EmptyExmple()
+    {
+        this->Create("Empty example", "d:c,w:60,h:20", WindowFlags::Sizeable);
+        s2.Create(this, "d:c%", false);
+        s.Create(&s2, "d:c", true);
+    };
+};
 class MyWin : public AppCUI::Controls::Window
 {
     Button b1;
@@ -32,13 +45,19 @@ class MyWin : public AppCUI::Controls::Window
         rb2.Create(&pright, "Option &2", "x:1,y:2,w:20", 5);
         rb3.Create(&pright, "Option &3", "x:1,y:3,w:20", 5);
 
-        b1.Create(&pbottom, "&Press me", "l:1,b:0,w:90%,h:2", 100);
+        b1.Create(&pbottom, "Empy &example", "l:1,b:0,w:90%,h:2", 100);
     }
     bool OnEvent(Control*, AppCUI::Controls::Event eventType, int) override
     {
         if (eventType == AppCUI::Controls::Event::WindowClose)
         {
             Application::Close();
+            return true;
+        }
+        if (eventType == AppCUI::Controls::Event::ButtonClicked)
+        {
+            EmptyExmple win;
+            win.Show();
             return true;
         }
         return false;
