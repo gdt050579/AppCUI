@@ -109,8 +109,8 @@ class SimpleHexView : public AppCUI::Controls::Window
   public:
     SimpleHexView()
     {
-        this->Create("SimpleHexView", "d:c,w:100%,h:100%");
-        btnOpenFile.Create(this, "Open File ...", "x:0,y:0,w:100%,h:2", COMMAND_ID_BTN_OPEN);
+        this->Create("SimpleHexView", "x:0,y:0,w:100%,h:100%");
+        btnOpenFile.Create(this, "Open File ...", "l:2,t:0,r:2,h:1", COMMAND_ID_BTN_OPEN, ButtonFlags::Flat);
         hexView.Create(this, "x:0,y:2,w:100%,h:100%");
     }
 
@@ -137,8 +137,8 @@ class SimpleHexView : public AppCUI::Controls::Window
 
 int main()
 {
-    if (!Application::Init(InitializationFlags::CommandBar))
-        return 1;
+    if (!Application::Init(InitializationFlags::CommandBar | InitializationFlags::LoadSettingsFile))
+        return -1;
     auto window = std::make_unique<SimpleHexView>();
     Application::AddWindow(std::move(window));
     Application::Run();
