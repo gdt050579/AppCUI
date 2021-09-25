@@ -30,11 +30,15 @@ SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Member
     int v = 0;
     if (Members->Flags & GATTR_VERTICAL)
     {
+        if (x != (Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE)))
+            return SplitterMouseStatus::None;
         if (Members->Layout.Height > MIN_SPLITTER_SIZE)
             v = ((y == 1) || (y == 2)) ? y : 0;
     }
     else
     {
+        if (y != Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE))
+            return SplitterMouseStatus::None;
         if (Members->Layout.Width > MIN_SPLITTER_SIZE)
             v = ((x == 1) || (x == 2)) ? x : 0;
     }
@@ -313,6 +317,10 @@ bool Splitter::OnMouseOver(int x, int y)
         break;
     case SplitterMouseStatus::OnButton2:
         toolTipTextID = Members->Flags & GATTR_VERTICAL ? SPLITTER_TOOLTIPTEXT_LEFT : SPLITTER_TOOLTIPTEXT_TOP;
+        break;
+    case SplitterMouseStatus::None:
+        HideToolTip();
+        break;
     }
     if (toolTipTextID != NO_TOOLTIP_TEXT)
         ShowToolTip(splitterToolTipTexts[toolTipTextID], x, y);
