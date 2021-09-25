@@ -7,6 +7,7 @@
 #include <string_view>
 #include <variant>
 #include <vector>
+#include <functional>
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -1041,6 +1042,7 @@ namespace OS
     class EXPORT Library
     {
         void* libraryHandle;
+
       public:
         Library();
         bool Load(const std::filesystem::path& path);
@@ -2434,7 +2436,13 @@ namespace Controls
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         void OnUpdateScrollBars() override;
 
-        ItemHandle AddItem(const ItemHandle parent, const std::u16string_view& value, void* data = nullptr, bool process = false);
+        ItemHandle AddItem(
+              const ItemHandle parent,
+              const std::u16string_view& value,
+              void* data              = nullptr,
+              bool process            = false,
+              std::u16string metadata = u"",
+              bool isExpandable       = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
@@ -2442,6 +2450,8 @@ namespace Controls
         ItemData* GetItemData(const ItemHandle handle);
         ItemData* GetItemData(const size_t index);
         size_t GetItemsCount();
+        void SetToggleItemHandle(
+              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
 
       private:
         ItemHandle GetHandleForNewItem() const;
@@ -2454,7 +2464,8 @@ namespace Controls
         bool MoveDown();
         bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
         bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
-        bool ToggleExpandRecursive(const ItemHandle handle) const;
+        bool ToggleExpandRecursive(const ItemHandle handle);
+        bool ToggleItem(const ItemHandle handle);
     };
 
 }; // namespace Controls

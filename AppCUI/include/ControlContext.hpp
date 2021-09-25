@@ -587,24 +587,28 @@ struct TreeItem
     ItemHandle handle{ InvalidItemHandle };
     std::u16string value;
     ItemData data{};
-    bool expanded              = false;
-    unsigned int columns       = 1;
-    unsigned int startOffset   = 0;
+    bool expanded        = false;
+    bool isExpandable    = false;
+    unsigned int columns = 1;
+    std::vector<std::string> columnsValues;
     std::vector<ItemHandle> children;
+    std::u16string metadata;
+    unsigned int depth = 1;
 };
 
 class TreeControlContext : public ControlContext
 {
   public:
     std::map<ItemHandle, TreeItem> items;
-    std::vector<ItemHandle> itemsDrew;
     std::vector<ItemHandle> itemsToDrew;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
-    unsigned int maxItemsToDraw  = 0;
-    unsigned int offsetTopToDraw = 0;
-    unsigned int offsetBotToDraw = 0;
-    bool notProcessed            = true;
+    unsigned int maxItemsToDraw                                                            = 0;
+    unsigned int offsetTopToDraw                                                           = 0;
+    unsigned int offsetBotToDraw                                                           = 0;
+    bool notProcessed                                                                      = true;
+    std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
+    std::vector<ItemHandle> roots;
 
     // TODO: move these (context, cfg, etc)
     const unsigned int offset          = 2;

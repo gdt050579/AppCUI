@@ -27,9 +27,18 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree.Create(this, "x:1%, y:20%, w:99%, h:85%");
+        tree.SetToggleItemHandle(PopulateTree);
 
         tree.ClearItems();
-        PopulateTree(InvalidItemHandle, std::filesystem::current_path().u16string());
+        const auto path = std::filesystem::current_path().u16string();
+        const auto root = tree.AddItem(
+              InvalidItemHandle,
+              std::filesystem::current_path().filename().u16string(),
+              nullptr,
+              false,
+              std::filesystem::current_path().u16string(),
+              std::filesystem::is_directory(path));
+        PopulateTree(tree, root, &path);
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -49,7 +58,16 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 {
                     currentFolder.SetText(res->u8string());
                     tree.ClearItems();
-                    PopulateTree(InvalidItemHandle, res->u16string());
+
+                    const auto path = std::filesystem::path(res->u16string());
+                    const auto root = tree.AddItem(
+                          InvalidItemHandle,
+                          path.filename().u16string(),
+                          nullptr,
+                          false,
+                          path.u16string(),
+                          std::filesystem::is_directory(path));
+                    PopulateTree(tree, root, &path);
                 }
 
                 return true;
@@ -60,30 +78,16 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         return false;
     }
 
-    bool PopulateTree(const ItemHandle handle, const std::u16string& path)
+    static bool PopulateTree(Tree& tree, const ItemHandle handle, const void* context)
     {
-        const auto fsPath = std::filesystem::path(path);
-
-        const ItemHandle ih = tree.AddItem(handle, fsPath.filename().u16string());
-
-        if (std::filesystem::is_directory(fsPath) == false)
-        {
-            return true;
-        }
-
+        const auto fsPath = std::filesystem::path(*reinterpret_cast<std::u16string*>(const_cast<void*>(context)));
         try
         {
             const auto rdi = std::filesystem::directory_iterator(fsPath);
             for (const auto& p : rdi)
             {
-                if (p.is_directory())
-                {
-                    PopulateTree(ih, p.path().u16string());
-                }
-                else
-                {
-                    tree.AddItem(handle, p.path().filename().u16string());
-                }
+                tree.AddItem(
+                      handle, p.path().filename().u16string(), nullptr, false, p.path().u16string(), p.is_directory());
             }
         }
         catch (std::exception e)

@@ -15,7 +15,7 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
     cc->Layout.MinWidth  = 4;
     CHECK(Init(parent, "", layout, true), false, "Failed to create tree!");
     cc->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL;
-    cc->ScrollBars.LeftMargin = 25;
+    cc->ScrollBars.LeftMargin = 25; // search field
 
     cc->maxItemsToDraw  = this->GetHeight() - 2;
     cc->offsetTopToDraw = 0;
@@ -30,71 +30,46 @@ bool Tree::RecursiveItemPainting(
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    wtp.X += offset;
-
-    for (auto i = 0U; i < cc->itemsToDrew.size(); i++)
+    for (auto i = cc->offsetTopToDraw; i < std::min<size_t>(cc->offsetBotToDraw, cc->itemsToDrew.size()); i++)
     {
         auto& item = cc->items[cc->itemsToDrew[i]];
 
-        if (item.parent != ih)
-        {
-            continue;
-        }
+        wtp.X = item.depth * cc->offset;
 
-        CHECK(cc->itemsDrew.size() < cc->maxItemsToDraw, false, "Performance improvement - don't draw hidden objects.");
-
-        item.startOffset = wtp.X;
-        if (i >= cc->offsetTopToDraw && i <= cc->offsetBotToDraw)
-        {
-            if (item.children.size() > 0)
-            {
-                if (item.expanded)
-                {
-                    wtp.Color = cc->colorTriangleDown;
-                    renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
-                }
-                else
-                {
-                    wtp.Color = cc->colorTriangleRight;
-                    renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
-                }
-            }
-            else
-            {
-                wtp.Color = cc->colorCircleFiled;
-                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
-            }
-
-            wtp.X += cc->offset;
-
-            if (item.handle == cc->currentSelectedItemHandle)
-            {
-                wtp.Color = cc->colorTextSelected;
-            }
-            else
-            {
-                wtp.Color = cc->colorText;
-            }
-
-            renderer.WriteText(item.value, wtp);
-
-            wtp.X -= cc->offset;
-
-            wtp.Y++;
-
-            cc->itemsDrew.emplace_back(item.handle);
-        }
-
-        if (item.children.size() > 0)
+        if (item.isExpandable)
         {
             if (item.expanded)
             {
-                CHECK(RecursiveItemPainting(renderer, item.handle, wtp, cc->offset), false, "");
+                wtp.Color = cc->colorTriangleDown;
+                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+            }
+            else
+            {
+                wtp.Color = cc->colorTriangleRight;
+                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
             }
         }
-    }
+        else
+        {
+            wtp.Color = cc->colorCircleFiled;
+            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
+        }
 
-    wtp.X -= offset;
+        wtp.X += cc->offset;
+
+        if (item.handle == cc->currentSelectedItemHandle)
+        {
+            wtp.Color = cc->colorTextSelected;
+        }
+        else
+        {
+            wtp.Color = cc->colorText;
+        }
+
+        renderer.WriteText(item.value, wtp);
+
+        wtp.Y++;
+    }
 
     return true;
 }
@@ -175,21 +150,64 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
         cc->itemsToDrew.clear();
     }
 
-    for (auto& it : cc->items)
+    CHECK(cc->items.size() > 0, true, "");
+
+    if (handle == InvalidItemHandle)
     {
-        auto& item = it.second;
-        if (item.parent != handle)
+        for (const auto& handle : cc->roots)
         {
-            continue;
-        }
+            cc->itemsToDrew.emplace_back(handle);
 
-        cc->itemsToDrew.emplace_back(item.handle);
-
-        if (item.children.size() > 0)
-        {
-            if (item.expanded)
+            const auto& item = cc->items[handle];
+            if (item.isExpandable == false || item.expanded == false)
             {
-                ProcessItemsToBeDrawn(item.handle, false);
+                continue;
+            }
+
+            for (auto& it : item.children)
+            {
+                const auto& child = cc->items[it];
+                if (child.isExpandable)
+                {
+                    if (child.expanded)
+                    {
+                        ProcessItemsToBeDrawn(it, false);
+                    }
+                    else
+                    {
+                        cc->itemsToDrew.emplace_back(child.handle);
+                    }
+                }
+                else
+                {
+                    cc->itemsToDrew.emplace_back(child.handle);
+                }
+            }
+        }
+    }
+    else
+    {
+        const auto& item = cc->items[handle];
+        cc->itemsToDrew.emplace_back(item.handle);
+        CHECK(item.isExpandable, true, "");
+
+        for (auto& it : item.children)
+        {
+            const auto& child = cc->items[it];
+            if (child.isExpandable)
+            {
+                if (child.expanded)
+                {
+                    ProcessItemsToBeDrawn(it, false);
+                }
+                else
+                {
+                    cc->itemsToDrew.emplace_back(child.handle);
+                }
+            }
+            else
+            {
+                cc->itemsToDrew.emplace_back(child.handle);
             }
         }
     }
@@ -226,7 +244,7 @@ bool Tree::IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) 
     return false;
 }
 
-bool Tree::ToggleExpandRecursive(const ItemHandle handle) const
+bool Tree::ToggleExpandRecursive(const ItemHandle handle)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -239,9 +257,9 @@ bool Tree::ToggleExpandRecursive(const ItemHandle handle) const
         ItemHandle current = ancestorRelated.front();
         ancestorRelated.pop();
 
-        auto& item    = cc->items[current];
-        item.expanded = !item.expanded;
+        ToggleItem(current);
 
+        const auto& item = cc->items[current];
         for (const auto& handle : item.children)
         {
             ancestorRelated.push(handle);
@@ -267,7 +285,6 @@ void Tree::Paint(Graphics::Renderer& renderer)
     wtp.Y     = 1; // 0  is for border
     wtp.Width = cc->Layout.Width;
 
-    cc->itemsDrew.clear();
     if (cc->notProcessed)
     {
         ProcessItemsToBeDrawn(InvalidItemHandle);
@@ -364,8 +381,8 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
             const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin()) + difference;
             cc->currentSelectedItemHandle = cc->itemsToDrew[index];
 
-            cc->offsetTopToDraw += difference;
-            cc->offsetBotToDraw += difference;
+            cc->offsetTopToDraw += static_cast<unsigned int>(difference);
+            cc->offsetBotToDraw += static_cast<unsigned int>(difference);
         }
         else
         {
@@ -389,27 +406,17 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
         {
             break;
         }
-        cc->offsetTopToDraw           = cc->itemsToDrew.size() - cc->maxItemsToDraw;
+        cc->offsetTopToDraw           = static_cast<unsigned int>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
         cc->offsetBotToDraw           = cc->offsetTopToDraw + cc->maxItemsToDraw;
         cc->currentSelectedItemHandle = cc->itemsToDrew[cc->itemsToDrew.size() - 1];
         return true;
 
     case Key::Ctrl | Key::Space:
-        if (cc->itemsDrew.size() > 0)
-        {
-            ToggleExpandRecursive(cc->currentSelectedItemHandle);
-            return true;
-        }
+        ToggleExpandRecursive(cc->currentSelectedItemHandle);
+        return true;
     case Key::Space:
-        if (cc->itemsDrew.size() > 0)
-        {
-            auto& item = cc->items[cc->currentSelectedItemHandle];
-            if (item.children.size() > 0)
-            {
-                item.expanded = !item.expanded;
-                ProcessItemsToBeDrawn(InvalidItemHandle);
-            }
-        }
+        ToggleItem(cc->currentSelectedItemHandle);
+        ProcessItemsToBeDrawn(InvalidItemHandle);
         return true;
     default:
         break;
@@ -423,11 +430,11 @@ void Tree::OnFocus()
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    if (cc->itemsDrew.size() > 0)
+    if (cc->itemsToDrew.size() > 0)
     {
         if (cc->currentSelectedItemHandle == InvalidItemHandle)
         {
-            cc->currentSelectedItemHandle = cc->itemsDrew[0];
+            cc->currentSelectedItemHandle = cc->itemsToDrew[cc->offsetTopToDraw];
         }
     }
 }
@@ -445,36 +452,33 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         if (y > 0 && y < this->GetHeight())
         {
             const unsigned int index = y - 1;
-            if (index >= cc->itemsDrew.size())
+            if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
             {
                 break;
             }
 
-            const auto itemHandle = cc->itemsDrew[index];
+            const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
 
-            if (x > static_cast<int>(it->second.startOffset + cc->offset) && x < this->GetWidth())
+            if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth())
             {
                 cc->currentSelectedItemHandle = itemHandle;
                 break;
             }
 
-            if (it->second.children.size() > 0)
+            if (x >= static_cast<int>(it->second.depth * cc->offset) &&
+                x < static_cast<int>(it->second.depth * cc->offset + cc->offset))
             {
-                if (x >= static_cast<int>(it->second.startOffset) &&
-                    x < static_cast<int>(it->second.startOffset + cc->offset))
+                ToggleItem(it->second.handle);
+                if (it->second.expanded == false)
                 {
-                    it->second.expanded = !it->second.expanded;
-                    if (it->second.expanded == false)
+                    if (IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
                     {
-                        if (IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
-                        {
-                            cc->currentSelectedItemHandle = it->second.handle;
-                        }
+                        cc->currentSelectedItemHandle = it->second.handle;
                     }
-                    ProcessItemsToBeDrawn(InvalidItemHandle);
-                    break;
                 }
+                ProcessItemsToBeDrawn(InvalidItemHandle);
+                break;
             }
         }
         break;
@@ -524,23 +528,38 @@ void Tree::OnUpdateScrollBars()
     UpdateVScrollBar(index, count);
 }
 
-ItemHandle Tree::AddItem(const ItemHandle parent, const std::u16string_view& value, void* data, bool process)
+ItemHandle Tree::AddItem(
+      const ItemHandle parent,
+      const std::u16string_view& value,
+      void* data,
+      bool process,
+      std::u16string metadata,
+      bool isExpandable)
 {
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
-    ti.data              = ItemData(data);
+    ti.data         = ItemData(data);
+    ti.isExpandable = isExpandable;
+    ti.metadata     = metadata;
+
+    if (parent == InvalidItemHandle)
+    {
+        cc->roots.emplace_back(ti.handle);
+    }
+    else
+    {
+        auto& parentItem = cc->items[parent];
+        ti.depth         = parentItem.depth + 1;
+        parentItem.children.emplace_back(ti.handle);
+    }
+
     cc->items[ti.handle] = ti;
 
     if (cc->items.size() == 1)
     {
         cc->currentSelectedItemHandle = ti.handle;
-    }
-
-    if (parent != InvalidItemHandle)
-    {
-        cc->items[parent].children.emplace_back(ti.handle);
     }
 
     if (process)
@@ -560,26 +579,30 @@ bool Tree::RemoveItem(const ItemHandle handle, bool process)
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    // delete element
-    const auto it = cc->items.find(handle);
-    if (it != cc->items.end())
+    std::queue<ItemHandle> ancestorRelated;
+    ancestorRelated.push(handle);
+
+    while (ancestorRelated.empty() == false)
     {
-        // delete children
-        for (const auto& it : it->second.children)
+        ItemHandle current = ancestorRelated.front();
+        ancestorRelated.pop();
+
+        const auto it = cc->items.find(handle);
+
+        if (it != cc->items.end())
         {
+            for (const auto& handle : cc->items[current].children)
+            {
+                ancestorRelated.push(handle);
+            }
             cc->items.erase(it);
-        }
 
-        // delete self as child
-        auto& children   = cc->items[it->second.parent].children;
-        const auto child = std::find(children.begin(), children.end(), handle);
-        if (child != children.end())
-        {
-            children.erase(child);
+            const auto rootIt = std::find(cc->roots.begin(), cc->roots.end(), handle);
+            if (rootIt != cc->roots.end())
+            {
+                cc->roots.erase(rootIt);
+            }
         }
-
-        // delete self
-        cc->items.erase(it);
     }
 
     if (process)
@@ -604,6 +627,8 @@ bool Tree::ClearItems()
     cc->nextItemHandle = 1ULL;
 
     cc->currentSelectedItemHandle = InvalidItemHandle;
+
+    cc->roots.clear();
 
     ProcessItemsToBeDrawn(InvalidItemHandle);
 
@@ -661,6 +686,41 @@ size_t Tree::GetItemsCount()
     CHECK(Context != nullptr, 0, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     return cc->items.size();
+}
+
+void Tree::SetToggleItemHandle(
+      const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback)
+{
+    CHECKRET(Context != nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    cc->callback  = callback;
+}
+
+bool Tree::ToggleItem(const ItemHandle handle)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    auto& item = cc->items[handle];
+    CHECK(item.isExpandable, true, "");
+
+    for (const auto& child : item.children)
+    {
+        RemoveItem(child);
+    }
+    item.children.clear();
+
+    item.expanded = !item.expanded;
+
+    if (item.expanded)
+    {
+        if (cc->callback)
+        {
+            CHECK(cc->callback(*this, handle, &item.metadata), false, "");
+        }
+    }
+
+    return true;
 }
 
 ItemHandle Tree::GetHandleForNewItem() const
