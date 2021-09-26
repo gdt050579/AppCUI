@@ -8,6 +8,7 @@ using namespace AppCUI::Graphics;
 #define TAB_DISPLAY_MODE_BOTTOM 1
 #define TAB_DISPLAY_MODE_LEFT   2
 #define TAB_DISPLAY_MODE_LIST   3
+#define TAB_DISPLAY_MODE_NOTABS 4
 
 #define TAB_DISPLAY_MODE(flags) (((flags) >> 8) & 0xF)
 
@@ -40,6 +41,9 @@ void TabControlContext::UpdateMargins()
             ;
             this->Margins.Bottom = 0;
         }
+        break;
+    case TAB_DISPLAY_MODE_NOTABS:
+        this->Margins.Left = this->Margins.Right = this->Margins.Bottom = this->Margins.Top = 0;
         break;
     default:
         LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
@@ -83,6 +87,8 @@ int TabControlContext::MousePositionToPanel(int x, int y)
         if ((idx > (int) this->CurrentControlIndex) && (idx >= 0))
             return idx;
         return -1;
+    case TAB_DISPLAY_MODE_NOTABS:
+        return -1; // no tabs to click on
     }
     LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
     return -1;
@@ -146,7 +152,6 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
         renderer.WriteText(cc->Text, params);
     }
 }
-
 void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
@@ -238,6 +243,11 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
         params.Y              = ypoz;
         renderer.WriteText(cc->Text, params);
     }
+}
+void TabControlContext::PaintNoTabsPanelTab(Graphics::Renderer& renderer)
+{
+    if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
+        renderer.Clear(' ', this->Cfg->Tab.PageColor);
 }
 bool NextTab(Tab* t)
 {
@@ -409,6 +419,9 @@ void Tab::Paint(Graphics::Renderer& renderer)
         break;
     case TAB_DISPLAY_MODE_LIST:
         Members->PaintListPanelTab(renderer);
+        break;
+    case TAB_DISPLAY_MODE_NOTABS:
+        Members->PaintNoTabsPanelTab(renderer);
         break;
     }
 }
