@@ -5,7 +5,10 @@
 namespace AppCUI::Controls
 {
 bool Tree::Create(
-      Control* parent, const std::string_view& layout, const TreeFlags flags, const std::vector<std::u16string> columns)
+      Control* parent,
+      const std::string_view& layout,
+      const unsigned int flags,
+      const std::vector<std::u16string> columns)
 {
     Context = new TreeControlContext();
     CHECK(Context != nullptr, false, "");
@@ -15,8 +18,20 @@ bool Tree::Create(
     cc->Layout.MaxHeight = 200000;
     cc->Layout.MinWidth  = 4;
     CHECK(Init(parent, "", layout, true), false, "Failed to create tree!");
-    cc->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL;
-    cc->ScrollBars.LeftMargin = 25; // search field
+
+    cc->treeFlags = flags;
+
+    cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+
+    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::HideScrollBar))
+    {
+        // no scrollbar
+    }
+    else
+    {
+        cc->Flags |= GATTR_HSCROLL | GATTR_VSCROLL;
+        cc->ScrollBars.LeftMargin = 25; // search field
+    }
 
     cc->maxItemsToDraw  = this->GetHeight() - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     cc->offsetTopToDraw = 0;
@@ -26,7 +41,7 @@ bool Tree::Create(
 
     if (columns.size() == 0)
     {
-        cc->columns.itemWidth   = cc->Layout.Width;
+        cc->columns.itemWidth   = cc->Layout.Width - 2; // 0 - border left | 1 - border right
         cc->columns.columnWidth = 0;
     }
     else
@@ -747,7 +762,11 @@ void Tree::SetToggleItemHandle(
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    cc->callback  = callback;
+    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
+    {
+        CHECKRET(callback != nullptr, "");
+        cc->callback = callback;
+    }
 }
 
 bool Tree::ToggleItem(const ItemHandle handle)
@@ -758,19 +777,25 @@ bool Tree::ToggleItem(const ItemHandle handle)
     auto& item = cc->items[handle];
     CHECK(item.isExpandable, true, "");
 
-    for (const auto& child : item.children)
+    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
     {
-        RemoveItem(child);
+        for (const auto& child : item.children)
+        {
+            RemoveItem(child);
+        }
+        item.children.clear();
     }
-    item.children.clear();
 
     item.expanded = !item.expanded;
 
     if (item.expanded)
     {
-        if (cc->callback)
+        if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
         {
-            CHECK(cc->callback(*this, handle, &item.metadata), false, "");
+            if (cc->callback)
+            {
+                CHECK(cc->callback(*this, handle, &item.metadata), false, "");
+            }
         }
     }
 

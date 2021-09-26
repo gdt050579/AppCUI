@@ -618,6 +618,7 @@ class TreeControlContext : public ControlContext
     std::vector<ItemHandle> roots;
     ColumnData columns;
     const unsigned int offset = 2;
+    unsigned int treeFlags    = 0;
 };
 
 enum class MenuItemType : unsigned int

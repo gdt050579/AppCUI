@@ -2434,7 +2434,7 @@ namespace Controls
         HideColumnsSeparator            = 0x000400, // not implemented
         Sortable                        = 0x000800, // not implemented
         DynamicallyPopulateNodeChildren = 0x001000, // not implemented
-        Reserved_002000                 = 0x002000, // not implemented
+        HideScrollBar                   = 0x002000, // not implemented
         Reserved_004000                 = 0x004000, // not implemented
         SearchMode                      = 0x008000, // not implemented
         HideSearchBar                   = 0x010000, // not implemented
@@ -2453,7 +2453,7 @@ namespace Controls
         bool Create(
               Control* parent,
               const std::string_view& layout,
-              const TreeFlags flags                     = TreeFlags::None,
+              const unsigned int flags                  = 0,
               const std::vector<std::u16string> columns = std::vector<std::u16string>());
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
