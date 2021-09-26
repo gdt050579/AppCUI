@@ -4,7 +4,7 @@
 
 namespace AppCUI::Controls
 {
-bool Tree::Create(Control* parent, const std::string_view& layout)
+bool Tree::Create(Control* parent, const std::string_view& layout, const std::vector<std::u16string> columns)
 {
     Context = new TreeControlContext();
     CHECK(Context != nullptr, false, "");
@@ -21,20 +21,38 @@ bool Tree::Create(Control* parent, const std::string_view& layout)
     cc->offsetTopToDraw = 0;
     cc->offsetBotToDraw = cc->maxItemsToDraw;
 
+    cc->columns.headerValues = columns;
+
+    if (columns.size() == 0)
+    {
+        cc->columns.itemWidth   = cc->Layout.Width;
+        cc->columns.columnWidth = 0;
+    }
+    else
+    {
+        cc->columns.itemWidth   = cc->Layout.Width / 2 - 1;
+        cc->columns.columnWidth = (static_cast<unsigned int>(cc->Layout.Width) - cc->columns.itemWidth) /
+                                  static_cast<unsigned int>(cc->columns.headerValues.size());
+    }
+
     return true;
 }
 
-bool Tree::RecursiveItemPainting(
-      Graphics::Renderer& renderer, const ItemHandle ih, WriteTextParams& wtp, const unsigned int offset) const
+bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
+    WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth };
+    wtp.Y     = 1; // 0  is for border
+    wtp.Align = TextAlignament::Left;
+
     for (auto i = cc->offsetTopToDraw; i < std::min<size_t>(cc->offsetBotToDraw, cc->itemsToDrew.size()); i++)
     {
-        auto& item = cc->items[cc->itemsToDrew[i]];
+        auto& item = cc->items[cc->itemsToDrew[i]]; 
 
-        wtp.X = item.depth * cc->offset;
+        wtp.X     = item.depth * cc->offset;
+        wtp.Width = cc->columns.itemWidth - item.depth * cc->offset + cc->offset - 3;
 
         if (item.isExpandable)
         {
@@ -69,6 +87,21 @@ bool Tree::RecursiveItemPainting(
         renderer.WriteText(item.value, wtp);
 
         wtp.Y++;
+    }
+
+    return true;
+}
+
+bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(cc->columns.headerValues.size() > 0, true, "");
+
+    for (auto i = 0; i < cc->columns.headerValues.size(); i++)
+    {
+        const auto x = static_cast<int>((cc->columns.itemWidth + 1) + i * cc->columns.columnWidth);
+        renderer.DrawVerticalLine(x, 1, cc->Layout.Height - 2, cc->colorText);
     }
 
     return true;
@@ -277,20 +310,15 @@ void Tree::Paint(Graphics::Renderer& renderer)
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->colorText, false);
-
-    const auto flags = WriteTextFlags::LeftMargin | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth |
-                       WriteTextFlags::OverwriteColors;
-    WriteTextParams wtp{ flags };
-    wtp.X     = 1; // 0  is for border
-    wtp.Y     = 1; // 0  is for border
-    wtp.Width = cc->Layout.Width;
+    PaintColumnSeparators(renderer);
 
     if (cc->notProcessed)
     {
         ProcessItemsToBeDrawn(InvalidItemHandle);
         cc->notProcessed = false;
     }
-    RecursiveItemPainting(renderer, InvalidItemHandle, wtp, 0);
+
+    ItemsPainting(renderer, InvalidItemHandle);
 }
 
 bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)

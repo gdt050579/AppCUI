@@ -581,15 +581,21 @@ class NumericSelectorControlContext : public ControlContext
     } isMouseOn{ IsMouseOn::None };
 };
 
+struct ColumnData
+{
+    unsigned int itemWidth   = 0;
+    unsigned int columnWidth = 0;
+    std::vector<std::u16string> headerValues;
+};
+
 struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::u16string value;
     ItemData data{};
-    bool expanded        = false;
-    bool isExpandable    = false;
-    unsigned int columns = 1;
+    bool expanded     = false;
+    bool isExpandable = false;
     std::vector<std::string> columnsValues;
     std::vector<ItemHandle> children;
     std::u16string metadata;
@@ -609,6 +615,7 @@ class TreeControlContext : public ControlContext
     bool notProcessed                                                                      = true;
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
+    ColumnData columns;
 
     // TODO: move these (context, cfg, etc)
     const unsigned int offset          = 2;

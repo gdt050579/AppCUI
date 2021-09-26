@@ -2428,7 +2428,10 @@ namespace Controls
     class EXPORT Tree : public Control
     {
       public:
-        bool Create(Control* parent, const std::string_view& layout);
+        bool Create(
+              Control* parent,
+              const std::string_view& layout,
+              const std::vector<std::u16string> columns = std::vector<std::u16string>());
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnFocus() override;
@@ -2455,11 +2458,8 @@ namespace Controls
 
       private:
         ItemHandle GetHandleForNewItem() const;
-        bool RecursiveItemPainting(
-              Graphics::Renderer& renderer,
-              const ItemHandle ih,
-              AppCUI::Graphics::WriteTextParams& wtp,
-              const unsigned int offset) const;
+        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
+        bool PaintColumnSeparators(Graphics::Renderer& renderer);
         bool MoveUp();
         bool MoveDown();
         bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
