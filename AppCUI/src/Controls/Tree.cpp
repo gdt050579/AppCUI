@@ -39,17 +39,8 @@ bool Tree::Create(
 
     cc->columns.headerValues = columns;
 
-    if (columns.size() == 0)
-    {
-        cc->columns.itemWidth   = cc->Layout.Width - 2; // 0 - border left | 1 - border right
-        cc->columns.columnWidth = 0;
-    }
-    else
-    {
-        cc->columns.itemWidth   = cc->Layout.Width / 2 - 1;
-        cc->columns.columnWidth = (static_cast<unsigned int>(cc->Layout.Width) - cc->columns.itemWidth) /
-                                  static_cast<unsigned int>(cc->columns.headerValues.size());
-    }
+    cc->columns.width = (static_cast<unsigned int>(cc->Layout.Width)) /
+                        static_cast<unsigned int>(std::max<>(cc->columns.headerValues.size(), size_t(1U)));
 
     return true;
 }
@@ -68,7 +59,7 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
         auto& item = cc->items[cc->itemsToDrew[i]];
 
         wtp.X     = item.depth * cc->offset;
-        wtp.Width = cc->columns.itemWidth - item.depth * cc->offset + cc->offset - 3;
+        wtp.Width = cc->columns.width - item.depth * cc->offset + cc->offset - 3;
 
         if (item.isExpandable)
         {
@@ -100,7 +91,7 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
             wtp.Color = cc->Cfg->Tree.Text.Normal;
         }
 
-        renderer.WriteText(item.value, wtp);
+        renderer.WriteText(item.values[0], wtp);
 
         wtp.Y++;
     }
@@ -120,16 +111,15 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
     wtp.Color = cc->Cfg->Tree.Column.Text;
 
     renderer.FillHorizontalLine(1, 1, cc->Layout.Width - 2, ' ', cc->Cfg->Tree.Column.Header);
-    renderer.WriteSingleLineText(1, 1, "content", wtp.Color);
 
     for (auto i = 0; i < cc->columns.headerValues.size(); i++)
     {
-        wtp.Width = cc->columns.columnWidth - 1 - 1; // left vertical line | right vertical line
-        wtp.X     = static_cast<int>((cc->columns.itemWidth + 1) + i * cc->columns.columnWidth) + 1;
+        wtp.Width = cc->columns.width - 1 - 1; // left vertical line | right vertical line
+        wtp.X     = (i * cc->columns.width) + 2;
         renderer.WriteText(cc->columns.headerValues[i], wtp);
     }
 
-    return false;
+    return true;
 }
 
 bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
@@ -140,8 +130,13 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
 
     for (auto i = 0; i < cc->columns.headerValues.size(); i++)
     {
-        const auto x = static_cast<int>((cc->columns.itemWidth + 1) + i * cc->columns.columnWidth);
+        const auto x = (i * cc->columns.width) + 1;
         renderer.DrawVerticalLine(x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+    }
+
+    if (cc->columns.headerValues.size() > 1)
+    {
+        renderer.DrawVerticalLine(cc->Layout.Width - 2, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
     }
 
     return true;
@@ -518,7 +513,27 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     case AppCUI::Input::MouseButton::None:
         break;
     case AppCUI::Input::MouseButton::Left:
-        if (y > 1 && y < this->GetHeight())
+        switch (cc->isMouseOn)
+        {
+        case TreeControlContext::IsMouseOn::Border:
+            break;
+        case TreeControlContext::IsMouseOn::ToggleSymbol:
+        {
+            const unsigned int index = y - 2;
+            const auto itemHandle    = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
+            const auto it            = cc->items.find(itemHandle);
+            ToggleItem(it->second.handle);
+            if (it->second.expanded == false)
+            {
+                if (IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
+                {
+                    cc->currentSelectedItemHandle = it->second.handle;
+                }
+            }
+            ProcessItemsToBeDrawn(InvalidItemHandle);
+        }
+        break;
+        case TreeControlContext::IsMouseOn::Item:
         {
             const unsigned int index = y - 2;
             if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
@@ -532,23 +547,11 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
             if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth())
             {
                 cc->currentSelectedItemHandle = itemHandle;
-                break;
             }
-
-            if (x >= static_cast<int>(it->second.depth * cc->offset) &&
-                x < static_cast<int>(it->second.depth * cc->offset + cc->offset))
-            {
-                ToggleItem(it->second.handle);
-                if (it->second.expanded == false)
-                {
-                    if (IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
-                    {
-                        cc->currentSelectedItemHandle = it->second.handle;
-                    }
-                }
-                ProcessItemsToBeDrawn(InvalidItemHandle);
-                break;
-            }
+        }
+        break;
+        default:
+            break;
         }
         break;
     case AppCUI::Input::MouseButton::Center:
@@ -560,6 +563,43 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     default:
         break;
     }
+}
+
+bool Tree::OnMouseOver(int x, int y)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    if (IsMouseOnBorder(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::Border;
+    }
+    else if (IsMouseOnToggleSymbol(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ToggleSymbol;
+    }
+    else if (IsMouseOnItem(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
+    }
+    else if (IsMouseOnColumnSeparator(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnSeparator;
+    }
+    else if (IsMouseOnColumnHeader(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnHeader;
+    }
+    else if (IsMouseOnSearchField(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::SearchField;
+    }
+    else
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::None;
+    }
+
+    return false;
 }
 
 bool Tree::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
@@ -599,16 +639,23 @@ void Tree::OnUpdateScrollBars()
 
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
-      const std::u16string_view& value,
+      const std::vector<std::u16string_view> values,
       void* data,
       bool process,
       std::u16string metadata,
       bool isExpandable)
 {
+    CHECK(values.size() > 0, InvalidItemHandle, "");
+
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    TreeItem ti{ parent, GetHandleForNewItem(), value.data() };
+    std::vector<std::u16string> itemValues;
+    for (const auto& value : values)
+    {
+        itemValues.push_back(value.data());
+    }
+    TreeItem ti{ parent, GetHandleForNewItem(), itemValues };
     ti.data         = ItemData(data);
     ti.isExpandable = isExpandable;
     ti.metadata     = metadata;
@@ -720,7 +767,7 @@ const std::u16string_view Tree::GetItemText(const ItemHandle handle)
     const auto it = cc->items.find(handle);
     if (it != cc->items.end())
     {
-        return it->second.value;
+        return it->second.values[0];
     }
 
     return u"";
@@ -800,6 +847,76 @@ bool Tree::ToggleItem(const ItemHandle handle)
     }
 
     return true;
+}
+
+bool Tree::IsMouseOnToggleSymbol(int x, int y) const
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    const unsigned int index = y - 2;
+    if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
+    {
+        return false;
+    }
+
+    const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
+    const auto it         = cc->items.find(itemHandle);
+
+    if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth())
+    {
+        return false; // on item
+    }
+
+    if (x >= static_cast<int>(it->second.depth * cc->offset) &&
+        x < static_cast<int>(it->second.depth * cc->offset + cc->offset - 1U))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool Tree::IsMouseOnItem(int x, int y) const
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
+    const unsigned int index = y - 2;
+    if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
+    {
+        return false;
+    }
+
+    const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
+    const auto it         = cc->items.find(itemHandle);
+
+    return (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth());
+}
+
+bool Tree::IsMouseOnBorder(int x, int y) const
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    return (x == 0 || x == cc->Layout.Width - 1) || (y == 0 || y == cc->Layout.Height - 1);
+}
+
+bool Tree::IsMouseOnColumnHeader(int x, int y) const
+{
+    // TODO:
+    return false;
+}
+
+bool Tree::IsMouseOnColumnSeparator(int x, int y) const
+{
+    // TODO:
+    return false;
+}
+
+bool Tree::IsMouseOnSearchField(int x, int y) const
+{
+    // TODO:
+    return false;
 }
 
 ItemHandle Tree::GetHandleForNewItem() const

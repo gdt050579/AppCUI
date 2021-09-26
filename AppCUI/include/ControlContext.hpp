@@ -584,8 +584,7 @@ class NumericSelectorControlContext : public ControlContext
 
 struct ColumnData
 {
-    unsigned int itemWidth   = 0;
-    unsigned int columnWidth = 0;
+    unsigned int width = 0;
     std::vector<std::u16string> headerValues;
 };
 
@@ -593,11 +592,10 @@ struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
-    std::u16string value;
+    std::vector<std::u16string> values;
     ItemData data{};
     bool expanded     = false;
     bool isExpandable = false;
-    std::vector<std::string> columnsValues;
     std::vector<ItemHandle> children;
     std::u16string metadata;
     unsigned int depth = 1;
@@ -619,6 +617,17 @@ class TreeControlContext : public ControlContext
     ColumnData columns;
     const unsigned int offset = 2;
     unsigned int treeFlags    = 0;
+
+    enum class IsMouseOn
+    {
+        None,
+        ToggleSymbol,
+        Item,
+        Border,
+        ColumnSeparator,
+        ColumnHeader,
+        SearchField
+    } isMouseOn{ IsMouseOn::None };
 };
 
 enum class MenuItemType : unsigned int

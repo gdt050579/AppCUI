@@ -197,7 +197,8 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
 bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
-    const auto i   = tree.AddItem(wcc->referalItemHandle, std::u16string(wcc->Text), w);
+    const std::u16string itemTitle(wcc->Text);
+    const auto i = tree.AddItem(wcc->referalItemHandle, { itemTitle }, w);
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)

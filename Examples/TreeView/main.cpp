@@ -30,14 +30,16 @@ class ExampleMainWindow : public AppCUI::Controls::Window
               this,
               "x:1%, y:20%, w:99%, h:85%",
               static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren) |
-                    static_cast<unsigned int>(TreeFlags::HideScrollBar));
+                    static_cast<unsigned int>(TreeFlags::HideScrollBar),
+              { u"Path", u"test2", u"test3" });
         tree.SetToggleItemHandle(PopulateTree);
 
         tree.ClearItems();
-        const auto path = std::filesystem::current_path().u16string();
-        const auto root = tree.AddItem(
+        const auto path     = std::filesystem::current_path().u16string();
+        const auto filename = std::filesystem::current_path().filename().u16string();
+        const auto root     = tree.AddItem(
               InvalidItemHandle,
-              std::filesystem::current_path().filename().u16string(),
+              { filename },
               nullptr,
               false,
               std::filesystem::current_path().u16string(),
@@ -63,10 +65,11 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                     currentFolder.SetText(res->u8string());
                     tree.ClearItems();
 
-                    const auto path = std::filesystem::path(res->u16string());
-                    const auto root = tree.AddItem(
+                    const auto path     = std::filesystem::path(res->u16string());
+                    const auto filename = path.filename().u16string();
+                    const auto root     = tree.AddItem(
                           InvalidItemHandle,
-                          path.filename().u16string(),
+                          { filename },
                           nullptr,
                           false,
                           path.u16string(),
@@ -90,8 +93,8 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             const auto rdi = std::filesystem::directory_iterator(fsPath);
             for (const auto& p : rdi)
             {
-                tree.AddItem(
-                      handle, p.path().filename().u16string(), nullptr, false, p.path().u16string(), p.is_directory());
+                const auto filename = p.path().filename().u16string();
+                tree.AddItem(handle, { filename }, nullptr, false, p.path().u16string(), p.is_directory());
             }
         }
         catch (std::exception e)

@@ -2459,12 +2459,13 @@ namespace Controls
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnFocus() override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         void OnUpdateScrollBars() override;
 
         ItemHandle AddItem(
               const ItemHandle parent,
-              const std::u16string_view& value,
+              const std::vector<std::u16string_view> values,
               void* data              = nullptr,
               bool process            = false,
               std::u16string metadata = u"",
@@ -2490,6 +2491,12 @@ namespace Controls
         bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
         bool ToggleExpandRecursive(const ItemHandle handle);
         bool ToggleItem(const ItemHandle handle);
+        bool IsMouseOnToggleSymbol(int x, int y) const;
+        bool IsMouseOnItem(int x, int y) const;
+        bool IsMouseOnBorder(int x, int y) const;
+        bool IsMouseOnColumnHeader(int x, int y) const;
+        bool IsMouseOnColumnSeparator(int x, int y) const;
+        bool IsMouseOnSearchField(int x, int y) const;
     };
 
 }; // namespace Controls
