@@ -71,7 +71,7 @@ class TabExampleWin : public AppCUI::Controls::Window
 class MyWin : public AppCUI::Controls::Window
 {
     Panel p;
-    RadioBox tabTop, tabBottom, tabLeft, tabList;
+    RadioBox tabTop, tabBottom, tabLeft, tabList, tabNoTabs;
     CheckBox cbTransparent, cbTabBar;
     Button btnShow;
     NumericSelector selector;
@@ -81,11 +81,12 @@ class MyWin : public AppCUI::Controls::Window
     MyWin()
     {
         this->Create("Tab example config", "d:c,w:50,h:17");
-        p.Create(this, "Tab mode", "x:1,y:1,w:46,h:6");
+        p.Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
         tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
         tabLeft.Create(&p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);
         tabList.Create(&p, "Lis&ts", "x:1,y:3,w:40", TAB_MODE_GROUP);
+        tabNoTabs.Create(&p, "&Hide tabs (no visible tabs)","x:1,y:4,w:40", TAB_MODE_GROUP);
         tabTop.SetChecked(true);
 
         cbTransparent.Create(this, "Transparent background for tab pages", "x:1,y:8,w:46");
@@ -108,6 +109,8 @@ class MyWin : public AppCUI::Controls::Window
             flags = TabFlags::LeftTabs;
         if (tabList.IsChecked())
             flags = TabFlags::ListView;
+        if (tabNoTabs.IsChecked())
+            flags = TabFlags::HideTabs;
         if (cbTransparent.IsChecked())
             flags = flags | TabFlags::TransparentBackground;
         if (cbTabBar.IsChecked())
