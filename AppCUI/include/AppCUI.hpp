@@ -2428,23 +2428,23 @@ namespace Controls
 
     enum class TreeFlags : unsigned int
     {
-        None                 = 0x000000,
-        HideColumns          = 0x000100,
-        HideBorder           = 0x000200,
-        HideColumnsSeparator = 0x000400,
-        Sortable             = 0x000800,
-        Reserved_001000      = 0x001000,
-        Reserved_002000      = 0x002000,
-        Reserved_004000      = 0x004000,
-        SearchMode           = 0x008000,
-        HideSearchBar        = 0x010000,
-        Reserved_020000      = 0x020000,
-        Reserved_040000      = 0x040000,
-        Reserved_080000      = 0x080000,
-        Reserved_100000      = 0x100000,
-        Reserved_200000      = 0x200000,
-        Reserved_400000      = 0x400000,
-        Reserved_800000      = 0x800000
+        None                            = 0x000000,
+        HideColumns                     = 0x000100, // not implemented
+        HideBorder                      = 0x000200, // not implemented
+        HideColumnsSeparator            = 0x000400, // not implemented
+        Sortable                        = 0x000800, // not implemented
+        DynamicallyPopulateNodeChildren = 0x001000, // not implemented
+        Reserved_002000                 = 0x002000, // not implemented
+        Reserved_004000                 = 0x004000, // not implemented
+        SearchMode                      = 0x008000, // not implemented
+        HideSearchBar                   = 0x010000, // not implemented
+        Reserved_020000                 = 0x020000, // not implemented
+        Reserved_040000                 = 0x040000, // not implemented
+        Reserved_080000                 = 0x080000, // not implemented
+        Reserved_100000                 = 0x100000, // not implemented
+        Reserved_200000                 = 0x200000, // not implemented
+        Reserved_400000                 = 0x400000, // not implemented
+        Reserved_800000                 = 0x800000  // not implemented
     };
 
     class EXPORT Tree : public Control
