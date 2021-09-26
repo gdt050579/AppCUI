@@ -2425,12 +2425,34 @@ namespace Controls
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
     };
 
+    enum class TreeFlags : unsigned int
+    {
+        None                 = 0x000000,
+        HideColumns          = 0x000100,
+        HideBorder           = 0x000200,
+        HideColumnsSeparator = 0x000400,
+        Sortable             = 0x000800,
+        Reserved_001000      = 0x001000,
+        Reserved_002000      = 0x002000,
+        Reserved_004000      = 0x004000,
+        SearchMode           = 0x008000,
+        HideSearchBar        = 0x010000,
+        Reserved_020000      = 0x020000,
+        Reserved_040000      = 0x040000,
+        Reserved_080000      = 0x080000,
+        Reserved_100000      = 0x100000,
+        Reserved_200000      = 0x200000,
+        Reserved_400000      = 0x400000,
+        Reserved_800000      = 0x800000
+    };
+
     class EXPORT Tree : public Control
     {
       public:
         bool Create(
               Control* parent,
               const std::string_view& layout,
+              const TreeFlags flags                     = TreeFlags::None,
               const std::vector<std::u16string> columns = std::vector<std::u16string>());
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2459,6 +2481,7 @@ namespace Controls
       private:
         ItemHandle GetHandleForNewItem() const;
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
+        bool PaintColumnHeaders(Graphics::Renderer& renderer);
         bool PaintColumnSeparators(Graphics::Renderer& renderer);
         bool MoveUp();
         bool MoveDown();
@@ -2677,7 +2700,7 @@ namespace Application
         } Splitter;
         struct
         {
-            Graphics::ColorPair NormalColor, TextColor;
+            Graphics::ColorPair NormalColor, Text;
         } Panel;
         struct
         {
@@ -2768,13 +2791,32 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair TextColor;
-            } Normal, Focused, Inactive, Hover, WrongValue;
+                Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
+            } Text;
         } NumericSelector;
         struct
         {
             Graphics::ColorPair Text, Arrow;
         } ToolTip;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Border;
+                struct
+                {
+                    Graphics::ColorPair Separator, Text, Header;
+                } Column;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused, Inactive;
+                } Text;
+                struct
+                {
+                    Graphics::ColorPair Expanded, Collapsed, SingleElement;
+                } Symbol;
+            };
+        } Tree;
         void SetDarkTheme();
     };
 

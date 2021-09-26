@@ -616,14 +616,7 @@ class TreeControlContext : public ControlContext
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
     ColumnData columns;
-
-    // TODO: move these (context, cfg, etc)
-    const unsigned int offset          = 2;
-    const ColorPair colorTriangleRight = ColorPair{ Color::Green, Color::Transparent };
-    const ColorPair colorTriangleDown  = ColorPair{ Color::Red, Color::Transparent };
-    const ColorPair colorCircleFiled   = ColorPair{ Color::Black, Color::Transparent };
-    const ColorPair colorText          = ColorPair{ Color::White, Color::Transparent };
-    const ColorPair colorTextSelected  = ColorPair{ Color::Black, Color::Gray };
+    const unsigned int offset = 2;
 };
 
 enum class MenuItemType : unsigned int

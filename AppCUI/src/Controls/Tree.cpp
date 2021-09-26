@@ -4,7 +4,8 @@
 
 namespace AppCUI::Controls
 {
-bool Tree::Create(Control* parent, const std::string_view& layout, const std::vector<std::u16string> columns)
+bool Tree::Create(
+      Control* parent, const std::string_view& layout, const TreeFlags flags, const std::vector<std::u16string> columns)
 {
     Context = new TreeControlContext();
     CHECK(Context != nullptr, false, "");
@@ -17,7 +18,7 @@ bool Tree::Create(Control* parent, const std::string_view& layout, const std::ve
     cc->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL;
     cc->ScrollBars.LeftMargin = 25; // search field
 
-    cc->maxItemsToDraw  = this->GetHeight() - 2;
+    cc->maxItemsToDraw  = this->GetHeight() - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     cc->offsetTopToDraw = 0;
     cc->offsetBotToDraw = cc->maxItemsToDraw;
 
@@ -44,12 +45,12 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth };
-    wtp.Y     = 1; // 0  is for border
+    wtp.Y     = 2; // 0  is for border | 1 is for header
     wtp.Align = TextAlignament::Left;
 
     for (auto i = cc->offsetTopToDraw; i < std::min<size_t>(cc->offsetBotToDraw, cc->itemsToDrew.size()); i++)
     {
-        auto& item = cc->items[cc->itemsToDrew[i]]; 
+        auto& item = cc->items[cc->itemsToDrew[i]];
 
         wtp.X     = item.depth * cc->offset;
         wtp.Width = cc->columns.itemWidth - item.depth * cc->offset + cc->offset - 3;
@@ -58,18 +59,18 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
         {
             if (item.expanded)
             {
-                wtp.Color = cc->colorTriangleDown;
+                wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
                 renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
             }
             else
             {
-                wtp.Color = cc->colorTriangleRight;
+                wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
                 renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
             }
         }
         else
         {
-            wtp.Color = cc->colorCircleFiled;
+            wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
             renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
         }
 
@@ -77,11 +78,11 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
 
         if (item.handle == cc->currentSelectedItemHandle)
         {
-            wtp.Color = cc->colorTextSelected;
+            wtp.Color = cc->Cfg->Tree.Text.Focused;
         }
         else
         {
-            wtp.Color = cc->colorText;
+            wtp.Color = cc->Cfg->Tree.Text.Normal;
         }
 
         renderer.WriteText(item.value, wtp);
@@ -90,6 +91,30 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
     }
 
     return true;
+}
+
+bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(cc->columns.headerValues.size() > 0, true, "");
+
+    WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
+    wtp.Y     = 1; // 0  is for border
+    wtp.Align = TextAlignament::Left;
+    wtp.Color = cc->Cfg->Tree.Column.Text;
+
+    renderer.FillHorizontalLine(1, 1, cc->Layout.Width - 2, ' ', cc->Cfg->Tree.Column.Header);
+    renderer.WriteSingleLineText(1, 1, "content", wtp.Color);
+
+    for (auto i = 0; i < cc->columns.headerValues.size(); i++)
+    {
+        wtp.Width = cc->columns.columnWidth - 1 - 1; // left vertical line | right vertical line
+        wtp.X     = static_cast<int>((cc->columns.itemWidth + 1) + i * cc->columns.columnWidth) + 1;
+        renderer.WriteText(cc->columns.headerValues[i], wtp);
+    }
+
+    return false;
 }
 
 bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
@@ -101,7 +126,7 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
     for (auto i = 0; i < cc->columns.headerValues.size(); i++)
     {
         const auto x = static_cast<int>((cc->columns.itemWidth + 1) + i * cc->columns.columnWidth);
-        renderer.DrawVerticalLine(x, 1, cc->Layout.Height - 2, cc->colorText);
+        renderer.DrawVerticalLine(x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
     }
 
     return true;
@@ -309,7 +334,8 @@ void Tree::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->colorText, false);
+    renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->Cfg->Tree.Border, false);
+    PaintColumnHeaders(renderer);
     PaintColumnSeparators(renderer);
 
     if (cc->notProcessed)
@@ -477,9 +503,9 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     case AppCUI::Input::MouseButton::None:
         break;
     case AppCUI::Input::MouseButton::Left:
-        if (y > 0 && y < this->GetHeight())
+        if (y > 1 && y < this->GetHeight())
         {
-            const unsigned int index = y - 1;
+            const unsigned int index = y - 2;
             if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
             {
                 break;

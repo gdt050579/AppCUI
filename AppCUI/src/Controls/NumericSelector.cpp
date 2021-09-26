@@ -107,7 +107,7 @@ void NumericSelector::Paint(Renderer& renderer)
               static_cast<int>(cc->sliderPosition + cc->buttonPadding),
               0,
               -1,
-              cc->Cfg->NumericSelector.Hover.TextColor);
+              cc->Cfg->NumericSelector.Text.Hover);
     }
 
     renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
@@ -115,11 +115,11 @@ void NumericSelector::Paint(Renderer& renderer)
     switch (cc->isMouseOn)
     {
     case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Hover.TextColor);
+        renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Text.Hover);
         break;
     case NumericSelectorControlContext::IsMouseOn::PlusButton:
         renderer.FillHorizontalLine(
-              GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Hover.TextColor);
+              GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Text.Hover);
         break;
     case NumericSelectorControlContext::IsMouseOn::TextField:
         if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
@@ -488,19 +488,19 @@ bool NumericSelector::GetRenderColor(Graphics::ColorPair& color) const
 
     if (IsEnabled() == false)
     {
-        color = nsCfg.Inactive.TextColor;
+        color = nsCfg.Text.Inactive;
     }
     else if (cc->intoInsertionMode && IsValueInsertedWrong())
     {
-        color = nsCfg.WrongValue.TextColor;
+        color = nsCfg.Text.WrongValue;
     }
     else if (cc->Focused)
     {
-        color = nsCfg.Focused.TextColor;
+        color = nsCfg.Text.Focused;
     }
     else
     {
-        color = nsCfg.Normal.TextColor;
+        color = nsCfg.Text.Normal;
     }
 
     return true;
