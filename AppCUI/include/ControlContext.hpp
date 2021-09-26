@@ -373,6 +373,7 @@ struct TabControlContext : public ControlContext
     void PaintTopBottomPanelTab(Graphics::Renderer& renderer, bool onTop);
     void PaintLeftPanelTab(Graphics::Renderer& renderer);
     void PaintListPanelTab(Graphics::Renderer& renderer);
+    void PaintNoTabsPanelTab(Graphics::Renderer& renderer);
 };
 struct CanvasControlContext : public ControlContext
 {

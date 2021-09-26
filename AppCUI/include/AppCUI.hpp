@@ -1041,6 +1041,7 @@ namespace OS
     class EXPORT Library
     {
         void* libraryHandle;
+
       public:
         Library();
         bool Load(const std::filesystem::path& path);
@@ -2066,6 +2067,7 @@ namespace Controls
         BottomTabs            = 0x000100,
         LeftTabs              = 0x000200,
         ListView              = 0x000300,
+        HideTabs              = 0x000400,
         TransparentBackground = 0x001000,
         TabsBar               = 0x002000,
     };
