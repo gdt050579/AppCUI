@@ -20,7 +20,7 @@ class MyControl : public AppCUI::Controls::UserControl
 class WindowControlsBarExample : public AppCUI::Controls::Window
 {
     MyControl m;
-    ItemHandle itText,itRed,itGreen,itBlue;
+    ItemHandle itText,itRed,itGreen,itBlue,itmShowHide;
 
   public:
     WindowControlsBarExample(char id)
@@ -34,7 +34,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         this->SetTag("TAG", "A tag is a small string\nthat explains what is the purpose\nof this window");
         // add buttons;
         auto cb = this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft);
-        cb.AddCommandItem("Hide Colors", 12345, "Show/Hide colors group");
+        itmShowHide = cb.AddCommandItem("Hide Colors", 12345, "Show/Hide colors group");
         cb.AddCommandItem("Center", 12346, "When you press this button the Window will center to the screen");
         cb.AddCommandItem("+", 12347, "Increase the number from text item");
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight);
@@ -61,6 +61,12 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
                 this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, value);
                 this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, value);
                 this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, value);
+                if (value)
+                    this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft)
+                          .SetItemText(itmShowHide, "Hide colors");
+                else
+                    this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft)
+                          .SetItemText(itmShowHide, "Show colors");
                 return true;
             case 12346:
                 this->CenterScreen();
