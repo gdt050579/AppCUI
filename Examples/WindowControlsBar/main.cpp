@@ -20,7 +20,7 @@ class MyControl : public AppCUI::Controls::UserControl
 class WindowControlsBarExample : public AppCUI::Controls::Window
 {
     MyControl m;
-    ItemHandle itText;
+    ItemHandle itText,itRed,itGreen,itBlue,itmShowHide;
 
   public:
     WindowControlsBarExample(char id)
@@ -34,13 +34,13 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
         this->SetTag("TAG", "A tag is a small string\nthat explains what is the purpose\nof this window");
         // add buttons;
         auto cb = this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft);
-        cb.AddCommandItem("Close", 12345, "When you press this button the Window will close");
+        itmShowHide = cb.AddCommandItem("Hide Colors", 12345, "Show/Hide colors group");
         cb.AddCommandItem("Center", 12346, "When you press this button the Window will center to the screen");
         cb.AddCommandItem("+", 12347, "Increase the number from text item");
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight);
-        cb.AddSingleChoiceItem("&Red", 100, false);
-        cb.AddSingleChoiceItem("&Green", 101, false);
-        cb.AddSingleChoiceItem("&Blue", 102, id == '2');
+        itRed = cb.AddSingleChoiceItem("&Red", 100, false);
+        itGreen = cb.AddSingleChoiceItem("&Green", 101, false);
+        itBlue = cb.AddSingleChoiceItem("&Blue", 102, id == '2');
         cb = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
         cb.AddCheckItem("&Option 1", 200, false, "Check this to enable option 1");
         cb.AddCheckItem("O&ption 2", 201, false, "Check this to enable option 2");
@@ -49,6 +49,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
     bool OnEvent(Control* sender, Event eventType, int ID) override
     {
         Utils::LocalString<128> s;
+        bool value;
         if (Window::OnEvent(sender, eventType, ID))
             return true;
         if (eventType == Event::Command)
@@ -56,7 +57,16 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
             switch (ID)
             {
             case 12345:
-                Application::Close();
+                value = !this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).IsItemVisible(itRed);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, value);
+                if (value)
+                    this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft)
+                          .SetItemText(itmShowHide, "Hide colors");
+                else
+                    this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft)
+                          .SetItemText(itmShowHide, "Show colors");
                 return true;
             case 12346:
                 this->CenterScreen();
