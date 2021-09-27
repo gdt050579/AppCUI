@@ -8,7 +8,7 @@ This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Exam
 
 ## General description 
 
-**AppCUI** is a [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
+**AppCUI** is a cross-platform [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
 
 Generally speaking, the library allows to build a virtual desktop, with multiple windows and extensible components.
 
@@ -16,12 +16,26 @@ The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Ex
 
 ![ListView usage example](docs/example_images/listview.gif)
 
+The library displays the whole spectre of ASCII (and ASCII extended, via [Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) characters, but also a wide range of `UTF16` characters.
 
+In this example we can see the display of characters with values from `0` to `255`, [UTF8 Box Drawing characters](https://en.wikipedia.org/wiki/Box_Drawing), as well as `UTF16` symbols, russian and romanian characters.
+
+![Font display example](docs/example_images/fonttest.png)
+
+## Display
+
+While the rendering of components, layering and colors management is done in the backend, several options are available for display. In here, we call them _Frontends_.
+
+1. Windows Console is available on Windows systems and provides full functionality for interaction like mouse click, drag, keyboard, resizing, etc.
+2. SDL2 is available as a frontend for all systems including Windows, OSX and Unix. It also provides full functionality.
+3. NCurses with limited functionality is available for Unix and OSX systems.
+
+While frontends may be different, AppCUI strives to provide cross-platform support so that the same app looks, feels and behaves the same on every system.
 
 
 ## Advanced documentation
 
-Detailed informations can be found (here)[https://gdt050579.github.io/AppCUI/].
+Detailed informations can be found [here](https://gdt050579.github.io/AppCUI/).
 
 ## Building
 
