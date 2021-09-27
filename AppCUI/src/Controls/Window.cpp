@@ -424,6 +424,23 @@ bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bo
     }
     RETURNERROR(false, "This method can only be applied on Check and Radio items");
 }
+bool AppCUI::Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool value)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    if ((b->Type == WindowBarItemType::CheckBox) || (b->Type == WindowBarItemType::Button) ||
+        (b->Type == WindowBarItemType::SingleChoice) || (b->Type == WindowBarItemType::Text))
+    {
+        // change visibility
+        if (value)
+            b->RemoveFlag(WindowBarItemFlags::Hidden);
+        else
+            b->SetFlag(WindowBarItemFlags::Hidden);
+        UpdateWindowsButtonsPoz((WindowControlContext*) this->Context);
+        return true;
+    }
+    RETURNERROR(false, "This method can only be applied on Check and Radio items");
+}
 //=========================================================================================================================================================
 bool WindowBarItem::Init(
       WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText)
@@ -1130,4 +1147,3 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
-

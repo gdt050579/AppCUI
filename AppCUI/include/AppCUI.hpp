@@ -1870,6 +1870,7 @@ namespace Controls
         bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
+        bool SetItemVisible(ItemHandle itemHandle, bool value);
         friend class Window;
     };
     class EXPORT Window : public Control
