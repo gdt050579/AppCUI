@@ -7,6 +7,8 @@
 
 This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`
 
+Documentation: [https://gdt050579.github.io/AppCUI/]
+
 ## Building
 
 Optionally, you can choose which frontend you want to have on your system:
