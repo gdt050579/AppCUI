@@ -1,6 +1,5 @@
 #include "AppCUI.hpp"
 #include <cstring>
-#include <chrono>
 #include <string>
 #include <locale>
 #include <codecvt>
@@ -41,12 +40,11 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         tree.SetToggleItemHandle(PopulateTree);
 
         tree.ClearItems();
-        const auto path                  = std::filesystem::current_path().u16string();
-        const auto filename              = std::filesystem::current_path().filename().u16string();
-        const auto pathLastWriteTime     = std::filesystem::last_write_time(std::filesystem::current_path());
-        const auto pathLastWriteTimeText = GetLastFileWriteText(pathLastWriteTime);
-        unsigned long long pathSize      = 0;
-        std::u16string pathSizeText      = u"0";
+        const auto path              = std::filesystem::current_path().u16string();
+        const auto filename          = std::filesystem::current_path().filename().u16string();
+        const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
+        unsigned long long pathSize  = 0;
+        std::u16string pathSizeText  = u"0";
         try
         {
             pathSize     = std::filesystem::file_size(path);
@@ -57,7 +55,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         }
         const auto root = tree.AddItem(
               InvalidItemHandle,
-              { filename, pathLastWriteTimeText, pathSizeText },
+              { filename, pathLastWriteTime, pathSizeText },
               nullptr,
               false,
               std::filesystem::current_path().u16string(),
@@ -83,10 +81,9 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                     currentFolder.SetText(res->u8string());
                     tree.ClearItems();
 
-                    const auto path                  = std::filesystem::path(res->u16string());
-                    const auto filename              = path.filename().u16string();
-                    const auto pathLastWriteTime     = std::filesystem::last_write_time(path);
-                    const auto pathLastWriteTimeText = GetLastFileWriteText(pathLastWriteTime);
+                    const auto path              = std::filesystem::path(res->u16string());
+                    const auto filename          = path.filename().u16string();
+                    const auto pathLastWriteTime = GetLastFileWriteText(path);
 
                     unsigned long long pathSize = 0;
                     std::u16string pathSizeText = u"0";
@@ -101,7 +98,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
 
                     const auto root = tree.AddItem(
                           InvalidItemHandle,
-                          { filename, pathLastWriteTimeText, pathSizeText },
+                          { filename, pathLastWriteTime, pathSizeText },
                           nullptr,
                           false,
                           path.u16string(),
@@ -125,10 +122,10 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             const auto rdi = std::filesystem::directory_iterator(fsPath);
             for (const auto& p : rdi)
             {
-                const auto filename              = p.path().filename().u16string();
-                const auto pathLastWriteTimeText = GetLastFileWriteText(p.last_write_time());
-                unsigned long long pathSize      = p.file_size();
-                std::u16string pathSizeText      = u"0";
+                const auto filename          = p.path().filename().u16string();
+                const auto pathLastWriteTime = GetLastFileWriteText(p.path());
+                unsigned long long pathSize  = p.file_size();
+                std::u16string pathSizeText  = u"0";
                 try
                 {
                     pathSizeText = GetTextFromNumber(pathSize);
@@ -138,7 +135,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                 }
                 tree.AddItem(
                       handle,
-                      { filename, pathLastWriteTimeText, pathSizeText },
+                      { filename, pathLastWriteTime, pathSizeText },
                       nullptr,
                       false,
                       p.path().u16string(),
@@ -153,27 +150,38 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         return true;
     }
 
-    static const std::u16string GetLastFileWriteText(const std::filesystem::file_time_type& ftime)
+    static const std::u16string GetLastFileWriteText(const std::filesystem::path& path)
     {
-        std::time_t cftime =
-              std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(ftime));
-
-        const auto local = std::localtime(&cftime);
-        if (local == nullptr)
-        {
-            return u"";
-        }
-
-        const auto asc = std::asctime(local);
-        if (asc == nullptr)
-        {
-            return u"";
-        }
-
+        char dateBuffer[64]{ 0 };
+        const time_t date{ GetLastModifiedTime(path) };
+        struct tm t;
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+        localtime_r(&date, &t); // TODO: errno not treated
+        strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#else
+        localtime_s(&t, &date); // TODO: errno not treated
+        std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#endif
         std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-        const auto size = strlen(asc);
-        return convert.from_bytes(asc, asc + (size - 1)); // ignore new line
+        const auto size = strlen(dateBuffer);
+        return convert.from_bytes(dateBuffer, dateBuffer + size);
     };
+
+    static const std::time_t GetLastModifiedTime(const std::filesystem::path& path)
+    {
+#if BUILD_FOR_WINDOWS
+        auto lastTime = std::filesystem::last_write_time(path);
+        return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
+#elif BUILD_FOR_OSX
+        struct stat attr;
+        stat(path().string().c_str(), &attr);
+        return attr.st_mtimespec.tv_sec;
+#elif BUILD_FOR_UNIX
+        struct stat attr;
+        stat(path().string().c_str(), &attr);
+        return attr.st_mtime;
+#endif
+    }
 
     static const std::u16string GetTextFromNumber(const unsigned long long value)
     {
