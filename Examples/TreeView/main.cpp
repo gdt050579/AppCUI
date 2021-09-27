@@ -1,4 +1,5 @@
 #include "AppCUI.hpp"
+#include <cstring>
 #include <chrono>
 #include <string>
 #include <locale>
