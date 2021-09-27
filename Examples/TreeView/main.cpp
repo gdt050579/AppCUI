@@ -5,6 +5,10 @@
 #include <codecvt>
 #include <charconv>
 
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+#    include <sys/stat.h>
+#endif
+
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;

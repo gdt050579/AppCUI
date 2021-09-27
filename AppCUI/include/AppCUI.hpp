@@ -2465,6 +2465,7 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
         void OnUpdateScrollBars() override;
+        bool OnBeforeResize(int newWidth, int newHeight) override;
 
         ItemHandle AddItem(
               const ItemHandle parent,

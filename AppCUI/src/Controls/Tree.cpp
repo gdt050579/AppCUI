@@ -662,6 +662,12 @@ void Tree::OnUpdateScrollBars()
     UpdateVScrollBar(index, count);
 }
 
+bool Tree::OnBeforeResize(int newWidth, int newHeight)
+{
+    // TODO: update everything based on width and height!
+    return false;
+}
+
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
       const std::vector<std::u16string_view> values,
