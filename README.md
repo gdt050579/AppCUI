@@ -30,6 +30,7 @@ While the rendering of components, layering and colors management is done in the
 2. `SDL2` is available as a frontend for all systems including Windows, OSX and Unix. It also provides full functionality. Apps based on SDL2 will run in a separate window.
 3. `NCurses` with limited functionality is available for Unix and OSX systems. Apps based on ncurses will run in any terminal, including `iterm`, `terminal`, `xterm` and so on, but will not have the whole set of mouse movements or access to the full keyboard button range (due to limitations in terminals themselves).
 
+
 While frontends may be different, AppCUI strives to provide cross-platform support so that the same app looks, feels and behaves the same on every system.
 
 
