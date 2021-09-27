@@ -2,14 +2,14 @@
 
 ![Build icon](https://github.com/gdt050579/AppCUI/actions/workflows/ci.yml/badge.svg)
 
-*AppCUI* is a [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using the its basic building blocks such as: _Window_, _Button_, _Label_, etc.
+**AppCUI** is a [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
 
-The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Examples/ListView), an application to showcase US states and their basic information like _Population_, _Capital_.
+The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Examples/ListView), an application to showcase US states and their basic information like _Population_, _Capital_. The user is greeted with an initial window with list view options, like whether the columns are sortable or whether the column separators are visible
 
-![ListView usage example](https://raw.githubusercontent.com/gdt050579/AppCUI/main/docs/example_images/listview.gif)
+![ListView usage example](docs/example_images/listview.gif)
 
 
-![AppCUI logo](https://raw.githubusercontent.com/gdt050579/AppCUI/main/docs/logo.png)
+![AppCUI logo](docs/logo.png)
 
 This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`
 
