@@ -171,18 +171,18 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         return convert.from_bytes(dateBuffer, dateBuffer + size);
     };
 
-    static const std::time_t GetLastModifiedTime(const std::filesystem::path& path)
+    static std::time_t GetLastModifiedTime(const std::filesystem::path& path)
     {
 #if BUILD_FOR_WINDOWS
         auto lastTime = std::filesystem::last_write_time(path);
         return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
 #elif BUILD_FOR_OSX
         struct stat attr;
-        stat(path().string().c_str(), &attr);
+        stat(path.string().c_str(), &attr);
         return attr.st_mtimespec.tv_sec;
 #elif BUILD_FOR_UNIX
         struct stat attr;
-        stat(path().string().c_str(), &attr);
+        stat(path.string().c_str(), &attr);
         return attr.st_mtime;
 #endif
     }
