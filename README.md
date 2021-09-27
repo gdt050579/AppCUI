@@ -2,18 +2,26 @@
 
 ![Build icon](https://github.com/gdt050579/AppCUI/actions/workflows/ci.yml/badge.svg)
 
+![AppCUI logo](docs/logo.png)
+
+This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`.
+
+## General description 
+
 **AppCUI** is a [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
 
-The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Examples/ListView), an application to showcase US states and their basic information like _Population_, _Capital_. The user is greeted with an initial window with list view options, like whether the columns are sortable or whether the column separators are visible
+Generally speaking, the library allows to build a virtual desktop, with multiple windows and extensible components.
+
+The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Examples/ListView), an application to showcase US states and their basic information like _Population_, _Capital_. The user is greeted with an initial window with list view options, like whether the columns are sortable or whether the column separators are visible, after that, a button is pressed to spawn another window with a _list view_, showcasing the US states.
 
 ![ListView usage example](docs/example_images/listview.gif)
 
 
-![AppCUI logo](docs/logo.png)
 
-This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`
 
-Documentation: [https://gdt050579.github.io/AppCUI/]
+## Advanced documentation
+
+Detailed informations can be found (here)[https://gdt050579.github.io/AppCUI/].
 
 ## Building
 
@@ -76,4 +84,4 @@ Contributors can install sphinx using `pip install -r requirements.txt`, this wi
 
 After the command executes successfully, the html pages can be found in the `build` folder.
 
-On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages` and then to `https://gdt050579.github.io/AppCUI/`
+On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages` and then to _https://gdt050579.github.io/AppCUI/_
