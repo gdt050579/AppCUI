@@ -33,6 +33,7 @@ While the rendering of components, layering and colors management is done in the
 While frontends may be different, AppCUI strives to provide cross-platform support so that the same app looks, feels and behaves the same on every system.
 
 
+
 ## Advanced documentation
 
 Detailed informations can be found [here](https://gdt050579.github.io/AppCUI/).
