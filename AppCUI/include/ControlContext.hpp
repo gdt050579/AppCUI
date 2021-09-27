@@ -584,8 +584,12 @@ class NumericSelectorControlContext : public ControlContext
 
 struct ColumnData
 {
-    unsigned int width = 0;
-    std::vector<std::u16string> headerValues;
+    unsigned int x      = 0;
+    unsigned int width  = 0;
+    unsigned int height = 0;
+    std::u16string headerValue;
+    TextAlignament headerAlignment  = TextAlignament::Left;
+    TextAlignament contentAlignment = TextAlignament::Left;
 };
 
 struct TreeItem
@@ -614,7 +618,7 @@ class TreeControlContext : public ControlContext
     bool notProcessed                                                                      = true;
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
-    ColumnData columns;
+    std::vector<ColumnData> columns;
     const unsigned int offset = 2;
     unsigned int treeFlags    = 0;
 

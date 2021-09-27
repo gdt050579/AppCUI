@@ -37,10 +37,22 @@ bool Tree::Create(
     cc->offsetTopToDraw = 0;
     cc->offsetBotToDraw = cc->maxItemsToDraw;
 
-    cc->columns.headerValues = columns;
-
-    cc->columns.width = (static_cast<unsigned int>(cc->Layout.Width)) /
-                        static_cast<unsigned int>(std::max<>(cc->columns.headerValues.size(), size_t(1U)));
+    const unsigned int offsetLeft   = 1; // border
+    const unsigned int offsetRight  = 1; // border
+    const unsigned int offsetTop    = 1; // border
+    const unsigned int offsetBottom = 1; // border
+    const unsigned int width        = (static_cast<unsigned int>(cc->Layout.Width)) /
+                               static_cast<unsigned int>(std::max<>(columns.size(), size_t(1U)));
+    for (const auto& col : columns)
+    {
+        ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + offsetLeft),
+                       width,
+                       static_cast<unsigned int>(cc->Layout.Height - 2),
+                       col,
+                       TextAlignament::Center,
+                       TextAlignament::Left };
+        cc->columns.emplace_back(cd);
+    }
 
     return true;
 }
@@ -58,40 +70,58 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
     {
         auto& item = cc->items[cc->itemsToDrew[i]];
 
-        wtp.X     = item.depth * cc->offset;
-        wtp.Width = cc->columns.width - item.depth * cc->offset + cc->offset - 3;
-
-        if (item.isExpandable)
+        unsigned int j = 0; // column index
+        for (const auto& col : cc->columns)
         {
-            if (item.expanded)
+            if (j == 0)
             {
-                wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
-                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+                wtp.X     = col.x + item.depth * cc->offset - 1;
+                wtp.Width = col.width - item.depth * cc->offset + cc->offset - 3;
+
+                if (item.isExpandable)
+                {
+                    if (item.expanded)
+                    {
+                        wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
+                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+                    }
+                    else
+                    {
+                        wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
+                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
+                    }
+                }
+                else
+                {
+                    wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
+                    renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
+                }
+
+                wtp.X += cc->offset;
+
+                if (item.handle == cc->currentSelectedItemHandle)
+                {
+                    wtp.Color = cc->Cfg->Tree.Text.Focused;
+                }
+                else
+                {
+                    wtp.Color = cc->Cfg->Tree.Text.Normal;
+                }
             }
             else
             {
-                wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
-                renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
+                wtp.X     = col.x + 1;
+                wtp.Width = col.width - 1;
+                wtp.Color = cc->Cfg->Tree.Text.Normal;
             }
-        }
-        else
-        {
-            wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
-            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
-        }
 
-        wtp.X += cc->offset;
+            if (j < item.values.size())
+            {
+                renderer.WriteText(item.values[j], wtp);
+            }
 
-        if (item.handle == cc->currentSelectedItemHandle)
-        {
-            wtp.Color = cc->Cfg->Tree.Text.Focused;
+            j++;
         }
-        else
-        {
-            wtp.Color = cc->Cfg->Tree.Text.Normal;
-        }
-
-        renderer.WriteText(item.values[0], wtp);
 
         wtp.Y++;
     }
@@ -103,20 +133,20 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(cc->columns.headerValues.size() > 0, true, "");
+    CHECK(cc->columns.size() > 0, true, "");
 
     WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
     wtp.Y     = 1; // 0  is for border
-    wtp.Align = TextAlignament::Left;
     wtp.Color = cc->Cfg->Tree.Column.Text;
 
     renderer.FillHorizontalLine(1, 1, cc->Layout.Width - 2, ' ', cc->Cfg->Tree.Column.Header);
 
-    for (auto i = 0; i < cc->columns.headerValues.size(); i++)
+    for (const auto& col : cc->columns)
     {
-        wtp.Width = cc->columns.width - 1 - 1; // left vertical line | right vertical line
-        wtp.X     = (i * cc->columns.width) + 2;
-        renderer.WriteText(cc->columns.headerValues[i], wtp);
+        wtp.Align = col.headerAlignment;
+        wtp.X     = col.x;
+        wtp.Width = col.width - 1 - 1; // left vertical line | right vertical line
+        renderer.WriteText(col.headerValue, wtp);
     }
 
     return true;
@@ -126,17 +156,12 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(cc->columns.headerValues.size() > 0, true, "");
+    CHECK(cc->columns.size() > 0, true, "");
 
-    for (auto i = 0; i < cc->columns.headerValues.size(); i++)
+    for (const auto& col : cc->columns)
     {
-        const auto x = (i * cc->columns.width) + 1;
-        renderer.DrawVerticalLine(x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
-    }
-
-    if (cc->columns.headerValues.size() > 1)
-    {
-        renderer.DrawVerticalLine(cc->Layout.Width - 2, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        renderer.DrawVerticalLine(col.x + col.width, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
     }
 
     return true;
