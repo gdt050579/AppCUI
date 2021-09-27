@@ -158,10 +158,22 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECK(cc->columns.size() > 0, true, "");
 
+    unsigned int i = 0;
     for (const auto& col : cc->columns)
     {
-        renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
-        renderer.DrawVerticalLine(col.x + col.width, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        if (i == 0)
+        {
+            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        }
+        else if (i == cc->columns.size() - 1)
+        {
+            renderer.DrawVerticalLine(cc->Layout.Width - 2, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        }
+        else
+        {
+            renderer.DrawVerticalLine(col.x + col.width, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+        }
+        i++;
     }
 
     return true;
@@ -369,7 +381,10 @@ void Tree::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->Cfg->Tree.Border, false);
+    const auto width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
+    const auto height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
+
+    renderer.DrawRectSize(0, 0, width, height, cc->Cfg->Tree.Border, false);
     PaintColumnHeaders(renderer);
     PaintColumnSeparators(renderer);
 
@@ -662,10 +677,9 @@ void Tree::OnUpdateScrollBars()
     UpdateVScrollBar(index, count);
 }
 
-bool Tree::OnBeforeResize(int newWidth, int newHeight)
+void Tree::OnAfterResize(int newWidth, int newHeight)
 {
-    // TODO: update everything based on width and height!
-    return false;
+    CHECKRET(AdjustElementsOnResize(newWidth, newHeight), "");
 }
 
 ItemHandle Tree::AddItem(
@@ -948,6 +962,34 @@ bool Tree::IsMouseOnSearchField(int x, int y) const
 {
     // TODO:
     return false;
+}
+
+bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    cc->maxItemsToDraw  = newHeight - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
+    cc->offsetTopToDraw = 0;
+    cc->offsetBotToDraw = cc->maxItemsToDraw;
+
+    const unsigned int offsetLeft   = 1; // border
+    const unsigned int offsetRight  = 1; // border
+    const unsigned int offsetTop    = 1; // border
+    const unsigned int offsetBottom = 1; // border
+    const unsigned int width =
+          (static_cast<unsigned int>(newWidth)) / static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
+
+    unsigned int i = 0;
+    for (auto& col : cc->columns)
+    {
+        col.x      = static_cast<unsigned int>(i * width + offsetLeft);
+        col.width  = width;
+        col.height = static_cast<unsigned int>(newHeight - 2);
+        i++;
+    }
+
+    return true;
 }
 
 ItemHandle Tree::GetHandleForNewItem() const
