@@ -424,6 +424,18 @@ bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bo
     }
     RETURNERROR(false, "This method can only be applied on Check and Radio items");
 }
+bool AppCUI::Controls::WindowControlsBar::IsItemVisible(ItemHandle itemHandle)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    return !b->IsHidden();
+}
+bool AppCUI::Controls::WindowControlsBar::IsItemShown(ItemHandle itemHandle)
+{
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    return b->IsVisible() && (!b->IsHidden());
+}
 bool AppCUI::Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool value)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);

@@ -49,6 +49,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
     bool OnEvent(Control* sender, Event eventType, int ID) override
     {
         Utils::LocalString<128> s;
+        bool value;
         if (Window::OnEvent(sender, eventType, ID))
             return true;
         if (eventType == Event::Command)
@@ -56,9 +57,10 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
             switch (ID)
             {
             case 12345:
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, false);
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, false);
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, false);
+                value = !this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).IsItemVisible(itRed);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, value);
                 return true;
             case 12346:
                 this->CenterScreen();
