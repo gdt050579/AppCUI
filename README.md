@@ -8,7 +8,7 @@ This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Exam
 
 ## General description  
 
-**AppCUI** is a cross-platform [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
+**AppCUI** is a cross-platform [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc. 
 
 Generally speaking, the library allows to build a virtual desktop, with multiple windows and extensible components.
 
