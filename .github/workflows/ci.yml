@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: 
-    - '**'
-    
+    branches:
+      - main
+  workflow_dispatch:
   pull_request:
 
 env:

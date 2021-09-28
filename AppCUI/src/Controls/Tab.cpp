@@ -33,12 +33,11 @@ void TabControlContext::UpdateMargins()
         if (this->CurrentControlIndex < this->ControlsCount)
         {
             this->Margins.Top    = this->CurrentControlIndex + 1;
-            this->Margins.Bottom = this->ControlsCount - this->CurrentControlIndex;
+            this->Margins.Bottom = this->ControlsCount - (this->CurrentControlIndex + 1);
         }
         else
         {
             this->Margins.Top = this->ControlsCount;
-            ;
             this->Margins.Bottom = 0;
         }
         break;

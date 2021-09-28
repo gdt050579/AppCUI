@@ -21,10 +21,11 @@ class TabExampleWin : public AppCUI::Controls::Window
     Panel p_inf;
     Label inf;
     Button btnClose;
+    ListView lv;
 
 
   public:
-    TabExampleWin(TabFlags flags, unsigned int tabSize)
+    TabExampleWin(TabFlags flags, unsigned int tabSize, int tabsCount)
     {
         Utils::LocalString<256> temp;
         temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
@@ -38,22 +39,37 @@ class TabExampleWin : public AppCUI::Controls::Window
         tb.Create(this, "x:1,y:7,w:56,h:8", flags);
         tb.SetTabPageTitleSize(tabSize);
         // first page
-        pg1.Create(&tb, "&RadioBox");
-        r1.Create(&pg1, "Option &1", "x:1,y:1,w:20", 100);
-        r2.Create(&pg1, "Option &2", "x:1,y:2,w:20", 100);
-        r3.Create(&pg1, "Option &3", "x:1,y:3,w:20", 100);
+        if (tabsCount >= 1)
+        {
+            pg1.Create(&tb, "&RadioBox");
+            r1.Create(&pg1, "Option &1", "x:1,y:1,w:20", 100);
+            r2.Create(&pg1, "Option &2", "x:1,y:2,w:20", 100);
+            r3.Create(&pg1, "Option &3", "x:1,y:3,w:20", 100);
+            lv.Create(&pg1, "l:20,t:0,r:0,b:0");
+            lv.AddColumn("Names", TextAlignament::Left, 50);
+            lv.AddItem("Andrei");
+            lv.AddItem("Denis");
+            lv.AddItem("Dragos");
+            lv.AddItem("Ghiorghita");
+            lv.AddItem("Raul");
+        }
 
         // second page
-        pg2.Create(&tb, "&CheckBox");
-        c1.Create(&pg2, "Enable flag &1", "x:1,y:1,w:20");
-        c2.Create(&pg2, "Enable flag &2", "x:1,y:2,w:20");
-        c3.Create(&pg2, "Enable flag &3", "x:1,y:3,w:20");
+        if (tabsCount >= 2)
+        {
+            pg2.Create(&tb, "&CheckBox");
+            c1.Create(&pg2, "Enable flag &1", "x:1,y:1,w:20");
+            c2.Create(&pg2, "Enable flag &2", "x:1,y:2,w:20");
+            c3.Create(&pg2, "Enable flag &3", "x:1,y:3,w:20");
+        }
 
         // third page
-        pg3.Create(&tb, "&TextField");
-        lb1.Create(&pg3, "Enter a text", "x:1,y:1,w:15");
-        tx1.Create(&pg3, "some text ...", "x:17,y:1,w:20,h:5");
-
+        if (tabsCount >= 3)
+        {
+            pg3.Create(&tb, "&TextField");
+            lb1.Create(&pg3, "Enter a text", "x:1,y:1,w:15");
+            tx1.Create(&pg3, "some text ...", "x:17,y:1,w:20,h:5");
+        }
 
         tb.SetCurrentTabPage(0);
     }
@@ -74,13 +90,13 @@ class MyWin : public AppCUI::Controls::Window
     RadioBox tabTop, tabBottom, tabLeft, tabList, tabNoTabs;
     CheckBox cbTransparent, cbTabBar;
     Button btnShow;
-    NumericSelector selector;
-    Label lbTabSize;
+    NumericSelector selector, tabsCount;
+    Label lbTabSize, lbTabsCount;
 
   public:
     MyWin()
     {
-        this->Create("Tab example config", "d:c,w:50,h:17");
+        this->Create("Tab example config", "d:c,w:50,h:19");
         p.Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
         tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
@@ -95,6 +111,8 @@ class MyWin : public AppCUI::Controls::Window
         lbTabSize.Create(this, "Tabs &width", "x:1,y:11,w:10");
         selector.Create(this, 5, 18, 6, "x:14,y:11,w:32");
         selector.SetHotKey('W');
+        lbTabsCount.Create(this, "Tabs count", "x:1,y:13,w:10");
+        tabsCount.Create(this, 1, 3, 3, "x:14,y:13,w:32");
 
         btnShow.Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
@@ -116,7 +134,7 @@ class MyWin : public AppCUI::Controls::Window
         if (cbTabBar.IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()));
+        TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()), static_cast<int>(tabsCount.GetValue()));
         tw.Show();
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
