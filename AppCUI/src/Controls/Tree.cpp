@@ -23,6 +23,9 @@ bool Tree::Create(
 
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
+    cc->width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
+    cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
+
     if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::HideScrollBar))
     {
         // no scrollbar
@@ -33,7 +36,7 @@ bool Tree::Create(
         cc->ScrollBars.LeftMargin = 25; // search field
     }
 
-    cc->maxItemsToDraw  = this->GetHeight() - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
+    cc->maxItemsToDraw  = cc->height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     cc->offsetTopToDraw = 0;
     cc->offsetBotToDraw = cc->maxItemsToDraw;
 
@@ -41,13 +44,13 @@ bool Tree::Create(
     const unsigned int offsetRight  = 1; // border
     const unsigned int offsetTop    = 1; // border
     const unsigned int offsetBottom = 1; // border
-    const unsigned int width        = (static_cast<unsigned int>(cc->Layout.Width)) /
-                               static_cast<unsigned int>(std::max<>(columns.size(), size_t(1U)));
+    const unsigned int width =
+          (static_cast<unsigned int>(cc->width)) / static_cast<unsigned int>(std::max<>(columns.size(), size_t(1U)));
     for (const auto& col : columns)
     {
         ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + offsetLeft),
                        width,
-                       static_cast<unsigned int>(cc->Layout.Height - 2),
+                       static_cast<unsigned int>(cc->height - 2),
                        col,
                        TextAlignament::Center,
                        TextAlignament::Left };
@@ -139,7 +142,7 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
     wtp.Y     = 1; // 0  is for border
     wtp.Color = cc->Cfg->Tree.Column.Text;
 
-    renderer.FillHorizontalLine(1, 1, cc->Layout.Width - 2, ' ', cc->Cfg->Tree.Column.Header);
+    renderer.FillHorizontalLine(1, 1, cc->width - 2, ' ', cc->Cfg->Tree.Column.Header);
 
     for (const auto& col : cc->columns)
     {
@@ -161,18 +164,11 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
     unsigned int i = 0;
     for (const auto& col : cc->columns)
     {
-        if (i == 0)
+        if (i == cc->columns.size() - 1)
         {
-            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
+            renderer.DrawVerticalLine(cc->width - 2, 1, cc->height - 2, cc->Cfg->Tree.Column.Separator);
         }
-        else if (i == cc->columns.size() - 1)
-        {
-            renderer.DrawVerticalLine(cc->Layout.Width - 2, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
-        }
-        else
-        {
-            renderer.DrawVerticalLine(col.x + col.width, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Column.Separator);
-        }
+        renderer.DrawVerticalLine(col.x, 1, cc->height - 2, cc->Cfg->Tree.Column.Separator);
         i++;
     }
 
@@ -381,10 +377,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    const auto width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
-    const auto height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
-
-    renderer.DrawRectSize(0, 0, width, height, cc->Cfg->Tree.Border, false);
+    renderer.DrawRectSize(0, 0, cc->width, cc->height, cc->Cfg->Tree.Border, false);
     PaintColumnHeaders(renderer);
     PaintColumnSeparators(renderer);
 
@@ -584,7 +577,7 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
             const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
 
-            if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth())
+            if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < static_cast<int>(cc->width))
             {
                 cc->currentSelectedItemHandle = itemHandle;
             }
@@ -908,7 +901,7 @@ bool Tree::IsMouseOnToggleSymbol(int x, int y) const
     const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
     const auto it         = cc->items.find(itemHandle);
 
-    if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth())
+    if (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < static_cast<int>(cc->width))
     {
         return false; // on item
     }
@@ -935,7 +928,7 @@ bool Tree::IsMouseOnItem(int x, int y) const
     const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
     const auto it         = cc->items.find(itemHandle);
 
-    return (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < this->GetWidth());
+    return (x > static_cast<int>(it->second.depth * cc->offset + cc->offset) && x < static_cast<int>(cc->width));
 }
 
 bool Tree::IsMouseOnBorder(int x, int y) const
@@ -943,7 +936,7 @@ bool Tree::IsMouseOnBorder(int x, int y) const
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    return (x == 0 || x == cc->Layout.Width - 1) || (y == 0 || y == cc->Layout.Height - 1);
+    return (x == 0 || x == cc->width - 1) || (y == 0 || y == cc->width - 1);
 }
 
 bool Tree::IsMouseOnColumnHeader(int x, int y) const
@@ -969,7 +962,10 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    cc->maxItemsToDraw  = newHeight - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
+    cc->width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
+    cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
+
+    cc->maxItemsToDraw  = cc->height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     cc->offsetTopToDraw = 0;
     cc->offsetBotToDraw = cc->maxItemsToDraw;
 
@@ -977,15 +973,15 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     const unsigned int offsetRight  = 1; // border
     const unsigned int offsetTop    = 1; // border
     const unsigned int offsetBottom = 1; // border
-    const unsigned int width =
-          (static_cast<unsigned int>(newWidth)) / static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
+    const unsigned int width = (static_cast<unsigned int>(cc->width)) /
+                               static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
 
     unsigned int i = 0;
     for (auto& col : cc->columns)
     {
         col.x      = static_cast<unsigned int>(i * width + offsetLeft);
         col.width  = width;
-        col.height = static_cast<unsigned int>(newHeight - 2);
+        col.height = static_cast<unsigned int>(cc->height - 2);
         i++;
     }
 

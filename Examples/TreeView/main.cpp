@@ -156,19 +156,26 @@ class ExampleMainWindow : public AppCUI::Controls::Window
 
     static const std::u16string GetLastFileWriteText(const std::filesystem::path& path)
     {
-        char dateBuffer[64]{ 0 };
-        const time_t date{ GetLastModifiedTime(path) };
-        struct tm t;
+        try
+        {
+            char dateBuffer[64]{ 0 };
+            const time_t date{ GetLastModifiedTime(path) };
+            struct tm t;
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-        localtime_r(&date, &t); // TODO: errno not treated
-        strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+            localtime_r(&date, &t); // TODO: errno not treated
+            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #else
-        localtime_s(&t, &date); // TODO: errno not treated
-        std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+            localtime_s(&t, &date); // TODO: errno not treated
+            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
-        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-        const auto size = strlen(dateBuffer);
-        return convert.from_bytes(dateBuffer, dateBuffer + size);
+            std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+            const auto size = strlen(dateBuffer);
+            return convert.from_bytes(dateBuffer, dateBuffer + size);
+        }
+        catch(...)
+        {
+            return u"ERROR";
+        }
     };
 
     static std::time_t GetLastModifiedTime(const std::filesystem::path& path)

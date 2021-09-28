@@ -621,6 +621,8 @@ class TreeControlContext : public ControlContext
     std::vector<ColumnData> columns;
     const unsigned int offset = 2;
     unsigned int treeFlags    = 0;
+    unsigned int width        = 0;
+    unsigned int height       = 0;
 
     enum class IsMouseOn
     {
