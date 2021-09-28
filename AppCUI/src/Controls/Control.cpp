@@ -1293,6 +1293,10 @@ bool AppCUI::Controls::Control::AddControl(Control* ctrl)
     CTRLC->Controls[CTRLC->ControlsCount++]     = ctrl;
     ((ControlContext*) (ctrl->Context))->Parent = this;
     OnAfterAddControl(ctrl);
+    // Force a recompute layout on the entire app
+    auto app = AppCUI::Application::GetApplication();
+    if (app)
+        app->RepaintStatus = REPAINT_STATUS_ALL;
     return true;
 }
 bool AppCUI::Controls::Control::RemoveControl(Control* control)
