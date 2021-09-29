@@ -1406,6 +1406,7 @@ namespace Graphics
         Image();
         ~Image();
         bool Create(unsigned int width, unsigned int height);
+        bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
         bool SetPixel(
