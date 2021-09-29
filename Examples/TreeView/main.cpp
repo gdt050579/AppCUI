@@ -30,7 +30,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
   public:
     ExampleMainWindow()
     {
-        Create("Tree view example", "d:c, w:80%, h:60%");
+        Create("Tree view example", "d:c, w:100%, h:100%");
         open.Create(this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
         vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
         horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
@@ -42,12 +42,10 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                     static_cast<unsigned int>(TreeFlags::HideScrollBar),
               3);
 
-        std::u16string headerValuePath          = u"Path";
-        std::u16string headerValueLastWriteTime = u"Last Write Time";
-        std::u16string headerValueSize          = u"Size";
-        tree.AddColumnData(0, headerValuePath);
-        tree.AddColumnData(1, headerValueLastWriteTime);
-        tree.AddColumnData(2, headerValueSize);
+        // TODO: maybe add % for column sizes as well
+        tree.AddColumnData(0, u"Path", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left, 100);
+        tree.AddColumnData(1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
+        tree.AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
         tree.SetToggleItemHandle(PopulateTree);
 
         tree.ClearItems();

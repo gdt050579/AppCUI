@@ -64,8 +64,7 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth };
-    wtp.Y     = 2; // 0  is for border | 1 is for header
-    wtp.Align = TextAlignament::Left;
+    wtp.Y = 2; // 0  is for border | 1 is for header
 
     for (auto i = cc->offsetTopToDraw; i < std::min<size_t>(cc->offsetBotToDraw, cc->itemsToDrew.size()); i++)
     {
@@ -74,6 +73,7 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
         unsigned int j = 0; // column index
         for (const auto& col : cc->columns)
         {
+            wtp.Align = col.contentAlignment;
             if (j == 0)
             {
                 wtp.X     = col.x + item.depth * cc->offset - 1;
@@ -111,8 +111,15 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
             }
             else
             {
-                wtp.X     = col.x + 1;
-                wtp.Width = col.width - 1;
+                wtp.X = col.x + 1;
+                if (j == cc->columns.size() - 1)
+                {
+                    wtp.Width = col.width - 3;
+                }
+                else
+                {
+                    wtp.Width = col.width - 1;
+                }
                 wtp.Color = cc->Cfg->Tree.Text.Normal;
             }
 
@@ -140,14 +147,29 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
     wtp.Y     = 1; // 0  is for border
     wtp.Color = cc->Cfg->Tree.Column.Text;
 
-    renderer.FillHorizontalLine(1, 1, cc->width - 2, ' ', cc->Cfg->Tree.Column.Header);
+    {
+        const auto& firstColumn = cc->columns[0];
+        const auto& lastColumn  = cc->columns[cc->columns.size() - 1];
+        const auto rightX       = std::min<>(lastColumn.x + lastColumn.width, cc->width - 2);
+        renderer.FillHorizontalLine(firstColumn.x, 1, rightX, ' ', cc->Cfg->Tree.Column.Header);
+    }
 
+    unsigned int i = 0;
     for (const auto& col : cc->columns)
     {
         wtp.Align = col.headerAlignment;
-        wtp.X     = col.x;
-        wtp.Width = col.width - 1 - 1; // left vertical line | right vertical line
+        wtp.X     = col.x + 1;
+        if (i == cc->columns.size() - 1)
+        {
+            wtp.Width = col.width - 3;
+        }
+        else
+        {
+            wtp.Width = col.width - 1 - 1; // left vertical line | right vertical line
+        }
+
         renderer.WriteText(col.headerValue, wtp);
+        i++;
     }
 
     return true;
@@ -159,16 +181,13 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECK(cc->columns.size() > 0, true, "");
 
-    unsigned int i = 0;
     for (const auto& col : cc->columns)
     {
-        if (i == cc->columns.size() - 1)
-        {
-            renderer.DrawVerticalLine(cc->width - 2, 1, cc->height - 2, cc->Cfg->Tree.Column.Separator);
-        }
         renderer.DrawVerticalLine(col.x, 1, cc->height - 2, cc->Cfg->Tree.Column.Separator);
-        i++;
     }
+
+    const auto& lastColumn = cc->columns[cc->columns.size() - 1];
+    renderer.DrawVerticalLine(lastColumn.x + lastColumn.width, 1, cc->height - 2, cc->Cfg->Tree.Column.Separator);
 
     return true;
 }
@@ -852,14 +871,49 @@ void Tree::SetToggleItemHandle(
     }
 }
 
-bool Tree::AddColumnData(const unsigned int index, std::u16string& title)
+bool Tree::AddColumnData(
+      const unsigned int index,
+      std::u16string_view title,
+      const TextAlignament headerAlignment,
+      const TextAlignament contentAlignment,
+      const unsigned int width)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     CHECK(index < cc->columns.size(), false, "");
 
-    cc->columns[index].headerValue = title;
+    auto& column = cc->columns[index];
+
+    column.headerValue      = title;
+    column.headerAlignment  = headerAlignment;
+    column.contentAlignment = contentAlignment;
+    if (width != 0xFFFFFFFF)
+    {
+        column.width       = width;
+        column.customWidth = true;
+
+        // shifts columns
+        unsigned int currentX = column.x + column.width + 1;
+        for (auto i = index + 1; i < cc->columns.size(); i++)
+        {
+            auto& col       = cc->columns[i];
+            col.customWidth = true;
+            if (currentX < col.x)
+            {
+                const auto diff = col.x - currentX;
+                col.x -= diff;
+                col.width -= diff;
+            }
+            else
+            {
+                const auto diff = currentX - col.x;
+                col.x += diff;
+                col.width += diff;
+            }
+            currentX = col.x + col.width + 1;
+        }
+    }
 
     return true;
 }
@@ -986,12 +1040,19 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     const unsigned int width        = (static_cast<unsigned int>(cc->width)) /
                                static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
 
-    unsigned int i = 0;
+    unsigned int i                     = 0;
+    unsigned int xPreviousColumn       = 0;
+    unsigned int widthOfPreviousColumn = 0;
     for (auto& col : cc->columns)
     {
-        col.x      = static_cast<unsigned int>(i * width + offsetLeft);
-        col.width  = width;
         col.height = static_cast<unsigned int>(cc->height - 2);
+        col.x      = static_cast<unsigned int>(xPreviousColumn + widthOfPreviousColumn + offsetLeft);
+        if (col.customWidth == false)
+        {
+            col.width = width;
+        }
+        xPreviousColumn       = col.x;
+        widthOfPreviousColumn = col.width;
         i++;
     }
 

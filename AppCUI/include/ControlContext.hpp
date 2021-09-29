@@ -590,6 +590,7 @@ struct ColumnData
     std::u16string headerValue;
     TextAlignament headerAlignment  = TextAlignament::Left;
     TextAlignament contentAlignment = TextAlignament::Left;
+    bool customWidth                = false;
 };
 
 struct TreeItem
