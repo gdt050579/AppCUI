@@ -5,11 +5,10 @@
 namespace AppCUI::Controls
 {
 bool Tree::Create(
-      Control* parent,
-      const std::string_view& layout,
-      const unsigned int flags,
-      const std::vector<std::u16string> columns)
+      Control* parent, const std::string_view& layout, const unsigned int flags, const unsigned int noOfColumns)
 {
+    CHECK(noOfColumns > 0, false, "");
+
     Context = new TreeControlContext();
     CHECK(Context != nullptr, false, "");
 
@@ -24,7 +23,7 @@ bool Tree::Create(
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
     cc->width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
-    cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
+    cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height - 2 : cc->Layout.Height - 1 - 2;
 
     if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::HideScrollBar))
     {
@@ -44,14 +43,13 @@ bool Tree::Create(
     const unsigned int offsetRight  = 1; // border
     const unsigned int offsetTop    = 1; // border
     const unsigned int offsetBottom = 1; // border
-    const unsigned int width =
-          (static_cast<unsigned int>(cc->width)) / static_cast<unsigned int>(std::max<>(columns.size(), size_t(1U)));
-    for (const auto& col : columns)
+    const unsigned int width        = (static_cast<unsigned int>(cc->width) / noOfColumns);
+    for (auto i = 0U; i < noOfColumns; i++)
     {
         ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + offsetLeft),
                        width,
                        static_cast<unsigned int>(cc->height - 2),
-                       col,
+                       u"",
                        TextAlignament::Center,
                        TextAlignament::Left };
         cc->columns.emplace_back(cd);
@@ -854,6 +852,18 @@ void Tree::SetToggleItemHandle(
     }
 }
 
+bool Tree::AddColumnData(const unsigned int index, std::u16string& title)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    CHECK(index < cc->columns.size(), false, "");
+
+    cc->columns[index].headerValue = title;
+
+    return true;
+}
+
 bool Tree::ToggleItem(const ItemHandle handle)
 {
     CHECK(Context != nullptr, false, "");
@@ -963,7 +973,7 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     cc->width  = cc->Layout.Width % 2 == 0 ? cc->Layout.Width : cc->Layout.Width - 1;
-    cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height : cc->Layout.Height - 1;
+    cc->height = cc->height = cc->Layout.Height % 2 == 0 ? cc->Layout.Height - 2 : cc->Layout.Height - 1 - 2;
 
     cc->maxItemsToDraw  = cc->height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     cc->offsetTopToDraw = 0;
@@ -973,7 +983,7 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     const unsigned int offsetRight  = 1; // border
     const unsigned int offsetTop    = 1; // border
     const unsigned int offsetBottom = 1; // border
-    const unsigned int width = (static_cast<unsigned int>(cc->width)) /
+    const unsigned int width        = (static_cast<unsigned int>(cc->width)) /
                                static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
 
     unsigned int i = 0;

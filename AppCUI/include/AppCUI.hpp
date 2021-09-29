@@ -2457,7 +2457,7 @@ namespace Controls
               Control* parent,
               const std::string_view& layout,
               const unsigned int flags                  = 0,
-              const std::vector<std::u16string> columns = std::vector<std::u16string>());
+              const unsigned int noOfColumns            = 1);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnFocus() override;
@@ -2483,6 +2483,7 @@ namespace Controls
         size_t GetItemsCount();
         void SetToggleItemHandle(
               const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
+        bool AddColumnData(const unsigned int index, std::u16string& title);
 
       private:
         ItemHandle GetHandleForNewItem() const;

@@ -40,7 +40,14 @@ class ExampleMainWindow : public AppCUI::Controls::Window
               "x:1%, y:20%, w:99%, h:85%",
               static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren) |
                     static_cast<unsigned int>(TreeFlags::HideScrollBar),
-              { u"Path", u"Last Write Time", u"Size" });
+              3);
+
+        std::u16string headerValuePath          = u"Path";
+        std::u16string headerValueLastWriteTime = u"Last Write Time";
+        std::u16string headerValueSize          = u"Size";
+        tree.AddColumnData(0, headerValuePath);
+        tree.AddColumnData(1, headerValueLastWriteTime);
+        tree.AddColumnData(2, headerValueSize);
         tree.SetToggleItemHandle(PopulateTree);
 
         tree.ClearItems();
@@ -172,7 +179,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             const auto size = strlen(dateBuffer);
             return convert.from_bytes(dateBuffer, dateBuffer + size);
         }
-        catch(...)
+        catch (...)
         {
             return u"ERROR";
         }
