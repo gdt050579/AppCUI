@@ -14,6 +14,7 @@ This is a test page
    initialization
    layout
    development
+   colors
 
 
 Indices and tables
