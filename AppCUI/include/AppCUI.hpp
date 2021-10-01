@@ -1884,8 +1884,10 @@ namespace Controls
     {
         bool ProcessControlBarItem(unsigned int index);
 
+      protected:
+        bool Init(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags);
       public:
-        bool Create(
+        static std::unique_ptr<Window> Create(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               WindowFlags windowsFlags = WindowFlags::None);

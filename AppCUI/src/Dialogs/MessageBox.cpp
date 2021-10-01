@@ -31,29 +31,29 @@ bool CreateMessageBoxWindow(
       int buttonsType,
       int* result)
 {
-    Window wnd;
+    auto wnd = Window::Create(title, "d:c,w:60,h:10", flags);
+    CHECK(wnd, false, "");
 
-    CHECK(wnd.Create(title, "d:c,w:60,h:10", flags), false, "");
 
     switch (buttonsType)
     {
     case MSGBOX_BUTTONS_OK:
-        Button::Create(wnd, "&Ok", "x:23,y:6,w:15", (int) Result::Ok)->SetFocus();
+        Button::Create(*wnd, "&Ok", "x:23,y:6,w:15", (int) Result::Ok)->SetFocus();
         break;
     case MSGBOX_BUTTONS_OK_CANCEL:
-        Button::Create(wnd, "&Cancel", "x:31,y:6,w:15", (int) Result::Cancel);
-        Button::Create(wnd, "&Ok", "x:15,y:6,w:15", (int) Result::Ok)->SetFocus();
+        Button::Create(*wnd, "&Cancel", "x:31,y:6,w:15", (int) Result::Cancel);
+        Button::Create(*wnd, "&Ok", "x:15,y:6,w:15", (int) Result::Ok)->SetFocus();
         break;
     case MSGBOX_BUTTONS_YES_NO_CANCEL:
-        Button::Create(wnd, "&No", "x:23,y:6,w:15", (int) Result::No);
-        Button::Create(wnd, "&Cancel", "x:39,y:6,w:15", (int) Result::Cancel);
-        Button::Create(wnd, "&Yes", "x:7,y:6,w:15", (int) Result::Yes)->SetFocus();
+        Button::Create(*wnd, "&No", "x:23,y:6,w:15", (int) Result::No);
+        Button::Create(*wnd, "&Cancel", "x:39,y:6,w:15", (int) Result::Cancel);
+        Button::Create(*wnd, "&Yes", "x:7,y:6,w:15", (int) Result::Yes)->SetFocus();
         break;
     }
-    Label::Create(wnd, content, "x:1,y:1,w:56,h:3");
-    wnd.SetEventHandler(MessageBoxWindowEventHandler);
+    Label::Create(*wnd, content, "x:1,y:1,w:56,h:3");
+    wnd->SetEventHandler(MessageBoxWindowEventHandler);
     if (result != nullptr)
-        (*result) = wnd.Show();
+        (*result) = wnd->Show();
     return true;
 }
 void MessageBox::ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
