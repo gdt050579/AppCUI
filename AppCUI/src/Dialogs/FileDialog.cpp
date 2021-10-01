@@ -246,7 +246,7 @@ void FileDialogClass::Validate()
     if (lbPath.GetText().Len() == 0)
         return;
 
-    this->resultedPath = (std::filesystem::path) lbPath.GetText();
+    this->resultedPath = lbPath.GetText();
     this->resultedPath /= txName.GetText();
 
     bool exists = std::filesystem::exists(this->resultedPath);
