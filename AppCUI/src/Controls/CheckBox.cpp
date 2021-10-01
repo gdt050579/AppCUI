@@ -10,7 +10,7 @@ std::unique_ptr<CheckBox> CheckBox::Create(
     INIT_CONTROL(CheckBox, ControlContext);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 1;
-    CHECK(me->Init(caption, layout, true), false, "Unable to create check box !");
+    CHECK(me->Init(caption, layout, true), nullptr, "Unable to create check box !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     me->SetControlID(controlID);
     return me;

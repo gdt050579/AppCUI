@@ -23,24 +23,18 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
     this->CanvasScrollY = newY;
 }
 
-bool CanvasViewer::Create(
-      Control* parent, const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
-{
-    return this->Create(parent, "", layout, canvasWidth, canvasHeight, flags);
-}
-bool CanvasViewer::Create(
-      Control* parent,
+std::unique_ptr<CanvasViewer> CanvasViewer::Create(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
       ViewerFlags flags)
 {
-    CHECK(canvasWidth > 0, false, "Canvas Width must be greater than 0.");
-    CHECK(canvasHeight > 0, false, "Canvas Height must be greater than 0.");
-    CONTROL_INIT_CONTEXT(CanvasControlContext);
-    CHECK(Init(parent, caption, layout, true), false, "Failed to create Canvas viewer object");
-    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
+    CHECK(canvasWidth > 0, nullptr, "Canvas Width must be greater than 0.");
+    CHECK(canvasHeight > 0, nullptr, "Canvas Height must be greater than 0.");
+    INIT_CONTROL(CanvasViewer, CanvasControlContext);
+    CHECK(me->Init(caption, layout, true), nullptr, "Failed to create Canvas viewer object");
+    
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
@@ -50,12 +44,45 @@ bool CanvasViewer::Create(
     Members->dragModeEnabled           = false;
     Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
     CHECK(Members->canvas.Create(canvasWidth, canvasHeight),
-          false,
+          nullptr,
           "Fail to create a canvas of size %d x %d",
           canvasWidth,
           canvasHeight);
-    return true;
+    return me;
 }
+std::unique_ptr<CanvasViewer> CanvasViewer::Create(      
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      ViewerFlags flags)
+{
+    return CanvasViewer::Create("", layout, canvasWidth, canvasHeight, flags);
+}
+
+CanvasViewer* CanvasViewer::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      ViewerFlags flags)
+{
+    auto me = CanvasViewer::Create(caption, layout, canvasWidth, canvasHeight, flags);
+    CHECK(me, nullptr, "Fail to create a CanvasViewer control !");
+    return parent.AddControl<CanvasViewer>(std::move(me));
+}
+CanvasViewer* CanvasViewer::Create(
+      Control& parent,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      ViewerFlags flags)
+{
+    auto me = CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags);
+    CHECK(me, nullptr, "Fail to create a CanvasViewer control !");
+    return parent.AddControl<CanvasViewer>(std::move(me));
+}
+
 
 CanvasViewer::~CanvasViewer()
 {

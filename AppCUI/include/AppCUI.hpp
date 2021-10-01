@@ -2143,8 +2143,12 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        bool Create(Control* parent, const std::string_view& layout);
+        static UserControl* Create(
+              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static std::unique_ptr<UserControl> Create(
+              const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static UserControl* Create(Control& parent, const std::string_view& layout);
+        static std::unique_ptr<UserControl> Create(const std::string_view& layout);
     };
     enum class ViewerFlags : unsigned int
     {
@@ -2155,14 +2159,25 @@ namespace Controls
     {
       public:
         ~CanvasViewer();
-        bool Create(
-              Control* parent,
+        static CanvasViewer* Create(
+              Control& parent,
               const std::string_view& layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags = ViewerFlags::None);
-        bool Create(
-              Control* parent,
+        static std::unique_ptr<CanvasViewer> Create(
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None);
+        static CanvasViewer* Create(
+              Control& parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None);
+        static std::unique_ptr<CanvasViewer> Create(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               unsigned int canvasWidth,

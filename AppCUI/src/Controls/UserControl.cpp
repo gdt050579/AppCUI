@@ -2,15 +2,28 @@
 
 using namespace AppCUI::Controls;
 
-bool UserControl::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+std::unique_ptr<UserControl> UserControl::Create(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, caption, layout, false), false, "Failed to create user control !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    INIT_CONTROL(UserControl, ControlContext);
+    CHECK(me->Init(caption, layout, false), nullptr, "Failed to create user control !");
     Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | GATTR_TABSTOP;
-    return true;
+    return me;
 }
-bool UserControl::Create(Control* parent, const std::string_view& layout)
+std::unique_ptr<UserControl> UserControl::Create(const std::string_view& layout)
 {
-    return UserControl::Create(parent, "", layout);
+    return UserControl::Create("", layout);
+}
+UserControl* UserControl::Create(
+      Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+{
+    auto me = UserControl::Create(caption, layout);
+    CHECK(me, nullptr, "Fail to create a UserControl control !");
+    return parent.AddControl<UserControl>(std::move(me));
+}
+UserControl* UserControl::Create(Control& parent, const std::string_view& layout)
+{
+    auto me = UserControl::Create(layout);
+    CHECK(me, nullptr, "Fail to create a UserControl control !");
+    return parent.AddControl<UserControl>(std::move(me));
 }

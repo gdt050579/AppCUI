@@ -1259,7 +1259,7 @@ Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctr
     {
         // LOG_INFO("Allocate 8 controls for current container %p", this);
         CTRLC->Controls = new Control*[8];
-        CHECK(CTRLC->Controls != nullptr, false, "");
+        CHECK(CTRLC->Controls != nullptr, nullptr, "");
         CTRLC->ControlsCount = 0;
     }
     else
@@ -1268,7 +1268,7 @@ Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctr
         {
             // grow
             Control** tmp = new Control*[CTRLC->ControlsCount + 8];
-            CHECK(tmp != nullptr, false, "");
+            CHECK(tmp != nullptr, nullptr, "");
             for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
                 tmp[tr] = CTRLC->Controls[tr];
             delete CTRLC->Controls;
