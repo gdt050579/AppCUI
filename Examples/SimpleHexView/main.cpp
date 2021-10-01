@@ -124,7 +124,7 @@ class SimpleHexView : public AppCUI::Controls::Window
 
         if (eventType == Event::ButtonClicked && controlID == COMMAND_ID_BTN_OPEN)
         {
-            auto path = Dialogs::FileDialog::ShowOpenFileWindow("", "", ".");
+            auto path = Dialogs::FileDialog::ShowOpenFileWindow("", std::nullopt, ".");
             if (path.has_value())
             {
                 hexView.Open(path.value());

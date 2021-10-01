@@ -2456,6 +2456,13 @@ namespace Dialogs
         static Result ShowYesNoCancel(
               const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
     };
+
+    struct ExtensionFilter
+    {
+        Utils::ConstString filterName;
+        std::vector<Utils::ConstString> extensions;
+    };
+    using ExtensionList = std::vector<ExtensionFilter>;
     class EXPORT FileDialog
     {
         FileDialog() = delete;
@@ -2463,11 +2470,11 @@ namespace Dialogs
       public:
         static std::optional<std::filesystem::path> ShowSaveFileWindow(
               const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
+              std::optional<const ExtensionList> extensionList,
               const std::filesystem::path& path);
         static std::optional<std::filesystem::path> ShowOpenFileWindow(
               const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
+              std::optional<const ExtensionList> extensionList,
               const std::filesystem::path& path);
     };
     class EXPORT WindowManager

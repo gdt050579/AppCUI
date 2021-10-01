@@ -56,12 +56,12 @@ struct FileDialogClass
     std::filesystem::path currentPath;
     bool openDialog;
 
-    bool ProcessExtensionFilter(const char* start, const char* end);
+    bool ProcessExtensionFilter(const ExtensionList& extensionList);
 
     int Show(
           bool open,
           const AppCUI::Utils::ConstString& fileName,
-          std::string_view extensionFilter,
+          std::optional<const ExtensionList> extensionList,
           const std::filesystem::path& _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
@@ -73,18 +73,6 @@ struct FileDialogClass
     void OnCurrentItemChanged();
 };
 
-const char* SkipSpaces(const char* start, const char* end)
-{
-    while ((start < end) && (((*start) == ' ') || ((*start) == '\t')))
-        start++;
-    return start;
-}
-const char* SkipUntilChar(const char* start, const char* end, char ch)
-{
-    while ((start < end) && ((*start) != ch))
-        start++;
-    return start;
-}
 void ConvertSizeToString(unsigned long long size, char result[32])
 {
     result[31] = 0;
@@ -107,23 +95,21 @@ void ConvertSizeToString(unsigned long long size, char result[32])
         result[poz--] = ' ';
     }
 }
-unsigned int __compute_hash__(const char* start, const char* end)
+
+unsigned int __compute_hash__(std::u16string_view str)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned int hash            = 0x811c9dc5;
-    const unsigned char* p_start = (const unsigned char*) start;
-    const unsigned char* p_end   = (const unsigned char*) end;
-    while (p_start < p_end)
+    unsigned int hash = 0x811c9dc5;
+    for (auto ch : str)
     {
-        unsigned int val = *p_start;
-        if ((val >= 'A') && (val <= 'Z'))
-            val |= 32;
-        hash = hash ^ val;
+        if ((ch >= 'A') && (ch <= 'Z'))
+            ch |= 32;
+        hash = hash ^ ch;
         hash = hash * 0x01000193;
-        p_start++;
     }
     return hash;
 }
+
 int FileDialog_ListViewItemComparer(
       ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
 {
@@ -143,64 +129,23 @@ bool FileDialog_EventHandler(
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
 
-bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
+bool FileDialogClass::ProcessExtensionFilter(const ExtensionList& extensionList)
 {
-    // format is: <Name>:ext,<Name>:ext, ...
-    //        or: <Name>:[ext1,ext2,ext3],<Name>:ext,....
-    if (start >= end)
-        return true;
-    LocalString<256> temp;
-    std::set<unsigned int> tempSet;
-    const char* p = start;
-    const char* n;
-    const char* end_array;
-    while (p < end)
+    for (const auto& extensionInfo : extensionList)
     {
-        p = SkipSpaces(p, end);
-        n = SkipUntilChar(p, end, ':');
-        CHECK(n > p, false, "Expecting a valid format (name:ext) or (name:[ext1,ext2,...extn]) !");
-        CHECK(temp.Set(p, (unsigned int) (n - p)), false, "Fail to copy name into a string !");
-        p = SkipSpaces(n + 1, end);
-        CHECK(p < end, false, "Premature end of formated string (an extension must follow ':' delimiter)");
-        if ((*p) == '[')
+        std::set<unsigned int> requiredExtensions;
+        for (const auto& ext : extensionInfo.extensions)
         {
-            // we have a list of extensions
-            tempSet.clear();
-            p++;
-            end_array = SkipUntilChar(p, end, ']');
-            CHECK(end_array < end, false, "Premature end of an array list (missing ']' delimiter)");
-
-            // parse the array
-            while (p < end_array)
-            {
-                n = SkipUntilChar(p, end_array, ',');
-                tempSet.insert(__compute_hash__(p, n));
-                p = n + 1;
-            }
-            p = end_array + 1;
-            p = SkipSpaces(p, end); // skip any possible spaces
-            if ((p < end) && ((*p) == ','))
-                p++; // for a comma after the end of the array
-            // add
-            CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
-                  false,
-                  "Fail to add item to combo-box ");
-            this->extensions.push_back(tempSet);
+            CharacterBuffer buf;
+            buf.Set(ext);
+            std::u16string extString;
+            CHECK(buf.ToString(extString), false, "Failed to convert extension to string");
+            requiredExtensions.insert(__compute_hash__(extString));
         }
-        else
-        {
-            // we have one extension
-            n = SkipUntilChar(p, end, ',');
-            CHECK(n > p, false, "Expecting a valid format (name:ext): an extension must have at least one character");
-            // add extension to set
-            CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
-                  false,
-                  "Fail to add item to combo-box ");
-            tempSet.clear();
-            tempSet.insert(__compute_hash__(p, n));
-            this->extensions.push_back(tempSet);
-            p = n + 1;
-        }
+        CHECK(comboType.AddItem(extensionInfo.filterName, ItemData{ this->extensions.size() }),
+              false,
+              "Failed to add item to combo-box ");
+        this->extensions.push_back(requiredExtensions);
     }
     return true;
 }
@@ -330,13 +275,12 @@ void FileDialogClass::UpdateFileList()
                     if (extFilter)
                     {
                         // a filter is set - let's check the extention
-                        auto ext_u16        = fileEntry.path().extension().u16string();
-                        const char* ext     = (const char*) ext_u16.c_str();
-                        const char* ext_end = ext + ext_u16.size();
-                        if ((ext != nullptr) && ((*ext) == '.'))
-                            ext++;
-                        unsigned int hash = __compute_hash__(ext, ext_end);
-                        if (!extFilter->contains(hash))
+                        auto ext_u16 = fileEntry.path().extension().u16string();
+                        if (ext_u16.length() > 0 && ext_u16[0] == '.')
+                        {
+                            ext_u16.erase(0, 1);
+                        }
+                        if (!extFilter->contains(__compute_hash__(ext_u16)))
                             continue; // extension is filtered
                     }
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
@@ -416,7 +360,7 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
 int FileDialogClass::Show(
       bool open,
       const AppCUI::Utils::ConstString& fileName,
-      std::string_view extensionFilter,
+      std::optional<const ExtensionList> extensionFilter,
       const std::filesystem::path& _path)
 {
     std::filesystem::path initialPath = std::filesystem::absolute(".");
@@ -496,7 +440,10 @@ int FileDialogClass::Show(
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
 
-    this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
+    if (extensionFilter.has_value())
+    {
+        this->ProcessExtensionFilter(extensionFilter.value());
+    }
     if (this->comboType.GetItemsCount() > 0)
         this->comboType.AddSeparator();
     this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
@@ -508,19 +455,23 @@ int FileDialogClass::Show(
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
+      const AppCUI::Utils::ConstString& fileName,
+      std::optional<const ExtensionList> extensionList,
+      const std::filesystem::path& path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(false, fileName, extensionFilter, path);
+    int res = dlg.Show(false, fileName, extensionList, path);
     if (res == (int) Dialogs::Result::Ok)
         return dlg.resultedPath;
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
+      const AppCUI::Utils::ConstString& fileName,
+      std::optional<const ExtensionList> extensionList,
+      const std::filesystem::path& path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(true, fileName, extensionFilter, path);
+    int res = dlg.Show(true, fileName, extensionList, path);
     if (res == (int) Dialogs::Result::Ok)
         return dlg.resultedPath;
     return std::nullopt;

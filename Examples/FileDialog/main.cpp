@@ -29,12 +29,16 @@ class MyWin : public AppCUI::Controls::Window
             Application::Close();
             return true;
         }
+        ExtensionList filterExtensions;
+        filterExtensions.push_back({ "Text Files", { "txt" } });
+        filterExtensions.push_back({ "Images", { "jpg", "jpeg", "png" } });
+        filterExtensions.push_back({ "Documents", { "pdf", "doc", "docx", "xlsx", "xls", "ppt", "pptx" } });
+
         if (eventType == Event::ButtonClicked)
         {
             if (controlID == BUTTON_ID_SHOW_SAVE)
             {
-                auto res = FileDialog::ShowSaveFileWindow(
-                      "", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
+                auto res = FileDialog::ShowSaveFileWindow("", filterExtensions, ".");
                 if (res.has_value())
                     l1.SetText(res->u8string());
                 else
@@ -42,8 +46,7 @@ class MyWin : public AppCUI::Controls::Window
             }
             if (controlID == BUTTON_ID_SHOW_OPEN)
             {
-                auto res = FileDialog::ShowOpenFileWindow(
-                      "", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
+                auto res = FileDialog::ShowOpenFileWindow("", filterExtensions, ".");
                 if (res.has_value())
                     l2.SetText(res->u8string());
                 else
