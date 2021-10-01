@@ -136,10 +136,8 @@ bool FileDialogClass::ProcessExtensionFilter(const ExtensionList& extensionList)
         std::set<unsigned int> requiredExtensions;
         for (const auto& ext : extensionInfo.extensions)
         {
-            CharacterBuffer buf;
-            buf.Set(ext);
-            std::u16string extString;
-            CHECK(buf.ToString(extString), false, "Failed to convert extension to string");
+            LocalUnicodeStringBuilder<256> extString;
+            CHECK(extString.Set(ext), false, "Failed to convert extension to string");
             requiredExtensions.insert(__compute_hash__(extString));
         }
         CHECK(comboType.AddItem(extensionInfo.filterName, ItemData{ this->extensions.size() }),
