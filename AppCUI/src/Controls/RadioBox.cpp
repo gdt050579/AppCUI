@@ -13,7 +13,7 @@ std::unique_ptr<RadioBox> RadioBox::Create(
     INIT_CONTROL(RadioBox, ControlContext);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 1;
-    CHECK(me->Init(caption, layout, true), false, "Unable to create radioBox box !");
+    CHECK(me->Init(caption, layout, true), nullptr, "Unable to create radioBox box !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     me->SetControlID(controlID);
     me->SetGroup(groupID);

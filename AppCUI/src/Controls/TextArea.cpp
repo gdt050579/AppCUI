@@ -916,7 +916,7 @@ std::unique_ptr<TextArea> TextArea::Create(
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;
     Members->View.TopLine         = 0;
-    Members->Host                 = this;
+    Members->Host                 = me.get();
     Members->ComputeVisibleLinesAndRows();
     Members->ClearSel();
     Members->AnalyzeCurrentText();

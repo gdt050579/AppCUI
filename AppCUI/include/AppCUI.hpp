@@ -2245,10 +2245,12 @@ namespace Controls
         {
         }
     };
-    class EXPORT ListView : public Control
+    class EXPORT ListView : public Control 
     {
       public:
-        bool Create(Control* parent, const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
+        static std::unique_ptr<ListView> Create(const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
+        static ListView* Create(
+              Control& parent, const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2369,8 +2371,13 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        bool Create(
-              Control* parent,
+        static std::unique_ptr<ComboBox> Create(
+              const std::string_view& layout,
+              const AppCUI::Utils::ConstString& text = std::string_view(),
+              char itemsSeparator                    = ',');
+
+        static ComboBox* Create(
+              Control& parent,
               const std::string_view& layout,
               const AppCUI::Utils::ConstString& text = std::string_view(),
               char itemsSeparator                    = ',');
@@ -2439,8 +2446,13 @@ namespace Controls
     class EXPORT NumericSelector : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static std::unique_ptr<NumericSelector> Create(
+              const long long minValue,
+              const long long maxValue,
+              long long value,
+              const std::string_view& layout);
+        static NumericSelector* Create(
+              Control& parent,
               const long long minValue,
               const long long maxValue,
               long long value,

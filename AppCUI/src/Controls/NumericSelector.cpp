@@ -6,30 +6,39 @@ using namespace AppCUI::Graphics;
 
 namespace AppCUI::Controls
 {
-bool NumericSelector::Create(
-      Control* parent,
+std::unique_ptr<NumericSelector> NumericSelector::Create(
       const long long minValue,
       const long long maxValue,
       long long value,
       const std::string_view& layout)
 {
-    CONTROL_INIT_CONTEXT(NumericSelectorControlContext);
-    CHECK(Context != nullptr, false, "");
+    INIT_CONTROL(NumericSelector, NumericSelectorControlContext);
 
-    const auto cc        = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    const auto cc        = Members;
     cc->Layout.MinHeight = 1;
     cc->Layout.MaxHeight = 1;
     cc->Layout.MinWidth  = 10;
-    CHECK(Init(parent, "", layout, true), false, "Failed to create numeric selector!");
+    CHECK(me->Init("", layout, true), nullptr, "Failed to create numeric selector!");
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
     cc->minValue = minValue;
     cc->maxValue = maxValue;
-    SetValue(value);
+    me->SetValue(value);
 
-    return true;
+    return me;
 }
-
+NumericSelector* NumericSelector::Create(
+      Control& parent,
+      const long long minValue,
+      const long long maxValue,
+      long long value,
+      const std::string_view& layout)
+{
+    auto me = NumericSelector::Create(minValue, maxValue, value, layout);
+    CHECK(me, nullptr, "Fail to create a NumericSelector control !");
+    return parent.AddControl<NumericSelector>(std::move(me));
+}    
+    
 long long NumericSelector::GetValue() const
 {
     CHECK(Context != nullptr, false, "");

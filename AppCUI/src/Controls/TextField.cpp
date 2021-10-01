@@ -291,9 +291,9 @@ std::unique_ptr<TextField> TextField::Create(
 
     Members->Flags    = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->Modified = true;
-    ClearSelection();
+    me->ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
-    TextField_MoveTo(this, 0xFFFF, false);
+    TextField_MoveTo(me.get(), 0xFFFF, false);
     if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
     {
         Members->Syntax.Handler = handler;

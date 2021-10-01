@@ -188,14 +188,13 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-bool ComboBox::Create(Control* parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+std::unique_ptr<ComboBox> ComboBox::Create(const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
 {
-    CONTROL_INIT_CONTEXT(ComboBoxControlContext);
-    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+    INIT_CONTROL(ComboBox, ComboBoxControlContext);
     Members->Layout.MinWidth  = 7;
     Members->Layout.MinHeight = 1;
     Members->Layout.MaxHeight = 1;
-    CHECK(Init(parent, "", layout, false), false, "Failed to create combo box !");
+    CHECK(me->Init("", layout, false), nullptr, "Failed to create combo box !");
 
     Members->Flags                        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     unsigned int initialAllocatedElements = 16;
@@ -217,40 +216,56 @@ bool ComboBox::Create(Control* parent, const std::string_view& layout, const App
             count = ComputeItemsCount<Character>((const Character*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         default:
-            RETURNERROR(false, "Invalid string type !");
+            RETURNERROR(nullptr, "Invalid string type !");
     }
     if (count > initialAllocatedElements)
         initialAllocatedElements = (count | 3) + 1;
 
     Members->Items.reserve(initialAllocatedElements);
-    CHECK(Members->Indexes.Create(initialAllocatedElements), false, "Fail to initialize %d elements indexes !", initialAllocatedElements);
+    CHECK(Members->Indexes.Create(initialAllocatedElements),
+          nullptr,
+          "Fail to initialize %d elements indexes !",
+          initialAllocatedElements);
     if (count>0)
     {
         bool result = false;
         switch (listItems.Encoding)
         {
         case StringEncoding::Ascii:
-            result = AddItemsFromList<char, std::string_view>(this,(const char*) listItems.Data,listItems.Length,itemsSeparator);
+            result = AddItemsFromList<char, std::string_view>(
+                  me.get(), (const char*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::UTF8:
-            result = AddItemsFromList<char8_t, std::u8string_view>(this, (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
+            result = AddItemsFromList<char8_t, std::u8string_view>(
+                  me.get(), (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::Unicode16:
-            result = AddItemsFromList<char16_t, std::u16string_view>(this, (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
+            result = AddItemsFromList<char16_t, std::u16string_view>(
+                  me.get(), (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::CharacterBuffer:
-            result = AddItemsFromList<Character, CharacterView>(this, (const Character*) listItems.Data, listItems.Length, itemsSeparator);
+            result = AddItemsFromList<Character, CharacterView>(
+                  me.get(), (const Character*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         default:
-            RETURNERROR(false, "Invalid string type !");
+            RETURNERROR(nullptr, "Invalid string type !");
         }
-        CHECK(result, false, "Fail to add items to ComboBox !");
+        CHECK(result, nullptr, "Fail to add items to ComboBox !");
     }
     Members->VisibleItemsCount = 1;
     Members->CurentItemIndex   = ComboBox::NO_ITEM_SELECTED;
     Members->FirstVisibleItem  = 0;
-    return true;
+    return me;
 }
+
+ComboBox* ComboBox::Create(
+      Control& parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+{
+    auto me = ComboBox::Create(layout, text, itemsSeparator);
+    CHECK(me, nullptr, "Fail to create a ComboBox control !");
+    return parent.AddControl<ComboBox>(std::move(me));
+}
+
 unsigned int ComboBox::GetItemsCount()
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, 0);
