@@ -43,7 +43,6 @@ struct FileDialogClass
     Controls::Window wnd;
     Controls::Label lbPath, lbLocation, lbName, lbExt;
     Controls::ListView lSpecialPaths;
-    Controls::ComboBox comboDrive;
     Controls::ListView files;
     Controls::TextField txName;
     Controls::ComboBox comboType;
@@ -54,7 +53,7 @@ struct FileDialogClass
     std::vector<std::set<unsigned int>> extensions;
     std::set<unsigned int>* extFilter;
     std::filesystem::path resultedPath;
-    std::stack<std::filesystem::path> pathStack;
+    std::filesystem::path currentPath;
     bool openDialog;
 
     bool ProcessExtensionFilter(const char* start, const char* end);
@@ -212,17 +211,17 @@ void FileDialogClass::OnClickedOnItem()
     if (index < 0)
         return;
     unsigned int value      = (int) files.GetItemData(index)->UInt32Value;
-    std::filesystem::path p = pathStack.top();
+    std::filesystem::path p = currentPath;
     if (value == 0)
     {
-        pathStack.push(p.parent_path());
+        currentPath = p.parent_path();
         UpdateFileList();
         return;
     }
     if (value == 1)
     {
         p /= files.GetItemText(index, 0);
-        pathStack.push(p);
+        currentPath = p;
         UpdateFileList();
         return;
     }
@@ -275,7 +274,7 @@ void FileDialogClass::Validate()
 void FileDialogClass::UpdateCurrentFolder()
 {
     const auto idx = lSpecialPaths.GetCurrentItem();
-    pathStack.push(locations[idx].locationPath);
+    currentPath    = locations[idx].locationPath;
     UpdateFileList();
 }
 
@@ -295,10 +294,12 @@ void FileDialogClass::UpdateCurrentExtensionFilter()
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    if (pathStack.size() > 0)
+    if (!currentPath.empty())
     {
-        std::filesystem::path p = std::filesystem::absolute(pathStack.top());
-        lbPath.SetText(std::filesystem::canonical(p).string());
+        currentPath = std::filesystem::canonical(currentPath);
+
+        std::filesystem::path p = currentPath;
+        lbPath.SetText(p.u8string());
 
         if (p != p.root_path())
         {
@@ -335,8 +336,7 @@ void FileDialogClass::UpdateFileList()
                 auto lastModifiedTime = getLastModifiedTime(fileEntry);
                 std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
 
-                itemHandle =
-                      this->files.AddItem((const char*) fileEntry.path().filename().u8string().c_str(), size, time_rep);
+                itemHandle = this->files.AddItem(fileEntry.path().filename().u8string(), size, time_rep);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
@@ -426,7 +426,7 @@ int FileDialogClass::Show(
     {
         // pass
     }
-    pathStack.push(initialPath);
+    currentPath = initialPath;
 
     extFilter = nullptr;
     // defaultFileName = fileName;
