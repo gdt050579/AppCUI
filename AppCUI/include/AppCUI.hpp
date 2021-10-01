@@ -2205,6 +2205,32 @@ namespace Controls
     class EXPORT ImageViewer : public CanvasViewer
     {
       public:
+        // delete some functions from the base class
+        static CanvasViewer* Create(
+              Control& parent,
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None) = delete;
+        static std::unique_ptr<CanvasViewer> Create(
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None) = delete;
+        static CanvasViewer* Create(
+              Control& parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None) = delete;
+        static std::unique_ptr<CanvasViewer> Create(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags = ViewerFlags::None) = delete;
+
         static std::unique_ptr<ImageViewer> Create(
               const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
         static ImageViewer* Create(
