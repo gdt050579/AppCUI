@@ -1695,19 +1695,26 @@ namespace Controls
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
-
-        bool Init(
-              Control* parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              bool computeHotKey = false);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
 
-      public:
+        // static init
+        static bool Init(
+              std::unique_ptr<Control> control,
+              Control* parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              bool computeHotKey = false);
+        // protected constructor
         Control();
-        bool AddControl(Control* control);
+      public:        
+        Control* AddControl(std::unique_ptr<Control> control);
+        template <typename T>
+        T* AddControl(std::unique_ptr<T> control)
+        {
+            return static_cast<T*>(this->AddControl(std::move(control));
+        }
         bool RemoveControl(Control* control);
         bool RemoveControl(unsigned int index);
 
