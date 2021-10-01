@@ -43,7 +43,7 @@ bool Tree::Create(
     const unsigned int offsetRight  = 1; // border
     const unsigned int offsetTop    = 1; // border
     const unsigned int offsetBottom = 1; // border
-    const unsigned int width        = (static_cast<unsigned int>(cc->width) / noOfColumns);
+    const unsigned int width        = std::max<>((static_cast<unsigned int>(cc->width) / noOfColumns), cc->minColumnWidth);
     for (auto i = 0U; i < noOfColumns; i++)
     {
         ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + offsetLeft),
@@ -890,7 +890,7 @@ bool Tree::AddColumnData(
     column.contentAlignment = contentAlignment;
     if (width != 0xFFFFFFFF)
     {
-        column.width       = width;
+        column.width       = std::max<>(width, cc->minColumnWidth);
         column.customWidth = true;
 
         // shifts columns
@@ -1049,7 +1049,7 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
         col.x      = static_cast<unsigned int>(xPreviousColumn + widthOfPreviousColumn + offsetLeft);
         if (col.customWidth == false)
         {
-            col.width = width;
+            col.width = std::max<>(width, cc->minColumnWidth);
         }
         xPreviousColumn       = col.x;
         widthOfPreviousColumn = col.width;
