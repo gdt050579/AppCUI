@@ -1,5 +1,6 @@
 #include "AppCUI.hpp"
 #include <set>
+#include <stack>
 #include <vector>
 
 #define ALL_FILES_INDEX 0xFFFFFFFF
