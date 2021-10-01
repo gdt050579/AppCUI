@@ -19,7 +19,7 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
-enum class LayoutFormatMode: unsigned short
+enum class LayoutFormatMode : unsigned short
 {
     None,
     PointAndSize,
@@ -33,7 +33,7 @@ enum class LayoutFormatMode: unsigned short
 
     LeftTopRightBottomAnchors
 };
-enum class LayoutValueType: unsigned short
+enum class LayoutValueType : unsigned short
 {
     CharacterOffset = 0,
     Percentage
@@ -246,10 +246,10 @@ struct WindowControlContext : public ControlContext
         unsigned char Current;
         bool IsCurrentItemPressed;
     } ControlBar;
-    bool Maximized;    
+    bool Maximized;
 };
 
-enum class SplitterMouseStatus: unsigned char
+enum class SplitterMouseStatus : unsigned char
 {
     None = 0,
     OnButton1,
@@ -571,7 +571,7 @@ class NumericSelectorControlContext : public ControlContext
     bool wrongValueInserted      = false;
     long long sliderPosition     = 0;
     bool isMouseLeftClickPressed = false;
-    
+
     enum class IsMouseOn
     {
         None,
@@ -705,7 +705,13 @@ struct MenuContext
     type* name = (type*) ((object)->Context);                                                                          \
     if (name == nullptr)                                                                                               \
         return retValue;
-#define CONTROL_INIT_CONTEXT(type) CHECK((Context = new type()) != nullptr, false, "Unable to create control context");
+#define INIT_CONTROL(type, contextType)                                                                                \
+    auto me       = std::make_unique<type>();                                                                          \
+    auto Members  = new contextType();                                                                                 \
+    type* p_me    = me.get();                                                                                          \
+    p_me->Context = Members;
+
+CHECK((obj->Context = new type()) != nullptr, retValue, "Unable to create control context");
 #define DELETE_CONTROL_CONTEXT(type)                                                                                   \
     if (Context != nullptr)                                                                                            \
     {                                                                                                                  \
@@ -713,4 +719,3 @@ struct MenuContext
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
-

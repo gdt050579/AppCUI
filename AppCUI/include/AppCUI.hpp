@@ -1923,7 +1923,7 @@ namespace Controls
     class EXPORT Label : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static Label* Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
 
