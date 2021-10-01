@@ -241,9 +241,12 @@ void FileDialogClass::OnCurrentItemChanged()
 }
 void FileDialogClass::Validate()
 {
-    if (txName.GetText().Len() == 0)
+    if (currentPath.empty())
+    {
         return;
-    if (lbPath.GetText().Len() == 0)
+    }
+
+    if (txName.GetText().Len() == 0)
         return;
 
     this->resultedPath = currentPath;
@@ -254,7 +257,7 @@ void FileDialogClass::Validate()
     {
         if (exists == false)
         {
-            MessageBox::ShowError("Error", "Selected file does not exists !");
+            MessageBox::ShowError("Error", "Selected file does not exist!");
             return;
         }
     }
@@ -262,8 +265,7 @@ void FileDialogClass::Validate()
     {
         if (exists)
         {
-            if (MessageBox::ShowOkCancel("Overwrite", "Current file already exists. Overwrite ?") !=
-                Dialogs::Result::Ok)
+            if (MessageBox::ShowOkCancel("Overwrite", "Current file already exists. Overwrite?") != Dialogs::Result::Ok)
                 return;
         }
     }
