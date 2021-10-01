@@ -1698,15 +1698,15 @@ namespace Controls
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
-        
+
         Control* AddChildControl(std::unique_ptr<Control> control);
 
         bool Init(
               const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey = false);
         // protected constructor
         Control();
-      public:        
-        
+
+      public:
         template <typename T>
         T* AddControl(std::unique_ptr<T> control)
         {
@@ -1920,7 +1920,8 @@ namespace Controls
     class EXPORT Label : public Control
     {
       public:
-        static Label* Create(Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static Label* Create(
+              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         static std::unique_ptr<Label> Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
@@ -2019,8 +2020,7 @@ namespace Controls
       public:
         static Panel* Create(
               Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static std::unique_ptr<Panel> Create(
-              const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static std::unique_ptr<Panel> Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         static Panel* Create(Control& parent, const std::string_view& layout);
         static std::unique_ptr<Panel> Create(const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
@@ -2157,6 +2157,13 @@ namespace Controls
     };
     class EXPORT CanvasViewer : public Control
     {
+      protected:
+        bool Init(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              unsigned int canvasWidth,
+              unsigned int canvasHeight,
+              ViewerFlags flags);
       public:
         ~CanvasViewer();
         static CanvasViewer* Create(
@@ -2198,9 +2205,16 @@ namespace Controls
     class EXPORT ImageViewer : public CanvasViewer
     {
       public:
-        bool Create(Control* parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
-        bool Create(
-              Control* parent,
+        static std::unique_ptr<ImageViewer> Create(
+              const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
+        static ImageViewer* Create(
+              Control& parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
+        static std::unique_ptr<ImageViewer> Create(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              ViewerFlags flags = ViewerFlags::None);
+        static ImageViewer* Create(
+              Control& parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               ViewerFlags flags = ViewerFlags::None);
@@ -2245,10 +2259,11 @@ namespace Controls
         {
         }
     };
-    class EXPORT ListView : public Control 
+    class EXPORT ListView : public Control
     {
       public:
-        static std::unique_ptr<ListView> Create(const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
+        static std::unique_ptr<ListView> Create(
+              const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
         static ListView* Create(
               Control& parent, const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
         bool Reserve(unsigned int itemsCount);
@@ -2447,10 +2462,7 @@ namespace Controls
     {
       public:
         static std::unique_ptr<NumericSelector> Create(
-              const long long minValue,
-              const long long maxValue,
-              long long value,
-              const std::string_view& layout);
+              const long long minValue, const long long maxValue, long long value, const std::string_view& layout);
         static NumericSelector* Create(
               Control& parent,
               const long long minValue,

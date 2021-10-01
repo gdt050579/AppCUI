@@ -23,18 +23,17 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
     this->CanvasScrollY = newY;
 }
 
-std::unique_ptr<CanvasViewer> CanvasViewer::Create(
+bool CanvasViewer::Init(
       const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      ViewerFlags flags)
+    const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
 {
-    CHECK(canvasWidth > 0, nullptr, "Canvas Width must be greater than 0.");
-    CHECK(canvasHeight > 0, nullptr, "Canvas Height must be greater than 0.");
-    INIT_CONTROL(CanvasViewer, CanvasControlContext);
-    CHECK(me->Init(caption, layout, true), nullptr, "Failed to create Canvas viewer object");
-    
+    CHECK(this->Context == nullptr, false, "Object already initialized");
+    CHECK(canvasWidth > 0, false, "Canvas Width must be greater than 0.");
+    CHECK(canvasHeight > 0, false, "Canvas Height must be greater than 0.");
+    this->Context = new CanvasControlContext();
+    auto Members  = reinterpret_cast<CanvasControlContext*>(this->Context);
+    CHECK(Control::Init(caption, layout, true), false, "Failed to create Canvas viewer object");
+        
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
@@ -44,10 +43,23 @@ std::unique_ptr<CanvasViewer> CanvasViewer::Create(
     Members->dragModeEnabled           = false;
     Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
     CHECK(Members->canvas.Create(canvasWidth, canvasHeight),
-          nullptr,
+          false,
           "Fail to create a canvas of size %d x %d",
           canvasWidth,
           canvasHeight);
+
+    return true;
+}
+
+std::unique_ptr<CanvasViewer> CanvasViewer::Create(
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      ViewerFlags flags)
+{
+    auto me = std::make_unique<CanvasViewer>();
+    CHECK(me->Init(caption, layout, canvasWidth, canvasHeight, flags), nullptr, "");
     return me;
 }
 std::unique_ptr<CanvasViewer> CanvasViewer::Create(      
