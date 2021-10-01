@@ -229,7 +229,6 @@ namespace Internal
         std::vector<AppCUI::Controls::Control*> toDelete;
 
         AppCUI::Controls::Desktop* AppDesktop;
-        AppCUI::Controls::Desktop DefaultDesktopControl;
         ToolTipController ToolTip;
         AppCUI::Application::CommandBar CommandBarWrapper;
 

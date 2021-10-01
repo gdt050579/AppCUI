@@ -396,7 +396,7 @@ int FileDialogClass::Show(
       std::string_view extensionFilter,
       const std::filesystem::path & _path)
 {
-
+    /*
     extFilter       = nullptr;
     //defaultFileName = fileName;
     openDialog      = open;
@@ -463,6 +463,8 @@ int FileDialogClass::Show(
     UpdateFileList();
     txName.SetFocus();
     return wnd.Show();
+    //*/
+    return 0;
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(

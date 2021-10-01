@@ -28,18 +28,24 @@ void GoToNextWindow(ControlContext* Members, int direction)
     if (start != (int) Members->CurrentControlIndex)
         Members->Controls[start]->SetFocus();
 }
-bool Desktop::Create(unsigned int _width, unsigned int _height)
+bool Desktop::Init(unsigned int _width, unsigned int _height)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
+    this->Context = new ControlContext();
+    auto Members  = reinterpret_cast<ControlContext*>(this->Context);
     AppCUI::Utils::LocalString<128> temp;
 
-    CHECK(Init(nullptr, "", temp.Format("x:0,y:0,w:%d,h:%d", _width, _height), false),
+    CHECK(Control::Init("", temp.Format("x:0,y:0,w:%d,h:%d", _width, _height), false),
           false,
           "Failed to create desktop !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
     Members->ScreenClip.Set(0, 0, _width, _height);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     return true;
+}
+std::unique_ptr<Desktop> Desktop::Create(unsigned int _width, unsigned int _height)
+{
+    auto dsk = std::make_unique<Desktop>();
+    CHECK(dsk->Init(_width, _height), nullptr, "");
+    return dsk;
 }
 void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
 {

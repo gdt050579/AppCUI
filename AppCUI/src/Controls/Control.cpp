@@ -1219,9 +1219,7 @@ AppCUI::Controls::Control::~Control()
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
 bool AppCUI::Controls::Control::Init(
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      bool computeHotKey)
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
     AppCUI::Utils::ConstStringObject captionObj(caption);
     CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
@@ -1231,7 +1229,7 @@ bool AppCUI::Controls::Control::Init(
 
     auto ctx = reinterpret_cast<ControlContext*>(this->Context);
     CHECK(ctx->UpdateLayoutFormat(layout), false, "Invalid format !");
-    CHECK(ctx->RecomputeLayout(nullptr), false, "Unable to recompute layout !");
+    // CHECK(ctx->RecomputeLayout(nullptr), false, "Unable to recompute layout !");
 
     if (computeHotKey)
     {
@@ -1246,7 +1244,7 @@ bool AppCUI::Controls::Control::Init(
     }
 
     // all good
-    ctx->Inited = true;   
+    ctx->Inited = true;
     return true;
 }
 
@@ -1277,10 +1275,10 @@ Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctr
     }
     if (OnBeforeAddControl(ctrl.get()) == false)
         return nullptr;
-    // fac linkul
-    auto p_ctrl                                 = ctrl.release();
-    CTRLC->Controls[CTRLC->ControlsCount++]     = p_ctrl;
-    ((ControlContext*) (ctrl->Context))->Parent = this;
+
+    auto p_ctrl                                   = ctrl.release();
+    CTRLC->Controls[CTRLC->ControlsCount++]       = p_ctrl;
+    ((ControlContext*) (p_ctrl->Context))->Parent = this;
     OnAfterAddControl(p_ctrl);
     // Recompute layouts
     (reinterpret_cast<ControlContext*>(p_ctrl->Context))->RecomputeLayout(this);

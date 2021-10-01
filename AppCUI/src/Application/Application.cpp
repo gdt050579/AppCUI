@@ -68,16 +68,15 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
-    auto ptrWin = wnd.release();
-    CHECK(ptrWin, InvalidItemHandle, "Null pointer for Window object");
+    CHECK(wnd, InvalidItemHandle, "Null pointer for Window object");
     auto resultHandle     = ItemHandle{ app->LastWindowID };
-    const auto winMembers = reinterpret_cast<WindowControlContext*>(ptrWin->Context);
+    const auto winMembers = reinterpret_cast<WindowControlContext*>(wnd->Context);
     CHECK(winMembers, InvalidItemHandle, "Invalid members !");
     winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
     app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
     if (((app->InitFlags & InitializationFlags::AutoHotKeyForWindow) != InitializationFlags::None) &&
-        (ptrWin->GetHotKey() == Key::None))
+        (wnd->GetHotKey() == Key::None))
     {
         // compute a possible hot key
         bool v[10] = {
@@ -109,11 +108,12 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
         for (unsigned int tr = 1; tr < 10; tr++)
             if (!v[tr])
             {
-                ptrWin->SetHotKey('0' + tr);
+                wnd->SetHotKey('0' + tr);
                 break;
             }
     }
-    CHECK(app->AppDesktop->AddControl(ptrWin), InvalidItemHandle, "Fail to add window to desktop !");
+    auto ptrWin = wnd.get();
+    CHECK(app->AppDesktop->AddControl(std::move(wnd)), InvalidItemHandle, "Fail to add window to desktop !");
     ptrWin->SetFocus();
     return resultHandle;
 }
@@ -532,12 +532,14 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     this->config.SetDarkTheme();
 
     if (initData.CustomDesktop)
-        this->AppDesktop = initData.CustomDesktop;
+        this->AppDesktop = initData.CustomDesktop.release();
     else
-        this->AppDesktop = &this->DefaultDesktopControl;
-    CHECK(this->AppDesktop->Create(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
-          false,
-          "Failed to create desktop !");
+        this->AppDesktop = AppCUI::Controls::Desktop::Create(
+                                 this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight())
+                                 .release();
+    //CHECK(this->AppDesktop->Init(),
+    //      false,
+    //      "Failed to create desktop !");
     if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
         AppCUI::Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
