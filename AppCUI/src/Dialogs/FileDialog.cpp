@@ -1,9 +1,8 @@
 #include "AppCUI.hpp"
-
 #include <set>
+#include <vector>
 
 #define ALL_FILES_INDEX 0xFFFFFFFF
-
 
 using namespace AppCUI;
 using namespace AppCUI::OS;
@@ -41,35 +40,40 @@ std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 struct FileDialogClass
 {
     Controls::Window wnd;
-    Controls::Label lbPath, lbDrive, lbName, lbExt;
+    Controls::Label lbPath, lbLocation, lbName, lbExt;
+    Controls::ListView lSpecialPaths;
     Controls::ComboBox comboDrive;
     Controls::ListView files;
     Controls::TextField txName;
     Controls::ComboBox comboType;
+    std::vector<FSLocationData> locations;
     Controls::Button btnOK, btnCancel;
-    std::vector<std::pair<std::string, std::filesystem::path>> specialFolders;
+    // TODO: Future back and forward option
+    // Controls::Button btnBack, btnForward;
     std::vector<std::set<unsigned int>> extensions;
     std::set<unsigned int>* extFilter;
     std::filesystem::path resultedPath;
+    std::stack<std::filesystem::path> pathStack;
     bool openDialog;
 
-    bool ProcessExtensionFilter(const char* start, const char *end);
+    bool ProcessExtensionFilter(const char* start, const char* end);
 
     int Show(
           bool open,
           const AppCUI::Utils::ConstString& fileName,
           std::string_view extensionFilter,
-          const std::filesystem::path & _path);
+          const std::filesystem::path& _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
     void UpdateFileList();
     bool OnEventHandler(const void* sender, AppCUI::Controls::Event eventType, int controlID);
+
     void Validate();
     void OnClickedOnItem();
     void OnCurrentItemChanged();
 };
 
-const char * SkipSpaces(const char * start, const char * end)
+const char* SkipSpaces(const char* start, const char* end)
 {
     while ((start < end) && (((*start) == ' ') || ((*start) == '\t')))
         start++;
@@ -103,10 +107,10 @@ void ConvertSizeToString(unsigned long long size, char result[32])
         result[poz--] = ' ';
     }
 }
-unsigned int __compute_hash__(const char * start, const char * end)
+unsigned int __compute_hash__(const char* start, const char* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned int hash = 0x811c9dc5;
+    unsigned int hash            = 0x811c9dc5;
     const unsigned char* p_start = (const unsigned char*) start;
     const unsigned char* p_end   = (const unsigned char*) end;
     while (p_start < p_end)
@@ -138,6 +142,7 @@ bool FileDialog_EventHandler(
 {
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
+
 bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
 {
     // format is: <Name>:ext,<Name>:ext, ...
@@ -149,7 +154,7 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
     const char* p = start;
     const char* n;
     const char* end_array;
-    while (p<end)
+    while (p < end)
     {
         p = SkipSpaces(p, end);
         n = SkipUntilChar(p, end, ':');
@@ -157,7 +162,7 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
         CHECK(temp.Set(p, (unsigned int) (n - p)), false, "Fail to copy name into a string !");
         p = SkipSpaces(n + 1, end);
         CHECK(p < end, false, "Premature end of formated string (an extension must follow ':' delimiter)");
-        if ((*p) =='[')
+        if ((*p) == '[')
         {
             // we have a list of extensions
             tempSet.clear();
@@ -185,14 +190,14 @@ bool FileDialogClass::ProcessExtensionFilter(const char* start, const char* end)
         else
         {
             // we have one extension
-            n = SkipUntilChar(p,end,',');
+            n = SkipUntilChar(p, end, ',');
             CHECK(n > p, false, "Expecting a valid format (name:ext): an extension must have at least one character");
             // add extension to set
             CHECK(comboType.AddItem(temp.GetText(), ItemData{ this->extensions.size() }),
                   false,
                   "Fail to add item to combo-box ");
             tempSet.clear();
-            tempSet.insert(__compute_hash__(p,n));
+            tempSet.insert(__compute_hash__(p, n));
             this->extensions.push_back(tempSet);
             p = n + 1;
         }
@@ -205,18 +210,18 @@ void FileDialogClass::OnClickedOnItem()
     int index = files.GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value = (int) files.GetItemData(index)->UInt32Value;
-    std::filesystem::path p = lbPath.GetText();
+    unsigned int value      = (int) files.GetItemData(index)->UInt32Value;
+    std::filesystem::path p = pathStack.top();
     if (value == 0)
     {
-        lbPath.SetText(p.parent_path().u8string());
+        pathStack.push(p.parent_path());
         UpdateFileList();
         return;
     }
     if (value == 1)
     {
         p /= files.GetItemText(index, 0);
-        lbPath.SetText(p.u8string());
+        pathStack.push(p);
         UpdateFileList();
         return;
     }
@@ -241,9 +246,9 @@ void FileDialogClass::Validate()
     if (lbPath.GetText().Len() == 0)
         return;
 
-    this->resultedPath = (std::filesystem::path)lbPath.GetText();
+    this->resultedPath = (std::filesystem::path) lbPath.GetText();
     this->resultedPath /= txName.GetText();
-    
+
     bool exists = std::filesystem::exists(this->resultedPath);
     if (openDialog)
     {
@@ -265,13 +270,14 @@ void FileDialogClass::Validate()
     // all is ok
     wnd.Exit(Dialogs::Result::Ok);
 }
+
 void FileDialogClass::UpdateCurrentFolder()
 {
-    unsigned int idx = comboDrive.GetCurrentItemUserData().UInt32Value;
-    // update lbPath with the name of the selected special folder
-    lbPath.SetText((const char*) specialFolders[idx].second.u8string().c_str());
+    const auto idx = lSpecialPaths.GetCurrentItem();
+    pathStack.push(locations[idx].locationPath);
     UpdateFileList();
 }
+
 void FileDialogClass::UpdateCurrentExtensionFilter()
 {
     unsigned int idx = comboType.GetCurrentItemUserData().UInt32Value;
@@ -288,10 +294,11 @@ void FileDialogClass::UpdateCurrentExtensionFilter()
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    std::string s_p;
-    if (lbPath.GetText().ToString(s_p))
+    if (pathStack.size() > 0)
     {
-        std::filesystem::path p = s_p;
+        std::filesystem::path p = std::filesystem::absolute(pathStack.top());
+        lbPath.SetText(std::filesystem::canonical(p).string());
+
         if (p != p.root_path())
         {
             files.AddItem("..", "UP-DIR");
@@ -323,7 +330,6 @@ void FileDialogClass::UpdateFileList()
                     }
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
                 }
-                    
 
                 auto lastModifiedTime = getLastModifiedTime(fileEntry);
                 std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
@@ -366,93 +372,119 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
         Validate();
         return true;
     case Event::ComboBoxSelectedItemChanged:
-        if (sender == &comboDrive)
-        {
-            UpdateCurrentFolder();
-            UpdateFileList();
-        }
-        else if (sender == &comboType)
-        {
-            UpdateCurrentExtensionFilter();
-            UpdateFileList();
-        }
+        UpdateCurrentExtensionFilter();
+        UpdateFileList();
         return true;
     case Event::TextFieldValidate:
         UpdateFileList();
         files.SetFocus();
         return true;
     case Event::ListViewCurrentItemChanged:
-        OnCurrentItemChanged();
+        if (sender == &lSpecialPaths)
+        {
+            UpdateCurrentFolder();
+        }
+        else
+        {
+            OnCurrentItemChanged();
+        }
         return true;
     case Event::ListViewItemClicked:
-        OnClickedOnItem();
+        if (sender == &lSpecialPaths)
+        {
+            UpdateCurrentFolder();
+        }
+        else
+        {
+            OnClickedOnItem();
+        }
         return true;
     }
     return true;
 }
+
 int FileDialogClass::Show(
       bool open,
       const AppCUI::Utils::ConstString& fileName,
       std::string_view extensionFilter,
-      const std::filesystem::path & _path)
+      const std::filesystem::path& _path)
 {
+    std::filesystem::path initialPath = std::filesystem::absolute(".");
+    try
+    {
+        if (_path.empty())
+        {
+            initialPath = std::filesystem::absolute(".");
+        }
+        else
+        {
+            initialPath = std::filesystem::absolute(_path);
+        }
+    }
+    catch (...)
+    {
+        // pass
+    }
+    pathStack.push(initialPath);
 
-    extFilter       = nullptr;
-    //defaultFileName = fileName;
-    openDialog      = open;
+    extFilter = nullptr;
+    // defaultFileName = fileName;
+    openDialog = open;
     if (open)
         wnd.Create("Open", "w:78,h:23,d:c");
     else
         wnd.Create("Save", "w:78,h:23,d:c");
+
     wnd.SetEventHandler(FileDialog_EventHandler, this);
-    lbPath.Create(&wnd, "", "x:2,y:2,w:63");
-    lbDrive.Create(&wnd, "&Location", "x:2,y:1,w:8");
-    comboDrive.Create(&wnd, "x:12,y:1,w:61");
-    comboDrive.SetHotKey('L');
-    // populate combo box with special folders and available drivers
-    this->specialFolders.clear();
-    AppCUI::OS::GetSpecialFolders(this->specialFolders,SpecialFoldersType::Drives,false);
-    if (this->specialFolders.size() > 0)
+
+    ListViewFlags specialPathsFlags =
+          ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
+    lSpecialPaths.Create(&wnd, "x:1,y:1,w:13,h:15", specialPathsFlags);
+    lSpecialPaths.AddColumn("Special", TextAlignament::Left);
+
+    // TODO: Future option for back and front
+    // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
+    // btnForward.Create(&wnd, ">", "x:5,y:0,w:3", 2, ButtonFlags::Flat);
+
+    lbLocation.Create(&wnd, "Location: ", "x:1,y:0,w:10");
+    lbPath.Create(&wnd, "", "x:11,y:0,w:62");
+
+    SpecialFolderMap specialFoldersMap;
+    RootsVector rootsVector;
+    AppCUI::OS::GetSpecialFolders(specialFoldersMap, rootsVector);
+
+    this->locations.push_back({ "Initial", initialPath });
+    for (const auto& root : rootsVector)
     {
-        comboDrive.AddSeparator("Drives");
-        for (unsigned int index = 0; index < this->specialFolders.size(); index++)
-            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
+        this->locations.push_back(root);
     }
-    auto lastSize = this->specialFolders.size();
-    AppCUI::OS::GetSpecialFolders(this->specialFolders, SpecialFoldersType::SpecialLocations, false);
-    if (this->specialFolders.size() > lastSize)
+
+    for (const auto& specialFolder : specialFoldersMap)
     {
-        comboDrive.AddSeparator("Locations");
-        for (auto index = lastSize; index < this->specialFolders.size(); index++)
-            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ (unsigned long long)index });
+        this->locations.push_back(specialFolder.second);
     }
-    files.Create(&wnd, "x:2,y:3,w:72,h:13", ListViewFlags::Sortable);
+
+    for (const auto& locationInfo : locations)
+    {
+        lSpecialPaths.AddItem(locationInfo.locationName);
+    }
+
+    files.Create(&wnd, "x:15,y:1,w:59,h:15", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);
     files.AddColumn("&Size", TextAlignament::Right, 16);
     files.AddColumn("&Modified", TextAlignament::Center, 20);
     files.SetItemCompareFunction(FileDialog_ListViewItemComparer, this);
     files.Sort(0, true); // sort after the first column, ascendent
 
-    lbName.Create(&wnd, "File &Name", "x:2,y:17,w:10");
-    txName.Create(&wnd, fileName, "x:13,y:17,w:47");
+    lbName.Create(&wnd, "File &Name", "x:2,y:17,w:11");
+    txName.Create(&wnd, fileName, "x:15,y:17,w:45");
     txName.SetHotKey('N');
-    lbExt.Create(&wnd, "File &Type", "x:2,y:19,w:10");
-    comboType.Create(&wnd, "x:13,y:19,w:47");
+    lbExt.Create(&wnd, "File &Type", "x:2,y:19,w:11");
+    comboType.Create(&wnd, "x:15,y:19,w:45");
     comboType.SetHotKey('T');
 
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
-    try
-    {
-        if (_path.empty())
-            lbPath.SetText(std::filesystem::absolute(".").u8string());
-        else
-            lbPath.SetText(std::filesystem::absolute(_path).u8string());        
-    }
-    catch (...)
-    {
-        lbPath.SetText(std::filesystem::absolute(".").u8string());
-    }
 
     this->ProcessExtensionFilter(extensionFilter.data(), extensionFilter.data() + extensionFilter.size());
     if (this->comboType.GetItemsCount() > 0)
@@ -466,7 +498,7 @@ int FileDialogClass::Show(
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(false, fileName, extensionFilter, path);
@@ -475,7 +507,7 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
+      const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path& path)
 {
     FileDialogClass dlg;
     int res = dlg.Show(true, fileName, extensionFilter, path);

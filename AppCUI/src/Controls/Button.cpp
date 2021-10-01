@@ -14,14 +14,15 @@ bool Button::Create(
     CONTROL_INIT_CONTEXT(ControlContext);
     CREATE_CONTROL_CONTEXT(this, Members, false);
 
-    Members->Layout.MinWidth = 4;
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
+        Members->Layout.MinWidth  = 3;
         Members->Layout.MinHeight = 1; // one character (flat button)
         Members->Layout.MaxHeight = 1;
     }
     else
     {
+        Members->Layout.MinWidth  = 4;
         Members->Layout.MinHeight = 2; // Exactly 2 characters
         Members->Layout.MaxHeight = 2;
     }
@@ -44,7 +45,7 @@ void Button::Paint(Graphics::Renderer& renderer)
     const auto* bc        = &Members->Cfg->Button.Normal;
     bool pressed          = false;
     params.Y              = 0;
-    params.HotKeyPosition = Members->HotKeyOffset;    
+    params.HotKeyPosition = Members->HotKeyOffset;
     params.Align          = TextAlignament::Center;
 
     // daca e disable
@@ -98,19 +99,18 @@ void Button::Paint(Graphics::Renderer& renderer)
             renderer.WriteText(Members->Text, params);
 
             renderer.FillHorizontalLineWithSpecialChar(
-                    1,
-                    1,
-                    Members->Layout.Width,
-                    SpecialChars::BlockUpperHalf,
-                    ColorPair{ Color::Black, Color::Transparent });
+                  1,
+                  1,
+                  Members->Layout.Width,
+                  SpecialChars::BlockUpperHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
             renderer.WriteSpecialCharacter(
-                    Members->Layout.Width - 1,
-                    0,
-                    SpecialChars::BlockLowerHalf,
-                    ColorPair{ Color::Black, Color::Transparent });
+                  Members->Layout.Width - 1,
+                  0,
+                  SpecialChars::BlockLowerHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
         }
     }
-
 }
 void Button::OnHotKey()
 {

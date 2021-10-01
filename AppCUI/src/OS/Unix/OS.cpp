@@ -1,15 +1,55 @@
 #include "Internal.hpp"
+#include "PlatformFolders.hpp"
 #include "Whereami.hpp"
+#include <sys/mount.h>
+
 using namespace AppCUI::OS;
 
-void AppCUI::OS::GetSpecialFolders(
-      std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
-      SpecialFoldersType,
-      bool clearVector)
+void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 {
-    if (clearVector)
-        specialFolderLists.clear();
-    // to be implemented
+    const auto desktop = sago::getDesktopFolder();
+    if (!desktop.empty())
+    {
+        specialFolders[SpecialFolder::Desktop] = { "Desktop", desktop };
+    }
+
+    const auto documents = sago::getDocumentsFolder();
+    if (!desktop.empty())
+    {
+        specialFolders[SpecialFolder::Documents] = { "Documents", documents };
+    }
+
+    auto downloadFolder = sago::getDownloadFolder();
+    if (downloadFolder.empty())
+    {
+        downloadFolder = sago::getDownloadFolder1();
+    }
+    if (!downloadFolder.empty())
+    {
+        specialFolders[SpecialFolder::Downloads] = { "Downloads", downloadFolder };
+    }
+
+    const auto music = sago::getMusicFolder();
+    if (!music.empty())
+    {
+        specialFolders[SpecialFolder::Music] = { "Music", music };
+    }
+
+    const auto pictures = sago::getPicturesFolder();
+    if (!pictures.empty())
+    {
+        specialFolders[SpecialFolder::Pictures] = { "Pictures", pictures };
+    }
+
+    const auto video = sago::getVideoFolder();
+    if (!video.empty())
+    {
+        specialFolders[SpecialFolder::Videos] = { "Video", video };
+    }
+
+    specialFolders[SpecialFolder::AppPath] = { "App Folder", GetCurrentApplicationPath().parent_path() };
+
+    roots.push_back({ "/ (root)", "/" });
 }
 
 static std::filesystem::path current_application_path;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1052,17 +1053,29 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
-
-    enum class SpecialFoldersType : unsigned int
+    enum class SpecialFolder : unsigned int
     {
-        All = 0,
-        Drives,
-        SpecialLocations
+        Desktop = 0,
+        Documents,
+        Downloads,
+        Music,
+        Pictures,
+        Videos,
+        AppPath,
+        Home
     };
-    EXPORT void GetSpecialFolders(
-          std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
-          SpecialFoldersType type,
-          bool clearVector);
+
+    struct FSLocationData
+    {
+        std::string locationName;
+        std::filesystem::path locationPath;
+    };
+
+    using SpecialFolderMap = std::map<SpecialFolder, FSLocationData>;
+    using RootsVector      = std::vector<FSLocationData>;
+
+    // Fills the specialFolders map and roots vector with paths
+    EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
 
 } // namespace OS
