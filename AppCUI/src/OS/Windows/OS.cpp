@@ -10,7 +10,7 @@ void AddSpecialFolder(
     hr = SHGetKnownFolderPath(specialFolerID, KF_FLAG_CREATE, NULL, &resultPath);
     if (SUCCEEDED(hr))
     {
-        specialFolderList[specialType] = { name, resultPath };
+        specialFolders[specialType] = { name, resultPath };
     }
     if (resultPath)
         CoTaskMemFree(resultPath);
