@@ -294,12 +294,19 @@ void FileDialogClass::UpdateCurrentExtensionFilter()
 void FileDialogClass::UpdateFileList()
 {
     files.DeleteAllItems();
-    if (!currentPath.empty())
+    if (std::filesystem::exists(currentPath))
     {
-        currentPath = std::filesystem::canonical(currentPath);
+        try
+        {
+            currentPath = std::filesystem::canonical(currentPath);
+        }
+        catch (...)
+        {
+            // pass
+        }
 
         std::filesystem::path p = currentPath;
-        lbPath.SetText(p.u8string());
+        lbPath.SetText(p.u16string());
 
         if (p != p.root_path())
         {
@@ -321,9 +328,9 @@ void FileDialogClass::UpdateFileList()
                     if (extFilter)
                     {
                         // a filter is set - let's check the extention
-                        auto ext_u8         = fileEntry.path().extension().u8string();
-                        const char* ext     = (const char*) ext_u8.c_str();
-                        const char* ext_end = ext + ext_u8.size();
+                        auto ext_u16        = fileEntry.path().extension().u16string();
+                        const char* ext     = (const char*) ext_u16.c_str();
+                        const char* ext_end = ext + ext_u16.size();
                         if ((ext != nullptr) && ((*ext) == '.'))
                             ext++;
                         unsigned int hash = __compute_hash__(ext, ext_end);
@@ -336,7 +343,7 @@ void FileDialogClass::UpdateFileList()
                 auto lastModifiedTime = getLastModifiedTime(fileEntry);
                 std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
 
-                itemHandle = this->files.AddItem(fileEntry.path().filename().u8string(), size, time_rep);
+                itemHandle = this->files.AddItem(fileEntry.path().filename().u16string(), size, time_rep);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
