@@ -274,22 +274,20 @@ TextField::~TextField()
 {
     DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-bool TextField::Create(
-      Control* parent,
+std::unique_ptr<TextField> TextField::Create(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       TextFieldFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
 {
-    CONTROL_INIT_CONTEXT(TextFieldControlContext);
-    CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
+    INIT_CONTROL(TextField, TextFieldControlContext);
     Members->Layout.MinWidth  = 3;
     Members->Layout.MinHeight = 1;
     Members->Syntax.Handler   = nullptr;
     Members->Syntax.Context   = nullptr;
 
-    CHECK(Init(parent, caption, layout, false), false, "Failed to create text field !");
+    CHECK(me->Init(caption, layout, false), nullptr, "Failed to create text field !");
 
     Members->Flags    = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->Modified = true;
@@ -301,11 +299,25 @@ bool TextField::Create(
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
         CHECK(handler,
-              false,
+              nullptr,
               "if 'TextFieldFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
-    return true;
+    return me;
 }
+
+TextField* TextField::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      TextFieldFlags flags,
+      Handlers::SyntaxHighlightHandler handler,
+      void* handlerContext)
+{
+    auto me = TextField::Create(caption, layout, flags, handler, handlerContext);
+    CHECK(me, nullptr, "Fail to create a TextField control !");
+    return parent.AddControl<TextField>(std::move(me));
+}
+
 void TextField::SelectAll()
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );

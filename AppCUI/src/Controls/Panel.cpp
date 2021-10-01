@@ -6,22 +6,32 @@ using namespace AppCUI::Input;
 
 #define PANEL_ATTR_BORDER 1024
 
-bool Panel::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+std::unique_ptr<Panel> Panel::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, caption, layout, false), false, "Failed to create panel !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    INIT_CONTROL(Panel, ControlContext);
+    CHECK(me->Init(caption, layout, false), nullptr, "Failed to create panel !");
     Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | PANEL_ATTR_BORDER;
-    CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
-    return true;
+    CHECK(me->SetMargins(1, 1, 1, 1), nullptr, "Failed to set margins !");
+    return me;
 }
-bool Panel::Create(Control* parent, const std::string_view& layout)
+Panel* Panel::Create(Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, "", layout, false), false, "Failed to create panel !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    auto me = Panel::Create(caption, layout);
+    CHECK(me, nullptr, "Fail to create a panel control !");
+    return parent.AddControl<Panel>(std::move(me));
+}
+std::unique_ptr<Panel> Panel::Create(const std::string_view& layout)
+{
+    INIT_CONTROL(Panel, ControlContext);
+    CHECK(me->Init("", layout, false), nullptr, "Failed to create panel !");
     Members->Flags = GATTR_VISIBLE | GATTR_ENABLE;
-    return true;
+    return me;
+}
+Panel* Panel::Create(Control& parent, const std::string_view& layout)
+{
+    auto me = Panel::Create(layout);
+    CHECK(me, nullptr, "Fail to create a panel control !");
+    return parent.AddControl<Panel>(std::move(me));
 }
 void Panel::Paint(Graphics::Renderer& renderer)
 {

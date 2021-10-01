@@ -881,25 +881,24 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-bool TextArea::Create(
-      Control* parent,
+std::unique_ptr<TextArea> TextArea::Create(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
 {
-    CONTROL_INIT_CONTEXT(TextAreaControlContext);
-    CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, false);
+    INIT_CONTROL(TextArea, TextAreaControlContext);
+
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Syntax.Handler   = nullptr;
     Members->Syntax.Context   = nullptr;
-    CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
+    CHECK(me->Init("", layout, false), nullptr, "Failed to create text area  !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
-    CHECK(Members->Text.Set(caption), false, "Fail to set text to internal CharactersBuffers object !");
-    CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
+    CHECK(Members->Text.Set(caption), nullptr, "Fail to set text to internal CharactersBuffers object !");
+    CHECK(Members->Lines.Create(128), nullptr, "Fail to create indexes for line numbers");
     // scroll bars
     if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
     {
@@ -911,7 +910,7 @@ bool TextArea::Create(
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
         CHECK(handler,
-              false,
+              nullptr,
               "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
     Members->tabChar              = ' ';
@@ -922,8 +921,23 @@ bool TextArea::Create(
     Members->ClearSel();
     Members->AnalyzeCurrentText();
     // all is good
-    return true;
+    return me;
 }
+
+TextArea* TextArea::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      TextAreaFlags flags,
+      Handlers::SyntaxHighlightHandler handler,
+      void* handlerContext)
+{
+    auto me = TextArea::Create(caption, layout, flags, handler, handlerContext);
+    CHECK(me, nullptr, "Fail to create a TextArea control !");
+    return parent.AddControl<TextArea>(std::move(me));
+}
+
+
 void TextArea::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );

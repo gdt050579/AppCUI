@@ -2017,8 +2017,12 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        bool Create(Control* parent, const std::string_view& layout);
+        static Panel* Create(
+              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static std::unique_ptr<Panel> Create(
+              const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static Panel* Create(Control& parent, const std::string_view& layout);
+        static std::unique_ptr<Panel> Create(const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
     enum class TextFieldFlags : unsigned int
@@ -2031,8 +2035,14 @@ namespace Controls
     class EXPORT TextField : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static TextField* Create(
+              Control& parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              TextFieldFlags flags                     = TextFieldFlags::None,
+              Handlers::SyntaxHighlightHandler handler = nullptr,
+              void* Context                            = nullptr);
+        static std::unique_ptr<TextField> Create(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               TextFieldFlags flags                     = TextFieldFlags::None,
@@ -2064,13 +2074,20 @@ namespace Controls
     class EXPORT TextArea : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static TextArea* Create(
+              Control& parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               TextAreaFlags flags                      = TextAreaFlags::None,
               Handlers::SyntaxHighlightHandler handler = nullptr,
               void* handlerContext                     = nullptr);
+        static std::unique_ptr<TextArea> Create(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              TextAreaFlags flags                      = TextAreaFlags::None,
+              Handlers::SyntaxHighlightHandler handler = nullptr,
+              void* handlerContext                     = nullptr);
+
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnUpdateScrollBars() override;
@@ -2096,17 +2113,20 @@ namespace Controls
     class EXPORT TabPage : public Control
     {
       public:
-        bool Create(Control* parent, const AppCUI::Utils::ConstString& caption);
+        static TabPage* Create(Control& parent, const AppCUI::Utils::ConstString& caption);
+        static std::unique_ptr<TabPage> Create(const AppCUI::Utils::ConstString& caption);
         bool OnBeforeResize(int newWidth, int newHeight);
     };
     class EXPORT Tab : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static Tab* Create(
+              Control& parent,
               const std::string_view& layout,
               TabFlags flags           = TabFlags::TopTabs,
               unsigned int tabPageSize = 16);
+        static std::unique_ptr<Tab> Create(
+              const std::string_view& layout, TabFlags flags = TabFlags::TopTabs, unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
