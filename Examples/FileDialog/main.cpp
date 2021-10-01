@@ -31,6 +31,7 @@ class MyWin : public AppCUI::Controls::Window
         }
         ExtensionList filterExtensions;
         filterExtensions.push_back({ "Text Files", { "txt" } });
+        filterExtensions.push_back({ u"Какой-то текст", { u"текст" } });
         filterExtensions.push_back({ "Images", { "jpg", "jpeg", "png" } });
         filterExtensions.push_back({ "Documents", { "pdf", "doc", "docx", "xlsx", "xls", "ppt", "pptx" } });
 
