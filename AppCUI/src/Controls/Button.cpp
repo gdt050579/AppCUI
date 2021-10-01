@@ -4,15 +4,10 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool Button::Create(
-      Control* parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      int controlID,
-      ButtonFlags flags)
+std::unique_ptr<Button> Button::Create(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    INIT_CONTROL(Button, ControlContext);
 
     Members->Layout.MinWidth = 4;
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
@@ -26,13 +21,25 @@ bool Button::Create(
         Members->Layout.MaxHeight = 2;
     }
 
-    CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
+    CHECK(me->Init(caption, layout, true), nullptr, "Unable to create check box !");
 
     Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
     Members->Layout.Height = 2;
-    SetControlID(controlID);
-    return true;
+    me->SetControlID(controlID);
+    return me;
 }
+Button* Button::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      int controlID,
+      ButtonFlags flags)
+{
+    auto me = Button::Create(caption, layout, controlID, flags);
+    CHECK(me, nullptr, "Fail to create a button control !");
+    return parent.AddControl(std::move(me));
+}
+
 void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
@@ -44,7 +51,7 @@ void Button::Paint(Graphics::Renderer& renderer)
     const auto* bc        = &Members->Cfg->Button.Normal;
     bool pressed          = false;
     params.Y              = 0;
-    params.HotKeyPosition = Members->HotKeyOffset;    
+    params.HotKeyPosition = Members->HotKeyOffset;
     params.Align          = TextAlignament::Center;
 
     // daca e disable
@@ -98,19 +105,18 @@ void Button::Paint(Graphics::Renderer& renderer)
             renderer.WriteText(Members->Text, params);
 
             renderer.FillHorizontalLineWithSpecialChar(
-                    1,
-                    1,
-                    Members->Layout.Width,
-                    SpecialChars::BlockUpperHalf,
-                    ColorPair{ Color::Black, Color::Transparent });
+                  1,
+                  1,
+                  Members->Layout.Width,
+                  SpecialChars::BlockUpperHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
             renderer.WriteSpecialCharacter(
-                    Members->Layout.Width - 1,
-                    0,
-                    SpecialChars::BlockLowerHalf,
-                    ColorPair{ Color::Black, Color::Transparent });
+                  Members->Layout.Width - 1,
+                  0,
+                  SpecialChars::BlockLowerHalf,
+                  ColorPair{ Color::Black, Color::Transparent });
         }
     }
-
 }
 void Button::OnHotKey()
 {

@@ -3,15 +3,21 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-Label* Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+std::unique_ptr<Label> Label::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     INIT_CONTROL(Label, ControlContext);
     Members->Layout.MinHeight = 1;
     Members->Layout.MinWidth  = 1;
-    CHECK(Init(std::move(me), parent, caption, layout, true), nullptr, "Failed to create label !");
+    CHECK(me->Init(caption, layout, true), nullptr, "Failed to create label !");
     Members->HotKey = AppCUI::Input::Key::None; // A label can draw a hot key, but does not have an associated one
     Members->Flags  = GATTR_ENABLE | GATTR_VISIBLE;
-    return p_me;
+    return me;
+}
+Label* Label::Create(Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+{
+    auto me = Label::Create(caption, layout);
+    CHECK(me, nullptr, "Fail to create label object ");
+    return parent.AddControl<Label>(std::move(me));
 }
 
 void Label::Paint(Graphics::Renderer& renderer)

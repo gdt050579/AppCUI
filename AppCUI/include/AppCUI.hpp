@@ -1700,12 +1700,8 @@ namespace Controls
         void HideToolTip();
 
         // static init
-        static bool Init(
-              std::unique_ptr<Control> control,
-              Control* parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              bool computeHotKey = false);
+        bool Init(
+              const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey = false);
         // protected constructor
         Control();
       public:        
@@ -1923,7 +1919,8 @@ namespace Controls
     class EXPORT Label : public Control
     {
       public:
-        static Label* Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static Label* Create(Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        static std::unique_ptr<Label> Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
     };
 
@@ -1935,8 +1932,13 @@ namespace Controls
     class EXPORT Button : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static Button* Create(
+              Control& parent,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              int controlID     = 0,
+              ButtonFlags flags = ButtonFlags::None);
+        static std::unique_ptr<Button> Create(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               int controlID     = 0,

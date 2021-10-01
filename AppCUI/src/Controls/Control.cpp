@@ -1219,23 +1219,19 @@ AppCUI::Controls::Control::~Control()
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
 bool AppCUI::Controls::Control::Init(
-      std::unique_ptr<Control> control,
-      Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       bool computeHotKey)
 {
-    CHECK(control, false, "Invalid (null) control !");
-
     AppCUI::Utils::ConstStringObject captionObj(caption);
     CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
 
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
 
-    auto ctx = reinterpret_cast<ControlContext*>(control->Context);
+    auto ctx = reinterpret_cast<ControlContext*>(this->Context);
     CHECK(ctx->UpdateLayoutFormat(layout), false, "Invalid format !");
-    CHECK(ctx->RecomputeLayout(parent), false, "Unable to recompute layout !");
+    CHECK(ctx->RecomputeLayout(nullptr), false, "Unable to recompute layout !");
 
     if (computeHotKey)
     {
@@ -1248,20 +1244,9 @@ bool AppCUI::Controls::Control::Init(
     {
         CHECK(ctx->Text.Set(caption, NoColorPair), false, "Fail to set text with UTF8 value");
     }
-    ctx->Inited = true;
-    //
 
-    if (parent != nullptr)
-    {
-        auto res = parent->AddControl(std::move(control));
-        CHECK(res, false, "Fail to add control to its parent !");
-    }
-
-    // Force a recompute layout on the entire app
-    auto app = AppCUI::Application::GetApplication();
-    if (app)
-        app->RepaintStatus = REPAINT_STATUS_ALL;
-
+    // all good
+    ctx->Inited = true;   
     return true;
 }
 
@@ -1297,7 +1282,8 @@ Control* AppCUI::Controls::Control::AddControl(std::unique_ptr<Control> ctrl)
     CTRLC->Controls[CTRLC->ControlsCount++]     = p_ctrl;
     ((ControlContext*) (ctrl->Context))->Parent = this;
     OnAfterAddControl(p_ctrl);
-    // Recompute layout
+    // Recompute layouts
+    (reinterpret_cast<ControlContext*>(p_ctrl->Context))->RecomputeLayout(this);
     RecomputeLayout();
     // Force a recompute layout on the entire app
     auto app = AppCUI::Application::GetApplication();

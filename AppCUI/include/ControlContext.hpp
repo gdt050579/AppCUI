@@ -706,10 +706,9 @@ struct MenuContext
     if (name == nullptr)                                                                                               \
         return retValue;
 #define INIT_CONTROL(type, contextType)                                                                                \
-    auto me       = std::make_unique<type>();                                                                          \
-    auto Members  = new contextType();                                                                                 \
-    type* p_me    = me.get();                                                                                          \
-    p_me->Context = Members;
+    auto me           = std::make_unique<type>();                                                                      \
+    auto Members      = new contextType();                                                                             \
+    me.get()->Context = Members;
 
 CHECK((obj->Context = new type()) != nullptr, retValue, "Unable to create control context");
 #define DELETE_CONTROL_CONTEXT(type)                                                                                   \
