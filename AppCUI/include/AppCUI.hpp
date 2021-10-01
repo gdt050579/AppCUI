@@ -1062,7 +1062,6 @@ namespace OS
         Pictures,
         Videos,
         AppPath,
-        Home
     };
 
     struct FSLocationData
