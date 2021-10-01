@@ -1955,11 +1955,13 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static CheckBox* Create(
+              Control& parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               int controlID = 0);
+        static std::unique_ptr<CheckBox> Create(
+              const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID = 0);
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -1970,8 +1972,13 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       public:
-        bool Create(
-              Control* parent,
+        static std::unique_ptr<RadioBox> Create(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              int groupID,
+              int controlID = 0);
+        static RadioBox* Create(
+              Control& parent,
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               int groupID,

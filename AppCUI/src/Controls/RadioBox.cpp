@@ -4,18 +4,34 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool AppCUI::Controls::RadioBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
+std::unique_ptr<RadioBox> RadioBox::Create(
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      int groupID,
+      int controlID)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    INIT_CONTROL(RadioBox, ControlContext);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 1;
-    CHECK(Init(parent, caption, layout, true), false, "Unable to create radioBox box !");
+    CHECK(me->Init(caption, layout, true), false, "Unable to create radioBox box !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    SetControlID(controlID);
-    SetGroup(groupID);
-    return true;
+    me->SetControlID(controlID);
+    me->SetGroup(groupID);
+    return me;
 }
+
+RadioBox* RadioBox::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      int groupID,
+      int controlID)
+{
+    auto me = RadioBox::Create(caption, layout, groupID, controlID);
+    CHECK(me, nullptr, "Fail to create a Radiobox control !");
+    return parent.AddControl<RadioBox>(std::move(me));
+}
+
 void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

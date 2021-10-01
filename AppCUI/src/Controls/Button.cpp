@@ -37,7 +37,7 @@ Button* Button::Create(
 {
     auto me = Button::Create(caption, layout, controlID, flags);
     CHECK(me, nullptr, "Fail to create a button control !");
-    return parent.AddControl(std::move(me));
+    return parent.AddControl<Button>(std::move(me));
 }
 
 void Button::Paint(Graphics::Renderer& renderer)
