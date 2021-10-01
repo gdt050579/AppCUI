@@ -1698,18 +1698,19 @@ namespace Controls
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
+        
+        Control* AddChildControl(std::unique_ptr<Control> control);
 
-        // static init
         bool Init(
               const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey = false);
         // protected constructor
         Control();
       public:        
-        Control* AddControl(std::unique_ptr<Control> control);
+        
         template <typename T>
         T* AddControl(std::unique_ptr<T> control)
         {
-            return static_cast<T*>(this->AddControl(std::move(control));
+            return static_cast<T*>(this->AddChildControl(std::move(control)));
         }
         bool RemoveControl(Control* control);
         bool RemoveControl(unsigned int index);
@@ -1993,7 +1994,8 @@ namespace Controls
     class EXPORT Splitter : public Control
     {
       public:
-        bool Create(Control* parent, const std::string_view& layout, bool vertical);
+        static Splitter* Create(Control& parent, const std::string_view& layout, bool vertical);
+        static std::unique_ptr<Splitter> Create(const std::string_view& layout, bool vertical);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         bool SetSecondPanelSize(int newSize);

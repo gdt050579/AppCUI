@@ -114,11 +114,11 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-bool Splitter::Create(Control* parent, const std::string_view& layout, bool vertical)
+std::unique_ptr<Splitter> Splitter::Create(const std::string_view& layout, bool vertical)
 {
-    CONTROL_INIT_CONTEXT(SplitterControlContext);
-    CHECK(Init(parent, "", layout, false), false, "Unable to create splitter !");
-    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    INIT_CONTROL(Splitter, SplitterControlContext);
+    CHECK(me->Init("", layout, false), nullptr, "Unable to create splitter !");
+    
     Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     Members->mouseStatus = SplitterMouseStatus::None;
     if (vertical)
@@ -127,7 +127,13 @@ bool Splitter::Create(Control* parent, const std::string_view& layout, bool vert
         Members->SecondPanelSize = Members->Layout.Width / 2;
     else
         Members->SecondPanelSize = Members->Layout.Height / 2;
-    return true;
+    return me;
+}
+Splitter* Splitter::Create(Control& parent, const std::string_view& layout, bool vertical)
+{
+    auto me = Splitter::Create(layout, vertical);
+    CHECK(me, nullptr, "Fail to create a splitter control !");
+    return parent.AddControl<Splitter>(std::move(me));
 }
 bool Splitter::SetSecondPanelSize(int newSize)
 {

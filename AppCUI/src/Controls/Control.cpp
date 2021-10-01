@@ -1250,10 +1250,10 @@ bool AppCUI::Controls::Control::Init(
     return true;
 }
 
-Control* AppCUI::Controls::Control::AddControl(std::unique_ptr<Control> ctrl)
+Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
 {
-    CHECK(ctrl, false, "Invalid control (nullptr)");
-    CHECK(ctrl->IsInitialized(), false, "Control was not initialized before adding it to a parent control !");
+    CHECK(ctrl, nullptr, "Invalid control (nullptr)");
+    CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
     // LOG_INFO("AddControl(this=%p,Control=%p,Controls List=%p,Count=%d", this, ctrl, Controls, ControlsCount);
     if (CTRLC->Controls == nullptr) // first time
     {
@@ -1276,7 +1276,7 @@ Control* AppCUI::Controls::Control::AddControl(std::unique_ptr<Control> ctrl)
         }
     }
     if (OnBeforeAddControl(ctrl.get()) == false)
-        return false;
+        return nullptr;
     // fac linkul
     auto p_ctrl                                 = ctrl.release();
     CTRLC->Controls[CTRLC->ControlsCount++]     = p_ctrl;

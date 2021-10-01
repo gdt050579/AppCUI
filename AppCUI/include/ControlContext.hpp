@@ -710,7 +710,6 @@ struct MenuContext
     auto Members      = new contextType();                                                                             \
     me.get()->Context = Members;
 
-CHECK((obj->Context = new type()) != nullptr, retValue, "Unable to create control context");
 #define DELETE_CONTROL_CONTEXT(type)                                                                                   \
     if (Context != nullptr)                                                                                            \
     {                                                                                                                  \
