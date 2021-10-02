@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE File.cpp OS.cpp Whereami.cpp)
+target_sources(AppCUI PRIVATE File.cpp OS.cpp Whereami.cpp PlatformFolders.cpp)
