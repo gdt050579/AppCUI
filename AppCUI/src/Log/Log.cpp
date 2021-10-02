@@ -22,7 +22,9 @@ using namespace AppCUI::Utils;
 void (*fnMessageLogCallbak)(const Log::Message& msg) = nullptr;
 AppCUI::OS::File* logFile                            = nullptr;
 
-const char* _severity_type_names_[4] = { "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] " };
+const char* _severity_type_names_[5] = {
+    "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
+};
 
 bool _LogMessage_to_String_(const Log::Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
 {

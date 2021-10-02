@@ -40,6 +40,14 @@
 #endif
 
 #ifdef ENABLE_LOGGING
+#    define ASSERT(c, error)                                                                                           \
+        {                                                                                                              \
+            if (!(c))                                                                                                  \
+            {                                                                                                          \
+                AppCUI::Log::Report(AppCUI::Log::Severity::Fatal, __FILE__, __FUNCTION__, #c, __LINE__, "%s", error);  \
+                throw error;                                                                                           \
+            }                                                                                                          \
+        }
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -96,6 +104,13 @@
 inline void Unused(...)
 {
 }
+#    define ASSERT(c, error)                                                                                           \
+        {                                                                                                              \
+            if (!(c))                                                                                                  \
+            {                                                                                                          \
+                throw(error);                                                                                          \
+            }                                                                                                          \
+        }
 #    define CHECK(c, returnValue, format, ...)                                                                         \
         {                                                                                                              \
             if (!(c))                                                                                                  \
@@ -1701,10 +1716,12 @@ namespace Controls
 
         Control* AddChildControl(std::unique_ptr<Control> control);
 
-        bool Init(
-              const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey = false);
         // protected constructor
-        Control();
+        Control(
+              void* context,
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              bool computeHotKey);
 
       public:
         template <typename T>
@@ -1886,6 +1903,7 @@ namespace Controls
 
       protected:
         bool Init(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags);
+
       public:
         static std::unique_ptr<Window> Create(
               const AppCUI::Utils::ConstString& caption,
@@ -1921,6 +1939,7 @@ namespace Controls
     };
     class EXPORT Label : public Control
     {
+        Label(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
       public:
         static Label* Create(
               Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
@@ -2166,6 +2185,7 @@ namespace Controls
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags);
+
       public:
         ~CanvasViewer();
         static CanvasViewer* Create(
@@ -2576,6 +2596,7 @@ namespace Log
 {
     enum class Severity : unsigned int
     {
+        Fatal         = 4,
         InternalError = 3,
         Error         = 2,
         Warning       = 1,

@@ -1210,42 +1210,52 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     }
 }
 //=======================================================================================================================================================
-AppCUI::Controls::Control::Control()
-{
-    Context = nullptr;
-}
 AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey)
+AppCUI::Controls::Control::Control(
+      void* context, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
-    AppCUI::Utils::ConstStringObject captionObj(caption);
-    CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
-
+    ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
-    CHECK(cfg != nullptr, false, "Unable to get config object !");
-
+    ASSERT(cfg != nullptr, "Unable to get config object !");
+    this->Context = context;    
     auto ctx = reinterpret_cast<ControlContext*>(this->Context);
-    CHECK(ctx->UpdateLayoutFormat(layout), false, "Invalid format !");
-    // CHECK(ctx->RecomputeLayout(nullptr), false, "Unable to recompute layout !");
+    ctx->Inited   = false;
+    ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 
+    AppCUI::Utils::ConstStringObject captionObj(caption);
     if (computeHotKey)
     {
         ctx->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-        CHECK(ctx->Text.SetWithHotKey(caption, ctx->HotKeyOffset, ctx->HotKey, Key::Alt, NoColorPair),
-              false,
-              "Fail to set text with UTF8 value");
+        if (!captionObj.Data)
+        {
+            ASSERT(
+                  ctx->Text.SetWithHotKey("", ctx->HotKeyOffset, ctx->HotKey, Key::Alt, NoColorPair),
+                  "Fail to set text with UTF8 value");
+        }
+        else
+        {
+            ASSERT(
+                  ctx->Text.SetWithHotKey(caption, ctx->HotKeyOffset, ctx->HotKey, Key::Alt, NoColorPair),
+                  "Fail to set text with UTF8 value");
+        }
     }
     else
     {
-        CHECK(ctx->Text.Set(caption, NoColorPair), false, "Fail to set text with UTF8 value");
+        if (!captionObj.Data)
+        {
+            ASSERT(ctx->Text.Set("", NoColorPair), "Fail to set text with UTF8 value");
+        }
+        else
+        {
+            ASSERT(ctx->Text.Set(caption, NoColorPair), "Fail to set text with UTF8 value");
+        }
     }
 
     // all good
     ctx->Inited = true;
-    return true;
 }
 
 Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
