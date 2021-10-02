@@ -96,16 +96,21 @@ void ConvertSizeToString(unsigned long long size, char result[32])
     }
 }
 
-unsigned int __compute_hash__(std::u16string_view str)
+unsigned int __compute_hash__(const char16_t* start, const char16_t* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned int hash = 0x811c9dc5;
-    for (auto ch : str)
+    unsigned int hash       = 0x811c9dc5;
+    const char16_t* p_start = (const char16_t*) start;
+    const char16_t* p_end   = (const char16_t*) end;
+
+    while (p_start < p_end)
     {
-        if ((ch >= 'A') && (ch <= 'Z'))
-            ch |= 32;
-        hash = hash ^ ch;
+        unsigned int val = *p_start;
+        if ((val >= 'A') && (val <= 'Z'))
+            val |= 32;
+        hash = hash ^ val;
         hash = hash * 0x01000193;
+        p_start++;
     }
     return hash;
 }
@@ -138,7 +143,8 @@ bool FileDialogClass::ProcessExtensionFilter(const ExtensionList& extensionList)
         {
             LocalUnicodeStringBuilder<256> extString;
             CHECK(extString.Set(ext), false, "Failed to convert extension to string");
-            requiredExtensions.insert(__compute_hash__(extString));
+            const auto& extView = extString.ToStringView();
+            requiredExtensions.insert(__compute_hash__(extView.data(), extView.data() + extView.size()));
         }
         CHECK(comboType.AddItem(extensionInfo.filterName, ItemData{ this->extensions.size() }),
               false,
@@ -273,12 +279,15 @@ void FileDialogClass::UpdateFileList()
                     if (extFilter)
                     {
                         // a filter is set - let's check the extention
-                        auto ext_u16 = fileEntry.path().extension().u16string();
-                        if (ext_u16.length() > 0 && ext_u16[0] == '.')
+                        auto ext16          = fileEntry.path().extension().u16string();
+                        auto ext16Start     = ext16.data();
+                        const auto ext16End = ext16.data() + ext16.size();
+
+                        if (ext16.length() > 1 && ext16[0] == '.')
                         {
-                            ext_u16.erase(0, 1);
+                            ext16Start++;
                         }
-                        if (!extFilter->contains(__compute_hash__(ext_u16)))
+                        if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
                             continue; // extension is filtered
                     }
                     ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
