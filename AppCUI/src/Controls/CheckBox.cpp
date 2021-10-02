@@ -4,23 +4,24 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
+CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
+    : Control(new ControlContext(), caption, layout, true)
+{
+    auto Members              = reinterpret_cast<ControlContext*>(this->Context);
+    Members->Layout.MinWidth  = 5;
+    Members->Layout.MinHeight = 1;
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    this->SetControlID(controlID);
+}
 std::unique_ptr<CheckBox> CheckBox::Create(
       const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
 {
-    INIT_CONTROL(CheckBox, ControlContext);
-    Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 1;
-    CHECK(me->Init(caption, layout, true), nullptr, "Unable to create check box !");
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    me->SetControlID(controlID);
-    return me;
+    return std::unique_ptr<CheckBox>(new CheckBox(caption, layout, controlID));
 }
 CheckBox* CheckBox::Create(
       Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
 {
-    auto me = CheckBox::Create(caption, layout, controlID);
-    CHECK(me, nullptr, "Fail to create a CheckBox control !");
-    return parent.AddControl<CheckBox>(std::move(me));
+    return parent.AddControl<CheckBox>(CheckBox::Create(caption, layout, controlID));
 }
 void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 {

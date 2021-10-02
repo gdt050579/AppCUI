@@ -4,29 +4,35 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-std::unique_ptr<Button> Button::Create(
+Button::Button(
       const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
+    : Control(new ControlContext(), caption, layout,true)
 {
-    INIT_CONTROL(Button, ControlContext);
-
+    auto Members             = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth = 4;
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
         Members->Layout.MinHeight = 1; // one character (flat button)
         Members->Layout.MaxHeight = 1;
+        Members->Layout.Height    = 1;
     }
     else
     {
         Members->Layout.MinHeight = 2; // Exactly 2 characters
         Members->Layout.MaxHeight = 2;
+        Members->Layout.Height    = 2;
     }
-
-    CHECK(me->Init(caption, layout, true), nullptr, "Unable to create check box !");
-
     Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
-    Members->Layout.Height = 2;
-    me->SetControlID(controlID);
-    return me;
+    
+    this->SetControlID(controlID);
+}
+
+
+
+std::unique_ptr<Button> Button::Create(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
+{
+    return std::unique_ptr<Button>(new Button(caption, layout, controlID, flags));
 }
 Button* Button::Create(
       Control& parent,
@@ -35,9 +41,7 @@ Button* Button::Create(
       int controlID,
       ButtonFlags flags)
 {
-    auto me = Button::Create(caption, layout, controlID, flags);
-    CHECK(me, nullptr, "Fail to create a button control !");
-    return parent.AddControl<Button>(std::move(me));
+    return parent.AddControl<Button>(Button::Create(caption, layout,controlID, flags));  
 }
 
 void Button::Paint(Graphics::Renderer& renderer)

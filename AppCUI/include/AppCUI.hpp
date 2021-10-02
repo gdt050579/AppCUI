@@ -1954,6 +1954,12 @@ namespace Controls
     };
     class EXPORT Button : public Control
     {
+      protected:
+        Button(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              int controlID,
+              ButtonFlags flags);
       public:
         static Button* Create(
               Control& parent,
@@ -1977,6 +1983,8 @@ namespace Controls
     };
     class EXPORT CheckBox : public Control
     {
+      protected:
+        CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID);
       public:
         static CheckBox* Create(
               Control& parent,
