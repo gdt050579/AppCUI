@@ -27,23 +27,6 @@ Button::Button(
     this->SetControlID(controlID);
 }
 
-
-
-std::unique_ptr<Button> Button::Create(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
-{
-    return std::unique_ptr<Button>(new Button(caption, layout, controlID, flags));
-}
-Button* Button::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      int controlID,
-      ButtonFlags flags)
-{
-    return parent.AddControl<Button>(Button::Create(caption, layout,controlID, flags));  
-}
-
 void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

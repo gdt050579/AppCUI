@@ -13,16 +13,7 @@ CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     this->SetControlID(controlID);
 }
-std::unique_ptr<CheckBox> CheckBox::Create(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
-{
-    return std::unique_ptr<CheckBox>(new CheckBox(caption, layout, controlID));
-}
-CheckBox* CheckBox::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
-{
-    return parent.AddControl<CheckBox>(CheckBox::Create(caption, layout, controlID));
-}
+
 void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

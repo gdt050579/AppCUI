@@ -16,24 +16,6 @@ RadioBox::RadioBox(
     this->SetGroup(groupID);
 }
 
-std::unique_ptr<RadioBox> RadioBox::Create(
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      int groupID,
-      int controlID)
-{
-    return std::unique_ptr<RadioBox>(new RadioBox(caption, layout, groupID, controlID));
-}
-
-RadioBox* RadioBox::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      int groupID,
-      int controlID)
-{
-    return parent.AddControl<RadioBox>(RadioBox::Create(caption, layout, groupID, controlID));
-}
 
 void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
 {

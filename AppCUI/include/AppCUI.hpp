@@ -1641,7 +1641,10 @@ namespace Controls
     namespace Factory
     {
         class EXPORT Label;
-    }
+        class EXPORT Button;
+        class EXPORT CheckBox;
+        class EXPORT RadioBox;
+    }; // namespace Factory
     enum class Event : unsigned int
     {
         WindowClose,
@@ -1963,17 +1966,6 @@ namespace Controls
               int controlID,
               ButtonFlags flags);
       public:
-        static Button* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              int controlID     = 0,
-              ButtonFlags flags = ButtonFlags::None);
-        static std::unique_ptr<Button> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              int controlID     = 0,
-              ButtonFlags flags = ButtonFlags::None);
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -1982,48 +1974,36 @@ namespace Controls
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+
+        friend Factory::Button;
     };
     class EXPORT CheckBox : public Control
     {
       protected:
         CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID);
       public:
-        static CheckBox* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              int controlID = 0);
-        static std::unique_ptr<CheckBox> Create(
-              const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID = 0);
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+
+        friend Factory::CheckBox;
     };
     class EXPORT RadioBox : public Control
     {
       protected:
         RadioBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID);
       public:
-        static std::unique_ptr<RadioBox> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              int groupID,
-              int controlID = 0);
-        static RadioBox* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              int groupID,
-              int controlID = 0);
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+
+        friend Factory::RadioBox;
     };
     class EXPORT Splitter : public Control
     {
@@ -2579,6 +2559,53 @@ namespace Controls
                   const std::string_view& layout);
             static std::unique_ptr<AppCUI::Controls::Label> Create(
                   const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        };
+        class EXPORT Button
+        {
+            Button() = delete;
+
+          public:  
+        static AppCUI::Controls::Button* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  int controlID     = 0,
+                  ButtonFlags flags = ButtonFlags::None);
+            static std::unique_ptr<AppCUI::Controls::Button> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  int controlID                       = 0,
+                  AppCUI::Controls::ButtonFlags flags = AppCUI::Controls::ButtonFlags::None);
+        };
+        class EXPORT CheckBox
+        {
+            CheckBox() = delete;
+
+          public:
+            static AppCUI::Controls::CheckBox* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  int controlID = 0);
+            static std::unique_ptr<AppCUI::Controls::CheckBox> Create(
+                  const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID = 0);
+        };
+        class EXPORT RadioBox
+        {
+            RadioBox() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::RadioBox> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  int groupID,
+                  int controlID = 0);
+            static AppCUI::Controls::RadioBox* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  int groupID,
+                  int controlID = 0);
         };
     } // namespace Factory
 
