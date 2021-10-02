@@ -54,6 +54,10 @@ struct FileDialogClass
     std::set<unsigned int>* extFilter;
     std::filesystem::path resultedPath;
     std::filesystem::path currentPath;
+    AppCUI::Controls::Splitter splitListView;
+    AppCUI::Controls::Panel splitPanelLeft;
+    AppCUI::Controls::Panel splitPanelRight;
+
     bool openDialog;
 
     bool ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensionsFilter);
@@ -164,7 +168,7 @@ bool FileDialogClass::ProcessExtensionFilter(const AppCUI::Utils::ConstString& e
     CHECK(filters.Set(extensiosFilter), false, "Failed to convert extensions filter");
     auto filterSV = filters.ToStringView();
 
-    const auto filterGroups = splitSV(filterSV, u";");
+    const auto filterGroups = splitSV(filterSV, u"|");
     for (const auto& nameAndExtensions : filterGroups)
     {
         const auto splitNameAndExtensions = splitSV(nameAndExtensions, u":");
@@ -432,17 +436,22 @@ int FileDialogClass::Show(
 
     wnd.SetEventHandler(FileDialog_EventHandler, this);
 
+    lbLocation.Create(&wnd, "Location: ", "x:1,y:0,w:10");
+    lbPath.Create(&wnd, "", "x:11,y:0,w:62");
+
+    splitListView.Create(&wnd, "x:0,y:1,w:76,h:15", true);
+    splitListView.SetSecondPanelSize(60);
+    splitPanelLeft.Create(&splitListView, "x:0,y:0,w:100%,h:100%");
+    splitPanelRight.Create(&splitListView, "x:0,y:0,w:100%,h:100%");
+
     ListViewFlags specialPathsFlags =
           ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
-    lSpecialPaths.Create(&wnd, "x:1,y:1,w:13,h:15", specialPathsFlags);
-    lSpecialPaths.AddColumn("Special", TextAlignament::Left);
+    lSpecialPaths.Create(&splitPanelLeft, "x:0,y:0,w:100%,h:100%", specialPathsFlags);
+    lSpecialPaths.AddColumn("Special", TextAlignament::Left, 20);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
     // btnForward.Create(&wnd, ">", "x:5,y:0,w:3", 2, ButtonFlags::Flat);
-
-    lbLocation.Create(&wnd, "Location: ", "x:1,y:0,w:10");
-    lbPath.Create(&wnd, "", "x:11,y:0,w:62");
 
     SpecialFolderMap specialFoldersMap;
     RootsVector rootsVector;
@@ -464,7 +473,7 @@ int FileDialogClass::Show(
         lSpecialPaths.AddItem(locationInfo.locationName);
     }
 
-    files.Create(&wnd, "x:15,y:1,w:59,h:15", ListViewFlags::Sortable);
+    files.Create(&splitPanelRight, "x:0,y:0,w:100%,h:100%", ListViewFlags::Sortable);
     files.AddColumn("&Name", TextAlignament::Left, 31);
     files.AddColumn("&Size", TextAlignament::Right, 16);
     files.AddColumn("&Modified", TextAlignament::Center, 20);

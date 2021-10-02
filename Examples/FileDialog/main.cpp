@@ -35,7 +35,7 @@ class MyWin : public AppCUI::Controls::Window
             if (controlID == BUTTON_ID_SHOW_SAVE)
             {
                 auto res = FileDialog::ShowSaveFileWindow(
-                      "", "Text Files:txt;Images:jpg,jpeg,png;Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
+                      "", "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
                 if (res.has_value())
                     l1.SetText(res->u8string());
                 else
@@ -44,7 +44,7 @@ class MyWin : public AppCUI::Controls::Window
             if (controlID == BUTTON_ID_SHOW_OPEN)
             {
                 auto res = FileDialog::ShowOpenFileWindow(
-                      "", "Text Files:txt;Images:jpg,jpeg,png;Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
+                      "", "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
                 if (res.has_value())
                     l2.SetText(res->u8string());
                 else
