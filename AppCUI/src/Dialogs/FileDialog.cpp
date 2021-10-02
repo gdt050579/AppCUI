@@ -56,12 +56,12 @@ struct FileDialogClass
     std::filesystem::path currentPath;
     bool openDialog;
 
-    bool ProcessExtensionFilter(const ExtensionList& extensionList);
+    bool ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensionsFilter);
 
     int Show(
           bool open,
           const AppCUI::Utils::ConstString& fileName,
-          std::optional<const ExtensionList> extensionList,
+          const AppCUI::Utils::ConstString& extensionsFilter,
           const std::filesystem::path& _path);
     void UpdateCurrentFolder();
     void UpdateCurrentExtensionFilter();
@@ -134,19 +134,53 @@ bool FileDialog_EventHandler(
     return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
 }
 
-bool FileDialogClass::ProcessExtensionFilter(const ExtensionList& extensionList)
+// https://www.cppstories.com/2018/07/string-view-perf-followup/
+std::vector<std::u16string_view> splitSV(std::u16string_view strv, std::u16string_view delims = u" ")
 {
-    for (const auto& extensionInfo : extensionList)
+    std::vector<std::u16string_view> output;
+    size_t first = 0;
+
+    while (first < strv.size())
     {
+        const auto second = strv.find_first_of(delims, first);
+
+        if (first != second)
+            output.emplace_back(strv.substr(first, second - first));
+
+        if (second == std::u16string_view::npos)
+            break;
+
+        first = second + 1;
+    }
+    return output;
+}
+
+bool FileDialogClass::ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensiosFilter)
+{
+    using namespace std::literals;
+    // format is: <Name>:ext;<Name>:ext; ...
+    //        or: <Name>:ext1,ext2,ext3;<Name>:ext;....
+    LocalUnicodeStringBuilder<256> filters;
+    CHECK(filters.Set(extensiosFilter), false, "Failed to convert extensions filter");
+    auto filterSV = filters.ToStringView();
+
+    const auto filterGroups = splitSV(filterSV, u";");
+    for (const auto& nameAndExtensions : filterGroups)
+    {
+        const auto splitNameAndExtensions = splitSV(nameAndExtensions, u":");
+        CHECK(splitNameAndExtensions.size() == 2, false, "The format is <Name>:ext1,ext2,ext3 or <Name>:ext");
+        const auto filterName       = splitNameAndExtensions[0];
+        const auto filterExtensions = splitSV(splitNameAndExtensions[1], u",");
+        CHECK(filterExtensions.size() != 0,
+              false,
+              "Name should have at least one extension in the list, separated by coma");
+
         std::set<unsigned int> requiredExtensions;
-        for (const auto& ext : extensionInfo.extensions)
+        for (const auto& extension : filterExtensions)
         {
-            LocalUnicodeStringBuilder<256> extString;
-            CHECK(extString.Set(ext), false, "Failed to convert extension to string");
-            const auto& extView = extString.ToStringView();
-            requiredExtensions.insert(__compute_hash__(extView.data(), extView.data() + extView.size()));
+            requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
         }
-        CHECK(comboType.AddItem(extensionInfo.filterName, ItemData{ this->extensions.size() }),
+        CHECK(comboType.AddItem(filterName, ItemData{ this->extensions.size() }),
               false,
               "Failed to add item to combo-box ");
         this->extensions.push_back(requiredExtensions);
@@ -367,7 +401,7 @@ bool FileDialogClass::OnEventHandler(const void* sender, AppCUI::Controls::Event
 int FileDialogClass::Show(
       bool open,
       const AppCUI::Utils::ConstString& fileName,
-      std::optional<const ExtensionList> extensionFilter,
+      const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& _path)
 {
     std::filesystem::path initialPath = std::filesystem::absolute(".");
@@ -447,10 +481,8 @@ int FileDialogClass::Show(
     btnOK.Create(&wnd, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
     btnCancel.Create(&wnd, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
 
-    if (extensionFilter.has_value())
-    {
-        this->ProcessExtensionFilter(extensionFilter.value());
-    }
+    this->ProcessExtensionFilter(extensionsFilter);
+
     if (this->comboType.GetItemsCount() > 0)
         this->comboType.AddSeparator();
     this->comboType.AddItem("All files", ItemData{ ALL_FILES_INDEX });
@@ -463,22 +495,22 @@ int FileDialogClass::Show(
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const AppCUI::Utils::ConstString& fileName,
-      std::optional<const ExtensionList> extensionList,
+      const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(false, fileName, extensionList, path);
+    int res = dlg.Show(false, fileName, extensionsFilter, path);
     if (res == (int) Dialogs::Result::Ok)
         return dlg.resultedPath;
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const AppCUI::Utils::ConstString& fileName,
-      std::optional<const ExtensionList> extensionList,
+      const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
     FileDialogClass dlg;
-    int res = dlg.Show(true, fileName, extensionList, path);
+    int res = dlg.Show(true, fileName, extensionsFilter, path);
     if (res == (int) Dialogs::Result::Ok)
         return dlg.resultedPath;
     return std::nullopt;
