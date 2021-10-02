@@ -1644,6 +1644,8 @@ namespace Controls
         class EXPORT Button;
         class EXPORT CheckBox;
         class EXPORT RadioBox;
+        class EXPORT Splitter;
+        class EXPORT Panel;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -2007,9 +2009,9 @@ namespace Controls
     };
     class EXPORT Splitter : public Control
     {
+      protected:
+        Splitter(const std::string_view& layout, bool vertical);
       public:
-        static Splitter* Create(Control& parent, const std::string_view& layout, bool vertical);
-        static std::unique_ptr<Splitter> Create(const std::string_view& layout, bool vertical);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         bool SetSecondPanelSize(int newSize);
@@ -2027,16 +2029,17 @@ namespace Controls
         bool OnMouseLeave() override;
         int GetSplitterPosition();
         virtual ~Splitter();
+
+        friend Factory::Splitter;
     };
     class EXPORT Panel : public Control
     {
+      protected:
+        Panel(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
       public:
-        static Panel* Create(
-              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static std::unique_ptr<Panel> Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static Panel* Create(Control& parent, const std::string_view& layout);
-        static std::unique_ptr<Panel> Create(const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
+
+        friend Factory::Panel;
     };
     enum class TextFieldFlags : unsigned int
     {
@@ -2606,6 +2609,29 @@ namespace Controls
                   const std::string_view& layout,
                   int groupID,
                   int controlID = 0);
+        };
+        class EXPORT Splitter
+        {
+            Splitter() = delete;
+
+          public:
+            static AppCUI::Controls::Splitter* Create(
+                  AppCUI::Controls::Control& parent, const std::string_view& layout, bool vertical);
+            static std::unique_ptr<AppCUI::Controls::Splitter> Create(const std::string_view& layout, bool vertical);        
+        };
+        class EXPORT Panel
+        {
+            Panel() = delete;
+
+          public:
+            static AppCUI::Controls::Panel* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout);
+            static std::unique_ptr<AppCUI::Controls::Panel> Create(
+                  const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+            static AppCUI::Controls::Panel* Create(AppCUI::Controls::Control& parent, const std::string_view& layout);
+            static std::unique_ptr<AppCUI::Controls::Panel> Create(const std::string_view& layout);
         };
     } // namespace Factory
 

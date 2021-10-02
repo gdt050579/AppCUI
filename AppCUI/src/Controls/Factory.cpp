@@ -65,3 +65,33 @@ RadioBox* Factory::RadioBox::Create(
     return parent.AddControl<AppCUI::Controls::RadioBox>(
           Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
+
+//======[SPLITTER]===================================================================================
+std::unique_ptr<Splitter> Factory::Splitter::Create(const std::string_view& layout, bool vertical)
+{
+    return std::unique_ptr<AppCUI::Controls::Splitter>(new AppCUI::Controls::Splitter(layout, vertical));
+}
+Splitter* Factory::Splitter::Create(Control& parent, const std::string_view& layout, bool vertical)
+{
+    return parent.AddControl<AppCUI::Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
+}
+
+
+//======[PANEL]======================================================================================
+std::unique_ptr<Panel> Factory::Panel::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+{
+    return std::unique_ptr<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel(caption, layout));
+}
+Panel* Factory::Panel::Create(
+      Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+{
+    return parent.AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(caption, layout));
+}
+std::unique_ptr<Panel> Factory::Panel::Create(const std::string_view& layout)
+{
+    return std::unique_ptr<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel("", layout));
+}
+Panel* Factory::Panel::Create(Control& parent, const std::string_view& layout)
+{
+    return parent.AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(layout));
+}
