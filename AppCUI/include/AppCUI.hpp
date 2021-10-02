@@ -2466,6 +2466,18 @@ namespace Dialogs
     {
         FileDialog() = delete;
 
+        // Add additional extension filters so that FileDialog will show only the specified extensions,
+        // other extensions will be filtered. If no filter is passed (empty string) - "All files" is chosen
+        //
+        // Filter format is: <Name>:ext|<Name>:ext| ...
+        //               or: <Name>:ext1,ext2,ext3|<Name>:ext|....
+        //
+        // For example:
+        //       "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"
+        //
+        // Will show "Text Files" and, if selected, only .txt files will be shown
+        // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
+
       public:
         static std::optional<std::filesystem::path> ShowSaveFileWindow(
               const AppCUI::Utils::ConstString& fileName,
