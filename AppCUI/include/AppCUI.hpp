@@ -1648,6 +1648,8 @@ namespace Controls
         class EXPORT Panel;
         class EXPORT TextField;
         class EXPORT TextArea;
+        class EXPORT TabPage;
+        class EXPORT Tab;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -1951,6 +1953,7 @@ namespace Controls
     class EXPORT Label : public Control
     {
         Label(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
         friend Factory::Label;
@@ -1969,6 +1972,7 @@ namespace Controls
               const std::string_view& layout,
               int controlID,
               ButtonFlags flags);
+
       public:
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -1985,6 +1989,7 @@ namespace Controls
     {
       protected:
         CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID);
+
       public:
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
@@ -1999,6 +2004,7 @@ namespace Controls
     {
       protected:
         RadioBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID);
+
       public:
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
@@ -2013,6 +2019,7 @@ namespace Controls
     {
       protected:
         Splitter(const std::string_view& layout, bool vertical);
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2038,6 +2045,7 @@ namespace Controls
     {
       protected:
         Panel(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
 
@@ -2059,6 +2067,7 @@ namespace Controls
               TextFieldFlags flags,
               Handlers::SyntaxHighlightHandler handler,
               void* context);
+
       public:
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
@@ -2094,6 +2103,7 @@ namespace Controls
               TextAreaFlags flags,
               Handlers::SyntaxHighlightHandler handler,
               void* handlerContext);
+
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2121,21 +2131,20 @@ namespace Controls
     };
     class EXPORT TabPage : public Control
     {
+      protected:
+        TabPage(const AppCUI::Utils::ConstString& caption);
+
       public:
-        static TabPage* Create(Control& parent, const AppCUI::Utils::ConstString& caption);
-        static std::unique_ptr<TabPage> Create(const AppCUI::Utils::ConstString& caption);
         bool OnBeforeResize(int newWidth, int newHeight);
+
+        friend Factory::TabPage;
     };
     class EXPORT Tab : public Control
     {
+      protected:
+        Tab(const std::string_view& layout, TabFlags flags, unsigned int tabPageSize);
+
       public:
-        static Tab* Create(
-              Control& parent,
-              const std::string_view& layout,
-              TabFlags flags           = TabFlags::TopTabs,
-              unsigned int tabPageSize = 16);
-        static std::unique_ptr<Tab> Create(
-              const std::string_view& layout, TabFlags flags = TabFlags::TopTabs, unsigned int tabPageSize = 16);
         bool SetCurrentTabPage(unsigned int index);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
@@ -2148,6 +2157,8 @@ namespace Controls
         void OnAfterAddControl(Control* ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Control* GetCurrentTab();
+
+        friend Factory::Tab;
     };
     class EXPORT UserControl : public Control
     {
@@ -2560,8 +2571,8 @@ namespace Controls
         {
             Button() = delete;
 
-          public:  
-        static AppCUI::Controls::Button* Create(
+          public:
+            static AppCUI::Controls::Button* Create(
                   AppCUI::Controls::Control& parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
@@ -2610,7 +2621,7 @@ namespace Controls
           public:
             static AppCUI::Controls::Splitter* Create(
                   AppCUI::Controls::Control& parent, const std::string_view& layout, bool vertical);
-            static std::unique_ptr<AppCUI::Controls::Splitter> Create(const std::string_view& layout, bool vertical);        
+            static std::unique_ptr<AppCUI::Controls::Splitter> Create(const std::string_view& layout, bool vertical);
         };
         class EXPORT Panel
         {
@@ -2663,6 +2674,30 @@ namespace Controls
                   AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
                   Handlers::SyntaxHighlightHandler handler = nullptr,
                   void* handlerContext                     = nullptr);
+        };
+        class EXPORT TabPage
+        {
+            TabPage() = delete;
+
+          public:
+            static AppCUI::Controls::TabPage* Create(
+                  AppCUI::Controls::Control& parent, const AppCUI::Utils::ConstString& caption);
+            static std::unique_ptr<AppCUI::Controls::TabPage> Create(const AppCUI::Utils::ConstString& caption);
+        };
+        class EXPORT Tab
+        {
+            Tab() = delete;
+
+          public:
+            static AppCUI::Controls::Tab* Create(
+                  AppCUI::Controls::Control& parent,
+                  const std::string_view& layout,
+                  AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
+                  unsigned int tabPageSize = 16);
+            static std::unique_ptr<AppCUI::Controls::Tab> Create(
+                  const std::string_view& layout,
+                  AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
+                  unsigned int tabPageSize         = 16);
         };
     } // namespace Factory
 

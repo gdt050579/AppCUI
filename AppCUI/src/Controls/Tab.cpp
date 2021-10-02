@@ -37,7 +37,7 @@ void TabControlContext::UpdateMargins()
         }
         else
         {
-            this->Margins.Top = this->ControlsCount;
+            this->Margins.Top    = this->ControlsCount;
             this->Margins.Bottom = 0;
         }
         break;
@@ -114,12 +114,9 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
         else
             renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
     }
-        
+
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
-
-
-
 
     for (unsigned tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
@@ -262,44 +259,33 @@ bool PreviousTab(Tab* t)
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
 //===================================================================================================================
-std::unique_ptr<TabPage> TabPage::Create(const AppCUI::Utils::ConstString& caption)
+
+TabPage::TabPage(const AppCUI::Utils::ConstString& caption)
+    : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
 {
-    INIT_CONTROL(TabPage, ControlContext);
-    CHECK(me->Init(caption, "x:0,y:0,w:100%,h:100%", true), nullptr, "Unable to create tab page !");
+    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    return me;
 }
-TabPage* TabPage::Create(Control& parent,const AppCUI::Utils::ConstString& caption)
-{
-    auto me = TabPage::Create(caption);
-    CHECK(me, nullptr, "Fail to create a TabPage control !");
-    return parent.AddControl<TabPage>(std::move(me));
-}
+
 bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
-std::unique_ptr<Tab> Tab::Create(const std::string_view& layout, TabFlags flags, unsigned int tabPageSize)
+Tab::Tab(const std::string_view& layout, TabFlags flags, unsigned int tabPageSize)
+    : Control(new TabControlContext(), "", layout, false)
 {
-    CHECK(tabPageSize >= 10, nullptr, "Tab page title size should be bigger than 10");
-    CHECK(tabPageSize < 1000, nullptr, "Tab page title size should be smaller than 1000");
-    
-    INIT_CONTROL(Tab, TabControlContext);    
-    CHECK(me->Init("", layout, false), nullptr, "Unable to create tab control !");
+    tabPageSize = std::min<>(1000U, tabPageSize);
+    tabPageSize = std::max<>(10U, tabPageSize);
+
+    auto Members          = reinterpret_cast<TabControlContext*>(this->Context);
     Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->TabTitleSize = tabPageSize;
     // margin set
     Members->currentTab      = nullptr;
     Members->HoveredTabIndex = -1;
     Members->UpdateMargins();
-    return me;
 }
-Tab* Tab::Create(Control& parent, const std::string_view& layout, TabFlags flags, unsigned int tabPageSize)
-{
-    auto me = Tab::Create(layout, flags, tabPageSize);
-    CHECK(me, nullptr, "Fail to create a Tab control !");
-    return parent.AddControl<Tab>(std::move(me));
-}
+
 bool Tab::SetCurrentTabPage(unsigned int index)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);

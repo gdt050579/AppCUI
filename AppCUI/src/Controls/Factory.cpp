@@ -115,7 +115,6 @@ std::unique_ptr<AppCUI::Controls::TextField> Factory::TextField::Create(
           new AppCUI::Controls::TextField(caption, layout, flags, handler, handlerContext));
 }
 
-
 //======[TEXTAREA]===================================================================================
 AppCUI::Controls::TextArea* Factory::TextArea::Create(
       AppCUI::Controls::Control& parent,
@@ -137,4 +136,30 @@ std::unique_ptr<AppCUI::Controls::TextArea> Factory::TextArea::Create(
 {
     return std::unique_ptr<AppCUI::Controls::TextArea>(
           new AppCUI::Controls::TextArea(caption, layout, flags, handler, handlerContext));
+}
+
+//======[TABPAGE]====================================================================================
+AppCUI::Controls::TabPage* Factory::TabPage::Create(
+      AppCUI::Controls::Control& parent, const AppCUI::Utils::ConstString& caption)
+{
+    return parent.AddControl<AppCUI::Controls::TabPage>(Factory::TabPage::Create(caption));
+}
+std::unique_ptr<AppCUI::Controls::TabPage> Factory::TabPage::Create(const AppCUI::Utils::ConstString& caption)
+{
+    return std::unique_ptr<AppCUI::Controls::TabPage>(new AppCUI::Controls::TabPage(caption));
+}
+
+//======[TAB]========================================================================================
+AppCUI::Controls::Tab* Factory::Tab::Create(
+      AppCUI::Controls::Control& parent,
+      const std::string_view& layout,
+      AppCUI::Controls::TabFlags flags,
+      unsigned int tabPageSize)
+{
+    return parent.AddControl<AppCUI::Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
+}
+std::unique_ptr<AppCUI::Controls::Tab> Factory::Tab::Create(
+      const std::string_view& layout, AppCUI::Controls::TabFlags flags, unsigned int tabPageSize)
+{
+    return std::unique_ptr<AppCUI::Controls::Tab>(new AppCUI::Controls::Tab(layout, flags, tabPageSize));
 }
