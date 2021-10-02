@@ -11,7 +11,7 @@ Panel::Panel(const AppCUI::Utils::ConstString& caption, const std::string_view& 
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | PANEL_ATTR_BORDER;
-    ASSERT(this->SetMargins(1, 1, 1, 1), nullptr, "Failed to set margins !");
+    ASSERT(this->SetMargins(1, 1, 1, 1), "Failed to set margins !");
 }
 
 void Panel::Paint(Graphics::Renderer& renderer)
