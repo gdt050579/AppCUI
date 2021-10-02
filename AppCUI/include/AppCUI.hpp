@@ -2002,6 +2002,8 @@ namespace Controls
     };
     class EXPORT RadioBox : public Control
     {
+      protected:
+        RadioBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID);
       public:
         static std::unique_ptr<RadioBox> Create(
               const AppCUI::Utils::ConstString& caption,
