@@ -1646,6 +1646,8 @@ namespace Controls
         class EXPORT RadioBox;
         class EXPORT Splitter;
         class EXPORT Panel;
+        class EXPORT TextField;
+        class EXPORT TextArea;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -2050,20 +2052,14 @@ namespace Controls
     };
     class EXPORT TextField : public Control
     {
+      protected:
+        TextField(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              TextFieldFlags flags,
+              Handlers::SyntaxHighlightHandler handler,
+              void* context);
       public:
-        static TextField* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              TextFieldFlags flags                     = TextFieldFlags::None,
-              Handlers::SyntaxHighlightHandler handler = nullptr,
-              void* Context                            = nullptr);
-        static std::unique_ptr<TextField> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              TextFieldFlags flags                     = TextFieldFlags::None,
-              Handlers::SyntaxHighlightHandler handler = nullptr,
-              void* Context                            = nullptr);
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
         void Paint(Graphics::Renderer& renderer) override;
@@ -2075,6 +2071,8 @@ namespace Controls
         void ClearSelection();
 
         virtual ~TextField();
+
+        friend Factory::TextField;
     };
     enum class TextAreaFlags : unsigned int
     {
@@ -2089,21 +2087,14 @@ namespace Controls
 
     class EXPORT TextArea : public Control
     {
+      protected:
+        TextArea(
+              const AppCUI::Utils::ConstString& caption,
+              const std::string_view& layout,
+              TextAreaFlags flags,
+              Handlers::SyntaxHighlightHandler handler,
+              void* handlerContext);
       public:
-        static TextArea* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              TextAreaFlags flags                      = TextAreaFlags::None,
-              Handlers::SyntaxHighlightHandler handler = nullptr,
-              void* handlerContext                     = nullptr);
-        static std::unique_ptr<TextArea> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              TextAreaFlags flags                      = TextAreaFlags::None,
-              Handlers::SyntaxHighlightHandler handler = nullptr,
-              void* handlerContext                     = nullptr);
-
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnUpdateScrollBars() override;
@@ -2114,6 +2105,8 @@ namespace Controls
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);
         virtual ~TextArea();
+
+        friend Factory::TextArea;
     };
 
     enum class TabFlags : unsigned int
@@ -2632,6 +2625,44 @@ namespace Controls
                   const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
             static AppCUI::Controls::Panel* Create(AppCUI::Controls::Control& parent, const std::string_view& layout);
             static std::unique_ptr<AppCUI::Controls::Panel> Create(const std::string_view& layout);
+        };
+        class EXPORT TextField
+        {
+            TextField() = delete;
+
+          public:
+            static AppCUI::Controls::TextField* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
+                  Handlers::SyntaxHighlightHandler handler = nullptr,
+                  void* handlerContext                     = nullptr);
+            static std::unique_ptr<AppCUI::Controls::TextField> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
+                  Handlers::SyntaxHighlightHandler handler = nullptr,
+                  void* handlerContext                     = nullptr);
+        };
+        class EXPORT TextArea
+        {
+            TextArea() = delete;
+
+          public:
+            static AppCUI::Controls::TextArea* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
+                  Handlers::SyntaxHighlightHandler handler = nullptr,
+                  void* handlerContext                     = nullptr);
+            static std::unique_ptr<AppCUI::Controls::TextArea> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
+                  Handlers::SyntaxHighlightHandler handler = nullptr,
+                  void* handlerContext                     = nullptr);
         };
     } // namespace Factory
 

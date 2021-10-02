@@ -881,24 +881,24 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-std::unique_ptr<TextArea> TextArea::Create(
+TextArea::TextArea(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
+    : Control(new TextAreaControlContext(), "", layout, false)
 {
-    INIT_CONTROL(TextArea, TextAreaControlContext);
+    auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
 
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Syntax.Handler   = nullptr;
-    Members->Syntax.Context   = nullptr;
-    CHECK(me->Init("", layout, false), nullptr, "Failed to create text area  !");
+    Members->Syntax.Context   = nullptr;    
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
-    CHECK(Members->Text.Set(caption), nullptr, "Fail to set text to internal CharactersBuffers object !");
-    CHECK(Members->Lines.Create(128), nullptr, "Fail to create indexes for line numbers");
+    ASSERT(Members->Text.Set(caption), "Fail to set text to internal CharactersBuffers object !");
+    ASSERT(Members->Lines.Create(128), "Fail to create indexes for line numbers");
     // scroll bars
     if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
     {
@@ -909,32 +909,17 @@ std::unique_ptr<TextArea> TextArea::Create(
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
-        CHECK(handler,
-              nullptr,
-              "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
+        ASSERT(handler, "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;
     Members->View.TopLine         = 0;
-    Members->Host                 = me.get();
+    Members->Host                 = this;
     Members->ComputeVisibleLinesAndRows();
     Members->ClearSel();
     Members->AnalyzeCurrentText();
     // all is good
-    return me;
-}
 
-TextArea* TextArea::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      TextAreaFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
-{
-    auto me = TextArea::Create(caption, layout, flags, handler, handlerContext);
-    CHECK(me, nullptr, "Fail to create a TextArea control !");
-    return parent.AddControl<TextArea>(std::move(me));
 }
 
 

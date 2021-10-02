@@ -274,49 +274,33 @@ TextField::~TextField()
 {
     DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-std::unique_ptr<TextField> TextField::Create(
+TextField::TextField(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       TextFieldFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
+    : Control(new TextFieldControlContext(), caption, layout, false)
 {
-    INIT_CONTROL(TextField, TextFieldControlContext);
+    auto Members              = reinterpret_cast<TextFieldControlContext*>(this->Context);
     Members->Layout.MinWidth  = 3;
     Members->Layout.MinHeight = 1;
     Members->Syntax.Handler   = nullptr;
     Members->Syntax.Context   = nullptr;
-
-    CHECK(me->Init(caption, layout, false), nullptr, "Failed to create text field !");
-
-    Members->Flags    = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
-    Members->Modified = true;
-    me->ClearSelection();
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Modified         = true;
+    
+    this->ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
-    TextField_MoveTo(me.get(), 0xFFFF, false);
+    TextField_MoveTo(this, 0xFFFF, false);
     if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
-        CHECK(handler,
-              nullptr,
-              "if 'TextFieldFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
+        ASSERT(handler, "if 'TextFieldFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
-    return me;
 }
 
-TextField* TextField::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      TextFieldFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
-{
-    auto me = TextField::Create(caption, layout, flags, handler, handlerContext);
-    CHECK(me, nullptr, "Fail to create a TextField control !");
-    return parent.AddControl<TextField>(std::move(me));
-}
 
 void TextField::SelectAll()
 {
