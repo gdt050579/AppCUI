@@ -1638,6 +1638,10 @@ namespace Graphics
 }; // namespace Graphics
 namespace Controls
 {
+    namespace Factory
+    {
+        class EXPORT Label;
+    }
     enum class Event : unsigned int
     {
         WindowClose,
@@ -1941,10 +1945,8 @@ namespace Controls
     {
         Label(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
       public:
-        static Label* Create(
-              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static std::unique_ptr<Label> Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         void Paint(Graphics::Renderer& renderer) override;
+        friend Factory::Label;
     };
 
     enum class ButtonFlags : unsigned int
@@ -2563,6 +2565,22 @@ namespace Controls
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
     };
+
+    namespace Factory
+    {
+        class EXPORT Label
+        {
+            Label() = delete;
+
+          public:
+            static AppCUI::Controls::Label* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout);
+            static std::unique_ptr<AppCUI::Controls::Label> Create(
+                  const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        };
+    } // namespace Factory
 
 }; // namespace Controls
 namespace Dialogs
