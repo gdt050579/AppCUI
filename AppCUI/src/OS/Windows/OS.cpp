@@ -51,10 +51,15 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector
     // special folers
     AddSpecialFolder(FOLDERID_Desktop, SpecialFolder::Desktop, "Desktop", specialFolders);
     AddSpecialFolder(FOLDERID_Documents, SpecialFolder::Documents, "Documents", specialFolders);
+    AddSpecialFolder(FOLDERID_LocalDocuments, SpecialFolder::LocalDocuments, "Local Documents", specialFolders);
     AddSpecialFolder(FOLDERID_Downloads, SpecialFolder::Downloads, "Downloads", specialFolders);
+    AddSpecialFolder(FOLDERID_LocalDownloads, SpecialFolder::LocalDownloads, "Local Downloads", specialFolders);
     AddSpecialFolder(FOLDERID_Music, SpecialFolder::Music, "Music", specialFolders);
+    AddSpecialFolder(FOLDERID_LocalMusic, SpecialFolder::LocalMusic, "Local Music", specialFolders);
     AddSpecialFolder(FOLDERID_Pictures, SpecialFolder::Pictures, "Pictures", specialFolders);
+    AddSpecialFolder(FOLDERID_LocalPictures, SpecialFolder::LocalPictures, "Local Pictures", specialFolders);
     AddSpecialFolder(FOLDERID_Videos, SpecialFolder::Videos, "Videos", specialFolders);
+    AddSpecialFolder(FOLDERID_LocalVideos, SpecialFolder::Videos, "Local Videos", specialFolders);
 }
 
 std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()

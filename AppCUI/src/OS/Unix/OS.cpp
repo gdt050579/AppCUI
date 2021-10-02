@@ -13,10 +13,13 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector
         specialFolders[SpecialFolder::Desktop] = { "Desktop", desktop };
     }
 
+    specialFolders[SpecialFolder::AppPath] = { "App Folder", GetCurrentApplicationPath().parent_path() };
+
     const auto documents = sago::getDocumentsFolder();
     if (!desktop.empty())
     {
-        specialFolders[SpecialFolder::Documents] = { "Documents", documents };
+        specialFolders[SpecialFolder::Documents]      = { "Documents", documents };
+        specialFolders[SpecialFolder::LocalDocuments] = { "Local Documents", documents };
     }
 
     auto downloadFolder = sago::getDownloadFolder();
@@ -26,28 +29,30 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector
     }
     if (!downloadFolder.empty())
     {
-        specialFolders[SpecialFolder::Downloads] = { "Downloads", downloadFolder };
+        specialFolders[SpecialFolder::Downloads]      = { "Downloads", downloadFolder };
+        specialFolders[SpecialFolder::LocalDownloads] = { "Local Downloads", downloadFolder };
     }
 
     const auto music = sago::getMusicFolder();
     if (!music.empty())
     {
-        specialFolders[SpecialFolder::Music] = { "Music", music };
+        specialFolders[SpecialFolder::Music]      = { "Music", music };
+        specialFolders[SpecialFolder::LocalMusic] = { "Local Music", music };
     }
 
     const auto pictures = sago::getPicturesFolder();
     if (!pictures.empty())
     {
-        specialFolders[SpecialFolder::Pictures] = { "Pictures", pictures };
+        specialFolders[SpecialFolder::Pictures]      = { "Pictures", pictures };
+        specialFolders[SpecialFolder::LocalPictures] = { "Local Pictures", pictures };
     }
 
     const auto video = sago::getVideoFolder();
     if (!video.empty())
     {
-        specialFolders[SpecialFolder::Videos] = { "Video", video };
+        specialFolders[SpecialFolder::Videos]      = { "Videos", video };
+        specialFolders[SpecialFolder::LocalVideos] = { "Local Videos", video };
     }
-
-    specialFolders[SpecialFolder::AppPath] = { "App Folder", GetCurrentApplicationPath().parent_path() };
 
     roots.push_back({ "/ (root)", "/" });
 }

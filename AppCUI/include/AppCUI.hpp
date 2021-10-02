@@ -1055,13 +1055,18 @@ namespace OS
     };
     enum class SpecialFolder : unsigned int
     {
-        Desktop = 0,
+        AppPath = 0,
+        Desktop,
         Documents,
+        LocalDocuments,
         Downloads,
+        LocalDownloads,
         Music,
+        LocalMusic,
         Pictures,
+        LocalPictures,
         Videos,
-        AppPath,
+        LocalVideos,
     };
 
     struct FSLocationData
