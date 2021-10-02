@@ -2527,10 +2527,8 @@ namespace Controls
 
     class EXPORT Desktop : public Control
     {
-      protected:
-        bool Init(unsigned int screenWidth, unsigned int screenHeight);
       public:
-        static std::unique_ptr<Desktop> Create(unsigned int screenWidth, unsigned int screenHeight);
+        Desktop();
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;

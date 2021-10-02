@@ -534,12 +534,11 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     if (initData.CustomDesktop)
         this->AppDesktop = initData.CustomDesktop.release();
     else
-        this->AppDesktop = AppCUI::Controls::Desktop::Create(
-                                 this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight())
-                                 .release();
-    //CHECK(this->AppDesktop->Init(),
-    //      false,
-    //      "Failed to create desktop !");
+        this->AppDesktop = new AppCUI::Controls::Desktop();
+
+    CHECK(this->AppDesktop->Resize(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
+          false,
+          "");
     if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
         AppCUI::Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
