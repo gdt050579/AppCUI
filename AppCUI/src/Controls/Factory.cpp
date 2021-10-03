@@ -276,3 +276,19 @@ AppCUI::Controls::NumericSelector* Factory::NumericSelector::Create(
     return parent.AddControl<AppCUI::Controls::NumericSelector>(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }
+
+
+ //======[WINDOW]=====================================================================================
+std::unique_ptr<AppCUI::Controls::Window> Factory::Window::Create(
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      AppCUI::Controls::WindowFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::Window>(new AppCUI::Controls::Window(caption, layout, flags));
+}
+
+ //======[DESKTOP]====================================================================================
+std::unique_ptr<AppCUI::Controls::Desktop> Factory::Desktop::Create()
+{
+    return std::unique_ptr<AppCUI::Controls::Desktop>(new AppCUI::Controls::Desktop());
+}

@@ -31,9 +31,7 @@ bool CreateMessageBoxWindow(
       int buttonsType,
       int* result)
 {
-    auto wnd = Window::Create(title, "d:c,w:60,h:10", flags);
-    CHECK(wnd, false, "");
-
+    auto wnd = Factory::Window::Create(title, "d:c,w:60,h:10", flags);
 
     switch (buttonsType)
     {

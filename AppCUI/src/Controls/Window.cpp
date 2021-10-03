@@ -508,10 +508,9 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-bool Window::Init(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
+Window::Window(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
+    : Control(new WindowControlContext(), caption, layout, false)
 {
-    CHECK(this->Context == nullptr, false, "Window has already been initialized !");
-    this->Context             = new WindowControlContext();
     auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);
     Members->Layout.MaxHeight = 200000;
     Members->Layout.MaxWidth  = 200000;
@@ -519,8 +518,7 @@ bool Window::Init(const AppCUI::Utils::ConstString& caption, const std::string_v
     Members->Layout.MinWidth  = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding,
                                     // title, OneSpaceRightPadding, close
                                     // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
-    CHECK(Control::Init(caption, layout, false), false, "Failed to create window !");
-    CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
+    ASSERT(SetMargins(1, 1, 1, 1), "Failed to set margins !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
 
     Members->Maximized                       = false;
@@ -572,7 +570,7 @@ bool Window::Init(const AppCUI::Utils::ConstString& caption, const std::string_v
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
     {
-        CHECK(MaximizeRestore(), false, "Fail to maximize window !");
+        ASSERT(MaximizeRestore(),  "Fail to maximize window !");
     }
     if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
     {
@@ -580,14 +578,6 @@ bool Window::Init(const AppCUI::Utils::ConstString& caption, const std::string_v
         Members->Margins.Top += 1;
         Members->menu->SetWidth(Members->Layout.Width - 2);
     }
-    return true;
-}
-std::unique_ptr<Window> Window::Create(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags)
-{
-    auto win = std::make_unique<Window>();
-    CHECK(win->Init(caption, layout, windowsFlags), nullptr, "");
-    return win;
 }
 
 void Window::Paint(Graphics::Renderer& renderer)
