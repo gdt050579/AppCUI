@@ -7,13 +7,12 @@ using namespace AppCUI::Controls;
 #define USING_A_CLASS_IMPLEMENTATION
 
 #ifdef USING_A_CLASS_IMPLEMENTATION
-class SimpleWin : public AppCUI::Controls::Window
+class SimpleWin : public Window
 {
   public:
-    SimpleWin()
+    SimpleWin() : Window("Test", "d:c,w:40,h:10", WindowFlags::None)
     {
-        Window::Init("Test", "d:c,w:40,h:10", WindowFlags::None);
-        Label::Create(
+        Factory::Label::Create(
               *this,
               "This is a simple Window example that creates a 40x20 fixed window that  will close if you click on the "
               "[X]  button from the bottom-top corner.",
@@ -34,8 +33,8 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    auto wnd = Window::Create("Test", "d:c,w:40,h:10");
-    Label::Create(
+    auto wnd = Factory::Window::Create("Test", "d:c,w:40,h:10");
+    Factory::Label::Create(
           *wnd,
           "This is a simple Window example that creates a 40x20 fixed window that  will close if you click on the "
           "[X]  button from the bottom-top corner.",
