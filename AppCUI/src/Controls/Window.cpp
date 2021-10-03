@@ -530,6 +530,9 @@ Window::Window(const AppCUI::Utils::ConstString& caption, const std::string_view
     Members->referalItemHandle               = InvalidItemHandle;
     Members->windowItemHandle                = InvalidItemHandle;
 
+    ASSERT(Members->RecomputeLayout(nullptr), "Fail to recompute layout !");
+    this->RecomputeLayout();
+
     // init the buttons
     if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
     {
