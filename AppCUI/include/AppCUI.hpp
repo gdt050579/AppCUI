@@ -1652,6 +1652,8 @@ namespace Controls
         class EXPORT Tab;
         class EXPORT CanvasViewer;
         class EXPORT ImageViewer;
+        class EXPORT ListView;
+        class EXPORT ComboBox;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -2206,6 +2208,7 @@ namespace Controls
     {
       protected:
         ImageViewer(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, ViewerFlags flags);
+
       public:
         bool SetImage(
               const AppCUI::Graphics::Image& img,
@@ -2252,11 +2255,10 @@ namespace Controls
     };
     class EXPORT ListView : public Control
     {
+      protected:
+        ListView(const std::string_view& layout, ListViewFlags flags);
+
       public:
-        static std::unique_ptr<ListView> Create(
-              const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
-        static ListView* Create(
-              Control& parent, const std::string_view& layout, ListViewFlags flags = ListViewFlags::None);
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2370,23 +2372,17 @@ namespace Controls
               unsigned int columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
 
         virtual ~ListView();
+
+        friend Factory::ListView;
     };
 
     class EXPORT ComboBox : public Control
     {
+      protected:
+        ComboBox(const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator);
+
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
-
-        static std::unique_ptr<ComboBox> Create(
-              const std::string_view& layout,
-              const AppCUI::Utils::ConstString& text = std::string_view(),
-              char itemsSeparator                    = ',');
-
-        static ComboBox* Create(
-              Control& parent,
-              const std::string_view& layout,
-              const AppCUI::Utils::ConstString& text = std::string_view(),
-              char itemsSeparator                    = ',');
 
         ItemData GetCurrentItemUserData();
         unsigned int GetItemsCount();
@@ -2412,6 +2408,8 @@ namespace Controls
         void OnExpandView(AppCUI::Graphics::Clip& expandedClip) override;
         void OnPackView() override;
         virtual ~ComboBox();
+
+        friend Factory::ComboBox;
     };
 
     class EXPORT Menu
@@ -2694,6 +2692,35 @@ namespace Controls
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+        };
+        class EXPORT ListView
+        {
+            ListView() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::ListView> Create(
+                  const std::string_view& layout,
+                  AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
+            static AppCUI::Controls::ListView* Create(
+                  AppCUI::Controls::Control& parent,
+                  const std::string_view& layout,
+                  AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
+        };
+        class EXPORT ComboBox
+        {
+            ComboBox() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::ComboBox> Create(
+                  const std::string_view& layout,
+                  const AppCUI::Utils::ConstString& text = std::string_view(),
+                  char itemsSeparator                    = ',');
+
+            static AppCUI::Controls::ComboBox* Create(
+                  AppCUI::Controls::Control& parent,
+                  const std::string_view& layout,
+                  const AppCUI::Utils::ConstString& text = std::string_view(),
+                  char itemsSeparator                    = ',');
         };
     } // namespace Factory
 

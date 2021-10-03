@@ -230,3 +230,36 @@ AppCUI::Controls::ImageViewer* Factory::ImageViewer::Create(
 {
     return parent.AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
 }
+
+//======[LISTVIEW]===================================================================================
+std::unique_ptr<AppCUI::Controls::ListView> Factory::ListView::Create(
+      const std::string_view& layout, AppCUI::Controls::ListViewFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::ListView>(new AppCUI::Controls::ListView(layout, flags));
+}
+AppCUI::Controls::ListView* Factory::ListView::Create(
+      AppCUI::Controls::Control& parent,
+      const std::string_view& layout,
+      AppCUI::Controls::ListViewFlags flags)
+{
+    return parent.AddControl<AppCUI::Controls::ListView>(Factory::ListView::Create(layout, flags));
+}
+
+
+//======[COMBOBOX]===================================================================================
+std::unique_ptr<AppCUI::Controls::ComboBox> Factory::ComboBox::Create(
+      const std::string_view& layout,
+      const AppCUI::Utils::ConstString& text,
+      char itemsSeparator)
+{
+    return std::unique_ptr<AppCUI::Controls::ComboBox>(new AppCUI::Controls::ComboBox(layout, text, itemsSeparator));
+}
+
+AppCUI::Controls::ComboBox* Factory::ComboBox::Create(
+      AppCUI::Controls::Control& parent,
+      const std::string_view& layout,
+      const AppCUI::Utils::ConstString& text,
+      char itemsSeparator)
+{
+    return parent.AddControl<AppCUI::Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
+}

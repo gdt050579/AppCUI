@@ -1303,17 +1303,17 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-std::unique_ptr<ListView> ListView::Create(const std::string_view& layout, ListViewFlags flags)
+ListView::ListView(const std::string_view& layout, ListViewFlags flags)
+    : Control(new ListViewControlContext(), "", layout, false)
 {
-    INIT_CONTROL(ListView, ListViewControlContext);
+    auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
-    CHECK(me->Init("", layout, false), nullptr, "Failed to create list view !");
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (unsigned int) flags;
     Members->ScrollBars.LeftMargin = 25;
     // allocate items
-    CHECK(Members->Items.Indexes.Create(32), nullptr, "Fail to allocate indexes");
+    ASSERT(Members->Items.Indexes.Create(32), "Fail to allocate Listview indexes");
     Members->Items.List.reserve(32);
 
     // initialize
@@ -1332,19 +1332,11 @@ std::unique_ptr<ListView> ListView::Create(const std::string_view& layout, ListV
     Members->Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
     Members->clipboardSeparator                = '\t';
     Members->Columns.TotalWidth                = 0;
-    Members->Host                              = me.get();
+    Members->Host                              = this;
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
 
-    // all is good
-    return me;
-}
-ListView* ListView::Create(Control& parent, const std::string_view& layout, ListViewFlags flags)
-{
-    auto me = ListView::Create(layout, flags);
-    CHECK(me, nullptr, "Fail to create a ListView control !");
-    return parent.AddControl<ListView>(std::move(me));
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {
@@ -1642,7 +1634,7 @@ unsigned int ListView::GetItemsCount()
 ItemHandle ListView::GetCurrentItem()
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
-    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int)lvcc->Items.Indexes.Len()))
+    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int) lvcc->Items.Indexes.Len()))
         return InvalidItemHandle;
     unsigned int* indexes = lvcc->Items.Indexes.GetUInt32Array();
     return indexes[lvcc->Items.CurentItemIndex];

@@ -15,7 +15,8 @@ using namespace AppCUI::Input;
 
 static const ItemData null_combobox_item = { nullptr };
 
-AppCUI::Graphics::CharacterBuffer __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
+AppCUI::Graphics::CharacterBuffer
+      __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
 
 ComboBoxItem::ComboBoxItem()
 {
@@ -23,7 +24,8 @@ ComboBoxItem::ComboBoxItem()
     this->Index     = ComboBox::NO_ITEM_SELECTED;
     this->Data      = { nullptr };
 }
-ComboBoxItem::ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator)
+ComboBoxItem::ComboBoxItem(
+      const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator)
 {
     this->Text.Set(caption);
     this->Data      = userData;
@@ -32,24 +34,24 @@ ComboBoxItem::ComboBoxItem(const AppCUI::Utils::ConstString& caption, ItemData u
 }
 ComboBoxItem::~ComboBoxItem()
 {
-    //LOG_INFO("ComBoxItem(dtor) at %p [Text:Buffer = %p]", this, this->Text.GetBuffer());
+    // LOG_INFO("ComBoxItem(dtor) at %p [Text:Buffer = %p]", this, this->Text.GetBuffer());
     this->Text.Destroy();
-    //LOG_INFO("           after delete = %p", this->Text.GetBuffer());
+    // LOG_INFO("           after delete = %p", this->Text.GetBuffer());
 }
 ComboBoxItem::ComboBoxItem(const ComboBoxItem& obj)
 {
-    //LOG_INFO("ComBoxItem(copy-ctor) at %p (from %p)", this, &obj);
-    //LOG_INFO("           this->Buffer = %p", this->Text.GetBuffer());
-    //LOG_INFO("           from->Buffer = %p", obj.Text.GetBuffer());
+    // LOG_INFO("ComBoxItem(copy-ctor) at %p (from %p)", this, &obj);
+    // LOG_INFO("           this->Buffer = %p", this->Text.GetBuffer());
+    // LOG_INFO("           from->Buffer = %p", obj.Text.GetBuffer());
     this->Data = obj.Data;
     this->Text.Set(obj.Text);
     this->Separator = obj.Separator;
     this->Index     = obj.Index;
-    //LOG_INFO("           after-copy   = %p", this->Text.GetBuffer());
+    // LOG_INFO("           after-copy   = %p", this->Text.GetBuffer());
 }
-ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept 
+ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept
 {
-    //LOG_INFO("ComBoxItem(move-ctor) at %p (from %p)", this, &obj);
+    // LOG_INFO("ComBoxItem(move-ctor) at %p (from %p)", this, &obj);
     std::swap(this->Data, obj.Data);
     std::swap(this->Separator, obj.Separator);
     std::swap(this->Index, obj.Index);
@@ -57,7 +59,7 @@ ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept
 }
 ComboBoxItem& ComboBoxItem::operator=(const ComboBoxItem& obj)
 {
-    //LOG_INFO("ComBoxItem(op-eq) at %p (from %p)", this, &obj);
+    // LOG_INFO("ComBoxItem(op-eq) at %p (from %p)", this, &obj);
     this->Data      = obj.Data;
     this->Separator = obj.Separator;
     this->Index     = obj.Index;
@@ -66,11 +68,11 @@ ComboBoxItem& ComboBoxItem::operator=(const ComboBoxItem& obj)
 }
 ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 {
-    //LOG_INFO("ComBoxItem(op-move) at %p (from %p)", this, &obj);
+    // LOG_INFO("ComBoxItem(op-move) at %p (from %p)", this, &obj);
     this->Data      = obj.Data;
     this->Separator = obj.Separator;
     this->Index     = obj.Index;
-    this->Text.Swap(obj.Text);    
+    this->Text.Swap(obj.Text);
     return *this;
 }
 
@@ -78,7 +80,7 @@ bool ComboBox_AddItem(
       ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { nullptr })
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
-    unsigned int itemID = (unsigned int) Members->Items.size();
+    unsigned int itemID  = (unsigned int) Members->Items.size();
     unsigned int indexID = Members->Indexes.Len();
     CHECK(itemID < 0xFFFF, false, "A maximum of 0xFFFF indexes can be stored in a combobox !");
     if (!separator)
@@ -100,7 +102,7 @@ unsigned int ComboBox_MousePosToIndex(ComboBox* control, int, int y)
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, ComboBox::NO_ITEM_SELECTED);
     if ((y > 1) && (y < (int) (2 + Members->VisibleItemsCount)))
     {
-        unsigned int newItem= ((unsigned int) (y - 2)) + Members->FirstVisibleItem;
+        unsigned int newItem = ((unsigned int) (y - 2)) + Members->FirstVisibleItem;
         if (newItem >= Members->Items.size())
             return ComboBox::NO_ITEM_SELECTED;
         if (Members->Items[newItem].Separator)
@@ -151,7 +153,7 @@ unsigned int ComputeItemsCount(const T* start, size_t len, char separator)
         return 0;
     const T* end       = start + len;
     unsigned int count = 1; // assume at least one element (if not item separator is found)
-    while (start<end)
+    while (start < end)
     {
         if ((*start) == separator)
             count++;
@@ -160,25 +162,25 @@ unsigned int ComputeItemsCount(const T* start, size_t len, char separator)
     return count;
 }
 
-template <typename T,typename SV_T>
+template <typename T, typename SV_T>
 bool AddItemsFromList(ComboBox* cbx, const T* p, size_t len, const char separator)
-{    
+{
     const T* end   = p + len;
     const T* start = p;
-    for (;p<end; p++)
+    for (; p < end; p++)
     {
         if ((*p) == separator)
         {
             if (start < p)
             {
-                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start),false), false, "");
+                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false), false, "");
             }
             start = p + 1;
         }
     }
     if (start < p)
     {
-        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start),false), false, "");
+        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false), false, "");
     }
     return true;
 }
@@ -188,82 +190,71 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-std::unique_ptr<ComboBox> ComboBox::Create(const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+ComboBox::ComboBox(const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+    : Control(new ComboBoxControlContext(), "", layout, false)
 {
-    INIT_CONTROL(ComboBox, ComboBoxControlContext);
-    Members->Layout.MinWidth  = 7;
-    Members->Layout.MinHeight = 1;
-    Members->Layout.MaxHeight = 1;
-    CHECK(me->Init("", layout, false), nullptr, "Failed to create combo box !");
-
+    auto Members                          = reinterpret_cast<ComboBoxControlContext*>(this->Context);
+    Members->Layout.MinWidth              = 7;
+    Members->Layout.MinHeight             = 1;
+    Members->Layout.MaxHeight             = 1;
     Members->Flags                        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     unsigned int initialAllocatedElements = 16;
     unsigned int count                    = 0;
-    
+
     AppCUI::Utils::ConstStringObject listItems(text);
     switch (listItems.Encoding)
     {
-        case StringEncoding::Ascii:
-            count = ComputeItemsCount<char>((const char *)listItems.Data, listItems.Length, itemsSeparator);
-            break;
-        case StringEncoding::UTF8:
-            count = ComputeItemsCount<char8_t>((const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
-            break;
-        case StringEncoding::Unicode16:
-            count = ComputeItemsCount<char16_t>((const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
-            break;
-        case StringEncoding::CharacterBuffer:
-            count = ComputeItemsCount<Character>((const Character*) listItems.Data, listItems.Length, itemsSeparator);
-            break;
-        default:
-            RETURNERROR(nullptr, "Invalid string type !");
+    case StringEncoding::Ascii:
+        count = ComputeItemsCount<char>((const char*) listItems.Data, listItems.Length, itemsSeparator);
+        break;
+    case StringEncoding::UTF8:
+        count = ComputeItemsCount<char8_t>((const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
+        break;
+    case StringEncoding::Unicode16:
+        count = ComputeItemsCount<char16_t>((const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
+        break;
+    case StringEncoding::CharacterBuffer:
+        count = ComputeItemsCount<Character>((const Character*) listItems.Data, listItems.Length, itemsSeparator);
+        break;
+    default:
+        ASSERT(false, "Invalid encoding type !");
     }
     if (count > initialAllocatedElements)
         initialAllocatedElements = (count | 3) + 1;
 
     Members->Items.reserve(initialAllocatedElements);
-    CHECK(Members->Indexes.Create(initialAllocatedElements),
-          nullptr,
-          "Fail to initialize %d elements indexes !",
-          initialAllocatedElements);
-    if (count>0)
+    ASSERT(Members->Indexes.Create(initialAllocatedElements), "Fail to initialize elements indexes !");
+
+    if (count > 0)
     {
         bool result = false;
         switch (listItems.Encoding)
         {
         case StringEncoding::Ascii:
             result = AddItemsFromList<char, std::string_view>(
-                  me.get(), (const char*) listItems.Data, listItems.Length, itemsSeparator);
+                  this, (const char*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::UTF8:
             result = AddItemsFromList<char8_t, std::u8string_view>(
-                  me.get(), (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
+                  this, (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::Unicode16:
             result = AddItemsFromList<char16_t, std::u16string_view>(
-                  me.get(), (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
+                  this, (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::CharacterBuffer:
             result = AddItemsFromList<Character, CharacterView>(
-                  me.get(), (const Character*) listItems.Data, listItems.Length, itemsSeparator);
+                  this, (const Character*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         default:
-            RETURNERROR(nullptr, "Invalid string type !");
+            ASSERT(false, "Invalid encoding type !");
         }
-        CHECK(result, nullptr, "Fail to add items to ComboBox !");
+        ASSERT(result, "Fail to add items to ComboBox !");
     }
     Members->VisibleItemsCount = 1;
     Members->CurentItemIndex   = ComboBox::NO_ITEM_SELECTED;
     Members->FirstVisibleItem  = 0;
-    return me;
-}
 
-ComboBox* ComboBox::Create(
-      Control& parent, const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
-{
-    auto me = ComboBox::Create(layout, text, itemsSeparator);
-    CHECK(me, nullptr, "Fail to create a ComboBox control !");
-    return parent.AddControl<ComboBox>(std::move(me));
 }
 
 unsigned int ComboBox::GetItemsCount()
@@ -403,16 +394,15 @@ void ComboBox::OnExpandView(AppCUI::Graphics::Clip& expandedClip)
     // compute best FirstVisibleItem
     if (Members->CurentItemIndex != ComboBox::NO_ITEM_SELECTED)
     {
-        
         auto cItem = Members->Indexes.GetUInt32Array()[Members->CurentItemIndex];
         if ((Members->VisibleItemsCount / 2) <= cItem)
             Members->FirstVisibleItem = cItem - (Members->VisibleItemsCount / 2);
         else
             Members->FirstVisibleItem = 0;
-        if ((Members->FirstVisibleItem + Members->VisibleItemsCount)>=Members->Items.size())
+        if ((Members->FirstVisibleItem + Members->VisibleItemsCount) >= Members->Items.size())
         {
             if (Members->VisibleItemsCount < Members->Items.size())
-                Members->FirstVisibleItem = (unsigned int)(Members->Items.size() - Members->VisibleItemsCount);
+                Members->FirstVisibleItem = (unsigned int) (Members->Items.size() - Members->VisibleItemsCount);
             else
                 Members->FirstVisibleItem = 0;
         }
@@ -458,18 +448,19 @@ bool ComboBox::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
                 Members->FirstVisibleItem--;
             return true;
         case AppCUI::Input::MouseWheel::Down:
-            if ((size_t)Members->FirstVisibleItem + (size_t)Members->VisibleItemsCount < Members->Items.size())
+            if ((size_t) Members->FirstVisibleItem + (size_t) Members->VisibleItemsCount < Members->Items.size())
                 Members->FirstVisibleItem++;
             return true;
         }
-    } else
+    }
+    else
     {
         switch (direction)
         {
-            case AppCUI::Input::MouseWheel::Up:
-                return OnKeyEvent(Key::Up, 0);
-            case AppCUI::Input::MouseWheel::Down:
-                return OnKeyEvent(Key::Down, 0);
+        case AppCUI::Input::MouseWheel::Up:
+            return OnKeyEvent(Key::Up, 0);
+        case AppCUI::Input::MouseWheel::Down:
+            return OnKeyEvent(Key::Down, 0);
         }
     }
     return false;
@@ -497,17 +488,19 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
 
-    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |WriteTextFlags::FitTextToWidth,
-                           TextAlignament::Left);
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |
+                WriteTextFlags::FitTextToWidth,
+          TextAlignament::Left);
     WriteTextParams paramsSeparator(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |
-          WriteTextFlags::FitTextToWidth | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+                WriteTextFlags::FitTextToWidth | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
           TextAlignament::Center);
 
     paramsSeparator.Width = Members->Layout.Width - 7;
     paramsSeparator.X     = 3;
     paramsSeparator.Color = Members->Cfg->ComboBox.Inactive.Text;
-    auto* cbc = &Members->Cfg->ComboBox.Normal;  
+    auto* cbc             = &Members->Cfg->ComboBox.Normal;
     if (!this->IsEnabled())
         cbc = &Members->Cfg->ComboBox.Inactive;
     if (Members->Focused)
@@ -524,32 +517,34 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 6;
         params.Color = cbc->Text;
         renderer.WriteText(Members->Items[Members->Indexes.GetUInt32Array()[Members->CurentItemIndex]].Text, params);
-    }        
+    }
     renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button);
     renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc->Button);
 
     if (Members->Flags & GATTR_EXPANDED)
     {
-        renderer.FillRect(0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
-        renderer.DrawRect(0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, Members->Cfg->ComboBox.Focus.Text, false);
+        renderer.FillRect(
+              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
+        renderer.DrawRect(
+              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, Members->Cfg->ComboBox.Focus.Text, false);
         params.X     = 1;
         params.Width = Members->Layout.Width - 2;
         params.Color = Members->Cfg->ComboBox.Focus.Text;
         for (unsigned int tr = 0; tr < Members->VisibleItemsCount; tr++)
-        {            
+        {
             if ((tr + Members->FirstVisibleItem) >= itemsCount)
                 break;
-                           
-            auto& i = Members->Items[tr + Members->FirstVisibleItem];                
+
+            auto& i = Members->Items[tr + Members->FirstVisibleItem];
             if (i.Separator)
             {
                 renderer.FillHorizontalLineWithSpecialChar(
-                        1,
-                        tr + 2,
-                        Members->Layout.Width - 2,
-                        SpecialChars::BoxHorizontalSingleLine,
-                        Members->Cfg->ComboBox.Inactive.Text);
-                if (i.Text.Len()>0)
+                      1,
+                      tr + 2,
+                      Members->Layout.Width - 2,
+                      SpecialChars::BoxHorizontalSingleLine,
+                      Members->Cfg->ComboBox.Inactive.Text);
+                if (i.Text.Len() > 0)
                 {
                     paramsSeparator.Y = tr + 2;
                     renderer.WriteText(i.Text, paramsSeparator);
@@ -561,10 +556,12 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                 renderer.WriteText(i.Text, params);
                 // cursor or selection
                 if (i.Index == Members->CurentItemIndex)
-                    renderer.FillHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
+                    renderer.FillHorizontalLine(
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
                 else if (i.Index == Members->HoveredIndexItem)
-                    renderer.FillHorizontalLine(1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
-            }                           
+                    renderer.FillHorizontalLine(
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
+            }
         }
     }
 }
