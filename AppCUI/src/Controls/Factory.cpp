@@ -238,19 +238,14 @@ std::unique_ptr<AppCUI::Controls::ListView> Factory::ListView::Create(
     return std::unique_ptr<AppCUI::Controls::ListView>(new AppCUI::Controls::ListView(layout, flags));
 }
 AppCUI::Controls::ListView* Factory::ListView::Create(
-      AppCUI::Controls::Control& parent,
-      const std::string_view& layout,
-      AppCUI::Controls::ListViewFlags flags)
+      AppCUI::Controls::Control& parent, const std::string_view& layout, AppCUI::Controls::ListViewFlags flags)
 {
     return parent.AddControl<AppCUI::Controls::ListView>(Factory::ListView::Create(layout, flags));
 }
 
-
 //======[COMBOBOX]===================================================================================
 std::unique_ptr<AppCUI::Controls::ComboBox> Factory::ComboBox::Create(
-      const std::string_view& layout,
-      const AppCUI::Utils::ConstString& text,
-      char itemsSeparator)
+      const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
 {
     return std::unique_ptr<AppCUI::Controls::ComboBox>(new AppCUI::Controls::ComboBox(layout, text, itemsSeparator));
 }
@@ -262,4 +257,22 @@ AppCUI::Controls::ComboBox* Factory::ComboBox::Create(
       char itemsSeparator)
 {
     return parent.AddControl<AppCUI::Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
+}
+
+//======[NUMERICSELECTOR]============================================================================
+std::unique_ptr<AppCUI::Controls::NumericSelector> Factory::NumericSelector::Create(
+      const long long minValue, const long long maxValue, long long value, const std::string_view& layout)
+{
+    return std::unique_ptr<AppCUI::Controls::NumericSelector>(
+          new AppCUI::Controls::NumericSelector(minValue, maxValue, value, layout));
+}
+AppCUI::Controls::NumericSelector* Factory::NumericSelector::Create(
+      AppCUI::Controls::Control& parent,
+      const long long minValue,
+      const long long maxValue,
+      long long value,
+      const std::string_view& layout)
+{
+    return parent.AddControl<AppCUI::Controls::NumericSelector>(
+          Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }

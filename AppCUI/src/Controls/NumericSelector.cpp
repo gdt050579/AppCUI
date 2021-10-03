@@ -6,39 +6,21 @@ using namespace AppCUI::Graphics;
 
 namespace AppCUI::Controls
 {
-std::unique_ptr<NumericSelector> NumericSelector::Create(
-      const long long minValue,
-      const long long maxValue,
-      long long value,
-      const std::string_view& layout)
+NumericSelector::NumericSelector(
+      const long long minValue, const long long maxValue, long long value, const std::string_view& layout)
+    : Control(new NumericSelectorControlContext(), "", layout, true)
 {
-    INIT_CONTROL(NumericSelector, NumericSelectorControlContext);
+    auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
+    Members->Layout.MinHeight = 1;
+    Members->Layout.MaxHeight = 1;
+    Members->Layout.MinWidth  = 10;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->minValue         = minValue;
+    Members->maxValue         = maxValue;
 
-    const auto cc        = Members;
-    cc->Layout.MinHeight = 1;
-    cc->Layout.MaxHeight = 1;
-    cc->Layout.MinWidth  = 10;
-    CHECK(me->Init("", layout, true), nullptr, "Failed to create numeric selector!");
-    cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-
-    cc->minValue = minValue;
-    cc->maxValue = maxValue;
-    me->SetValue(value);
-
-    return me;
+    this->SetValue(value);
 }
-NumericSelector* NumericSelector::Create(
-      Control& parent,
-      const long long minValue,
-      const long long maxValue,
-      long long value,
-      const std::string_view& layout)
-{
-    auto me = NumericSelector::Create(minValue, maxValue, value, layout);
-    CHECK(me, nullptr, "Fail to create a NumericSelector control !");
-    return parent.AddControl<NumericSelector>(std::move(me));
-}    
-    
+
 long long NumericSelector::GetValue() const
 {
     CHECK(Context != nullptr, false, "");

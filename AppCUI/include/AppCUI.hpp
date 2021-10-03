@@ -1654,6 +1654,7 @@ namespace Controls
         class EXPORT ImageViewer;
         class EXPORT ListView;
         class EXPORT ComboBox;
+        class EXPORT NumericSelector;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -2449,16 +2450,10 @@ namespace Controls
 
     class EXPORT NumericSelector : public Control
     {
-      public:
-        static std::unique_ptr<NumericSelector> Create(
+      protected:
+        NumericSelector(
               const long long minValue, const long long maxValue, long long value, const std::string_view& layout);
-        static NumericSelector* Create(
-              Control& parent,
-              const long long minValue,
-              const long long maxValue,
-              long long value,
-              const std::string_view& layout);
-
+      public:
         long long GetValue() const;
         void SetValue(const long long value);
         void SetMinValue(const long long minValue);
@@ -2484,6 +2479,8 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
+
+        friend Factory::NumericSelector;
     };
 
     class EXPORT Desktop : public Control
@@ -2721,6 +2718,20 @@ namespace Controls
                   const std::string_view& layout,
                   const AppCUI::Utils::ConstString& text = std::string_view(),
                   char itemsSeparator                    = ',');
+        };
+        class EXPORT NumericSelector
+        {
+            NumericSelector() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::NumericSelector> Create(
+                  const long long minValue, const long long maxValue, long long value, const std::string_view& layout);
+            static AppCUI::Controls::NumericSelector* Create(
+                  AppCUI::Controls::Control& parent,
+                  const long long minValue,
+                  const long long maxValue,
+                  long long value,
+                  const std::string_view& layout);
         };
     } // namespace Factory
 
