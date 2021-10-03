@@ -11,19 +11,16 @@ using namespace AppCUI::Dialogs;
 #define BUTTON_ID_SHOW_YNC_QUESTION 4
 #define BUTTON_ID_SHOW_WARNING      5
 
-class MyWin : public AppCUI::Controls::Window
-{
-    Button b1, b2, b3, b4, b5;
-
+class MyWin : public Window
+{   
   public:
-    MyWin()
+    MyWin() : Window("Message box example", "d:c,w:40,h:13", WindowFlags::None)
     {
-        this->Create("Message box example", "d:c,w:40,h:13");
-        b1.Create(this, "Show an &error !", "x:1,y:1,w:36", BUTTON_ID_SHOW_ERROR);
-        b2.Create(this, "Show an &notification", "x:1,y:3,w:36", BUTTON_ID_SHOW_NOTIFICATION);
-        b3.Create(this, "Ask a &question", "x:1,y:5,w:36", BUTTON_ID_SHOW_QUESTION);
-        b4.Create(this, "Ask a &Yes/No/Cancel question", "x:1,y:7,w:36", BUTTON_ID_SHOW_YNC_QUESTION);
-        b5.Create(this, "Show a &warning !", "x:1,y:9,w:36", BUTTON_ID_SHOW_WARNING);
+        Factory::Button::Create(*this, "Show an &error !", "x:1,y:1,w:36", BUTTON_ID_SHOW_ERROR);
+        Factory::Button::Create(*this, "Show an &notification", "x:1,y:3,w:36", BUTTON_ID_SHOW_NOTIFICATION);
+        Factory::Button::Create(*this, "Ask a &question", "x:1,y:5,w:36", BUTTON_ID_SHOW_QUESTION);
+        Factory::Button::Create(*this, "Ask a &Yes/No/Cancel question", "x:1,y:7,w:36", BUTTON_ID_SHOW_YNC_QUESTION);
+        Factory::Button::Create(*this, "Show a &warning !", "x:1,y:9,w:36", BUTTON_ID_SHOW_WARNING);
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {

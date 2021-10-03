@@ -5,46 +5,46 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-class MyControl : public AppCUI::Controls::UserControl
+class MyControl : public UserControl
 {
   public:
+    MyControl(const std::string_view& layout) : UserControl(layout)
+    {
+    }
     void Paint(AppCUI::Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::Black, Color::Red });
     }
 };
-class LayoutWin : public AppCUI::Controls::Window
+class LayoutWin : public Window
 {
-    MyControl m;
   public:
-    LayoutWin(const std::string_view & layout)
-    {
-        this->Create("Test", "d:c,w:40,h:14", WindowFlags::Sizeable);
-        m.Create(this, layout);        
+    LayoutWin(const std::string_view& layout) : Window("Test", "d:c,w:40,h:14", WindowFlags::Sizeable)
+    {        
+        this->AddControl<MyControl>(std::make_unique<MyControl>(layout));
     }
 };
 
-class MainWin : public AppCUI::Controls::Window
+class MainWin : public Window
 {
-    ListView lst;
-    Button b;
+    ListView *lst;
+    Button *b;
     void AddExample(std::string_view layout, std::string_view info)
     {
-        ItemHandle i = lst.AddItem(layout, info);
-        lst.SetItemXOffset(i, 2);
+        ItemHandle i = lst->AddItem(layout, info);
+        lst->SetItemXOffset(i, 2);
     }
     void AddGroup(std::string_view name)
     {
-        ItemHandle i = lst.AddItem(name);
-        lst.SetItemType(i, ListViewItemType::Highlighted);
+        ItemHandle i = lst->AddItem(name);
+        lst->SetItemType(i, ListViewItemType::Highlighted);
     }
   public:
-    MainWin()
+    MainWin() : Window("Layout modes", "x:0,y:0,w:70,h:20", WindowFlags::None)
     {
-        this->Create("Layout modex", "x:0,y:0,w:70,h:20");
-        lst.Create(this, "x:1,y:1,w:66,h:14");
-        lst.AddColumn("Layout", TextAlignament::Left, 25);
-        lst.AddColumn("Explanation", TextAlignament::Left, 100);
+        lst = Factory::ListView::Create(*this, "x:1,y:1,w:66,h:14");
+        lst->AddColumn("Layout", TextAlignament::Left, 25);
+        lst->AddColumn("Explanation", TextAlignament::Left, 100);
         
         // add list of layouts 
         AddGroup("Docking");
@@ -78,8 +78,8 @@ class MainWin : public AppCUI::Controls::Window
         AddGroup("4 margins anchors");
         AddExample("l:1,t:2,r:3,b:4", "An object that has the following margins: left: 1 character, top: 2 characters, right: 3 characters, bottom: 4 characters ");
         AddExample("l:1,t:1,r:1,b:1", "An object that has the following margins: left: 1 character, top: 1 character, right: 1 character, bottom: 1 character ");
-        b.Create(this, "&Show", "d:b,w:16", 1234);
-        b.SetEnabled(false);
+        b = Factory::Button::Create(*this, "&Show", "d:b,w:16", 1234);
+        b->SetEnabled(false);
     }
     bool OnEvent(Control*, Event eventType, int) override
     {
@@ -90,17 +90,17 @@ class MainWin : public AppCUI::Controls::Window
         }
         if (eventType == Event::ButtonClicked)
         {
-            auto itm = lst.GetCurrentItem();
+            auto itm = lst->GetCurrentItem();
             if (itm != InvalidItemHandle)
             {
-                LayoutWin dlg((std::string)lst.GetItemText(itm, 0));
+                LayoutWin dlg((std::string)lst->GetItemText(itm, 0));
                 dlg.Show();
                 return true;
             }
         }
         if (eventType == Event::ListViewCurrentItemChanged)
         {            
-            b.SetEnabled(lst.GetItemXOffset(lst.GetCurrentItem())==2);
+            b->SetEnabled(lst->GetItemXOffset(lst->GetCurrentItem())==2);
             return true;
         }
         return false;
