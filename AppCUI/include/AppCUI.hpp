@@ -1650,6 +1650,8 @@ namespace Controls
         class EXPORT TextArea;
         class EXPORT TabPage;
         class EXPORT Tab;
+        class EXPORT CanvasViewer;
+        class EXPORT ImageViewer;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -2178,7 +2180,7 @@ namespace Controls
     class EXPORT CanvasViewer : public Control
     {
       protected:
-        bool Init(
+        CanvasViewer(
               const AppCUI::Utils::ConstString& caption,
               const std::string_view& layout,
               unsigned int canvasWidth,
@@ -2187,30 +2189,6 @@ namespace Controls
 
       public:
         ~CanvasViewer();
-        static CanvasViewer* Create(
-              Control& parent,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None);
-        static std::unique_ptr<CanvasViewer> Create(
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None);
-        static CanvasViewer* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None);
-        static std::unique_ptr<CanvasViewer> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         bool OnMouseLeave() override;
@@ -2221,54 +2199,20 @@ namespace Controls
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
         Graphics::Canvas* GetCanvas();
-    };
 
+        friend Factory::CanvasViewer;
+    };
     class EXPORT ImageViewer : public CanvasViewer
     {
+      protected:
+        ImageViewer(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, ViewerFlags flags);
       public:
-        // delete some functions from the base class
-        static CanvasViewer* Create(
-              Control& parent,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None) = delete;
-        static std::unique_ptr<CanvasViewer> Create(
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None) = delete;
-        static CanvasViewer* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None) = delete;
-        static std::unique_ptr<CanvasViewer> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
-              ViewerFlags flags = ViewerFlags::None) = delete;
-
-        static std::unique_ptr<ImageViewer> Create(
-              const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
-        static ImageViewer* Create(
-              Control& parent, const std::string_view& layout, ViewerFlags flags = ViewerFlags::None);
-        static std::unique_ptr<ImageViewer> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              ViewerFlags flags = ViewerFlags::None);
-        static ImageViewer* Create(
-              Control& parent,
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              ViewerFlags flags = ViewerFlags::None);
         bool SetImage(
               const AppCUI::Graphics::Image& img,
               AppCUI::Graphics::ImageRenderingMethod method,
               AppCUI::Graphics::ImageScaleMethod scale);
+
+        friend Factory::ImageViewer;
     };
     enum class ListViewFlags : unsigned int
     {
@@ -2693,11 +2637,63 @@ namespace Controls
                   AppCUI::Controls::Control& parent,
                   const std::string_view& layout,
                   AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize = 16);
+                  unsigned int tabPageSize         = 16);
             static std::unique_ptr<AppCUI::Controls::Tab> Create(
                   const std::string_view& layout,
                   AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize         = 16);
+        };
+        class EXPORT CanvasViewer
+        {
+            CanvasViewer() = delete;
+
+          public:
+            static AppCUI::Controls::CanvasViewer* Create(
+                  AppCUI::Controls::Control& parent,
+                  const std::string_view& layout,
+                  unsigned int canvasWidth,
+                  unsigned int canvasHeight,
+                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+            static std::unique_ptr<AppCUI::Controls::CanvasViewer> Create(
+                  const std::string_view& layout,
+                  unsigned int canvasWidth,
+                  unsigned int canvasHeight,
+                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
+            static AppCUI::Controls::CanvasViewer* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  unsigned int canvasWidth,
+                  unsigned int canvasHeight,
+                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
+            static std::unique_ptr<AppCUI::Controls::CanvasViewer> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  unsigned int canvasWidth,
+                  unsigned int canvasHeight,
+                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
+        };
+        class EXPORT ImageViewer
+        {
+            ImageViewer() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::ImageViewer> Create(
+                  const std::string_view& layout,
+                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+            static AppCUI::Controls::ImageViewer* Create(
+                  AppCUI::Controls::Control& parent,
+                  const std::string_view& layout,
+                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+            static std::unique_ptr<AppCUI::Controls::ImageViewer> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+            static AppCUI::Controls::ImageViewer* Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
         };
     } // namespace Factory
 

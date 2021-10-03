@@ -23,17 +23,16 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
     this->CanvasScrollY = newY;
 }
 
-bool CanvasViewer::Init(
+CanvasViewer::CanvasViewer(
       const AppCUI::Utils::ConstString& caption,
-    const std::string_view& layout, unsigned int canvasWidth, unsigned int canvasHeight, ViewerFlags flags)
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      ViewerFlags flags)
+    : Control(new CanvasControlContext(), caption, layout, true)
 {
-    CHECK(this->Context == nullptr, false, "Object already initialized");
-    CHECK(canvasWidth > 0, false, "Canvas Width must be greater than 0.");
-    CHECK(canvasHeight > 0, false, "Canvas Height must be greater than 0.");
-    this->Context = new CanvasControlContext();
-    auto Members  = reinterpret_cast<CanvasControlContext*>(this->Context);
-    CHECK(Control::Init(caption, layout, true), false, "Failed to create Canvas viewer object");
-        
+    auto Members = reinterpret_cast<CanvasControlContext*>(this->Context);
+
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
@@ -42,59 +41,8 @@ bool CanvasViewer::Init(
     Members->mouseDragY                = 0;
     Members->dragModeEnabled           = false;
     Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
-    CHECK(Members->canvas.Create(canvasWidth, canvasHeight),
-          false,
-          "Fail to create a canvas of size %d x %d",
-          canvasWidth,
-          canvasHeight);
-
-    return true;
+    ASSERT(Members->canvas.Create(canvasWidth, canvasHeight), "Fail to create a canvas of size object !");
 }
-
-std::unique_ptr<CanvasViewer> CanvasViewer::Create(
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      ViewerFlags flags)
-{
-    auto me = std::make_unique<CanvasViewer>();
-    CHECK(me->Init(caption, layout, canvasWidth, canvasHeight, flags), nullptr, "");
-    return me;
-}
-std::unique_ptr<CanvasViewer> CanvasViewer::Create(      
-      const std::string_view& layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      ViewerFlags flags)
-{
-    return CanvasViewer::Create("", layout, canvasWidth, canvasHeight, flags);
-}
-
-CanvasViewer* CanvasViewer::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      ViewerFlags flags)
-{
-    auto me = CanvasViewer::Create(caption, layout, canvasWidth, canvasHeight, flags);
-    CHECK(me, nullptr, "Fail to create a CanvasViewer control !");
-    return parent.AddControl<CanvasViewer>(std::move(me));
-}
-CanvasViewer* CanvasViewer::Create(
-      Control& parent,
-      const std::string_view& layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      ViewerFlags flags)
-{
-    auto me = CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags);
-    CHECK(me, nullptr, "Fail to create a CanvasViewer control !");
-    return parent.AddControl<CanvasViewer>(std::move(me));
-}
-
 
 CanvasViewer::~CanvasViewer()
 {
@@ -142,10 +90,10 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
 void CanvasViewer::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
-    
+
     // horizontal
-    if (Members->canvas.GetHeight()>(unsigned int)Members->Layout.Height)
-        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (unsigned int)Members->Layout.Height);
+    if (Members->canvas.GetHeight() > (unsigned int) Members->Layout.Height)
+        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (unsigned int) Members->Layout.Height);
     else
         UpdateVScrollBar(-Members->CanvasScrollY, 0);
 
@@ -154,7 +102,6 @@ void CanvasViewer::OnUpdateScrollBars()
         UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (unsigned int) Members->Layout.Width);
     else
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
-
 }
 
 bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
@@ -176,11 +123,11 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
         Members->MoveScrollTo(Members->CanvasScrollX + 1, Members->CanvasScrollY);
         return true;
 
-    case Key::Ctrl | Key::Left :
+    case Key::Ctrl | Key::Left:
         Members->MoveScrollTo(0, Members->CanvasScrollY);
         return true;
     case Key::Ctrl | Key::Right:
-        Members->MoveScrollTo(-((int)Members->canvas.GetWidth()), Members->CanvasScrollY);
+        Members->MoveScrollTo(-((int) Members->canvas.GetWidth()), Members->CanvasScrollY);
         return true;
     case Key::Ctrl | Key::Up:
         Members->MoveScrollTo(Members->CanvasScrollX, 0);
@@ -202,7 +149,6 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
         Members->MoveScrollTo(Members->CanvasScrollX, Members->CanvasScrollY - 10);
         return true;
 
-
     case Key::Home:
         Members->MoveScrollTo(0, 0);
         return true;
@@ -218,14 +164,14 @@ bool AppCUI::Controls::CanvasViewer::OnMouseWheel(int, int, AppCUI::Input::Mouse
 {
     switch (direction)
     {
-        case AppCUI::Input::MouseWheel::Up:
-            return OnKeyEvent(Key::Up, 0);
-        case AppCUI::Input::MouseWheel::Down:
-            return OnKeyEvent(Key::Down, 0);
-        case AppCUI::Input::MouseWheel::Left:
-            return OnKeyEvent(Key::Left, 0);
-        case AppCUI::Input::MouseWheel::Right:
-            return OnKeyEvent(Key::Right, 0);
+    case AppCUI::Input::MouseWheel::Up:
+        return OnKeyEvent(Key::Up, 0);
+    case AppCUI::Input::MouseWheel::Down:
+        return OnKeyEvent(Key::Down, 0);
+    case AppCUI::Input::MouseWheel::Left:
+        return OnKeyEvent(Key::Left, 0);
+    case AppCUI::Input::MouseWheel::Right:
+        return OnKeyEvent(Key::Right, 0);
     }
     return false;
 }

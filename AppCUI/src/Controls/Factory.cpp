@@ -163,3 +163,70 @@ std::unique_ptr<AppCUI::Controls::Tab> Factory::Tab::Create(
 {
     return std::unique_ptr<AppCUI::Controls::Tab>(new AppCUI::Controls::Tab(layout, flags, tabPageSize));
 }
+
+//======[CANVASVIEWER]===============================================================================
+AppCUI::Controls::CanvasViewer* Factory::CanvasViewer::Create(
+      AppCUI::Controls::Control& parent,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      AppCUI::Controls::ViewerFlags flags)
+{
+    return parent.AddControl<AppCUI::Controls::CanvasViewer>(
+          Factory::CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags));
+}
+std::unique_ptr<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      AppCUI::Controls::ViewerFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::CanvasViewer>(
+          new AppCUI::Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
+}
+AppCUI::Controls::CanvasViewer* Factory::CanvasViewer::Create(
+      AppCUI::Controls::Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      AppCUI::Controls::ViewerFlags flags)
+{
+    return parent.AddControl<AppCUI::Controls::CanvasViewer>(
+          Factory::CanvasViewer::Create(caption, layout, canvasWidth, canvasHeight, flags));
+}
+std::unique_ptr<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      unsigned int canvasWidth,
+      unsigned int canvasHeight,
+      AppCUI::Controls::ViewerFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::CanvasViewer>(
+          new AppCUI::Controls::CanvasViewer(caption, layout, canvasWidth, canvasHeight, flags));
+}
+
+//======[IMAGEVIEWER]================================================================================
+std::unique_ptr<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
+      const std::string_view& layout, AppCUI::Controls::ViewerFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer("", layout, flags));
+}
+AppCUI::Controls::ImageViewer* Factory::ImageViewer::Create(
+      AppCUI::Controls::Control& parent, const std::string_view& layout, AppCUI::Controls::ViewerFlags flags)
+{
+    return parent.AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
+}
+std::unique_ptr<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, AppCUI::Controls::ViewerFlags flags)
+{
+    return std::unique_ptr<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer(caption, layout, flags));
+}
+AppCUI::Controls::ImageViewer* Factory::ImageViewer::Create(
+      AppCUI::Controls::Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      const std::string_view& layout,
+      AppCUI::Controls::ViewerFlags flags)
+{
+    return parent.AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
+}
