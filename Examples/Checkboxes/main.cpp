@@ -6,25 +6,22 @@ using namespace AppCUI::Controls;
 
 #define A_CHECKBOX_ID 12345
 
-class MyWin : public AppCUI::Controls::Window
+class MyWin : public Window
 {
-    CheckBox c1, c2, c3;
-    Label c3_info;
-
+    Label * lb;
+    CheckBox* c3;
   public:
-    MyWin()
+    MyWin() : Window("Checkbox example", "d:c,w:60,h:12", WindowFlags::None)
     {
-        this->Create("Checkbox example", "d:c,w:60,h:12");
-        c1.Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
-        c2.Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56");
-        c2.SetEnabled(false);
-        c3.Create(
-              this,
+        Factory::CheckBox::Create(*this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
+        Factory::CheckBox::Create(*this, "A inactive(disabled) checkbox", "x:1,y:2,w:56")->SetEnabled(false);
+        c3 = Factory::CheckBox::Create(
+              *this,
               "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be used\nto "
               "see if the checkbox has been clicked",
               "x:1,y:4,w:56,h:4",
               A_CHECKBOX_ID);
-        c3_info.Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
+        lb = Factory::Label::Create(*this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
@@ -35,10 +32,10 @@ class MyWin : public AppCUI::Controls::Window
         }
         if ((eventType == Event::CheckedStatusChanged) && (controlID == A_CHECKBOX_ID))
         {
-            if (c3.IsChecked())
-                c3_info.SetText("3rd checkbox status: CHECKED");
+            if (c3->IsChecked())
+                lb->SetText("3rd checkbox status: CHECKED");
             else
-                c3_info.SetText("3rd checkbox status: NOT CHECKED");
+                lb->SetText("3rd checkbox status: NOT CHECKED");
         }
         return false;
     }

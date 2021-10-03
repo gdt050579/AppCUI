@@ -8,29 +8,28 @@ using namespace AppCUI::Controls;
 #define BUTTON_2_ID 2
 #define BUTTON_3_ID 3
 
-class MyWin : public AppCUI::Controls::Window
+class MyWin : public Window
 {
     Label * l2;
 
   public:
-    MyWin()
+    MyWin() : Window("Button example", "d:c,w:60,h:20", WindowFlags::None)
     {
-        this->Init("Button example", "d:c,w:60,h:20", WindowFlags::None);
-        Button::Create(*this, "Buton &1", "x:1,y:16,w:14", BUTTON_1_ID);
-        Button::Create(*this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
-        Button::Create(*this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID)->SetEnabled(false);
+        Factory::Button::Create(*this, "Buton &1", "x:1,y:16,w:14", BUTTON_1_ID);
+        Factory::Button::Create(*this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
+        Factory::Button::Create(*this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID)->SetEnabled(false);
 
-        Button::Create(*this, "Flat Buton 1", "x:1,y:14,w:14", BUTTON_1_ID, ButtonFlags::Flat);
-        Button::Create(*this, "Flat Buton 2", "x:16,y:14,w:14", BUTTON_2_ID, ButtonFlags::Flat);
-        Button::Create(*this, "Inactive", "x:31,y:14,w:14", BUTTON_3_ID, ButtonFlags::Flat)->SetEnabled(false);
+        Factory::Button::Create(*this, "Flat Buton 1", "x:1,y:14,w:14", BUTTON_1_ID, ButtonFlags::Flat);
+        Factory::Button::Create(*this, "Flat Buton 2", "x:16,y:14,w:14", BUTTON_2_ID, ButtonFlags::Flat);
+        Factory::Button::Create(*this, "Inactive", "x:31,y:14,w:14", BUTTON_3_ID, ButtonFlags::Flat)->SetEnabled(false);
 
-        auto p = Panel::Create(*this, "Information panel", "x:1,y:1,w:56,h:5");
-        Label::Create(
+        auto p = Factory::Panel::Create(*this, "Information panel", "x:1,y:1,w:56,h:5");
+        Factory::Label::Create(
               *p,
               "Use 'TAB' and 'CTRL+TAB'to switch betweens buttons.\nUse 'Enter' or 'Space' to press a button.\nUse "
               "'ESC' to exit.",
               "x:0,y:0,w:100%,h:100%");
-        l2 = Label::Create(*this, "", "x:1,y:10,w:56");
+        l2 = Factory::Label::Create(*this, "", "x:1,y:10,w:56");
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
