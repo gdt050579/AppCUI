@@ -17,13 +17,12 @@ using namespace AppCUI::Input;
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Label l1;
+    Label *l1;
 
   public:
-    MyWin()
+    MyWin() : Window("Command Bar Example", "d:c,w:60,h:10", WindowFlags::None)
     {
-        this->Create("Command Bar Example", "d:c,w:60,h:10");
-        l1.Create(this, "", "x:1,y:2,w:56");
+        l1 = Factory::Label::Create(*this, "", "x:1,y:2,w:56");
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {
@@ -50,31 +49,31 @@ class MyWin : public AppCUI::Controls::Window
             switch (controlID)
             {
             case COMMAND_ID_PRINT_HELLO_WORLD:
-                l1.SetText("Hello world");
+                l1->SetText("Hello world");
                 break;
             case COMMAND_ID_PRINT_A_NUMBER:
-                l1.SetText("12345");
+                l1->SetText("12345");
                 break;
             case COMMAND_ID_CLEAR_TEXT:
-                l1.SetText("");
+                l1->SetText("");
                 break;
             case COMMAND_ID_NUMPAD:
-                l1.SetText("Numpad pressed!");
+                l1->SetText("Numpad pressed!");
                 break;
             case COMMAND_ID_ENTER:
-                l1.SetText("Enter pressed!");
+                l1->SetText("Enter pressed!");
                 break;
             case COMMAND_ID_ALT:
-                l1.SetText("Alt modifier!");
+                l1->SetText("Alt modifier!");
                 break;
             case COMMAND_ID_ALT_CTRL:
-                l1.SetText("Alt+Ctrl+F1 modifier!");
+                l1->SetText("Alt+Ctrl+F1 modifier!");
                 break;
             case COMMAND_ID_CTRL_A:
-                l1.SetText("Ctrl+A modifier");
+                l1->SetText("Ctrl+A modifier");
                 break;
             case COMMAND_ID_CTRL_SHIFT_A:
-                l1.SetText("Ctrl+Shift+A modifier");
+                l1->SetText("Ctrl+Shift+A modifier");
                 break;
             }
         }
