@@ -6535,57 +6535,41 @@ unsigned int gdt_pixels[150 * 150] = {
     0x141717, 0x14171A, 0x15171A, 0x15171A, 0x16191C
 };
 
-class ImageWinViewer : public AppCUI::Controls::Window
+class ImageWinViewer : public Window
 {
-    ImageViewer iv;
-
   public:
     ImageWinViewer(const AppCUI::Graphics::Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
+        : Window("Image view", "d:c,w:100%,h:100%", WindowFlags::None)
     {
-        this->Create("Image view", "d:c,w:100%,h:100%");
-        iv.Create(this, "x:0,y:0,w:100%,h:100%");
-        iv.SetImage(img, method, scale);
+        Factory::ImageViewer::Create(*this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
     }
-    bool OnEvent(Control*, Event eventType, int) override
-    {
-        if (eventType == Event::WindowClose)
-        {
-            this->Exit(0);
-            return true;
-        }
-        return false;
-    };
 };
 
-class MainWin : public AppCUI::Controls::Window
+class MainWin : public Window
 {
-    Button dizzy, gdt, colorPallete, colorScales, stringImage;
-    ComboBox cbMethod;
-    ComboBox cbScale;
-    Label lbMethod;
-    Label lbScale;
+    ComboBox *cbMethod;
+    ComboBox *cbScale;
 
   public:
-    MainWin()
+    MainWin() : Window("Image example", "d:c,w:50,h:17", WindowFlags::None)
     {
-        this->Create("Image example", "d:c,w:50,h:17");
-        dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
-        gdt.Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
-        colorPallete.Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
-        colorScales.Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
-        stringImage.Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
+        Factory::Button::Create(*this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
+        Factory::Button::Create(*this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
+        Factory::Button::Create(*this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
+        Factory::Button::Create(*this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
+        Factory::Button::Create(*this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
 
-        lbMethod.Create(this, "Method", "l:1,b:3,w:6");
-        cbMethod.Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
-        cbMethod.SetCurentItemIndex(0);
+        Factory::Label::Create(*this, "Method", "l:1,b:3,w:6");
+        cbMethod = Factory::ComboBox::Create(*this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+        cbMethod->SetCurentItemIndex(0);
 
-        lbScale.Create(this, "Scale", "l:1,b:1,w:6");
-        cbScale.Create(this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
-        cbScale.SetCurentItemIndex(0);
+        Factory::Label::Create(*this, "Scale", "l:1,b:1,w:6");
+        cbScale = Factory::ComboBox::Create(*this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
+        cbScale->SetCurentItemIndex(0);
     }
     ImageRenderingMethod GetMethod()
     {
-        auto i = cbMethod.GetCurrentItemIndex();
+        auto i = cbMethod->GetCurrentItemIndex();
         switch (i)
         {
         case 0:
@@ -6600,7 +6584,7 @@ class MainWin : public AppCUI::Controls::Window
     }
     ImageScaleMethod GetScale()
     {
-        auto i = cbScale.GetCurrentItemIndex();
+        auto i = cbScale->GetCurrentItemIndex();
         switch (i)
         {
         case 0:

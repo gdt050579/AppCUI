@@ -1127,8 +1127,11 @@ bool Window::Exit(Dialogs::Result dialogResult)
 int Window::Show()
 {
     CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
-    CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
+    CHECK(Members->RecomputeLayout(nullptr), -1, "Fail to recompute layout !");
+    this->RecomputeLayout();
+    CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
+    
     return Members->DialogResult;
 }
 int Window::GetDialogResult()
