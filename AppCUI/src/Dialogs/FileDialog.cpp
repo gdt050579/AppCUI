@@ -470,18 +470,18 @@ int FileDialogClass::Show(
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
 {
-    FileDialogClass dlg;
-    int res = dlg.Show(false, fileName, extensionFilter, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return dlg.resultedPath;
+    //FileDialogClass dlg;
+    //int res = dlg.Show(false, fileName, extensionFilter, path);
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return dlg.resultedPath;
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const AppCUI::Utils::ConstString& fileName, std::string_view extensionFilter, const std::filesystem::path & path)
 {
-    FileDialogClass dlg;
-    int res = dlg.Show(true, fileName, extensionFilter, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return dlg.resultedPath;
+    //FileDialogClass dlg;
+    //int res = dlg.Show(true, fileName, extensionFilter, path);
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return dlg.resultedPath;
     return std::nullopt;
 }

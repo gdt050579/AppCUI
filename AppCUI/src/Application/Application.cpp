@@ -534,7 +534,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     if (initData.CustomDesktop)
         this->AppDesktop = initData.CustomDesktop.release();
     else
-        this->AppDesktop = new AppCUI::Controls::Desktop();
+        this->AppDesktop = AppCUI::Controls::Factory::Desktop::Create().release();
 
     CHECK(this->AppDesktop->Resize(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,

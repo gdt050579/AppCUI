@@ -1655,6 +1655,8 @@ namespace Controls
         class EXPORT ListView;
         class EXPORT ComboBox;
         class EXPORT NumericSelector;
+        class EXPORT Window;
+        class EXPORT Desktop;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -1920,13 +1922,10 @@ namespace Controls
         bool ProcessControlBarItem(unsigned int index);
 
       protected:
-        bool Init(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags);
+        Window(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags);
 
       public:
-        static std::unique_ptr<Window> Create(
-              const AppCUI::Utils::ConstString& caption,
-              const std::string_view& layout,
-              WindowFlags windowsFlags = WindowFlags::None);
+
         void Paint(Graphics::Renderer& renderer) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -1954,6 +1953,8 @@ namespace Controls
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
+        
+        friend Factory::Window;
     };
     class EXPORT Label : public Control
     {
@@ -2167,13 +2168,9 @@ namespace Controls
     };
     class EXPORT UserControl : public Control
     {
-      public:
-        static UserControl* Create(
-              Control& parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static std::unique_ptr<UserControl> Create(
-              const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-        static UserControl* Create(Control& parent, const std::string_view& layout);
-        static std::unique_ptr<UserControl> Create(const std::string_view& layout);
+      protected:
+        UserControl(const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
+        UserControl(const std::string_view& layout);
     };
     enum class ViewerFlags : unsigned int
     {
@@ -2485,11 +2482,14 @@ namespace Controls
 
     class EXPORT Desktop : public Control
     {
-      public:
+      protected:
         Desktop();
+      public:        
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
+
+        friend Factory::Desktop;
     };
 
     namespace Factory
@@ -2732,6 +2732,23 @@ namespace Controls
                   const long long maxValue,
                   long long value,
                   const std::string_view& layout);
+        };
+        class EXPORT Window
+        {
+            Window() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::Window> Create(
+                  const AppCUI::Utils::ConstString& caption,
+                  const std::string_view& layout,
+                  AppCUI::Controls::WindowFlags windowFlags = AppCUI::Controls::WindowFlags::None);
+        };
+        class EXPORT Desktop
+        {
+            Desktop() = delete;
+
+          public:
+            static std::unique_ptr<AppCUI::Controls::Desktop> Create();
         };
     } // namespace Factory
 

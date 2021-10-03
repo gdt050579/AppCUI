@@ -31,6 +31,9 @@ class InternalWindowManager : public AppCUI::Controls::Window
     ItemHandle focusedItem;
 
   public:
+    InternalWindowManager() : AppCUI::Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
+    {
+    }
     bool Create();
     bool AddItem(Window* w, unsigned int offsetX);
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
@@ -213,7 +216,6 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 }
 bool InternalWindowManager::Create()
 {
-    CHECK(Window::Init("Window manager", "d:c,w:72,h:20", WindowFlags::None), false, "");
     CHECK(lst = Factory::ListView::Create(*this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
     CHECK(lst->AddColumn("Window caption", TextAlignament::Left, 56), false, "");
     CHECK(lst->AddColumn("TAG", TextAlignament::Left, 8), false, "");

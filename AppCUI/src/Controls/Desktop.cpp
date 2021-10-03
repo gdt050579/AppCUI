@@ -28,14 +28,10 @@ void GoToNextWindow(ControlContext* Members, int direction)
     if (start != (int) Members->CurrentControlIndex)
         Members->Controls[start]->SetFocus();
 }
-Desktop::Desktop()
+Desktop::Desktop() : Control(new ControlContext(), "", "x:0,y:0,w:1,h:1", false)
 {
-    this->Context = new ControlContext();
-    auto Members  = reinterpret_cast<ControlContext*>(this->Context);
-    if (Control::Init("", "x:0,y:0,w:1,h:1", false)) 
-    {
-        Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    }
+    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }
 
 void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
