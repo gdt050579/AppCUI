@@ -16,7 +16,7 @@ class MyWin : public Window
         Factory::CheckBox::Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
         Factory::CheckBox::Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56")->SetEnabled(false);
         c3 = Factory::CheckBox::Create(
-              *this,
+              this,
               "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be used\nto "
               "see if the checkbox has been clicked",
               "x:1,y:4,w:56,h:4",

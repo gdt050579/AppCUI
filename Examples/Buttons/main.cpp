@@ -25,7 +25,7 @@ class MyWin : public Window
 
         auto p = Factory::Panel::Create(this, "Information panel", "x:1,y:1,w:56,h:5");
         Factory::Label::Create(
-              *p,
+              p,
               "Use 'TAB' and 'CTRL+TAB'to switch betweens buttons.\nUse 'Enter' or 'Space' to press a button.\nUse "
               "'ESC' to exit.",
               "x:0,y:0,w:100%,h:100%");
