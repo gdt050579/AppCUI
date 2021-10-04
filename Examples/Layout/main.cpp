@@ -42,7 +42,7 @@ class MainWin : public Window
   public:
     MainWin() : Window("Layout modes", "x:0,y:0,w:70,h:20", WindowFlags::None)
     {
-        lst = Factory::ListView::Create(*this, "x:1,y:1,w:66,h:14");
+        lst = Factory::ListView::Create(this, "x:1,y:1,w:66,h:14");
         lst->AddColumn("Layout", TextAlignament::Left, 25);
         lst->AddColumn("Explanation", TextAlignament::Left, 100);
         
@@ -78,7 +78,7 @@ class MainWin : public Window
         AddGroup("4 margins anchors");
         AddExample("l:1,t:2,r:3,b:4", "An object that has the following margins: left: 1 character, top: 2 characters, right: 3 characters, bottom: 4 characters ");
         AddExample("l:1,t:1,r:1,b:1", "An object that has the following margins: left: 1 character, top: 1 character, right: 1 character, bottom: 1 character ");
-        b = Factory::Button::Create(*this, "&Show", "d:b,w:16", 1234);
+        b = Factory::Button::Create(this, "&Show", "d:b,w:16", 1234);
         b->SetEnabled(false);
     }
     bool OnEvent(Control*, Event eventType, int) override

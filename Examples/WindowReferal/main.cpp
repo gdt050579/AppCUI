@@ -14,7 +14,7 @@ class WindowExample : public Window
   public:
     WindowExample(std::string_view name) : Window(name, "d:c,w:40,h:10", WindowFlags::Sizeable)
     {
-        Factory::Button::Create(*this, "New win", "l:2,t:2,r:2,b:2", 1234);
+        Factory::Button::Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
         my_name = name;
         if (winID % 5 != 0)
             this->SetTag(tags[winID % 8], "bla bla bla");

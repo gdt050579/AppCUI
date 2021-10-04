@@ -77,13 +77,13 @@ class LogoWin : public Window
   public:
     LogoWin() : Window("Canvas example", "d:c,w:80,h:22", WindowFlags::None)
     {
-        auto sp = Factory::Splitter::Create(*this, "x:0,y:0,w:100%,h:100%", true);
+        auto sp = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", true);
         sp->SetSecondPanelSize(60);
-        auto viewLogo = Factory::CanvasViewer::Create(*sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
+        auto viewLogo = Factory::CanvasViewer::Create(sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 
-        auto pn = Factory::Panel::Create(*sp, "x:0,y:0,w:100%,h:100%");
-        auto viewInactive = Factory::CanvasViewer::Create(*pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::Border);
-        auto viewSmall    = Factory::CanvasViewer::Create(*pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::Border);
+        auto pn = Factory::Panel::Create(sp, "x:0,y:0,w:100%,h:100%");
+        auto viewInactive = Factory::CanvasViewer::Create(pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::Border);
+        auto viewSmall    = Factory::CanvasViewer::Create(pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::Border);
         viewInactive->SetEnabled(false);
         CreateImage(viewLogo->GetCanvas());
         CreateImage(viewInactive->GetCanvas());

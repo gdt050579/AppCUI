@@ -6541,7 +6541,7 @@ class ImageWinViewer : public Window
     ImageWinViewer(const AppCUI::Graphics::Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
         : Window("Image view", "d:c,w:100%,h:100%", WindowFlags::None)
     {
-        Factory::ImageViewer::Create(*this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
+        Factory::ImageViewer::Create(this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
     }
 };
 
@@ -6553,18 +6553,18 @@ class MainWin : public Window
   public:
     MainWin() : Window("Image example", "d:c,w:50,h:17", WindowFlags::None)
     {
-        Factory::Button::Create(*this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
-        Factory::Button::Create(*this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
-        Factory::Button::Create(*this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
-        Factory::Button::Create(*this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
-        Factory::Button::Create(*this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
+        Factory::Button::Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
+        Factory::Button::Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
+        Factory::Button::Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
+        Factory::Button::Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
+        Factory::Button::Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
 
-        Factory::Label::Create(*this, "Method", "l:1,b:3,w:6");
-        cbMethod = Factory::ComboBox::Create(*this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+        Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
+        cbMethod = Factory::ComboBox::Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
-        Factory::Label::Create(*this, "Scale", "l:1,b:1,w:6");
-        cbScale = Factory::ComboBox::Create(*this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
+        Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
+        cbScale = Factory::ComboBox::Create(this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
         cbScale->SetCurentItemIndex(0);
     }
     ImageRenderingMethod GetMethod()

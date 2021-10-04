@@ -13,15 +13,15 @@ class MyWin : public Window
   public:
     MyWin() : Window("Checkbox example", "d:c,w:60,h:12", WindowFlags::None)
     {
-        Factory::CheckBox::Create(*this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
-        Factory::CheckBox::Create(*this, "A inactive(disabled) checkbox", "x:1,y:2,w:56")->SetEnabled(false);
+        Factory::CheckBox::Create(this, "A &regular checkbox with hot key", "x:1,y:1,w:56");
+        Factory::CheckBox::Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56")->SetEnabled(false);
         c3 = Factory::CheckBox::Create(
               *this,
               "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be used\nto "
               "see if the checkbox has been clicked",
               "x:1,y:4,w:56,h:4",
               A_CHECKBOX_ID);
-        lb = Factory::Label::Create(*this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
+        lb = Factory::Label::Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {

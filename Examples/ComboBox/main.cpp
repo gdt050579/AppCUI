@@ -11,13 +11,13 @@ class MyWin : public Window
   public:
     MyWin() : Window("ComboBox example", "d:c,w:56,h:11", WindowFlags::None)
     {
-        Factory::Label::Create(*this, "Select a color", "x:2,y:1,w:15");
-        Factory::ComboBox::Create(*this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
-        Factory::Label::Create(*this, "Select a word", "x:2,y:3,w:15");
-        Factory::ComboBox::Create(*this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
-        Factory::Label::Create(*this, "Select a vehicle", "x:2,y:5,w:18");
-        auto cb = Factory::ComboBox::Create(*this, "x:22,y:5,w:30");
-        col = Factory::TextField::Create(*this, "", "x:2,y:7,w:50");
+        Factory::Label::Create(this, "Select a color", "x:2,y:1,w:15");
+        Factory::ComboBox::Create(this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
+        Factory::Label::Create(this, "Select a word", "x:2,y:3,w:15");
+        Factory::ComboBox::Create(this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
+        Factory::Label::Create(this, "Select a vehicle", "x:2,y:5,w:18");
+        auto cb = Factory::ComboBox::Create(this, "x:22,y:5,w:30");
+        col = Factory::TextField::Create(this, "", "x:2,y:7,w:50");
 
         cb->AddSeparator("Cars");
         cb->AddItem("Mercedes");

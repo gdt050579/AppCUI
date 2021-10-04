@@ -216,16 +216,16 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 }
 bool InternalWindowManager::Create()
 {
-    CHECK(lst = Factory::ListView::Create(*this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
+    CHECK(lst = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::SearchMode), false, "");
     CHECK(lst->AddColumn("Window caption", TextAlignament::Left, 56), false, "");
     CHECK(lst->AddColumn("TAG", TextAlignament::Left, 8), false, "");
-    CHECK(btnGoTo = Factory::Button::Create(*this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
-    CHECK(btnClose = Factory::Button::Create(*this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
-    CHECK(btnCloseDescendands = Factory::Button::Create(*this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC),
+    CHECK(btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
+    CHECK(btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
+    CHECK(btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC),
           false,
           "");
-    CHECK(btnCloseAll = Factory::Button::Create(*this, "Close &All", "l:43,b:0,w:13", BUTTON_ID_CLOSE_ALL), false, "");
-    CHECK(btnCancel = Factory::Button::Create(*this, "Cancel", "l:57,b:0,w:13", BUTTON_ID_CANCEL), false, "");
+    CHECK(btnCloseAll = Factory::Button::Create(this, "Close &All", "l:43,b:0,w:13", BUTTON_ID_CLOSE_ALL), false, "");
+    CHECK(btnCancel = Factory::Button::Create(this, "Cancel", "l:57,b:0,w:13", BUTTON_ID_CANCEL), false, "");
 
     // add all existing windows
     auto* app = AppCUI::Application::GetApplication();
