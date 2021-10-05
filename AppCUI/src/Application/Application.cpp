@@ -531,8 +531,8 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
 
     this->config.SetDarkTheme();
 
-    if (initData.CustomDesktop)
-        this->AppDesktop = initData.CustomDesktop.release();
+    if (initData.CustomDesktopConstructor)
+        this->AppDesktop = initData.CustomDesktopConstructor();
     else
         this->AppDesktop = AppCUI::Controls::Factory::Desktop::Create().release();
 

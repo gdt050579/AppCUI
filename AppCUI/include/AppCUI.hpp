@@ -2897,11 +2897,11 @@ namespace Application
         CharacterSize CharSize;
         InitializationFlags Flags;
         std::string_view FontName;
-        std::unique_ptr<AppCUI::Controls::Desktop> CustomDesktop;
+        AppCUI::Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None), FontName(""), CustomDesktop(nullptr)
+              Flags(InitializationFlags::None), FontName(""), CustomDesktopConstructor(nullptr)
         {
         }
     };

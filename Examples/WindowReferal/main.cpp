@@ -5,12 +5,13 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-int winID = 1;
+int winID                = 1;
 std::string_view tags[8] = { "Random", "General", "Mathematics", "Computer", "Logic", "Fast", "Wind", "Help" };
 
 class WindowExample : public Window
 {
     std::string my_name;
+
   public:
     WindowExample(std::string_view name) : Window(name, "d:c,w:40,h:10", WindowFlags::Sizeable)
     {
@@ -27,7 +28,7 @@ class WindowExample : public Window
         {
             AppCUI::Utils::LocalString<128> tmp;
             tmp.Format("%s_%d", my_name.c_str(), winID++);
-            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()),this);
+            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()), this);
             return true;
         }
         return false;
@@ -70,8 +71,8 @@ class MyDesktop : public Desktop
 int main()
 {
     InitializationData initData;
-    initData.CustomDesktop = std::make_unique<MyDesktop>();
-    initData.Flags         = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
+    initData.CustomDesktopConstructor = []() { return (Desktop*) (new MyDesktop()); };
+    initData.Flags                    = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
     if (!Application::Init(initData))
         return 1;
     auto m = Application::AddMenu("&Windows");
@@ -82,7 +83,7 @@ int main()
     m->AddCommandItem("&Cascade", 12348);
     m->AddCommandItem("&Fit", 12349, Key::F5);
     m->AddSeparator();
-    m->AddCommandItem("E&xit", 12350,Key::F10);
+    m->AddCommandItem("E&xit", 12350, Key::F10);
 
     Application::Run();
     return 0;
