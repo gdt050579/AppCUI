@@ -12,6 +12,9 @@ using namespace AppCUI::Dialogs;
 
 struct MyUserControl : public UserControl
 {
+    MyUserControl(const std::string_view& layout) : UserControl(layout)
+    {
+    }
     void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
@@ -130,22 +133,10 @@ struct MyUserControl : public UserControl
 
 class MyWin : public AppCUI::Controls::Window
 {
-    MyUserControl uc;
-
   public:
-    MyWin()
+    MyWin() : Window("Single line strings", "d:c,w:100,h:26",WindowFlags::None)
     {
-        this->Create("Single line strings", "d:c,w:100,h:26");
-        uc.Create(this, "x:0,y:0,w:100%,h:100%");
-    }
-    bool OnEvent(Control*, Event eventType, int) override
-    {
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
-            return true;
-        }
-        return false;
+        this->AddControl<MyUserControl>(std::make_unique<MyUserControl>("x:0,y:0,w:100%,h:100%"));
     }
 };
 int main()

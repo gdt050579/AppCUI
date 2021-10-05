@@ -62,20 +62,10 @@ class FontTest : public AppCUI::Controls::Window
     HexViewUserControl hexView;
 
   public:
-    FontTest()
+    FontTest() : Window("FontTest", "x:0,y:0,w:100%,h:100%",WindowFlags::None)
     {
-        this->Create("FontTest", "x:0,y:0,w:100%,h:100%");
+        
         hexView.Create(this, "x:0,y:0,w:100%,h:100%");
-    }
-
-    bool OnEvent(Control* /*sender*/, Event eventType, int) override
-    {
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
-            return true;
-        }
-        return false;
     }
 };
 

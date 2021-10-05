@@ -11,7 +11,7 @@ int main()
         return 1;
     auto wnd = Factory::Window::Create("UNICODE test ", "d:c,w:40,h:15");
     Factory::Label::Create(
-          *wnd,
+          wnd,
           u8"Words in German and French: \n - Déjà vu, Schön, Groß, Fähig\n\r"
           u8"Words in Russian: \n - Любовь, Кошка, Улыбаться\n"
           u8"Math symbols: ∑ ∫ ∏\n\r"

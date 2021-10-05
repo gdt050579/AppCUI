@@ -23,7 +23,7 @@ class TicTacToeTable : public UserControl
     int totalPieces;
 
   public:
-    TicTacToeTable()
+    TicTacToeTable(const std::string_view& layout) : UserControl(layout)
     {
         Start();
     }
@@ -110,13 +110,12 @@ class TicTacToeTable : public UserControl
 
 class TicTacToeWin : public AppCUI::Controls::Window
 {
-    TicTacToeTable game;
+    TicTacToeTable *game;
 
   public:
-    TicTacToeWin()
+    TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18",WindowFlags::None)
     {
-        this->Create("TicTacToe", "d:c,w:20,h:18");
-        game.Create(this, "x:2,y:1,w:14,h:14");
+        game = this->AddControl<TicTacToeTable>(std::make_unique<TicTacToeTable>("x:2,y:1,w:14,h:14"));        
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
@@ -139,7 +138,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
                 MessageBox::ShowNotification("Tic Tac Toe", "Draw Game !");
                 break;
             }
-            game.Start(); // restart a new game
+            game->Start(); // restart a new game
             return true;
         }
         return false;

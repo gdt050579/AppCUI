@@ -10,68 +10,55 @@ using namespace AppCUI::Graphics;
 #define SHOW_TAB_BUTTON_ID 654321
 #define TAB_MODE_GROUP     101
 
-class TabExampleWin : public AppCUI::Controls::Window
+class TabExampleWin : public Window
 {
-    Tab tb;
-    TabPage pg1, pg2, pg3;
-    RadioBox r1, r2, r3;
-    CheckBox c1, c2, c3;
-    Label lb1;
-    TextField tx1;
-    Panel p_inf;
-    Label inf;
-    Button btnClose;
-    ListView lv;
-
-
   public:
     TabExampleWin(TabFlags flags, unsigned int tabSize, int tabsCount)
+        : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton)
     {
-        Utils::LocalString<256> temp;
-        temp.Set("To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n");
-        this->Create("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton);
         // information panel
-        p_inf.Create(this, "Informations", "x:1,y:1,w:56,h:5");
-        inf.Create(&p_inf, temp.GetText(), "x:0,y:0,w:100%,h:100%");
+        auto p_inf = Factory::Panel::Create(this, "Informations", "x:1,y:1,w:56,h:5");
+        Factory::Label::Create(
+              p_inf, "To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n", "x:0,y:0,w:100%,h:100%");
 
-        btnClose.Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
+        Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
 
-        tb.Create(this, "x:1,y:7,w:56,h:8", flags);
-        tb.SetTabPageTitleSize(tabSize);
+        auto tb = Factory::Tab::Create(this, "x:1,y:7,w:56,h:8", flags);
+        tb->SetTabPageTitleSize(tabSize);
         // first page
         if (tabsCount >= 1)
         {
-            pg1.Create(&tb, "&RadioBox");
-            r1.Create(&pg1, "Option &1", "x:1,y:1,w:20", 100);
-            r2.Create(&pg1, "Option &2", "x:1,y:2,w:20", 100);
-            r3.Create(&pg1, "Option &3", "x:1,y:3,w:20", 100);
-            lv.Create(&pg1, "l:20,t:0,r:0,b:0");
-            lv.AddColumn("Names", TextAlignament::Left, 50);
-            lv.AddItem("Andrei");
-            lv.AddItem("Denis");
-            lv.AddItem("Dragos");
-            lv.AddItem("Ghiorghita");
-            lv.AddItem("Raul");
+            auto pg1 = Factory::TabPage::Create(tb, "&RadioBox");
+            Factory::RadioBox::Create(pg1, "Option &1", "x:1,y:1,w:20", 100);
+            Factory::RadioBox::Create(pg1, "Option &2", "x:1,y:2,w:20", 100);
+            Factory::RadioBox::Create(pg1, "Option &3", "x:1,y:3,w:20", 100);
+            auto lv = Factory::ListView::Create(pg1, "l:20,t:0,r:0,b:0");
+            lv->AddColumn("Names", TextAlignament::Left, 50);
+            lv->AddItem("Andrei");
+            lv->AddItem("Denis");
+            lv->AddItem("Dragos");
+            lv->AddItem("Ghiorghita");
+            lv->AddItem("Raul");
         }
 
         // second page
         if (tabsCount >= 2)
         {
-            pg2.Create(&tb, "&CheckBox");
-            c1.Create(&pg2, "Enable flag &1", "x:1,y:1,w:20");
-            c2.Create(&pg2, "Enable flag &2", "x:1,y:2,w:20");
-            c3.Create(&pg2, "Enable flag &3", "x:1,y:3,w:20");
+            auto pg2 = Factory::TabPage::Create(tb, "&CheckBox");
+            Factory::CheckBox::Create(pg2, "Enable flag &1", "x:1,y:1,w:20");
+            Factory::CheckBox::Create(pg2, "Enable flag &2", "x:1,y:2,w:20");
+            Factory::CheckBox::Create(pg2, "Enable flag &3", "x:1,y:3,w:20");
         }
 
         // third page
         if (tabsCount >= 3)
         {
-            pg3.Create(&tb, "&TextField");
-            lb1.Create(&pg3, "Enter a text", "x:1,y:1,w:15");
-            tx1.Create(&pg3, "some text ...", "x:17,y:1,w:20,h:5");
+            auto pg3 = Factory::TabPage::Create(tb, "&TextField");
+            Factory::Label::Create(pg3, "Enter a text", "x:1,y:1,w:15");
+            Factory::TextField::Create(pg3, "some text ...", "x:17,y:1,w:20,h:5");
         }
 
-        tb.SetCurrentTabPage(0);
+        tb->SetCurrentTabPage(0);
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
@@ -84,57 +71,53 @@ class TabExampleWin : public AppCUI::Controls::Window
     }
 };
 
-class MyWin : public AppCUI::Controls::Window
+class MyWin : public Window
 {
-    Panel p;
-    RadioBox tabTop, tabBottom, tabLeft, tabList, tabNoTabs;
-    CheckBox cbTransparent, cbTabBar;
-    Button btnShow;
-    NumericSelector selector, tabsCount;
-    Label lbTabSize, lbTabsCount;
+    RadioBox *tabTop, *tabBottom, *tabLeft, *tabList, *tabNoTabs;
+    CheckBox *cbTransparent, *cbTabBar;
+    NumericSelector *selector, *tabsCount;
 
   public:
-    MyWin()
-    {
-        this->Create("Tab example config", "d:c,w:50,h:19");
-        p.Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
-        tabTop.Create(&p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
-        tabBottom.Create(&p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
-        tabLeft.Create(&p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);
-        tabList.Create(&p, "Lis&ts", "x:1,y:3,w:40", TAB_MODE_GROUP);
-        tabNoTabs.Create(&p, "&Hide tabs (no visible tabs)","x:1,y:4,w:40", TAB_MODE_GROUP);
-        tabTop.SetChecked(true);
+    MyWin() : Window("Tab example config", "d:c,w:50,h:19",WindowFlags::None)
+    {        
+        auto p = Factory::Panel::Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
+        tabTop    = Factory::RadioBox::Create(p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
+        tabBottom = Factory::RadioBox::Create(p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
+        tabLeft   = Factory::RadioBox::Create(p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);
+        tabList   = Factory::RadioBox::Create(p, "Lis&ts", "x:1,y:3,w:40", TAB_MODE_GROUP);
+        tabNoTabs = Factory::RadioBox::Create(p, "&Hide tabs (no visible tabs)", "x:1,y:4,w:40", TAB_MODE_GROUP);
+        tabTop->SetChecked(true);
 
-        cbTransparent.Create(this, "Transparent background for tab pages", "x:1,y:8,w:46");
-        cbTabBar.Create(this, "Show tab bar with pages", "x:1,y:9,w:46");
+        cbTransparent = Factory::CheckBox::Create(this, "Transparent background for tab pages", "x:1,y:8,w:46");
+        cbTabBar      = Factory::CheckBox::Create(this, "Show tab bar with pages", "x:1,y:9,w:46");
 
-        lbTabSize.Create(this, "Tabs &width", "x:1,y:11,w:10");
-        selector.Create(this, 5, 18, 6, "x:14,y:11,w:32");
-        selector.SetHotKey('W');
-        lbTabsCount.Create(this, "Tabs count", "x:1,y:13,w:10");
-        tabsCount.Create(this, 1, 3, 3, "x:14,y:13,w:32");
+        Factory::Label::Create(this, "Tabs &width", "x:1,y:11,w:10");
+        selector = Factory::NumericSelector::Create(this, 5, 18, 6, "x:14,y:11,w:32");
+        selector->SetHotKey('W');
+        Factory::Label::Create(this, "Tabs count", "x:1,y:13,w:10");
+        tabsCount = Factory::NumericSelector::Create(this, 1, 3, 3, "x:14,y:13,w:32");
 
-        btnShow.Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
+        Factory::Button::Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
     void ShowTabControl()
     {
         TabFlags flags;
-        if (tabTop.IsChecked())
+        if (tabTop->IsChecked())
             flags = TabFlags::TopTabs;
-        if (tabBottom.IsChecked())
+        if (tabBottom->IsChecked())
             flags = TabFlags::BottomTabs;
-        if (tabLeft.IsChecked())
+        if (tabLeft->IsChecked())
             flags = TabFlags::LeftTabs;
-        if (tabList.IsChecked())
+        if (tabList->IsChecked())
             flags = TabFlags::ListView;
-        if (tabNoTabs.IsChecked())
+        if (tabNoTabs->IsChecked())
             flags = TabFlags::HideTabs;
-        if (cbTransparent.IsChecked())
+        if (cbTransparent->IsChecked())
             flags = flags | TabFlags::TransparentBackground;
-        if (cbTabBar.IsChecked())
+        if (cbTabBar->IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        TabExampleWin tw(flags, static_cast<unsigned int>(selector.GetValue()), static_cast<int>(tabsCount.GetValue()));
+        TabExampleWin tw(flags, static_cast<unsigned int>(selector->GetValue()), static_cast<int>(tabsCount->GetValue()));
         tw.Show();
     }
     bool OnEvent(Control*, Event eventType, int controlID) override

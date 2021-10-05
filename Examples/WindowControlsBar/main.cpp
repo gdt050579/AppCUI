@@ -11,23 +11,26 @@ int value = 1;
 class MyControl : public AppCUI::Controls::UserControl
 {
   public:
+    MyControl(const std::string_view& layout) : UserControl(layout)
+    {
+    }
     Color back;
     void Paint(AppCUI::Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::Black, back });
     }
 };
-class WindowControlsBarExample : public AppCUI::Controls::Window
+class WindowControlsBarExample : public Window
 {
-    MyControl m;
+    MyControl* m;
     ItemHandle itText,itRed,itGreen,itBlue,itmShowHide;
 
   public:
-    WindowControlsBarExample(char id)
+    WindowControlsBarExample(char id) : Window("Test", "l:2,t:1,r:2,b:1", WindowFlags::Sizeable)
     {
-        this->Create("Test", "l:2,t:1,r:2,b:1", WindowFlags::Sizeable);
-        m.Create(this, "l:2,t:1,r:2,b:1");
-        m.back = Color::Black;
+        m       = this->AddControl<MyControl>(std::make_unique<MyControl>("l:2,t:1,r:2,b:1"));
+        m->back = Color::Black;
+        
         // associated a hot key
         this->SetHotKey(id);
         // add a TAG
@@ -49,7 +52,7 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
     bool OnEvent(Control* sender, Event eventType, int ID) override
     {
         Utils::LocalString<128> s;
-        bool value;
+        bool b_value;
         if (Window::OnEvent(sender, eventType, ID))
             return true;
         if (eventType == Event::Command)
@@ -57,11 +60,11 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
             switch (ID)
             {
             case 12345:
-                value = !this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).IsItemVisible(itRed);
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, value);
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, value);
-                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, value);
-                if (value)
+                b_value = !this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).IsItemVisible(itRed);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itRed, b_value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itGreen, b_value);
+                this->GetControlBar(WindowControlsBarLayout::BottomBarFromRight).SetItemVisible(itBlue, b_value);
+                if (b_value)
                     this->GetControlBar(WindowControlsBarLayout::TopBarFromLeft)
                           .SetItemText(itmShowHide, "Hide colors");
                 else
@@ -79,13 +82,13 @@ class WindowControlsBarExample : public AppCUI::Controls::Window
                 this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft).SetItemToolTip(itText, s.GetText());
                 return true;
             case 100:
-                m.back = Color::Red;
+                m->back = Color::Red;
                 return true;
             case 101:
-                m.back = Color::Green;
+                m->back = Color::Green;
                 return true;
             case 102:
-                m.back = Color::Blue;
+                m->back = Color::Blue;
                 return true;
             }
         }
