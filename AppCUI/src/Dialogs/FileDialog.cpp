@@ -408,6 +408,7 @@ int FileDialogClass::Show(
       const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& _path)
 {
+    /*
     std::filesystem::path initialPath = std::filesystem::absolute(".");
     try
     {
@@ -509,10 +510,10 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
-    FileDialogClass dlg;
-    int res = dlg.Show(false, fileName, extensionFilter, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return dlg.resultedPath;
+    //FileDialogClass dlg;
+    //int res = dlg.Show(false, fileName, extensionFilter, path);
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return dlg.resultedPath;
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
@@ -520,9 +521,9 @@ std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const AppCUI::Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
-    FileDialogClass dlg;
-    int res = dlg.Show(true, fileName, extensionFilter, path);
-    if (res == (int) Dialogs::Result::Ok)
-        return dlg.resultedPath;
+    //FileDialogClass dlg;
+    //int res = dlg.Show(true, fileName, extensionFilter, path);
+    //if (res == (int) Dialogs::Result::Ok)
+    //    return dlg.resultedPath;
     return std::nullopt;
 }
