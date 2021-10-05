@@ -9,15 +9,17 @@ Button::Button(
     : Control(new ControlContext(), caption, layout,true)
 {
     auto Members             = reinterpret_cast<ControlContext*>(this->Context);
-    Members->Layout.MinWidth = 4;
+
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
+        Members->Layout.MinWidth  = 3;
         Members->Layout.MinHeight = 1; // one character (flat button)
         Members->Layout.MaxHeight = 1;
         Members->Layout.Height    = 1;
     }
     else
     {
+        Members->Layout.MinWidth  = 4;
         Members->Layout.MinHeight = 2; // Exactly 2 characters
         Members->Layout.MaxHeight = 2;
         Members->Layout.Height    = 2;

@@ -22,17 +22,18 @@ class MyWin : public AppCUI::Controls::Window
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
-        
         if (eventType == Event::WindowClose)
         {
             Application::Close();
             return true;
         }
+
         if (eventType == Event::ButtonClicked)
         {
             if (controlID == BUTTON_ID_SHOW_SAVE)
             {
-                auto res = FileDialog::ShowSaveFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", "."); 
+                auto res = FileDialog::ShowSaveFileWindow(
+                      "", "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
                 if (res.has_value())
                     l1->SetText(res->u8string());
                 else
@@ -40,7 +41,8 @@ class MyWin : public AppCUI::Controls::Window
             }
             if (controlID == BUTTON_ID_SHOW_OPEN)
             {
-                auto res = FileDialog::ShowOpenFileWindow("", "Text Files:txt,Images:[jpg,jpeg,png],Documents:[pdf,doc,docx,xlsx,xls,ppt,pptx]", ".");
+                auto res = FileDialog::ShowOpenFileWindow(
+                      "", "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx", ".");
                 if (res.has_value())
                     l2->SetText(res->u8string());
                 else
@@ -53,7 +55,7 @@ class MyWin : public AppCUI::Controls::Window
 };
 int main()
 {
-    if (!Application::Init())
+    if (!Application::Init(InitializationFlags::Maximized))
         return 1;
     Application::AddWindow(std::make_unique<MyWin>());
     Application::Run();
