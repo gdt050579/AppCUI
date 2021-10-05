@@ -1973,6 +1973,7 @@ namespace Controls
         virtual ~Window();
         
         friend Factory::Window;
+        friend Control;
     };
     class EXPORT Label : public Control
     {
@@ -1981,6 +1982,7 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         friend Factory::Label;
+        friend Control;
     };
 
     enum class ButtonFlags : unsigned int
@@ -2024,6 +2026,7 @@ namespace Controls
         bool OnMouseLeave() override;
 
         friend Factory::CheckBox;
+        friend Control;
     };
     class EXPORT RadioBox : public Control
     {
@@ -2039,6 +2042,7 @@ namespace Controls
         bool OnMouseLeave() override;
 
         friend Factory::RadioBox;
+        friend Control;
     };
     class EXPORT Splitter : public Control
     {
@@ -2065,6 +2069,7 @@ namespace Controls
         virtual ~Splitter();
 
         friend Factory::Splitter;
+        friend Control;
     };
     class EXPORT Panel : public Control
     {
@@ -2075,6 +2080,7 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
 
         friend Factory::Panel;
+        friend Control;
     };
     enum class TextFieldFlags : unsigned int
     {
@@ -2107,6 +2113,7 @@ namespace Controls
         virtual ~TextField();
 
         friend Factory::TextField;
+        friend Control;
     };
     enum class TextAreaFlags : unsigned int
     {
@@ -2142,6 +2149,7 @@ namespace Controls
         virtual ~TextArea();
 
         friend Factory::TextArea;
+        friend Control;
     };
 
     enum class TabFlags : unsigned int
@@ -2163,6 +2171,7 @@ namespace Controls
         bool OnBeforeResize(int newWidth, int newHeight);
 
         friend Factory::TabPage;
+        friend Control;
     };
     class EXPORT Tab : public Control
     {
@@ -2184,6 +2193,7 @@ namespace Controls
         Control* GetCurrentTab();
 
         friend Factory::Tab;
+        friend Control;
     };
     class EXPORT UserControl : public Control
     {
@@ -2220,6 +2230,7 @@ namespace Controls
         Graphics::Canvas* GetCanvas();
 
         friend Factory::CanvasViewer;
+        friend Control;
     };
     class EXPORT ImageViewer : public CanvasViewer
     {
@@ -2233,6 +2244,7 @@ namespace Controls
               AppCUI::Graphics::ImageScaleMethod scale);
 
         friend Factory::ImageViewer;
+        friend Control;
     };
     enum class ListViewFlags : unsigned int
     {
@@ -2391,6 +2403,7 @@ namespace Controls
         virtual ~ListView();
 
         friend Factory::ListView;
+        friend Control;
     };
 
     class EXPORT ComboBox : public Control
@@ -2427,6 +2440,7 @@ namespace Controls
         virtual ~ComboBox();
 
         friend Factory::ComboBox;
+        friend Control;
     };
 
     class EXPORT Menu
@@ -2497,6 +2511,7 @@ namespace Controls
         void OnLoseFocus() override;
 
         friend Factory::NumericSelector;
+        friend Control;
     };
 
     class EXPORT Desktop : public Control
@@ -2509,6 +2524,7 @@ namespace Controls
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
 
         friend Factory::Desktop;
+        friend Control;
     };
 
     namespace Factory
