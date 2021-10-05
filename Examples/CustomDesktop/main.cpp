@@ -8,6 +8,9 @@ using namespace AppCUI::Controls;
 class MyDeskop : public Desktop
 {
   public:
+    MyDeskop() : Desktop()
+    {
+    }
     void Paint(Renderer & r) override
     {
         int h = this->GetHeight();
@@ -33,12 +36,11 @@ class MyDeskop : public Desktop
 int main()
 {
     InitializationData initData;
-    initData.CustomDesktop = new MyDeskop();
+    initData.CustomDesktop = std::make_unique<MyDeskop>();
     initData.Flags         = InitializationFlags::CommandBar | InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;
-    auto w = std::make_unique<Window>();
-    w->Create("Test", "d:c,w:20,h:5", WindowFlags::Sizeable);
+    auto w = Factory::Window::Create("Test", "d:c,w:20,h:5", WindowFlags::Sizeable);
     Application::AddWindow(std::move(w));
     Application::Run();
     return 0;

@@ -10,13 +10,12 @@ using namespace AppCUI::Controls;
 
 class MyWin : public Window
 {
-    Label * l2;
-
+    Label * l2;    
   public:
     MyWin() : Window("Button example", "d:c,w:60,h:20", WindowFlags::None)
     {
         Factory::Button::Create(this, "Buton &1", "x:1,y:16,w:14", BUTTON_1_ID);
-        Factory::Button::Create(this, "Buton &2", "x:16,y:16,w:14", BUTTON_2_ID);
+        this->CreateChildControl<Button>("Buton &2", "x:16,y:16,w:14", BUTTON_2_ID, ButtonFlags::None);        
         Factory::Button::Create(this, "Inactive", "x:31,y:16,w:14", BUTTON_3_ID)->SetEnabled(false);
 
         Factory::Button::Create(this, "Flat Buton 1", "x:1,y:14,w:14", BUTTON_1_ID, ButtonFlags::Flat);

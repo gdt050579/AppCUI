@@ -15,7 +15,7 @@ constexpr int COMMAND_ID_BTN_OPEN = 1;
 class HexViewUserControl : public UserControl
 {
   public:
-    HexViewUserControl()
+    HexViewUserControl(const std::string_view& layout) : UserControl(layout)
     {
         resetAll();
     }
@@ -103,15 +103,13 @@ class HexViewUserControl : public UserControl
 class SimpleHexView : public AppCUI::Controls::Window
 {
   private:
-    Button btnOpenFile;
-    HexViewUserControl hexView;
+    HexViewUserControl *hexView;
 
   public:
-    SimpleHexView()
+    SimpleHexView() : Window("SimpleHexView", "x:0,y:0,w:100%,h:100%", WindowFlags::None)
     {
-        this->Create("SimpleHexView", "x:0,y:0,w:100%,h:100%");
-        btnOpenFile.Create(this, "Open File ...", "l:2,t:0,r:2,h:1", COMMAND_ID_BTN_OPEN, ButtonFlags::Flat);
-        hexView.Create(this, "x:0,y:2,w:100%,h:100%");
+        Factory::Button::Create(this, "Open File ...", "l:2,t:0,r:2,h:1", COMMAND_ID_BTN_OPEN, ButtonFlags::Flat);
+        hexView = this->CreateChildControl<HexViewUserControl>("x:0,y:2,w:100%,h:100%");
     }
 
     bool OnEvent(Control* /*sender*/, Event eventType, int controlID) override
@@ -127,8 +125,8 @@ class SimpleHexView : public AppCUI::Controls::Window
             auto path = Dialogs::FileDialog::ShowOpenFileWindow("", "", ".");
             if (path.has_value())
             {
-                hexView.Open(path.value());
-                hexView.SetFocus();
+                hexView->Open(path.value());
+                hexView->SetFocus();
             }
         }
         return false;
