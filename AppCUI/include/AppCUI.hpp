@@ -1762,6 +1762,11 @@ namespace Controls
         {
             return static_cast<T*>(this->AddChildControl(std::move(control)));
         }
+        template <typename T, typename ... Arguments>
+        T* CreateChildControl(Arguments ... args)
+        {
+            return this->AddControl<T>(std::make_unique<T>(std::forward<Arguments>(args)...));
+        }
         bool RemoveControl(Control* control);
         bool RemoveControl(unsigned int index);
 
