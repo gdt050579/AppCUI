@@ -4,13 +4,14 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
+using namespace AppCUI::Utils;
 
 #define BUTTON_ID_SHOW_SAVE 1
 #define BUTTON_ID_SHOW_OPEN 2
 
 class MyWin : public AppCUI::Controls::Window
 {
-    TextField *l1, *l2;
+    Reference<TextField> l1, l2;
 
   public:
     MyWin() : Window("File example", "d:c,w:40,h:13", WindowFlags::None)

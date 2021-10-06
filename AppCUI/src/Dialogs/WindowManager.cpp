@@ -25,8 +25,8 @@ struct WinItemInfo
 
 class InternalWindowManager : public AppCUI::Controls::Window
 {
-    ListView *lst;
-    Button *btnGoTo, *btnClose, *btnCloseAll, *btnCloseDescendands, *btnCancel;
+    Reference<ListView> lst;
+    Reference<Button> btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
     std::map<ItemHandle, WinItemInfo> rel;
     ItemHandle focusedItem;
 

@@ -4,6 +4,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
+using namespace AppCUI::Utils;
 
 #define COMMAND_ID_PRINT_HELLO_WORLD 1
 #define COMMAND_ID_PRINT_A_NUMBER    2
@@ -17,7 +18,7 @@ using namespace AppCUI::Input;
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Label *l1;
+    Reference<Label> l1;
 
   public:
     MyWin() : Window("Command Bar Example", "d:c,w:60,h:10", WindowFlags::None)

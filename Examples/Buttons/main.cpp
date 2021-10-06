@@ -3,6 +3,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
 
 #define BUTTON_1_ID 1
 #define BUTTON_2_ID 2
@@ -10,7 +11,7 @@ using namespace AppCUI::Controls;
 
 class MyWin : public Window
 {
-    Label * l2;    
+    Reference<Label> l2;    
   public:
     MyWin() : Window("Button example", "d:c,w:60,h:20", WindowFlags::None)
     {

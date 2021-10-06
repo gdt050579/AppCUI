@@ -5,6 +5,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
+using namespace AppCUI::Utils;
 
 #define BTN_SHOW_DIZZY         1000
 #define BTN_SHOW_GDT           1001
@@ -6547,8 +6548,8 @@ class ImageWinViewer : public Window
 
 class MainWin : public Window
 {
-    ComboBox *cbMethod;
-    ComboBox *cbScale;
+    Reference<ComboBox> cbMethod;
+    Reference<ComboBox> cbScale;
 
   public:
     MainWin() : Window("Image example", "d:c,w:50,h:17", WindowFlags::None)
@@ -6560,7 +6561,8 @@ class MainWin : public Window
         Factory::Button::Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
 
         Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
-        cbMethod = Factory::ComboBox::Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+        cbMethod = Factory::ComboBox::Create(
+              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
         Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
@@ -6675,15 +6677,17 @@ class MainWin : public Window
             if (controlID == BTN_SHOW_STRING_IMAGE)
             {
                 AppCUI::Graphics::Image img;
-                img.Create(8, 8, "...ww..." 
-                                 "..wyyw.."
-                                 "..wggw.."
-                                 "...66..."
-                                 "...66..."
-                                 "...66..."
-                                 "..6666.."
-                                 "bBbBbBbB"
-                ); 
+                img.Create(
+                      8,
+                      8,
+                      "...ww..."
+                      "..wyyw.."
+                      "..wggw.."
+                      "...66..."
+                      "...66..."
+                      "...66..."
+                      "..6666.."
+                      "bBbBbBbB");
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
                 return true;

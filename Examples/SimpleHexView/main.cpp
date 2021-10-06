@@ -103,7 +103,7 @@ class HexViewUserControl : public UserControl
 class SimpleHexView : public AppCUI::Controls::Window
 {
   private:
-    HexViewUserControl *hexView;
+    Reference<HexViewUserControl> hexView;
 
   public:
     SimpleHexView() : Window("SimpleHexView", "x:0,y:0,w:100%,h:100%", WindowFlags::None)

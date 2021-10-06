@@ -4,6 +4,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
+using namespace AppCUI::Utils;
 
 class MyControl : public UserControl
 {
@@ -27,8 +28,8 @@ class LayoutWin : public Window
 
 class MainWin : public Window
 {
-    ListView *lst;
-    Button *b;
+    Reference<ListView> lst;
+    Reference<Button> b;
     void AddExample(std::string_view layout, std::string_view info)
     {
         ItemHandle i = lst->AddItem(layout, info);

@@ -3,10 +3,11 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
 
 class MyWin : public Window
 {
-    TextField *col;
+    Reference<TextField> col;
 
   public:
     MyWin() : Window("ComboBox example", "d:c,w:56,h:11", WindowFlags::None)

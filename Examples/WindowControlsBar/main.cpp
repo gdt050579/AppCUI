@@ -5,6 +5,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
+using namespace AppCUI::Utils;
 
 int value = 1;
 
@@ -22,7 +23,7 @@ class MyControl : public AppCUI::Controls::UserControl
 };
 class WindowControlsBarExample : public Window
 {
-    MyControl* m;
+    Reference <MyControl> m;
     ItemHandle itText,itRed,itGreen,itBlue,itmShowHide;
 
   public:

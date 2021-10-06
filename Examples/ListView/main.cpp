@@ -3293,10 +3293,12 @@ class SelectionDemo : public Window
 
 class MyWin : public Window
 {
-    CheckBox *cbHideColumns, *cbCheckBoxes, *cbHideColumnSeparators, *cbSort, *cbItemSeparators, *cbAllowSelection,
-          *cbHideSearchBar;
-    CheckBox *cbSimpleListCheckboxes;
-    RadioBox *rbCustomizedListView, *rbSimpleList, *rbSortAndColumnsFeatures, *rbColors, *rbTree, *rbSearch, *rbSelect;
+    Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators,
+          cbAllowSelection,
+          cbHideSearchBar;
+    Reference<CheckBox> cbSimpleListCheckboxes;
+    Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
+          rbSelect;
 
   public:
     MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:21", WindowFlags::None)

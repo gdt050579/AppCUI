@@ -5,6 +5,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
+using namespace AppCUI::Utils;
 
 #define MENU_CMD_SAVE           1000
 #define MENU_CMD_OPEN           1001
@@ -80,8 +81,8 @@ void MyUserControl::Paint(AppCUI::Graphics::Renderer& renderer)
 }
 class ContextMenuExample : public AppCUI::Controls::Window
 {
-    MyUserControl *m;
-    CheckBox *cb;
+    Reference<MyUserControl> m;
+    Reference<CheckBox> cb;
   public:
     ContextMenuExample() : Window("Context menu", "d:c,w:64,h:10", WindowFlags::None)
     {

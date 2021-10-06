@@ -1,15 +1,18 @@
 #include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
+
 #define VALIDATE_PARENT CHECK(parent, nullptr, "Expecting a valid (non-null) parent object !");
-#define POINTER AppCUI::Controls::Pointer
+#define POINTER         AppCUI::Utils::Pointer
+#define REFERENCE       AppCUI::Utils::Reference
 
 //======[LABEL]======================================================================================
 POINTER<Label> Factory::Label::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     return POINTER<AppCUI::Controls::Label>(new AppCUI::Controls::Label(caption, layout));
 }
-Label* Factory::Label::Create(
+REFERENCE<Label> Factory::Label::Create(
       Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     VALIDATE_PARENT;
@@ -25,7 +28,7 @@ POINTER<Button> Factory::Button::Create(
 {
     return POINTER<AppCUI::Controls::Button>(new AppCUI::Controls::Button(caption, layout, controlID, flags));
 }
-Button* Factory::Button::Create(
+REFERENCE<Button> Factory::Button::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -42,7 +45,7 @@ POINTER<CheckBox> Factory::CheckBox::Create(
 {
     return POINTER<AppCUI::Controls::CheckBox>(new AppCUI::Controls::CheckBox(caption, layout, controlID));
 }
-CheckBox* Factory::CheckBox::Create(
+REFERENCE<CheckBox> Factory::CheckBox::Create(
       Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
 {
     VALIDATE_PARENT;
@@ -53,11 +56,10 @@ CheckBox* Factory::CheckBox::Create(
 POINTER<RadioBox> Factory::RadioBox::Create(
       const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
 {
-    return POINTER<AppCUI::Controls::RadioBox>(
-          new AppCUI::Controls::RadioBox(caption, layout, groupID, controlID));
+    return POINTER<AppCUI::Controls::RadioBox>(new AppCUI::Controls::RadioBox(caption, layout, groupID, controlID));
 }
 
-RadioBox* Factory::RadioBox::Create(
+REFERENCE<RadioBox> Factory::RadioBox::Create(
       Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -74,7 +76,7 @@ POINTER<Splitter> Factory::Splitter::Create(const std::string_view& layout, bool
 {
     return POINTER<AppCUI::Controls::Splitter>(new AppCUI::Controls::Splitter(layout, vertical));
 }
-Splitter* Factory::Splitter::Create(Control* parent, const std::string_view& layout, bool vertical)
+REFERENCE<Splitter> Factory::Splitter::Create(Control* parent, const std::string_view& layout, bool vertical)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
@@ -85,7 +87,7 @@ POINTER<Panel> Factory::Panel::Create(const AppCUI::Utils::ConstString& caption,
 {
     return POINTER<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel(caption, layout));
 }
-Panel* Factory::Panel::Create(
+REFERENCE<Panel> Factory::Panel::Create(
       Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
 {
     VALIDATE_PARENT;
@@ -95,14 +97,14 @@ POINTER<Panel> Factory::Panel::Create(const std::string_view& layout)
 {
     return POINTER<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel("", layout));
 }
-Panel* Factory::Panel::Create(Control* parent, const std::string_view& layout)
+REFERENCE<Panel> Factory::Panel::Create(Control* parent, const std::string_view& layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(layout));
 }
 
 //======[TEXTFIELD]==================================================================================
-AppCUI::Controls::TextField* Factory::TextField::Create(
+REFERENCE<TextField> Factory::TextField::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -126,7 +128,7 @@ POINTER<AppCUI::Controls::TextField> Factory::TextField::Create(
 }
 
 //======[TEXTAREA]===================================================================================
-AppCUI::Controls::TextArea* Factory::TextArea::Create(
+REFERENCE<TextArea> Factory::TextArea::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -150,7 +152,7 @@ POINTER<AppCUI::Controls::TextArea> Factory::TextArea::Create(
 }
 
 //======[TABPAGE]====================================================================================
-AppCUI::Controls::TabPage* Factory::TabPage::Create(
+REFERENCE<TabPage> Factory::TabPage::Create(
       AppCUI::Controls::Control* parent, const AppCUI::Utils::ConstString& caption)
 {
     VALIDATE_PARENT;
@@ -162,7 +164,7 @@ POINTER<AppCUI::Controls::TabPage> Factory::TabPage::Create(const AppCUI::Utils:
 }
 
 //======[TAB]========================================================================================
-AppCUI::Controls::Tab* Factory::Tab::Create(
+REFERENCE<Tab> Factory::Tab::Create(
       AppCUI::Controls::Control* parent,
       const std::string_view& layout,
       AppCUI::Controls::TabFlags flags,
@@ -171,14 +173,14 @@ AppCUI::Controls::Tab* Factory::Tab::Create(
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
-POINTER<AppCUI::Controls::Tab> Factory::Tab::Create(
+POINTER<Tab> Factory::Tab::Create(
       const std::string_view& layout, AppCUI::Controls::TabFlags flags, unsigned int tabPageSize)
 {
     return POINTER<AppCUI::Controls::Tab>(new AppCUI::Controls::Tab(layout, flags, tabPageSize));
 }
 
 //======[CANVASVIEWER]===============================================================================
-AppCUI::Controls::CanvasViewer* Factory::CanvasViewer::Create(
+REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       AppCUI::Controls::Control* parent,
       const std::string_view& layout,
       unsigned int canvasWidth,
@@ -198,7 +200,7 @@ POINTER<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
     return POINTER<AppCUI::Controls::CanvasViewer>(
           new AppCUI::Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
 }
-AppCUI::Controls::CanvasViewer* Factory::CanvasViewer::Create(
+REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -227,7 +229,7 @@ POINTER<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
 {
     return POINTER<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer("", layout, flags));
 }
-AppCUI::Controls::ImageViewer* Factory::ImageViewer::Create(
+REFERENCE<ImageViewer> Factory::ImageViewer::Create(
       AppCUI::Controls::Control* parent, const std::string_view& layout, AppCUI::Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
@@ -238,7 +240,7 @@ POINTER<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
 {
     return POINTER<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer(caption, layout, flags));
 }
-AppCUI::Controls::ImageViewer* Factory::ImageViewer::Create(
+REFERENCE<ImageViewer> Factory::ImageViewer::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
@@ -254,7 +256,7 @@ POINTER<AppCUI::Controls::ListView> Factory::ListView::Create(
 {
     return POINTER<AppCUI::Controls::ListView>(new AppCUI::Controls::ListView(layout, flags));
 }
-AppCUI::Controls::ListView* Factory::ListView::Create(
+REFERENCE<ListView> Factory::ListView::Create(
       AppCUI::Controls::Control* parent, const std::string_view& layout, AppCUI::Controls::ListViewFlags flags)
 {
     VALIDATE_PARENT;
@@ -268,7 +270,7 @@ POINTER<AppCUI::Controls::ComboBox> Factory::ComboBox::Create(
     return POINTER<AppCUI::Controls::ComboBox>(new AppCUI::Controls::ComboBox(layout, text, itemsSeparator));
 }
 
-AppCUI::Controls::ComboBox* Factory::ComboBox::Create(
+REFERENCE<ComboBox> Factory::ComboBox::Create(
       AppCUI::Controls::Control* parent,
       const std::string_view& layout,
       const AppCUI::Utils::ConstString& text,
@@ -285,7 +287,7 @@ POINTER<AppCUI::Controls::NumericSelector> Factory::NumericSelector::Create(
     return POINTER<AppCUI::Controls::NumericSelector>(
           new AppCUI::Controls::NumericSelector(minValue, maxValue, value, layout));
 }
-AppCUI::Controls::NumericSelector* Factory::NumericSelector::Create(
+REFERENCE < NumericSelector> Factory::NumericSelector::Create(
       AppCUI::Controls::Control* parent,
       const long long minValue,
       const long long maxValue,
@@ -297,17 +299,14 @@ AppCUI::Controls::NumericSelector* Factory::NumericSelector::Create(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }
 
-
- //======[WINDOW]=====================================================================================
+//======[WINDOW]=====================================================================================
 POINTER<AppCUI::Controls::Window> Factory::Window::Create(
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      AppCUI::Controls::WindowFlags flags)
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, AppCUI::Controls::WindowFlags flags)
 {
     return POINTER<AppCUI::Controls::Window>(new AppCUI::Controls::Window(caption, layout, flags));
 }
 
- //======[DESKTOP]====================================================================================
+//======[DESKTOP]====================================================================================
 POINTER<AppCUI::Controls::Desktop> Factory::Desktop::Create()
 {
     return POINTER<AppCUI::Controls::Desktop>(new AppCUI::Controls::Desktop());
@@ -315,3 +314,4 @@ POINTER<AppCUI::Controls::Desktop> Factory::Desktop::Create()
 
 #undef VALIDATE_PARENT
 #undef POINTER
+#undef REFERENCE

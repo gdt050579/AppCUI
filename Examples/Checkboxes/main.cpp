@@ -3,13 +3,14 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
 
 #define A_CHECKBOX_ID 12345
 
 class MyWin : public Window
 {
-    Label * lb;
-    CheckBox* c3;
+    Reference<Label> lb;
+    Reference<CheckBox> c3;
   public:
     MyWin() : Window("Checkbox example", "d:c,w:60,h:12", WindowFlags::None)
     {

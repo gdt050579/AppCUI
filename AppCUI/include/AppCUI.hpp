@@ -311,6 +311,43 @@ namespace Utils
 {
     using CharacterView = std::basic_string_view<AppCUI::Graphics::Character>;
     using ConstString   = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
+    template <typename T>
+    class Pointer : public std::unique_ptr<T>
+    {
+      public:
+        Pointer(T* obj) : std::unique_ptr<T>(obj)
+        {
+        }
+        operator T*()
+        {
+            return this->get();
+        }
+    };
+    template <typename T>
+    class Reference
+    {
+        T* ptr;
+
+      public:
+        Reference() : ptr(nullptr)
+        {
+        }
+        Reference(T* obj) : ptr(obj)
+        {
+        }
+        constexpr inline operator bool()
+        {
+            return ptr != nullptr;
+        }
+        constexpr inline T* operator->()
+        {
+            return ptr;
+        }
+        constexpr inline operator T&()
+        {
+            return *ptr;
+        }
+    };
 } // namespace Utils
 namespace Application
 {
@@ -1703,18 +1740,7 @@ namespace Controls
     class EXPORT Menu;
     class EXPORT Window;
 
-    template <typename T>
-    class Pointer : public std::unique_ptr<T>
-    {
-      public:
-        Pointer(T* obj) : std::unique_ptr<T>(obj)
-        {
-        }
-        operator T*()
-        {
-            return this->get();
-        }
-    };
+    using namespace AppCUI::Utils;
 
     namespace Handlers
     {
@@ -1775,12 +1801,12 @@ namespace Controls
 
       public:
         template <typename T>
-        T* AddControl(std::unique_ptr<T> control)
+        Reference<T> AddControl(std::unique_ptr<T> control)
         {
-            return static_cast<T*>(this->AddChildControl(std::move(control)));
+            return Reference(static_cast<T*>(this->AddChildControl(std::move(control))));
         }
-        template <typename T, typename ... Arguments>
-        T* CreateChildControl(Arguments ... args)
+        template <typename T, typename... Arguments>
+        Reference<T> CreateChildControl(Arguments... args)
         {
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
@@ -1960,7 +1986,6 @@ namespace Controls
         Window(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags windowsFlags);
 
       public:
-
         void Paint(Graphics::Renderer& renderer) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -1988,7 +2013,7 @@ namespace Controls
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
-        
+
         friend Factory::Window;
         friend Control;
     };
@@ -2500,6 +2525,7 @@ namespace Controls
       protected:
         NumericSelector(
               const long long minValue, const long long maxValue, long long value, const std::string_view& layout);
+
       public:
         long long GetValue() const;
         void SetValue(const long long value);
@@ -2535,7 +2561,8 @@ namespace Controls
     {
       protected:
         Desktop();
-      public:        
+
+      public:
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
@@ -2551,11 +2578,11 @@ namespace Controls
             Label() = delete;
 
           public:
-            static AppCUI::Controls::Label* Create(
+            static Reference<AppCUI::Controls::Label> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Label> Create(
+            static Pointer<AppCUI::Controls::Label> Create(
                   const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
         };
         class EXPORT Button
@@ -2563,13 +2590,13 @@ namespace Controls
             Button() = delete;
 
           public:
-            static AppCUI::Controls::Button* Create(
+            static Reference<AppCUI::Controls::Button> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   int controlID     = 0,
                   ButtonFlags flags = ButtonFlags::None);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Button> Create(
+            static Pointer<AppCUI::Controls::Button> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   int controlID                       = 0,
@@ -2580,12 +2607,12 @@ namespace Controls
             CheckBox() = delete;
 
           public:
-            static AppCUI::Controls::CheckBox* Create(
+            static Reference<AppCUI::Controls::CheckBox> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   int controlID = 0);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::CheckBox> Create(
+            static Pointer<AppCUI::Controls::CheckBox> Create(
                   const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID = 0);
         };
         class EXPORT RadioBox
@@ -2593,12 +2620,12 @@ namespace Controls
             RadioBox() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::RadioBox> Create(
+            static Pointer<AppCUI::Controls::RadioBox> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   int groupID,
                   int controlID = 0);
-            static AppCUI::Controls::RadioBox* Create(
+            static Reference<AppCUI::Controls::RadioBox> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
@@ -2610,37 +2637,38 @@ namespace Controls
             Splitter() = delete;
 
           public:
-            static AppCUI::Controls::Splitter* Create(
+            static Reference<AppCUI::Controls::Splitter> Create(
                   AppCUI::Controls::Control* parent, const std::string_view& layout, bool vertical);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Splitter> Create(const std::string_view& layout, bool vertical);
+            static Pointer<AppCUI::Controls::Splitter> Create(const std::string_view& layout, bool vertical);
         };
         class EXPORT Panel
         {
             Panel() = delete;
 
           public:
-            static AppCUI::Controls::Panel* Create(
+            static Reference<AppCUI::Controls::Panel> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Panel> Create(
+            static Pointer<AppCUI::Controls::Panel> Create(
                   const AppCUI::Utils::ConstString& caption, const std::string_view& layout);
-            static AppCUI::Controls::Panel* Create(AppCUI::Controls::Control* parent, const std::string_view& layout);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Panel> Create(const std::string_view& layout);
+            static Reference<AppCUI::Controls::Panel> Create(
+                  AppCUI::Controls::Control* parent, const std::string_view& layout);
+            static Pointer<AppCUI::Controls::Panel> Create(const std::string_view& layout);
         };
         class EXPORT TextField
         {
             TextField() = delete;
 
           public:
-            static AppCUI::Controls::TextField* Create(
+            static Reference<AppCUI::Controls::TextField> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
                   Handlers::SyntaxHighlightHandler handler = nullptr,
                   void* handlerContext                     = nullptr);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::TextField> Create(
+            static Pointer<AppCUI::Controls::TextField> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
@@ -2652,14 +2680,14 @@ namespace Controls
             TextArea() = delete;
 
           public:
-            static AppCUI::Controls::TextArea* Create(
+            static Reference<AppCUI::Controls::TextArea> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
                   Handlers::SyntaxHighlightHandler handler = nullptr,
                   void* handlerContext                     = nullptr);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::TextArea> Create(
+            static Pointer<AppCUI::Controls::TextArea> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
@@ -2671,21 +2699,21 @@ namespace Controls
             TabPage() = delete;
 
           public:
-            static AppCUI::Controls::TabPage* Create(
+            static Reference<AppCUI::Controls::TabPage> Create(
                   AppCUI::Controls::Control* parent, const AppCUI::Utils::ConstString& caption);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::TabPage> Create(const AppCUI::Utils::ConstString& caption);
+            static Pointer<AppCUI::Controls::TabPage> Create(const AppCUI::Utils::ConstString& caption);
         };
         class EXPORT Tab
         {
             Tab() = delete;
 
           public:
-            static AppCUI::Controls::Tab* Create(
+            static Reference<AppCUI::Controls::Tab> Create(
                   AppCUI::Controls::Control* parent,
                   const std::string_view& layout,
                   AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize         = 16);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Tab> Create(
+            static Pointer<AppCUI::Controls::Tab> Create(
                   const std::string_view& layout,
                   AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize         = 16);
@@ -2695,25 +2723,25 @@ namespace Controls
             CanvasViewer() = delete;
 
           public:
-            static AppCUI::Controls::CanvasViewer* Create(
+            static Reference<AppCUI::Controls::CanvasViewer> Create(
                   AppCUI::Controls::Control* parent,
                   const std::string_view& layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::CanvasViewer> Create(
+            static Pointer<AppCUI::Controls::CanvasViewer> Create(
                   const std::string_view& layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-            static AppCUI::Controls::CanvasViewer* Create(
+            static Reference<AppCUI::Controls::CanvasViewer> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::CanvasViewer> Create(
+            static Pointer<AppCUI::Controls::CanvasViewer> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   unsigned int canvasWidth,
@@ -2725,18 +2753,18 @@ namespace Controls
             ImageViewer() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::ImageViewer> Create(
+            static Pointer<AppCUI::Controls::ImageViewer> Create(
                   const std::string_view& layout,
                   AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static AppCUI::Controls::ImageViewer* Create(
+            static Reference<AppCUI::Controls::ImageViewer> Create(
                   AppCUI::Controls::Control* parent,
                   const std::string_view& layout,
                   AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static AppCUI::Controls::Pointer<AppCUI::Controls::ImageViewer> Create(
+            static Pointer<AppCUI::Controls::ImageViewer> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static AppCUI::Controls::ImageViewer* Create(
+            static Reference<AppCUI::Controls::ImageViewer> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
@@ -2747,10 +2775,10 @@ namespace Controls
             ListView() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::ListView> Create(
+            static Pointer<AppCUI::Controls::ListView> Create(
                   const std::string_view& layout,
                   AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
-            static AppCUI::Controls::ListView* Create(
+            static Reference < AppCUI::Controls::ListView> Create(
                   AppCUI::Controls::Control* parent,
                   const std::string_view& layout,
                   AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
@@ -2760,12 +2788,12 @@ namespace Controls
             ComboBox() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::ComboBox> Create(
+            static Pointer<AppCUI::Controls::ComboBox> Create(
                   const std::string_view& layout,
                   const AppCUI::Utils::ConstString& text = std::string_view(),
                   char itemsSeparator                    = ',');
 
-            static AppCUI::Controls::ComboBox* Create(
+            static Reference < AppCUI::Controls::ComboBox> Create(
                   AppCUI::Controls::Control* parent,
                   const std::string_view& layout,
                   const AppCUI::Utils::ConstString& text = std::string_view(),
@@ -2776,9 +2804,9 @@ namespace Controls
             NumericSelector() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::NumericSelector> Create(
+            static Pointer<AppCUI::Controls::NumericSelector> Create(
                   const long long minValue, const long long maxValue, long long value, const std::string_view& layout);
-            static AppCUI::Controls::NumericSelector* Create(
+            static Reference < AppCUI::Controls::NumericSelector> Create(
                   AppCUI::Controls::Control* parent,
                   const long long minValue,
                   const long long maxValue,
@@ -2790,7 +2818,7 @@ namespace Controls
             Window() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Window> Create(
+            static Pointer<AppCUI::Controls::Window> Create(
                   const AppCUI::Utils::ConstString& caption,
                   const std::string_view& layout,
                   AppCUI::Controls::WindowFlags windowFlags = AppCUI::Controls::WindowFlags::None);
@@ -2800,7 +2828,7 @@ namespace Controls
             Desktop() = delete;
 
           public:
-            static AppCUI::Controls::Pointer<AppCUI::Controls::Desktop> Create();
+            static Pointer<AppCUI::Controls::Desktop> Create();
         };
     } // namespace Factory
 
