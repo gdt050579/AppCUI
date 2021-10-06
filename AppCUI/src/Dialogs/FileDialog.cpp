@@ -39,171 +39,6 @@ std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-class FileDialogWindow : public Window
-{
-  public:
-    FileDialogWindow(
-          bool open,
-          const AppCUI::Utils::ConstString& fileName,
-          const AppCUI::Utils::ConstString& extensionsFilter,
-          const std::filesystem::path& _path);
-
-    bool OnEvent(Control* sender, Event eventType, int controlID) override;
-    std::filesystem::path GetResultedPath() const;
-
-  protected:
-    Reference<Controls::Label> lbPath, lbLocation;
-    Reference<Controls::Label> lbName, lbExt;
-    Reference<Controls::Splitter> splitListView;
-    Reference<AppCUI::Controls::Panel> splitPanelLeft, splitPanelRight;
-    Reference<Controls::ListView> lSpecialPaths;
-    Reference<Controls::ListView> files;
-    Reference<Controls::TextField> txName;
-    Reference<Controls::ComboBox> comboType;
-    Reference<Controls::Button> btnOK, btnCancel;
-    // TODO: Future back and forward option
-    // Controls::Button btnBack, btnForward;
-    std::vector<FSLocationData> locations;
-    std::vector<std::set<unsigned int>> extensions;
-    const std::set<unsigned int>* extFilter;
-    std::filesystem::path resultedPath;
-    std::filesystem::path currentPath;
-
-    bool openDialog;
-
-    void LoadAllLocations();
-    bool ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensionsFilter);
-
-    void SpecialFoldersUpdatePath();
-    void UpdateCurrentExtensionFilter();
-    void UpdateWithCurrentPath();
-
-    void Validate();
-    void FileListItemClicked();
-    void FileListItemChanged();
-};
-
-std::filesystem::path CanonizePath(std::filesystem::path p)
-{
-    std::filesystem::path result;
-    std::error_code err;
-
-    result = std::filesystem::canonical(p, err);
-
-    if (err)
-    {
-        result = std::filesystem::absolute(".", err);
-        if (err)
-        {
-            return p;
-        }
-    }
-    return result;
-}
-
-FileDialogWindow::FileDialogWindow(
-      bool open,
-      const AppCUI::Utils::ConstString& fileName,
-      const AppCUI::Utils::ConstString& extensionsFilter,
-      const std::filesystem::path& specifiedPath)
-    : Window(open ? "Open" : "Save", "w:78,h:23,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
-{
-    currentPath = CanonizePath(specifiedPath.empty() ? "." : specifiedPath);
-
-    lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10");
-    lbPath     = Factory::Label::Create(this, "", "x:11,y:0,w:62");
-
-    splitListView = Factory::Splitter::Create(this, "x:0,y:1,w:76,h:15", true);
-    splitListView->SetSecondPanelSize(60);
-    splitPanelLeft  = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
-    splitPanelRight = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
-
-    ListViewFlags specialPathsFlags =
-          ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
-    lSpecialPaths = Factory::ListView::Create(splitPanelLeft, "x:0,y:0,w:100%,h:100%", specialPathsFlags);
-    lSpecialPaths->AddColumn("Special", TextAlignament::Left, 20);
-
-    // TODO: Future option for back and front
-    // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
-    // btnForward.Create(&wnd, ">", "x:5,y:0,w:3", 2, ButtonFlags::Flat);
-
-    locations.push_back({ "Initial", currentPath });
-    LoadAllLocations();
-    for (const auto& locationInfo : locations)
-    {
-        lSpecialPaths->AddItem(locationInfo.locationName);
-    }
-
-    files = Factory::ListView::Create(splitPanelRight, "x:0,y:0,w:100%,h:100%", ListViewFlags::Sortable);
-    files->AddColumn("&Name", TextAlignament::Left, 31);
-    files->AddColumn("&Size", TextAlignament::Right, 16);
-    files->AddColumn("&Modified", TextAlignament::Center, 20);
-    files->SetItemCompareFunction(
-          [](AppCUI::Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
-                -> int
-          {
-              const auto& v1 = control->GetItemData(item1)->UInt64Value;
-              const auto& v2 = control->GetItemData(item2)->UInt64Value;
-              if (v1 < v2)
-                  return -1;
-              if (v1 > v2)
-                  return 1;
-              const auto& s1 = control->GetItemText(item1, columnIndex);
-              const auto& s2 = control->GetItemText(item2, columnIndex);
-              return s1.CompareWith(s2, true);
-          },
-          this);
-    files->Sort(0, true); // sort after the first column, ascendent
-
-    lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
-    txName = Factory::TextField::Create(this, fileName, "x:15,y:17,w:45");
-    txName->SetHotKey('N');
-    lbExt = Factory::Label::Create(this, "File &Type", "x:2,y:19,w:11");
-
-    btnOK     = Factory::Button::Create(this, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
-    btnCancel = Factory::Button::Create(this, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
-
-    comboType = Factory::ComboBox::Create(this, "x:15,y:19,w:45");
-    comboType->SetHotKey('T');
-    ProcessExtensionFilter(extensionsFilter);
-    if (comboType->GetItemsCount() > 0)
-        comboType->AddSeparator();
-    comboType->AddItem("All files", ItemData{ ALL_FILES_INDEX });
-    comboType->SetCurentItemIndex(0);
-    UpdateCurrentExtensionFilter();
-
-    UpdateWithCurrentPath();
-    txName->SetFocus();
-}
-
-void FileDialogWindow::LoadAllLocations()
-{
-    SpecialFolderMap specialFoldersMap;
-    RootsVector rootsVector;
-    AppCUI::OS::GetSpecialFolders(specialFoldersMap, rootsVector);
-
-    for (const auto& root : rootsVector)
-    {
-        this->locations.push_back(root);
-    }
-
-    std::set<std::filesystem::path> locationDeDuplicator;
-
-    for (const auto& specialFolder : specialFoldersMap)
-    {
-        if (!locationDeDuplicator.contains(specialFolder.second.locationPath))
-        {
-            this->locations.push_back(specialFolder.second);
-            locationDeDuplicator.insert(specialFolder.second.locationPath);
-        }
-    }
-}
-
-std::filesystem::path FileDialogWindow::GetResultedPath() const
-{
-    return resultedPath;
-}
-
 void ConvertSizeToString(unsigned long long size, char result[32])
 {
     result[31] = 0;
@@ -267,6 +102,173 @@ std::vector<std::u16string_view> splitSV(std::u16string_view strv, std::u16strin
     return output;
 }
 
+class FileDialogWindow : public Window
+{
+  public:
+    FileDialogWindow(
+          bool open,
+          const AppCUI::Utils::ConstString& fileName,
+          const AppCUI::Utils::ConstString& extensionsFilter,
+          const std::filesystem::path& _path);
+
+    bool OnEvent(Control* sender, Event eventType, int controlID) override;
+    std::filesystem::path GetResultedPath() const;
+
+  protected:
+    Reference<Controls::Label> lbPath, lbLocation;
+    Reference<Controls::Label> lbName, lbExt;
+    Reference<Controls::Splitter> splitListView;
+    Reference<AppCUI::Controls::Panel> splitPanelLeft, splitPanelRight;
+    Reference<Controls::ListView> lSpecialPaths;
+    Reference<Controls::ListView> files;
+    Reference<Controls::TextField> txName;
+    Reference<Controls::ComboBox> comboType;
+    Reference<Controls::Button> btnOK, btnCancel;
+    // TODO: Future back and forward option
+    // Controls::Button btnBack, btnForward;
+    std::vector<FSLocationData> locations;
+    std::vector<std::set<unsigned int>> extensions;
+    const std::set<unsigned int>* extFilter;
+    std::filesystem::path resultedPath;
+    std::filesystem::path currentPath;
+
+    bool openDialog;
+
+    void LoadAllSpecialLocations();
+    bool ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensionsFilter);
+
+    void SpecialFoldersUpdatePath();
+    void UpdateCurrentExtensionFilter();
+
+    void UpdateCurrentPath(const std::filesystem::path& newPath);
+    void ReloadCurrentPath();
+
+    void ProcessTextFieldInput();
+    void FileListItemClicked();
+    void FileListItemChanged();
+};
+
+std::filesystem::path CanonizePath(std::filesystem::path p)
+{
+    std::filesystem::path result;
+    std::error_code err;
+
+    result = std::filesystem::canonical(p, err);
+
+    if (err)
+    {
+        result = std::filesystem::absolute(".", err);
+        if (err)
+        {
+            return p;
+        }
+    }
+    return result;
+}
+
+FileDialogWindow::FileDialogWindow(
+      bool open,
+      const AppCUI::Utils::ConstString& fileName,
+      const AppCUI::Utils::ConstString& extensionsFilter,
+      const std::filesystem::path& specifiedPath)
+    : Window(open ? "Open" : "Save", "w:78,h:23,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
+{
+    const std::filesystem::path initialPath = CanonizePath(specifiedPath.empty() ? "." : specifiedPath);
+
+    lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10");
+    lbPath     = Factory::Label::Create(this, "", "x:11,y:0,w:62");
+
+    splitListView = Factory::Splitter::Create(this, "x:0,y:1,w:76,h:15", true);
+    splitListView->SetSecondPanelSize(60);
+    splitPanelLeft  = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
+    splitPanelRight = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
+
+    ListViewFlags specialPathsFlags =
+          ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
+    lSpecialPaths = Factory::ListView::Create(splitPanelLeft, "x:0,y:0,w:100%,h:100%", specialPathsFlags);
+    lSpecialPaths->AddColumn("Special", TextAlignament::Left, 20);
+
+    // TODO: Future option for back and front
+    // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
+    // btnForward.Create(&wnd, ">", "x:5,y:0,w:3", 2, ButtonFlags::Flat);
+
+    locations.push_back({ "Initial", initialPath });
+    LoadAllSpecialLocations();
+    for (const auto& locationInfo : locations)
+    {
+        lSpecialPaths->AddItem(locationInfo.locationName);
+    }
+
+    files = Factory::ListView::Create(splitPanelRight, "x:0,y:0,w:100%,h:100%", ListViewFlags::Sortable);
+    files->AddColumn("&Name", TextAlignament::Left, 31);
+    files->AddColumn("&Size", TextAlignament::Right, 16);
+    files->AddColumn("&Modified", TextAlignament::Center, 20);
+    files->SetItemCompareFunction(
+          [](AppCUI::Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
+                -> int
+          {
+              const auto& v1 = control->GetItemData(item1)->UInt64Value;
+              const auto& v2 = control->GetItemData(item2)->UInt64Value;
+              if (v1 < v2)
+                  return -1;
+              if (v1 > v2)
+                  return 1;
+              const auto& s1 = control->GetItemText(item1, columnIndex);
+              const auto& s2 = control->GetItemText(item2, columnIndex);
+              return s1.CompareWith(s2, true);
+          },
+          this);
+    files->Sort(0, true); // sort after the first column, ascendent
+
+    lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
+    txName = Factory::TextField::Create(this, fileName, "x:15,y:17,w:45", TextFieldFlags::ProcessEnter);
+    txName->SetHotKey('N');
+    lbExt = Factory::Label::Create(this, "File &Type", "x:2,y:19,w:11");
+
+    btnOK     = Factory::Button::Create(this, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
+    btnCancel = Factory::Button::Create(this, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
+
+    comboType = Factory::ComboBox::Create(this, "x:15,y:19,w:45");
+    comboType->SetHotKey('T');
+    ProcessExtensionFilter(extensionsFilter);
+    if (comboType->GetItemsCount() > 0)
+        comboType->AddSeparator();
+    comboType->AddItem("All files", ItemData{ ALL_FILES_INDEX });
+    comboType->SetCurentItemIndex(0);
+    UpdateCurrentExtensionFilter();
+
+    UpdateCurrentPath(initialPath);
+    txName->SetFocus();
+}
+
+void FileDialogWindow::LoadAllSpecialLocations()
+{
+    SpecialFolderMap specialFoldersMap;
+    RootsVector rootsVector;
+    AppCUI::OS::GetSpecialFolders(specialFoldersMap, rootsVector);
+
+    for (const auto& root : rootsVector)
+    {
+        locations.push_back(root);
+    }
+
+    std::set<std::filesystem::path> locationDeDuplicator;
+
+    for (const auto& specialFolder : specialFoldersMap)
+    {
+        if (!locationDeDuplicator.contains(specialFolder.second.locationPath))
+        {
+            locations.push_back(specialFolder.second);
+            locationDeDuplicator.insert(specialFolder.second.locationPath);
+        }
+    }
+}
+
+std::filesystem::path FileDialogWindow::GetResultedPath() const
+{
+    return resultedPath;
+}
+
 bool FileDialogWindow::ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensiosFilter)
 {
     // format is: <Name>:ext|<Name>:ext| ...
@@ -304,60 +306,61 @@ void FileDialogWindow::FileListItemClicked()
     int index = files->GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value      = (int) files->GetItemData(index)->UInt32Value;
-    std::filesystem::path p = currentPath;
+    unsigned int value = (int) files->GetItemData(index)->UInt32Value;
     if (value == 0)
     {
         try
         {
-            currentPath = p.parent_path();
-            UpdateWithCurrentPath();
+            UpdateCurrentPath(currentPath.parent_path());
         }
         catch (...)
         {
-            MessageBox::ShowError("Error", u"Unable to get parent path of: "s + p.u16string());
+            MessageBox::ShowError("Error", u"Unable to get parent path of: "s + currentPath.u16string());
         }
         return;
     }
-    if (value == 1)
+    else if (value == 1)
     {
         try
         {
-            p /= files->GetItemText(index, 0);
-            currentPath = p;
-            UpdateWithCurrentPath();
+            UpdateCurrentPath(currentPath / files->GetItemText(index, 0));
         }
         catch (...)
         {
-            MessageBox::ShowError("Error", u"Unable to open path: "s + p.u16string());
+            MessageBox::ShowError("Error", u"Unable to open path: "s + currentPath.u16string());
         }
 
         return;
     }
-    if (value == 2)
-        Validate();
+    else if (value == 2)
+    {
+        ProcessTextFieldInput();
+    }
 }
 void FileDialogWindow::FileListItemChanged()
 {
     const auto& index = files->GetCurrentItem();
     if (index < 0)
-        return;
-    const auto& value = files->GetItemData(index)->UInt32Value;
-    if (value == 2)
-        txName->SetText(files->GetItemText(index, 0));
-    else
-        txName->SetText(""); // default value
-}
-
-void FileDialogWindow::Validate()
-{
-    if (currentPath.empty())
     {
         return;
     }
+    const auto& value = files->GetItemData(index)->UInt32Value;
+    if (value == 2)
+    {
+        txName->SetText(files->GetItemText(index, 0));
+    }
+    else
+    {
+        txName->SetText(""); // default value
+    }
+}
 
-    if (txName->GetText().Len() == 0)
+void FileDialogWindow::ProcessTextFieldInput()
+{
+    if (currentPath.empty() || txName->GetText().Len() == 0)
+    {
         return;
+    }
 
     std::filesystem::path candidateResultedPath = currentPath;
     try
@@ -371,6 +374,19 @@ void FileDialogWindow::Validate()
     }
 
     std::error_code err;
+    const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
+    if (err)
+    {
+        MessageBox::ShowError(
+              "Error", u"Unable to check path for being a directory: "s + candidateResultedPath.u16string());
+        return;
+    }
+    if (isDir)
+    {
+        UpdateCurrentPath(candidateResultedPath);
+        return;
+    }
+
     const bool exists = std::filesystem::exists(candidateResultedPath, err);
     if (err)
     {
@@ -402,7 +418,7 @@ void FileDialogWindow::Validate()
 void FileDialogWindow::SpecialFoldersUpdatePath()
 {
     const auto idx = lSpecialPaths->GetCurrentItem();
-    currentPath    = locations[idx].locationPath;
+    UpdateCurrentPath(locations[idx].locationPath);
 }
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
@@ -419,79 +435,104 @@ void FileDialogWindow::UpdateCurrentExtensionFilter()
     }
 }
 
-void FileDialogWindow::UpdateWithCurrentPath()
+void FileDialogWindow::ReloadCurrentPath()
 {
     files->DeleteAllItems();
+
+    if (currentPath != currentPath.root_path())
+    {
+        files->AddItem("..", "UP-DIR");
+        files->SetItemData(0, ItemData{ nullptr });
+    }
+    char size[32];
+    char time_rep[64];
+    ItemHandle itemHandle;
+    try
+    {
+        for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
+        {
+            if (fileEntry.is_directory())
+                Utils::String::Set(size, "Folder", 32, 6);
+            else
+            {
+                // check filter first
+                if (extFilter)
+                {
+                    // a filter is set - let's check the extention
+                    auto ext16          = fileEntry.path().extension().u16string();
+                    auto ext16Start     = ext16.data();
+                    const auto ext16End = ext16.data() + ext16.size();
+
+                    if (ext16.length() > 1 && ext16[0] == '.')
+                    {
+                        ext16Start++;
+                    }
+                    if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
+                        continue; // extension is filtered
+                }
+                ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+            }
+
+            auto lastModifiedTime = getLastModifiedTime(fileEntry);
+            std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
+
+            itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, time_rep);
+            if (fileEntry.is_directory())
+            {
+                this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
+                this->files->SetItemData(itemHandle, ItemData{ 1 });
+            }
+            else
+            {
+                this->files->SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
+                this->files->SetItemData(itemHandle, ItemData{ 2 });
+            }
+        }
+    }
+    catch (...)
+    {
+        MessageBox::ShowError("Error", u"Unable to read location: "s + currentPath.u16string());
+    }
+
+    files->Sort();
+}
+
+void FileDialogWindow::UpdateCurrentPath(const std::filesystem::path& newPath)
+{
     std::error_code err;
-    const bool exists = std::filesystem::exists(currentPath, err);
+    const bool exists = std::filesystem::exists(newPath, err);
     if (err)
     {
-        MessageBox::ShowError("Error", u"Unable to check path for existence: "s + currentPath.u16string());
+        MessageBox::ShowError("Error", u"Unable to check path for existence: "s + newPath.u16string());
+        return;
+    }
+    if (!exists)
+    {
+        MessageBox::ShowError("Error", u"Path doesn't exist: "s + newPath.u16string());
+        return;
+    }
+    const bool isDir = std::filesystem::is_directory(newPath, err);
+    if (err)
+    {
+        MessageBox::ShowError("Error", u"Cannot check if the path is directory: "s + newPath.u16string());
+        return;
+    }
+    if (!isDir)
+    {
+        MessageBox::ShowError("Error", u"Path is not a directory: "s + newPath.u16string());
         return;
     }
 
-    if (exists)
+    std::filesystem::directory_iterator(newPath, err);
+    if (err)
     {
-        currentPath = CanonizePath(currentPath);
-        lbPath->SetText(currentPath.u16string());
-
-        if (currentPath != currentPath.root_path())
-        {
-            files->AddItem("..", "UP-DIR");
-            files->SetItemData(0, ItemData{ nullptr });
-        }
-        char size[32];
-        char time_rep[64];
-        ItemHandle itemHandle;
-        try
-        {
-            for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
-            {
-                if (fileEntry.is_directory())
-                    Utils::String::Set(size, "Folder", 32, 6);
-                else
-                {
-                    // check filter first
-                    if (extFilter)
-                    {
-                        // a filter is set - let's check the extention
-                        auto ext16          = fileEntry.path().extension().u16string();
-                        auto ext16Start     = ext16.data();
-                        const auto ext16End = ext16.data() + ext16.size();
-
-                        if (ext16.length() > 1 && ext16[0] == '.')
-                        {
-                            ext16Start++;
-                        }
-                        if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
-                            continue; // extension is filtered
-                    }
-                    ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
-                }
-
-                auto lastModifiedTime = getLastModifiedTime(fileEntry);
-                std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
-
-                itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, time_rep);
-                if (fileEntry.is_directory())
-                {
-                    this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-                    this->files->SetItemData(itemHandle, ItemData{ 1 });
-                }
-                else
-                {
-                    this->files->SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
-                    this->files->SetItemData(itemHandle, ItemData{ 2 });
-                }
-            }
-        }
-        catch (...)
-        {
-            MessageBox::ShowError("Error", u"Unable to read location: "s + currentPath.u16string());
-            // for the moment skip
-        }
-        files->Sort();
+        MessageBox::ShowError("Error", u"Unable to read location: "s + currentPath.u16string());
+        return;
     }
+
+    currentPath = CanonizePath(newPath);
+    lbPath->SetText(currentPath.u16string());
+    ReloadCurrentPath();
 }
 
 bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventType, int controlID)
@@ -502,12 +543,12 @@ bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventTyp
         Exit(Dialogs::Result::Cancel);
         return true;
     case Event::WindowAccept:
-        Validate();
+        ProcessTextFieldInput();
         return true;
     case Event::ButtonClicked:
         if (controlID == (int) Dialogs::Result::Ok)
         {
-            Validate();
+            ProcessTextFieldInput();
         }
         else
         {
@@ -518,13 +559,13 @@ bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventTyp
         if (sender == comboType)
         {
             UpdateCurrentExtensionFilter();
-            UpdateWithCurrentPath();
+            ReloadCurrentPath();
         }
         return true;
     case Event::TextFieldValidate:
         if (sender == txName)
         {
-            UpdateWithCurrentPath();
+            ProcessTextFieldInput();
         }
         files->SetFocus();
         return true;
@@ -532,7 +573,6 @@ bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventTyp
         if (sender == lSpecialPaths)
         {
             SpecialFoldersUpdatePath();
-            UpdateWithCurrentPath();
         }
         else if (sender == files)
         {
@@ -543,7 +583,6 @@ bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventTyp
         if (sender == lSpecialPaths)
         {
             SpecialFoldersUpdatePath();
-            UpdateWithCurrentPath();
         }
         else if (sender == files)
         {
