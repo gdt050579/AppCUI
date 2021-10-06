@@ -137,9 +137,9 @@ int FileDialog_ListViewItemComparer(
     return s1.CompareWith(s2, true);
 }
 bool FileDialog_EventHandler(
-      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void*)
-{
-    return ((FileDialogClass*) control)->OnEventHandler(sender, eventType, controlID);
+      Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* context)
+{    
+    return ((FileDialogClass*) context)->OnEventHandler(sender, eventType, controlID);
 }
 
 // https://www.cppstories.com/2018/07/string-view-perf-followup/
