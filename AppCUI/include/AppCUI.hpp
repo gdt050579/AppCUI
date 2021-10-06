@@ -347,6 +347,22 @@ namespace Utils
         {
             return *ptr;
         }
+        constexpr inline bool operator==(const void* obj)
+        {
+            return ptr == obj;
+        }
+        constexpr inline bool operator==(const Reference<T>& obj)
+        {
+            return ptr == obj.ptr;
+        }
+        constexpr inline bool operator!=(const void* obj)
+        {
+            return ptr != obj;
+        }
+        constexpr inline bool operator!=(const Reference<T>& obj)
+        {
+            return ptr != obj.ptr;
+        }
     };
 } // namespace Utils
 namespace Application
