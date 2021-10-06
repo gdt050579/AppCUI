@@ -311,12 +311,12 @@ void FileDialogWindow::FileListItemClicked()
         try
         {
             currentPath = p.parent_path();
+            UpdateWithCurrentPath();
         }
         catch (...)
         {
             MessageBox::ShowError("Error", u"Unable to get parent path of: "s + p.u16string());
         }
-        UpdateWithCurrentPath();
         return;
     }
     if (value == 1)
@@ -324,13 +324,14 @@ void FileDialogWindow::FileListItemClicked()
         try
         {
             p /= files->GetItemText(index, 0);
+            currentPath = p;
+            UpdateWithCurrentPath();
         }
         catch (...)
         {
             MessageBox::ShowError("Error", u"Unable to open path: "s + p.u16string());
         }
-        currentPath = p;
-        UpdateWithCurrentPath();
+
         return;
     }
     if (value == 2)
