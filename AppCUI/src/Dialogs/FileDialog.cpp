@@ -526,7 +526,7 @@ void FileDialogWindow::UpdateCurrentPath(const std::filesystem::path& newPath)
     std::filesystem::directory_iterator(newPath, err);
     if (err)
     {
-        MessageBox::ShowError("Error", u"Unable to read location: "s + currentPath.u16string());
+        MessageBox::ShowError("Error", u"Unable to read location: "s + newPath.u16string());
         return;
     }
 
