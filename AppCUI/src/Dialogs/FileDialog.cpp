@@ -371,7 +371,7 @@ void FileDialogWindow::Validate()
     }
 
     std::error_code err;
-    bool exists = std::filesystem::exists(candidateResultedPath, err);
+    const bool exists = std::filesystem::exists(candidateResultedPath, err);
     if (err)
     {
         MessageBox::ShowError("Error", u"Unable to check path for existence: "s + candidateResultedPath.u16string());
@@ -423,14 +423,19 @@ void FileDialogWindow::UpdateWithCurrentPath()
 {
     files->DeleteAllItems();
     std::error_code err;
-    if (std::filesystem::exists(currentPath, err))
+    const bool exists = std::filesystem::exists(currentPath, err);
+    if (err)
+    {
+        MessageBox::ShowError("Error", u"Unable to check path for existence: "s + currentPath.u16string());
+        return;
+    }
+
+    if (exists)
     {
         currentPath = CanonizePath(currentPath);
+        lbPath->SetText(currentPath.u16string());
 
-        std::filesystem::path p = currentPath;
-        lbPath->SetText(p.u16string());
-
-        if (p != p.root_path())
+        if (currentPath != currentPath.root_path())
         {
             files->AddItem("..", "UP-DIR");
             files->SetItemData(0, ItemData{ nullptr });
@@ -440,7 +445,7 @@ void FileDialogWindow::UpdateWithCurrentPath()
         ItemHandle itemHandle;
         try
         {
-            for (const auto& fileEntry : std::filesystem::directory_iterator(p))
+            for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
             {
                 if (fileEntry.is_directory())
                     Utils::String::Set(size, "Folder", 32, 6);
@@ -482,7 +487,7 @@ void FileDialogWindow::UpdateWithCurrentPath()
         }
         catch (...)
         {
-            MessageBox::ShowError("Error", u"Unable to read location: "s + p.u16string());
+            MessageBox::ShowError("Error", u"Unable to read location: "s + currentPath.u16string());
             // for the moment skip
         }
         files->Sort();
