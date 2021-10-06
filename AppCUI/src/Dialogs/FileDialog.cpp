@@ -138,7 +138,7 @@ int FileDialog_ListViewItemComparer(
 }
 bool FileDialog_EventHandler(
       Control* control, const void* sender, AppCUI::Controls::Event eventType, int controlID, void* context)
-{    
+{
     return ((FileDialogClass*) context)->OnEventHandler(sender, eventType, controlID);
 }
 
@@ -462,9 +462,15 @@ int FileDialogClass::Show(
         this->locations.push_back(root);
     }
 
+    std::set<std::filesystem::path> locationDeDuplicator;
+
     for (const auto& specialFolder : specialFoldersMap)
     {
-        this->locations.push_back(specialFolder.second);
+        if (!locationDeDuplicator.contains(specialFolder.second.locationPath))
+        {
+            this->locations.push_back(specialFolder.second);
+            locationDeDuplicator.insert(specialFolder.second.locationPath);
+        }
     }
 
     for (const auto& locationInfo : locations)
