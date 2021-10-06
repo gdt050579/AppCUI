@@ -3032,6 +3032,7 @@ namespace Application
         FixedSize           = 0x0010,
         LoadSettingsFile    = 0x0020,
         AutoHotKeyForWindow = 0x0040,
+        AutoRedraw          = 0x0080,
     };
 
     enum class CharacterSize : unsigned int
