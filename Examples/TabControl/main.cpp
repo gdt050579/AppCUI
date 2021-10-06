@@ -5,6 +5,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
+using namespace AppCUI::Utils;
 
 #define CLOSE_BUTTON_ID    123456
 #define SHOW_TAB_BUTTON_ID 654321
@@ -73,9 +74,9 @@ class TabExampleWin : public Window
 
 class MyWin : public Window
 {
-    RadioBox *tabTop, *tabBottom, *tabLeft, *tabList, *tabNoTabs;
-    CheckBox *cbTransparent, *cbTabBar;
-    NumericSelector *selector, *tabsCount;
+    Reference<RadioBox> tabTop, tabBottom, tabLeft, tabList, tabNoTabs;
+    Reference<CheckBox> cbTransparent, cbTabBar;
+    Reference<NumericSelector> selector, tabsCount;
 
   public:
     MyWin() : Window("Tab example config", "d:c,w:50,h:19",WindowFlags::None)

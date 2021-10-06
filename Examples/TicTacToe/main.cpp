@@ -8,6 +8,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
+using namespace AppCUI::Utils;
 
 constexpr unsigned int CELL_WITH_X = 1;
 constexpr unsigned int CELL_WITH_O = 2;
@@ -110,7 +111,7 @@ class TicTacToeTable : public UserControl
 
 class TicTacToeWin : public AppCUI::Controls::Window
 {
-    TicTacToeTable *game;
+    Reference<TicTacToeTable> game;
 
   public:
     TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18",WindowFlags::None)
