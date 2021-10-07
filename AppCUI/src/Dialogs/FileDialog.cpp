@@ -222,7 +222,7 @@ void FileDialogClass::OnCurrentItemChanged()
     {
         return;
     }
-    
+
     const unsigned int value = files.GetItemData(index)->UInt32Value;
     if (value == 1)
     {
@@ -314,18 +314,18 @@ void FileDialogClass::UpdateFileList()
             files.SetItemData(0, ItemData{ nullptr });
         }
         char size[32];
+        char dateBuffer[64]{ 0 };
         ItemHandle itemHandle;
         try
         {
             for (const auto& fileEntry : std::filesystem::directory_iterator(p))
             {
                 if (fileEntry.is_directory())
-                {
                     Utils::String::Set(size, "Folder", 32, 6);
-                }
                 else
-                {                    
-                    if (extFilter) // check filter first
+                {
+                    // check filter first
+                    if (extFilter)
                     {
                         // a filter is set - let's check the extention
                         auto ext16          = fileEntry.path().extension().u16string();
@@ -339,11 +339,9 @@ void FileDialogClass::UpdateFileList()
                         if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
                             continue; // extension is filtered
                     }
-
-                    ConvertSizeToString(static_cast<unsigned long long>(fileEntry.file_size()), size);
+                    ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
                 }
 
-                char dateBuffer[64]{ 0 };
                 const time_t date{ getLastModifiedTime(fileEntry) };
                 struct tm t;
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
@@ -354,7 +352,7 @@ void FileDialogClass::UpdateFileList()
                 std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
 
-                itemHandle = this->files.AddItem(fileEntry.path().filename().u16string(), size, time_rep);
+                itemHandle = this->files.AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
                 if (fileEntry.is_directory())
                 {
                     this->files.SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
@@ -480,14 +478,8 @@ int FileDialogClass::Show(
     this->locations.push_back({ "Initial", initialPath });
     for (const auto& root : rootsVector)
     {
-        comboDrive.AddSeparator("Drives");
-        for (unsigned int index = 0; index < this->specialFolders.size(); index++)
-            comboDrive.AddItem(this->specialFolders[index].first.c_str(), ItemData{ index });
         this->locations.push_back(root);
     }
-    auto lastSize = this->specialFolders.size();
-    AppCUI::OS::GetSpecialFolders(this->specialFolders, SpecialFoldersType::SpecialLocations, false);
-    if (this->specialFolders.size() > lastSize)
 
     for (const auto& specialFolder : specialFoldersMap)
     {
