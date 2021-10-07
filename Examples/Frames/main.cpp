@@ -59,7 +59,7 @@ class FramesExample : public Window
     bool OnFrameUpdate() override
     {
         counter++;
-        if (counter == 30) /* 30 FPS */
+        if (counter == 3) /* 30 FPS */
         {
             ball->Update();
             counter = 0;

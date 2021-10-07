@@ -456,11 +456,14 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
             {
                 if (result == WAIT_TIMEOUT)
                 {
+                    this->startTime   = GetTickCount();
+                    evnt.updateFrames = true;
                     return; // process framerate update;
                 }
                 else
                 {
                     // other error
+                    return;
                 }
             }
         }

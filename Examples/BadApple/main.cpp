@@ -19,7 +19,7 @@ constexpr unsigned int BUTTON_ID_STOP = 2;
 class VideoScreen : public AppCUI::Controls::UserControl
 {
   public:
-    VideoScreen(std::string_view layout) : UserControl(layout), painitng(false), currentFrame(0), count(0)
+    VideoScreen(std::string_view layout) : UserControl(layout), painitng(false), currentFrame(0)
     {
     }
 
@@ -45,13 +45,8 @@ class VideoScreen : public AppCUI::Controls::UserControl
     {
         if (painitng)
         {
-            count++;
-            if (count >= 60)
-            {
-                currentFrame++;
-                count = 0;
-                return true;
-            }            
+            currentFrame++;
+            return true;
         }
             
         return false;
@@ -68,7 +63,6 @@ class VideoScreen : public AppCUI::Controls::UserControl
     }
 
   private:
-    int count;
     bool painitng;
     size_t currentFrame;
     std::vector<std::vector<std::string>> frames;
