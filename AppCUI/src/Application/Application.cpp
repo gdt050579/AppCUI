@@ -315,7 +315,7 @@ bool ProcessUpdateFrameEvent(AppCUI::Controls::Control* ctrl)
         auto e = s + Members->ControlsCount;
         while (s<e)
         {
-            res |= (*s)->OnFrameUpdate();
+            res |= ProcessUpdateFrameEvent(*s);
             s++;
         }
     }

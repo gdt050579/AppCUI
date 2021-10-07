@@ -1743,7 +1743,7 @@ bool AppCUI::Controls::Control::OnBeforeResize(int, int)
 }
 bool AppCUI::Controls::Control::OnFrameUpdate()
 {
-    return true;
+    return false;
 }
 void AppCUI::Controls::Control::OnAfterResize(int, int)
 {
