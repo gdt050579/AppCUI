@@ -160,7 +160,8 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
     CHECK(window, false, "Failed to initialize SDL Window: %s", SDL_GetError());
     windowID = SDL_GetWindowID(window);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -224,13 +225,10 @@ SDL_Texture* SDLTerminal::renderCharacter(
     SDL_Surface* glyphSurface = TTF_RenderGlyph_Shaded(font, charCode, fg, bg);
     if (glyphSurface == nullptr)
     {
+        characterCache[charPacked] = nullptr;
         return nullptr;
     }
     SDL_Texture* glyphTexture = SDL_CreateTextureFromSurface(renderer, glyphSurface);
-    if (glyphTexture == nullptr)
-    {
-        return nullptr;
-    }
     SDL_FreeSurface(glyphSurface);
     characterCache[charPacked] = glyphTexture;
     return glyphTexture;
@@ -244,6 +242,7 @@ void SDLTerminal::OnFlushToScreen()
     AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const std::size_t width                  = ScreenCanvas.GetWidth();
     const std::size_t height                 = ScreenCanvas.GetHeight();
+
     SDL_RenderClear(renderer);
 
     SDL_Rect WindowRect;
@@ -256,18 +255,16 @@ void SDLTerminal::OnFlushToScreen()
         {
             AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
 
-            const int cuiFG     = static_cast<int>(ch.Color.Foreground);
-            const int cuiBG     = static_cast<int>(ch.Color.Background);
-            const SDL_Color& fg = appcuiColorToSDLColor[cuiFG];
-            const SDL_Color& bg = appcuiColorToSDLColor[cuiBG];
-            const int chCode    = codePageConversions(ch.Code);
+            SDL_Texture* glyphTexture = renderCharacter(
+                  ch.PackedValue,
+                  codePageConversions(ch.Code),
+                  appcuiColorToSDLColor[(char) ch.Color.Foreground],
+                  appcuiColorToSDLColor[(char) ch.Color.Background]);
 
-            WindowRect.x = charWidth * x;
-            WindowRect.y = charHeight * y;
-
-            SDL_Texture* glyphTexture = renderCharacter(ch.PackedValue, chCode, fg, bg);
             if (glyphTexture != nullptr)
             {
+                WindowRect.x = charWidth * x;
+                WindowRect.y = charHeight * y;
                 SDL_RenderCopy(renderer, glyphTexture, nullptr, &WindowRect);
             }
         }

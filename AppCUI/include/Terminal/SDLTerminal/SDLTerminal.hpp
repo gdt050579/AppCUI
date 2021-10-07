@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace AppCUI
 {
@@ -27,7 +28,7 @@ namespace Internal
         size_t charHeight;
         bool autoRedraw;
 
-        std::map<unsigned int, SDL_Texture*> characterCache;
+        std::unordered_map<unsigned int, SDL_Texture*> characterCache;
 
       public:
         virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
