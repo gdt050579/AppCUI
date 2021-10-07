@@ -25,6 +25,7 @@ namespace Internal
         TTF_Font* font;
         size_t charWidth;
         size_t charHeight;
+        bool autoRedraw;
 
       public:
         virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
@@ -50,4 +51,3 @@ namespace Internal
     };
 } // namespace Internal
 } // namespace AppCUI
-

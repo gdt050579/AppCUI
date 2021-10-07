@@ -5,18 +5,17 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-int winID = 1;
+int winID                = 1;
 std::string_view tags[8] = { "Random", "General", "Mathematics", "Computer", "Logic", "Fast", "Wind", "Help" };
 
-class WindowExample : public AppCUI::Controls::Window
+class WindowExample : public Window
 {
-    Button b;
     std::string my_name;
+
   public:
-    WindowExample(std::string_view name)
+    WindowExample(std::string_view name) : Window(name, "d:c,w:40,h:10", WindowFlags::Sizeable)
     {
-        this->Create(name, "d:c,w:40,h:10", WindowFlags::Sizeable);
-        b.Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
+        Factory::Button::Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
         my_name = name;
         if (winID % 5 != 0)
             this->SetTag(tags[winID % 8], "bla bla bla");
@@ -29,7 +28,7 @@ class WindowExample : public AppCUI::Controls::Window
         {
             AppCUI::Utils::LocalString<128> tmp;
             tmp.Format("%s_%d", my_name.c_str(), winID++);
-            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()),this);
+            Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()), this);
             return true;
         }
         return false;
@@ -72,8 +71,8 @@ class MyDesktop : public Desktop
 int main()
 {
     InitializationData initData;
-    initData.CustomDesktop = new MyDesktop();
-    initData.Flags         = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
+    initData.CustomDesktopConstructor = []() { return (Desktop*) (new MyDesktop()); };
+    initData.Flags                    = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
     if (!Application::Init(initData))
         return 1;
     auto m = Application::AddMenu("&Windows");
@@ -84,7 +83,7 @@ int main()
     m->AddCommandItem("&Cascade", 12348);
     m->AddCommandItem("&Fit", 12349, Key::F5);
     m->AddSeparator();
-    m->AddCommandItem("E&xit", 12350,Key::F10);
+    m->AddCommandItem("E&xit", 12350, Key::F10);
 
     Application::Run();
     return 0;

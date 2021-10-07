@@ -23,37 +23,29 @@ void HighlightNumberAndCapitalLetters(Control*, Graphics::Character* chars, unsi
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Label l1, l2, l3, l4, l5;
-    TextField t1, t2, t3, t4, t5;
-
   public:
-    MyWin()
+    MyWin() : Window("Text Field Example", "d:c,w:70,h:20",WindowFlags::Sizeable)
     {
-        this->Create("Text Field Example", "d:c,w:70,h:20");
-        l1.Create(this, "&Normal text", "x:1,y:1,w:15");
-        t1.Create(this, "a normal text", "x:19,y:1,w:48");
-        t1.SetHotKey('N');
+        Factory::Label::Create(this, "&Normal text", "x:1,y:1,w:15");
+        Factory::TextField::Create(this, "a normal text", "l:19,t:1,r:1")->SetHotKey('N');
 
-        l2.Create(this, "&Read only", "x:1,y:3,w:15");
-        t2.Create(this, "this text cannnot be changed", "x:19,y:3,w:48", TextFieldFlags::Readonly);
-        t2.SetHotKey('R');
+        Factory::Label::Create(this, "&Read only", "x:1,y:3,w:15");
+        Factory::TextField::Create(this, "this text cannnot be changed", "l:19,t:3,r:1", TextFieldFlags::Readonly)->SetHotKey('R');
 
-        l3.Create(this, "Inactive text", "x:1,y:5,w:15");
-        t3.Create(this, "this text is inactive", "x:19,y:5,w:48");
-        t3.SetEnabled(false);
+        Factory::Label::Create(this, "Inactive text", "x:1,y:5,w:15");
+        Factory::TextField::Create(this, "this text is inactive", "l:19,t:5,r:1")->SetEnabled(false);
 
-        l4.Create(this, "&Multi-line", "x:1,y:7,w:15");
-        t4.Create(this, "this is a large text the expends for over the next lines", "x:19,y:7,w:48,h:3");
-        t4.SetHotKey('M');
+        Factory::Label::Create(this, "&Multi-line", "x:1,y:7,w:15");
+        Factory::TextField::Create(
+              this, "this is a large text the expends for over the next lines", "l:19,t:7,r:1,h:3")->SetHotKey('M');
 
-        l5.Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
-        t5.Create(
+        Factory::Label::Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
+        Factory::TextField::Create(
               this,
               "Capital Letters and numbers (12345)",
-              "x:19,y:11,w:48",
+              "l:19,t:11,r:1",
               TextFieldFlags::SyntaxHighlighting,
-              HighlightNumberAndCapitalLetters);
-        t5.SetHotKey('H');
+              HighlightNumberAndCapitalLetters)->SetHotKey('H');
     }
     bool OnEvent(Control*, Event eventType, int) override
     {

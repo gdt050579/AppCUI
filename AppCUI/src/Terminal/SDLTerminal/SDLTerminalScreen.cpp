@@ -176,6 +176,7 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
           "Fail to create the original screen canvas of %d x %d size",
           widthInChars,
           heightInChars);
+    autoRedraw = (initData.Flags & InitializationFlags::AutoRedraw) != InitializationFlags::None;
     return true;
 }
 

@@ -11,14 +11,11 @@ using namespace AppCUI::Controls;
 
 class SimpleWin : public AppCUI::Controls::Window
 {
-    Label l1;
-
   public:
-    SimpleWin()
+    SimpleWin() : Window("Log Example", "d:c,w:40,h:10",WindowFlags::None)
     {
         LOG_INFO("Creating Simple Win");
-        this->Create("Log Example", "d:c,w:40,h:10");
-        l1.Create(this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
+        Factory::Label::Create(this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
     }
     bool OnEvent(Control*, Event eventType, int) override
     {

@@ -5,6 +5,7 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
+using namespace AppCUI::Utils;
 
 #define MENU_CMD_SAVE           1000
 #define MENU_CMD_OPEN           1001
@@ -28,13 +29,12 @@ class MyUserControl: public AppCUI::Controls::UserControl
     Color squareColor;
     bool smallMenu;
   public:
-    void Create(Control* parent);
+    MyUserControl();
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
     void OnMousePressed(int x, int y, MouseButton button) override;
 };
-void MyUserControl::Create(Control* parent)
+MyUserControl::MyUserControl (): UserControl("x:50%,y:50%,w:2,h:1")
 {
-    UserControl::Create(parent, "x:50%,y:50%,w:2,h:1");
     squareColor = Color::Red;
     smallMenu   = false;
     // build a menu
@@ -81,16 +81,14 @@ void MyUserControl::Paint(AppCUI::Graphics::Renderer& renderer)
 }
 class ContextMenuExample : public AppCUI::Controls::Window
 {
-    Label l1;
-    MyUserControl m;
-    CheckBox cb;
+    Reference<MyUserControl> m;
+    Reference<CheckBox> cb;
   public:
-    ContextMenuExample()
+    ContextMenuExample() : Window("Context menu", "d:c,w:64,h:10", WindowFlags::None)
     {
-        this->Create("Context menu", "d:c,w:64,h:10");
-        l1.Create(this, "Right click on the red-square below to view a context menu\nTIP: Use mouse wheel to scroll menus", "x:1,y:1,w:62,h:2");
-        cb.Create(this, "Small contextual menu with scroll", "x:1,y:6,w:62");
-        m.Create(this);
+        Factory::Label::Create(this, "Right click on the red-square below to view a context menu\nTIP: Use mouse wheel to scroll menus", "x:1,y:1,w:62,h:2");
+        cb = Factory::CheckBox::Create(this, "Small contextual menu with scroll", "x:1,y:6,w:62");
+        m  = this->AddControl<MyUserControl>(std::make_unique<MyUserControl>());
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
@@ -101,7 +99,7 @@ class ContextMenuExample : public AppCUI::Controls::Window
         }
         if (eventType == Event::CheckedStatusChanged)
         {
-            m.smallMenu = cb.IsChecked();
+            m->smallMenu = cb->IsChecked();
             return true;
         }
         if (eventType == Event::Command)
@@ -109,13 +107,13 @@ class ContextMenuExample : public AppCUI::Controls::Window
             switch (controlID)
             {
             case MENU_CMD_RED:
-                m.squareColor = Color::Red;
+                m->squareColor = Color::Red;
                 break;
             case MENU_CMD_GREEN:
-                m.squareColor = Color::Green;
+                m->squareColor = Color::Green;
                 break;
             case MENU_CMD_BLUE:
-                m.squareColor = Color::Blue;
+                m->squareColor = Color::Blue;
                 break;
             }
         }

@@ -14,11 +14,9 @@ using namespace AppCUI::Input;
 class MyWin: public Window
 {
   public:
-    MyWin(std::string_view name, char16_t hotKey)
+    MyWin(std::string_view name, char16_t hotKey) : Window(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable)
     {
-        this->Create(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable);
         this->SetHotKey(hotKey);
-
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {

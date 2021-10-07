@@ -6,28 +6,19 @@ using namespace AppCUI::Graphics;
 
 namespace AppCUI::Controls
 {
-bool NumericSelector::Create(
-      Control* parent,
-      const long long minValue,
-      const long long maxValue,
-      long long value,
-      const std::string_view& layout)
+NumericSelector::NumericSelector(
+      const long long minValue, const long long maxValue, long long value, const std::string_view& layout)
+    : Control(new NumericSelectorControlContext(), "", layout, true)
 {
-    CONTROL_INIT_CONTEXT(NumericSelectorControlContext);
-    CHECK(Context != nullptr, false, "");
+    auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
+    Members->Layout.MinHeight = 1;
+    Members->Layout.MaxHeight = 1;
+    Members->Layout.MinWidth  = 10;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->minValue         = minValue;
+    Members->maxValue         = maxValue;
 
-    const auto cc        = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    cc->Layout.MinHeight = 1;
-    cc->Layout.MaxHeight = 1;
-    cc->Layout.MinWidth  = 10;
-    CHECK(Init(parent, "", layout, true), false, "Failed to create numeric selector!");
-    cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-
-    cc->minValue = minValue;
-    cc->maxValue = maxValue;
-    SetValue(value);
-
-    return true;
+    this->SetValue(value);
 }
 
 long long NumericSelector::GetValue() const

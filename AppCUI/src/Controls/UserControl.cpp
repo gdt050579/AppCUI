@@ -2,15 +2,14 @@
 
 using namespace AppCUI::Controls;
 
-bool UserControl::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+UserControl::UserControl(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+    : Control(new ControlContext(), caption, layout, false)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, caption, layout, false), false, "Failed to create user control !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
-    Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | GATTR_TABSTOP;
-    return true;
+    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }
-bool UserControl::Create(Control* parent, const std::string_view& layout)
+UserControl::UserControl(const std::string_view& layout) : Control(new ControlContext(), "", layout, false)
 {
-    return UserControl::Create(parent, "", layout);
+    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }

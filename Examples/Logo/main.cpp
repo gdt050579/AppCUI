@@ -16,11 +16,8 @@ const char* AppCuiLogo[15] = {
     "...[XXXXX{].[XXXXXX{].XX|...", "....[----]...[-----]..[-]...", "............................",
 };
 
-class LogoWin : public AppCUI::Controls::Window
+class LogoWin : public Window
 {
-    CanvasViewer viewLogo, viewInactive, viewSmall;
-    Splitter sp;
-    Panel pn;
 
     void CreateImage(Canvas* c)
     {
@@ -78,19 +75,19 @@ class LogoWin : public AppCUI::Controls::Window
     }
 
   public:
-    LogoWin()
+    LogoWin() : Window("Canvas example", "d:c,w:80,h:22", WindowFlags::None)
     {
-        this->Create("Canvas example", "d:c,w:80,h:22");
-        sp.Create(this, "x:0,y:0,w:100%,h:100%", true);
-        viewLogo.Create(&sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
+        auto sp = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", true);
+        sp->SetSecondPanelSize(60);
+        auto viewLogo = Factory::CanvasViewer::Create(sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 
-        pn.Create(&sp, "x:0,y:0,w:100%,h:100%");
-        viewInactive.Create(&pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::Border);
-        viewSmall.Create(&pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::Border);
-        viewInactive.SetEnabled(false);
-        CreateImage(viewLogo.GetCanvas());
-        CreateImage(viewInactive.GetCanvas());
-        CreateImage(viewSmall.GetCanvas());
+        auto pn = Factory::Panel::Create(sp, "x:0,y:0,w:100%,h:100%");
+        auto viewInactive = Factory::CanvasViewer::Create(pn, "Inactive", "x:1,y:1,w:29,h:16", 28, 15, ViewerFlags::Border);
+        auto viewSmall    = Factory::CanvasViewer::Create(pn, "&Small", "x:33,y:1,w:14,h:9", 28, 15, ViewerFlags::Border);
+        viewInactive->SetEnabled(false);
+        CreateImage(viewLogo->GetCanvas());
+        CreateImage(viewInactive->GetCanvas());
+        CreateImage(viewSmall->GetCanvas());
     }
     bool OnEvent(Control*, Event eventType, int) override
     {

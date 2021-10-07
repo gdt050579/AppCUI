@@ -5,6 +5,7 @@ target_sources(AppCUI PRIVATE
 	ComboBox.cpp 
 	Control.cpp
 	Desktop.cpp 
+        Factory.cpp
 	Label.cpp 
 	ListView.cpp
 	ImageViewer.cpp

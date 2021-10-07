@@ -8,18 +8,16 @@ using namespace AppCUI::Controls;
 class MyDeskop : public Desktop
 {
   public:
-    void Paint(Renderer & r) override
+    void Paint(Renderer& r) override
     {
-        int h = this->GetHeight();
-        int w = this->GetWidth();
-        ColorPair c[3] = {
-            ColorPair{ Color::Black, Color::Blue },
-            ColorPair{ Color::Black, Color::Gray },
-            ColorPair{ Color::Black, Color::DarkRed }
-        };
-        for (auto y = 0; y < h;y++)
+        int h          = this->GetHeight();
+        int w          = this->GetWidth();
+        ColorPair c[3] = { ColorPair{ Color::Black, Color::Blue },
+                           ColorPair{ Color::Black, Color::Gray },
+                           ColorPair{ Color::Black, Color::DarkRed } };
+        for (auto y = 0; y < h; y++)
         {
-            for (auto x=0;x<w;x+=2)
+            for (auto x = 0; x < w; x += 2)
             {
                 r.WriteSingleLineText(x, y, "  ", c[(x + y) % 3]);
             }
@@ -33,12 +31,11 @@ class MyDeskop : public Desktop
 int main()
 {
     InitializationData initData;
-    initData.CustomDesktop = new MyDeskop();
-    initData.Flags         = InitializationFlags::CommandBar | InitializationFlags::Menu;
+    initData.CustomDesktopConstructor = []()-> Desktop* { return new MyDeskop(); };
+    initData.Flags                    = InitializationFlags::CommandBar | InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;
-    auto w = std::make_unique<Window>();
-    w->Create("Test", "d:c,w:20,h:5", WindowFlags::Sizeable);
+    auto w = Factory::Window::Create("Test", "d:c,w:20,h:5", WindowFlags::Sizeable);
     Application::AddWindow(std::move(w));
     Application::Run();
     return 0;

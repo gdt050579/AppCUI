@@ -28,19 +28,12 @@ void GoToNextWindow(ControlContext* Members, int direction)
     if (start != (int) Members->CurrentControlIndex)
         Members->Controls[start]->SetFocus();
 }
-bool Desktop::Create(unsigned int _width, unsigned int _height)
+Desktop::Desktop() : Control(new ControlContext(), "", "x:0,y:0,w:1,h:1", false)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    AppCUI::Utils::LocalString<128> temp;
-
-    CHECK(Init(nullptr, "", temp.Format("x:0,y:0,w:%d,h:%d", _width, _height), false),
-          false,
-          "Failed to create desktop !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
-    Members->ScreenClip.Set(0, 0, _width, _height);
+    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    return true;
 }
+
 void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
@@ -85,9 +78,4 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
         }
     }
     return false;
-}
-void Desktop::OnControlRemoved(AppCUI::Controls::Control* ctrl)
-{
-    if (ctrl)
-        Application::GetApplication()->toDelete.push_back(ctrl);
 }

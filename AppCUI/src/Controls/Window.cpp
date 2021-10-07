@@ -508,18 +508,17 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
+Window::Window(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
+    : Control(new WindowControlContext(), caption, layout, false)
 {
-    CONTROL_INIT_CONTEXT(WindowControlContext);
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);
     Members->Layout.MaxHeight = 200000;
     Members->Layout.MaxWidth  = 200000;
     Members->Layout.MinHeight = 3;
     Members->Layout.MinWidth  = 12; // left_corner(1 char), maximize button(3chars),OneSpaceLeftPadding,
                                     // title, OneSpaceRightPadding, close
                                     // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
-    CHECK(Init(nullptr, caption, layout, false), false, "Failed to create window !");
-    CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
+    ASSERT(SetMargins(1, 1, 1, 1), "Failed to set margins !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
 
     Members->Maximized                       = false;
@@ -530,6 +529,9 @@ bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string
     Members->ControlBar.Count                = 0;
     Members->referalItemHandle               = InvalidItemHandle;
     Members->windowItemHandle                = InvalidItemHandle;
+
+    ASSERT(Members->RecomputeLayout(nullptr), "Fail to recompute layout !");
+    this->RecomputeLayout();
 
     // init the buttons
     if ((Flags & WindowFlags::NoCloseButton) == WindowFlags::None)
@@ -571,7 +573,7 @@ bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
     {
-        CHECK(MaximizeRestore(), false, "Fail to maximize window !");
+        ASSERT(MaximizeRestore(),  "Fail to maximize window !");
     }
     if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
     {
@@ -579,8 +581,8 @@ bool Window::Create(const AppCUI::Utils::ConstString& caption, const std::string
         Members->Margins.Top += 1;
         Members->menu->SetWidth(Members->Layout.Width - 2);
     }
-    return true;
 }
+
 void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
@@ -1128,8 +1130,11 @@ bool Window::Exit(Dialogs::Result dialogResult)
 int Window::Show()
 {
     CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
-    CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
+    CHECK(Members->RecomputeLayout(nullptr), -1, "Fail to recompute layout !");
+    this->RecomputeLayout();
+    CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
+    
     return Members->DialogResult;
 }
 int Window::GetDialogResult()

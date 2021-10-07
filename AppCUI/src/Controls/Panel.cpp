@@ -6,23 +6,21 @@ using namespace AppCUI::Input;
 
 #define PANEL_ATTR_BORDER 1024
 
-bool Panel::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+Panel::Panel(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+    : Control(new ControlContext(), caption, layout, false)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, caption, layout, false), false, "Failed to create panel !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
-    Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | PANEL_ATTR_BORDER;
-    CHECK(SetMargins(1, 1, 1, 1), false, "Failed to set margins !");
-    return true;
+    auto Members = reinterpret_cast<ControlContext*>(this->Context);
+    if (Members->Text.Len()==0)
+    {
+        Members->Flags = GATTR_VISIBLE | GATTR_ENABLE;
+    }
+    else
+    {
+        Members->Flags = GATTR_VISIBLE | GATTR_ENABLE | PANEL_ATTR_BORDER;
+        ASSERT(this->SetMargins(1, 1, 1, 1), "Failed to set margins !");
+    }
 }
-bool Panel::Create(Control* parent, const std::string_view& layout)
-{
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CHECK(Init(parent, "", layout, false), false, "Failed to create panel !");
-    CREATE_CONTROL_CONTEXT(this, Members, false);
-    Members->Flags = GATTR_VISIBLE | GATTR_ENABLE;
-    return true;
-}
+
 void Panel::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

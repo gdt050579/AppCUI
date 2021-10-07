@@ -3,33 +3,31 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
 
-class MyWin : public AppCUI::Controls::Window
+class MyWin : public Window
 {
-    ComboBox cb1, cb2, cb3;
-    Label inf, inf2, inf3;
-    TextField col;
+    Reference<TextField> col;
 
   public:
-    MyWin()
+    MyWin() : Window("ComboBox example", "d:c,w:56,h:11", WindowFlags::None)
     {
-        this->Create("ComboBox example", "d:c,w:56,h:11");
-        inf.Create(this, "Select a color", "x:2,y:1,w:15");
-        cb1.Create(this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
-        inf2.Create(this, "Select a word", "x:2,y:3,w:15");
-        cb2.Create(this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
-        inf3.Create(this, "Select a vehicle", "x:2,y:5,w:18");
-        cb3.Create(this, "x:22,y:5,w:30");
-        col.Create(this, "", "x:2,y:7,w:50");
+        Factory::Label::Create(this, "Select a color", "x:2,y:1,w:15");
+        Factory::ComboBox::Create(this, "x:22,y:1,w:30", "White,Blue,Red,Aqua,Metal,Yellow,Green,Orange");
+        Factory::Label::Create(this, "Select a word", "x:2,y:3,w:15");
+        Factory::ComboBox::Create(this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
+        Factory::Label::Create(this, "Select a vehicle", "x:2,y:5,w:18");
+        auto cb = Factory::ComboBox::Create(this, "x:22,y:5,w:30");
+        col = Factory::TextField::Create(this, "", "x:2,y:7,w:50");
 
-        cb3.AddSeparator("Cars");
-        cb3.AddItem("Mercedes");
-        cb3.AddItem("Skoda");
-        cb3.AddItem("Toyota");
-        cb3.AddItem("Ford");
-        cb3.AddSeparator("Motorcycles");
-        cb3.AddItem("BMW");
-        cb3.AddItem("Ducatti");
+        cb->AddSeparator("Cars");
+        cb->AddItem("Mercedes");
+        cb->AddItem("Skoda");
+        cb->AddItem("Toyota");
+        cb->AddItem("Ford");
+        cb->AddSeparator("Motorcycles");
+        cb->AddItem("BMW");
+        cb->AddItem("Ducatti");
         
     }
     bool OnEvent(Control* sender, Event eventType, int) override
@@ -48,7 +46,7 @@ class MyWin : public AppCUI::Controls::Window
             AppCUI::Utils::LocalString<32> value;
             value.Format("%u", c->GetCurrentItemIndex());
             temp.Add(value.GetText());
-            col.SetText(temp);
+            col->SetText(temp);
         }
         return false;
     }

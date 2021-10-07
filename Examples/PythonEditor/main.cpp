@@ -148,36 +148,19 @@ void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCoun
     }
 }
 
-class PythonEditorWin : public AppCUI::Controls::Window
-{
-    TextArea editor;
 
-  public:
-    PythonEditorWin()
-    {
-        this->Create("Python Editor", "d:c,w:40,h:20", WindowFlags::Sizeable);
-        editor.Create(
-              this,
-              python_code,
-              "x:0,y:0,w:100%,h:100%",
-              TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
-              PythonHighligh);
-    }
-    bool OnEvent(Control*, Event eventType, int) override
-    {
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
-            return true;
-        }
-        return false;
-    }
-};
 int main()
 {
     if (!Application::Init())
         return 1;
-    Application::AddWindow(std::make_unique<PythonEditorWin>());
+    auto wnd = Factory::Window::Create("Python Editor", "d:c,w:40,h:20", WindowFlags::Sizeable);
+    Factory::TextArea::Create(
+          wnd,
+          python_code,
+          "x:0,y:0,w:100%,h:100%",
+          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
+          PythonHighligh);
+    Application::AddWindow(std::move(wnd));
     Application::Run();
     return 0;
 }
