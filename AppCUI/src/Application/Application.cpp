@@ -288,6 +288,21 @@ void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
     for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
         ComputeControlLayout(client, Members->Controls[tr]);
 }
+void DestroyControl(AppCUI::Controls::Control* ctrl)
+{
+    if (!ctrl)
+        return;
+    auto Members = reinterpret_cast<ControlContext*>(ctrl->Context);
+    if (Members)
+    {
+        for (unsigned int tr=0;tr<Members->ControlsCount;tr++)
+        {
+            DestroyControl(Members->Controls[tr]);
+        }
+        Members->ControlsCount = 0;
+    }
+    delete ctrl;
+}
 AppCUI::Controls::Control* RecursiveCoordinatesToControl(AppCUI::Controls::Control* ctrl, int x, int y)
 {
     if (ctrl == nullptr)

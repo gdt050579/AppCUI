@@ -2582,7 +2582,6 @@ namespace Controls
       public:
         void Paint(AppCUI::Graphics::Renderer& renderer) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnControlRemoved(AppCUI::Controls::Control* ctrl) override;
 
         friend Factory::Desktop;
         friend Control;
