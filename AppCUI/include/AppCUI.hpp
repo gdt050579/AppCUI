@@ -2164,6 +2164,7 @@ namespace Controls
         void OnFocus() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
 
         void SelectAll();
         void ClearSelection();

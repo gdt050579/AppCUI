@@ -101,7 +101,7 @@ bool __is_not_op__(unsigned int, Character ch)
 void TextField_MoveToNextWord(TextField* control, bool selected)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-    if (Members->Cursor.Pos >= (int)Members->Text.Len())
+    if (Members->Cursor.Pos >= (int) Members->Text.Len())
         return;
     auto currentChar                = Members->Text.GetBuffer()[Members->Cursor.Pos];
     std::optional<unsigned int> res = std::nullopt;
@@ -152,8 +152,8 @@ void TextField_MoveToPreviousWord(TextField* control, bool selected)
     // set new pos
     if (res.has_value())
     {
-        if (res.value()>0)
-            TextField_MoveTo(control, res.value()+1, selected);
+        if (res.value() > 0)
+            TextField_MoveTo(control, res.value() + 1, selected);
         else
             TextField_MoveTo(control, 0, selected);
     }
@@ -246,7 +246,8 @@ void TextField_CopyToClipboard(TextField* control)
 
     if (!TextField_HasSelection(control))
         return;
-    if (!AppCUI::OS::Clipboard::SetText(Members->Text.SubString(Members->Selection.Start, (size_t)Members->Selection.End + 1)))
+    if (!AppCUI::OS::Clipboard::SetText(
+              Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
     }
@@ -289,18 +290,17 @@ TextField::TextField(
     Members->Syntax.Context   = nullptr;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->Modified         = true;
-    
+
     this->ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
     TextField_MoveTo(this, 0xFFFF, false);
-    if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
+    if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
         ASSERT(handler, "if 'TextFieldFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
 }
-
 
 void TextField::SelectAll()
 {
@@ -394,7 +394,7 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
         return true;
 
     case Key::Enter:
-        if ((Members->Flags & TextFieldFlags::ProcessEnter) != TextFieldFlags::None) 
+        if ((Members->Flags & TextFieldFlags::ProcessEnter) != TextFieldFlags::None)
         {
             RaiseEvent(Event::TextFieldValidate);
             return true;
@@ -445,7 +445,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
     {
         if (Members->Modified)
         {
-            if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None) 
+            if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
             {
                 Members->Syntax.Handler(this, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
             }
@@ -484,6 +484,23 @@ void TextField::Paint(Graphics::Renderer& renderer)
             y--;
         }
         renderer.SetCursor(x + 1, y);
+    }
+}
+void TextField::OnAfterResize(int newWidth, int newHeight)
+{
+    CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
+    int sz            = Members->Text.Len();
+    auto visibleChars = C_WIDTH;
+    if (sz < visibleChars)
+    {
+        Members->Cursor.StartOffset = 0;
+    }
+    else
+    {
+        if (Members->Cursor.Pos >= visibleChars)
+            Members->Cursor.StartOffset = Members->Cursor.Pos - visibleChars;
+        else
+            Members->Cursor.StartOffset = 0;
     }
 }
 void TextField::OnFocus()

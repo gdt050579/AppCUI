@@ -24,26 +24,26 @@ void HighlightNumberAndCapitalLetters(Control*, Graphics::Character* chars, unsi
 class MyWin : public AppCUI::Controls::Window
 {
   public:
-    MyWin() : Window("Text Field Example", "d:c,w:70,h:20",WindowFlags::None)
+    MyWin() : Window("Text Field Example", "d:c,w:70,h:20",WindowFlags::Sizeable)
     {
         Factory::Label::Create(this, "&Normal text", "x:1,y:1,w:15");
-        Factory::TextField::Create(this, "a normal text", "x:19,y:1,w:48")->SetHotKey('N');
+        Factory::TextField::Create(this, "a normal text", "l:19,t:1,r:1")->SetHotKey('N');
 
         Factory::Label::Create(this, "&Read only", "x:1,y:3,w:15");
-        Factory::TextField::Create(this, "this text cannnot be changed", "x:19,y:3,w:48", TextFieldFlags::Readonly)->SetHotKey('R');
+        Factory::TextField::Create(this, "this text cannnot be changed", "l:19,t:3,r:1", TextFieldFlags::Readonly)->SetHotKey('R');
 
         Factory::Label::Create(this, "Inactive text", "x:1,y:5,w:15");
-        Factory::TextField::Create(this, "this text is inactive", "x:19,y:5,w:48")->SetEnabled(false);
+        Factory::TextField::Create(this, "this text is inactive", "l:19,t:5,r:1")->SetEnabled(false);
 
         Factory::Label::Create(this, "&Multi-line", "x:1,y:7,w:15");
         Factory::TextField::Create(
-              this, "this is a large text the expends for over the next lines", "x:19,y:7,w:48,h:3")->SetHotKey('M');
+              this, "this is a large text the expends for over the next lines", "l:19,t:7,r:1,h:3")->SetHotKey('M');
 
         Factory::Label::Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
         Factory::TextField::Create(
               this,
               "Capital Letters and numbers (12345)",
-              "x:19,y:11,w:48",
+              "l:19,t:11,r:1",
               TextFieldFlags::SyntaxHighlighting,
               HighlightNumberAndCapitalLetters)->SetHotKey('H');
     }
