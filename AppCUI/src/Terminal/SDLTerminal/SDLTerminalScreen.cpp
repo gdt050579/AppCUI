@@ -161,7 +161,7 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
     windowID = SDL_GetWindowID(window);
 
     // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -221,7 +221,6 @@ SDL_Texture* SDLTerminal::renderCharacter(
     {
         return characterCache[charPacked];
     }
-
     SDL_Surface* glyphSurface = TTF_RenderGlyph_Shaded(font, charCode, fg, bg);
     if (glyphSurface == nullptr)
     {
@@ -239,11 +238,10 @@ SDL_Texture* SDLTerminal::renderCharacter(
 // Optimizations would be welcome, like drawing an entire string of text with the same colors
 void SDLTerminal::OnFlushToScreen()
 {
+    SDL_RenderClear(renderer);
     AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const std::size_t width                  = ScreenCanvas.GetWidth();
     const std::size_t height                 = ScreenCanvas.GetHeight();
-
-    SDL_RenderClear(renderer);
 
     SDL_Rect WindowRect;
     WindowRect.w = charWidth;
