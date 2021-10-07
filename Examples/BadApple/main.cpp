@@ -34,12 +34,13 @@ class VideoScreen : public AppCUI::Controls::UserControl
                 renderer.WriteSingleLineText(0, y, line, { Color::White, Color::Transparent });
                 ++y;
             }
-
-            if (painitng)
-            {
-                currentFrame++;
-            }
         }
+    }
+    bool OnFrameUpdate() override
+    {
+        if (painitng)
+            currentFrame++;
+        return painitng;
     }
 
     void SetFrames(const std::vector<std::vector<std::string>>& _frames)
@@ -133,7 +134,7 @@ class BadApple : public AppCUI::Controls::Window
 
 int main()
 {
-    if (!Application::Init(InitializationFlags::Maximized | InitializationFlags::AutoRedraw))
+    if (!Application::Init(InitializationFlags::Maximized | InitializationFlags::EnableFPSMode))
         return 1;
     Application::AddWindow(std::make_unique<BadApple>());
     Application::Run();
