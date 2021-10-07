@@ -2508,6 +2508,8 @@ namespace Controls
         bool IsMouseOnColumnSeparator(int x, int y) const;
         bool IsMouseOnSearchField(int x, int y) const;
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
+        bool AdjustDimensionsOnResize();
+        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
     };
 
 }; // namespace Controls
@@ -2824,7 +2826,11 @@ namespace Application
                 Graphics::ColorPair Border;
                 struct
                 {
-                    Graphics::ColorPair Separator, Text, Header;
+                    Graphics::ColorPair Normal, Focused;
+                } Separator;
+                struct
+                {
+                    Graphics::ColorPair Text, Header;
                 } Column;
                 struct
                 {

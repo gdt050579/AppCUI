@@ -314,7 +314,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tree.Symbol.Expanded      = ColorPair{ Color::Red, Color::Transparent };
     this->Tree.Symbol.SingleElement = ColorPair{ Color::Black, Color::Transparent };
     this->Tree.Border               = ColorPair{ Color::White, Color::Transparent };
-    this->Tree.Column.Separator     = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Column.Text          = ColorPair{ Color::Gray, Color::Transparent };
-    this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Magenta };
+    this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
+    this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
+    this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
 }

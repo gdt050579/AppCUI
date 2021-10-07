@@ -620,11 +620,14 @@ class TreeControlContext : public ControlContext
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
     std::vector<ColumnData> columns;
-    const unsigned int offset         = 2;
-    unsigned int treeFlags            = 0;
-    unsigned int width                = 0;
-    unsigned int height               = 0;
-    const unsigned int minColumnWidth = 10;
+    const unsigned int offset           = 2;
+    unsigned int treeFlags              = 0;
+    unsigned int width                  = 0;
+    unsigned int height                 = 0;
+    const unsigned int minColumnWidth   = 10;
+    const unsigned int borderOffset     = 1;
+    unsigned int separatorIndexSelected = 0xFFFFFFFF;
+    const unsigned int invalidIndex     = 0xFFFFFFFF;
 
     enum class IsMouseOn
     {
