@@ -27,6 +27,8 @@ namespace Internal
         size_t charHeight;
         bool autoRedraw;
 
+        std::map<unsigned int, SDL_Texture*> characterCache;
+
       public:
         virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
         virtual void OnUninit() override;
@@ -48,6 +50,9 @@ namespace Internal
         void handleMouse(SystemEvent& evt, const SDL_Event& eSdl);
         void handleKeyUp(SystemEvent& evt, const SDL_Event& eSdl);
         void handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl);
+
+        SDL_Texture* renderCharacter(
+              const unsigned int charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
     };
 } // namespace Internal
 } // namespace AppCUI
