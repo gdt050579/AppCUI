@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1053,17 +1054,33 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
-
-    enum class SpecialFoldersType : unsigned int
+    enum class SpecialFolder : unsigned int
     {
-        All = 0,
-        Drives,
-        SpecialLocations
+        AppPath = 0,
+        Desktop,
+        Documents,
+        LocalDocuments,
+        Downloads,
+        LocalDownloads,
+        Music,
+        LocalMusic,
+        Pictures,
+        LocalPictures,
+        Videos,
+        LocalVideos,
     };
-    EXPORT void GetSpecialFolders(
-          std::vector<std::pair<std::string, std::filesystem::path>>& specialFolderLists,
-          SpecialFoldersType type,
-          bool clearVector);
+
+    struct FSLocationData
+    {
+        std::string locationName;
+        std::filesystem::path locationPath;
+    };
+
+    using SpecialFolderMap = std::map<SpecialFolder, FSLocationData>;
+    using RootsVector      = std::vector<FSLocationData>;
+
+    // Fills the specialFolders map and roots vector with paths
+    EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
 
 } // namespace OS
@@ -1407,6 +1424,7 @@ namespace Graphics
         Image();
         ~Image();
         bool Create(unsigned int width, unsigned int height);
+        bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
         bool SetPixel(
@@ -2534,14 +2552,26 @@ namespace Dialogs
     {
         FileDialog() = delete;
 
+        // Add additional extension filters so that FileDialog will show only the specified extensions,
+        // other extensions will be filtered. If no filter is passed (empty string) - "All files" is chosen
+        //
+        // Filter format is: <Name>:ext|<Name>:ext| ...
+        //               or: <Name>:ext1,ext2,ext3|<Name>:ext|....
+        //
+        // For example:
+        //       "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"
+        //
+        // Will show "Text Files" and, if selected, only .txt files will be shown
+        // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
+
       public:
         static std::optional<std::filesystem::path> ShowSaveFileWindow(
               const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
+              const AppCUI::Utils::ConstString& extensionsFilter,
               const std::filesystem::path& path);
         static std::optional<std::filesystem::path> ShowOpenFileWindow(
               const AppCUI::Utils::ConstString& fileName,
-              std::string_view extensionFilter,
+              const AppCUI::Utils::ConstString& extensionsFilter,
               const std::filesystem::path& path);
     };
     class EXPORT WindowManager

@@ -6,11 +6,11 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-#define BTN_SHOW_DIZZY          1000
-#define BTN_SHOW_GDT            1001
-#define BTN_SHOW_COLOR_PALETTE  1002
-#define BTN_SHOW_COLOR_SCALES   1003
-
+#define BTN_SHOW_DIZZY         1000
+#define BTN_SHOW_GDT           1001
+#define BTN_SHOW_COLOR_PALETTE 1002
+#define BTN_SHOW_COLOR_SCALES  1003
+#define BTN_SHOW_STRING_IMAGE  1004
 
 // image taken from https://en.wikipedia.org/wiki/Treasure_Island_Dizzy#/media/File:Treasure_Island_Dizzy.png
 unsigned int dizzy_pixels[] = {
@@ -6535,7 +6535,6 @@ unsigned int gdt_pixels[150 * 150] = {
     0x141717, 0x14171A, 0x15171A, 0x15171A, 0x16191C
 };
 
-
 class ImageWinViewer : public AppCUI::Controls::Window
 {
     ImageViewer iv;
@@ -6560,7 +6559,7 @@ class ImageWinViewer : public AppCUI::Controls::Window
 
 class MainWin : public AppCUI::Controls::Window
 {
-    Button dizzy,gdt,colorPallete, colorScales;
+    Button dizzy, gdt, colorPallete, colorScales, stringImage;
     ComboBox cbMethod;
     ComboBox cbScale;
     Label lbMethod;
@@ -6569,12 +6568,12 @@ class MainWin : public AppCUI::Controls::Window
   public:
     MainWin()
     {
-        this->Create("Image example", "d:c,w:50,h:15");
+        this->Create("Image example", "d:c,w:50,h:17");
         dizzy.Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         gdt.Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
         colorPallete.Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
         colorScales.Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
-
+        stringImage.Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
 
         lbMethod.Create(this, "Method", "l:1,b:3,w:6");
         cbMethod.Create(this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
@@ -6583,7 +6582,6 @@ class MainWin : public AppCUI::Controls::Window
         lbScale.Create(this, "Scale", "l:1,b:1,w:6");
         cbScale.Create(this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
         cbScale.SetCurentItemIndex(0);
-
     }
     ImageRenderingMethod GetMethod()
     {
@@ -6651,7 +6649,7 @@ class MainWin : public AppCUI::Controls::Window
             if (controlID == BTN_SHOW_COLOR_PALETTE)
             {
                 AppCUI::Graphics::Image img;
-                img.Create(27, 27); // 27 = square of (9 x 9 x 9) ==> 9 = variantion on one channel (from 0 to 255)      
+                img.Create(27, 27); // 27 = square of (9 x 9 x 9) ==> 9 = variantion on one channel (from 0 to 255)
                 unsigned int x = 0;
                 unsigned int y = 0;
                 for (unsigned int r = 0; r <= 256; r += 32)
@@ -6677,16 +6675,31 @@ class MainWin : public AppCUI::Controls::Window
             if (controlID == BTN_SHOW_COLOR_SCALES)
             {
                 AppCUI::Graphics::Image img;
-                img.Create(16, 7); 
-                for (unsigned int bit = 1; bit<=7;bit++)
+                img.Create(16, 7);
+                for (unsigned int bit = 1; bit <= 7; bit++)
                 {
                     for (unsigned int x = 0; x < 16; x++)
                     {
                         img.SetPixel(
                               x, bit - 1, x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1));
-
                     }
                 }
+                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                iwv.Show();
+                return true;
+            }
+            if (controlID == BTN_SHOW_STRING_IMAGE)
+            {
+                AppCUI::Graphics::Image img;
+                img.Create(8, 8, "...ww..." 
+                                 "..wyyw.."
+                                 "..wggw.."
+                                 "...66..."
+                                 "...66..."
+                                 "...66..."
+                                 "..6666.."
+                                 "bBbBbBbB"
+                ); 
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
                 return true;
