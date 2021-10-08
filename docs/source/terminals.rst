@@ -8,7 +8,7 @@ AppCUI supports various terminals front-ends, as shown in the next table.
 || Feature                         || Windows  || SDL || ncurses |
 ||                                 || Terminal ||     ||         |
 +----------------------------------+-----------+------+----------+
-| Windows                          | Yes       |      |          |
+| Windows                          | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
 | Linux                            |           | Yes  | Yes      |
 +----------------------------------+-----------+------+----------+
@@ -24,19 +24,19 @@ AppCUI supports various terminals front-ends, as shown in the next table.
 +----------------------------------+-----------+------+----------+
 | Mouse event (move, drag, click)  | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Alt+key support                  | Yes       |      |          |
+| ``Alt+key`` support              | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Ctrl+key support                 | Yes       |      |          |
+| ``Ctrl+key`` support             | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Shift+Key support                | Yes       |      |          |
+| ``Shift+key`` support            | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Ctrl+Alt+key support             | Yes       |      |          |
+| ``Ctrl+Alt+key`` support         | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Ctrl+Shift+key support           | Yes       |      |          |
+| ``Ctrl+Shift+key`` support       | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Alt+Shift+key support            | Yes       |      |          |
+| ``Alt+Shift+key`` support        | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Ctrl+Alt+Shift+key support       | Yes       |      |          |
+| ``Ctrl+Alt+Shift+key`` support   | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
 | Underline characters             |           |      |          |
 +----------------------------------+-----------+------+----------+
@@ -50,7 +50,7 @@ AppCUI supports various terminals front-ends, as shown in the next table.
 +----------------------------------+-----------+------+----------+
 | Terminal full-screen support     | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
-| Terminal configure size support  | Yes       |      |          |
+| Terminal configure size support  | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
 | Terminal set character size Mode | Yes       | Yes  |          |
 +----------------------------------+-----------+------+----------+
