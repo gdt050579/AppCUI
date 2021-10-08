@@ -5,8 +5,8 @@ Terminals
 AppCUI supports various terminals front-ends, as shown in the next table.
 
 +----------------------------------+-----------+-------+---------+
-|| Feature                         || Windows  || SDL || ncurses |
-||                                 || Terminal ||     ||         |
+|| Feature                         || Windows  || SDL  || ncurses|
+||                                 || Terminal ||      ||        |
 +----------------------------------+-----------+-------+---------+
 | Windows                          |    Yes    |  Yes  |         |
 +----------------------------------+-----------+-------+---------+
