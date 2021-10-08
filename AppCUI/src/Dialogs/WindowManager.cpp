@@ -35,8 +35,8 @@ class InternalWindowManager : public AppCUI::Controls::Window
     {
     }
     bool Create();
-    bool AddItem(Window* w, unsigned int offsetX);
-    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
+    bool AddItem(Window* w, const ItemHandle parent, ItemHandle& child);
+    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent);
     bool OnEvent(Control* c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
@@ -197,27 +197,31 @@ bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
     return false;
 }
 
-bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
+bool InternalWindowManager::AddItem(Window* w, const ItemHandle parent, ItemHandle& child)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
     const std::u16string itemTitle(wcc->Text);
-    const auto i = tree->AddItem(wcc->referalItemHandle, { itemTitle }, w);
+    const std::u16string tag(w->GetTag());
+    child = tree->AddItem(parent, { itemTitle, tag }, w);
     return true;
 }
-void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
+void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent)
 {
-    AddItem(rel[id].wnd, offsetX);
+    ItemHandle child = 0xFFFFFFFF;
+    AddItem(rel[id].wnd, parent, child);
     rel[id].added = true;
     // search for all children
     for (const auto& i : rel)
     {
         if (i.second.Referal == id)
-            Process(rel, i.first, offsetX + 2);
+        {
+            Process(rel, i.first, child);
+        }
     }
 }
 bool InternalWindowManager::Create()
 {
-    CHECK(tree = Factory::Tree::Create(this, "l:1,t:1,r:1,b:3"), false, "");
+    CHECK(tree = Factory::Tree::Create(this, "l:1,t:1,r:1,b:3", 0, 2), false, "");
     CHECK(btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
     CHECK(btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
     CHECK(btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC),
@@ -249,12 +253,15 @@ bool InternalWindowManager::Create()
             }
             wnd++;
         }
+
         for (const auto& i : rel)
         {
             if (rel.contains(i.second.Referal))
+            {
                 continue;
+            }
             // add this item
-            Process(rel, i.first, 0);
+            Process(rel, i.first, 0xFFFFFFFF);
         }
     }
 

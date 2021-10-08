@@ -5,8 +5,11 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-int winID                = 1;
-std::string_view tags[8] = { "Random", "General", "Mathematics", "Computer", "Logic", "Fast", "Wind", "Help" };
+int winID                     = 1;
+constexpr auto tagsNo         = 8U;
+constexpr auto buttonNewWinID = 1234;
+
+std::string_view tags[tagsNo] = { "Random", "General", "Mathematics", "Computer", "Logic", "Fast", "Wind", "Help" };
 
 class WindowExample : public Window
 {
@@ -15,16 +18,17 @@ class WindowExample : public Window
   public:
     WindowExample(std::string_view name) : Window(name, "d:c,w:40,h:10", WindowFlags::Sizeable)
     {
-        Factory::Button::Create(this, "New win", "l:2,t:2,r:2,b:2", 1234);
+        Factory::Button::Create(this, "New win", "l:2,t:2,r:2,b:2", buttonNewWinID);
         my_name = name;
         if (winID % 5 != 0)
-            this->SetTag(tags[winID % 8], "bla bla bla");
+            this->SetTag(tags[winID % tagsNo], "bla bla bla");
     }
+
     bool OnEvent(Control* c, Event eventType, int id) override
     {
         if (Window::OnEvent(c, eventType, id))
             return true;
-        if ((eventType == Event::ButtonClicked) && (id == 1234))
+        if ((eventType == Event::ButtonClicked) && (id == buttonNewWinID))
         {
             AppCUI::Utils::LocalString<128> tmp;
             tmp.Format("%s_%d", my_name.c_str(), winID++);
@@ -73,8 +77,11 @@ int main()
     InitializationData initData;
     initData.CustomDesktopConstructor = []() { return (Desktop*) (new MyDesktop()); };
     initData.Flags                    = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
-    if (!Application::Init(initData))
+    if (Application::Init(initData) == false)
+    {
         return 1;
+    }
+
     auto m = Application::AddMenu("&Windows");
     m->AddCommandItem("&New", 12345, Key::F1);
     m->AddSeparator();
@@ -86,5 +93,6 @@ int main()
     m->AddCommandItem("E&xit", 12350, Key::F10);
 
     Application::Run();
+
     return 0;
 }

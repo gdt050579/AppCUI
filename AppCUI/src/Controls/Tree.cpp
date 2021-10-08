@@ -443,7 +443,15 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
     case Key::Up:
         return MoveUp();
     case Key::Down:
-        return MoveDown();
+        if (cc->separatorIndexSelected != cc->invalidIndex)
+        {
+            cc->separatorIndexSelected = cc->invalidIndex;
+            return true;
+        }
+        else
+        {
+            return MoveDown();
+        }
     case Key::Ctrl | Key::Up:
         if (cc->itemsToDrew.size() > 0)
         {
@@ -805,6 +813,7 @@ ItemHandle Tree::AddItem(
         auto& parentItem = cc->items[parent];
         ti.depth         = parentItem.depth + 1;
         parentItem.children.emplace_back(ti.handle);
+        parentItem.isExpandable = true;
     }
 
     cc->items[ti.handle] = ti;
