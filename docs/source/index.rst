@@ -15,6 +15,7 @@ This is a test page
    layout
    development
    colors
+   terminals
 
 
 Indices and tables
