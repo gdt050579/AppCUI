@@ -10,21 +10,17 @@ using namespace AppCUI::Graphics;
 
 class MyWin : public AppCUI::Controls::Window
 {
-    Button but_odd, but_prime;
-    Label inf_odd, inf_prime;
-
   public:
-    MyWin()
+    MyWin() : Window("Progress status", "d:c,w:70,h:9",WindowFlags::None)
     {
-        this->Create("Progress status", "d:c,w:70,h:9");
-        but_odd.Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
-        inf_odd.Create(
+        Factory::Button::Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
+        Factory::Label::Create(
               this,
               "Compute how many odd numbers are between\n1 and 100.000 in a verry inneficient way ...",
               "x:1,y:1,w:50,h:2");
 
-        but_prime.Create(this, "Compute", "r:1,t:4,w:14", BUTTON_COMPUTE_PRIME);
-        inf_prime.Create(
+        Factory::Button::Create(this, "Compute", "r:1,t:4,w:14", BUTTON_COMPUTE_PRIME);
+        Factory::Label::Create(
               this,
               "Compute the 10000 prime number using a slow method\n(check if there are no divisors)",
               "x:1,y:4,w:50,h:2");

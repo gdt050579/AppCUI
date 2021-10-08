@@ -155,14 +155,18 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 
 void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEventType::None;
-    evnt.keyCode   = Key::None;
+    evnt.eventType        = SystemEventType::None;
+    evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
 
     SDL_Event e;
     // wait 30 ms max for the next event
     if (!SDL_WaitEventTimeout(&e, 30))
     {
+        if (autoRedraw)
+        {
+            evnt.eventType = SystemEventType::RequestRedraw;
+        }
         return;
     }
 

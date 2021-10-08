@@ -4,17 +4,16 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool AppCUI::Controls::CheckBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
+CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
+    : Control(new ControlContext(), caption, layout, true)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 1;
-    CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    SetControlID(controlID);
-    return true;
+    this->SetControlID(controlID);
 }
+
 void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

@@ -4,19 +4,13 @@
 
 namespace AppCUI::Controls
 {
-bool Tree::Create(
-      Control* parent, const std::string_view& layout, const unsigned int flags, const unsigned int noOfColumns)
+Tree::Tree(const std::string_view& layout, const unsigned int flags, const unsigned int noOfColumns)
+    : Control(new TreeControlContext(), "", layout, true)
 {
-    CHECK(noOfColumns > 0, false, "");
-
-    Context = new TreeControlContext();
-    CHECK(Context != nullptr, false, "");
-
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
     cc->Layout.MinHeight = 1;
     cc->Layout.MaxHeight = 200000;
     cc->Layout.MinWidth  = 20;
-    CHECK(Init(parent, "", layout, true), false, "Failed to create tree!");
 
     cc->treeFlags = flags;
 
@@ -32,10 +26,12 @@ bool Tree::Create(
         cc->ScrollBars.LeftMargin = 25; // search field
     }
 
-    CHECK(AdjustDimensionsOnResize(), false, "");
+    const auto columnsCount = (noOfColumns != 0 ? noOfColumns : 1);
 
-    const unsigned int width = std::max<>((static_cast<unsigned int>(cc->width) / noOfColumns), cc->minColumnWidth);
-    for (auto i = 0U; i < noOfColumns; i++)
+    AdjustDimensionsOnResize();
+
+    const unsigned int width = std::max<>((static_cast<unsigned int>(cc->width) / columnsCount), cc->minColumnWidth);
+    for (auto i = 0U; i < columnsCount; i++)
     {
         ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + cc->borderOffset),
                        width,
@@ -47,8 +43,6 @@ bool Tree::Create(
     }
 
     cc->separatorIndexSelected = cc->invalidIndex;
-
-    return true;
 }
 
 bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const

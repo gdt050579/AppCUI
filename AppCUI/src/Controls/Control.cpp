@@ -20,8 +20,6 @@ using namespace AppCUI::Utils;
 #define CHAR_TYPE_POINT     7
 #define CHAR_TYPE_MINUS     8
 
-
-
 //=========================================
 // THIS CODE WAS AUTOMATICALLY GENERATED !
 //=========================================
@@ -352,22 +350,20 @@ inline bool HashToAlignament(unsigned int hash, Alignament& align)
 // END OF AUTOMATICALLY GENERATED CODE
 //=========================================
 
-
-
-
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
 #define SET_LAYOUT_INFO(flag, field)                                                                                   \
     {                                                                                                                  \
         inf.flags |= flag;                                                                                             \
         inf.field.Value = value;                                                                                       \
-        inf.field.Type = valueType;                                                                                    \
+        inf.field.Type  = valueType;                                                                                   \
     }
 
-
-#define TRANSLATE_VALUE(result,from,size,flag) \
-    if (this->Layout.Format.PercentageMask & flag) result = from * size / 10000; else result = from;
-
+#define TRANSLATE_VALUE(result, from, size, flag)                                                                      \
+    if (this->Layout.Format.PercentageMask & flag)                                                                     \
+        result = from * size / 10000;                                                                                  \
+    else                                                                                                               \
+        result = from;
 
 struct LayoutKeyValueData
 {
@@ -502,7 +498,7 @@ inline const unsigned char* SkipSpaces(const unsigned char* start, const unsigne
 }
 inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsigned char* e, unsigned int& hashValue)
 {
-    hashValue = 0;
+    hashValue          = 0;
     unsigned int index = 0;
     while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
@@ -523,18 +519,17 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     CHECK(p, false, "Expecting a valid (non-null) layout string !");
 
     LayoutKeyValueData lkv;
-    inf.a_left       = { 0, LayoutValueType::CharacterOffset };
-    inf.a_bottom     = { 0, LayoutValueType::CharacterOffset };
-    inf.a_top        = { 0, LayoutValueType::CharacterOffset };
-    inf.a_right      = { 0, LayoutValueType::CharacterOffset };
-    inf.x            = { 0, LayoutValueType::CharacterOffset };
-    inf.y            = { 0, LayoutValueType::CharacterOffset };
-    inf.width        = { 1, LayoutValueType::CharacterOffset };
-    inf.height       = { 1, LayoutValueType::CharacterOffset };
-    inf.align        = Alignament::TopLeft;
-    inf.dock         = Alignament::TopLeft;
-    inf.flags        = 0;
-
+    inf.a_left   = { 0, LayoutValueType::CharacterOffset };
+    inf.a_bottom = { 0, LayoutValueType::CharacterOffset };
+    inf.a_top    = { 0, LayoutValueType::CharacterOffset };
+    inf.a_right  = { 0, LayoutValueType::CharacterOffset };
+    inf.x        = { 0, LayoutValueType::CharacterOffset };
+    inf.y        = { 0, LayoutValueType::CharacterOffset };
+    inf.width    = { 1, LayoutValueType::CharacterOffset };
+    inf.height   = { 1, LayoutValueType::CharacterOffset };
+    inf.align    = Alignament::TopLeft;
+    inf.dock     = Alignament::TopLeft;
+    inf.flags    = 0;
 
     int cnt;
 
@@ -609,7 +604,6 @@ bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Appl
     return true;
 }
 
-
 ControlContext::ControlContext()
 {
     this->Controls            = nullptr;
@@ -652,12 +646,12 @@ bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
           false,
           "When dock|d parameter is used, 'align' parameter can not be used !");
     // if width is not set --> default it to 100%
-    if ((inf.flags & LAYOUT_FLAG_WIDTH)==0)
-        inf.width      = { 10000, LayoutValueType::Percentage };
+    if ((inf.flags & LAYOUT_FLAG_WIDTH) == 0)
+        inf.width = { 10000, LayoutValueType::Percentage };
     // if height is not set --> default it to 100%
     if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
         inf.height = { 10000, LayoutValueType::Percentage };
-    
+
     // set the layout (only width and height) will be copied (rest are 0)
     this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
     this->Layout.Format.Width      = inf.width;
@@ -676,7 +670,7 @@ bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
     // if X and Y are set --> Left, Right, Top and Bottom should not be set
     CHECK((inf.flags & (LAYOUT_FLAG_LEFT | LAYOUT_FLAG_RIGHT | LAYOUT_FLAG_TOP | LAYOUT_FLAG_BOTTOM)) == 0,
           false,
-          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can not be used");   
+          "When (x,y) parameters are used, none of the anchor (left,right,bottom,top) parameters can not be used");
     // if align is not set --> default it to TopLeft
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::TopLeft;
@@ -686,7 +680,7 @@ bool ControlContext::ProcessXYWHLayout(LayoutInformation& inf)
     // if height is not present --> default it to 1 (character)
     if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
         inf.height = { 1, LayoutValueType::CharacterOffset };
-    
+
     this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
     this->Layout.Format.X          = inf.x;
     this->Layout.Format.Y          = inf.y;
@@ -711,11 +705,11 @@ bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignamen
     // if height is not present --> default it to 1 (character)
     if ((inf.flags & LAYOUT_FLAG_HEIGHT) == 0)
         inf.height = { 1, LayoutValueType::CharacterOffset };
-    this->Layout.Format.LayoutMode     = LayoutFormatMode::PointAndSize;
-    this->Layout.Format.Width          = inf.width;
-    this->Layout.Format.Height         = inf.height;
-    this->Layout.Format.Align          = anchor;
-    this->Layout.Format.Anchor         = anchor;    
+    this->Layout.Format.LayoutMode = LayoutFormatMode::PointAndSize;
+    this->Layout.Format.Width      = inf.width;
+    this->Layout.Format.Height     = inf.height;
+    this->Layout.Format.Align      = anchor;
+    this->Layout.Format.Anchor     = anchor;
     // copy anchor to (X,Y)
     switch (anchor)
     {
@@ -751,7 +745,7 @@ bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
           false,
           "When (left,right) parameters are used toghere, width can not be used as it is deduced from left-right "
           "difference");
-    
+
     // if "align" is not provided, it is defaulted to center
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::Center;
@@ -836,11 +830,11 @@ bool ControlContext::ProcessLTRAnchors(LayoutInformation& inf)
     if (!(inf.flags & LAYOUT_FLAG_HEIGHT))
         inf.height = { 1, LayoutValueType::CharacterOffset };
 
-    this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
-    this->Layout.Format.AnchorLeft   = inf.a_left;
-    this->Layout.Format.AnchorTop    = inf.a_top;
-    this->Layout.Format.AnchorRight  = inf.a_right;
-    this->Layout.Format.Height       = inf.height;
+    this->Layout.Format.LayoutMode  = LayoutFormatMode::LeftTopRightAnchorsAndHeight;
+    this->Layout.Format.AnchorLeft  = inf.a_left;
+    this->Layout.Format.AnchorTop   = inf.a_top;
+    this->Layout.Format.AnchorRight = inf.a_right;
+    this->Layout.Format.Height      = inf.height;
 
     return true;
 }
@@ -849,7 +843,7 @@ bool ControlContext::ProcessLBRAnchors(LayoutInformation& inf)
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_WIDTH)) == 0,
           false,
           "When (left,bottom,right) parameters are used together, 'X', 'Y' and 'A' parameters can not be used");
-    
+
     if (!(inf.flags & LAYOUT_FLAG_HEIGHT))
         inf.height = { 1, LayoutValueType::CharacterOffset };
 
@@ -873,7 +867,7 @@ bool ControlContext::ProcessTLBAnchors(LayoutInformation& inf)
     this->Layout.Format.LayoutMode   = LayoutFormatMode::TopLeftBottomAnchorsAndWidth;
     this->Layout.Format.AnchorTop    = inf.a_top;
     this->Layout.Format.AnchorLeft   = inf.a_left;
-    this->Layout.Format.AnchorBottom = inf.a_bottom;    
+    this->Layout.Format.AnchorBottom = inf.a_bottom;
     this->Layout.Format.Width        = inf.width;
 
     return true;
@@ -900,7 +894,8 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y | LAYOUT_FLAG_ALIGN | LAYOUT_FLAG_HEIGHT | LAYOUT_FLAG_WIDTH)) ==
                 0,
           false,
-          "When (left,top,right,bottom) parameters are used together, 'X', 'Y', 'A', 'W' and 'H' parameters can not be used");
+          "When (left,top,right,bottom) parameters are used together, 'X', 'Y', 'A', 'W' and 'H' parameters can not be "
+          "used");
 
     this->Layout.Format.LayoutMode   = LayoutFormatMode::LeftTopRightBottomAnchors;
     this->Layout.Format.AnchorLeft   = inf.a_left;
@@ -955,7 +950,7 @@ bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
 }
 void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
 {
-    this->Layout.Width = (int) width;
+    this->Layout.Width  = (int) width;
     this->Layout.Height = (int) heigh;
     // check Width / Height values agains min...max values
     this->Layout.Width  = std::max<>(this->Layout.Width, this->Layout.MinWidth);
@@ -1013,10 +1008,10 @@ bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
     switch (md.Align)
     {
     case Alignament::TopLeft:
-        // do nothing        
+        // do nothing
         break;
     case Alignament::Top:
-        this->Layout.X -= this->Layout.Width / 2;        
+        this->Layout.X -= this->Layout.Width / 2;
         break;
     case Alignament::TopRight:
         this->Layout.X -= this->Layout.Width;
@@ -1068,7 +1063,7 @@ bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetri
     default:
         RETURNERROR(false, "Invalid alignamet (%d) --> only Top, Center and Bottom are allowed !", md.Align);
     }
-    
+
     return true;
 }
 bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetricData& md)
@@ -1126,44 +1121,43 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     md.ParentWidth = sz.Width;
     md.ParentHeigh = sz.Height;
 
-
     // compute position
     switch (this->Layout.Format.LayoutMode)
     {
-        case LayoutFormatMode::PointAndSize:
-            return RecomputeLayout_PointAndSize(md);
-        case LayoutFormatMode::LeftRightAnchorsAndHeight:
-            return RecomputeLayout_LeftRightAnchorsAndHeight(md);
-        case LayoutFormatMode::TopBottomAnchorsAndWidth:
-            return RecomputeLayout_TopBottomAnchorsAndWidth(md);
-        case LayoutFormatMode::LeftTopRightAnchorsAndHeight:
-            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
-            this->Layout.X = md.AnchorLeft;
-            this->Layout.Y = md.AnchorTop;
-            return true;
-        case LayoutFormatMode::LeftBottomRightAnchorsAndHeight:
-            SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
-            this->Layout.X = md.AnchorLeft;
-            this->Layout.Y = md.ParentHeigh - (md.AnchorBottom + this->Layout.Height);
-            return true;
-        case LayoutFormatMode::TopLeftBottomAnchorsAndWidth:
-            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
-            this->Layout.X = md.AnchorLeft;
-            this->Layout.Y = md.AnchorTop;
-            return true;
-        case LayoutFormatMode::TopRightBottomAnchorsAndWidth:
-            SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
-            this->Layout.X = md.ParentWidth - (md.AnchorRight + this->Layout.Width);
-            this->Layout.Y = md.AnchorTop;
-            return true;
-        case LayoutFormatMode::LeftTopRightBottomAnchors:
-            SetControlSize(
-                  md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
-            this->Layout.X = md.AnchorLeft;
-            this->Layout.Y = md.AnchorTop;
-            return true;
-        default:
-            RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
+    case LayoutFormatMode::PointAndSize:
+        return RecomputeLayout_PointAndSize(md);
+    case LayoutFormatMode::LeftRightAnchorsAndHeight:
+        return RecomputeLayout_LeftRightAnchorsAndHeight(md);
+    case LayoutFormatMode::TopBottomAnchorsAndWidth:
+        return RecomputeLayout_TopBottomAnchorsAndWidth(md);
+    case LayoutFormatMode::LeftTopRightAnchorsAndHeight:
+        SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+        this->Layout.X = md.AnchorLeft;
+        this->Layout.Y = md.AnchorTop;
+        return true;
+    case LayoutFormatMode::LeftBottomRightAnchorsAndHeight:
+        SetControlSize(md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.Height);
+        this->Layout.X = md.AnchorLeft;
+        this->Layout.Y = md.ParentHeigh - (md.AnchorBottom + this->Layout.Height);
+        return true;
+    case LayoutFormatMode::TopLeftBottomAnchorsAndWidth:
+        SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+        this->Layout.X = md.AnchorLeft;
+        this->Layout.Y = md.AnchorTop;
+        return true;
+    case LayoutFormatMode::TopRightBottomAnchorsAndWidth:
+        SetControlSize(md.Width, md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+        this->Layout.X = md.ParentWidth - (md.AnchorRight + this->Layout.Width);
+        this->Layout.Y = md.AnchorTop;
+        return true;
+    case LayoutFormatMode::LeftTopRightBottomAnchors:
+        SetControlSize(
+              md.ParentWidth - (md.AnchorLeft + md.AnchorRight), md.ParentHeigh - (md.AnchorTop + md.AnchorBottom));
+        this->Layout.X = md.AnchorLeft;
+        this->Layout.Y = md.AnchorTop;
+        return true;
+    default:
+        RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }
 }
 void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
@@ -1216,62 +1210,64 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     }
 }
 //=======================================================================================================================================================
-AppCUI::Controls::Control::Control()
-{
-    Context = nullptr;
-}
 AppCUI::Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-bool AppCUI::Controls::Control::Init(
-      Control* parent, const ConstString& caption, const std::string_view& layout, bool computeHotKey)
+AppCUI::Controls::Control::Control(
+      void* context, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey)
 {
-    AppCUI::Utils::ConstStringObject captionObj(caption);
-    CHECK(captionObj.Data != nullptr, false, "Expecting a valid (non-null) string !");
-
+    ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
-    CHECK(cfg != nullptr, false, "Unable to get config object !");
-    CHECK(CTRLC->UpdateLayoutFormat(layout), false, "Invalid format !");
-    CHECK(CTRLC->RecomputeLayout(parent), false, "Unable to recompute layout !");
+    ASSERT(cfg != nullptr, "Unable to get config object !");
+    this->Context = context;    
+    auto ctx = reinterpret_cast<ControlContext*>(this->Context);
+    ctx->Inited   = false;
+    ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 
+    AppCUI::Utils::ConstStringObject captionObj(caption);
     if (computeHotKey)
     {
-        CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-        CHECK(CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, CTRLC->HotKey, Key::Alt, NoColorPair),
-              false,
-              "Fail to set text with UTF8 value");
+        ctx->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+        if (!captionObj.Data)
+        {
+            ASSERT(
+                  ctx->Text.SetWithHotKey("", ctx->HotKeyOffset, ctx->HotKey, Key::Alt, NoColorPair),
+                  "Fail to set text with UTF8 value");
+        }
+        else
+        {
+            ASSERT(
+                  ctx->Text.SetWithHotKey(caption, ctx->HotKeyOffset, ctx->HotKey, Key::Alt, NoColorPair),
+                  "Fail to set text with UTF8 value");
+        }
     }
     else
     {
-        CHECK(CTRLC->Text.Set(caption, NoColorPair), false, "Fail to set text with UTF8 value");
+        if (!captionObj.Data)
+        {
+            ASSERT(ctx->Text.Set("", NoColorPair), "Fail to set text with UTF8 value");
+        }
+        else
+        {
+            ASSERT(ctx->Text.Set(caption, NoColorPair), "Fail to set text with UTF8 value");
+        }
     }
-    CTRLC->Inited = true;
-    //
 
-    if (parent != nullptr)
-    {
-        CHECK(parent->AddControl(this), false, "Unable to add control !");
-    }
-
-    // Force a recompute layout on the entire app
-    auto app = AppCUI::Application::GetApplication();
-    if (app)
-        app->RepaintStatus = REPAINT_STATUS_ALL;
-
-    return true;
+    // all good
+    ctx->Inited = true;
 }
 
-bool AppCUI::Controls::Control::AddControl(Control* ctrl)
+Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
 {
-    CHECK(ctrl != nullptr, false, "Invalid control (nullptr)");
-    CHECK(ctrl->IsInitialized(), false, "Control was not initialized before adding it to a parent control !");
+    CHECK(ctrl, nullptr, "Invalid control (nullptr)");
+    CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
     // LOG_INFO("AddControl(this=%p,Control=%p,Controls List=%p,Count=%d", this, ctrl, Controls, ControlsCount);
     if (CTRLC->Controls == nullptr) // first time
     {
         // LOG_INFO("Allocate 8 controls for current container %p", this);
         CTRLC->Controls = new Control*[8];
-        CHECK(CTRLC->Controls != nullptr, false, "");
+        CHECK(CTRLC->Controls != nullptr, nullptr, "");
         CTRLC->ControlsCount = 0;
     }
     else
@@ -1280,26 +1276,28 @@ bool AppCUI::Controls::Control::AddControl(Control* ctrl)
         {
             // grow
             Control** tmp = new Control*[CTRLC->ControlsCount + 8];
-            CHECK(tmp != nullptr, false, "");
+            CHECK(tmp != nullptr, nullptr, "");
             for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
                 tmp[tr] = CTRLC->Controls[tr];
             delete CTRLC->Controls;
             CTRLC->Controls = tmp;
         }
     }
-    if (OnBeforeAddControl(ctrl) == false)
-        return false;
-    // fac linkul
-    CTRLC->Controls[CTRLC->ControlsCount++]     = ctrl;
-    ((ControlContext*) (ctrl->Context))->Parent = this;
-    OnAfterAddControl(ctrl);
-    // Recompute layout
+    if (OnBeforeAddControl(ctrl.get()) == false)
+        return nullptr;
+
+    auto p_ctrl                                   = ctrl.release();
+    CTRLC->Controls[CTRLC->ControlsCount++]       = p_ctrl;
+    ((ControlContext*) (p_ctrl->Context))->Parent = this;
+    OnAfterAddControl(p_ctrl);
+    // Recompute layouts
+    (reinterpret_cast<ControlContext*>(p_ctrl->Context))->RecomputeLayout(this);
     RecomputeLayout();
     // Force a recompute layout on the entire app
     auto app = AppCUI::Application::GetApplication();
     if (app)
         app->RepaintStatus = REPAINT_STATUS_ALL;
-    return true;
+    return p_ctrl;
 }
 bool AppCUI::Controls::Control::RemoveControl(Control* control)
 {
@@ -1522,7 +1520,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         return false;
     if (updateHotKey)
     {
-        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset,CTRLC->HotKey,Key::Alt, NoColorPair) == false)
+        if (CTRLC->Text.SetWithHotKey(caption, CTRLC->HotKeyOffset, CTRLC->HotKey, Key::Alt, NoColorPair) == false)
             return false;
     }
     else

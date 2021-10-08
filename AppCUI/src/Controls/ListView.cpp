@@ -1303,18 +1303,17 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-bool ListView::Create(Control* parent, const std::string_view& layout, ListViewFlags flags)
+ListView::ListView(const std::string_view& layout, ListViewFlags flags)
+    : Control(new ListViewControlContext(), "", layout, false)
 {
-    CONTROL_INIT_CONTEXT(ListViewControlContext);
-    CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, false);
+    auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
-    CHECK(Init(parent, "", layout, false), false, "Failed to create list view !");
     Members->Flags =
           GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (unsigned int) flags;
     Members->ScrollBars.LeftMargin = 25;
     // allocate items
-    CHECK(Members->Items.Indexes.Create(32), false, "Fail to allocate indexes");
+    ASSERT(Members->Items.Indexes.Create(32), "Fail to allocate Listview indexes");
     Members->Items.List.reserve(32);
 
     // initialize
@@ -1338,8 +1337,6 @@ bool ListView::Create(Control* parent, const std::string_view& layout, ListViewF
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
 
-    // all is good
-    return true;
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {
@@ -1637,7 +1634,7 @@ unsigned int ListView::GetItemsCount()
 ItemHandle ListView::GetCurrentItem()
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
-    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int)lvcc->Items.Indexes.Len()))
+    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int) lvcc->Items.Indexes.Len()))
         return InvalidItemHandle;
     unsigned int* indexes = lvcc->Items.Indexes.GetUInt32Array();
     return indexes[lvcc->Items.CurentItemIndex];

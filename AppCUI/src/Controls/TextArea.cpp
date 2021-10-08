@@ -881,25 +881,24 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-bool TextArea::Create(
-      Control* parent,
+TextArea::TextArea(
       const AppCUI::Utils::ConstString& caption,
       const std::string_view& layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)
+    : Control(new TextAreaControlContext(), "", layout, false)
 {
-    CONTROL_INIT_CONTEXT(TextAreaControlContext);
-    CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, false);
+    auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
+
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Syntax.Handler   = nullptr;
-    Members->Syntax.Context   = nullptr;
-    CHECK(Init(parent, "", layout, false), false, "Failed to create text area  !");
+    Members->Syntax.Context   = nullptr;    
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
-    CHECK(Members->Text.Set(caption), false, "Fail to set text to internal CharactersBuffers object !");
-    CHECK(Members->Lines.Create(128), false, "Fail to create indexes for line numbers");
+    ASSERT(Members->Text.Set(caption), "Fail to set text to internal CharactersBuffers object !");
+    ASSERT(Members->Lines.Create(128), "Fail to create indexes for line numbers");
     // scroll bars
     if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
     {
@@ -910,9 +909,7 @@ bool TextArea::Create(
     {
         Members->Syntax.Handler = handler;
         Members->Syntax.Context = handlerContext;
-        CHECK(handler,
-              false,
-              "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
+        ASSERT(handler, "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;
@@ -922,8 +919,10 @@ bool TextArea::Create(
     Members->ClearSel();
     Members->AnalyzeCurrentText();
     // all is good
-    return true;
+
 }
+
+
 void TextArea::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );

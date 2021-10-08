@@ -4,18 +4,19 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool AppCUI::Controls::RadioBox::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
+RadioBox::RadioBox(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
+    : Control(new ControlContext(), caption, layout, true)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 1;
-    CHECK(Init(parent, caption, layout, true), false, "Unable to create radioBox box !");
+    Members->Layout.MinHeight = 1;    
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    SetControlID(controlID);
-    SetGroup(groupID);
-    return true;
+    this->SetControlID(controlID);
+    this->SetGroup(groupID);
 }
+
+
 void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

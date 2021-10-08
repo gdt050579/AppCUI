@@ -4,36 +4,31 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-bool Button::Create(
-      Control* parent,
-      const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
-      int controlID,
-      ButtonFlags flags)
+Button::Button(
+      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
+    : Control(new ControlContext(), caption, layout,true)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    auto Members             = reinterpret_cast<ControlContext*>(this->Context);
 
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
         Members->Layout.MinWidth  = 3;
         Members->Layout.MinHeight = 1; // one character (flat button)
         Members->Layout.MaxHeight = 1;
+        Members->Layout.Height    = 1;
     }
     else
     {
         Members->Layout.MinWidth  = 4;
         Members->Layout.MinHeight = 2; // Exactly 2 characters
         Members->Layout.MaxHeight = 2;
+        Members->Layout.Height    = 2;
     }
-
-    CHECK(Init(parent, caption, layout, true), false, "Unable to create check box !");
-
     Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
-    Members->Layout.Height = 2;
-    SetControlID(controlID);
-    return true;
+    
+    this->SetControlID(controlID);
 }
+
 void Button::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );

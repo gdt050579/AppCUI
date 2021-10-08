@@ -25,12 +25,15 @@ struct WinItemInfo
 
 class InternalWindowManager : public AppCUI::Controls::Window
 {
-    Tree tree;
-    Button btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
+    Reference<Tree> tree;
+    Reference<Button> btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
     std::map<ItemHandle, WinItemInfo> rel;
     ItemHandle focusedItem;
 
   public:
+    InternalWindowManager() : AppCUI::Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
+    {
+    }
     bool Create();
     bool AddItem(Window* w, unsigned int offsetX);
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX);
@@ -45,14 +48,14 @@ class InternalWindowManager : public AppCUI::Controls::Window
 
 void InternalWindowManager::UpdateButtonsStatus()
 {
-    auto i = tree.GetCurrentItem();
-    btnGoTo.SetEnabled(i != InvalidItemHandle);
-    btnClose.SetEnabled(i != InvalidItemHandle);
-    btnCloseDescendands.SetEnabled(false);
+    auto i = tree->GetCurrentItem();
+    btnGoTo->SetEnabled(i != InvalidItemHandle);
+    btnClose->SetEnabled(i != InvalidItemHandle);
+    btnCloseDescendands->SetEnabled(false);
     if (i == InvalidItemHandle)
         return;
 
-    auto data = tree.GetItemData(i);
+    auto data = tree->GetItemData(i);
     if ((data) && (data->Pointer))
     {
         auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
@@ -63,7 +66,7 @@ void InternalWindowManager::UpdateButtonsStatus()
             {
                 if (itm.second.Referal == Members->windowItemHandle)
                 {
-                    btnCloseDescendands.SetEnabled(true);
+                    btnCloseDescendands->SetEnabled(true);
                     break;
                 }
             }
@@ -81,39 +84,39 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
 }
 bool InternalWindowManager::RemoveCurrentWindow()
 {
-    const auto current = tree.GetCurrentItem();
+    const auto current = tree->GetCurrentItem();
     if (current == InvalidItemHandle)
         return false;
 
     LocalUnicodeStringBuilder<256> tmp;
     tmp.Add("Close ");
-    tmp.Add(tree.GetItemText(current));
+    tmp.Add(tree->GetItemText(current));
     tmp.Add(" ?");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        auto data = tree.GetItemData(current);
+        auto data = tree->GetItemData(current);
         if ((data) && (data->Pointer))
             (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
         return true;
     }
-    tree.RemoveItem(current);
+    tree->RemoveItem(current);
 
     return false;
 }
 bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
 {
-    auto i = tree.GetCurrentItem();
+    auto i = tree->GetCurrentItem();
     if (i == InvalidItemHandle)
         return false;
 
     LocalUnicodeStringBuilder<256> tmp;
     CHECK(tmp.Add("Close "), false, "");
-    CHECK(tmp.Add(tree.GetItemText(i)), false, "");
+    CHECK(tmp.Add(tree->GetItemText(i)), false, "");
     CHECK(tmp.Add(" and all of its descendants ?"), false, "");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) != Result::Ok)
         return false;
 
-    auto data = tree.GetItemData(i);
+    auto data = tree->GetItemData(i);
     if ((data) && (data->Pointer))
     {
         auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
@@ -123,7 +126,7 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
         }
     }
 
-    tree.RemoveItem(i);
+    tree->RemoveItem(i);
 
     return true;
 }
@@ -132,21 +135,21 @@ bool InternalWindowManager::CloseAll()
     if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
         return false;
 
-    const size_t count = tree.GetItemsCount();
+    const size_t count = tree->GetItemsCount();
     for (size_t tr = 0; tr < count; tr++)
     {
-        auto data = tree.GetItemData(tr);
+        auto data = tree->GetItemData(tr);
         if ((data) && (data->Pointer))
             (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
     }
 
-    tree.ClearItems();
+    tree->ClearItems();
 
     return true;
 }
 void InternalWindowManager::GoToSelectedItem()
 {
-    auto data = tree.GetItemData(tree.GetCurrentItem());
+    auto data = tree->GetItemData(tree->GetCurrentItem());
     if ((!data) || (!data->Pointer))
         return;
     (reinterpret_cast<Window*>(data->Pointer))->SetFocus();
@@ -198,7 +201,7 @@ bool InternalWindowManager::AddItem(Window* w, unsigned int offsetX)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
     const std::u16string itemTitle(wcc->Text);
-    const auto i = tree.AddItem(wcc->referalItemHandle, { itemTitle }, w);
+    const auto i = tree->AddItem(wcc->referalItemHandle, { itemTitle }, w);
     return true;
 }
 void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, unsigned int offsetX)
@@ -214,13 +217,14 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 }
 bool InternalWindowManager::Create()
 {
-    CHECK(Window::Create("Window manager", "d:c,w:72,h:20"), false, "");
-    CHECK(tree.Create(this, "l:1,t:1,r:1,b:3"), false, "");
-    CHECK(btnGoTo.Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
-    CHECK(btnClose.Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
-    CHECK(btnCloseDescendands.Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC), false, "");
-    CHECK(btnCloseAll.Create(this, "Close &All", "l:43,b:0,w:13", BUTTON_ID_CLOSE_ALL), false, "");
-    CHECK(btnCancel.Create(this, "Cancel", "l:57,b:0,w:13", BUTTON_ID_CANCEL), false, "");
+    CHECK(tree = Factory::Tree::Create(this, "l:1,t:1,r:1,b:3"), false, "");
+    CHECK(btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
+    CHECK(btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
+    CHECK(btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC),
+          false,
+          "");
+    CHECK(btnCloseAll = Factory::Button::Create(this, "Close &All", "l:43,b:0,w:13", BUTTON_ID_CLOSE_ALL), false, "");
+    CHECK(btnCancel = Factory::Button::Create(this, "Cancel", "l:57,b:0,w:13", BUTTON_ID_CANCEL), false, "");
 
     // add all existing windows
     auto* app = AppCUI::Application::GetApplication();

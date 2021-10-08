@@ -3,14 +3,9 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-bool ImageViewer::Create(Control* parent, const std::string_view& layout, ViewerFlags flags)
+ImageViewer::ImageViewer(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, ViewerFlags flags)
+    : CanvasViewer(caption,layout,16,16,flags)
 {
-    return CanvasViewer::Create(parent, layout, 16, 16, flags);
-}
-bool ImageViewer::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, ViewerFlags flags)
-{
-    return CanvasViewer::Create(parent, caption, layout, 16, 16, flags);
 }
 bool ImageViewer::SetImage(
       const AppCUI::Graphics::Image& img,

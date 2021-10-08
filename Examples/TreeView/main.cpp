@@ -14,28 +14,29 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 
-class ExampleMainWindow : public AppCUI::Controls::Window
+class TreeExample : public AppCUI::Controls::Window
 {
     enum class ControlIds : unsigned int
     {
         ButtonShowOpen = 1
     };
 
-    Button open;
-    TextField currentFolder;
-    Splitter vertical;
-    Splitter horizontal;
-    Tree tree;
+    Reference<Button> open;
+    Reference<TextField> currentFolder;
+    Reference<Splitter> vertical;
+    Reference<Splitter> horizontal;
+    Reference<Tree> tree;
 
   public:
-    ExampleMainWindow()
+    TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", WindowFlags::Sizeable)
     {
-        Create("Tree view example", "d:c, w:100%, h:100%");
-        open.Create(this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
-        vertical.Create(this, "x:6%, y:0, w:11%, h:15%", true);
-        horizontal.Create(this, "x:1%, y:15%, w:99%, h:5%", false);
-        currentFolder.Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
-        tree.Create(
+        open = Factory::Button::Create(
+              this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
+        vertical   = Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
+        horizontal = Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
+        currentFolder =
+              Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+        tree = Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:85%",
               static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren) |
@@ -43,12 +44,14 @@ class ExampleMainWindow : public AppCUI::Controls::Window
               3);
 
         // TODO: maybe add % for column sizes as well
-        tree.AddColumnData(0, u"Path", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left, 100);
-        tree.AddColumnData(1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
-        tree.AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
-        tree.SetToggleItemHandle(PopulateTree);
+        tree->AddColumnData(
+              0, u"Path", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left, 100);
+        tree->AddColumnData(
+              1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
+        tree->AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
+        tree->SetToggleItemHandle(PopulateTree);
 
-        tree.ClearItems();
+        tree->ClearItems();
         const auto path              = std::filesystem::current_path().u16string();
         const auto filename          = std::filesystem::current_path().filename().u16string();
         const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
@@ -62,7 +65,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
         catch (...)
         {
         }
-        const auto root = tree.AddItem(
+        const auto root = tree->AddItem(
               InvalidItemHandle,
               { filename, pathLastWriteTime, pathSizeText },
               nullptr,
@@ -84,11 +87,11 @@ class ExampleMainWindow : public AppCUI::Controls::Window
             {
             case ControlIds::ButtonShowOpen:
             {
-                const auto res = FileDialog::ShowOpenFileWindow("", "", currentFolder.GetText());
+                const auto res = FileDialog::ShowOpenFileWindow("", "", currentFolder->GetText());
                 if (res.has_value())
                 {
-                    currentFolder.SetText(res->u8string());
-                    tree.ClearItems();
+                    currentFolder->SetText(res->u8string());
+                    tree->ClearItems();
 
                     const auto path              = std::filesystem::path(res->u16string());
                     const auto filename          = path.filename().u16string();
@@ -105,7 +108,7 @@ class ExampleMainWindow : public AppCUI::Controls::Window
                     {
                     }
 
-                    const auto root = tree.AddItem(
+                    const auto root = tree->AddItem(
                           InvalidItemHandle,
                           { filename, pathLastWriteTime, pathSizeText },
                           nullptr,
@@ -223,7 +226,7 @@ int main()
         return 1;
     }
 
-    Application::AddWindow(std::make_unique<ExampleMainWindow>());
+    Application::AddWindow(std::make_unique<TreeExample>());
     Application::Run();
 
     return 0;

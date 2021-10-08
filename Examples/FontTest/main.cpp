@@ -19,9 +19,13 @@ int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::Speci
     0x25CF, 0x25CB, 0x221A,                                                         // symbols
 };
 
-struct HexViewUserControl : public UserControl
+struct FontUserControl : public UserControl
 {
   public:
+    FontUserControl(const std::string_view& layout)
+        : UserControl(layout)
+    {
+    }
     void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
@@ -58,24 +62,11 @@ struct HexViewUserControl : public UserControl
 
 class FontTest : public AppCUI::Controls::Window
 {
-  private:
-    HexViewUserControl hexView;
 
   public:
-    FontTest()
+    FontTest() : Window("FontTest", "x:0,y:0,w:100%,h:100%",WindowFlags::None)
     {
-        this->Create("FontTest", "x:0,y:0,w:100%,h:100%");
-        hexView.Create(this, "x:0,y:0,w:100%,h:100%");
-    }
-
-    bool OnEvent(Control* /*sender*/, Event eventType, int) override
-    {
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
-            return true;
-        }
-        return false;
+        this->CreateChildControl<FontUserControl>("x:0,y:0,w:100%,h:100%");
     }
 };
 

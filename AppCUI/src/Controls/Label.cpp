@@ -3,17 +3,16 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-bool Label::Create(Control* parent, const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+Label::Label(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+    : Control(new ControlContext(), caption, layout, true)
 {
-    CONTROL_INIT_CONTEXT(ControlContext);
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    auto Members = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinHeight = 1;
     Members->Layout.MinWidth  = 1;
-    CHECK(Init(parent, caption, layout, true), false, "Failed to create label !");
     Members->HotKey = AppCUI::Input::Key::None; // A label can draw a hot key, but does not have an associated one
     Members->Flags  = GATTR_ENABLE | GATTR_VISIBLE;
-    return true;
 }
+
 
 void Label::Paint(Graphics::Renderer& renderer)
 {
