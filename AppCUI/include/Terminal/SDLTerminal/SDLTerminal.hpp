@@ -19,6 +19,7 @@ namespace Internal
         std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
         std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation;
         AppCUI::Input::Key oldShiftState;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastFramesUpdate;
 
         SDL_Window* window;
         Uint32 windowID;
