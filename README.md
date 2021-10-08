@@ -16,11 +16,21 @@ The first example is [ListView](https://github.com/gdt050579/AppCUI/tree/main/Ex
 
 ![ListView usage example](docs/example_images/listview.gif)
 
+
+---
+
+
 The library displays the whole spectre of ASCII (and ASCII extended, via [Code Page 437](https://en.wikipedia.org/wiki/Code_page_437)) characters, but also a wide range of `UTF16` characters.
 
 In this example we can see the display of characters with values from `0` to `255`, [UTF8 Box Drawing characters](https://en.wikipedia.org/wiki/Box_Drawing), as well as `UTF16` symbols, russian and romanian characters.
 
 ![Font display example](docs/example_images/fonttest.png)
+
+---
+
+_AppCUI_ also supports animantions with a stable 30 frames per second, [BadApple](https://github.com/gdt050579/AppCUI/tree/main/Examples/BadApple) is an ascii art animation, that is also a good example of custom drawing and extensibility of components.
+
+![BadApple ascii art](docs/example_images/badapple.gif)
 
 ## Display
 
@@ -32,6 +42,7 @@ While the rendering of components, layering and colors management is done in the
 
 While frontends may be different, AppCUI strives to provide cross-platform support so that the same app looks, feels and behaves the same on every system.
 
+More about frontends can be found [here](https://gdt050579.github.io/AppCUI/terminals.html).
 
 ## Advanced documentation
 

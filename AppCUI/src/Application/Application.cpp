@@ -303,6 +303,24 @@ void DestroyControl(AppCUI::Controls::Control* ctrl)
     }
     delete ctrl;
 }
+bool ProcessUpdateFrameEvent(AppCUI::Controls::Control* ctrl)
+{
+    CREATE_CONTROL_CONTEXT(ctrl, Members, false);
+    if ((Members->Flags & (GATTR_VISIBLE | GATTR_ENABLE)) != (GATTR_VISIBLE | GATTR_ENABLE))
+        return false; // no need to call the function
+    bool res = ctrl->OnFrameUpdate();
+    if (Members->ControlsCount > 0)
+    {
+        auto s = Members->Controls;
+        auto e = s + Members->ControlsCount;
+        while (s<e)
+        {
+            res |= ProcessUpdateFrameEvent(*s);
+            s++;
+        }
+    }
+    return res;
+}
 AppCUI::Controls::Control* RecursiveCoordinatesToControl(AppCUI::Controls::Control* ctrl, int x, int y)
 {
     if (ctrl == nullptr)
@@ -1040,6 +1058,14 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             RepaintStatus = REPAINT_STATUS_NONE;
         }
         this->terminal->GetSystemEvent(evnt);
+        if (evnt.updateFrames)
+        {
+            if (ProcessUpdateFrameEvent(this->AppDesktop))
+                this->RepaintStatus |= REPAINT_STATUS_DRAW;
+            for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
+                if (ProcessUpdateFrameEvent(this->ModalControlsStack[tr]))
+                    this->RepaintStatus |= REPAINT_STATUS_DRAW;
+        }
         switch (evnt.eventType)
         {
         case SystemEventType::AppClosed:

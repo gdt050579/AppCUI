@@ -77,6 +77,7 @@ namespace Internal
         AppCUI::Input::MouseWheel mouseWheel;
         AppCUI::Input::Key keyCode;
         char16_t unicodeCharacter;
+        bool updateFrames;
     };
 
     struct CommandBarField

@@ -8,6 +8,7 @@ using namespace AppCUI::Graphics;
 WindowsTerminal::WindowsTerminal()
 {
     ConsoleBufferCount = 0;
+    this->fpsMode      = false;
 }
 WindowsTerminal::~WindowsTerminal()
 {
@@ -361,6 +362,9 @@ bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& init
     // build the key translation matrix
     BuildKeyTranslationMatrix();
 
+    // fpsMode
+    this->fpsMode   = ((initData.Flags & InitializationFlags::EnableFPSMode) != InitializationFlags::None);
+    this->startTime = GetTickCount();
     return true;
 }
 void WindowsTerminal::RestoreOriginalConsoleSettings()
@@ -411,9 +415,64 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     INPUT_RECORD ir;
     AppCUI::Input::Key eventShiftState;
 
-    evnt.eventType = SystemEventType::None;
-    if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
-        return;
+    evnt.eventType    = SystemEventType::None;
+    evnt.updateFrames = false;
+    if (this->fpsMode)
+    {
+        DWORD cTime = GetTickCount();
+        DWORD diff  = 33;
+        if (cTime >= this->startTime)
+        {
+            diff -= (cTime - this->startTime);
+            if (diff > 33)
+                diff = 0;
+        }
+        else
+        {
+            diff = 0;
+        }
+        if (diff == 0)
+        {
+            this->startTime = cTime;
+            // a new framerate request should be send
+            evnt.updateFrames = true;
+            if ((PeekConsoleInput(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+                return; // no event - only process the framerate update
+            // there is one event - read-it
+            if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+                return; // some error happened, process the framerate update
+        }
+        else
+        {
+            // wait until a framerate will be required
+            DWORD result = WaitForSingleObject(this->hstdIn, diff);
+            if (result == WAIT_OBJECT_0)
+            {
+                // there is an event available
+                if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+                    return; // some error happened, process the framerate update
+            }
+            else
+            {
+                if (result == WAIT_TIMEOUT)
+                {
+                    this->startTime   = GetTickCount();
+                    evnt.updateFrames = true;
+                    return; // process framerate update;
+                }
+                else
+                {
+                    // other error
+                    return;
+                }
+            }
+        }
+    }
+    else
+    {
+        if ((ReadConsoleInputW(this->hstdIn, &ir, 1, &nrread) == FALSE) || (nrread != 1))
+            return;
+    }
 
     switch (ir.EventType)
     {

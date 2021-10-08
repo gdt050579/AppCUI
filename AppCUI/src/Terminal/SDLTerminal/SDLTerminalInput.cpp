@@ -56,6 +56,8 @@ bool SDLTerminal::initInput(const AppCUI::Application::InitializationData&)
     KeyTranslation[SDL_SCANCODE_HOME]      = Key::Home;
     KeyTranslation[SDL_SCANCODE_END]       = Key::End;
     KeyTranslation[SDL_SCANCODE_SPACE]     = Key::Space;
+
+    lastFramesUpdate = std::chrono::high_resolution_clock::now();
     return true;
 }
 
@@ -155,19 +157,33 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 
 void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 {
+    using namespace std::chrono_literals;
+
     evnt.eventType        = SystemEventType::None;
     evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
+    evnt.updateFrames     = false;
 
     SDL_Event e;
-    // wait 30 ms max for the next event
-    if (!SDL_WaitEventTimeout(&e, 30))
+    // wait 33 ms max for the next event, equates to roughly 30 fps
+    if (!SDL_WaitEventTimeout(&e, 33))
     {
         if (autoRedraw)
         {
-            evnt.eventType = SystemEventType::RequestRedraw;
+            evnt.updateFrames = true;
         }
         return;
+    }
+
+    if (autoRedraw)
+    {
+        auto pollTime = std::chrono::high_resolution_clock::now();
+        auto diffMS   = std::chrono::duration_cast<std::chrono::milliseconds>(pollTime - lastFramesUpdate);
+        if (diffMS >= 33ms)
+        {
+            evnt.updateFrames = true;
+            lastFramesUpdate  = pollTime;
+        }
     }
 
     switch (e.type)
