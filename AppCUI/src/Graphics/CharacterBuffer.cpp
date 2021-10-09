@@ -226,7 +226,26 @@ bool CharacterBuffer::Grow(size_t newSize)
     Allocated = (unsigned int) alingSize;
     return true;
 }
+bool CharacterBuffer::Fill(char16_t character, unsigned int size, const ColorPair color)
+{
+    Character c;
 
+    if (size != this->Count)
+    {
+        CHECK(Grow(size), false, "Fail to allocate %d characters", size);
+    }
+    this->Count = size;
+    auto s      = this->Buffer;
+    auto e      = s + this->Count;
+    c.Code      = character;
+    c.Color     = color;
+    while (s<e)
+    {
+        s->PackedValue = c.PackedValue;
+        s++;
+    }
+    return true;
+}
 bool CharacterBuffer::Set(const CharacterBuffer& obj)
 {
     this->Count = 0; // we overwrite the buffer anyway - don't need to recopy it if the allocated space is too small
