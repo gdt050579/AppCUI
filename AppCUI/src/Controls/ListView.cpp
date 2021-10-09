@@ -1068,11 +1068,27 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
     if (y < GetVisibleItemsCount())
     {
         this->Filter.FilterModeEnabled = false;
-        if (((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex) &&
-            ((button & AppCUI::Input::MouseButton::DoubleClicked) != AppCUI::Input::MouseButton::None))
-            SendMsg(Event::ListViewItemClicked);
-        else
+
+        if ((y + Items.FirstVisibleIndex) != this->Items.CurentItemIndex)
             MoveTo(y + Items.FirstVisibleIndex);
+
+        if ((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex)
+        {
+            auto i = GetFilteredItem(Items.CurentItemIndex);
+            if (x == ((1 - Columns.XOffset) + (int) i->XOffset))
+            {
+                if ((i->Flags & ITEM_FLAG_CHECKED) != 0)
+                    i->Flags -= ITEM_FLAG_CHECKED;
+                else
+                    i->Flags |= ITEM_FLAG_CHECKED;
+                SendMsg(Event::ListViewItemChecked);
+            }
+            else
+            {
+                if (((button & AppCUI::Input::MouseButton::DoubleClicked) != AppCUI::Input::MouseButton::None))
+                    SendMsg(Event::ListViewItemClicked);
+            }
+        }         
     }
 }
 bool ListViewControlContext::OnMouseDrag(int x, int, AppCUI::Input::MouseButton)
