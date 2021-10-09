@@ -13,6 +13,7 @@ using namespace AppCUI::Utils;
 
 class TabExampleWin2 : public Window
 {
+    Reference<Tab> tb_h, tb_v;
   public:
     TabExampleWin2(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
@@ -20,10 +21,10 @@ class TabExampleWin2 : public Window
         auto spv = Factory::Splitter::Create(this, "d:c", true);
         auto sph = Factory::Splitter::Create(spv, "d:c", false);
 
-        Factory::Button::Create(sph, "Push Me", "d:c",1234);
+        Factory::Button::Create(sph, "Add", "d:c",1234);
 
-        auto tb_h = Factory::Tab::Create(sph, "d:c", flags);
-        auto tb_v = Factory::Tab::Create(spv, "d:c", flags);
+        tb_h = Factory::Tab::Create(sph, "d:c", flags);
+        tb_v = Factory::Tab::Create(spv, "d:c", flags);
 
         LocalString<128> tmp;
 
@@ -39,6 +40,22 @@ class TabExampleWin2 : public Window
             lv->AddColumn("Name", TextAlignament::Left, 20);
         }
 
+    }
+    bool OnEvent(Control* ctrl, Event eventType, int controlID) override
+    {
+        if (Window::OnEvent(ctrl, eventType, controlID))
+            return true;
+        if ((eventType == Event::ButtonClicked) && (controlID == 1234))
+        {
+            auto pg = Factory::TabPage::Create(tb_v, "New page");
+            auto lv = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+            pg     = Factory::TabPage::Create(tb_h, "New page");
+            lv     = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+            return true;
+        }
+        return false;
     }
 };
 
