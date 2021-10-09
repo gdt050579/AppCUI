@@ -17,14 +17,16 @@ class TabExampleWin : public Window
     TabExampleWin(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton)
     {
+        auto spl = Factory::Splitter::Create(this, "l:0,t:0,r:0,b:3", false);
+        spl->SetSecondPanelSize(8);
         // information panel
-        auto p_inf = Factory::Panel::Create(this, "Informations", "x:1,y:1,w:56,h:5");
+        auto p_inf = Factory::Panel::Create(spl, "Informations", "x:1,y:1,w:56,h:5");
         Factory::Label::Create(
               p_inf, "To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n", "x:0,y:0,w:100%,h:100%");
 
         Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
-
-        auto tb = Factory::Tab::Create(this, "x:1,y:7,w:56,h:8", flags);
+        
+        auto tb = Factory::Tab::Create(spl, "x:1,y:7,w:56,h:8", flags);
         tb->SetTabPageTitleSize(tabSize);
         // first page
         if (tabsCount >= 1)
