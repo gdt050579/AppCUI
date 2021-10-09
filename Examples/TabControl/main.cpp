@@ -142,7 +142,7 @@ class MyWin : public Window
     }
     void ShowTabControl()
     {
-        TabFlags flags;
+        TabFlags flags = TabFlags::TopTabs;
         if (tabTop->IsChecked())
             flags = TabFlags::TopTabs;
         if (tabBottom->IsChecked())
