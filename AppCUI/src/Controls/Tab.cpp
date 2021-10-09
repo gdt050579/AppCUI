@@ -334,6 +334,7 @@ void Tab::OnAfterResize(int, int)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
 
+    Members->UpdateMargins();
     int nw = Members->Layout.Width - (Members->Margins.Left + Members->Margins.Right);
     int nh = Members->Layout.Height - (Members->Margins.Top + Members->Margins.Bottom);
     for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
@@ -437,6 +438,8 @@ void Tab::OnAfterAddControl(Control* ctrl)
     // ii fac resize
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     CREATE_CONTROL_CONTEXT(ctrl, cMembers, );
+    Members->UpdateMargins();
+
     cMembers->Layout.X = cMembers->Layout.Y = 0;
     cMembers->Layout.Width                  = Members->Layout.Width - (Members->Margins.Left + Members->Margins.Right);
     cMembers->Layout.Height                 = Members->Layout.Height - (Members->Margins.Top + Members->Margins.Bottom);
