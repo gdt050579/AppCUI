@@ -12,8 +12,10 @@ using namespace AppCUI::Dialogs;
 
 struct MyUserControl : public UserControl
 {
+    CharacterBuffer c;
     MyUserControl(const std::string_view& layout) : UserControl(layout)
     {
+        c.Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", ColorPair{ Color::White, Color::Blue });
     }
     void Paint(Graphics::Renderer& renderer) override
     {
@@ -128,6 +130,8 @@ struct MyUserControl : public UserControl
         params.Align = TextAlignament::Left;
         renderer.WriteText("This is a string that will be wrapped to the current width into multiple lines.", params);
 
+        renderer.SetClipMargins(5, 23, 80, 0);
+        renderer.WriteSingleLineCharacterBuffer(6, 23, c, true);
     }
 };
 
