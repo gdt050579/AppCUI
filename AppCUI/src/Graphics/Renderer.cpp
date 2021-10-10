@@ -1267,6 +1267,66 @@ bool Renderer::WriteSingleLineText(
     params.Width          = width;
     return WriteText(text, params);
 }
+bool Renderer::WriteSingleLineCharacterBuffer(
+      int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency)
+{
+    CHECK_VISIBLE;
+    // check size
+    auto buf = charBuffer.GetBuffer();
+    auto sz  = charBuffer.Len();
+    auto end = buf + sz;
+    if (sz == 0)
+        return false; // empty text, nothing to draw
+    CHECK(sz < 0x00FFFFFF,
+          false,
+          "String is too large (%z characters) - max allowed size is 0x00FFFFFF !",
+          sz);
+
+    // translate coordonates
+    x += this->TranslateX;
+    y += this->TranslateY;
+    
+    // vertical clip
+    if ((y < Clip.Top) || (y > Clip.Bottom))
+        return false; // outside clip rect -> exit
+    
+    // horizontal clip
+    if (x > Clip.Right)
+        return false; // outside clip rect
+    if (x<Clip.Left)
+    {
+        buf += Clip.Left - x;
+        x = Clip.Left;
+        if (buf >= end)
+            return false; // ouside clip rect
+        sz = (unsigned int) (end - buf);
+    }
+    if ((x + (int)sz)>Clip.Right)
+    {
+        sz = (Clip.Right + 1) - x;
+        end = buf + sz;
+        if (sz == 0)
+            return false; // nothing to draw
+    }
+    // draw
+    if (noTransparency)
+    {
+        // fast draw --> use a memcpy
+        memcpy(this->OffsetRows[y] + x, buf, sz * sizeof(Character));
+    }
+    else
+    {
+        auto p = this->OffsetRows[y] + x;
+        while (buf<end)
+        {
+            SET_CHARACTER_EX(p, buf->Code, buf->Color);
+            buf++;
+            p++;
+        }
+    }
+    
+    return true;
+}
 
 //=========================================================================[IMAGE]===================
 struct _RGB_Color_

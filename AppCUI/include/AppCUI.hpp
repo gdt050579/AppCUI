@@ -1582,6 +1582,7 @@ namespace Graphics
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
+        bool WriteSingleLineCharacterBuffer(int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
         bool WriteSingleLineText(
               int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
