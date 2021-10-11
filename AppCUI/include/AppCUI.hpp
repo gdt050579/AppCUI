@@ -3012,7 +3012,7 @@ namespace Controls
         const ConstString GetItemText(const ItemHandle handle);
         ItemData* GetItemData(const ItemHandle handle);
         ItemData* GetItemData(const size_t index);
-        size_t GetItemsCount();
+        unsigned int GetItemsCount() const;
         void SetToggleItemHandle(
               const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
         bool AddColumnData(

@@ -944,11 +944,11 @@ ItemData* Tree::GetItemData(const size_t index)
     return &it->second.data;
 }
 
-size_t Tree::GetItemsCount()
+unsigned int Tree::GetItemsCount() const
 {
     CHECK(Context != nullptr, 0, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    return cc->items.size();
+    return static_cast<unsigned int>(cc->items.size());
 }
 
 void Tree::SetToggleItemHandle(
