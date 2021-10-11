@@ -1680,9 +1680,7 @@ namespace Graphics
         void ClearClip();
         void SetTranslate(int offX, int offY);
 
-        bool SetSize(unsigned int width, unsigned int height);
         void Reset();
-        void Update();
         void DarkenScreen();
         bool ClearEntireSurface(int character, const ColorPair color);
 
