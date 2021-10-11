@@ -1,8 +1,6 @@
 #include "AppCUI.hpp"
 #include <cstring>
 #include <string>
-#include <locale>
-#include <codecvt>
 #include <charconv>
 
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
@@ -13,6 +11,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
+using namespace AppCUI::Graphics;
 
 class TreeExample : public AppCUI::Controls::Window
 {
@@ -52,11 +51,12 @@ class TreeExample : public AppCUI::Controls::Window
         tree->SetToggleItemHandle(PopulateTree);
 
         tree->ClearItems();
-        const auto path              = std::filesystem::current_path().u16string();
-        const auto filename          = std::filesystem::current_path().filename().u16string();
+        const auto path = std::filesystem::current_path().u16string();
+        CharacterBuffer filename;
+        filename.Set(std::filesystem::current_path().filename().u16string());
         const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
         unsigned long long pathSize  = 0;
-        std::u16string pathSizeText  = u"0";
+        CharacterBuffer pathSizeText;
         try
         {
             pathSize     = std::filesystem::file_size(path);
@@ -64,15 +64,21 @@ class TreeExample : public AppCUI::Controls::Window
         }
         catch (...)
         {
+            pathSizeText.Add("0");
         }
-        const auto root = tree->AddItem(
+
+        const auto cpath = std::filesystem::current_path().u16string();
+        const auto root  = tree->AddItem(
               InvalidItemHandle,
-              { filename, pathLastWriteTime, pathSizeText },
+              { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
+              cpath,
               nullptr,
               false,
-              std::filesystem::current_path().u16string(),
               std::filesystem::is_directory(path));
-        PopulateTree(tree, root, &path);
+
+        CharacterBuffer cb;
+        cb.Add(path);
+        PopulateTree(tree, root, &cb);
     }
 
     bool OnEvent(Control*, Event eventType, int controlID) override
@@ -93,12 +99,13 @@ class TreeExample : public AppCUI::Controls::Window
                     currentFolder->SetText(res->u8string());
                     tree->ClearItems();
 
-                    const auto path              = std::filesystem::path(res->u16string());
-                    const auto filename          = path.filename().u16string();
+                    const auto path = std::filesystem::path(res->u16string());
+                    CharacterBuffer filename;
+                    filename.Set(path.filename().u16string());
                     const auto pathLastWriteTime = GetLastFileWriteText(path);
 
                     unsigned long long pathSize = 0;
-                    std::u16string pathSizeText = u"0";
+                    CharacterBuffer pathSizeText;
                     try
                     {
                         pathSize     = std::filesystem::file_size(path);
@@ -106,16 +113,21 @@ class TreeExample : public AppCUI::Controls::Window
                     }
                     catch (...)
                     {
+                        pathSizeText.Add("0");
                     }
 
-                    const auto root = tree->AddItem(
+                    const auto localPath = path.u16string();
+                    const auto root      = tree->AddItem(
                           InvalidItemHandle,
-                          { filename, pathLastWriteTime, pathSizeText },
+                          { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
+                          localPath,
                           nullptr,
                           false,
-                          path.u16string(),
                           std::filesystem::is_directory(path));
-                    PopulateTree(tree, root, &path);
+                    
+                    CharacterBuffer cb;
+                    cb.Add(res->u16string());
+                    PopulateTree(tree, root, &cb);
                 }
 
                 return true;
@@ -128,29 +140,29 @@ class TreeExample : public AppCUI::Controls::Window
 
     static bool PopulateTree(Tree& tree, const ItemHandle handle, const void* context)
     {
-        const auto fsPath = std::filesystem::path(*reinterpret_cast<std::u16string*>(const_cast<void*>(context)));
+        const auto cb = reinterpret_cast<CharacterBuffer*>(const_cast<void*>(context));
+        std::u16string u16Path;
+        CHECK(cb->ToString(u16Path), false, "");
+        const auto fsPath = std::filesystem::path(u16Path);
         try
         {
             const auto rdi = std::filesystem::directory_iterator(fsPath);
             for (const auto& p : rdi)
             {
-                const auto filename          = p.path().filename().u16string();
+                CharacterBuffer filename;
+                filename.Set(p.path().filename().u16string());
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
                 unsigned long long pathSize  = p.file_size();
-                std::u16string pathSizeText  = u"0";
-                try
-                {
-                    pathSizeText = GetTextFromNumber(pathSize);
-                }
-                catch (...)
-                {
-                }
+                const auto pathSizeText      = GetTextFromNumber(pathSize);
+                const auto cpath             = p.path().u16string();
                 tree.AddItem(
                       handle,
-                      { filename, pathLastWriteTime, pathSizeText },
+                      { filename,
+                        *const_cast<CharacterBuffer*>(&pathLastWriteTime),
+                        *const_cast<CharacterBuffer*>(&pathSizeText) },
+                      cpath,
                       nullptr,
                       false,
-                      p.path().u16string(),
                       p.is_directory());
             }
         }
@@ -162,28 +174,21 @@ class TreeExample : public AppCUI::Controls::Window
         return true;
     }
 
-    static const std::u16string GetLastFileWriteText(const std::filesystem::path& path)
+    static const CharacterBuffer GetLastFileWriteText(const std::filesystem::path& path)
     {
-        try
-        {
-            char dateBuffer[64]{ 0 };
-            const time_t date{ GetLastModifiedTime(path) };
-            struct tm t;
+        char dateBuffer[64]{ 0 };
+        const time_t date{ GetLastModifiedTime(path) };
+        struct tm t;
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-            localtime_r(&date, &t); // TODO: errno not treated
-            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+        localtime_r(&date, &t); // TODO: errno not treated
+        strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #else
-            localtime_s(&t, &date); // TODO: errno not treated
-            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+        localtime_s(&t, &date); // TODO: errno not treated
+        std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
-            std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-            const auto size = strlen(dateBuffer);
-            return convert.from_bytes(dateBuffer, dateBuffer + size);
-        }
-        catch (...)
-        {
-            return u"ERROR";
-        }
+        CharacterBuffer cb;
+        cb.Add(dateBuffer);
+        return cb;
     };
 
     static std::time_t GetLastModifiedTime(const std::filesystem::path& path)
@@ -202,20 +207,22 @@ class TreeExample : public AppCUI::Controls::Window
 #endif
     }
 
-    static const std::u16string GetTextFromNumber(const unsigned long long value)
+    static const CharacterBuffer GetTextFromNumber(const unsigned long long value)
     {
         constexpr auto SIZE = 20;
         char cValue[SIZE]   = { 0 };
+        CharacterBuffer cb;
 
         if (auto [ptr, ec] = std::to_chars(cValue, cValue + SIZE, value); ec == std::errc())
         {
-            std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-            return convert.from_bytes(cValue, cValue + SIZE);
+            cb.Add(cValue);
         }
         else
         {
-            return u"0";
+            cb.Add("0");
         }
+
+        return cb;
     }
 };
 

@@ -587,7 +587,7 @@ struct TreeColumnData
     unsigned int x      = 0;
     unsigned int width  = 0;
     unsigned int height = 0;
-    std::u16string headerValue;
+    CharacterBuffer headerValue;
     TextAlignament headerAlignment  = TextAlignament::Left;
     TextAlignament contentAlignment = TextAlignament::Left;
     bool customWidth                = false;
@@ -597,12 +597,12 @@ struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
-    std::vector<std::u16string> values;
+    std::vector<CharacterBuffer> values;
     ItemData data{};
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;
-    std::u16string metadata;
+    CharacterBuffer metadata;
     unsigned int depth = 1;
 };
 

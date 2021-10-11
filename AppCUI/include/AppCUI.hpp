@@ -3001,15 +3001,15 @@ namespace Controls
 
         ItemHandle AddItem(
               const ItemHandle parent,
-              const std::vector<std::u16string_view> values,
-              void* data              = nullptr,
-              bool process            = false,
-              std::u16string metadata = u"",
-              bool isExpandable       = false);
+              const std::vector<Graphics::CharacterBuffer>& values,
+              const ConstString metadata,
+              void* data        = nullptr,
+              bool process      = false,
+              bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
-        const std::u16string_view GetItemText(const ItemHandle handle);
+        const ConstString GetItemText(const ItemHandle handle);
         ItemData* GetItemData(const ItemHandle handle);
         ItemData* GetItemData(const size_t index);
         size_t GetItemsCount();
@@ -3017,7 +3017,7 @@ namespace Controls
               const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
         bool AddColumnData(
               const unsigned int index,
-              std::u16string_view title,
+              const ConstString title,
               const AppCUI::Graphics::TextAlignament headerAlignment,
               const AppCUI::Graphics::TextAlignament contentAlignment,
               const unsigned int width = 0xFFFFFFFF);

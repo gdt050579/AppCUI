@@ -36,7 +36,7 @@ Tree::Tree(const std::string_view& layout, const unsigned int flags, const unsig
         TreeColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + cc->borderOffset),
                            width,
                            static_cast<unsigned int>(cc->height - 2),
-                           u"",
+                           {},
                            TextAlignament::Center,
                            TextAlignament::Left };
         cc->columns.emplace_back(cd);
@@ -161,7 +161,7 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
             wtp.Width = col.width - 1 - 1; // left vertical line | right vertical line
         }
 
-        renderer.WriteText(col.headerValue, wtp);
+        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.headerValue), wtp);
         i++;
     }
 
@@ -789,8 +789,8 @@ void Tree::OnAfterResize(int newWidth, int newHeight)
 
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
-      const std::vector<std::u16string_view> values,
-      const ConstString& metadata,
+      const std::vector<CharacterBuffer>& values,
+      const ConstString metadata,
       void* data,
       bool process,
       bool isExpandable)
@@ -800,15 +800,10 @@ ItemHandle Tree::AddItem(
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    std::vector<std::u16string> itemValues;
-    for (const auto& value : values)
-    {
-        itemValues.push_back(value.data());
-    }
-    TreeItem ti{ parent, GetHandleForNewItem(), itemValues };
+    TreeItem ti{ parent, GetHandleForNewItem(), values };
     ti.data         = ItemData(data);
     ti.isExpandable = isExpandable;
-    ti.metadata     = metadata;
+    CHECK(ti.metadata.Set(metadata), false, "");
 
     if (parent == InvalidItemHandle)
     {
@@ -910,7 +905,7 @@ ItemHandle Tree::GetCurrentItem()
     return cc->currentSelectedItemHandle;
 }
 
-const std::u16string_view Tree::GetItemText(const ItemHandle handle)
+const ConstString Tree::GetItemText(const ItemHandle handle)
 {
     CHECK(Context != nullptr, u"", "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -918,10 +913,11 @@ const std::u16string_view Tree::GetItemText(const ItemHandle handle)
     const auto it = cc->items.find(handle);
     if (it != cc->items.end())
     {
-        return it->second.values[0];
+        return it->second.values.at(0);
     }
 
-    return u"";
+    static const ConstString cs{ "u" };
+    return cs;
 }
 
 ItemData* Tree::GetItemData(const ItemHandle handle)
@@ -969,7 +965,7 @@ void Tree::SetToggleItemHandle(
 
 bool Tree::AddColumnData(
       const unsigned int index,
-      std::u16string_view title,
+      const ConstString title,
       const TextAlignament headerAlignment,
       const TextAlignament contentAlignment,
       const unsigned int width)
@@ -981,7 +977,7 @@ bool Tree::AddColumnData(
 
     auto& column = cc->columns[index];
 
-    column.headerValue      = title;
+    CHECK(column.headerValue.Set(title), false, "");
     column.headerAlignment  = headerAlignment;
     column.contentAlignment = contentAlignment;
     if (width != 0xFFFFFFFF)
