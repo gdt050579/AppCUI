@@ -33,12 +33,12 @@ Tree::Tree(const std::string_view& layout, const unsigned int flags, const unsig
     const unsigned int width = std::max<>((static_cast<unsigned int>(cc->width) / columnsCount), cc->minColumnWidth);
     for (auto i = 0U; i < columnsCount; i++)
     {
-        ColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + cc->borderOffset),
-                       width,
-                       static_cast<unsigned int>(cc->height - 2),
-                       u"",
-                       TextAlignament::Center,
-                       TextAlignament::Left };
+        TreeColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + cc->borderOffset),
+                           width,
+                           static_cast<unsigned int>(cc->height - 2),
+                           u"",
+                           TextAlignament::Center,
+                           TextAlignament::Left };
         cc->columns.emplace_back(cd);
     }
 

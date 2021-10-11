@@ -582,7 +582,7 @@ class NumericSelectorControlContext : public ControlContext
     } isMouseOn{ IsMouseOn::None };
 };
 
-struct ColumnData
+struct TreeColumnData
 {
     unsigned int x      = 0;
     unsigned int width  = 0;
@@ -619,7 +619,7 @@ class TreeControlContext : public ControlContext
     bool notProcessed                                                                      = true;
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
-    std::vector<ColumnData> columns;
+    std::vector<TreeColumnData> columns;
     const unsigned int offset           = 2;
     unsigned int treeFlags              = 0;
     unsigned int width                  = 0;
