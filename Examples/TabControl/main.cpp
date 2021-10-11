@@ -11,35 +11,86 @@ using namespace AppCUI::Utils;
 #define SHOW_TAB_BUTTON_ID 654321
 #define TAB_MODE_GROUP     101
 
+class TabExampleWin2 : public Window
+{
+    Reference<Tab> tb_h, tb_v;
+  public:
+    TabExampleWin2(TabFlags flags, unsigned int tabSize, int tabsCount)
+        : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
+    {
+        auto spv = Factory::Splitter::Create(this, "d:c", true);
+        auto sph = Factory::Splitter::Create(spv, "d:c", false);
+
+        Factory::Button::Create(sph, "Add", "d:c",1234);
+
+        tb_h = Factory::Tab::Create(sph, "d:c", flags);
+        tb_v = Factory::Tab::Create(spv, "d:c", flags);
+
+        LocalString<128> tmp;
+
+        for (unsigned int tr=0;tr<tabsCount;tr++)
+        {
+            tmp.SetFormat("VTab: &%d", tr + 1);
+            auto pg = Factory::TabPage::Create(tb_v, tmp.GetText());
+            auto lv = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+            tmp[0] = 'H';
+            pg = Factory::TabPage::Create(tb_h, tmp.GetText());
+            lv = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+        }
+
+    }
+    bool OnEvent(Control* ctrl, Event eventType, int controlID) override
+    {
+        if (Window::OnEvent(ctrl, eventType, controlID))
+            return true;
+        if ((eventType == Event::ButtonClicked) && (controlID == 1234))
+        {
+            auto pg = Factory::TabPage::Create(tb_v, "New page");
+            auto lv = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+            pg     = Factory::TabPage::Create(tb_h, "New page");
+            lv     = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Name", TextAlignament::Left, 20);
+            return true;
+        }
+        return false;
+    }
+};
+
 class TabExampleWin : public Window
 {
   public:
     TabExampleWin(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton)
     {
+        Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
+        auto spl = Factory::Splitter::Create(this, "l:0,t:0,r:0,b:3", false);
+        spl->SetSecondPanelSize(8);
         // information panel
-        auto p_inf = Factory::Panel::Create(this, "Informations", "x:1,y:1,w:56,h:5");
+        auto p_inf = Factory::Panel::Create(spl, "Informations", "x:1,y:1,w:56,h:5");
         Factory::Label::Create(
               p_inf, "To navigate through Tabs use Ctrl+TAB / Ctrl+Shift+Tab\n", "x:0,y:0,w:100%,h:100%");
 
-        Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
-
-        auto tb = Factory::Tab::Create(this, "x:1,y:7,w:56,h:8", flags);
+        auto tb = Factory::Tab::Create(spl, "x:1,y:7,w:56,h:8", flags);
         tb->SetTabPageTitleSize(tabSize);
         // first page
         if (tabsCount >= 1)
         {
             auto pg1 = Factory::TabPage::Create(tb, "&RadioBox");
-            Factory::RadioBox::Create(pg1, "Option &1", "x:1,y:1,w:20", 100);
-            Factory::RadioBox::Create(pg1, "Option &2", "x:1,y:2,w:20", 100);
-            Factory::RadioBox::Create(pg1, "Option &3", "x:1,y:3,w:20", 100);
-            auto lv = Factory::ListView::Create(pg1, "l:20,t:0,r:0,b:0");
+            auto lv  = Factory::ListView::Create(pg1, "l:20,t:0,r:0,b:0");
+            // auto lv  = Factory::ListView::Create(pg1, "d:c");
             lv->AddColumn("Names", TextAlignament::Left, 50);
             lv->AddItem("Andrei");
             lv->AddItem("Denis");
             lv->AddItem("Dragos");
             lv->AddItem("Ghiorghita");
             lv->AddItem("Raul");
+
+            Factory::RadioBox::Create(pg1, "Option &1", "x:1,y:1,w:20", 100);
+            Factory::RadioBox::Create(pg1, "Option &2", "x:1,y:2,w:20", 100);
+            Factory::RadioBox::Create(pg1, "Option &3", "x:1,y:3,w:20", 100);
         }
 
         // second page
@@ -77,9 +128,10 @@ class MyWin : public Window
     Reference<RadioBox> tabTop, tabBottom, tabLeft, tabList, tabNoTabs;
     Reference<CheckBox> cbTransparent, cbTabBar;
     Reference<NumericSelector> selector, tabsCount;
+    Reference<ComboBox> example;
 
   public:
-    MyWin() : Window("Tab example config", "d:c,w:50,h:19",WindowFlags::None)
+    MyWin() : Window("Tab example config", "d:c,w:50,h:21",WindowFlags::None)
     {        
         auto p = Factory::Panel::Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
         tabTop    = Factory::RadioBox::Create(p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
@@ -95,14 +147,19 @@ class MyWin : public Window
         Factory::Label::Create(this, "Tabs &width", "x:1,y:11,w:10");
         selector = Factory::NumericSelector::Create(this, 5, 18, 6, "x:14,y:11,w:32");
         selector->SetHotKey('W');
+
         Factory::Label::Create(this, "Tabs count", "x:1,y:13,w:10");
         tabsCount = Factory::NumericSelector::Create(this, 1, 3, 3, "x:14,y:13,w:32");
 
-        Factory::Button::Create(this, "&Show tab control", "l:14,b:0,w:21", SHOW_TAB_BUTTON_ID);
+        Factory::Label::Create(this, "Example", "x:1,y:15,w:10");
+        example = Factory::ComboBox::Create(this, "x:14,y:15,w:32", "Normal,Sliders");
+        example->SetCurentItemIndex(1);
+
+        Factory::Button::Create(this, "&Show tab control", "l:16,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
     void ShowTabControl()
     {
-        TabFlags flags;
+        TabFlags flags = TabFlags::TopTabs;
         if (tabTop->IsChecked())
             flags = TabFlags::TopTabs;
         if (tabBottom->IsChecked())
@@ -118,8 +175,20 @@ class MyWin : public Window
         if (cbTabBar->IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        TabExampleWin tw(flags, static_cast<unsigned int>(selector->GetValue()), static_cast<int>(tabsCount->GetValue()));
-        tw.Show();
+        auto v_tabSize   = static_cast<unsigned int>(selector->GetValue());
+        auto v_tabsCount = static_cast<int>(tabsCount->GetValue());
+
+        TabExampleWin tw(flags, v_tabSize, v_tabsCount);
+        TabExampleWin2 tw2(flags, v_tabSize, v_tabsCount);
+        switch (example->GetCurrentItemIndex())
+        {
+        case 0:
+            tw.Show();
+            break;
+        case 1:
+            tw2.Show();
+            break;
+        }
     }
     bool OnEvent(Control*, Event eventType, int controlID) override
     {
