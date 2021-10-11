@@ -1583,7 +1583,8 @@ namespace Graphics
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
-        bool WriteSingleLineCharacterBuffer(int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
+        bool WriteSingleLineCharacterBuffer(
+              int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
         bool WriteSingleLineText(
               int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
@@ -2971,18 +2972,18 @@ namespace Controls
         HideBorder                      = 0x000200, // not implemented
         HideColumnsSeparator            = 0x000400, // not implemented
         Sortable                        = 0x000800, // not implemented
-        DynamicallyPopulateNodeChildren = 0x001000, // not implemented
-        HideScrollBar                   = 0x002000, // not implemented
-        Reserved_004000                 = 0x004000, // not implemented
-        SearchMode                      = 0x008000, // not implemented
-        HideSearchBar                   = 0x010000, // not implemented
-        Reserved_020000                 = 0x020000, // not implemented
-        Reserved_040000                 = 0x040000, // not implemented
-        Reserved_080000                 = 0x080000, // not implemented
-        Reserved_100000                 = 0x100000, // not implemented
-        Reserved_200000                 = 0x200000, // not implemented
-        Reserved_400000                 = 0x400000, // not implemented
-        Reserved_800000                 = 0x800000  // not implemented
+        DynamicallyPopulateNodeChildren = 0x001000,
+        HideScrollBar                   = 0x002000,
+        // Reserved_004000                 = 0x004000,
+        SearchMode    = 0x008000, // not implemented
+        HideSearchBar = 0x010000, // not implemented
+        // Reserved_020000                 = 0x020000,
+        // Reserved_040000                 = 0x040000,
+        // Reserved_080000                 = 0x080000,
+        // Reserved_100000                 = 0x100000,
+        // Reserved_200000                 = 0x200000,
+        // Reserved_400000                 = 0x400000,
+        // Reserved_800000                 = 0x800000
     };
 
     class EXPORT Tree : public Control
