@@ -66,23 +66,26 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
                 wtp.X     = col.x + item.depth * cc->offset - 1;
                 wtp.Width = col.width - item.depth * cc->offset + cc->offset - 2;
 
-                if (item.isExpandable)
+                if (wtp.X < static_cast<int>(col.x + col.width))
                 {
-                    if (item.expanded)
+                    if (item.isExpandable)
                     {
-                        wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
-                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+                        if (item.expanded)
+                        {
+                            wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
+                            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+                        }
+                        else
+                        {
+                            wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
+                            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
+                        }
                     }
                     else
                     {
-                        wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
-                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
+                        wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
+                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
                     }
-                }
-                else
-                {
-                    wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
-                    renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
                 }
 
                 wtp.X += cc->offset;
@@ -112,7 +115,10 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
 
             if (j < item.values.size())
             {
-                renderer.WriteText(item.values[j], wtp);
+                if (wtp.X < static_cast<int>(col.x + col.width))
+                {
+                    renderer.WriteText(item.values[j], wtp);
+                }
             }
 
             j++;
@@ -784,9 +790,9 @@ void Tree::OnAfterResize(int newWidth, int newHeight)
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
       const std::vector<std::u16string_view> values,
+      const ConstString& metadata,
       void* data,
       bool process,
-      std::u16string metadata,
       bool isExpandable)
 {
     CHECK(values.size() > 0, InvalidItemHandle, "");
