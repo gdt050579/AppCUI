@@ -4,7 +4,7 @@
 
 namespace AppCUI::Controls
 {
-Tree::Tree(const std::string_view& layout, const unsigned int flags, const unsigned int noOfColumns)
+Tree::Tree(const std::string_view& layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
@@ -12,11 +12,11 @@ Tree::Tree(const std::string_view& layout, const unsigned int flags, const unsig
     cc->Layout.MaxHeight = 200000;
     cc->Layout.MinWidth  = 20;
 
-    cc->treeFlags = flags;
+    cc->treeFlags = static_cast<unsigned int>(flags);
 
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
-    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::HideScrollBar))
+    if (cc->treeFlags && TreeFlags::HideScrollBar)
     {
         // no scrollbar
     }
@@ -956,7 +956,7 @@ void Tree::SetToggleItemHandle(
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
+    if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
     {
         CHECKRET(callback != nullptr, "");
         cc->callback = callback;
@@ -1037,7 +1037,7 @@ bool Tree::ToggleItem(const ItemHandle handle)
     auto& item = cc->items[handle];
     CHECK(item.isExpandable, true, "");
 
-    if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
+    if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
     {
         for (const auto& child : item.children)
         {
@@ -1050,7 +1050,7 @@ bool Tree::ToggleItem(const ItemHandle handle)
 
     if (item.expanded)
     {
-        if (cc->treeFlags & static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren))
+        if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
         {
             if (cc->callback)
             {

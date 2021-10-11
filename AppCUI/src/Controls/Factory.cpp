@@ -445,7 +445,7 @@ POINTER<AppCUI::Controls::Desktop> Factory::Desktop::Create()
 
 //======[TREE]=======================================================================================
 POINTER<AppCUI::Controls::Tree> Factory::Tree::Create(
-      const std::string_view& layout, const unsigned int flags, const unsigned int noOfColumns)
+      const std::string_view& layout, TreeFlags flags, const unsigned int noOfColumns)
 {
     return POINTER<AppCUI::Controls::Tree>(new AppCUI::Controls::Tree(layout, flags, noOfColumns));
 }
@@ -453,7 +453,7 @@ POINTER<AppCUI::Controls::Tree> Factory::Tree::Create(
 REFERENCE<Tree> Factory::Tree::Create(
       AppCUI::Controls::Control* parent,
       const std::string_view& layout,
-      const unsigned int flags,
+      const TreeFlags flags,
       const unsigned int noOfColumns)
 {
     VALIDATE_PARENT;
@@ -463,7 +463,7 @@ REFERENCE<Tree> Factory::Tree::Create(
 REFERENCE<Tree> Factory::Tree::Create(
       AppCUI::Controls::Control& parent,
       const std::string_view& layout,
-      const unsigned int flags,
+      const TreeFlags flags,
       const unsigned int noOfColumns)
 {
     return parent.AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));

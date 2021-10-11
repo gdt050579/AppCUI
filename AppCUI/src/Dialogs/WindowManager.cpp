@@ -258,7 +258,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 
 bool InternalWindowManager::Create()
 {
-    CHECK(tree = Factory::Tree::Create(this, "l:1,t:1,r:1,b:3", 0, 2), false, "");
+    CHECK(tree = Factory::Tree::Create(this, "l:1,t:1,r:1,b:3", TreeFlags::None, 2), false, "");
     CHECK(btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO), false, "");
     CHECK(btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE), false, "");
     CHECK(btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC),

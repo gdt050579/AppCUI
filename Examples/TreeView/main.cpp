@@ -38,8 +38,7 @@ class TreeExample : public AppCUI::Controls::Window
         tree = Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:85%",
-              static_cast<unsigned int>(TreeFlags::DynamicallyPopulateNodeChildren) |
-                    static_cast<unsigned int>(TreeFlags::HideScrollBar),
+              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::HideScrollBar),
               3);
 
         // TODO: maybe add % for column sizes as well
@@ -124,7 +123,7 @@ class TreeExample : public AppCUI::Controls::Window
                           nullptr,
                           false,
                           std::filesystem::is_directory(path));
-                    
+
                     CharacterBuffer cb;
                     cb.Add(res->u16string());
                     PopulateTree(tree, root, &cb);
