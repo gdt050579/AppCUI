@@ -800,7 +800,7 @@ ItemHandle Tree::AddItem(
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    TreeItem ti{ parent, GetHandleForNewItem(), values };
+    TreeItem ti{ parent, cc->nextItemHandle++, values };
     ti.data         = ItemData(data);
     ti.isExpandable = isExpandable;
     CHECK(ti.metadata.Set(metadata), false, "");
@@ -1217,15 +1217,4 @@ bool Tree::AddToColumnWidth(const unsigned int columnIndex, const int value)
 
     return true;
 }
-
-ItemHandle Tree::GetHandleForNewItem() const
-{
-    CHECK(Context != nullptr, InvalidItemHandle, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    const auto current = cc->nextItemHandle;
-    cc->nextItemHandle++;
-    return current;
-}
-
 } // namespace AppCUI::Controls

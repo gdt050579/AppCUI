@@ -3027,7 +3027,6 @@ namespace Controls
               const unsigned int width = 0xFFFFFFFF);
 
       private:
-        ItemHandle GetHandleForNewItem() const;
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
         bool PaintColumnHeaders(Graphics::Renderer& renderer);
         bool PaintColumnSeparators(Graphics::Renderer& renderer);
