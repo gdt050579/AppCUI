@@ -328,6 +328,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
     switch (button)
     {
     case MouseButton::Left:
+    case MouseButton::Left | MouseButton::DoubleClicked:
         if (IsOnMinusButton(x, y) == false && IsOnPlusButton(x, y) == false)
         {
             cc->isMouseLeftClickPressed = true;
@@ -339,7 +340,6 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
         }
 
         // height is always 1 constrained - y doesn't matter
-
         if (IsOnMinusButton(x, y))
         {
             if (cc->intoInsertionMode)
@@ -379,7 +379,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
 
             SetValue(min + static_cast<long long>(valueIntervalLength * ratio));
         }
-
+        break;
     default:
         break;
     }
