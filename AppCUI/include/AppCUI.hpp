@@ -1396,6 +1396,7 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
+        bool Resize(unsigned int size, char16_t character = ' ', const ColorPair color = NoColorPair);
         bool Fill(char16_t character, unsigned int size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
         bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);

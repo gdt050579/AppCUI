@@ -226,6 +226,30 @@ bool CharacterBuffer::Grow(size_t newSize)
     Allocated = (unsigned int) alingSize;
     return true;
 }
+bool CharacterBuffer::Resize(unsigned int size, char16_t character, const ColorPair color)
+{
+    if (size == this->Count)
+        return true; // nothing to do
+    if (size<this->Count)
+    {
+        // truncate
+        this->Count = size;
+        return true;
+    }
+    CHECK(Grow(size), false, "Fail to allocate %d characters", size);
+    auto s  = this->Buffer + this->Count;
+    auto e  = this->Buffer + size;
+    Character c;
+    c.Code  = character;
+    c.Color = color;
+    while (s < e)
+    {
+        s->PackedValue = c.PackedValue;
+        s++;
+    }
+    this->Count = size;
+    return true;
+}
 bool CharacterBuffer::Fill(char16_t character, unsigned int size, const ColorPair color)
 {
     Character c;
