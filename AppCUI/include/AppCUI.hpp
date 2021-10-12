@@ -2567,6 +2567,8 @@ namespace Controls
         bool IsOnPlusButton(const int x, const int y) const;
         bool IsOnMinusButton(const int x, const int y) const;
         bool IsOnTextField(const int x, const int y) const;
+        bool MinValueReached() const;
+        bool MaxValueReached() const;
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
