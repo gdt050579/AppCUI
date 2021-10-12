@@ -88,7 +88,7 @@ void NumericSelector::Paint(Renderer& renderer)
 
     CHECKRET(FormatTextField(), "");
 
-    if (MinValueReached())
+    if (MinValueReached() && cc->intoInsertionMode == false)
     {
         renderer.WriteSingleLineText(0, 0, " - ", cc->Cfg->NumericSelector.Text.Inactive);
     }
@@ -106,9 +106,10 @@ void NumericSelector::Paint(Renderer& renderer)
               static_cast<int>(cc->sliderPosition + cc->buttonPadding), 0, -1, cc->Cfg->NumericSelector.Text.Hover);
     }
 
-    if (MaxValueReached())
+    if (MaxValueReached() && cc->intoInsertionMode == false)
     {
-        renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", cc->Cfg->NumericSelector.Text.Inactive);
+        renderer.WriteSingleLineText(
+              cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", cc->Cfg->NumericSelector.Text.Inactive);
     }
     else
     {
@@ -154,11 +155,25 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
     switch (keyCode)
     {
     case Key::Left:
-        SetValue(cc->value - 1);
+        if (cc->intoInsertionMode)
+        {
+            cc->insertionModevalue--;
+        }
+        else
+        {
+            SetValue(cc->value - 1);
+        }
         return true;
 
     case Key::Right:
-        SetValue(cc->value + 1);
+        if (cc->intoInsertionMode)
+        {
+            cc->insertionModevalue++;
+        }
+        else
+        {
+            SetValue(cc->value + 1);
+        }
         return true;
 
     case Key::Escape:
@@ -327,11 +342,25 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
 
         if (IsOnMinusButton(x, y))
         {
-            SetValue(cc->value - 1);
+            if (cc->intoInsertionMode)
+            {
+                cc->insertionModevalue--;
+            }
+            else
+            {
+                SetValue(cc->value - 1);
+            }
         }
         else if (IsOnPlusButton(x, y))
         {
-            SetValue(cc->value + 1);
+            if (cc->intoInsertionMode)
+            {
+                cc->insertionModevalue++;
+            }
+            else
+            {
+                SetValue(cc->value + 1);
+            }
         }
         else if (IsOnTextField(x, y))
         {
