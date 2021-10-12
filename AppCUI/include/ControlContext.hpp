@@ -4,6 +4,7 @@
 #include "Internal.hpp"
 #include <string.h>
 #include <vector>
+#include <map>
 
 using namespace AppCUI;
 using namespace AppCUI::Graphics;
@@ -578,6 +579,65 @@ class NumericSelectorControlContext : public ControlContext
         MinusButton,
         TextField,
         PlusButton
+    } isMouseOn{ IsMouseOn::None };
+};
+
+struct TreeColumnData
+{
+    unsigned int x      = 0;
+    unsigned int width  = 0;
+    unsigned int height = 0;
+    CharacterBuffer headerValue;
+    TextAlignament headerAlignment  = TextAlignament::Left;
+    TextAlignament contentAlignment = TextAlignament::Left;
+    bool customWidth                = false;
+};
+
+struct TreeItem
+{
+    ItemHandle parent{ InvalidItemHandle };
+    ItemHandle handle{ InvalidItemHandle };
+    std::vector<CharacterBuffer> values;
+    ItemData data{};
+    bool expanded     = false;
+    bool isExpandable = false;
+    std::vector<ItemHandle> children;
+    CharacterBuffer metadata;
+    unsigned int depth = 1;
+};
+
+class TreeControlContext : public ControlContext
+{
+  public:
+    std::map<ItemHandle, TreeItem> items;
+    std::vector<ItemHandle> itemsToDrew;
+    ItemHandle nextItemHandle{ 1ULL };
+    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
+    unsigned int maxItemsToDraw                                                            = 0;
+    unsigned int offsetTopToDraw                                                           = 0;
+    unsigned int offsetBotToDraw                                                           = 0;
+    bool notProcessed                                                                      = true;
+    std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
+    std::vector<ItemHandle> roots;
+    std::vector<TreeColumnData> columns;
+    const unsigned int offset           = 2;
+    unsigned int treeFlags              = 0;
+    unsigned int width                  = 0;
+    unsigned int height                 = 0;
+    const unsigned int minColumnWidth   = 10;
+    const unsigned int borderOffset     = 1;
+    unsigned int separatorIndexSelected = 0xFFFFFFFF;
+    const unsigned int invalidIndex     = 0xFFFFFFFF;
+
+    enum class IsMouseOn
+    {
+        None,
+        ToggleSymbol,
+        Item,
+        Border,
+        ColumnSeparator,
+        ColumnHeader,
+        SearchField
     } isMouseOn{ IsMouseOn::None };
 };
 

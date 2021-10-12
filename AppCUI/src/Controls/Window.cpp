@@ -1102,17 +1102,15 @@ const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
     // find tag win button
-    WindowBarItem* b = nullptr;
     for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    {
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {
-            b = &Members->ControlBar.Items[tr];
-            break;
+            return Members->ControlBar.Items[tr].Text;
         }
-    // sanity check (in reality the pointer should always be valid)
-    if (!b)
-        return tempReferenceChBuf;
-    return b->Text;
+    }
+
+    return tempReferenceChBuf;
 }
 
 bool Window::Exit(int dialogResult)

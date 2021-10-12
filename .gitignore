@@ -9,3 +9,8 @@ bin
 *.log
 docs/build
 .DS_Store
+*CMakeFiles*
+*cmake_install.cmake
+*.vcxproj
+*CMakeCache.txt
+*.sln

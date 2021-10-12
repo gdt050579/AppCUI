@@ -339,13 +339,18 @@ void FileDialogWindow::FileListItemClicked()
 }
 void FileDialogWindow::FileListItemChanged()
 {
-    const auto& index = files->GetCurrentItem();
+    const int index = files->GetCurrentItem();
     if (index < 0)
     {
         return;
     }
-    const auto& value = files->GetItemData(index)->UInt32Value;
-    if (value == 2)
+
+    const unsigned int value = files->GetItemData(index)->UInt32Value;
+    if (value == 1)
+    {
+        txName->SetText(files->GetItemText(index, 0));
+    }
+    else if (value == 2)
     {
         txName->SetText(files->GetItemText(index, 0));
     }
@@ -444,15 +449,18 @@ void FileDialogWindow::ReloadCurrentPath()
         files->AddItem("..", "UP-DIR");
         files->SetItemData(0, ItemData{ nullptr });
     }
+
     char size[32];
-    char time_rep[64];
+    char dateBuffer[64]{ 0 };
     ItemHandle itemHandle;
     try
     {
         for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
         {
             if (fileEntry.is_directory())
+            {
                 Utils::String::Set(size, "Folder", 32, 6);
+            }
             else
             {
                 // check filter first
@@ -468,15 +476,24 @@ void FileDialogWindow::ReloadCurrentPath()
                         ext16Start++;
                     }
                     if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
+                    {
                         continue; // extension is filtered
+                    }
                 }
                 ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
             }
 
-            auto lastModifiedTime = getLastModifiedTime(fileEntry);
-            std::strftime(time_rep, sizeof(time_rep), "%Y-%m-%d  %H:%M:%S", std::localtime(&lastModifiedTime));
+            const time_t date{ getLastModifiedTime(fileEntry) };
+            struct tm t;
+#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
+            localtime_r(&date, &t); // TODO: errno not treated
+            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#else
+            localtime_s(&t, &date); // TODO: errno not treated
+            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
+#endif
 
-            itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, time_rep);
+            itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
             if (fileEntry.is_directory())
             {
                 this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });

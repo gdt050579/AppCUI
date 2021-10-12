@@ -137,7 +137,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Panel.TextColor   = ColorPair{ Color::White, Color::Transparent };
+    this->Panel.Text        = ColorPair{ Color::White, Color::Transparent };
 
     this->Text.SelectionColor             = ColorPair{ Color::Yellow, Color::Magenta };
     this->Text.Normal.Text                = ColorPair{ Color::Silver, Color::Black };
@@ -298,12 +298,24 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->MenuBar.Pressed.HotKeyColor = ColorPair{ Color::White, Color::Magenta };
     this->MenuBar.Pressed.NameColor   = ColorPair{ Color::Yellow, Color::Magenta };
 
-    this->NumericSelector.Normal.TextColor     = ColorPair{ Color::Black, Color::Gray };
-    this->NumericSelector.Focused.TextColor    = ColorPair{ Color::Black, Color::White };
-    this->NumericSelector.Inactive.TextColor   = ColorPair{ Color::Gray, Color::Black };
-    this->NumericSelector.Hover.TextColor      = ColorPair{ Color::Black, Color::Yellow };
-    this->NumericSelector.WrongValue.TextColor = ColorPair{ Color::Black, Color::Red };
+    this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
+    this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
+    this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
+    this->NumericSelector.Text.Hover      = ColorPair{ Color::Black, Color::Yellow };
+    this->NumericSelector.Text.WrongValue = ColorPair{ Color::Black, Color::Red };
 
     this->ToolTip.Arrow = ColorPair{ Color::Green, Color::Black };
     this->ToolTip.Text  = ColorPair{ Color::Black, Color::Aqua };
+
+    this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
+    this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
+    this->Tree.Text.Inactive        = ColorPair{ Color::Gray, Color::Black };
+    this->Tree.Symbol.Collapsed     = ColorPair{ Color::Green, Color::Transparent };
+    this->Tree.Symbol.Expanded      = ColorPair{ Color::Red, Color::Transparent };
+    this->Tree.Symbol.SingleElement = ColorPair{ Color::Black, Color::Transparent };
+    this->Tree.Border               = ColorPair{ Color::White, Color::Transparent };
+    this->Tree.Column.Text          = ColorPair{ Color::Gray, Color::Transparent };
+    this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
+    this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
+    this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
 }

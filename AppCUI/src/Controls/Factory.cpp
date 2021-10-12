@@ -401,7 +401,6 @@ REFERENCE<ComboBox> Factory::ComboBox::Create(
     return parent.AddControl<AppCUI::Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
 }
 
-
 //======[NUMERICSELECTOR]============================================================================
 POINTER<AppCUI::Controls::NumericSelector> Factory::NumericSelector::Create(
       const long long minValue, const long long maxValue, long long value, const std::string_view& layout)
@@ -409,7 +408,7 @@ POINTER<AppCUI::Controls::NumericSelector> Factory::NumericSelector::Create(
     return POINTER<AppCUI::Controls::NumericSelector>(
           new AppCUI::Controls::NumericSelector(minValue, maxValue, value, layout));
 }
-REFERENCE < NumericSelector> Factory::NumericSelector::Create(
+REFERENCE<NumericSelector> Factory::NumericSelector::Create(
       AppCUI::Controls::Control* parent,
       const long long minValue,
       const long long maxValue,
@@ -442,6 +441,32 @@ POINTER<AppCUI::Controls::Window> Factory::Window::Create(
 POINTER<AppCUI::Controls::Desktop> Factory::Desktop::Create()
 {
     return POINTER<AppCUI::Controls::Desktop>(new AppCUI::Controls::Desktop());
+}
+
+//======[TREE]=======================================================================================
+POINTER<AppCUI::Controls::Tree> Factory::Tree::Create(
+      const std::string_view& layout, TreeFlags flags, const unsigned int noOfColumns)
+{
+    return POINTER<AppCUI::Controls::Tree>(new AppCUI::Controls::Tree(layout, flags, noOfColumns));
+}
+
+REFERENCE<Tree> Factory::Tree::Create(
+      AppCUI::Controls::Control* parent,
+      const std::string_view& layout,
+      const TreeFlags flags,
+      const unsigned int noOfColumns)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+}
+
+REFERENCE<Tree> Factory::Tree::Create(
+      AppCUI::Controls::Control& parent,
+      const std::string_view& layout,
+      const TreeFlags flags,
+      const unsigned int noOfColumns)
+{
+    return parent.AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 #undef VALIDATE_PARENT

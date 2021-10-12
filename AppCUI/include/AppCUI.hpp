@@ -8,6 +8,7 @@
 #include <string_view>
 #include <variant>
 #include <vector>
+#include <functional>
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -1583,7 +1584,8 @@ namespace Graphics
         bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
-        bool WriteSingleLineCharacterBuffer(int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
+        bool WriteSingleLineCharacterBuffer(
+              int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
         bool WriteSingleLineText(
               int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
@@ -1732,6 +1734,7 @@ namespace Controls
         class EXPORT NumericSelector;
         class EXPORT Window;
         class EXPORT Desktop;
+        class EXPORT Tree;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -1758,6 +1761,7 @@ namespace Controls
     class EXPORT Control;
     class EXPORT TextField;
     class EXPORT ListView;
+    class EXPORT Tree;
     class EXPORT Menu;
     class EXPORT Window;
 
@@ -2593,6 +2597,27 @@ namespace Controls
         friend Control;
     };
 
+    enum class TreeFlags : unsigned int
+    {
+        None                            = 0x000000,
+        HideColumns                     = 0x000100, // not implemented
+        HideBorder                      = 0x000200, // not implemented
+        HideColumnsSeparator            = 0x000400, // not implemented
+        Sortable                        = 0x000800, // not implemented
+        DynamicallyPopulateNodeChildren = 0x001000,
+        HideScrollBar                   = 0x002000,
+        // Reserved_004000                 = 0x004000,
+        SearchMode    = 0x008000, // not implemented
+        HideSearchBar = 0x010000, // not implemented
+        // Reserved_020000                 = 0x020000,
+        // Reserved_040000                 = 0x040000,
+        // Reserved_080000                 = 0x080000,
+        // Reserved_100000                 = 0x100000,
+        // Reserved_200000                 = 0x200000,
+        // Reserved_400000                 = 0x400000,
+        // Reserved_800000                 = 0x800000
+    };
+
     namespace Factory
     {
         class EXPORT Label
@@ -2939,9 +2964,95 @@ namespace Controls
           public:
             static Pointer<AppCUI::Controls::Desktop> Create();
         };
+
+        class EXPORT Tree
+        {
+            Tree() = delete;
+
+          public:
+            static Pointer<AppCUI::Controls::Tree> Create(
+                  const std::string_view& layout,
+                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
+                  const unsigned int noOfColumns          = 1);
+            static Reference<AppCUI::Controls::Tree> Create(
+                  Control* parent,
+                  const std::string_view& layout,
+                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
+                  const unsigned int noOfColumns          = 1);
+            static Reference<AppCUI::Controls::Tree> Create(
+                  Control& parent,
+                  const std::string_view& layout,
+                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
+                  const unsigned int noOfColumns          = 1);
+        };
     } // namespace Factory
 
+    class EXPORT Tree : public Control
+    {
+      protected:
+        Tree(const std::string_view& layout,
+             const TreeFlags flags          = TreeFlags::None,
+             const unsigned int noOfColumns = 1);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        void OnUpdateScrollBars() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
+
+        ItemHandle AddItem(
+              const ItemHandle parent,
+              const std::vector<Graphics::CharacterBuffer>& values,
+              const ConstString metadata,
+              void* data        = nullptr,
+              bool process      = false,
+              bool isExpandable = false);
+        bool RemoveItem(const ItemHandle handle, bool process = false);
+        bool ClearItems();
+        ItemHandle GetCurrentItem();
+        const ConstString GetItemText(const ItemHandle handle);
+        ItemData* GetItemData(const ItemHandle handle);
+        ItemData* GetItemData(const size_t index);
+        unsigned int GetItemsCount() const;
+        void SetToggleItemHandle(
+              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
+        bool AddColumnData(
+              const unsigned int index,
+              const ConstString title,
+              const AppCUI::Graphics::TextAlignament headerAlignment,
+              const AppCUI::Graphics::TextAlignament contentAlignment,
+              const unsigned int width = 0xFFFFFFFF);
+
+      private:
+        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
+        bool PaintColumnHeaders(Graphics::Renderer& renderer);
+        bool PaintColumnSeparators(Graphics::Renderer& renderer);
+        bool MoveUp();
+        bool MoveDown();
+        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
+        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
+        bool ToggleExpandRecursive(const ItemHandle handle);
+        bool ToggleItem(const ItemHandle handle);
+        bool IsMouseOnToggleSymbol(int x, int y) const;
+        bool IsMouseOnItem(int x, int y) const;
+        bool IsMouseOnBorder(int x, int y) const;
+        bool IsMouseOnColumnHeader(int x, int y) const;
+        bool IsMouseOnColumnSeparator(int x, int y) const;
+        bool IsMouseOnSearchField(int x, int y) const;
+        bool AdjustElementsOnResize(const int newWidth, const int newHeight);
+        bool AdjustDimensionsOnResize();
+        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
+
+        friend Factory::Tree;
+        friend Control;
+    };
+
 }; // namespace Controls
+
 namespace Dialogs
 {
     class EXPORT MessageBox
@@ -2992,6 +3103,7 @@ namespace Dialogs
         static void Show();
     };
 } // namespace Dialogs
+
 namespace Log
 {
     enum class Severity : unsigned int
@@ -3162,7 +3274,7 @@ namespace Application
         } Splitter;
         struct
         {
-            Graphics::ColorPair NormalColor, TextColor;
+            Graphics::ColorPair NormalColor, Text;
         } Panel;
         struct
         {
@@ -3253,13 +3365,36 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair TextColor;
-            } Normal, Focused, Inactive, Hover, WrongValue;
+                Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
+            } Text;
         } NumericSelector;
         struct
         {
             Graphics::ColorPair Text, Arrow;
         } ToolTip;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Border;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused;
+                } Separator;
+                struct
+                {
+                    Graphics::ColorPair Text, Header;
+                } Column;
+                struct
+                {
+                    Graphics::ColorPair Normal, Focused, Inactive;
+                } Text;
+                struct
+                {
+                    Graphics::ColorPair Expanded, Collapsed, SingleElement;
+                } Symbol;
+            };
+        } Tree;
         void SetDarkTheme();
     };
 
@@ -3306,5 +3441,6 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
