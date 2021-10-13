@@ -254,7 +254,7 @@ void Splitter::OnAfterResize(int, int)
 }
 void Splitter::OnFocus()
 {
-    Splitter_ResizeComponents(this);
+    //Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
 }
 bool Splitter::OnBeforeAddControl(Control* c)
 {

@@ -228,18 +228,20 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     }
 
     const unsigned int cnt = Members->ControlsCount;
-    unsigned int idx = Members->CurrentControlIndex;
-    if ((!focused) || (idx < 0))
+    const unsigned int idx = Members->CurrentControlIndex;
+
+    if (idx >= cnt)
     {
-        for (unsigned int tr = 1; tr <= cnt; tr++)
-            PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
+        // no selected control ==> draw all of them
+        for (unsigned int tr = 0; tr < cnt; tr++)
+            PaintControl(Members->Controls[tr], renderer, false);
     }
     else
     {
-        for (unsigned int tr = 1; tr < cnt; tr++)
+        // one control is selected
+        for (unsigned int tr = 1; tr <= cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
-        if ((idx >= 0) && (idx < cnt))
-            PaintControl(Members->Controls[idx], renderer, true);
+        PaintControl(Members->Controls[idx], renderer, focused);
     }
 }
 void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& renderer, bool activ)
