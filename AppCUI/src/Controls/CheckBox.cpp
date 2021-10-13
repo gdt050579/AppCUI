@@ -4,7 +4,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID)
+CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);

@@ -24,7 +24,7 @@ class TicTacToeTable : public UserControl
     int totalPieces;
 
   public:
-    TicTacToeTable(const std::string_view& layout) : UserControl(layout)
+    TicTacToeTable(std::string_view layout) : UserControl(layout)
     {
         Start();
     }

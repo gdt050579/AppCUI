@@ -508,7 +508,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-Window::Window(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, WindowFlags Flags)
+Window::Window(const AppCUI::Utils::ConstString& caption, std::string_view layout, WindowFlags Flags)
     : Control(new WindowControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);

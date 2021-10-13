@@ -271,7 +271,7 @@ bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
-Tab::Tab(const std::string_view& layout, TabFlags flags, unsigned int tabPageSize)
+Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
     : Control(new TabControlContext(), "", layout, false)
 {
     tabPageSize = std::min<>(1000U, tabPageSize);

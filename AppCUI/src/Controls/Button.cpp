@@ -5,7 +5,7 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 Button::Button(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int controlID, ButtonFlags flags)
+      const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
     : Control(new ControlContext(), caption, layout,true)
 {
     auto Members             = reinterpret_cast<ControlContext*>(this->Context);

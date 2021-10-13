@@ -114,7 +114,7 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-Splitter::Splitter(const std::string_view& layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
+Splitter::Splitter(std::string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members         = reinterpret_cast<SplitterControlContext*>(this->Context);
     Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;

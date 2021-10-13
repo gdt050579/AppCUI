@@ -15,7 +15,7 @@ constexpr int COMMAND_ID_BTN_OPEN = 1;
 class HexViewUserControl : public UserControl
 {
   public:
-    HexViewUserControl(const std::string_view& layout) : UserControl(layout)
+    HexViewUserControl(std::string_view layout) : UserControl(layout)
     {
         resetAll();
     }

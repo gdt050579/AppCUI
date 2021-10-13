@@ -3,7 +3,7 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-Label::Label(const AppCUI::Utils::ConstString& caption, const std::string_view& layout)
+Label::Label(const AppCUI::Utils::ConstString& caption, std::string_view layout)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);

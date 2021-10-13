@@ -8,7 +8,7 @@ using namespace AppCUI::Graphics;
 class MyControl: public UserControl
 {
   public:
-    MyControl(const std::string_view& layout) : UserControl(layout)
+    MyControl(std::string_view layout) : UserControl(layout)
     {
     } 
     void Paint(AppCUI::Graphics::Renderer& renderer) override

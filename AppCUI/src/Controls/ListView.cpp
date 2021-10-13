@@ -1319,7 +1319,7 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(const std::string_view& layout, ListViewFlags flags)
+ListView::ListView(std::string_view layout, ListViewFlags flags)
     : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);

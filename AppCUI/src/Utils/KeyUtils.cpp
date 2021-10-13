@@ -77,7 +77,7 @@ bool AppCUI::Utils::KeyUtils::ToString(AppCUI::Input::Key keyCode, AppCUI::Utils
     CHECK(text.Add(k), false, "");
     return true;
 }
-AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(const std::string_view& stringRepresentation)
+AppCUI::Input::Key AppCUI::Utils::KeyUtils::FromString(std::string_view stringRepresentation)
 {
     
     unsigned int code     = 0;

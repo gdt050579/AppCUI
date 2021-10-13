@@ -13,7 +13,7 @@ using namespace AppCUI::Dialogs;
 struct MyUserControl : public UserControl
 {
     CharacterBuffer c;
-    MyUserControl(const std::string_view& layout) : UserControl(layout)
+    MyUserControl(std::string_view layout) : UserControl(layout)
     {
         c.Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", ColorPair{ Color::White, Color::Blue });
     }
