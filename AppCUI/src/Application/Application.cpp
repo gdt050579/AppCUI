@@ -238,9 +238,10 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     }
     else
     {
-        // one control is selected
-        for (unsigned int tr = 1; tr <= cnt; tr++)
+        // one control is selected (paint controls that are not focused)
+        for (unsigned int tr = 1; tr < cnt; tr++)
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
+        // paint focused control
         PaintControl(Members->Controls[idx], renderer, focused);
     }
 }
