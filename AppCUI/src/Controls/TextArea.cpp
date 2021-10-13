@@ -883,7 +883,7 @@ TextArea::~TextArea()
 }
 TextArea::TextArea(
       const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
+      std::string_view layout,
       TextAreaFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)

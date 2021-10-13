@@ -9,7 +9,7 @@ using namespace AppCUI::Utils;
 class MyControl : public UserControl
 {
   public:
-    MyControl(const std::string_view& layout) : UserControl(layout)
+    MyControl(std::string_view layout) : UserControl(layout)
     {
     }
     void Paint(AppCUI::Graphics::Renderer& renderer) override
@@ -20,7 +20,7 @@ class MyControl : public UserControl
 class LayoutWin : public Window
 {
   public:
-    LayoutWin(const std::string_view& layout) : Window("Test", "d:c,w:40,h:14", WindowFlags::Sizeable)
+    LayoutWin(std::string_view layout) : Window("Test", "d:c,w:40,h:14", WindowFlags::Sizeable)
     {        
         this->AddControl<MyControl>(std::make_unique<MyControl>(layout));
     }

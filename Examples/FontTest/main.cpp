@@ -22,7 +22,7 @@ int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::Speci
 struct FontUserControl : public UserControl
 {
   public:
-    FontUserControl(const std::string_view& layout)
+    FontUserControl(std::string_view layout)
         : UserControl(layout)
     {
     }

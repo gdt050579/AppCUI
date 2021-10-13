@@ -277,7 +277,7 @@ TextField::~TextField()
 }
 TextField::TextField(
       const AppCUI::Utils::ConstString& caption,
-      const std::string_view& layout,
+      std::string_view layout,
       TextFieldFlags flags,
       Handlers::SyntaxHighlightHandler handler,
       void* handlerContext)

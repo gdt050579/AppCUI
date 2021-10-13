@@ -5,7 +5,7 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
 RadioBox::RadioBox(
-      const AppCUI::Utils::ConstString& caption, const std::string_view& layout, int groupID, int controlID)
+      const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);

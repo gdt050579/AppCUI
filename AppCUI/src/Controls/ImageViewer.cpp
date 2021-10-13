@@ -3,7 +3,7 @@
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-ImageViewer::ImageViewer(const AppCUI::Utils::ConstString& caption, const std::string_view& layout, ViewerFlags flags)
+ImageViewer::ImageViewer(const AppCUI::Utils::ConstString& caption, std::string_view layout, ViewerFlags flags)
     : CanvasViewer(caption,layout,16,16,flags)
 {
 }

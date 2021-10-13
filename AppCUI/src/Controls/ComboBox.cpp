@@ -190,7 +190,7 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-ComboBox::ComboBox(const std::string_view& layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+ComboBox::ComboBox(std::string_view layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
     : Control(new ComboBoxControlContext(), "", layout, false)
 {
     auto Members                          = reinterpret_cast<ComboBoxControlContext*>(this->Context);

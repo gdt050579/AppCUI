@@ -12,7 +12,7 @@ int value = 1;
 class MyControl : public AppCUI::Controls::UserControl
 {
   public:
-    MyControl(const std::string_view& layout) : UserControl(layout)
+    MyControl(std::string_view layout) : UserControl(layout)
     {
     }
     Color back;

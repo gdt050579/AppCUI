@@ -905,7 +905,7 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
 
     return true;
 }
-bool ControlContext::UpdateLayoutFormat(const std::string_view& format)
+bool ControlContext::UpdateLayoutFormat(std::string_view format)
 {
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
@@ -1215,7 +1215,7 @@ AppCUI::Controls::Control::~Control()
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
 AppCUI::Controls::Control::Control(
-      void* context, const AppCUI::Utils::ConstString& caption, const std::string_view& layout, bool computeHotKey)
+      void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();

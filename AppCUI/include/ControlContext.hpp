@@ -146,7 +146,7 @@ struct ControlContext
     bool ProcessTLBAnchors(LayoutInformation& inf);
     bool ProcessTRBAnchors(LayoutInformation& inf);
     bool ProcessLTRBAnchors(LayoutInformation& inf);
-    bool UpdateLayoutFormat(const std::string_view& format);
+    bool UpdateLayoutFormat(std::string_view format);
     void SetControlSize(unsigned int width, unsigned int heigh);
     bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
     bool RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetricData& md);
