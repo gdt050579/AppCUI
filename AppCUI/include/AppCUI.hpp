@@ -2139,6 +2139,23 @@ namespace Controls
         friend Factory::Splitter;
         friend Control;
     };
+    class EXPORT Password : public Control
+    {
+      protected:
+        Password(const AppCUI::Utils::ConstString& caption, std::string_view layout);
+
+      public:
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
+
+        friend Factory::Password;
+        friend Control;
+    };
     class EXPORT Panel : public Control
     {
       protected:
