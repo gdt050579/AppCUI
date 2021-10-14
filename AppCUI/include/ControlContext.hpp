@@ -639,6 +639,12 @@ class TreeControlContext : public ControlContext
         ColumnHeader,
         SearchField
     } isMouseOn{ IsMouseOn::None };
+
+    struct
+    {
+        Utils::UnicodeStringBuilder searchText;
+        bool filterModeEnabled = false;
+    } filter;
 };
 
 enum class MenuItemType : unsigned int

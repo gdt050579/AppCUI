@@ -3047,7 +3047,7 @@ namespace Controls
         bool IsMouseOnSearchField(int x, int y) const;
         bool SetColumnIndexByMouse(int x, int y);
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
-        bool AdjustDimensionsOnResize();
+        bool AdjustItemsBoundsOnResize();
         bool AddToColumnWidth(const unsigned int columnIndex, const int value);
 
         friend Factory::Tree;
@@ -3395,7 +3395,7 @@ namespace Application
                 } Column;
                 struct
                 {
-                    Graphics::ColorPair Normal, Focused, Inactive;
+                    Graphics::ColorPair Normal, Focused, Inactive, Filter;
                 } Text;
                 struct
                 {

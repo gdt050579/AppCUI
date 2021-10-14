@@ -85,7 +85,7 @@ class TabExampleWin : public Window
             lv->AddItem("Andrei");
             lv->AddItem("Denis");
             lv->AddItem("Dragos");
-            lv->AddItem("Ghiorghita");
+            lv->AddItem("Gheorghita");
             lv->AddItem("Raul");
 
             Factory::RadioBox::Create(pg1, "Option &1", "x:1,y:1,w:20", 100);

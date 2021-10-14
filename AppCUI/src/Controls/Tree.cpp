@@ -4,6 +4,9 @@
 
 namespace AppCUI::Controls
 {
+constexpr auto TreeSearchBarWidth      = 23U;
+constexpr auto TreeScrollbarLeftOffset = 25U;
+
 Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
@@ -25,8 +28,8 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
     else
     {
         cc->Flags |= GATTR_HSCROLL | GATTR_VSCROLL;
-        cc->ScrollBars.LeftMargin     = 25;    // search field
-        cc->ScrollBars.TopMargin      = 1 + 1; // border + column header
+        cc->ScrollBars.LeftMargin     = TreeScrollbarLeftOffset; // search field
+        cc->ScrollBars.TopMargin      = 1 + 1;                   // border + column header
         cc->ScrollBars.OutsideControl = false;
     }
 
@@ -439,9 +442,41 @@ void Tree::Paint(Graphics::Renderer& renderer)
     }
 
     ItemsPainting(renderer, InvalidItemHandle);
+
+    if (cc->Focused)
+    {
+        if ((cc->Layout.Width > TreeSearchBarWidth) && ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None))
+        {
+            renderer.FillHorizontalLine(1, cc->Layout.Height - 1, TreeSearchBarWidth, ' ', cc->Cfg->Tree.Text.Filter);
+
+            const auto searchTextLen = cc->filter.searchText.Len();
+            if (searchTextLen > 0)
+            {
+                const auto searchText = cc->filter.searchText.ToStringView();
+                if (searchText.length() < TreeSearchBarWidth - 2)
+                {
+                    renderer.WriteSingleLineText(2, cc->Layout.Height - 1, searchText, cc->Cfg->ListView.FilterText);
+                    renderer.SetCursor((int) (2 + searchText.length()), cc->Layout.Height - 1);
+                }
+                else
+                {
+                    renderer.WriteSingleLineText(
+                          2,
+                          cc->Layout.Height - 1,
+                          searchText.substr(searchText.length() - TreeSearchBarWidth + 2, TreeSearchBarWidth - 2),
+                          cc->Cfg->ListView.FilterText);
+                    renderer.SetCursor(TreeSearchBarWidth, cc->Layout.Height - 1);
+                }
+            }
+            else if (cc->isMouseOn == TreeControlContext::IsMouseOn::SearchField)
+            {
+                renderer.SetCursor(2, cc->Layout.Height - 1);
+            }
+        }
+    }
 }
 
-bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
+bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -670,8 +705,28 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
         }
     }
     break;
+
+    case Key::Backspace:
+        if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None)
+        {
+            if (cc->filter.searchText.Len() > 0)
+            {
+                cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
+                return true;
+            }
+        }
+        break;
     default:
         break;
+    }
+
+    if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None)
+    {
+        if (character > 0)
+        {
+            cc->filter.searchText.AddChar(character);
+            return true;
+        }
     }
 
     return false;
@@ -1172,7 +1227,17 @@ bool Tree::IsMouseOnColumnSeparator(int x, int y) const
 
 bool Tree::IsMouseOnSearchField(int x, int y) const
 {
-    // TODO:
+    if (this->HasFocus())
+    {
+        if (y == GetHeight() - 1)
+        {
+            if (x > 0 && x < TreeSearchBarWidth)
+            {
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 
