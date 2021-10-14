@@ -466,7 +466,7 @@ class ListViewControlContext : public ControlContext
 
     ListViewItem* GetFilteredItem(unsigned int index);
 
-    int SearchItem(unsigned int startPoz, unsigned int colIndex);
+    int SearchItem(unsigned int startPoz);
     void UpdateSearch(int startPoz);
     void UpdateSelectionInfo();
     void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
@@ -530,6 +530,7 @@ class ListViewControlContext : public ControlContext
     void SendMsg(Event eventType);
     bool Sort();
 
+    bool FilterItem(ListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
 };
 

@@ -228,6 +228,15 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // disable is not active
     if (!(Flags & GATTR_ENABLE))
         itemCol = Cfg->ListView.Item.Inactive;
+    else
+    {
+        // if activ and filtered
+        if (this->Filter.SearchText.Len()>0)
+        {
+            params.Flags = static_cast<WriteTextFlags>(
+                  (unsigned int) params.Flags - (unsigned int) WriteTextFlags::OverwriteColors);
+        }
+    }
 
     // prepare params
     params.Color = itemCol;
@@ -1221,31 +1230,64 @@ bool ListViewControlContext::Sort()
     Items.Indexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
     return true;
 }
-int ListViewControlContext::SearchItem(unsigned int startPoz, unsigned int colIndex)
+int ListViewControlContext::SearchItem(unsigned int startPoz)
 {
     unsigned int originalStartPoz;
-    ListViewItem* i;
 
-    unsigned int count = Items.Indexes.Len();
+    unsigned int count = Items.List.size();
     if (startPoz >= count)
         startPoz = 0;
     if (count == 0)
         return -1;
     originalStartPoz = startPoz;
-
+    int found        = -1;
     do
     {
-        if ((i = GetFilteredItem(startPoz)) != nullptr)
+        if (FilterItem(Items.List[startPoz],true))
         {
-            if (i->SubItem[colIndex].Contains(Filter.SearchText.ToStringView(), true))
-                return (int) startPoz;
+            if (found == -1)
+                found = startPoz;
         }
         startPoz++;
         if (startPoz >= count)
             startPoz = 0;
 
     } while (startPoz != originalStartPoz);
-    return -1;
+    return found;
+}
+bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll)
+{
+    unsigned int columnID = 0;
+    int index             = -1;
+    
+    for (unsigned int gr = 0; gr < Columns.Count; gr++)
+    {
+        if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
+            continue;
+        index = lvi.SubItem[gr].Find(this->Filter.SearchText.ToStringView(), true);
+        if (index >= 0)
+        {
+            columnID = gr;
+            break;
+        }
+    }
+    if ((clearColorForAll) || (index >= 0))
+    {
+        // clear all colors
+        for (unsigned int gr = 0; gr < Columns.Count; gr++)
+        {
+            lvi.SubItem[gr].SetColor(this->Cfg->ListView.Highlight.Normal);
+        }
+    }
+    if (index >= 0)
+    {
+        // set color for 
+        lvi.SubItem[columnID].SetColor(
+              index, index + this->Filter.SearchText.Len(), this->Cfg->ListView.Highlight.Selected);
+        return true;
+    }
+
+    return false;
 }
 void ListViewControlContext::FilterItems()
 {
@@ -1261,19 +1303,7 @@ void ListViewControlContext::FilterItems()
     {
         for (unsigned int tr = 0; tr < count; tr++)
         {
-            bool isOK         = false;
-            ListViewItem& lvi = Items.List[tr];
-            for (unsigned int gr = 0; gr < Columns.Count; gr++)
-            {
-                if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
-                    continue;
-                if (lvi.SubItem[gr].Contains(this->Filter.SearchText.ToStringView(), true))
-                {
-                    isOK = true;
-                    break;
-                }
-            }
-            if (isOK)
+            if (FilterItem(Items.List[tr],false))
                 Items.Indexes.Push(tr);
         }
     }
@@ -1284,7 +1314,6 @@ void ListViewControlContext::FilterItems()
 void ListViewControlContext::UpdateSearch(int startPoz)
 {
     int index;
-    int cCol = 0;
 
     // daca fac filtrare
     if ((Flags & ListViewFlags::SearchMode) == ListViewFlags::None)
@@ -1293,10 +1322,7 @@ void ListViewControlContext::UpdateSearch(int startPoz)
     }
     else
     {
-        if (SortParams.ColumnIndex < Columns.Count)
-            cCol = SortParams.ColumnIndex;
-
-        if ((index = SearchItem(startPoz, cCol)) >= 0)
+        if ((index = SearchItem(startPoz)) >= 0)
         {
             MoveTo(index);
         }
@@ -1304,8 +1330,11 @@ void ListViewControlContext::UpdateSearch(int startPoz)
         {
             if (Filter.SearchText.Len() > 0)
                 Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
+            // research and re-highlight
+            SearchItem(startPoz);
         }
     }
+    this->Filter.FilterModeEnabled = Filter.SearchText.Len() > 0;
 }
 void ListViewControlContext::SendMsg(Event eventType)
 {

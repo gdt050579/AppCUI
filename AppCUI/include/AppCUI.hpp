@@ -3318,6 +3318,10 @@ namespace Application
             {
                 Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning;
             } Item;
+            struct
+            {
+                Graphics::ColorPair Selected, Normal;
+            } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
             Graphics::ColorPair InactiveColor;
             Graphics::ColorPair FocusColor;
@@ -3325,6 +3329,7 @@ namespace Application
             Graphics::ColorPair FocusAndSelectedColor;
             Graphics::ColorPair FilterText;
             Graphics::ColorPair StatusColor;
+            
         } ListView;
         struct
         {
