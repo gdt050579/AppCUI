@@ -37,8 +37,8 @@ class TreeExample : public AppCUI::Controls::Window
               Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree = Factory::Tree::Create(
               this,
-              "x:1%, y:20%, w:99%, h:85%",
-              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::HideScrollBar),
+              "x:1%, y:20%, w:99%, h:80%",
+              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::SearchMode),
               3);
 
         // TODO: maybe add % for column sizes as well

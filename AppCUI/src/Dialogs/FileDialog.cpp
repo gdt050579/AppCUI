@@ -386,11 +386,6 @@ void FileDialogWindow::ProcessTextFieldInput()
               "Error", u"Unable to check path for being a directory: "s + candidateResultedPath.u16string());
         return;
     }
-    if (isDir)
-    {
-        UpdateCurrentPath(candidateResultedPath);
-        return;
-    }
 
     const bool exists = std::filesystem::exists(candidateResultedPath, err);
     if (err)

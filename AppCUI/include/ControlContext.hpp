@@ -614,6 +614,7 @@ class TreeControlContext : public ControlContext
     std::vector<ItemHandle> itemsToDrew;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
+    unsigned int columnSelected                                                            = 0;
     unsigned int maxItemsToDraw                                                            = 0;
     unsigned int offsetTopToDraw                                                           = 0;
     unsigned int offsetBotToDraw                                                           = 0;
@@ -623,8 +624,6 @@ class TreeControlContext : public ControlContext
     std::vector<TreeColumnData> columns;
     const unsigned int offset           = 2;
     unsigned int treeFlags              = 0;
-    unsigned int width                  = 0;
-    unsigned int height                 = 0;
     const unsigned int minColumnWidth   = 10;
     const unsigned int borderOffset     = 1;
     unsigned int separatorIndexSelected = 0xFFFFFFFF;
