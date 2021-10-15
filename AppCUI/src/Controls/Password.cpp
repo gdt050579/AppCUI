@@ -19,79 +19,32 @@ void Password::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    WriteTextParams params(
-          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
-          WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
+    ColorPair color;
 
-    const auto* bc        = &Members->Cfg->Button.Normal;
-    bool pressed          = false;
-    params.Y              = 0;
-    params.HotKeyPosition = Members->HotKeyOffset;
-    params.Align          = TextAlignament::Center;
+    if (!this->IsEnabled())
+        color = Members->Cfg->Text.Inactive.Text;
+    else if (Members->Focused)
+        color = Members->Cfg->Text.Focus.Text;
+    else if (Members->MouseIsOver)
+        color = Members->Cfg->Text.Hover.Text;
+    else
+        color = Members->Cfg->Text.Normal.Text;
 
-    // daca e disable
-    if (!IsEnabled())
+    auto sz = Members->Text.Len();
+    if ((sz + 3) > Members->Layout.Width)
+        sz = Members->Layout.Width - 3;
+   
+    if (this->IsChecked())
     {
-        bc = &Members->Cfg->Button.Inactive;
+        renderer.WriteSingleLineText(
+              1, 0, Members->Text.SubString(Members->Text.Len() - sz, Members->Text.Len()), color);
     }
     else
     {
-        if (IsChecked())
-            pressed = true;
-        else
-        {
-            if (this->HasFocus())
-                bc = &Members->Cfg->Button.Focused;
-            else
-            {
-                if (IsMouseOver())
-                    bc = &Members->Cfg->Button.Hover;
-            }
-        }
+        renderer.FillHorizontalLine(1, 0, sz + 1, '*', color);
     }
-
-    if (Members->Flags && ButtonFlags::Flat)
-    {
-        renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', bc->TextColor);
-        params.Color       = bc->TextColor;
-        params.HotKeyColor = bc->HotKeyColor;
-        params.X           = 0;
-        params.Width       = Members->Layout.Width;
-        renderer.WriteText(Members->Text, params);
-    }
-    else
-    {
-        params.Width = Members->Layout.Width - 1;
-        if (pressed)
-        {
-            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
-            params.Color       = Members->Cfg->Button.Focused.TextColor;
-            params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
-            params.X           = 1;
-            renderer.WriteText(Members->Text, params);
-        }
-        else
-        {
-            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
-
-            params.Color       = bc->TextColor;
-            params.HotKeyColor = bc->HotKeyColor;
-            params.X           = 0;
-            renderer.WriteText(Members->Text, params);
-
-            renderer.FillHorizontalLineWithSpecialChar(
-                  1,
-                  1,
-                  Members->Layout.Width,
-                  SpecialChars::BlockUpperHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
-            renderer.WriteSpecialCharacter(
-                  Members->Layout.Width - 1,
-                  0,
-                  SpecialChars::BlockLowerHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
-        }
-    }
+    if (Members->Focused)
+        renderer.SetCursor(1 + sz, 0);
 }
 
 bool Password::OnKeyEvent(Key KeyCode, char16_t)
