@@ -51,6 +51,31 @@ REFERENCE<Button> Factory::Button::Create(
 {
     return parent.AddControl<AppCUI::Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
+
+
+//======[PASSWORD]===================================================================================
+POINTER<Password> Factory::Password::Create(
+      const AppCUI::Utils::ConstString& caption,
+      std::string_view layout)
+{
+    return POINTER<AppCUI::Controls::Password>(new AppCUI::Controls::Password(caption, layout));
+}
+REFERENCE<Password> Factory::Password::Create(
+      Control* parent,
+      const AppCUI::Utils::ConstString& caption,
+      std::string_view layout)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
+}
+REFERENCE<Password> Factory::Password::Create(
+      Control& parent,
+      const AppCUI::Utils::ConstString& caption,
+      std::string_view layout)
+{
+    return parent.AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
+}
+
 //======[CHECKBOX]===================================================================================
 POINTER<CheckBox> Factory::CheckBox::Create(
       const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)

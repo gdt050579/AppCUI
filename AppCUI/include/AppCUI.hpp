@@ -2678,6 +2678,22 @@ namespace Controls
                   int controlID                       = 0,
                   AppCUI::Controls::ButtonFlags flags = AppCUI::Controls::ButtonFlags::None);
         };
+        class EXPORT Password
+        {
+            Password() = delete;
+
+          public:
+            static Reference<AppCUI::Controls::Password> Create(
+                  AppCUI::Controls::Control* parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  std::string_view layout);
+            static Reference<AppCUI::Controls::Password> Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  std::string_view layout);
+            static Pointer<AppCUI::Controls::Password> Create(
+                  const AppCUI::Utils::ConstString& caption, std::string_view layout);
+        };
         class EXPORT CheckBox
         {
             CheckBox() = delete;
