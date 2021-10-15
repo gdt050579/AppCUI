@@ -47,11 +47,20 @@ void Password::Paint(Graphics::Renderer& renderer)
         renderer.SetCursor(1 + sz, 0);
 }
 
-bool Password::OnKeyEvent(Key KeyCode, char16_t)
+bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
 {
-    if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
+    CREATE_CONTROL_CONTEXT(this, Members, false);
+    if (characterCode > 0)
     {
-        OnHotKey();
+        CHECK(Members->Text.InsertChar(characterCode, Members->Text.Len()), false, "");
+        return true;
+    }
+    if (KeyCode == Key::Backspace)
+    {
+        if (Members->Text.Len() > 0)
+        {
+            CHECK(Members->Text.DeleteChar(Members->Text.Len() - 1), false, "");
+        }
         return true;
     }
     return false;
