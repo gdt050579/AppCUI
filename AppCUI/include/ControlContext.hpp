@@ -604,8 +604,9 @@ struct TreeItem
     bool isExpandable = false;
     std::vector<ItemHandle> children;
     CharacterBuffer metadata;
-    unsigned int depth = 1;
-    bool markedAsFound = false;
+    unsigned int depth                = 1;
+    bool markedAsFound                = false;
+    bool hasAChildThatIsMarkedAsFound = false;
 };
 
 class TreeControlContext : public ControlContext

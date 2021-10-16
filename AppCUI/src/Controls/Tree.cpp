@@ -324,6 +324,7 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
     if (clear)
     {
         cc->itemsToDrew.clear();
+        cc->itemsToDrew.reserve(cc->items.size());
     }
 
     CHECK(cc->items.size() > 0, true, "");
@@ -332,9 +333,17 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
     {
         for (const auto& handle : cc->roots)
         {
+            const auto& item = cc->items[handle];
+            if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+            {
+                if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
+                {
+                    continue;
+                }
+            }
+
             cc->itemsToDrew.emplace_back(handle);
 
-            const auto& item = cc->items[handle];
             if (item.isExpandable == false || item.expanded == false)
             {
                 continue;
@@ -343,6 +352,15 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
             for (auto& it : item.children)
             {
                 const auto& child = cc->items[it];
+
+                if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+                {
+                    if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
+                    {
+                        continue;
+                    }
+                }
+
                 if (child.isExpandable)
                 {
                     if (child.expanded)
@@ -364,12 +382,30 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
     else
     {
         const auto& item = cc->items[handle];
+
+        if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+        {
+            if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
+            {
+                return true;
+            }
+        }
+
         cc->itemsToDrew.emplace_back(item.handle);
         CHECK(item.isExpandable, true, "");
 
         for (auto& it : item.children)
         {
             const auto& child = cc->items[it];
+
+            if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+            {
+                if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
+                {
+                    continue;
+                }
+            }
+
             if (child.isExpandable)
             {
                 if (child.expanded)
@@ -708,6 +744,16 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 return true;
             }
         }
+        else if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+        {
+            if (cc->filter.searchText.Len() > 0)
+            {
+                cc->filter.searchText.Clear();
+                SetColorForItems(cc->Cfg->Tree.Text.Normal);
+                ProcessItemsToBeDrawn(InvalidItemHandle);
+                return true;
+            }
+        }
 
         if (cc->separatorIndexSelected != InvalidIndex)
         {
@@ -838,7 +884,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 for (auto it = cc->orderedItems.rbegin(); it != cc->orderedItems.rend(); ++it)
                 {
                     const auto handle = *it;
-                    const auto& item = cc->items[handle];
+                    const auto& item  = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
                         cc->currentSelectedItemHandle = handle;
@@ -1516,6 +1562,10 @@ bool Tree::SearchItems(bool& found)
                 if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true); index >= 0)
                 {
                     item.second.markedAsFound = true;
+                    if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+                    {
+                        MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
+                    }
                     if (found == false)
                     {
                         cc->currentSelectedItemHandle = item.second.handle;
@@ -1552,7 +1602,7 @@ bool Tree::SearchItems(bool& found)
         ToggleItem(handle);
     }
 
-    if (toBeExpanded.size() > 0)
+    if (toBeExpanded.size() > 0 || cc->filterMode == TreeControlContext::FilterMode::Filter)
     {
         ProcessItemsToBeDrawn(InvalidItemHandle);
     }
@@ -1610,7 +1660,37 @@ bool Tree::MarkAllItemsAsNotFound()
     for (auto& [handle, item] : cc->items)
     {
         item.markedAsFound = false;
+
+        if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+        {
+            item.hasAChildThatIsMarkedAsFound = false;
+        }
     }
+
+    return true;
+}
+
+bool Tree::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
+{
+    CHECK(handle != InvalidItemHandle, false, "");
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    const auto& item = cc->items[handle];
+    ItemHandle ancestorHandle = item.parent;
+    do
+    {
+        if (const auto& it = cc->items.find(ancestorHandle); it != cc->items.end())
+        {
+            auto& ancestor = it->second;
+            ancestor.hasAChildThatIsMarkedAsFound = true;
+            ancestorHandle = ancestor.parent;
+        }
+        else
+        {
+            break;
+        }
+    } while (ancestorHandle != InvalidItemHandle);
 
     return true;
 }

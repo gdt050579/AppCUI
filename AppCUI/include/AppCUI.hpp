@@ -3072,6 +3072,7 @@ namespace Controls
         bool SearchItems(bool& found);
         bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
         bool MarkAllItemsAsNotFound();
+        bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
 
         friend Factory::Tree;
         friend Control;
