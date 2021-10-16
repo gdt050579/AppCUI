@@ -1719,6 +1719,7 @@ namespace Controls
     {
         class EXPORT Label;
         class EXPORT Button;
+        class EXPORT Password;
         class EXPORT CheckBox;
         class EXPORT RadioBox;
         class EXPORT Splitter;
@@ -1744,6 +1745,7 @@ namespace Controls
         CheckedStatusChanged,
         TextChanged,
         TextFieldValidate,
+        PasswordValidate,
         TabChanged,
         ListViewCurrentItemChanged,
         ListViewSelectionChanged,
@@ -3319,6 +3321,12 @@ namespace Application
             } Normal, Focus, Inactive, Hover;
             Graphics::ColorPair SelectionColor;
         } Text;
+        struct
+        {
+            struct {
+                Graphics::ColorPair Text, VisibleSign;
+            } Normal, Focus, Inactive, Hover;
+        } Password;
         struct
         {
             Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,

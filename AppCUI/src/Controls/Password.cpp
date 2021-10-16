@@ -19,29 +19,31 @@ void Password::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    ColorPair color;
+    auto col = &Members->Cfg->Password.Normal;
 
     if (!this->IsEnabled())
-        color = Members->Cfg->Text.Inactive.Text;
+        col = &Members->Cfg->Password.Inactive;    
     else if (Members->Focused)
-        color = Members->Cfg->Text.Focus.Text;
+        col = &Members->Cfg->Password.Focus;
     else if (Members->MouseIsOver)
-        color = Members->Cfg->Text.Hover.Text;
-    else
-        color = Members->Cfg->Text.Normal.Text;
+        col = &Members->Cfg->Password.Hover;
 
-    auto sz = Members->Text.Len();
+    int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
         sz = Members->Layout.Width - 3;
    
+    renderer.FillHorizontalLineSize(0, 0, Members->Layout.Width, ' ', col->Text);
     if (this->IsChecked())
     {
         renderer.WriteSingleLineText(
-              1, 0, Members->Text.SubString(Members->Text.Len() - sz, Members->Text.Len()), color);
+              1, 0, Members->Text.SubString(Members->Text.Len() - (unsigned int) sz, Members->Text.Len()), col->Text);
+        renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleFilled, col->VisibleSign);
     }
     else
     {
-        renderer.FillHorizontalLine(1, 0, sz + 1, '*', color);
+        if (sz>0)
+            renderer.FillHorizontalLine(1, 0, sz, '*', col->Text);
+        renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleEmpty, col->VisibleSign);
     }
     if (Members->Focused)
         renderer.SetCursor(1 + sz, 0);
@@ -63,6 +65,11 @@ bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
         }
         return true;
     }
+    if (KeyCode == Key::Enter)
+    {
+        RaiseEvent(Event::PasswordValidate);
+        return true;
+    }
     return false;
 }
 bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
@@ -79,8 +86,6 @@ bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
 void Password::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
 {
     SetChecked(false);
-    if (IsMouseInControl(x, y))
-        OnHotKey();
 }
 void Password::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 {
@@ -88,9 +93,13 @@ void Password::OnMousePressed(int, int, AppCUI::Input::MouseButton)
 }
 bool Password::OnMouseEnter()
 {
+    CREATE_CONTROL_CONTEXT(this, Members, false);
+    this->ShowToolTip("Click and hold to see the password");
     return true;
 }
 bool Password::OnMouseLeave()
 {
+    CREATE_CONTROL_CONTEXT(this, Members, false);
+    this->HideToolTip();
     return true;
 }
