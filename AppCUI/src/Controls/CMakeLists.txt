@@ -11,6 +11,7 @@ target_sources(AppCUI PRIVATE
 	ImageViewer.cpp
 	NumericSelector.cpp
 	Panel.cpp 
+	Password.cpp
 	RadioBox.cpp 
 	Splitter.cpp 
 	Tab.cpp

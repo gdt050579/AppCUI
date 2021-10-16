@@ -157,6 +157,15 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Text.Focus.LineNumbers          = ColorPair{ Color::Silver, Color::Teal };
     this->Text.Focus.CurrentLineNumber    = ColorPair{ Color::Yellow, Color::Magenta };
 
+    this->Password.Normal.Text          = ColorPair{ Color::Silver, Color::Black };
+    this->Password.Normal.VisibleSign   = ColorPair{ Color::Silver, Color::Black };
+    this->Password.Hover.Text           = ColorPair{ Color::Yellow, Color::Black };
+    this->Password.Hover.VisibleSign    = ColorPair{ Color::Yellow, Color::Black };
+    this->Password.Inactive.Text        = ColorPair{ Color::Gray, Color::Transparent };
+    this->Password.Inactive.VisibleSign = ColorPair{ Color::Gray, Color::Transparent };
+    this->Password.Focus.Text           = ColorPair{ Color::White, Color::Black };
+    this->Password.Focus.VisibleSign    = ColorPair{ Color::Green, Color::Black };
+
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
     this->Tab.TabBarColor            = ColorPair{ Color::Silver, Color::Gray };

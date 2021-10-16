@@ -1719,6 +1719,7 @@ namespace Controls
     {
         class EXPORT Label;
         class EXPORT Button;
+        class EXPORT Password;
         class EXPORT CheckBox;
         class EXPORT RadioBox;
         class EXPORT Splitter;
@@ -1744,6 +1745,7 @@ namespace Controls
         CheckedStatusChanged,
         TextChanged,
         TextFieldValidate,
+        PasswordValidate,
         TabChanged,
         ListViewCurrentItemChanged,
         ListViewSelectionChanged,
@@ -2137,6 +2139,23 @@ namespace Controls
         virtual ~Splitter();
 
         friend Factory::Splitter;
+        friend Control;
+    };
+    class EXPORT Password : public Control
+    {
+      protected:
+        Password(const AppCUI::Utils::ConstString& caption, std::string_view layout);
+
+      public:
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
+
+        friend Factory::Password;
         friend Control;
     };
     class EXPORT Panel : public Control
@@ -2660,6 +2679,22 @@ namespace Controls
                   std::string_view layout,
                   int controlID                       = 0,
                   AppCUI::Controls::ButtonFlags flags = AppCUI::Controls::ButtonFlags::None);
+        };
+        class EXPORT Password
+        {
+            Password() = delete;
+
+          public:
+            static Reference<AppCUI::Controls::Password> Create(
+                  AppCUI::Controls::Control* parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  std::string_view layout);
+            static Reference<AppCUI::Controls::Password> Create(
+                  AppCUI::Controls::Control& parent,
+                  const AppCUI::Utils::ConstString& caption,
+                  std::string_view layout);
+            static Pointer<AppCUI::Controls::Password> Create(
+                  const AppCUI::Utils::ConstString& caption, std::string_view layout);
         };
         class EXPORT CheckBox
         {
@@ -3286,6 +3321,12 @@ namespace Application
             } Normal, Focus, Inactive, Hover;
             Graphics::ColorPair SelectionColor;
         } Text;
+        struct
+        {
+            struct {
+                Graphics::ColorPair Text, VisibleSign;
+            } Normal, Focus, Inactive, Hover;
+        } Password;
         struct
         {
             Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,
