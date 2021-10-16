@@ -605,6 +605,7 @@ struct TreeItem
     std::vector<ItemHandle> children;
     CharacterBuffer metadata;
     unsigned int depth = 1;
+    bool markedAsFound = false;
 };
 
 class TreeControlContext : public ControlContext
@@ -612,6 +613,7 @@ class TreeControlContext : public ControlContext
   public:
     std::map<ItemHandle, TreeItem> items;
     std::vector<ItemHandle> itemsToDrew;
+    std::vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     unsigned int columnSelected                                                            = 0;
@@ -622,12 +624,9 @@ class TreeControlContext : public ControlContext
     std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
     std::vector<ItemHandle> roots;
     std::vector<TreeColumnData> columns;
-    const unsigned int offset           = 2;
     unsigned int treeFlags              = 0;
-    const unsigned int minColumnWidth   = 10;
-    const unsigned int borderOffset     = 1;
     unsigned int separatorIndexSelected = 0xFFFFFFFF;
-    const unsigned int invalidIndex     = 0xFFFFFFFF;
+    ItemHandle firstFoundInSearch       = InvalidItemHandle;
 
     enum class IsMouseOn
     {
@@ -640,10 +639,17 @@ class TreeControlContext : public ControlContext
         SearchField
     } isMouseOn{ IsMouseOn::None };
 
+    enum class FilterMode
+    {
+        None   = 0,
+        Search = 1,
+        Filter = 2
+    } filterMode;
+
     struct
     {
         Utils::UnicodeStringBuilder searchText;
-        bool filterModeEnabled = false;
+        FilterMode mode{ FilterMode::None };
     } filter;
 };
 

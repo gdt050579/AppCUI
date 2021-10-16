@@ -314,6 +314,7 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
     this->Tree.Text.Inactive        = ColorPair{ Color::Gray, Color::Black };
     this->Tree.Text.Filter          = ColorPair{ Color::White, Color::DarkRed };
+    this->Tree.Text.SearchInactive  = ColorPair{ Color::Transparent, Color::Silver };
     this->Tree.Symbol.Collapsed     = ColorPair{ Color::Green, Color::Transparent };
     this->Tree.Symbol.Expanded      = ColorPair{ Color::Red, Color::Transparent };
     this->Tree.Symbol.SingleElement = ColorPair{ Color::Black, Color::Transparent };

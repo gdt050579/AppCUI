@@ -1818,11 +1818,7 @@ namespace Controls
         Control* AddChildControl(std::unique_ptr<Control> control);
 
         // protected constructor
-        Control(
-              void* context,
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              bool computeHotKey);
+        Control(void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey);
 
       public:
         template <typename T>
@@ -2061,11 +2057,7 @@ namespace Controls
     class EXPORT Button : public Control
     {
       protected:
-        Button(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              int controlID,
-              ButtonFlags flags);
+        Button(const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags);
 
       public:
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
@@ -2550,8 +2542,7 @@ namespace Controls
     class EXPORT NumericSelector : public Control
     {
       protected:
-        NumericSelector(
-              const long long minValue, const long long maxValue, long long value, std::string_view layout);
+        NumericSelector(const long long minValue, const long long maxValue, long long value, std::string_view layout);
 
       public:
         long long GetValue() const;
@@ -2603,14 +2594,14 @@ namespace Controls
     {
         None                            = 0x000000,
         HideColumns                     = 0x000100, // not implemented
-        HideBorder                      = 0x000200, // not implemented
+        HideBorder                      = 0x000200,
         HideColumnsSeparator            = 0x000400, // not implemented
         Sortable                        = 0x000800, // not implemented
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
-        // Reserved_004000                 = 0x004000,
-        SearchMode    = 0x008000, // not implemented
-        HideSearchBar = 0x010000, // not implemented
+        Searchable                      = 0x004000, // shows all elements highlighting the ones matching
+        FilterSearch                    = 0x008000, // shows only the elements matching the criteria from the previous search action
+        HideSearchBar                   = 0x010000, // disables FilterMode & SearchMode
         // Reserved_020000                 = 0x020000,
         // Reserved_040000                 = 0x040000,
         // Reserved_080000                 = 0x080000,
@@ -2685,10 +2676,7 @@ namespace Controls
 
           public:
             static Pointer<AppCUI::Controls::RadioBox> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int groupID,
-                  int controlID = 0);
+                  const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID = 0);
             static Reference<AppCUI::Controls::RadioBox> Create(
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
@@ -2866,8 +2854,7 @@ namespace Controls
 
           public:
             static Pointer<AppCUI::Controls::ImageViewer> Create(
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
+                  std::string_view layout, AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
             static Reference<AppCUI::Controls::ImageViewer> Create(
                   AppCUI::Controls::Control* parent,
                   std::string_view layout,
@@ -2992,9 +2979,7 @@ namespace Controls
     class EXPORT Tree : public Control
     {
       protected:
-        Tree(std::string_view layout,
-             const TreeFlags flags          = TreeFlags::None,
-             const unsigned int noOfColumns = 1);
+        Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3049,6 +3034,10 @@ namespace Controls
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
         bool AdjustItemsBoundsOnResize();
         bool AddToColumnWidth(const unsigned int columnIndex, const int value);
+        bool SetColorForItems(const AppCUI::Graphics::ColorPair& color);
+        bool SearchItems(bool& found);
+        bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
+        bool MarkAllItemsAsNotFound();
 
         friend Factory::Tree;
         friend Control;
@@ -3330,7 +3319,7 @@ namespace Application
             Graphics::ColorPair FocusAndSelectedColor;
             Graphics::ColorPair FilterText;
             Graphics::ColorPair StatusColor;
-            
+
         } ListView;
         struct
         {
@@ -3395,7 +3384,7 @@ namespace Application
                 } Column;
                 struct
                 {
-                    Graphics::ColorPair Normal, Focused, Inactive, Filter;
+                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchInactive;
                 } Text;
                 struct
                 {
