@@ -3065,7 +3065,6 @@ namespace Controls
         bool IsMouseOnColumnHeader(int x, int y) const;
         bool IsMouseOnColumnSeparator(int x, int y) const;
         bool IsMouseOnSearchField(int x, int y) const;
-        bool SetColumnIndexByMouse(int x, int y);
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
         bool AdjustItemsBoundsOnResize();
         bool AddToColumnWidth(const unsigned int columnIndex, const int value);

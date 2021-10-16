@@ -38,7 +38,7 @@ class TreeExample : public AppCUI::Controls::Window
         tree = Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::Searchable | TreeFlags::HideBorder),
+              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::Searchable),
               3);
 
         // TODO: maybe add % for column sizes as well

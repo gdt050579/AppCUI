@@ -616,7 +616,6 @@ class TreeControlContext : public ControlContext
     std::vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
-    unsigned int columnSelected                                                            = 0;
     unsigned int maxItemsToDraw                                                            = 0;
     unsigned int offsetTopToDraw                                                           = 0;
     unsigned int offsetBotToDraw                                                           = 0;

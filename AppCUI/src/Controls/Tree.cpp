@@ -29,7 +29,7 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
 
     if ((cc->treeFlags & TreeFlags::HideScrollBar) == TreeFlags::None)
     {
-        cc->Flags |= GATTR_HSCROLL | GATTR_VSCROLL;
+        cc->Flags |= GATTR_VSCROLL;
         cc->ScrollBars.LeftMargin     = TreeScrollbarLeftOffset; // search field
         cc->ScrollBars.TopMargin      = BorderOffset + 1;        // border + column header
         cc->ScrollBars.OutsideControl = false;
@@ -131,10 +131,13 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
                 wtp.Color = cc->Cfg->Tree.Text.Normal;
             }
 
-            if (item.handle == cc->currentSelectedItemHandle && cc->columnSelected == j)
+            if (j == item.values.size() - 1 && item.handle == cc->currentSelectedItemHandle)
             {
                 wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth;
                 wtp.Color = cc->Cfg->Tree.Text.Focused;
+
+                renderer.FillHorizontalLine(
+                      1, wtp.Y, std::min<>(col.x + col.width, cc->Layout.Width - 2U), -1, wtp.Color);
             }
             else
             {
@@ -468,6 +471,24 @@ void Tree::Paint(Graphics::Renderer& renderer)
         cc->notProcessed = false;
     }
 
+    if ((cc->treeFlags & TreeFlags::HideScrollBar) == TreeFlags::None)
+    {
+        if (cc->itemsToDrew.size() > cc->maxItemsToDraw)
+        {
+            if ((cc->Flags & GATTR_VSCROLL) == 0)
+            {
+                cc->Flags |= GATTR_VSCROLL;
+            }
+        }
+        else
+        {
+            if ((cc->Flags & GATTR_VSCROLL) == GATTR_VSCROLL)
+            {
+                cc->Flags ^= GATTR_VSCROLL;
+            }
+        }
+    }
+
     ItemsPainting(renderer, InvalidItemHandle);
 
     if (cc->Focused)
@@ -710,45 +731,24 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 return true;
             }
         }
-        else
-        {
-            if (keyCode == Key::Left)
-            {
-                if (cc->columnSelected == 0)
-                {
-                    cc->columnSelected = static_cast<unsigned int>(cc->columns.size() - 1);
-                }
-                else
-                {
-                    cc->columnSelected--;
-                }
-            }
-            else
-            {
-                if (cc->columnSelected == cc->columns.size() - 1)
-                {
-                    cc->columnSelected = 0;
-                }
-                else
-                {
-                    cc->columnSelected++;
-                }
-            }
-            return true;
-        }
         break;
 
     case Key::Ctrl | Key::C:
     {
         if (const auto it = cc->items.find(cc->currentSelectedItemHandle); it != cc->items.end())
         {
-            if (cc->columnSelected < it->second.values.size())
+            CharacterBuffer cb;
+            for (const auto& value : it->second.values)
             {
-                auto& text = it->second.values[cc->columnSelected];
-                if (AppCUI::OS::Clipboard::SetText(text) == false)
+                if (cb.Len() > 0)
                 {
-                    LOG_WARNING("Fail to copy string [%s] to the clipboard!");
+                    cb.Add(" ");
                 }
+                cb.Add(CharacterView{ value });
+            }
+            if (AppCUI::OS::Clipboard::SetText(CharacterView{ cb }) == false)
+            {
+                LOG_WARNING("Fail to copy string [%s] to the clipboard!");
             }
         }
     }
@@ -797,10 +797,55 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 }
 
                 // there's no next so go back to the first
-                if (cc->orderedItems.size() > 0)
+                for (const auto& handle : cc->orderedItems)
                 {
-                    cc->currentSelectedItemHandle = cc->orderedItems[0];
-                    return true;
+                    const auto& item = cc->items[handle];
+                    if (item.markedAsFound == true)
+                    {
+                        cc->currentSelectedItemHandle = handle;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    break;
+
+    case Key::Ctrl | Key::Shift | Key::Enter:
+    {
+        if (cc->filterMode == TreeControlContext::FilterMode::Search)
+        {
+            if (cc->filter.searchText.Len() > 0)
+            {
+                bool foundCurrent = false;
+
+                for (auto it = cc->orderedItems.rbegin(); it != cc->orderedItems.rend(); ++it)
+                {
+                    const auto handle = *it;
+                    if (foundCurrent == false)
+                    {
+                        foundCurrent = cc->currentSelectedItemHandle == handle;
+                        continue;
+                    }
+
+                    const auto& item = cc->items[handle];
+                    if (item.markedAsFound == true)
+                    {
+                        cc->currentSelectedItemHandle = handle;
+                        return true;
+                    }
+                }
+
+                // there's no previous so go back to the last
+                for (auto it = cc->orderedItems.rbegin(); it != cc->orderedItems.rend(); ++it)
+                {
+                    const auto handle = *it;
+                    const auto& item = cc->items[handle];
+                    if (item.markedAsFound == true)
+                    {
+                        cc->currentSelectedItemHandle = handle;
+                        return true;
+                    }
                 }
             }
         }
@@ -944,8 +989,6 @@ bool Tree::OnMouseOver(int x, int y)
         cc->isMouseOn = TreeControlContext::IsMouseOn::None;
     }
 
-    SetColumnIndexByMouse(x, y);
-
     return false;
 }
 
@@ -977,8 +1020,6 @@ void Tree::OnUpdateScrollBars()
 
     const auto it         = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
     const long long index = it - cc->itemsToDrew.begin();
-
-    UpdateHScrollBar(cc->columnSelected, std::max<size_t>(cc->columns.size() - 1, 0));
     UpdateVScrollBar(index, std::max<size_t>(cc->itemsToDrew.size() - 1, 0));
 }
 
@@ -1342,27 +1383,6 @@ bool Tree::IsMouseOnSearchField(int x, int y) const
     return false;
 }
 
-bool Tree::SetColumnIndexByMouse(int x, int y)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    for (auto i = 0ULL; i < cc->columns.size(); i++)
-    {
-        const auto& col = cc->columns[i];
-        if (static_cast<unsigned int>(x) >= col.x && static_cast<unsigned int>(x) <= col.x + col.width)
-        {
-            if (y >= 2 && y <= cc->Layout.Height)
-            {
-                cc->columnSelected = static_cast<unsigned int>(i);
-                break;
-            }
-        }
-    }
-
-    return true;
-}
-
 bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
 {
     CHECK(Context != nullptr, false, "");
@@ -1386,6 +1406,17 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
         }
         xPreviousColumn       = col.x;
         widthOfPreviousColumn = col.width;
+    }
+
+    auto& lastColumn            = cc->columns[cc->columns.size() - 1];
+    const auto rightLastColumnX = lastColumn.x + lastColumn.width;
+    if (rightLastColumnX < static_cast<unsigned int>(cc->Layout.Width))
+    {
+        lastColumn.width += cc->Layout.Width - rightLastColumnX;
+    }
+    else if (rightLastColumnX > static_cast<unsigned int>(cc->Layout.Width))
+    {
+        lastColumn.width -= rightLastColumnX - cc->Layout.Width;
     }
 
     return true;
@@ -1520,7 +1551,7 @@ bool Tree::SearchItems(bool& found)
         ProcessItemsToBeDrawn(InvalidItemHandle);
     }
 
-    ProcessOrderedItems(cc->currentSelectedItemHandle, true);
+    ProcessOrderedItems(InvalidItemHandle, true);
 
     return true;
 }
