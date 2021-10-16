@@ -342,6 +342,8 @@ void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& 
 }
 void MenuContext::RunItemAction(unsigned int itemIndex)
 {
+    if (itemIndex >= this->ItemsCount)
+        return;
     auto itm      = this->Items[itemIndex].get();
     int commandID = -1;
     switch (itm->Type)
