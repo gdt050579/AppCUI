@@ -128,7 +128,6 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
                 {
                     wtp.Width = col.width; // column separator
                 }
-                wtp.Color = cc->Cfg->Tree.Text.Normal;
             }
 
             if (j == item.values.size() - 1 && item.handle == cc->currentSelectedItemHandle)
@@ -138,10 +137,6 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
 
                 renderer.FillHorizontalLine(
                       1, wtp.Y, std::min<>(col.x + col.width, cc->Layout.Width - 2U), -1, wtp.Color);
-            }
-            else
-            {
-                wtp.Color = cc->Cfg->Tree.Text.Normal;
             }
 
             if (j < item.values.size())
@@ -760,12 +755,15 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
-                SetColorForItems(cc->Cfg->Tree.Text.Normal);
 
                 if (cc->filter.searchText.Len() > 0)
                 {
                     bool found = false;
                     SearchItems(found);
+                }
+                else
+                {
+                    SetColorForItems(cc->Cfg->Tree.Text.Normal);
                 }
                 return true;
             }
@@ -867,7 +865,14 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
             if (found == false)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
-                SearchItems(found);
+                if (cc->filter.searchText.Len() > 0)
+                {
+                    SearchItems(found);
+                }
+                else
+                {
+                    SetColorForItems(cc->Cfg->Tree.Text.Normal);
+                }
             }
             return found;
         }
@@ -1511,12 +1516,13 @@ bool Tree::SearchItems(bool& found)
                 if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true); index >= 0)
                 {
                     item.second.markedAsFound = true;
-                    value.SetColor(index, index + cc->filter.searchText.Len(), cc->Cfg->Tree.Text.Filter);
                     if (found == false)
                     {
                         cc->currentSelectedItemHandle = item.second.handle;
+                        SetColorForItems(cc->Cfg->Tree.Text.SearchActive);
                     }
                     found = true;
+                    value.SetColor(index, index + cc->filter.searchText.Len(), cc->Cfg->Tree.Text.Filter);
 
                     ItemHandle ancestorHandle = item.second.parent;
                     do

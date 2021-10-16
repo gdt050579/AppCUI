@@ -3424,7 +3424,7 @@ namespace Application
                 } Column;
                 struct
                 {
-                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchInactive;
+                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchActive;
                 } Text;
                 struct
                 {
