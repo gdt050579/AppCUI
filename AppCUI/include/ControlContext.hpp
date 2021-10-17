@@ -627,6 +627,7 @@ class TreeControlContext : public ControlContext
     unsigned int treeFlags              = 0;
     unsigned int separatorIndexSelected = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch       = InvalidItemHandle;
+    bool hidSearchBarOnResize           = false;
 
     enum class IsMouseOn
     {
@@ -644,13 +645,13 @@ class TreeControlContext : public ControlContext
         None   = 0,
         Search = 1,
         Filter = 2
-    } filterMode;
+    };
 
     struct
     {
         Utils::UnicodeStringBuilder searchText;
         FilterMode mode{ FilterMode::None };
-    } filter;
+    } filter{};
 };
 
 enum class MenuItemType : unsigned int

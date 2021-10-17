@@ -35,24 +35,20 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
         cc->ScrollBars.OutsideControl = false;
     }
 
-    if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None && cc->Layout.Width > TreeScrollbarLeftOffset)
+    if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None)
     {
         if ((cc->treeFlags & TreeFlags::FilterSearch) != TreeFlags::None)
         {
-            cc->filterMode = TreeControlContext::FilterMode::Filter;
+            cc->filter.mode = TreeControlContext::FilterMode::Filter;
         }
         else if ((cc->treeFlags & TreeFlags::Searchable) != TreeFlags::None)
         {
-            cc->filterMode = TreeControlContext::FilterMode::Search;
+            cc->filter.mode = TreeControlContext::FilterMode::Search;
         }
         else
         {
             cc->treeFlags |= static_cast<unsigned int>(TreeFlags::HideSearchBar);
         }
-    }
-    else
-    {
-        cc->treeFlags |= static_cast<unsigned int>(TreeFlags::HideSearchBar);
     }
 
     AdjustItemsBoundsOnResize();
@@ -341,7 +337,7 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
         for (const auto& handle : cc->roots)
         {
             const auto& item = cc->items[handle];
-            if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+            if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
             {
                 if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
                 {
@@ -360,7 +356,7 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
             {
                 const auto& child = cc->items[it];
 
-                if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+                if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
                 {
                     if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
                     {
@@ -390,7 +386,7 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
     {
         const auto& item = cc->items[handle];
 
-        if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+        if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
         {
             if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
             {
@@ -405,7 +401,7 @@ bool Tree::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
         {
             const auto& child = cc->items[it];
 
-            if (cc->filterMode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
+            if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
             {
                 if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
                 {
@@ -531,7 +527,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
 
     if (cc->Focused)
     {
-        if (cc->Layout.Width > TreeSearchBarWidth && cc->filterMode != TreeControlContext::FilterMode::None)
+        if (cc->Layout.Width > TreeSearchBarWidth && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
             renderer.FillHorizontalLine(1, cc->Layout.Height - 1, TreeSearchBarWidth, ' ', cc->Cfg->Tree.Text.Filter);
 
@@ -690,7 +686,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
     case Key::Ctrl | Key::Space:
         ToggleExpandRecursive(cc->currentSelectedItemHandle);
         {
-            if (cc->filter.searchText.Len() > 0 && cc->filterMode != TreeControlContext::FilterMode::None)
+            if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
             {
                 bool found = false;
                 SearchItems(found);
@@ -700,7 +696,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
     case Key::Space:
         ToggleItem(cc->currentSelectedItemHandle);
         ProcessItemsToBeDrawn(InvalidItemHandle);
-        if (cc->filter.searchText.Len() > 0 && cc->filterMode != TreeControlContext::FilterMode::None)
+        if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
             bool found = false;
             SearchItems(found);
@@ -742,7 +738,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         }
         return true;
     case Key::Escape:
-        if (cc->filterMode == TreeControlContext::FilterMode::Search)
+        if (cc->filter.mode == TreeControlContext::FilterMode::Search)
         {
             if (cc->filter.searchText.Len() > 0)
             {
@@ -751,7 +747,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 return true;
             }
         }
-        else if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+        else if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
         {
             if (cc->filter.searchText.Len() > 0)
             {
@@ -802,7 +798,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
 
     case Key::Backspace:
-        if (cc->filterMode != TreeControlContext::FilterMode::None)
+        if (cc->filter.mode != TreeControlContext::FilterMode::None)
         {
             if (cc->filter.searchText.Len() > 0)
             {
@@ -823,7 +819,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
 
     case Key::Ctrl | Key::Enter:
-        if (cc->filterMode == TreeControlContext::FilterMode::Search)
+        if (cc->filter.mode == TreeControlContext::FilterMode::Search)
         {
             if (cc->filter.searchText.Len() > 0)
             {
@@ -860,7 +856,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
 
     case Key::Ctrl | Key::Shift | Key::Enter:
-        if (cc->filterMode == TreeControlContext::FilterMode::Search)
+        if (cc->filter.mode == TreeControlContext::FilterMode::Search)
         {
             if (cc->filter.searchText.Len() > 0)
             {
@@ -902,7 +898,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
     }
 
-    if (cc->filterMode != TreeControlContext::FilterMode::None)
+    if (cc->filter.mode != TreeControlContext::FilterMode::None)
     {
         if (character > 0)
         {
@@ -1462,14 +1458,44 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     }
 
     auto& lastColumn            = cc->columns[cc->columns.size() - 1];
-    const auto rightLastColumnX = lastColumn.x + lastColumn.width;
-    if (rightLastColumnX < static_cast<unsigned int>(cc->Layout.Width))
+    const auto rightLastColumnX = static_cast<int>(lastColumn.x + lastColumn.width);
+    if (rightLastColumnX < cc->Layout.Width)
     {
         lastColumn.width += cc->Layout.Width - rightLastColumnX;
     }
-    else if (rightLastColumnX > static_cast<unsigned int>(cc->Layout.Width))
+    else if (rightLastColumnX > cc->Layout.Width)
     {
         lastColumn.width -= rightLastColumnX - cc->Layout.Width;
+    }
+
+    if (cc->Layout.Width <= TreeScrollbarLeftOffset)
+    {
+        if (cc->hidSearchBarOnResize == false)
+        {
+            if ((cc->treeFlags & TreeFlags::HideSearchBar) != TreeFlags::None)
+            {
+                cc->filter.mode = TreeControlContext::FilterMode::None;
+                cc->filter.searchText.Clear();
+            }
+            cc->hidSearchBarOnResize = true;
+        }
+    }
+    else
+    {
+        if (cc->hidSearchBarOnResize)
+        {
+            cc->treeFlags ^= static_cast<unsigned int>(TreeFlags::HideSearchBar);
+            cc->hidSearchBarOnResize = false;
+        }
+
+        if ((cc->treeFlags & TreeFlags::FilterSearch) != TreeFlags::None)
+        {
+            cc->filter.mode = TreeControlContext::FilterMode::Filter;
+        }
+        else if ((cc->treeFlags & TreeFlags::Searchable) != TreeFlags::None)
+        {
+            cc->filter.mode = TreeControlContext::FilterMode::Search;
+        }
     }
 
     return true;
@@ -1561,10 +1587,10 @@ bool Tree::SearchItems(bool& found)
         {
             for (auto& value : item.second.values)
             {
-                if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true); index >= 0)
+                if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true) >= 0)
                 {
                     item.second.markedAsFound = true;
-                    if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+                    if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
                     {
                         MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
                     }
@@ -1604,7 +1630,7 @@ bool Tree::SearchItems(bool& found)
         ToggleItem(handle);
     }
 
-    if (toBeExpanded.size() > 0 || cc->filterMode == TreeControlContext::FilterMode::Filter)
+    if (toBeExpanded.size() > 0 || cc->filter.mode == TreeControlContext::FilterMode::Filter)
     {
         ProcessItemsToBeDrawn(InvalidItemHandle);
     }
@@ -1663,7 +1689,7 @@ bool Tree::MarkAllItemsAsNotFound()
     {
         item.markedAsFound = false;
 
-        if (cc->filterMode == TreeControlContext::FilterMode::Filter)
+        if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
         {
             item.hasAChildThatIsMarkedAsFound = false;
         }
