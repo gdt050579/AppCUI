@@ -73,6 +73,9 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
     cc->separatorIndexSelected = InvalidIndex;
 
     SetColorForItems(cc->Cfg->Tree.Text.Normal);
+
+    cc->itemsToDrew.reserve(100);
+    cc->orderedItems.reserve(100);
 }
 
 bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const
@@ -765,6 +768,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
             return true;
         }
         break;
+
     case Key::Left:
     case Key::Right:
         if (cc->separatorIndexSelected != InvalidIndex && cc->separatorIndexSelected != 0 &&
@@ -779,25 +783,23 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
 
     case Key::Ctrl | Key::C:
-    {
         if (const auto it = cc->items.find(cc->currentSelectedItemHandle); it != cc->items.end())
         {
-            CharacterBuffer cb;
+            LocalUnicodeStringBuilder<1024> lusb;
             for (const auto& value : it->second.values)
             {
-                if (cb.Len() > 0)
+                if (lusb.Len() > 0)
                 {
-                    cb.Add(" ");
+                    lusb.Add(" ");
+                    lusb.Add(value);
                 }
-                cb.Add(CharacterView{ value });
             }
-            if (AppCUI::OS::Clipboard::SetText(CharacterView{ cb }) == false)
+            if (AppCUI::OS::Clipboard::SetText(lusb) == false)
             {
                 LOG_WARNING("Fail to copy string [%s] to the clipboard!");
             }
         }
-    }
-    break;
+        break;
 
     case Key::Backspace:
         if (cc->filterMode != TreeControlContext::FilterMode::None)
@@ -821,7 +823,6 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         break;
 
     case Key::Ctrl | Key::Enter:
-    {
         if (cc->filterMode == TreeControlContext::FilterMode::Search)
         {
             if (cc->filter.searchText.Len() > 0)
@@ -856,11 +857,9 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 }
             }
         }
-    }
-    break;
+        break;
 
     case Key::Ctrl | Key::Shift | Key::Enter:
-    {
         if (cc->filterMode == TreeControlContext::FilterMode::Search)
         {
             if (cc->filter.searchText.Len() > 0)
@@ -897,8 +896,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                 }
             }
         }
-    }
-    break;
+        break;
 
     default:
         break;
@@ -1680,15 +1678,15 @@ bool Tree::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    const auto& item = cc->items[handle];
+    const auto& item          = cc->items[handle];
     ItemHandle ancestorHandle = item.parent;
     do
     {
         if (const auto& it = cc->items.find(ancestorHandle); it != cc->items.end())
         {
-            auto& ancestor = it->second;
+            auto& ancestor                        = it->second;
             ancestor.hasAChildThatIsMarkedAsFound = true;
-            ancestorHandle = ancestor.parent;
+            ancestorHandle                        = ancestor.parent;
         }
         else
         {
