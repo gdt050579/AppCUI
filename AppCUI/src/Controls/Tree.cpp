@@ -20,8 +20,8 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
     cc->Layout.MinHeight = 1;
-    cc->Layout.MaxHeight = 10000;
-    cc->Layout.MinWidth  = 40;
+    cc->Layout.MaxHeight = 200000;
+    cc->Layout.MinWidth  = 20;
 
     cc->treeFlags = static_cast<unsigned int>(flags);
 
@@ -35,7 +35,7 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
         cc->ScrollBars.OutsideControl = false;
     }
 
-    if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None)
+    if ((cc->treeFlags & TreeFlags::HideSearchBar) == TreeFlags::None && cc->Layout.Width > TreeScrollbarLeftOffset)
     {
         if ((cc->treeFlags & TreeFlags::FilterSearch) != TreeFlags::None)
         {
@@ -49,6 +49,10 @@ Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int no
         {
             cc->treeFlags |= static_cast<unsigned int>(TreeFlags::HideSearchBar);
         }
+    }
+    else
+    {
+        cc->treeFlags |= static_cast<unsigned int>(TreeFlags::HideSearchBar);
     }
 
     AdjustItemsBoundsOnResize();
