@@ -70,6 +70,14 @@ bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
         RaiseEvent(Event::PasswordValidate);
         return true;
     }
+    if ((KeyCode == (Key::Ctrl | Key::V)) || (KeyCode == (Key::Shift | Key::Insert)))
+    {
+        LocalUnicodeStringBuilder<2048> temp;
+        if (AppCUI::OS::Clipboard::GetText(temp))
+            Members->Text.Add(temp);
+        return true;
+    }
+    
     return false;
 }
 bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
