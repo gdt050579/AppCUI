@@ -231,7 +231,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     else
     {
         // if activ and filtered
-        if (this->Filter.SearchText.Len()>0)
+        if (this->Filter.SearchText.Len() > 0)
         {
             params.Flags = static_cast<WriteTextFlags>(
                   (unsigned int) params.Flags - (unsigned int) WriteTextFlags::OverwriteColors);
@@ -1097,7 +1097,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
                 if (((button & AppCUI::Input::MouseButton::DoubleClicked) != AppCUI::Input::MouseButton::None))
                     SendMsg(Event::ListViewItemClicked);
             }
-        }         
+        }
     }
 }
 bool ListViewControlContext::OnMouseDrag(int x, int, AppCUI::Input::MouseButton)
@@ -1232,18 +1232,17 @@ bool ListViewControlContext::Sort()
 }
 int ListViewControlContext::SearchItem(unsigned int startPoz)
 {
-    unsigned int originalStartPoz;
-
-    unsigned int count = Items.List.size();
+    const auto count = static_cast<unsigned int>(Items.List.size());
     if (startPoz >= count)
         startPoz = 0;
     if (count == 0)
         return -1;
-    originalStartPoz = startPoz;
-    int found        = -1;
+
+    unsigned int originalStartPoz = startPoz;
+    int found                     = -1;
     do
     {
-        if (FilterItem(Items.List[startPoz],true))
+        if (FilterItem(Items.List[startPoz], true))
         {
             if (found == -1)
                 found = startPoz;
@@ -1259,7 +1258,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
 {
     unsigned int columnID = 0;
     int index             = -1;
-    
+
     for (unsigned int gr = 0; gr < Columns.Count; gr++)
     {
         if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
@@ -1281,7 +1280,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
     }
     if (index >= 0)
     {
-        // set color for 
+        // set color for
         lvi.SubItem[columnID].SetColor(
               index, index + this->Filter.SearchText.Len(), this->Cfg->ListView.Highlight.Selected);
         return true;
@@ -1303,7 +1302,7 @@ void ListViewControlContext::FilterItems()
     {
         for (unsigned int tr = 0; tr < count; tr++)
         {
-            if (FilterItem(Items.List[tr],false))
+            if (FilterItem(Items.List[tr], false))
                 Items.Indexes.Push(tr);
         }
     }
@@ -1381,7 +1380,6 @@ ListView::ListView(std::string_view layout, ListViewFlags flags)
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
-
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {

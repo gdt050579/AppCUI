@@ -14,6 +14,7 @@ using namespace AppCUI::Utils;
 class TabExampleWin2 : public Window
 {
     Reference<Tab> tb_h, tb_v;
+
   public:
     TabExampleWin2(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
@@ -21,25 +22,24 @@ class TabExampleWin2 : public Window
         auto spv = Factory::Splitter::Create(this, "d:c", true);
         auto sph = Factory::Splitter::Create(spv, "d:c", false);
 
-        Factory::Button::Create(sph, "Add", "d:c",1234);
+        Factory::Button::Create(sph, "Add", "d:c", 1234);
 
         tb_h = Factory::Tab::Create(sph, "d:c", flags);
         tb_v = Factory::Tab::Create(spv, "d:c", flags);
 
         LocalString<128> tmp;
 
-        for (unsigned int tr=0;tr<tabsCount;tr++)
+        for (int tr = 0; tr < tabsCount; tr++)
         {
             tmp.SetFormat("VTab: &%d", tr + 1);
             auto pg = Factory::TabPage::Create(tb_v, tmp.GetText());
             auto lv = Factory::ListView::Create(pg, "d:c");
             lv->AddColumn("Name", TextAlignament::Left, 20);
             tmp[0] = 'H';
-            pg = Factory::TabPage::Create(tb_h, tmp.GetText());
-            lv = Factory::ListView::Create(pg, "d:c");
+            pg     = Factory::TabPage::Create(tb_h, tmp.GetText());
+            lv     = Factory::ListView::Create(pg, "d:c");
             lv->AddColumn("Name", TextAlignament::Left, 20);
         }
-
     }
     bool OnEvent(Control* ctrl, Event eventType, int controlID) override
     {
@@ -50,8 +50,8 @@ class TabExampleWin2 : public Window
             auto pg = Factory::TabPage::Create(tb_v, "New page");
             auto lv = Factory::ListView::Create(pg, "d:c");
             lv->AddColumn("Name", TextAlignament::Left, 20);
-            pg     = Factory::TabPage::Create(tb_h, "New page");
-            lv     = Factory::ListView::Create(pg, "d:c");
+            pg = Factory::TabPage::Create(tb_h, "New page");
+            lv = Factory::ListView::Create(pg, "d:c");
             lv->AddColumn("Name", TextAlignament::Left, 20);
             return true;
         }
@@ -85,7 +85,7 @@ class TabExampleWin : public Window
             lv->AddItem("Andrei");
             lv->AddItem("Denis");
             lv->AddItem("Dragos");
-            lv->AddItem("Ghiorghita");
+            lv->AddItem("Gheorghita");
             lv->AddItem("Raul");
 
             Factory::RadioBox::Create(pg1, "Option &1", "x:1,y:1,w:20", 100);
@@ -131,9 +131,9 @@ class MyWin : public Window
     Reference<ComboBox> example;
 
   public:
-    MyWin() : Window("Tab example config", "d:c,w:50,h:21",WindowFlags::None)
-    {        
-        auto p = Factory::Panel::Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
+    MyWin() : Window("Tab example config", "d:c,w:50,h:21", WindowFlags::None)
+    {
+        auto p    = Factory::Panel::Create(this, "Tab mode", "x:1,y:1,w:46,h:7");
         tabTop    = Factory::RadioBox::Create(p, "Tab pages on &top", "x:1,y:0,w:40", TAB_MODE_GROUP);
         tabBottom = Factory::RadioBox::Create(p, "Tab pages on &bottom", "x:1,y:1,w:40", TAB_MODE_GROUP);
         tabLeft   = Factory::RadioBox::Create(p, "Tab pages on &left", "x:1,y:2,w:40", TAB_MODE_GROUP);

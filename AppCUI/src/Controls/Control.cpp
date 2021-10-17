@@ -1184,8 +1184,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxVerticalValue)
             {
-                unsigned int sz  = (unsigned int) (y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
-                unsigned int poz = (unsigned int) ((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                const auto sz = static_cast<unsigned int>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
+                const auto poz =
+                      static_cast<unsigned int>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
                 renderer.WriteSpecialCharacter(
                       x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1201,8 +1202,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxHorizontalValue)
             {
-                unsigned int sz  = (unsigned int) (x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
-                unsigned int poz = (unsigned int) ((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                const auto sz = static_cast<unsigned int>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
+                const auto poz =
+                      static_cast<unsigned int>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
                 renderer.WriteSpecialCharacter(
                       ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1220,8 +1222,8 @@ AppCUI::Controls::Control::Control(
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
     ASSERT(cfg != nullptr, "Unable to get config object !");
-    this->Context = context;    
-    auto ctx = reinterpret_cast<ControlContext*>(this->Context);
+    this->Context = context;
+    auto ctx      = reinterpret_cast<ControlContext*>(this->Context);
     ctx->Inited   = false;
     ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 

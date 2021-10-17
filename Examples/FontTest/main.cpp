@@ -22,8 +22,7 @@ int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::Speci
 struct FontUserControl : public UserControl
 {
   public:
-    FontUserControl(std::string_view layout)
-        : UserControl(layout)
+    FontUserControl(std::string_view layout) : UserControl(layout)
     {
     }
     void Paint(Graphics::Renderer& renderer) override
@@ -35,16 +34,16 @@ struct FontUserControl : public UserControl
 
         for (int i = 0; i < 256; i++)
         {
-            const int y = i / width;
-            const int x = i % width;
+            const auto y = static_cast<int>(i / width);
+            const auto x = static_cast<int>(i % width);
             renderer.WriteCharacter(x, y, i, textColor);
         }
 
         const int nextLine = 256 / width + 2;
-        for (int i = 0; i < (int) AppCUI::Graphics::SpecialChars::Count; i++)
+        for (auto i = 0U; i < static_cast<unsigned int>(AppCUI::Graphics::SpecialChars::Count); i++)
         {
-            const int y = i / width;
-            const int x = i % width;
+            const auto y = static_cast<int>(i / width);
+            const auto x = static_cast<int>(i % width);
             renderer.WriteCharacter(
                   x,
                   nextLine + y,
@@ -62,9 +61,8 @@ struct FontUserControl : public UserControl
 
 class FontTest : public AppCUI::Controls::Window
 {
-
   public:
-    FontTest() : Window("FontTest", "x:0,y:0,w:100%,h:100%",WindowFlags::None)
+    FontTest() : Window("FontTest", "x:0,y:0,w:100%,h:100%", WindowFlags::None)
     {
         this->CreateChildControl<FontUserControl>("x:0,y:0,w:100%,h:100%");
     }

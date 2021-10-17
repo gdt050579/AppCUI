@@ -7,8 +7,9 @@ using namespace AppCUI::Graphics;
 
 WindowsTerminal::WindowsTerminal()
 {
-    ConsoleBufferCount = 0;
-    this->fpsMode      = false;
+    ConsoleBufferCount      = 0;
+    this->fpsMode           = false;
+    this->lastMousePosition = { 0xFFFFFFFFu, 0xFFFFFFFFu };
 }
 WindowsTerminal::~WindowsTerminal()
 {
@@ -40,7 +41,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
     SMALL_RECT BufRect = { 0, 0, (SHORT) (width - 1), (SHORT) (height - 1) };
 
     // allocate memory for a console buffer
-    CHAR_INFO* temp = new CHAR_INFO[(size_t)width * (size_t)height];
+    CHAR_INFO* temp = new CHAR_INFO[(size_t) width * (size_t) height];
     CHECK(temp, false, "Fail to allocate %dx%d buffer to store the original screem buffer !", width, height);
 
     // make a copy of the original screem buffer into the canvas
@@ -99,8 +100,8 @@ bool WindowsTerminal::ResizeConsoleWindowSize(unsigned int width, unsigned int h
 
     rect.Left   = 0;
     rect.Top    = 0;
-    rect.Right  = (SHORT)(width - 1);
-    rect.Bottom = (SHORT)(height - 1);
+    rect.Right  = (SHORT) (width - 1);
+    rect.Bottom = (SHORT) (height - 1);
 
     CHECK(SetConsoleWindowInfo(this->hstdOut, TRUE, &rect),
           false,
@@ -141,7 +142,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           Size(),
           "initData.Height has be smaller than 0xFFFF --> curently is: %u",
           initData.Height);
- 
+
     if ((currentSize.Width == initData.Width) && (currentSize.Height == initData.Height))
         return currentSize;
 
@@ -149,20 +150,20 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
 
     // for SetConsoleScreenBufferSize:
     /*
-    * The specified width and height cannot be less than the width and height of the console screen buffer's window. 
-    * https://docs.microsoft.com/en-us/windows/console/setconsolescreenbuffersize
-    */
+     * The specified width and height cannot be less than the width and height of the console screen buffer's window.
+     * https://docs.microsoft.com/en-us/windows/console/setconsolescreenbuffersize
+     */
 
     // for SetConsoleWindowInfo
     /*
-    * The function fails if the specified window rectangle extends beyond the boundaries of the console screen buffer.
-    * https://docs.microsoft.com/en-us/windows/console/setconsolewindowinfo
-    */
+     * The function fails if the specified window rectangle extends beyond the boundaries of the console screen buffer.
+     * https://docs.microsoft.com/en-us/windows/console/setconsolewindowinfo
+     */
 
     // if new width is larged then the old width, first resize screen buffer, than window size
     // if new width is smaller then the old width, first resize window size, than screen buffer
     // The height will be kept as it is during this resize
-    if (initData.Width>currentSize.Width)
+    if (initData.Width > currentSize.Width)
     {
         CHECK(ResizeConsoleScreenBufferSize(initData.Width, currentSize.Height), Size(), "");
         CHECK(ResizeConsoleWindowSize(initData.Width, currentSize.Height), Size(), "");
@@ -183,7 +184,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           "Console screen buffer width has not changed (curently is %u, expected value is %u)",
           csbi.dwSize.X,
           initData.Width);
-    CHECK((csbi.srWindow.Right+1 - csbi.srWindow.Left) == initData.Width,
+    CHECK((csbi.srWindow.Right + 1 - csbi.srWindow.Left) == initData.Width,
           Size(),
           "Console window width has not changed (curently is %u, expected value is %u)",
           (csbi.srWindow.Right + 1 - csbi.srWindow.Left),
@@ -217,19 +218,18 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           (csbi.srWindow.Bottom + 1 - csbi.srWindow.Top),
           initData.Height);
 
-
     return Size(initData.Width, initData.Height);
 }
 
 Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, const Size& currentSize)
 {
     Size resultedSize;
-    
+
     if ((initData.Flags & InitializationFlags::Maximized) != InitializationFlags::None)
         resultedSize = MaximizeTerminal();
     else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None)
         resultedSize = FullScreenTerminal();
-    else if ((initData.Width == 0) && (initData.Height == 0))        
+    else if ((initData.Width == 0) && (initData.Height == 0))
         resultedSize = currentSize; // default values (keep the existing settings)
     else
         resultedSize = ResizeTerminal(initData, currentSize); // custom size
@@ -238,7 +238,7 @@ Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, con
     CHECK(resultedSize.Width > 0, Size(), "Something went wrong with windows API ==> resulted width is 0 !");
     CHECK(resultedSize.Height > 0, Size(), "Something went wrong with windows API ==> resulted height is 0 !");
 
-    if ((initData.Flags & InitializationFlags::FixedSize)!= InitializationFlags::None)
+    if ((initData.Flags & InitializationFlags::FixedSize) != InitializationFlags::None)
     {
         // make sure that current window is unmoveable
     }
@@ -250,11 +250,11 @@ bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::Initializa
     if (initData.CharSize == CharacterSize::Default)
         return true; // leave the settings as they are
     CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize       = sizeof(CONSOLE_FONT_INFOEX);
-    cfi.FontWeight   = FW_NORMAL;
-    cfi.dwFontSize.X = 0;
-    cfi.nFont        = 0;
-    cfi.FontFamily   = FF_DONTCARE;
+    cfi.cbSize                = sizeof(CONSOLE_FONT_INFOEX);
+    cfi.FontWeight            = FW_NORMAL;
+    cfi.dwFontSize.X          = 0;
+    cfi.nFont                 = 0;
+    cfi.FontFamily            = FF_DONTCARE;
     std::string_view fontName = initData.FontName;
     if (fontName.size() == 0)
         fontName = "Consolas"; // default font name
@@ -477,8 +477,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
     switch (ir.EventType)
     {
     case KEY_EVENT:
-        if ((ir.Event.KeyEvent.uChar.UnicodeChar >= 32) &&
-            (ir.Event.KeyEvent.bKeyDown))
+        if ((ir.Event.KeyEvent.uChar.UnicodeChar >= 32) && (ir.Event.KeyEvent.bKeyDown))
             evnt.unicodeCharacter = ir.Event.KeyEvent.uChar.UnicodeChar;
         else
             evnt.unicodeCharacter = 0;
@@ -517,6 +516,20 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         this->shiftState = eventShiftState;
         break;
     case MOUSE_EVENT:
+
+        // for Windows 11
+        if (ir.Event.MouseEvent.dwEventFlags == 0x01)
+        {
+            if (ir.Event.MouseEvent.dwMousePosition.X == this->lastMousePosition.x &&
+                ir.Event.MouseEvent.dwMousePosition.Y == this->lastMousePosition.y)
+            {
+                break;
+            }
+
+            this->lastMousePosition.x = ir.Event.MouseEvent.dwMousePosition.X;
+            this->lastMousePosition.y = ir.Event.MouseEvent.dwMousePosition.Y;
+        }
+
         evnt.mouseX      = ir.Event.MouseEvent.dwMousePosition.X;
         evnt.mouseY      = ir.Event.MouseEvent.dwMousePosition.Y;
         evnt.mouseButton = AppCUI::Input::MouseButton::None;

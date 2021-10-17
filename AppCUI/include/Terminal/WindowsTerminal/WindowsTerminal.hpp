@@ -15,6 +15,10 @@ namespace Internal
         DWORD startTime;
         std::unique_ptr<CHAR_INFO> ConsoleBuffer;
         unsigned int ConsoleBufferCount;
+        struct
+        {
+            unsigned int x, y;
+        } lastMousePosition;
         AppCUI::Input::Key KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
         AppCUI::Input::Key shiftState;
         bool fpsMode;
@@ -28,11 +32,9 @@ namespace Internal
         AppCUI::Graphics::Size FullScreenTerminal();
         AppCUI::Graphics::Size MaximizeTerminal();
         AppCUI::Graphics::Size ResizeTerminal(
-              const AppCUI::Application::InitializationData& initData, 
-              const AppCUI::Graphics::Size& currentSize);
+              const AppCUI::Application::InitializationData& initData, const AppCUI::Graphics::Size& currentSize);
         AppCUI::Graphics::Size UpdateTerminalSize(
-              const AppCUI::Application::InitializationData& initData,
-              const AppCUI::Graphics::Size& currentSize);
+              const AppCUI::Application::InitializationData& initData, const AppCUI::Graphics::Size& currentSize);
         bool ComputeCharacterSize(const AppCUI::Application::InitializationData& initData);
 
       public:
@@ -48,4 +50,3 @@ namespace Internal
     };
 } // namespace Internal
 } // namespace AppCUI
-
