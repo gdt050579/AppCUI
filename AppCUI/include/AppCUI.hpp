@@ -3069,7 +3069,7 @@ namespace Controls
         bool AdjustItemsBoundsOnResize();
         bool AddToColumnWidth(const unsigned int columnIndex, const int value);
         bool SetColorForItems(const AppCUI::Graphics::ColorPair& color);
-        bool SearchItems(bool& found);
+        bool SearchItems();
         bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
         bool MarkAllItemsAsNotFound();
         bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);

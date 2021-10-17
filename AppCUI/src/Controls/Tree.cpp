@@ -688,8 +688,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         {
             if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
             {
-                bool found = false;
-                SearchItems(found);
+                SearchItems();
             }
         }
         return true;
@@ -698,8 +697,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         ProcessItemsToBeDrawn(InvalidItemHandle);
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
-            bool found = false;
-            SearchItems(found);
+            SearchItems();
         }
         return true;
 
@@ -806,8 +804,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
 
                 if (cc->filter.searchText.Len() > 0)
                 {
-                    bool found = false;
-                    SearchItems(found);
+                    SearchItems();
                 }
                 else
                 {
@@ -904,21 +901,19 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
         {
             cc->filter.searchText.AddChar(character);
             SetColorForItems(cc->Cfg->Tree.Text.Normal);
-            bool found = false;
-            SearchItems(found);
-            if (found == false)
+            if (SearchItems() == false)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
                 if (cc->filter.searchText.Len() > 0)
                 {
-                    SearchItems(found);
+                    SearchItems();
                 }
                 else
                 {
                     SetColorForItems(cc->Cfg->Tree.Text.Normal);
                 }
             }
-            return found;
+            return true;
         }
     }
 
@@ -967,8 +962,7 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
                 }
             }
             ProcessItemsToBeDrawn(InvalidItemHandle);
-            bool found = false;
-            SearchItems(found);
+            SearchItems();
         }
         break;
         case TreeControlContext::IsMouseOn::Item:
@@ -1571,13 +1565,13 @@ bool Tree::SetColorForItems(const ColorPair& color)
     return true;
 }
 
-bool Tree::SearchItems(bool& found)
+bool Tree::SearchItems()
 {
-    found = false;
+    bool found = false;
 
     MarkAllItemsAsNotFound();
 
-    CHECK(Context != nullptr, false, "");
+    CHECK(Context != nullptr, found, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     std::set<ItemHandle> toBeExpanded;
@@ -1637,7 +1631,7 @@ bool Tree::SearchItems(bool& found)
 
     ProcessOrderedItems(InvalidItemHandle, true);
 
-    return true;
+    return found;
 }
 
 bool Tree::ProcessOrderedItems(const ItemHandle handle, const bool clear)
