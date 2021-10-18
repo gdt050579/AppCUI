@@ -904,9 +904,13 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             }
             return true;
         case Key::Enter | Key::Ctrl:
-            if ((Filter.FilterModeEnabled) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
+            if (((Flags & ListViewFlags::SearchMode) != ListViewFlags::None) &&
+                ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) && (Filter.SearchText.Len() > 0))
             {
-                UpdateSearch(Items.CurentItemIndex + 1);
+                if (Filter.LastFoundItem >= 0)
+                    UpdateSearch(Filter.LastFoundItem + 1);
+                else
+                    UpdateSearch(0);
                 return true; // de vazut daca are send
             }
             return false;
@@ -1323,6 +1327,7 @@ void ListViewControlContext::UpdateSearch(int startPoz)
     {
         if ((index = SearchItem(startPoz)) >= 0)
         {
+            this->Filter.LastFoundItem = index;
             MoveTo(index);
         }
         else
@@ -1330,7 +1335,7 @@ void ListViewControlContext::UpdateSearch(int startPoz)
             if (Filter.SearchText.Len() > 0)
                 Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
             // research and re-highlight
-            SearchItem(startPoz);
+            this->Filter.LastFoundItem = SearchItem(startPoz);
         }
     }
     this->Filter.FilterModeEnabled = Filter.SearchText.Len() > 0;
@@ -1373,6 +1378,7 @@ ListView::ListView(std::string_view layout, ListViewFlags flags)
     Members->SortParams.CompareCallbakContext  = nullptr;
     Members->Columns.ResizeModeEnabled         = false;
     Members->Filter.FilterModeEnabled          = false;
+    Members->Filter.LastFoundItem              = -1;
     Members->Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
     Members->clipboardSeparator                = '\t';
     Members->Columns.TotalWidth                = 0;

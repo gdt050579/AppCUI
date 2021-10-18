@@ -452,6 +452,7 @@ class ListViewControlContext : public ControlContext
     struct
     {
         Utils::UnicodeStringBuilder SearchText;
+        int LastFoundItem;
         bool FilterModeEnabled;
     } Filter;
 
