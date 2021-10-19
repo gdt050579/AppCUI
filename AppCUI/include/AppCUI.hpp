@@ -2609,6 +2609,10 @@ namespace Controls
         friend Control;
     };
 
+    class EXPORT SingleApp : public Desktop
+    {
+    };
+
     enum class TreeFlags : unsigned int
     {
         None                            = 0x000000,
@@ -3447,6 +3451,7 @@ namespace Application
     EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
+    EXPORT bool RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleApp> singleApp);
     EXPORT AppCUI::Controls::ItemHandle AddWindow(
           std::unique_ptr<AppCUI::Controls::Window> wnd,
           AppCUI::Controls::ItemHandle referal = AppCUI::Controls::InvalidItemHandle);

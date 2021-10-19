@@ -41,6 +41,35 @@ bool AppCUI::Application::Run()
     app = nullptr;
     return true;
 }
+bool AppCUI::Application::RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleApp> singleApp)
+{
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    CHECK((app->InitFlags & InitializationFlags::SingleWindowApp) != InitializationFlags::None,
+          false,
+          "Flag `InitializationFlags::SingleWindowApp` was not set when initializing AppCUI !");
+    CHECK(singleApp, false, "Expecting a valid (non-null) single App");
+    auto Members    = reinterpret_cast<ControlContext*>(app->AppDesktop->Context);
+    auto top        = Members->Margins.Top;
+    auto bottom     = Members->Margins.Bottom;
+    app->AppDesktop = singleApp.release();
+        
+    CHECK(app->AppDesktop->Resize(app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight()),
+          false,
+          "");
+    ((ControlContext*) (app->AppDesktop->Context))->Margins.Top    = top;
+    ((ControlContext*) (app->AppDesktop->Context))->Margins.Bottom = bottom;
+    
+    // all good - start the loop
+    app->ExecuteEventLoop();
+    LOG_INFO("Starting to unitiale AppCUI ...");
+    app->Uninit();
+    Log::Unit();
+    LOG_INFO("Uninit succesiful");
+    delete app;
+    app = nullptr;
+    return true;
+}
 bool AppCUI::Application::GetApplicationSize(AppCUI::Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
