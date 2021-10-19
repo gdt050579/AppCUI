@@ -3178,6 +3178,7 @@ namespace Application
         LoadSettingsFile    = 0x0020,
         AutoHotKeyForWindow = 0x0040,
         EnableFPSMode       = 0x0080,
+        SingleWindowApp     = 0x0100,
     };
 
     enum class CharacterSize : unsigned int

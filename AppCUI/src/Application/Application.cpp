@@ -68,6 +68,9 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
+    CHECK((app->InitFlags & InitializationFlags::SingleWindowApp) == InitializationFlags::None,
+          InvalidItemHandle,
+          "This is a single app window (no desktop windows can be added !");
     CHECK(wnd, InvalidItemHandle, "Null pointer for Window object");
     auto resultHandle     = ItemHandle{ app->LastWindowID };
     const auto winMembers = reinterpret_cast<WindowControlContext*>(wnd->Context);
