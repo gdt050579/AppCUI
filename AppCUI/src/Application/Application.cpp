@@ -33,10 +33,10 @@ bool AppCUI::Application::Run()
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
     app->ExecuteEventLoop();
-    LOG_INFO("Starting to unitiale AppCUI ...");
+    LOG_INFO("Starting to un-init AppCUI ...");
     app->Uninit();
     Log::Unit();
-    LOG_INFO("Uninit succesiful");
+    LOG_INFO("Uninit successfully");
     delete app;
     app = nullptr;
     return true;
@@ -62,10 +62,10 @@ bool AppCUI::Application::RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleA
     
     // all good - start the loop
     app->ExecuteEventLoop();
-    LOG_INFO("Starting to unitiale AppCUI ...");
+    LOG_INFO("Starting to un-init AppCUI ...");
     app->Uninit();
     Log::Unit();
-    LOG_INFO("Uninit succesiful");
+    LOG_INFO("Uninit successfully");
     delete app;
     app = nullptr;
     return true;
