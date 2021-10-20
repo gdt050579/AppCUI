@@ -1042,9 +1042,15 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
 {
     AppCUI::Internal::SystemEvent evnt;
     RepaintStatus            = REPAINT_STATUS_ALL;
-    this->MouseLockedControl = nullptr;
-    this->MouseOverControl   = nullptr;
+    this->MouseLockedControl = nullptr;    
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    // hide current hovered control when new dialog is opened.
+    if (this->MouseOverControl)
+    {
+        ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
+        this->MouseOverControl                                       = nullptr;
+    }    
+    
     PackControl(true);
     if (ctrl != nullptr)
     {
