@@ -325,7 +325,7 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
 }
 bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& initData)
 {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    CONSOLE_SCREEN_BUFFER_INFOEX csbi;
 
     this->hstdOut = GetStdHandle(STD_OUTPUT_HANDLE);
     this->hstdIn  = GetStdHandle(STD_INPUT_HANDLE);
@@ -333,9 +333,30 @@ bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& init
     CHECK(SetConsoleMode(this->hstdIn, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT),
           false,
           "Fail to set up input reader mode !");
-    CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
+    csbi.cbSize = sizeof(csbi);
+    CHECK(GetConsoleScreenBufferInfoEx(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
     CHECK(csbi.dwSize.X > 0, false, "Received invalid screen width from the system --> exiting");
     CHECK(csbi.dwSize.Y > 0, false, "Received invalid screen height from the system --> exiting");
+
+    // set the colors
+    csbi.ColorTable[0]  = 0x000000;
+    csbi.ColorTable[1]  = 0x800000;
+    csbi.ColorTable[2]  = 0x008000;
+    csbi.ColorTable[3]  = 0x808000;
+    csbi.ColorTable[4]  = 0x000080;
+    csbi.ColorTable[5]  = 0x800080;
+    csbi.ColorTable[6]  = 0x008080;
+    csbi.ColorTable[7]  = 0xC0C0C0;
+    csbi.ColorTable[8]  = 0x808080;
+    csbi.ColorTable[9]  = 0xFF0000;
+    csbi.ColorTable[10] = 0x00FF00;
+    csbi.ColorTable[11] = 0xFFFF00;
+    csbi.ColorTable[12] = 0x0000FF;
+    csbi.ColorTable[13] = 0xFF00FF;
+    csbi.ColorTable[14] = 0x00FFFF;
+    csbi.ColorTable[15] = 0xFFFFFF;
+
+    SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
 
     // copy original screen buffer information
     CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
