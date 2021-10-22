@@ -1306,9 +1306,9 @@ bool AppCUI::Controls::Control::RemoveControl(Control* control)
     unsigned int index;
     if (GetChildIndex(control, index) == false)
         return false;
-    return RemoveControl(index);
+    return RemoveControlByID(index);
 }
-bool AppCUI::Controls::Control::RemoveControl(unsigned int index)
+bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
           false,
