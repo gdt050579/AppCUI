@@ -1810,6 +1810,8 @@ namespace Controls
       public:
         void* Context;
 
+      private:
+        bool RemoveControlByID(unsigned int index);
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
@@ -1834,7 +1836,7 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        bool RemoveControl(unsigned int index);
+        
 
         bool IsInitialized();
 
