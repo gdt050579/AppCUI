@@ -11,7 +11,7 @@ endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(APPCUI_ENABLE_TESTS 1)
-    set(APPCUI_ENABLE_EXMPLES 1)
+    set(APPCUI_ENABLE_EXAMPLES 1)
     set(APPCUI_ENABLE_OUTPUT_LOCATION 1)
 endif()
 
@@ -77,7 +77,7 @@ if(APPCUI_ENABLE_TESTS)
     add_subdirectory(Tests/FileTest)
 endif()
 
-if(APPCUI_ENABLE_EXMPLES)
+if(APPCUI_ENABLE_EXAMPLES)
     #examples
     add_subdirectory(Examples/SimpleWindow)
     add_subdirectory(Examples/MultipleWindows)
