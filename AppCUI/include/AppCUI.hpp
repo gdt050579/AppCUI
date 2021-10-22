@@ -364,6 +364,14 @@ namespace Utils
         {
             return ptr != obj.ptr;
         }
+        constexpr inline void Reset()
+        {
+            ptr = nullptr;
+        }
+        constexpr inline bool Emptry() const
+        {
+            return ptr != nullptr;
+        }
     };
 } // namespace Utils
 namespace Application
@@ -1836,7 +1844,7 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        
+        bool RemoveControl(Reference<Control> &control);
 
         bool IsInitialized();
 

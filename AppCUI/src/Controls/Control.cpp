@@ -1308,6 +1308,31 @@ bool AppCUI::Controls::Control::RemoveControl(Control* control)
         return false;
     return RemoveControlByID(index);
 }
+bool AppCUI::Controls::Control::RemoveControl(Reference<Control> &control)
+{
+    Control** lst = CTRLC->Controls;
+    Control** end = lst + (CTRLC->ControlsCount);
+    if (lst == nullptr)
+        return false;
+    unsigned int index   = 0xFFFFFFFF;
+    unsigned int c_index = 0;
+    while (lst < end)
+    {
+        if (control == (*lst))
+        {
+            index = c_index;
+            break;
+        }
+        c_index++;
+        lst++;
+    }
+    if (index == 0xFFFFFFFF)
+        return false;
+    bool result = RemoveControlByID(index);
+    if (result)
+        control.Reset();
+    return result;
+}
 bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
