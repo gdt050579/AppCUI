@@ -336,6 +336,11 @@ namespace Utils
         Reference(T* obj) : ptr(obj)
         {
         }
+        template <typename C>
+        Reference(Reference<C>& obj)
+        {
+            ptr = (T*) obj->ptr;
+        }
         constexpr inline operator bool()
         {
             return ptr != nullptr;
@@ -1820,6 +1825,7 @@ namespace Controls
 
       private:
         bool RemoveControlByID(unsigned int index);
+        bool RemoveControlByRef(Reference<Control> control);
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
@@ -1844,7 +1850,17 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        bool RemoveControl(Reference<Control> &control);
+        
+        template <typename T>
+        bool RemoveControl(Reference<T>& control)
+        {
+            if (RemoveControlByRef(control))
+            {
+                control.Reset();
+                return true;
+            }
+            return false;
+        }
 
         bool IsInitialized();
 
