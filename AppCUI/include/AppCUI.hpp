@@ -336,11 +336,7 @@ namespace Utils
         Reference(T* obj) : ptr(obj)
         {
         }
-        template <typename C>
-        Reference(Reference<C>& obj)
-        {
-            ptr = (T*) obj->ptr;
-        }
+
         constexpr inline operator bool()
         {
             return ptr != nullptr;
@@ -376,6 +372,11 @@ namespace Utils
         constexpr inline bool Emptry() const
         {
             return ptr != nullptr;
+        }
+        template <typename C>
+        Reference<C> To()
+        {
+            return Reference<C>((T*) this->ptr);
         }
     };
 } // namespace Utils
@@ -1854,7 +1855,7 @@ namespace Controls
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
-            if (RemoveControlByRef(control))
+            if (RemoveControlByRef(control.To<Control>()))
             {
                 control.Reset();
                 return true;
