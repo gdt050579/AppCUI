@@ -1855,7 +1855,7 @@ namespace Controls
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
-            if (RemoveControlByRef(control.To<Control>()))
+            if (RemoveControlByRef(control.To<AppCUI::Controls::Control>()))
             {
                 control.Reset();
                 return true;
