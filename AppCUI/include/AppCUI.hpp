@@ -892,12 +892,12 @@ namespace Utils
         {
         }
     };
-    template <unsigned int Size>
+    template <unsigned short Size>
     class FixSizeString
     {
         static_assert(Size > 0);
         char data[Size + 1];
-        unsigned int size;
+        unsigned short size;
 
       public:
         FixSizeString() : size(0)
@@ -914,11 +914,11 @@ namespace Utils
         }
         void Set(std::string_view txt)
         {
-            size = (unsigned int) std::min((size_t) Size, txt.length());
+            size = (unsigned short) std::min((size_t) Size, txt.length());
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
-        constexpr inline unsigned int Len() const
+        constexpr inline unsigned short Len() const
         {
             return size;
         }
@@ -926,7 +926,7 @@ namespace Utils
         {
             return data;
         }
-        constexpr inline unsigned int MaxSize() const
+        constexpr inline unsigned short MaxSize() const
         {
             return Size;
         }
