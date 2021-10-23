@@ -2334,7 +2334,7 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
-        Graphics::Canvas* GetCanvas();
+        Reference<Graphics::Canvas> GetCanvas();
 
         friend Factory::CanvasViewer;
         friend Control;

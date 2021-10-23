@@ -205,8 +205,8 @@ void AppCUI::Controls::CanvasViewer::OnMouseReleased(int x, int y, AppCUI::Input
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     Members->dragModeEnabled = false;
 }
-Canvas* CanvasViewer::GetCanvas()
+Reference<Canvas> CanvasViewer::GetCanvas()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, nullptr);
-    return &(Members->canvas);
+    return Reference<Canvas>(&(Members->canvas));
 }
