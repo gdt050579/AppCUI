@@ -1272,6 +1272,8 @@ namespace Graphics
         CircleFilled,
         CircleEmpty,
         CheckMark,
+        MenuSign,
+        FourPoints,
 
         // always last
         Count
