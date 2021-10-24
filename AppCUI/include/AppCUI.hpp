@@ -2104,7 +2104,7 @@ namespace Controls
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
-        Menu* AddMenu(const AppCUI::Utils::ConstString& name);
+        Reference<Menu> AddMenu(const AppCUI::Utils::ConstString& name);
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
