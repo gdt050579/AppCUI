@@ -16,10 +16,8 @@ SplashState::SplashState(const std::shared_ptr<GameData>& data, const AppCUI::Co
 
 SplashState::~SplashState()
 {
-    app->RemoveControl(*reinterpret_cast<AppCUI::Utils::Reference<AppCUI::Controls::Control>*>(&label));
-    app->RemoveControl(*reinterpret_cast<AppCUI::Utils::Reference<AppCUI::Controls::Control>*>(&labelCounter));
-    // label->SetVisible(false);
-    // labelCounter->SetVisible(false);
+    app->RemoveControl(label);
+    app->RemoveControl(labelCounter);
 }
 
 void SplashState::Init()
