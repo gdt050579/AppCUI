@@ -19,7 +19,7 @@ const char* AppCuiLogo[15] = {
 class LogoWin : public Window
 {
 
-    void CreateImage(Canvas* c)
+    void CreateImage(Reference<Canvas> c)
     {
         if (!c)
             return;

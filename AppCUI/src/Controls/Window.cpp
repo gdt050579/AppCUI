@@ -1146,14 +1146,14 @@ bool Window::IsWindowInResizeMode()
     return (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE);
 }
 
-Menu* Window::AddMenu(const AppCUI::Utils::ConstString& name)
+Reference<Menu> Window::AddMenu(const AppCUI::Utils::ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);
     CHECK(Members->menu, nullptr, "Application was not initialized with Menu option set up !");
     ItemHandle itm                 = Members->menu->AddMenu(name);
     AppCUI::Controls::Menu* result = Members->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
-    return result;
+    return Reference<Menu>(result);
 }
 WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
 {

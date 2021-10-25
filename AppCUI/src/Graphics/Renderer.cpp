@@ -10,7 +10,7 @@ int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::Speci
     0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
     32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
     0x25B2, 0x25BC, 0x25C4, 0x25BA,                                                 // Trangles
-    0x25CF, 0x25CB, 0x221A,                                                         // symbols
+    0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E                                          // symbols
 };
 int* SpecialCharacters = nullptr;
 
@@ -1277,23 +1277,20 @@ bool Renderer::WriteSingleLineCharacterBuffer(
     auto end = buf + sz;
     if (sz == 0)
         return false; // empty text, nothing to draw
-    CHECK(sz < 0x00FFFFFF,
-          false,
-          "String is too large (%z characters) - max allowed size is 0x00FFFFFF !",
-          sz);
+    CHECK(sz < 0x00FFFFFF, false, "String is too large (%z characters) - max allowed size is 0x00FFFFFF !", sz);
 
     // translate coordonates
     x += this->TranslateX;
     y += this->TranslateY;
-    
+
     // vertical clip
     if ((y < Clip.Top) || (y > Clip.Bottom))
         return false; // outside clip rect -> exit
-    
+
     // horizontal clip
     if (x > Clip.Right)
         return false; // outside clip rect
-    if (x<Clip.Left)
+    if (x < Clip.Left)
     {
         buf += Clip.Left - x;
         x = Clip.Left;
@@ -1301,9 +1298,9 @@ bool Renderer::WriteSingleLineCharacterBuffer(
             return false; // ouside clip rect
         sz = (unsigned int) (end - buf);
     }
-    if ((x + (int)sz)>Clip.Right)
+    if ((x + (int) sz) > Clip.Right)
     {
-        sz = (Clip.Right + 1) - x;
+        sz  = (Clip.Right + 1) - x;
         end = buf + sz;
         if (sz == 0)
             return false; // nothing to draw
@@ -1317,14 +1314,14 @@ bool Renderer::WriteSingleLineCharacterBuffer(
     else
     {
         auto p = this->OffsetRows[y] + x;
-        while (buf<end)
+        while (buf < end)
         {
             SET_CHARACTER_EX(p, buf->Code, buf->Color);
             buf++;
             p++;
         }
     }
-    
+
     return true;
 }
 
@@ -1391,8 +1388,8 @@ inline unsigned int Channel_To_Index16(unsigned int rgbChannelValue)
 }
 Color RGB_to_16Color(unsigned int colorRGB)
 {
-    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);        // blue channel
-    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF); // green channel
+    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);         // blue channel
+    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF);  // green channel
     unsigned int r = Channel_To_Index16((colorRGB >> 16) & 0xFF); // red channel
     return _color_map_16_[r * 9 + g * 3 + b];
 }
@@ -1408,29 +1405,28 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
 {
     // linear search - not efficient but good enough for the first implementation
     // in the future should be changed to a lookup table
-    unsigned int R        = (colorRGB >> 16) & 0xFF;
-    unsigned int G        = (colorRGB >> 8) & 0xFF;
-    unsigned int B        = (colorRGB) &0xFF;
+    unsigned int R = (colorRGB >> 16) & 0xFF;
+    unsigned int G = (colorRGB >> 8) & 0xFF;
+    unsigned int B = (colorRGB) &0xFF;
 
     unsigned int composeR = 0;
     unsigned int composeG = 0;
     unsigned int composeB = 0;
-   
-    unsigned int BestDiff = 0xFFFFFFFF;
 
+    unsigned int BestDiff = 0xFFFFFFFF;
 
     for (unsigned int c1 = 0; c1 < 16; c1++)
     {
         for (unsigned int c2 = 0; c2 < 16; c2++)
         {
-            auto& cc1       = _console_colors_[c1];
-            auto& cc2       = _console_colors_[c2];
+            auto& cc1 = _console_colors_[c1];
+            auto& cc2 = _console_colors_[c2];
 
-            for (unsigned int proc = 1;proc<=4;proc++) // 25%,50%,75%.100%
+            for (unsigned int proc = 1; proc <= 4; proc++) // 25%,50%,75%.100%
             {
-                composeR = ((((unsigned int) cc1.Red) * proc) + (((unsigned int) cc2.Red) * (4 - proc))) / 4;
-                composeG = ((((unsigned int) cc1.Green) * proc) + (((unsigned int) cc2.Green) * (4 - proc))) / 4;
-                composeB = ((((unsigned int) cc1.Blue) * proc) + (((unsigned int) cc2.Blue) * (4 - proc))) / 4;
+                composeR        = ((((unsigned int) cc1.Red) * proc) + (((unsigned int) cc2.Red) * (4 - proc))) / 4;
+                composeG        = ((((unsigned int) cc1.Green) * proc) + (((unsigned int) cc2.Green) * (4 - proc))) / 4;
+                composeB        = ((((unsigned int) cc1.Blue) * proc) + (((unsigned int) cc2.Blue) * (4 - proc))) / 4;
                 unsigned int df = 0;
                 df += Channel_Diff(R, composeR);
                 df += Channel_Diff(G, composeG);
@@ -1445,7 +1441,7 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
                         ch = SpecialChars::Block50;
                     else if (proc == 3)
                         ch = SpecialChars::Block75;
-                    else 
+                    else
                         ch = SpecialChars::Block100;
                     if (BestDiff == 0)
                         return; // found a perfect match
@@ -1480,22 +1476,22 @@ void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
 }
 void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
-    const auto w     = img.GetWidth();
-    const auto h     = img.GetHeight();
-    int px           = 0;
-    ColorPair cp     = NoColorPair;
-    SpecialChars sc  = SpecialChars::Block100;
+    const auto w    = img.GetWidth();
+    const auto h    = img.GetHeight();
+    int px          = 0;
+    ColorPair cp    = NoColorPair;
+    SpecialChars sc = SpecialChars::Block100;
     for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
     {
         px = x;
-        for (unsigned int img_x = 0; img_x < w; img_x += rap, px+=2)
-        {            
+        for (unsigned int img_x = 0; img_x < w; img_x += rap, px += 2)
+        {
             if (rap == 1)
                 PixelTo64Color(img.GetPixel(img_x, img_y), cp, sc);
             else
                 PixelTo64Color(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
 
-            //r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            // r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
             r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
         }
     }
@@ -1530,7 +1526,7 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
 }
 bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod method, ImageScaleMethod scale)
 {
-    auto rap       = static_cast<unsigned int>(scale);
+    auto rap = static_cast<unsigned int>(scale);
     // sanity check
     CHECK((rap >= 1) && (rap <= 20), false, "Invalid scale enum value");
 

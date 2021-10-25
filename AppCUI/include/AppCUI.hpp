@@ -336,6 +336,7 @@ namespace Utils
         Reference(T* obj) : ptr(obj)
         {
         }
+
         constexpr inline operator bool()
         {
             return ptr != nullptr;
@@ -371,6 +372,11 @@ namespace Utils
         constexpr inline bool Emptry() const
         {
             return ptr != nullptr;
+        }
+        template <typename C>
+        Reference<C> To()
+        {
+            return Reference<C>((T*) this->ptr);
         }
     };
 } // namespace Utils
@@ -886,6 +892,50 @@ namespace Utils
         {
         }
     };
+    template <unsigned short Size>
+    class FixSizeString
+    {
+        static_assert(Size > 0);
+        char data[Size + 1];
+        unsigned short size;
+
+      public:
+        FixSizeString() : size(0)
+        {
+            data[0] = 0;
+        }
+        FixSizeString(std::string_view txt)
+        {
+            Set(txt);
+        }
+        constexpr inline operator std::string_view() const
+        {
+            return std::string_view{ data, size };
+        }
+        void Set(std::string_view txt)
+        {
+            size = (unsigned short) std::min((size_t) Size, txt.length());
+            memcpy(data, txt.data(), size);
+            data[size] = 0;
+        }
+        constexpr inline unsigned short Len() const
+        {
+            return size;
+        }
+        constexpr inline const char* GetText() const
+        {
+            return data;
+        }
+        constexpr inline unsigned short MaxSize() const
+        {
+            return Size;
+        }
+        inline FixSizeString& operator=(std::string_view txt)
+        {
+            Set(txt);
+            return *this;
+        }
+    };
 
     class EXPORT KeyUtils
     {
@@ -1222,6 +1272,8 @@ namespace Graphics
         CircleFilled,
         CircleEmpty,
         CheckMark,
+        MenuSign,
+        FourPoints,
 
         // always last
         Count
@@ -1820,6 +1872,7 @@ namespace Controls
 
       private:
         bool RemoveControlByID(unsigned int index);
+        bool RemoveControlByRef(Reference<Control> control);
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
@@ -1844,7 +1897,17 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        bool RemoveControl(Reference<Control> &control);
+        
+        template <typename T>
+        bool RemoveControl(Reference<T>& control)
+        {
+            if (RemoveControlByRef(control.template To<AppCUI::Controls::Control>()))
+            {
+                control.Reset();
+                return true;
+            }
+            return false;
+        }
 
         bool IsInitialized();
 
@@ -2043,7 +2106,7 @@ namespace Controls
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
-        Menu* AddMenu(const AppCUI::Utils::ConstString& name);
+        Reference<Menu> AddMenu(const AppCUI::Utils::ConstString& name);
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
@@ -2317,7 +2380,7 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
-        Graphics::Canvas* GetCanvas();
+        Reference<Graphics::Canvas> GetCanvas();
 
         friend Factory::CanvasViewer;
         friend Control;
