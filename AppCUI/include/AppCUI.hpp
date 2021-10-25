@@ -374,9 +374,19 @@ namespace Utils
             return ptr != nullptr;
         }
         template <typename C>
-        Reference<C> To()
+        constexpr inline Reference<C> To()
         {
-            return Reference<C>((T*) this->ptr);
+            return Reference<C>(this->ptr);
+        }
+        template <typename C>
+        constexpr inline Reference<C> UpCast()
+        {
+            return Reference<C>(this->ptr);
+        }
+        template <typename C>
+        constexpr inline Reference<C> DownCast()
+        {
+            return Reference<C>((C*) (this->ptr));
         }
     };
 } // namespace Utils
