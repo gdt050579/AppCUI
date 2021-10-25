@@ -10,8 +10,8 @@ MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data, const AppCUI
 
 MainMenuState::~MainMenuState()
 {
-    // app->RemoveControl(startButton);
-    startButton->SetVisible(false);
+    app->RemoveControl(*reinterpret_cast<AppCUI::Utils::Reference<AppCUI::Controls::Control>*>(&startButton));
+    // startButton->SetVisible(false);
 }
 
 void MainMenuState::Init()

@@ -9,16 +9,17 @@ SplashState::SplashState(const std::shared_ptr<GameData>& data, const AppCUI::Co
 {
     label = AppCUI::Controls::Factory::Label::Create(this->app, "Tetris", "x:50%,y:50%, w:20%");
 
-    const auto text = GetTextFromNumber(stateDuration);
-    labelCounter    = AppCUI::Controls::Factory::Label::Create(this->app, text.c_str(), "x:51%,y:52%, w:20%");
+    AppCUI::Utils::LocalString<128> text;
+    text.Format("%u", stateDuration);
+    labelCounter = AppCUI::Controls::Factory::Label::Create(this->app, text.GetText(), "x:51%,y:52%, w:20%");
 }
 
 SplashState::~SplashState()
 {
-    // app->RemoveControl(label);
-    // app->RemoveControl(labelCounter);
-    label->SetVisible(false);
-    labelCounter->SetVisible(false);
+    app->RemoveControl(*reinterpret_cast<AppCUI::Utils::Reference<AppCUI::Controls::Control>*>(&label));
+    app->RemoveControl(*reinterpret_cast<AppCUI::Utils::Reference<AppCUI::Controls::Control>*>(&labelCounter));
+    // label->SetVisible(false);
+    // labelCounter->SetVisible(false);
 }
 
 void SplashState::Init()
@@ -32,9 +33,9 @@ bool SplashState::HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls:
 
 bool SplashState::Update()
 {
-    const auto text = GetTextFromNumber(
-          stateDuration - static_cast<unsigned long long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC));
-    labelCounter->SetText(text.c_str());
+    AppCUI::Utils::LocalString<128> text;
+    text.Format("%u", stateDuration - static_cast<unsigned long long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC));
+    labelCounter->SetText(text.GetText());
 
     if ((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC > stateDuration)
     {
@@ -56,17 +57,4 @@ void SplashState::Pause()
 
 void SplashState::Resume()
 {
-}
-
-const std::string SplashState::GetTextFromNumber(const unsigned long long value)
-{
-    constexpr auto SIZE = 20;
-    char cValue[SIZE]   = { 0 };
-
-    if (auto [ptr, ec] = std::to_chars(cValue, cValue + SIZE, value); ec == std::errc())
-    {
-        return cValue;
-    }
-
-    return "0";
 }

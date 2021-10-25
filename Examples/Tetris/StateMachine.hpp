@@ -23,8 +23,8 @@ class StateMachine
           const std::shared_ptr<struct GameData>& data, const AppCUI::Controls::SingleApp* app, bool isReplacing = true)
     {
         newState.reset(new T(data, app));
-        isAdding    = true;
-        isReplacing = isReplacing;
+        this->isAdding    = true;
+        this->isReplacing = isReplacing;
     }
     void PopState();
 
