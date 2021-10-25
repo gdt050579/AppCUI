@@ -9,7 +9,7 @@
 class SplashState : public State
 {
   public:
-    explicit SplashState(const std::shared_ptr<GameData>& data, const AppCUI::Controls::SingleApp* app);
+    explicit SplashState(const std::shared_ptr<GameData>& data);
 
     SplashState(const SplashState& other)     = default;
     SplashState(SplashState&& other) noexcept = default;
@@ -34,10 +34,7 @@ class SplashState : public State
 
     const int stateDuration = 3; // seconds
 
-    AppCUI::Controls::SingleApp* app = nullptr; // to be passed further
-
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> label = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page       = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Label> label        = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Label> labelCounter = nullptr;
-
-    static const std::string GetTextFromNumber(const unsigned long long value);
 };

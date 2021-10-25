@@ -5,7 +5,8 @@
 
 struct GameData
 {
-    std::shared_ptr<StateMachine> machine = std::make_shared<StateMachine>(StateMachine());
+    std::shared_ptr<StateMachine> machine               = std::make_shared<StateMachine>(StateMachine());
+    AppCUI::Utils::Reference<AppCUI::Controls::Tab> tab = nullptr;
 
     GameData() = default;
 

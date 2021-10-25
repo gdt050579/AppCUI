@@ -4,24 +4,24 @@
 #include <utility>
 #include <chrono>
 
-SplashState::SplashState(const std::shared_ptr<GameData>& data, const AppCUI::Controls::SingleApp* app)
-    : data(data), initialTime(clock()), app(const_cast<AppCUI::Controls::SingleApp*>(app))
+SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
-    label = AppCUI::Controls::Factory::Label::Create(this->app, "Tetris", "x:50%,y:50%, w:20%");
-
     AppCUI::Utils::LocalString<128> text;
     text.Format("%u", stateDuration);
-    labelCounter = AppCUI::Controls::Factory::Label::Create(this->app, text.GetText(), "x:51%,y:52%, w:20%");
+
+    page         = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
+    label        = AppCUI::Controls::Factory::Label::Create(page, "Tetris", "x:50%,y:50%, w:20%");
+    labelCounter = AppCUI::Controls::Factory::Label::Create(page, text.GetText(), "x:51%,y:52%, w:20%");
 }
 
 SplashState::~SplashState()
 {
-    app->RemoveControl(label);
-    app->RemoveControl(labelCounter);
+    data->tab->RemoveControl(page);
 }
 
 void SplashState::Init()
 {
+    data->tab->SetCurrentTabPage(page);
 }
 
 bool SplashState::HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID)
@@ -37,7 +37,7 @@ bool SplashState::Update()
 
     if ((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC > stateDuration)
     {
-        data->machine->PushState<MainMenuState>(data, app, true);
+        data->machine->PushState<MainMenuState>(data, true);
     }
 
     return true;
@@ -55,4 +55,5 @@ void SplashState::Pause()
 
 void SplashState::Resume()
 {
+    data->tab->SetCurrentTabPage(page);
 }

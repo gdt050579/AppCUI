@@ -6,7 +6,7 @@
 class MainMenuState : public State
 {
   public:
-    explicit MainMenuState(const std::shared_ptr<GameData>& data, const AppCUI::Controls::SingleApp* app);
+    explicit MainMenuState(const std::shared_ptr<GameData>& data);
 
     MainMenuState(const MainMenuState& other)     = default;
     MainMenuState(MainMenuState&& other) noexcept = default;
@@ -25,9 +25,8 @@ class MainMenuState : public State
     void Resume() override;
 
   private:
-    const std::shared_ptr<GameData>& data; 
-    
-    AppCUI::Controls::SingleApp* app = nullptr; // to be passed further
+    const std::shared_ptr<GameData>& data;
 
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page       = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> startButton = nullptr;
 };

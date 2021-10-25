@@ -2,19 +2,20 @@
 
 constexpr unsigned int StartButtonID = 0x0001;
 
-MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data, const AppCUI::Controls::SingleApp* app)
-    : data(data), app(const_cast<AppCUI::Controls::SingleApp*>(app))
+MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 {
-    startButton = AppCUI::Controls::Factory::Button::Create(this->app, "Start", "d:c,w:20", StartButtonID);
+    page = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
+    startButton = AppCUI::Controls::Factory::Button::Create(page, "Start", "d:c,w:20", StartButtonID);
 }
 
 MainMenuState::~MainMenuState()
 {
-    app->RemoveControl(startButton);
+    data->tab->RemoveControl(page);
 }
 
 void MainMenuState::Init()
 {
+    data->tab->SetCurrentTabPage(page);
 }
 
 bool MainMenuState::HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID)
@@ -47,4 +48,5 @@ void MainMenuState::Pause()
 
 void MainMenuState::Resume()
 {
+    data->tab->SetCurrentTabPage(page);
 }

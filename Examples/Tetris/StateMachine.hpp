@@ -19,10 +19,9 @@ class StateMachine
     ~StateMachine() = default;
 
     template <typename T>
-    void PushState(
-          const std::shared_ptr<struct GameData>& data, const AppCUI::Controls::SingleApp* app, bool isReplacing = true)
+    void PushState(const std::shared_ptr<struct GameData>& data, bool isReplacing = true)
     {
-        newState.reset(new T(data, app));
+        newState.reset(new T(data));
         this->isAdding    = true;
         this->isReplacing = isReplacing;
     }
