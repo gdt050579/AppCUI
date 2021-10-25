@@ -320,7 +320,7 @@ bool Tab::SetCurrentTabPage(unsigned int index)
 Reference<Control> Tab::GetCurrentTab()
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, nullptr);
-    if (Members->CurrentControlIndex < Members->ControlsCount)
+    if (Members->CurrentControlIndex >= Members->ControlsCount)
         return nullptr;
     return Members->Controls[Members->CurrentControlIndex];
 }
