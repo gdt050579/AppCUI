@@ -2343,7 +2343,7 @@ namespace Controls
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnAfterAddControl(Control* ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
-        Control* GetCurrentTab();
+        Reference<Control> GetCurrentTab();
 
         friend Factory::Tab;
         friend Control;
