@@ -97,13 +97,13 @@ void Splitter_ResizeComponents(Splitter* control)
                 {
                     o->MoveTo(Members->Layout.Width - Members->SecondPanelSize, 0);
                     o->Resize(Members->SecondPanelSize, Members->Layout.Height);
-                    o->SetVisible(Members->SecondPanelSize > 1);
+                    o->SetVisible(Members->SecondPanelSize >= 1);
                 }
                 else
                 {
                     o->MoveTo(0, Members->Layout.Height - Members->SecondPanelSize);
                     o->Resize(Members->Layout.Width, Members->SecondPanelSize);
-                    o->SetVisible(Members->SecondPanelSize > 1);
+                    o->SetVisible(Members->SecondPanelSize >= 1);
                 }
                 continue;
             }
