@@ -1451,7 +1451,7 @@ Control* AppCUI::Controls::Control::GetChild(unsigned int index)
           CTRLC->ControlsCount - 1);
     return CTRLC->Controls[index];
 }
-unsigned int AppCUI::Controls::Control::GetChildernCount()
+unsigned int AppCUI::Controls::Control::GetChildrenCount()
 {
     return CTRLC->ControlsCount;
 }
@@ -1637,6 +1637,12 @@ void AppCUI::Controls::Control::SetControlID(int newID)
     else
         CTRLC->ControlID = 0;
 }
+
+int AppCUI::Controls::Control::GetControlID() const
+{
+    return CTRLC->ControlID;
+}
+
 bool AppCUI::Controls::Control::SetFocus()
 {
     Control* obj = this;

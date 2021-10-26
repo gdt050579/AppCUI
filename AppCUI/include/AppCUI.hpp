@@ -1956,7 +1956,7 @@ namespace Controls
         Control* GetParent();
         Control** GetChildrenList();
         Control* GetChild(unsigned int index);
-        unsigned int GetChildernCount();
+        unsigned int GetChildrenCount();
         bool GetChildIndex(Control* control, unsigned int& index);
 
         // Events
@@ -1966,6 +1966,7 @@ namespace Controls
         // focus & expact/pack view
         bool SetFocus();
         void SetControlID(int newID);
+        int GetControlID() const;
         void ExpandView();
         void PackView();
 

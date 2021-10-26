@@ -116,7 +116,7 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
         };
         // iterate from all top level windows and see if a hot-key is being associated
         auto winList          = app->AppDesktop->GetChildrenList();
-        const auto endWinList = winList + app->AppDesktop->GetChildernCount();
+        const auto endWinList = winList + app->AppDesktop->GetChildrenCount();
         if (winList)
         {
             for (; winList < endWinList; winList++)
@@ -1302,7 +1302,7 @@ bool AppCUI::Internal::Application::Uninit()
 void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
 {
     auto winList      = this->AppDesktop->GetChildrenList();
-    auto winListCount = this->AppDesktop->GetChildernCount();
+    auto winListCount = this->AppDesktop->GetChildrenCount();
     auto y            = 0;
     auto x            = 0;
     int tempSz        = 0;

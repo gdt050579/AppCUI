@@ -31,4 +31,8 @@ class MainMenuState : public State
     AppCUI::Utils::Reference<AppCUI::Controls::Button> startButton     = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> highScoreButton = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> exitButton      = nullptr;
+
+  private:
+    // TODO: maybe attach a handler on each button instead
+    bool DoActionForControl(int controlID) const;
 };
