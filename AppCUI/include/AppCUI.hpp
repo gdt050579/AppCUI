@@ -1890,7 +1890,7 @@ namespace Controls
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
 
-        Control* AddChildControl(std::unique_ptr<Control> control);
+        Reference<Control> AddChildControl(std::unique_ptr<Control> control);
 
         // protected constructor
         Control(void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey);
@@ -1899,7 +1899,7 @@ namespace Controls
         template <typename T>
         Reference<T> AddControl(std::unique_ptr<T> control)
         {
-            return Reference(static_cast<T*>(this->AddChildControl(std::move(control))));
+            return this->AddChildControl(std::move(control)).DownCast<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
@@ -1953,11 +1953,11 @@ namespace Controls
         bool IsMouseOver() const;
 
         // childern and parent
-        Control* GetParent();
+        Reference<Control> GetParent();
         Control** GetChildrenList();
-        Control* GetChild(unsigned int index);
+        Reference<Control> GetChild(unsigned int index);
         unsigned int GetChildernCount();
-        bool GetChildIndex(Control* control, unsigned int& index);
+        bool GetChildIndex(Reference<Control> control, unsigned int& index);
 
         // Events
         void RaiseEvent(Event eventType);

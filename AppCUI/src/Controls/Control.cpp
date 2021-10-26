@@ -1260,7 +1260,7 @@ AppCUI::Controls::Control::Control(
     ctx->Inited = true;
 }
 
-Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
+Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
 {
     CHECK(ctrl, nullptr, "Invalid control (nullptr)");
     CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
@@ -1434,7 +1434,7 @@ bool AppCUI::Controls::Control::IsMouseOver() const
     return CTRLC->MouseIsOver;
 }
 
-Control* AppCUI::Controls::Control::GetParent()
+Reference<Control> AppCUI::Controls::Control::GetParent()
 {
     return CTRLC->Parent;
 }
@@ -1442,7 +1442,7 @@ Control** AppCUI::Controls::Control::GetChildrenList()
 {
     return CTRLC->Controls;
 }
-Control* AppCUI::Controls::Control::GetChild(unsigned int index)
+Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
           nullptr,
@@ -1456,7 +1456,7 @@ unsigned int AppCUI::Controls::Control::GetChildernCount()
     return CTRLC->ControlsCount;
 }
 
-bool AppCUI::Controls::Control::GetChildIndex(Control* control, unsigned int& index)
+bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
 {
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);

@@ -53,13 +53,13 @@ bool AppCUI::Application::RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleA
     auto top        = Members->Margins.Top;
     auto bottom     = Members->Margins.Bottom;
     app->AppDesktop = singleApp.release();
-        
+
     CHECK(app->AppDesktop->Resize(app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight()),
           false,
           "");
     ((ControlContext*) (app->AppDesktop->Context))->Margins.Top    = top;
     ((ControlContext*) (app->AppDesktop->Context))->Margins.Bottom = bottom;
-    
+
     // all good - start the loop
     app->ExecuteEventLoop();
     LOG_INFO("Starting to un-init AppCUI ...");
@@ -145,7 +145,7 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
     }
     auto ptrWin = wnd.get();
-    CHECK(app->AppDesktop->AddControl(std::move(wnd)), InvalidItemHandle, "Fail to add window to desktop !");
+    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)), InvalidItemHandle, "Fail to add window to desktop !");
     ptrWin->SetFocus();
     return resultHandle;
 }
@@ -330,7 +330,7 @@ void DestroyControl(AppCUI::Controls::Control* ctrl)
     auto Members = reinterpret_cast<ControlContext*>(ctrl->Context);
     if (Members)
     {
-        for (unsigned int tr=0;tr<Members->ControlsCount;tr++)
+        for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
         {
             DestroyControl(Members->Controls[tr]);
         }
@@ -348,7 +348,7 @@ bool ProcessUpdateFrameEvent(AppCUI::Controls::Control* ctrl)
     {
         auto s = Members->Controls;
         auto e = s + Members->ControlsCount;
-        while (s<e)
+        while (s < e)
         {
             res |= ProcessUpdateFrameEvent(*s);
             s++;
@@ -678,7 +678,7 @@ void AppCUI::Internal::Application::ComputePositions()
 }
 void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, char16_t unicodeCharacter)
 {
-    Control* ctrl = nullptr;
+    Reference<Control> ctrl = nullptr;
 
     // if a contextual menu is visible --> all keys will be handle by it
     if (this->VisibleMenu)
@@ -702,21 +702,21 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     bool found = false;
     while (ctrl != nullptr)
     {
-        if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
-        {
-            if (((ControlContext*) (ctrl->Context))
-                      ->Handlers.OnKeyEventHandler(
-                            ctrl,
-                            KeyCode,
-                            unicodeCharacter,
-                            ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
-            {
-                // if a key was handled --> repaint
-                found = true;
-                RepaintStatus |= REPAINT_STATUS_DRAW;
-                break;
-            }
-        }
+        //if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
+        //{
+        //    if (((ControlContext*) (ctrl->Context))
+        //              ->Handlers.OnKeyEventHandler(
+        //                    ctrl,
+        //                    KeyCode,
+        //                    unicodeCharacter,
+        //                    ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
+        //    {
+        //        // if a key was handled --> repaint
+        //        found = true;
+        //        RepaintStatus |= REPAINT_STATUS_DRAW;
+        //        break;
+        //    }
+        //}
         if (ctrl->OnKeyEvent(KeyCode, unicodeCharacter))
         {
             // if a key was handled --> repaint
@@ -1042,15 +1042,15 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
 {
     AppCUI::Internal::SystemEvent evnt;
     RepaintStatus            = REPAINT_STATUS_ALL;
-    this->MouseLockedControl = nullptr;    
+    this->MouseLockedControl = nullptr;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
     // hide current hovered control when new dialog is opened.
     if (this->MouseOverControl)
     {
         ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
         this->MouseOverControl                                       = nullptr;
-    }    
-    
+    }
+
     PackControl(true);
     if (ctrl != nullptr)
     {
@@ -1200,8 +1200,8 @@ void AppCUI::Internal::Application::SendCommand(int command)
     }
 }
 void AppCUI::Internal::Application::RaiseEvent(
-      AppCUI::Controls::Control* control,
-      AppCUI::Controls::Control* sourceControl,
+      Reference<AppCUI::Controls::Control> control,
+      Reference<AppCUI::Controls::Control> sourceControl,
       AppCUI::Controls::Event eventType,
       int controlID)
 {
@@ -1209,17 +1209,17 @@ void AppCUI::Internal::Application::RaiseEvent(
     {
         if (((ControlContext*) (control->Context))->Handlers.OnEventHandler != nullptr)
         {
-            if (((ControlContext*) (control->Context))
-                      ->Handlers.OnEventHandler(
-                            control,
-                            sourceControl,
-                            eventType,
-                            controlID,
-                            ((ControlContext*) (control->Context))->Handlers.OnEventHandlerContext) == true)
-            {
-                RepaintStatus |= REPAINT_STATUS_DRAW;
-                return;
-            }
+            //if (((ControlContext*) (control->Context))
+            //          ->Handlers.OnEventHandler(
+            //                control,
+            //                sourceControl,
+            //                eventType,
+            //                controlID,
+            //                ((ControlContext*) (control->Context))->Handlers.OnEventHandlerContext) == true)
+            //{
+            //    RepaintStatus |= REPAINT_STATUS_DRAW;
+            //    return;
+            //}
         }
         else
         {
