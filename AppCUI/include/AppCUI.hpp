@@ -369,7 +369,7 @@ namespace Utils
         {
             ptr = nullptr;
         }
-        constexpr inline bool Emptry() const
+        constexpr inline bool Empty() const
         {
             return ptr != nullptr;
         }
