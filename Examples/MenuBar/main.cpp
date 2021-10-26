@@ -25,7 +25,7 @@ class ContextMenuExample : public Window
         ctxMenu.AddCommandItem("Command &2", 200);
         ctxMenu.AddCommandItem("Command &3", 300);
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

@@ -17,7 +17,7 @@ class LoginWin : public Window
         Factory::Label::Create(this, "Password", "x:1,y:3,w:10,h:1");
         Factory::Button::Create(this, "Log In", "b:0,l:5,r:5", 1234);
     }
-    bool OnEvent(Control* ctrl, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override
     {
         if (Window::OnEvent(ctrl, eventType, controlID))
             return true;

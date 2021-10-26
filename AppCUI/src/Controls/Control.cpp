@@ -1757,7 +1757,7 @@ void AppCUI::Controls::Control::OnHotKey()
 void AppCUI::Controls::Control::OnHotKeyChanged()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control*, Event, int)
+bool AppCUI::Controls::Control::OnEvent(Reference<Control>, Event, int)
 {
     return false;
 }
@@ -1776,11 +1776,11 @@ bool AppCUI::Controls::Control::OnFrameUpdate()
 void AppCUI::Controls::Control::OnAfterResize(int, int)
 {
 }
-bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ctrl)
+bool AppCUI::Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnControlRemoved(AppCUI::Controls::Control*)
+void AppCUI::Controls::Control::OnControlRemoved(Reference<Control>)
 {
 }
 void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
@@ -1789,7 +1789,7 @@ void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
 void AppCUI::Controls::Control::OnPackView()
 {
 }
-void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control*)
+void AppCUI::Controls::Control::OnAfterAddControl(Reference<Control>)
 {
     // daca e primul - setez si tab-ul
     if (CTRLC->ControlsCount == 1)

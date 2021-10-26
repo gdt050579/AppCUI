@@ -89,7 +89,7 @@ class LogoWin : public Window
         CreateImage(viewInactive->GetCanvas());
         CreateImage(viewSmall->GetCanvas());
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

@@ -432,7 +432,7 @@ bool Tab::SetTabPageTitleSize(unsigned int newSize)
     Members->UpdateMargins();
     return true;
 }
-void Tab::OnAfterAddControl(Control* ctrl)
+void Tab::OnAfterAddControl(Reference<Control> ctrl)
 {
     if (ctrl == nullptr)
         return;

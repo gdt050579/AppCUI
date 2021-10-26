@@ -47,7 +47,7 @@ class MyWin : public AppCUI::Controls::Window
               TextFieldFlags::SyntaxHighlighting,
               HighlightNumberAndCapitalLetters)->SetHotKey('H');
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

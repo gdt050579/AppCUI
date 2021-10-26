@@ -41,7 +41,7 @@ class WindowMenuBarExample : public Window
         help->AddSeparator();
         help->AddCommandItem("Check for &updates", 302);
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

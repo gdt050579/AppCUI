@@ -27,7 +27,7 @@ class MyWin : public Window
 
         Factory::Button::Create(pbottom, "Empy &example", "l:1,b:0,w:90%,h:2", 100);
     }
-    bool OnEvent(Control*, AppCUI::Controls::Event eventType, int) override
+    bool OnEvent(Reference<Control>, AppCUI::Controls::Event eventType, int) override
     {
         if (eventType == AppCUI::Controls::Event::WindowClose)
         {

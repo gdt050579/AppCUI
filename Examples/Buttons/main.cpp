@@ -31,7 +31,7 @@ class MyWin : public Window
               "x:0,y:0,w:100%,h:100%");
         l2 = Factory::Label::Create(this, "", "x:1,y:10,w:56");
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

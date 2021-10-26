@@ -41,7 +41,7 @@ class TabExampleWin2 : public Window
             lv->AddColumn("Name", TextAlignament::Left, 20);
         }
     }
-    bool OnEvent(Control* ctrl, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override
     {
         if (Window::OnEvent(ctrl, eventType, controlID))
             return true;
@@ -112,7 +112,7 @@ class TabExampleWin : public Window
 
         tb->SetCurrentTabPage(0);
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if ((eventType == Event::ButtonClicked) && (controlID == CLOSE_BUTTON_ID))
         {
@@ -190,7 +190,7 @@ class MyWin : public Window
             break;
         }
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

@@ -3398,7 +3398,7 @@ class MyWin : public Window
             win.Show();
         }
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

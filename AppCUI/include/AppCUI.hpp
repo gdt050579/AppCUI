@@ -2015,15 +2015,15 @@ namespace Controls
         virtual bool OnMouseLeave();
         virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
-        virtual bool OnEvent(Control* sender, Event eventType, int controlID);
+        virtual bool OnEvent(Reference<Control> sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
         virtual void OnUpdateScrollBars();
 
         virtual bool OnBeforeResize(int newWidth, int newHeight);
         virtual void OnAfterResize(int newWidth, int newHeight);
-        virtual bool OnBeforeAddControl(Control* ctrl);
-        virtual void OnAfterAddControl(Control* ctrl);
-        virtual void OnControlRemoved(Control* ctrl);
+        virtual bool OnBeforeAddControl(Reference<Control> ctrl);
+        virtual void OnAfterAddControl(Reference<Control> ctrl);
+        virtual void OnControlRemoved(Reference<Control> ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
         virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
@@ -2099,7 +2099,7 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
-        bool OnEvent(Control* sender, Event eventType, int controlID) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
         void RemoveMe();
 
         int Show();
@@ -2202,8 +2202,8 @@ namespace Controls
         bool MaximizeSecondPanel();
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        bool OnBeforeAddControl(Control* ctrl) override;
-        void OnAfterAddControl(Control* ctrl) override;
+        bool OnBeforeAddControl(Reference<Control> ctrl) override;
+        void OnAfterAddControl(Reference<Control> ctrl) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
@@ -2351,7 +2351,7 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnAfterAddControl(Control* ctrl) override;
+        void OnAfterAddControl(Reference<Control> ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Reference<Control> GetCurrentTab();
 

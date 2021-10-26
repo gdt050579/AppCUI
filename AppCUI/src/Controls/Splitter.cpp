@@ -256,7 +256,7 @@ void Splitter::OnFocus()
 {
     //Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
 }
-bool Splitter::OnBeforeAddControl(Control* c)
+bool Splitter::OnBeforeAddControl(Reference<Control> c)
 {
     CHECK(c != nullptr, false, "");
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
@@ -336,7 +336,7 @@ bool Splitter::OnMouseLeave()
     Members->mouseStatus = SplitterMouseStatus::None;
     return true;
 }
-void Splitter::OnAfterAddControl(Control*)
+void Splitter::OnAfterAddControl(Reference<Control>)
 {
     Splitter_ResizeComponents(this);
 }
