@@ -1883,6 +1883,7 @@ namespace Controls
       private:
         bool RemoveControlByID(unsigned int index);
         bool RemoveControlByRef(Reference<Control> control);
+
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
@@ -1907,7 +1908,7 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        
+
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
@@ -2638,7 +2639,11 @@ namespace Controls
         bool SetChecked(ItemHandle menuItem, bool status);
 
         void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
-        void Show(Reference<Control> parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
+        void Show(
+              Reference<Control> parent,
+              int relativeX,
+              int relativeY,
+              const AppCUI::Graphics::Size& maxSize = { 0, 0 });
     };
 
     class EXPORT NumericSelector : public Control
@@ -2706,8 +2711,8 @@ namespace Controls
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
         Searchable                      = 0x004000, // shows all elements highlighting the ones matching
-        FilterSearch                    = 0x008000, // shows only the elements matching the criteria from the previous search action
-        HideSearchBar                   = 0x010000, // disables FilterMode & SearchMode
+        FilterSearch  = 0x008000, // shows only the elements matching the criteria from the previous search action
+        HideSearchBar = 0x010000, // disables FilterMode & SearchMode
         // Reserved_020000                 = 0x020000,
         // Reserved_040000                 = 0x040000,
         // Reserved_080000                 = 0x080000,
@@ -3401,7 +3406,8 @@ namespace Application
         } Text;
         struct
         {
-            struct {
+            struct
+            {
                 Graphics::ColorPair Text, VisibleSign;
             } Normal, Focus, Inactive, Hover;
         } Password;
@@ -3547,8 +3553,8 @@ namespace Application
     EXPORT void RecomputeControlsLayout();
     EXPORT void ArrangeWindows(ArangeWindowsMethod method);
     EXPORT void RaiseEvent(
-          AppCUI::Controls::Control* control,
-          AppCUI::Controls::Control* sourceControl,
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
           AppCUI::Controls::Event eventType,
           int controlID);
     EXPORT void Close();

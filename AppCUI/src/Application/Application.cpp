@@ -145,7 +145,9 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
     }
     auto ptrWin = wnd.get();
-    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)), InvalidItemHandle, "Fail to add window to desktop !");
+    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)),
+          InvalidItemHandle,
+          "Fail to add window to desktop !");
     ptrWin->SetFocus();
     return resultHandle;
 }
@@ -188,8 +190,8 @@ void AppCUI::Application::Repaint()
     app->Paint();
 }
 void AppCUI::Application::RaiseEvent(
-      AppCUI::Controls::Control* control,
-      AppCUI::Controls::Control* sourceControl,
+      AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
+      AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
       AppCUI::Controls::Event eventType,
       int controlID)
 {
@@ -702,7 +704,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     bool found = false;
     while (ctrl != nullptr)
     {
-        //if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
+        // if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
         //{
         //    if (((ControlContext*) (ctrl->Context))
         //              ->Handlers.OnKeyEventHandler(
@@ -1209,7 +1211,7 @@ void AppCUI::Internal::Application::RaiseEvent(
     {
         if (((ControlContext*) (control->Context))->Handlers.OnEventHandler != nullptr)
         {
-            //if (((ControlContext*) (control->Context))
+            // if (((ControlContext*) (control->Context))
             //          ->Handlers.OnEventHandler(
             //                control,
             //                sourceControl,
