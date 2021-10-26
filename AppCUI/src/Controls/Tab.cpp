@@ -293,7 +293,6 @@ Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
     Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->TabTitleSize = tabPageSize;
     // margin set
-    Members->currentTab      = nullptr;
     Members->HoveredTabIndex = -1;
     Members->UpdateMargins();
 }
@@ -311,9 +310,9 @@ bool Tab::SetCurrentTabPage(unsigned int index)
             // ca sa fortez calcularea focusului
             ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
             Members->Controls[tr]->SetVisible(true);
-            res                 = Members->Controls[tr]->SetFocus();
-            Members->currentTab = Members->Controls[tr];
-            found               = true;
+            Members->Controls[tr]->SetEnabled(true);
+            res   = Members->Controls[tr]->SetFocus();
+            found = true;
         }
         else
         {
@@ -331,10 +330,12 @@ bool Tab::SetCurrentTabPage(unsigned int index)
     return res;
 }
 
-Control* Tab::GetCurrentTab()
+Reference<Control> Tab::GetCurrentTab()
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, nullptr);
-    return Members->currentTab;
+    if (Members->CurrentControlIndex >= Members->ControlsCount)
+        return nullptr;
+    return Members->Controls[Members->CurrentControlIndex];
 }
 
 bool Tab::SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name)

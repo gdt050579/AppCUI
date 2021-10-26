@@ -365,7 +365,6 @@ class TextAreaControlContext : public ControlContext
 struct TabControlContext : public ControlContext
 {
   public:
-    Control* currentTab;
     unsigned int TabTitleSize;
     int HoveredTabIndex;
 

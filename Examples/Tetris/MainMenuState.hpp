@@ -27,6 +27,8 @@ class MainMenuState : public State
   private:
     const std::shared_ptr<GameData>& data;
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Button> startButton = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page           = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> startButton     = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> highScoreButton = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> exitButton      = nullptr;
 };

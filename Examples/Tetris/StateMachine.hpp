@@ -31,6 +31,8 @@ class StateMachine
 
     const std::shared_ptr<State>& PeekState();
 
+    const bool GetStatesCount() const;
+
   private:
     std::stack<std::shared_ptr<State>> states;
     std::shared_ptr<State> newState;

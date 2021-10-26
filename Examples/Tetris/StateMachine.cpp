@@ -43,8 +43,8 @@ bool StateMachine::ProcessStackAction()
 		states.push(newState);
         actionTaken = true;
 
-		states.top()->Init();
 		isAdding = false;
+        states.top()->Init();
 	}
 
     return actionTaken;
@@ -53,4 +53,9 @@ bool StateMachine::ProcessStackAction()
 const std::shared_ptr<State>& StateMachine::PeekState()
 {
 	return states.top();
+}
+
+const bool StateMachine::GetStatesCount() const
+{
+    return states.size();
 }

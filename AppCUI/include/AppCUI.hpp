@@ -369,14 +369,24 @@ namespace Utils
         {
             ptr = nullptr;
         }
-        constexpr inline bool Emptry() const
+        constexpr inline bool Empty() const
         {
             return ptr != nullptr;
         }
         template <typename C>
-        Reference<C> To()
+        constexpr inline Reference<C> To()
         {
-            return Reference<C>((T*) this->ptr);
+            return Reference<C>(this->ptr);
+        }
+        template <typename C>
+        constexpr inline Reference<C> UpCast()
+        {
+            return Reference<C>(this->ptr);
+        }
+        template <typename C>
+        constexpr inline Reference<C> DownCast()
+        {
+            return Reference<C>((C*) (this->ptr));
         }
     };
 } // namespace Utils
@@ -2343,7 +2353,7 @@ namespace Controls
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
         void OnAfterAddControl(Control* ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
-        Control* GetCurrentTab();
+        Reference<Control> GetCurrentTab();
 
         friend Factory::Tab;
         friend Control;
