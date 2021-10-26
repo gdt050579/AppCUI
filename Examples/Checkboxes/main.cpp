@@ -24,7 +24,7 @@ class MyWin : public Window
               A_CHECKBOX_ID);
         lb = Factory::Label::Create(this, "3rd checkbox status: NOT CHECKED", "x:1,y:9,w:58");
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

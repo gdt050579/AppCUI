@@ -118,7 +118,7 @@ class TicTacToeWin : public AppCUI::Controls::Window
     {
         game = this->CreateChildControl<TicTacToeTable>("x:2,y:1,w:14,h:14");        
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

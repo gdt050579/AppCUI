@@ -30,7 +30,7 @@ class MyWin : public Window
         cb->AddItem("Ducatti");
         
     }
-    bool OnEvent(Control* sender, Event eventType, int) override
+    bool OnEvent(Reference<Control> sender, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {
@@ -39,7 +39,7 @@ class MyWin : public Window
         }
         if (eventType == Event::ComboBoxSelectedItemChanged)
         {
-            ComboBox* c = reinterpret_cast<ComboBox*>(sender);
+            auto c = sender.DownCast<ComboBox>();
             AppCUI::Utils::LocalUnicodeStringBuilder<128> temp;
             temp.Add(c->GetCurrentItemText());
             temp.Add(" => Index: ");

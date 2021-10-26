@@ -37,7 +37,7 @@ class InternalWindowManager : public AppCUI::Controls::Window
     bool Create();
     bool AddItem(Window* w, const ItemHandle parent, ItemHandle& child);
     void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent);
-    bool OnEvent(Control* c, Event eventType, int id) override;
+    bool OnEvent(Reference<Control> c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
     bool RemoveCurrentWindowAndDescendents();
@@ -178,7 +178,7 @@ void InternalWindowManager::GoToSelectedItem()
     }
 }
 
-bool InternalWindowManager::OnEvent(Control* c, Event eventType, int id)
+bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int id)
 {
     if (Window::OnEvent(c, eventType, id))
     {

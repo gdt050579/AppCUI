@@ -112,7 +112,7 @@ class SimpleHexView : public AppCUI::Controls::Window
         hexView = this->CreateChildControl<HexViewUserControl>("x:0,y:2,w:100%,h:100%");
     }
 
-    bool OnEvent(Control* /*sender*/, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> /*sender*/, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

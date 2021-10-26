@@ -972,7 +972,7 @@ void Window::RemoveMe()
     // all good -> I am a top level window --> remove me
     app->AppDesktop->RemoveControl(this);
 }
-bool Window::OnEvent(Control*, Event eventType, int)
+bool Window::OnEvent(Reference<Control>, Event eventType, int)
 {
     if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
     {

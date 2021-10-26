@@ -1260,7 +1260,7 @@ AppCUI::Controls::Control::Control(
     ctx->Inited = true;
 }
 
-Control* AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
+Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
 {
     CHECK(ctrl, nullptr, "Invalid control (nullptr)");
     CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
@@ -1434,7 +1434,7 @@ bool AppCUI::Controls::Control::IsMouseOver() const
     return CTRLC->MouseIsOver;
 }
 
-Control* AppCUI::Controls::Control::GetParent()
+Reference<Control> AppCUI::Controls::Control::GetParent()
 {
     return CTRLC->Parent;
 }
@@ -1442,7 +1442,7 @@ Control** AppCUI::Controls::Control::GetChildrenList()
 {
     return CTRLC->Controls;
 }
-Control* AppCUI::Controls::Control::GetChild(unsigned int index)
+Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
           nullptr,
@@ -1456,7 +1456,7 @@ unsigned int AppCUI::Controls::Control::GetChildernCount()
     return CTRLC->ControlsCount;
 }
 
-bool AppCUI::Controls::Control::GetChildIndex(Control* control, unsigned int& index)
+bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
 {
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
@@ -1757,7 +1757,7 @@ void AppCUI::Controls::Control::OnHotKey()
 void AppCUI::Controls::Control::OnHotKeyChanged()
 {
 }
-bool AppCUI::Controls::Control::OnEvent(AppCUI::Controls::Control*, Event, int)
+bool AppCUI::Controls::Control::OnEvent(Reference<Control>, Event, int)
 {
     return false;
 }
@@ -1776,11 +1776,11 @@ bool AppCUI::Controls::Control::OnFrameUpdate()
 void AppCUI::Controls::Control::OnAfterResize(int, int)
 {
 }
-bool AppCUI::Controls::Control::OnBeforeAddControl(AppCUI::Controls::Control* ctrl)
+bool AppCUI::Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnControlRemoved(AppCUI::Controls::Control*)
+void AppCUI::Controls::Control::OnControlRemoved(Reference<Control>)
 {
 }
 void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
@@ -1789,7 +1789,7 @@ void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
 void AppCUI::Controls::Control::OnPackView()
 {
 }
-void AppCUI::Controls::Control::OnAfterAddControl(AppCUI::Controls::Control*)
+void AppCUI::Controls::Control::OnAfterAddControl(Reference<Control>)
 {
     // daca e primul - setez si tab-ul
     if (CTRLC->ControlsCount == 1)

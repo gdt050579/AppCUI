@@ -12,7 +12,7 @@ class MySingleApp : public SingleApp
     {
         Factory::Button::Create(this, "Push me", "d:c,w:20");
     }
-    bool OnEvent(Control* ctrl, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override
     {
         if (SingleApp::OnEvent(ctrl, eventType, controlID))
             return true;
