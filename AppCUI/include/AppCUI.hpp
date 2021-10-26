@@ -1900,7 +1900,7 @@ namespace Controls
         template <typename T>
         Reference<T> AddControl(std::unique_ptr<T> control)
         {
-            return this->AddChildControl(std::move(control)).DownCast<T>();
+            return this->AddChildControl(std::move(control)).template DownCast<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
