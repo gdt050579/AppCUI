@@ -2343,7 +2343,8 @@ namespace Controls
         Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize);
 
       public:
-        bool SetCurrentTabPage(unsigned int index);
+        bool SetCurrentTabPageByIndex(unsigned int index);
+        bool SetCurrentTabPage(Reference<Control> page);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;

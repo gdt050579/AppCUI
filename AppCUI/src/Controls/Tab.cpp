@@ -249,13 +249,13 @@ bool NextTab(Tab* t)
 {
     CREATE_CONTROL_CONTEXT(t, Members, false);
     CHECK(Members->ControlsCount > 0, false, "No tab pages available !");
-    return t->SetCurrentTabPage(((Members->CurrentControlIndex + 1) % Members->ControlsCount));
+    return t->SetCurrentTabPageByIndex(((Members->CurrentControlIndex + 1) % Members->ControlsCount));
 }
 bool PreviousTab(Tab* t)
 {
     CREATE_CONTROL_CONTEXT(t, Members, false);
     CHECK(Members->ControlsCount > 0, false, "No tab pages available !");
-    return t->SetCurrentTabPage(
+    return t->SetCurrentTabPageByIndex(
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
 //===================================================================================================================
@@ -285,7 +285,7 @@ Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
     Members->UpdateMargins();
 }
 
-bool Tab::SetCurrentTabPage(unsigned int index)
+bool Tab::SetCurrentTabPageByIndex(unsigned int index)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
@@ -316,6 +316,12 @@ bool Tab::SetCurrentTabPage(unsigned int index)
     if (found)
         this->RaiseEvent(Event::TabChanged);
     return res;
+}
+bool Tab::SetCurrentTabPage(Reference<Control> page)
+{
+    unsigned int index = 0xFFFFFFFF;
+    CHECK(Control::GetChildIndex(page, index), false, "Fail to find page index in current tab!");
+    return SetCurrentTabPageByIndex(index);
 }
 Reference<Control> Tab::GetCurrentTab()
 {
@@ -379,7 +385,7 @@ void Tab::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)
-        SetCurrentTabPage((unsigned int) Members->HoveredTabIndex);
+        SetCurrentTabPageByIndex((unsigned int) Members->HoveredTabIndex);
 }
 bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
 {
@@ -395,7 +401,7 @@ bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
     for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
         if (keyCode == Members->Controls[tr]->GetHotKey())
         {
-            SetCurrentTabPage(tr);
+            SetCurrentTabPageByIndex(tr);
             return true;
         }
     return false;
