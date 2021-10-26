@@ -2632,13 +2632,13 @@ namespace Controls
         ItemHandle AddSeparator();
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
 
-        Menu* GetSubMenu(ItemHandle menuItem);
+        Reference<Menu> GetSubMenu(ItemHandle menuItem);
 
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
         void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
-        void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
+        void Show(Reference<Control> parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
     };
 
     class EXPORT NumericSelector : public Control

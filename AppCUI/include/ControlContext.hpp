@@ -760,7 +760,7 @@ struct MenuContext
     // Show
     void Show(
           AppCUI::Controls::Menu* me,
-          AppCUI::Controls::Control* relativeControl,
+          Reference<AppCUI::Controls::Control> relativeControl,
           int x,
           int y,
           const AppCUI::Graphics::Size& maxSize);
