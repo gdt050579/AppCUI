@@ -94,7 +94,7 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::Init()
 {
-    data->tab->SetCurrentTabPage(page);
+    data->tab->SetCurrentTabPage(page.DownCast<AppCUI::Controls::Control>());
 }
 
 bool MainMenuState::HandleEvent(
@@ -129,7 +129,7 @@ void MainMenuState::Pause()
 
 void MainMenuState::Resume()
 {
-    data->tab->SetCurrentTabPage(page);
+    data->tab->SetCurrentTabPage(page.DownCast<AppCUI::Controls::Control>());
 }
 
 bool MainMenuState::DoActionForControl(int controlID) const
