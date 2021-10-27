@@ -23,7 +23,7 @@ MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 
                   for (auto i = 0U; i < childrenNo; i++)
                   {
-                      const auto child = control->GetChild(i);
+                      auto child = control->GetChild(i);
                       if (child->HasFocus())
                       {
                           if (i + 1U < childrenNo)
@@ -46,7 +46,7 @@ MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 
                   for (auto i = 0U; i < childrenNo; i++)
                   {
-                      const auto child = control->GetChild(i);
+                      auto child = control->GetChild(i);
                       if (child->HasFocus())
                       {
                           if (i == 0)
@@ -70,7 +70,7 @@ MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 
                   for (auto i = 0U; i < childrenNo; i++)
                   {
-                      const auto child = control->GetChild(i);
+                      auto child = control->GetChild(i);
                       if (child->HasFocus())
                       {
                           reinterpret_cast<MainMenuState*>(Context)->DoActionForControl(child->GetControlID());
@@ -94,12 +94,11 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::Init()
 {
-    // TODO: temporary fix for index
-    data->tab->SetCurrentTabPage(data->machine->GetStatesCount() - 1);
-    // data->tab->SetCurrentTabPage(page);
+    data->tab->SetCurrentTabPage(page);
 }
 
-bool MainMenuState::HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool MainMenuState::HandleEvent(
+      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
 {
     switch (eventType)
     {

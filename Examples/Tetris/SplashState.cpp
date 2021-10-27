@@ -21,12 +21,11 @@ SplashState::~SplashState()
 
 void SplashState::Init()
 {
-    // TODO: temporary fix for index
-    data->tab->SetCurrentTabPage(data->machine->GetStatesCount() - 1);
-    // data->tab->SetCurrentTabPage(page);
+    data->tab->SetCurrentTabPage(page);
 }
 
-bool SplashState::HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool SplashState::HandleEvent(
+      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
 {
     return false;
 }

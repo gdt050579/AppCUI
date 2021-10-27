@@ -8,7 +8,8 @@ Game::Game() noexcept
     data->machine->ProcessStackAction();
 }
 
-bool Game::OnEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool Game::OnEvent(
+      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
 {
     if (AppCUI::Controls::SingleApp::OnEvent(ctrl, eventType, controlID))
     {

@@ -40,7 +40,10 @@ class Game : public AppCUI::Controls::SingleApp
 
     ~Game() = default;
 
-    bool OnEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID) override;
+    bool OnEvent(
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
+          AppCUI::Controls::Event eventType,
+          int controlID) override;
     void Paint(AppCUI::Graphics::Renderer& r) override;
     bool OnFrameUpdate() override;
 

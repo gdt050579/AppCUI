@@ -329,10 +329,10 @@ bool Tab::SetCurrentTabPageByIndex(unsigned int index)
         this->RaiseEvent(Event::TabChanged);
     return res;
 }
-bool Tab::SetCurrentTabPage(Reference<Control> page)
+bool Tab::SetCurrentTabPage(Reference<TabPage> page)
 {
     unsigned int index = 0xFFFFFFFF;
-    CHECK(Control::GetChildIndex(page, index), false, "Fail to find page index in current tab!");
+    CHECK(Control::GetChildIndex(*reinterpret_cast<Reference<Control>*>(&page), index), false, "Fail to find page index in current tab!");
     return SetCurrentTabPageByIndex(index);
 }
 Reference<Control> Tab::GetCurrentTab()

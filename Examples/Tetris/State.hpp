@@ -14,9 +14,12 @@ class State
 
     virtual ~State() = default;
 
-    virtual bool HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID) = 0;
-    virtual bool Update()                                                                                       = 0;
-    virtual void Draw(AppCUI::Graphics::Renderer& renderer)                                                     = 0;
+    virtual bool HandleEvent(
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
+          AppCUI::Controls::Event eventType,
+          int controlID)                                    = 0;
+    virtual bool Update()                                   = 0;
+    virtual void Draw(AppCUI::Graphics::Renderer& renderer) = 0;
 
     virtual void Init()   = 0;
     virtual void Pause()  = 0;

@@ -1956,9 +1956,9 @@ namespace Controls
         // childern and parent
         Reference<Control> GetParent();
         Control** GetChildrenList();
-        Control* GetChild(unsigned int index);
+        Reference<Control> GetChild(unsigned int index);
         unsigned int GetChildrenCount();
-        bool GetChildIndex(Control* control, unsigned int& index);
+        bool GetChildIndex(Reference<Control> control, unsigned int& index);
 
         // Events
         void RaiseEvent(Event eventType);
@@ -2345,7 +2345,7 @@ namespace Controls
 
       public:
         bool SetCurrentTabPageByIndex(unsigned int index);
-        bool SetCurrentTabPage(Reference<Control> page);
+        bool SetCurrentTabPage(Reference<TabPage> page);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;

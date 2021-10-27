@@ -20,7 +20,10 @@ class SplashState : public State
 
     void Init() override;
 
-    bool HandleEvent(AppCUI::Controls::Control* ctrl, AppCUI::Controls::Event eventType, int controlID) override;
+    bool HandleEvent(
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
+          AppCUI::Controls::Event eventType,
+          int controlID) override;
     bool Update() override;
     void Draw(AppCUI::Graphics::Renderer& renderer) override;
 
