@@ -2344,7 +2344,12 @@ namespace Controls
 
       public:
         bool SetCurrentTabPageByIndex(unsigned int index);
-        bool SetCurrentTabPage(Reference<Control> page);
+        bool SetCurrentTabPageByRef(Reference<Control> page);
+        template <typename T>
+        inline bool SetCurrentTabPage(Reference<T> page)
+        {
+            return SetCurrentTabPageByRef(page.template DownCast<Control>());
+        }
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
