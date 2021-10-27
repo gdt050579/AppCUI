@@ -6,12 +6,13 @@ constexpr unsigned int ExitButtonID      = 0x0003;
 
 MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 {
-    page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "d:c,height:80");
-    startButton     = AppCUI::Controls::Factory::Button::Create(page, "Start", "d:t,w:20", StartButtonID);
-    highScoreButton = AppCUI::Controls::Factory::Button::Create(page, "HighScore", "d:c,w:20", HighScoreButtonID);
-    exitButton      = AppCUI::Controls::Factory::Button::Create(page, "Exit", "d:b,w:20", ExitButtonID);
+    page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "d:c");
+    menu            = AppCUI::Controls::Factory::Panel::Create(page, "d:c,h:6,w:20");
+    startButton     = AppCUI::Controls::Factory::Button::Create(menu, "Start", "d:t", StartButtonID);
+    highScoreButton = AppCUI::Controls::Factory::Button::Create(menu, "HighScore", "d:c", HighScoreButtonID);
+    exitButton      = AppCUI::Controls::Factory::Button::Create(menu, "Exit", "d:b", ExitButtonID);
 
-    page->SetOnKeyEventHandler(
+    menu->SetOnKeyEventHandler(
           [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
           {
               switch (KeyCode)
