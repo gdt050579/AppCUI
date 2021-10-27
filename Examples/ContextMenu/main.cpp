@@ -90,7 +90,7 @@ class ContextMenuExample : public AppCUI::Controls::Window
         cb = Factory::CheckBox::Create(this, "Small contextual menu with scroll", "x:1,y:6,w:62");
         m  = this->AddControl<MyUserControl>(std::make_unique<MyUserControl>());
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

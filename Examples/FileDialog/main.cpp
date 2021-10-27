@@ -21,7 +21,7 @@ class MyWin : public AppCUI::Controls::Window
         Factory::Button::Create(this, "&Open", "x:1,y:6,w:9", BUTTON_ID_SHOW_OPEN);
         l2 = Factory::TextField::Create(this, "", "x:12,y:6,w:24,h:4");
     }
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

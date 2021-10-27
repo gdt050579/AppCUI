@@ -111,7 +111,7 @@ class FileDialogWindow : public Window
           const AppCUI::Utils::ConstString& extensionsFilter,
           const std::filesystem::path& _path);
 
-    bool OnEvent(Control* sender, Event eventType, int controlID) override;
+    bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
     std::filesystem::path GetResultedPath() const;
 
   protected:
@@ -547,7 +547,7 @@ void FileDialogWindow::UpdateCurrentPath(const std::filesystem::path& newPath)
     ReloadCurrentPath();
 }
 
-bool FileDialogWindow::OnEvent(Control* sender, AppCUI::Controls::Event eventType, int controlID)
+bool FileDialogWindow::OnEvent(Reference<Control> sender, AppCUI::Controls::Event eventType, int controlID)
 {
     switch (eventType)
     {

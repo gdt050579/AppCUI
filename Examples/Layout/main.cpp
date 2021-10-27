@@ -82,7 +82,7 @@ class MainWin : public Window
         b = Factory::Button::Create(this, "&Show", "d:b,w:16", 1234);
         b->SetEnabled(false);
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

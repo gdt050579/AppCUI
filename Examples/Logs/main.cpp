@@ -17,7 +17,7 @@ class SimpleWin : public AppCUI::Controls::Window
         LOG_INFO("Creating Simple Win");
         Factory::Label::Create(this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
     }
-    bool OnEvent(Control*, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int) override
     {
         if (eventType == Event::WindowClose)
         {

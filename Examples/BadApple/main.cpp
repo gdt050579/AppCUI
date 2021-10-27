@@ -113,7 +113,7 @@ class BadApple : public AppCUI::Controls::Window
         myVideo->SetFrames(frames);
     }
 
-    bool OnEvent(AppCUI::Controls::Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

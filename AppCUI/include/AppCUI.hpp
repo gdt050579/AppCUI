@@ -1883,6 +1883,7 @@ namespace Controls
       private:
         bool RemoveControlByID(unsigned int index);
         bool RemoveControlByRef(Reference<Control> control);
+
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
@@ -1890,7 +1891,7 @@ namespace Controls
         bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
         void HideToolTip();
 
-        Control* AddChildControl(std::unique_ptr<Control> control);
+        Reference<Control> AddChildControl(std::unique_ptr<Control> control);
 
         // protected constructor
         Control(void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey);
@@ -1899,7 +1900,7 @@ namespace Controls
         template <typename T>
         Reference<T> AddControl(std::unique_ptr<T> control)
         {
-            return Reference(static_cast<T*>(this->AddChildControl(std::move(control))));
+            return this->AddChildControl(std::move(control)).template DownCast<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
@@ -1907,7 +1908,7 @@ namespace Controls
             return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
-        
+
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
@@ -1953,7 +1954,7 @@ namespace Controls
         bool IsMouseOver() const;
 
         // childern and parent
-        Control* GetParent();
+        Reference<Control> GetParent();
         Control** GetChildrenList();
         Control* GetChild(unsigned int index);
         unsigned int GetChildrenCount();
@@ -2016,15 +2017,15 @@ namespace Controls
         virtual bool OnMouseLeave();
         virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
 
-        virtual bool OnEvent(Control* sender, Event eventType, int controlID);
+        virtual bool OnEvent(Reference<Control> sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
         virtual void OnUpdateScrollBars();
 
         virtual bool OnBeforeResize(int newWidth, int newHeight);
         virtual void OnAfterResize(int newWidth, int newHeight);
-        virtual bool OnBeforeAddControl(Control* ctrl);
-        virtual void OnAfterAddControl(Control* ctrl);
-        virtual void OnControlRemoved(Control* ctrl);
+        virtual bool OnBeforeAddControl(Reference<Control> ctrl);
+        virtual void OnAfterAddControl(Reference<Control> ctrl);
+        virtual void OnControlRemoved(Reference<Control> ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
         virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
 
@@ -2100,7 +2101,7 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
-        bool OnEvent(Control* sender, Event eventType, int controlID) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
         void RemoveMe();
 
         int Show();
@@ -2203,8 +2204,8 @@ namespace Controls
         bool MaximizeSecondPanel();
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        bool OnBeforeAddControl(Control* ctrl) override;
-        void OnAfterAddControl(Control* ctrl) override;
+        bool OnBeforeAddControl(Reference<Control> ctrl) override;
+        void OnAfterAddControl(Reference<Control> ctrl) override;
         void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
@@ -2343,7 +2344,8 @@ namespace Controls
         Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize);
 
       public:
-        bool SetCurrentTabPage(unsigned int index);
+        bool SetCurrentTabPageByIndex(unsigned int index);
+        bool SetCurrentTabPage(Reference<Control> page);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -2352,7 +2354,7 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnAfterAddControl(Control* ctrl) override;
+        void OnAfterAddControl(Reference<Control> ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Reference<Control> GetCurrentTab();
 
@@ -2633,13 +2635,17 @@ namespace Controls
         ItemHandle AddSeparator();
         ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
 
-        Menu* GetSubMenu(ItemHandle menuItem);
+        Reference<Menu> GetSubMenu(ItemHandle menuItem);
 
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
         void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
-        void Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
+        void Show(
+              Reference<Control> parent,
+              int relativeX,
+              int relativeY,
+              const AppCUI::Graphics::Size& maxSize = { 0, 0 });
     };
 
     class EXPORT NumericSelector : public Control
@@ -2707,8 +2713,8 @@ namespace Controls
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
         Searchable                      = 0x004000, // shows all elements highlighting the ones matching
-        FilterSearch                    = 0x008000, // shows only the elements matching the criteria from the previous search action
-        HideSearchBar                   = 0x010000, // disables FilterMode & SearchMode
+        FilterSearch  = 0x008000, // shows only the elements matching the criteria from the previous search action
+        HideSearchBar = 0x010000, // disables FilterMode & SearchMode
         // Reserved_020000                 = 0x020000,
         // Reserved_040000                 = 0x040000,
         // Reserved_080000                 = 0x080000,
@@ -3402,7 +3408,8 @@ namespace Application
         } Text;
         struct
         {
-            struct {
+            struct
+            {
                 Graphics::ColorPair Text, VisibleSign;
             } Normal, Focus, Inactive, Hover;
         } Password;
@@ -3548,8 +3555,8 @@ namespace Application
     EXPORT void RecomputeControlsLayout();
     EXPORT void ArrangeWindows(ArangeWindowsMethod method);
     EXPORT void RaiseEvent(
-          AppCUI::Controls::Control* control,
-          AppCUI::Controls::Control* sourceControl,
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
+          AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
           AppCUI::Controls::Event eventType,
           int controlID);
     EXPORT void Close();

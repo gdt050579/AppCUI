@@ -91,7 +91,7 @@ class MyWin : public AppCUI::Controls::Window
         }
     }
 
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         if (eventType == Event::WindowClose)
         {

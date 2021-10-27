@@ -76,7 +76,7 @@ class TreeExample : public AppCUI::Controls::Window
               std::filesystem::is_directory(path));
     }
 
-    bool OnEvent(Control*, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
         switch (eventType)
         {

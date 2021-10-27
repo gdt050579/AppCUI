@@ -50,7 +50,7 @@ class WindowControlsBarExample : public Window
         cb.AddCheckItem("O&ption 2", 201, false, "Check this to enable option 2");
         itText = cb.AddTextItem("-1-");
     }
-    bool OnEvent(Control* sender, Event eventType, int ID) override
+    bool OnEvent(Reference<Control> sender, Event eventType, int ID) override
     {
         Utils::LocalString<128> s;
         bool b_value;

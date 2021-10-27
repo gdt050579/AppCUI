@@ -24,7 +24,7 @@ class WindowExample : public Window
             this->SetTag(tags[winID % tagsNo], "bla bla bla");
     }
 
-    bool OnEvent(Control* c, Event eventType, int id) override
+    bool OnEvent(Reference<Control> c, Event eventType, int id) override
     {
         if (Window::OnEvent(c, eventType, id))
             return true;
@@ -41,7 +41,7 @@ class WindowExample : public Window
 class MyDesktop : public Desktop
 {
   public:
-    bool OnEvent(Control*, Event eventType, int id) override
+    bool OnEvent(Reference<Control>, Event eventType, int id) override
     {
         AppCUI::Utils::LocalString<128> tmp;
         if (eventType == Event::Command)

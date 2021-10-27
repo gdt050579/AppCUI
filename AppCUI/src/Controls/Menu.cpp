@@ -552,7 +552,7 @@ bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
     return false;
 }
 
-void MenuContext::Show(AppCUI::Controls::Menu* me, AppCUI::Controls::Control* relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize)
+void MenuContext::Show(AppCUI::Controls::Menu* me, Reference<AppCUI::Controls::Control> relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize)
 {
     // compute abosolute position
     while (relativeControl)
@@ -727,17 +727,17 @@ bool Menu::SetChecked(ItemHandle menuItem, bool status)
     return CTX->SetChecked((unsigned int) menuItem, status);
 }
 
-Menu* Menu::GetSubMenu(ItemHandle menuItem)
+Reference<Menu> Menu::GetSubMenu(ItemHandle menuItem)
 {
     CHECK_VALID_ITEM(nullptr);
-    return CTX->Items[(unsigned int) menuItem]->SubMenu;
+    return Reference<Menu>(CTX->Items[(unsigned int) menuItem]->SubMenu);
 }
 
 void Menu::Show(int x, int y, const AppCUI::Graphics::Size& maxSize)
 {
     CTX->Show(this, nullptr, x, y, maxSize);
 }
-void Menu::Show(Control* parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize)
+void Menu::Show(Reference<Control> parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize)
 {
     CTX->Show(this, parent, relativeX, relativeY, maxSize);
 }

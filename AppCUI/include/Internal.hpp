@@ -278,8 +278,8 @@ namespace Internal
         bool ExecuteEventLoop(AppCUI::Controls::Control* control = nullptr);
         void Paint();
         void RaiseEvent(
-              AppCUI::Controls::Control* control,
-              AppCUI::Controls::Control* sourceControl,
+              AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
+              AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
               AppCUI::Controls::Event eventType,
               int controlID);
         bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
@@ -306,4 +306,3 @@ namespace Log
     void Unit(); // needed to release some alocation buffers
 }
 } // namespace AppCUI
-
