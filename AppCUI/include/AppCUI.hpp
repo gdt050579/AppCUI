@@ -2345,7 +2345,7 @@ namespace Controls
 
       public:
         bool SetCurrentTabPageByIndex(unsigned int index);
-        bool SetCurrentTabPage(Reference<TabPage> page);
+        bool SetCurrentTabPage(Reference<Control> page);
         bool SetTabPageTitleSize(unsigned int newSize);
         bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
