@@ -110,7 +110,7 @@ class TabExampleWin : public Window
             Factory::TextField::Create(pg3, "some text ...", "x:17,y:1,w:20,h:5");
         }
 
-        tb->SetCurrentTabPage(0);
+        tb->SetCurrentTabPageByIndex(0);
     }
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {
