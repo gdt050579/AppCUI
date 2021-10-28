@@ -103,8 +103,7 @@ bool MainMenuState::HandleEvent(
     switch (eventType)
     {
     case AppCUI::Controls::Event::ButtonClicked:
-        DoActionForControl(controlID);
-        break;
+        return DoActionForControl(controlID);
     default:
         break;
     }
@@ -132,7 +131,7 @@ void MainMenuState::Resume()
     data->tab->SetCurrentTabPage(page.DownCast<AppCUI::Controls::Control>());
 }
 
-bool MainMenuState::DoActionForControl(int controlID) const
+bool MainMenuState::DoActionForControl(int controlID)
 {
     switch (controlID)
     {
@@ -143,7 +142,7 @@ bool MainMenuState::DoActionForControl(int controlID) const
         AppCUI::Dialogs::MessageBox::ShowNotification("Info", "High Score list!");
         break;
     case ExitButtonID:
-        AppCUI::Dialogs::MessageBox::ShowNotification("Info", "Exiting the game! (not really)");
+        exitButton->RaiseEvent(AppCUI::Controls::Event::TerminateApplication);
         break;
     default:
         break;

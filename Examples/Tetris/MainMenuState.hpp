@@ -38,5 +38,5 @@ class MainMenuState : public State
 
   private:
     // TODO: maybe attach a handler on each button instead
-    bool DoActionForControl(int controlID) const;
+    bool DoActionForControl(int controlID);
 };
