@@ -21,7 +21,7 @@ SplashState::~SplashState()
 
 void SplashState::Init()
 {
-    data->tab->SetCurrentTabPage(page.DownCast<AppCUI::Controls::Control>());
+    data->tab->SetCurrentTabPage(page);
 }
 
 bool SplashState::HandleEvent(
@@ -56,5 +56,5 @@ void SplashState::Pause()
 
 void SplashState::Resume()
 {
-    data->tab->SetCurrentTabPage(page.DownCast<AppCUI::Controls::Control>());
+    data->tab->SetCurrentTabPage(page);
 }
