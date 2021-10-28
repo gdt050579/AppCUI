@@ -7,10 +7,10 @@ constexpr unsigned int ExitButtonID      = 0x0003;
 MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 {
     page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "d:c");
-    menu            = AppCUI::Controls::Factory::Panel::Create(page, "d:c,h:6,w:20");
-    startButton     = AppCUI::Controls::Factory::Button::Create(menu, "Start", "d:t", StartButtonID);
-    highScoreButton = AppCUI::Controls::Factory::Button::Create(menu, "HighScore", "d:c", HighScoreButtonID);
-    exitButton      = AppCUI::Controls::Factory::Button::Create(menu, "Exit", "d:b", ExitButtonID);
+    menu            = AppCUI::Controls::Factory::Panel::Create(page, "Menu", "d:c,h:8,w:30");
+    startButton     = AppCUI::Controls::Factory::Button::Create(menu, "Start", "d:t,w:25", StartButtonID);
+    highScoreButton = AppCUI::Controls::Factory::Button::Create(menu, "HighScore", "d:c,w:25", HighScoreButtonID);
+    exitButton      = AppCUI::Controls::Factory::Button::Create(menu, "Exit", "d:b,w:25", ExitButtonID);
 
     menu->SetOnKeyEventHandler(
           [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
@@ -118,6 +118,7 @@ bool MainMenuState::Update()
 
 void MainMenuState::Draw(AppCUI::Graphics::Renderer& renderer)
 {
+    renderer.HideCursor();
     renderer.Clear(
           ' ', AppCUI::Graphics::ColorPair{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::DarkBlue });
 }

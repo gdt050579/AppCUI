@@ -37,7 +37,7 @@ class SplashState : public State
 
     const int stateDuration = 3; // seconds
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> label        = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> labelCounter = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page  = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> panel   = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Label> counter = nullptr;
 };

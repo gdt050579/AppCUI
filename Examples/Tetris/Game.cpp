@@ -3,7 +3,8 @@
 
 Game::Game() noexcept
 {
-    data->tab = AppCUI::Controls::Factory::Tab::Create(this, "d:c", AppCUI::Controls::TabFlags::HideTabs);
+    data->tab = AppCUI::Controls::Factory::Tab::Create(
+          this, "d:c", AppCUI::Controls::TabFlags::HideTabs | AppCUI::Controls::TabFlags::TransparentBackground);
     data->machine->PushState<SplashState>(data);
     data->machine->ProcessStackAction();
 }

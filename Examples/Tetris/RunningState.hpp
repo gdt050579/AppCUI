@@ -31,6 +31,10 @@ class RunningState : public State
   private:
     const std::shared_ptr<GameData>& data;
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> label  = nullptr;
+    unsigned int score = 0;
+
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page     = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> game       = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> stats      = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Label> scoreLabel = nullptr;
 };

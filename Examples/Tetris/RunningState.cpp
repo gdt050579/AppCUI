@@ -2,9 +2,15 @@
 
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data)
 {
-    page = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    label =
-          AppCUI::Controls::Factory::Label::Create(page, "Running state. Please Esc to pause...", "x:50%,y:50%, w:20%");
+    page       = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
+    game       = AppCUI::Controls::Factory::Panel ::Create(page, "-", "t:0,b:0,w:75%,x:0%,a:l");
+    stats      = AppCUI::Controls::Factory::Panel::Create(page, "-", "t:0,b:0,w:25%,x:100%,a:r");
+    scoreLabel = AppCUI::Controls::Factory::Label::Create(stats, "0", "t:0,b:0,w:50%,x:2%,a:l");
+
+    page->SetText("");
+    game->SetText("");
+    stats->SetText("");
+    scoreLabel->SetText("");
 
     page->SetOnKeyEventHandler(
           [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
@@ -42,11 +48,16 @@ bool RunningState::HandleEvent(
 
 bool RunningState::Update()
 {
-    return false;
+    AppCUI::Utils::LocalString<128> text;
+    text.Format("Score: %u", score);
+    scoreLabel->SetText(text.GetText());
+
+    return true;
 }
 
 void RunningState::Draw(AppCUI::Graphics::Renderer& renderer)
 {
+    renderer.HideCursor();
     renderer.Clear(
           ' ', AppCUI::Graphics::ColorPair{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::DarkBlue });
 }
