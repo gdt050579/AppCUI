@@ -2,6 +2,7 @@
 
 #include "State.hpp"
 #include "Game.hpp"
+#include "RunningState.hpp"
 
 class MainMenuState : public State
 {

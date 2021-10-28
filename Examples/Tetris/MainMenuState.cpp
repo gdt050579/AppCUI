@@ -136,7 +136,7 @@ bool MainMenuState::DoActionForControl(int controlID)
     switch (controlID)
     {
     case StartButtonID:
-        AppCUI::Dialogs::MessageBox::ShowNotification("Info", "You have started the game!");
+        data->machine->PushState<RunningState>(data, true);
         break;
     case HighScoreButtonID:
         AppCUI::Dialogs::MessageBox::ShowNotification("Info", "High Score list!");
