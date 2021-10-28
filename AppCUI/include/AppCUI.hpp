@@ -1841,6 +1841,14 @@ namespace Controls
 
     namespace Handlers
     {
+        typedef void (*OnButtonPressedHandler)(Reference<Button> r);
+
+        struct OnButtonPressedInterface
+        {
+            virtual void OnButtonPressed(Reference<Button> r) = 0;
+        };
+
+
         typedef void (*AfterResizeHandler)(
               AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
         typedef bool (*BeforeResizeHandler)(
@@ -2154,6 +2162,9 @@ namespace Controls
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+        
+        void SetOnButtonPressed(Handlers::OnButtonPressedInterface* implementation);
+        void SetOnButtonPressed(Handlers::OnButtonPressedHandler callback);
 
         friend Factory::Button;
         friend Control;

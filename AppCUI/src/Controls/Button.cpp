@@ -152,3 +152,9 @@ bool Button::OnMouseLeave()
 {
     return true;
 }
+void Button::SetOnButtonPressed(Handlers::OnButtonPressedInterface* implementation)
+{
+}
+void Button::SetOnButtonPressed(Handlers::OnButtonPressedHandler callback)
+{
+}
