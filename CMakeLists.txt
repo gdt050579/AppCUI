@@ -32,6 +32,8 @@ elseif (UNIX)
     endif()
 endif()
 
+add_compile_definitions(APPCUI_ENABLE_CONTROL_BORDER_MODE)
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
      add_compile_options(-Wall -Wextra
              -Wno-switch
