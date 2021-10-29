@@ -205,8 +205,7 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
-    if (ctrl == nullptr)
-        return;
+    CHECKRET(ctrl != nullptr, "");    
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
@@ -247,10 +246,17 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     }
 
     // draw current control
+#if defined(APPCUI_ENABLE_CONTROL_BORDER_MODE)
+    ctrl->Control::Paint(renderer);
+#endif
     if (Members->Handlers.OnPaintHandler != nullptr)
+    {
         Members->Handlers.OnPaintHandler(ctrl, Members->Handlers.OnPaintHandlerContext);
+    }
     else
+    {
         ctrl->Paint(renderer);
+    }
 
     if ((Members->Focused) && (Members->Flags & (GATTR_VSCROLL | GATTR_HSCROLL)))
     {
