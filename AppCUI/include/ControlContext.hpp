@@ -116,8 +116,7 @@ struct ControlContext
         void* OnUpdateCommandBarHandlerContext;
         Handlers::KeyEventHandler OnKeyEventHandler;
         void* OnKeyEventHandlerContext;
-        Handlers::PaintHandler OnPaintHandler;
-        void* OnPaintHandlerContext;
+
         Handlers::OnFocusHandler OnFocusHandler;
         void* OnFocusHandlerContext;
         Handlers::OnFocusHandler OnLoseFocusHandler;

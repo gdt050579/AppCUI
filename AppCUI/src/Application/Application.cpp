@@ -247,8 +247,13 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     }
 
     // draw current control
-    if (Members->Handlers.OnPaintHandler != nullptr)
-        Members->Handlers.OnPaintHandler(ctrl, Members->Handlers.OnPaintHandlerContext);
+    if (Members->handlers)
+    {
+        if (Members->handlers->PaintControl.obj)
+            Members->handlers->PaintControl.obj->PaintControl(ctrl, renderer);
+        else
+            ctrl->Paint(renderer);
+    }
     else
         ctrl->Paint(renderer);
 

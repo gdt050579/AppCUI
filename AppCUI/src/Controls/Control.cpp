@@ -1811,11 +1811,7 @@ void AppCUI::Controls::Control::SetOnKeyEventHandler(Handlers::KeyEventHandler h
     CTRLC->Handlers.OnKeyEventHandler        = handler;
     CTRLC->Handlers.OnKeyEventHandlerContext = objContext;
 }
-void AppCUI::Controls::Control::SetPaintHandler(Handlers::PaintHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnPaintHandler        = handler;
-    CTRLC->Handlers.OnPaintHandlerContext = objContext;
-}
+
 void AppCUI::Controls::Control::SetOnFocusHandler(Handlers::PaintHandler handler, void* objContext)
 {
     CTRLC->Handlers.OnFocusHandler        = handler;

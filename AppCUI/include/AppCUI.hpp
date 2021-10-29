@@ -2060,7 +2060,6 @@ namespace Controls
 
         void SetOnUpdateCommandBarHandler(Handlers::UpdateCommandBarHandler handler, void* Context = nullptr);
         void SetOnKeyEventHandler(Handlers::KeyEventHandler handler, void* Context = nullptr);
-        void SetPaintHandler(Handlers::PaintHandler handler, void* Context = nullptr);
         void SetOnFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
         void SetOnLoseFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
         void SetMousePressedHandler(Handlers::MousePressedHandler handler, void* Context = nullptr);
