@@ -1488,9 +1488,6 @@ void AppCUI::Controls::Control::MoveTo(int newX, int newY)
     CTRLC->Layout.Y = newY;
     AppCUI::Application::RecomputeControlsLayout();
     AppCUI::Application::Repaint();
-    if (CTRLC->Handlers.OnAfterMoveHandler != nullptr)
-        CTRLC->Handlers.OnAfterMoveHandler(
-              this, CTRLC->Layout.X, CTRLC->Layout.Y, CTRLC->Handlers.OnAfterMoveHandlerContext);
 }
 bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
 {
@@ -1513,17 +1510,10 @@ bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
         newWidth = 1;
     if (newHeight < 1)
         newHeight = 1;
-    if (CTRLC->Handlers.OnBeforeResizeHandler != nullptr)
-    {
-        if (CTRLC->Handlers.OnBeforeResizeHandler(
-                  this, newWidth, newHeight, CTRLC->Handlers.OnBeforeResizeHandlerContext) == false)
-            return false;
-    }
-    else
-    {
-        if (OnBeforeResize(newWidth, newHeight) == false)
-            return false;
-    }
+
+    if (OnBeforeResize(newWidth, newHeight) == false)
+        return false;
+
     CTRLC->Layout.Width  = newWidth;
     CTRLC->Layout.Height = newHeight;
     RecomputeLayout();
@@ -1537,9 +1527,6 @@ void AppCUI::Controls::Control::RecomputeLayout()
         CTRLC->Controls[tr]->RecomputeLayout();
     }
     OnAfterResize(CTRLC->Layout.Width, CTRLC->Layout.Height);
-    if (CTRLC->Handlers.OnAfterResizeHandler != nullptr)
-        CTRLC->Handlers.OnAfterResizeHandler(
-              this, CTRLC->Layout.Width, CTRLC->Layout.Height, CTRLC->Handlers.OnAfterResizeHandlerContext);
 
     AppCUI::Application::RecomputeControlsLayout();
 }
@@ -1813,21 +1800,6 @@ Handlers::Control* AppCUI::Controls::Control::Handlers()
     GET_CONTROL_HANDLERS(Handlers::Control);
 }
 
-void AppCUI::Controls::Control::SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnBeforeResizeHandler        = handler;
-    CTRLC->Handlers.OnBeforeResizeHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetOnAfterResizeHandler(Handlers::AfterResizeHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnAfterResizeHandler        = handler;
-    CTRLC->Handlers.OnAfterResizeHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetOnAfterMoveHandler(Handlers::AfterMoveHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnAfterMoveHandler        = handler;
-    CTRLC->Handlers.OnAfterMoveHandlerContext = objContext;
-}
 void AppCUI::Controls::Control::SetOnUpdateCommandBarHandler(
       Handlers::UpdateCommandBarHandler handler, void* objContext)
 {

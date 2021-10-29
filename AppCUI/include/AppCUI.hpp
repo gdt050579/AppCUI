@@ -1927,11 +1927,7 @@ namespace Controls
             Wrapper<OnButtonPressedInterface, OnButtonPressedCallack, OnButtonPressedHandler> OnButtonPressed;
         };
 
-        typedef void (*AfterResizeHandler)(
-              AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
-        typedef bool (*BeforeResizeHandler)(
-              AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
-        typedef void (*AfterMoveHandler)(AppCUI::Controls::Control* control, int newX, int newY, void* Context);
+
         typedef bool (*UpdateCommandBarHandler)(AppCUI::Controls::Control* control, void* Context);
         typedef bool (*KeyEventHandler)(
               AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context);
@@ -2062,9 +2058,6 @@ namespace Controls
         // handlers
         virtual Handlers::Control* Handlers();
 
-        void SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void* Context = nullptr);
-        void SetOnAfterResizeHandler(Handlers::AfterResizeHandler handler, void* Context = nullptr);
-        void SetOnAfterMoveHandler(Handlers::AfterMoveHandler handler, void* Context = nullptr);
         void SetOnUpdateCommandBarHandler(Handlers::UpdateCommandBarHandler handler, void* Context = nullptr);
         void SetOnKeyEventHandler(Handlers::KeyEventHandler handler, void* Context = nullptr);
         void SetPaintHandler(Handlers::PaintHandler handler, void* Context = nullptr);

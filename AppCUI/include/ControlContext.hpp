@@ -111,11 +111,6 @@ struct ControlContext
     std::unique_ptr<AppCUI::Controls::Handlers::Control> handlers;
     struct
     {
-        Handlers::AfterResizeHandler OnAfterResizeHandler;
-        void* OnAfterResizeHandlerContext;
-        Handlers::BeforeResizeHandler OnBeforeResizeHandler;
-        void* OnBeforeResizeHandlerContext;
-        Handlers::AfterMoveHandler OnAfterMoveHandler;
         void* OnAfterMoveHandlerContext;
         Handlers::UpdateCommandBarHandler OnUpdateCommandBarHandler;
         void* OnUpdateCommandBarHandlerContext;
