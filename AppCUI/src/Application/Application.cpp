@@ -1209,19 +1209,25 @@ void AppCUI::Internal::Application::RaiseEvent(
 {
     while (control != nullptr)
     {
-        if (((ControlContext*) (control->Context))->Handlers.OnEventHandler != nullptr)
+        if (((ControlContext*) (control->Context))->handlers)
         {
-            // if (((ControlContext*) (control->Context))
-            //          ->Handlers.OnEventHandler(
-            //                control,
-            //                sourceControl,
-            //                eventType,
-            //                controlID,
-            //                ((ControlContext*) (control->Context))->Handlers.OnEventHandlerContext) == true)
-            //{
-            //    RepaintStatus |= REPAINT_STATUS_DRAW;
-            //    return;
-            //}
+            const auto handle = ((ControlContext*) (control->Context))->handlers.get();
+            if (handle->OnEvent.obj)
+            {
+                if (handle->OnEvent.obj->OnEvent(control, eventType,controlID))
+                {
+                    RepaintStatus |= REPAINT_STATUS_DRAW;
+                    return;
+                }
+            }
+            else
+            {
+                if (control->OnEvent(sourceControl, eventType, controlID) == true)
+                {
+                    RepaintStatus |= REPAINT_STATUS_DRAW;
+                    return;
+                }
+            }
         }
         else
         {

@@ -631,6 +631,8 @@ ControlContext::ControlContext()
     this->ScrollBars.MaxVerticalValue              = 0;
     this->ScrollBars.OutsideControl                = false;
     this->handlers                                 = nullptr;
+
+    memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
 bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
 {
@@ -1852,11 +1854,7 @@ void AppCUI::Controls::Control::SetOnLoseFocusHandler(Handlers::PaintHandler han
     CTRLC->Handlers.OnLoseFocusHandler        = handler;
     CTRLC->Handlers.OnLoseFocusHandlerContext = objContext;
 }
-void AppCUI::Controls::Control::SetEventHandler(Handlers::EventHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnEventHandler        = handler;
-    CTRLC->Handlers.OnEventHandlerContext = objContext;
-}
+
 void AppCUI::Controls::Control::SetMousePressedHandler(Handlers::MousePressedHandler handler, void* objContext)
 {
     CTRLC->Handlers.OnMousePressedHandler        = handler;

@@ -131,8 +131,6 @@ struct ControlContext
         void* OnMouseReleasedHandlerContext;
         Handlers::MousePressedHandler OnMousePressedHandler;
         void* OnMousePressedHandlerContext;
-        Handlers::EventHandler OnEventHandler;
-        void* OnEventHandlerContext;
     } Handlers;
 
     ControlContext();

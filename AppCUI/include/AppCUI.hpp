@@ -1845,6 +1845,8 @@ namespace Controls
         using namespace AppCUI::Graphics;
         typedef void (*OnButtonPressedHandler)(Reference<AppCUI::Controls::Button> r);
         typedef void (*PaintControlHandler)(Reference<AppCUI::Controls::Control> control, Renderer& renderer);
+        typedef bool (*OnEventHandler)(
+              Reference<AppCUI::Controls::Control> control, AppCUI::Controls::Event eventType, int controlID);
 
         struct OnButtonPressedInterface
         {
@@ -1858,7 +1860,7 @@ namespace Controls
                 callback(r);
             };
         };
-        
+
         struct PaintControlInterface
         {
             virtual void PaintControl(Reference<AppCUI::Controls::Control> control, Renderer& renderer) = 0;
@@ -1872,14 +1874,31 @@ namespace Controls
             };
         };
 
+        struct OnEventInterface
+        {
+            virtual bool OnEvent(
+                  Reference<AppCUI::Controls::Control> control, AppCUI::Controls::Event eventType, int controlID) = 0;
+        };
+        struct OnEventCallback : public OnEventInterface
+        {
+            OnEventHandler callback;
+            virtual bool OnEvent(
+                  Reference<AppCUI::Controls::Control> control,
+                  AppCUI::Controls::Event eventType,
+                  int controlID) override
+            {
+                return callback(control, eventType, controlID);
+            };
+        };
 
         template <typename I, typename C, typename H>
         class Wrapper
-        {            
+        {
             C callbackObj;
 
           public:
             I* obj;
+
           public:
             Wrapper() : obj(nullptr)
             {
@@ -1898,6 +1917,7 @@ namespace Controls
         struct Control
         {
             Wrapper<PaintControlInterface, PaintControlCallback, PaintControlHandler> PaintControl;
+            Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
             virtual ~Control()
             {
             }
@@ -1917,12 +1937,6 @@ namespace Controls
               AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context);
         typedef void (*PaintHandler)(AppCUI::Controls::Control* control, void* Context);
         typedef void (*OnFocusHandler)(AppCUI::Controls::Control* control, void* Context);
-        typedef bool (*EventHandler)(
-              AppCUI::Controls::Control* control,
-              const void* sender,
-              AppCUI::Controls::Event eventType,
-              int controlID,
-              void* Context);
         typedef void (*MousePressedHandler)(
               AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
         typedef void (*MouseReleasedHandler)(
@@ -2056,7 +2070,6 @@ namespace Controls
         void SetPaintHandler(Handlers::PaintHandler handler, void* Context = nullptr);
         void SetOnFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
         void SetOnLoseFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
-        void SetEventHandler(Handlers::EventHandler handler, void* Context = nullptr);
         void SetMousePressedHandler(Handlers::MousePressedHandler handler, void* Context = nullptr);
         void SetMouseReleasedHandler(Handlers::MouseReleasedHandler handler, void* Context = nullptr);
         void SetMouseHandler(
