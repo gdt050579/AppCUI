@@ -630,8 +630,7 @@ ControlContext::ControlContext()
     this->ScrollBars.MaxHorizontalValue            = 0;
     this->ScrollBars.MaxVerticalValue              = 0;
     this->ScrollBars.OutsideControl                = false;
-    // curat automat
-    memset(&this->Handlers, 0, sizeof(this->Handlers));
+    this->handlers                                 = nullptr;
 }
 bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
 {
@@ -1805,6 +1804,13 @@ void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString&
 void AppCUI::Controls::Control::OnUpdateScrollBars()
 {
 }
+
+
+Handlers::Control* AppCUI::Controls::Control::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::Control);
+}
+
 void AppCUI::Controls::Control::SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void* objContext)
 {
     CTRLC->Handlers.OnBeforeResizeHandler        = handler;

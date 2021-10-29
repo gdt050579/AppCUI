@@ -109,6 +109,18 @@ void Button::Paint(Graphics::Renderer& renderer)
 }
 void Button::OnHotKey()
 {
+    CREATE_CONTROL_CONTEXT(this, Members, );
+    if (Members->handlers)
+    {
+        auto bh = this->Handlers();
+        if (bh->OnButtonPressed.obj)
+        {
+            bh->OnButtonPressed.obj->OnButtonPressed(this);
+            return;
+        }        
+    }
+
+    // if no handler is present --> call RaiseEvent
     RaiseEvent(Event::ButtonClicked);
 }
 bool Button::OnKeyEvent(Key KeyCode, char16_t)
@@ -152,9 +164,7 @@ bool Button::OnMouseLeave()
 {
     return true;
 }
-void Button::SetOnButtonPressed(Handlers::OnButtonPressedInterface* implementation)
+Handlers::Button* Button::Handlers()
 {
-}
-void Button::SetOnButtonPressed(Handlers::OnButtonPressedHandler callback)
-{
+    GET_CONTROL_HANDLERS(Handlers::Button);
 }

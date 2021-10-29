@@ -108,6 +108,7 @@ struct ControlContext
     bool Inited, Focused, MouseIsOver;
 
     // Handlers
+    std::unique_ptr<AppCUI::Controls::Handlers::Control> handlers;
     struct
     {
         Handlers::AfterResizeHandler OnAfterResizeHandler;
@@ -770,6 +771,13 @@ struct MenuContext
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \
         return retValue;
+#define GET_CONTROL_HANDLERS(type)                                                                                     \
+    if (!this->Context)                                                                                                \
+        return nullptr;                                                                                                \
+    if (!((ControlContext*) (this->Context))->handlers)                                                                \
+        ((ControlContext*) (this->Context))->handlers = std::make_unique<type>();                                      \
+    return (type*) ((((ControlContext*) (this->Context))->handlers).get());
+
 #define CREATE_TYPECONTROL_CONTEXT(type, name, retValue)                                                               \
     type* name = (type*) ((this)->Context);                                                                            \
     if (name == nullptr)                                                                                               \

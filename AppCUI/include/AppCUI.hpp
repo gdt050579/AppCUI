@@ -1831,6 +1831,7 @@ namespace Controls
     typedef unsigned int ItemHandle;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
+    class EXPORT Button;
     class EXPORT TextField;
     class EXPORT ListView;
     class EXPORT Tree;
@@ -1841,13 +1842,70 @@ namespace Controls
 
     namespace Handlers
     {
-        typedef void (*OnButtonPressedHandler)(Reference<Button> r);
+        using namespace AppCUI::Graphics;
+        typedef void (*OnButtonPressedHandler)(Reference<AppCUI::Controls::Button> r);
+        typedef void (*PaintControlHandler)(Reference<AppCUI::Controls::Control> control, Renderer& renderer);
 
         struct OnButtonPressedInterface
         {
-            virtual void OnButtonPressed(Reference<Button> r) = 0;
+            virtual void OnButtonPressed(Reference<AppCUI::Controls::Button> r) = 0;
+        };
+        struct OnButtonPressedCallack : public OnButtonPressedInterface
+        {
+            OnButtonPressedHandler callback;
+            virtual void OnButtonPressed(Reference<AppCUI::Controls::Button> r) override
+            {
+                callback(r);
+            };
+        };
+        
+        struct PaintControlInterface
+        {
+            virtual void PaintControl(Reference<AppCUI::Controls::Control> control, Renderer& renderer) = 0;
+        };
+        struct PaintControlCallback : public PaintControlInterface
+        {
+            PaintControlHandler callback;
+            virtual void PaintControl(Reference<AppCUI::Controls::Control> control, Renderer& renderer) override
+            {
+                callback(control, renderer);
+            };
         };
 
+
+        template <typename I, typename C, typename H>
+        class Wrapper
+        {            
+            C callbackObj;
+
+          public:
+            I* obj;
+          public:
+            Wrapper() : obj(nullptr)
+            {
+            }
+            constexpr inline void operator=(I* implementation)
+            {
+                this->obj = implementation;
+            }
+            constexpr inline void operator=(H callback)
+            {
+                this->callbackObj.callback = callback;
+                this->obj                  = &this->callbackObj;
+            }
+        };
+
+        struct Control
+        {
+            Wrapper<PaintControlInterface, PaintControlCallback, PaintControlHandler> PaintControl;
+            virtual ~Control()
+            {
+            }
+        };
+        struct Button : public Control
+        {
+            Wrapper<OnButtonPressedInterface, OnButtonPressedCallack, OnButtonPressedHandler> OnButtonPressed;
+        };
 
         typedef void (*AfterResizeHandler)(
               AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
@@ -1987,7 +2045,9 @@ namespace Controls
         void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
         void UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
 
-        // handlere
+        // handlers
+        virtual Handlers::Control* Handlers();
+
         void SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void* Context = nullptr);
         void SetOnAfterResizeHandler(Handlers::AfterResizeHandler handler, void* Context = nullptr);
         void SetOnAfterMoveHandler(Handlers::AfterMoveHandler handler, void* Context = nullptr);
@@ -2162,9 +2222,9 @@ namespace Controls
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        
-        void SetOnButtonPressed(Handlers::OnButtonPressedInterface* implementation);
-        void SetOnButtonPressed(Handlers::OnButtonPressedHandler callback);
+
+        // handlers covariant
+        Handlers::Button* Handlers() override;
 
         friend Factory::Button;
         friend Control;
