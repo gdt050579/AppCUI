@@ -1843,19 +1843,20 @@ namespace Controls
     namespace Handlers
     {
         using namespace AppCUI::Graphics;
-        typedef void (*OnButtonPressedHandler)(Reference<AppCUI::Controls::Button> r);
-        typedef void (*PaintControlHandler)(Reference<AppCUI::Controls::Control> control, Renderer& renderer);
-        typedef bool (*OnEventHandler)(
-              Reference<AppCUI::Controls::Control> control, AppCUI::Controls::Event eventType, int controlID);
+        using namespace AppCUI;
+
+        typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
+        typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
+        typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
 
         struct OnButtonPressedInterface
         {
-            virtual void OnButtonPressed(Reference<AppCUI::Controls::Button> r) = 0;
+            virtual void OnButtonPressed(Reference<Controls::Button> r) = 0;
         };
         struct OnButtonPressedCallack : public OnButtonPressedInterface
         {
             OnButtonPressedHandler callback;
-            virtual void OnButtonPressed(Reference<AppCUI::Controls::Button> r) override
+            virtual void OnButtonPressed(Reference<Controls::Button> r) override
             {
                 callback(r);
             };
@@ -1863,12 +1864,12 @@ namespace Controls
 
         struct PaintControlInterface
         {
-            virtual void PaintControl(Reference<AppCUI::Controls::Control> control, Renderer& renderer) = 0;
+            virtual void PaintControl(Reference<Controls::Control> control, Renderer& renderer) = 0;
         };
         struct PaintControlCallback : public PaintControlInterface
         {
             PaintControlHandler callback;
-            virtual void PaintControl(Reference<AppCUI::Controls::Control> control, Renderer& renderer) override
+            virtual void PaintControl(Reference<Controls::Control> control, Renderer& renderer) override
             {
                 callback(control, renderer);
             };
@@ -1876,16 +1877,13 @@ namespace Controls
 
         struct OnEventInterface
         {
-            virtual bool OnEvent(
-                  Reference<AppCUI::Controls::Control> control, AppCUI::Controls::Event eventType, int controlID) = 0;
+            virtual bool OnEvent(Reference<Controls::Control> control, Controls::Event eventType, int controlID) = 0;
         };
         struct OnEventCallback : public OnEventInterface
         {
             OnEventHandler callback;
             virtual bool OnEvent(
-                  Reference<AppCUI::Controls::Control> control,
-                  AppCUI::Controls::Event eventType,
-                  int controlID) override
+                  Reference<Controls::Control> control, Controls::Event eventType, int controlID) override
             {
                 return callback(control, eventType, controlID);
             };
@@ -1928,11 +1926,9 @@ namespace Controls
         };
 
 
-        typedef bool (*UpdateCommandBarHandler)(AppCUI::Controls::Control* control, void* Context);
         typedef bool (*KeyEventHandler)(
               AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context);
-        typedef void (*PaintHandler)(AppCUI::Controls::Control* control, void* Context);
-        typedef void (*OnFocusHandler)(AppCUI::Controls::Control* control, void* Context);
+
         typedef void (*MousePressedHandler)(
               AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
         typedef void (*MouseReleasedHandler)(
@@ -2057,17 +2053,6 @@ namespace Controls
 
         // handlers
         virtual Handlers::Control* Handlers();
-
-        void SetOnUpdateCommandBarHandler(Handlers::UpdateCommandBarHandler handler, void* Context = nullptr);
-        void SetOnKeyEventHandler(Handlers::KeyEventHandler handler, void* Context = nullptr);
-        void SetOnFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
-        void SetOnLoseFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
-        void SetMousePressedHandler(Handlers::MousePressedHandler handler, void* Context = nullptr);
-        void SetMouseReleasedHandler(Handlers::MouseReleasedHandler handler, void* Context = nullptr);
-        void SetMouseHandler(
-              Handlers::MousePressedHandler mousePressedHandler,
-              Handlers::MouseReleasedHandler mouseReleasedHandler,
-              void* Context = nullptr);
 
         // paint
         virtual void Paint(Graphics::Renderer& renderer);

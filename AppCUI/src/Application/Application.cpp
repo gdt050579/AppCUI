@@ -218,23 +218,16 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     {
         if (focused)
         {
-            if (Members->Handlers.OnFocusHandler != nullptr)
-                Members->Handlers.OnFocusHandler(ctrl, Members->Handlers.OnFocusHandlerContext);
-            else
-                ctrl->OnFocus();
+            // on focus (handler)
+            ctrl->OnFocus();
         }
         else
         {
-            if (Members->Handlers.OnLoseFocusHandler != nullptr)
-            {
-                Members->Handlers.OnLoseFocusHandler(ctrl, Members->Handlers.OnFocusHandlerContext);
-            }
-            else
-            {
-                ctrl->OnLoseFocus();
-                if (ctrl == app->ExpandedControl)
-                    app->PackControl(false);
-            }
+            // on lose focus
+            ctrl->OnLoseFocus();
+            if (ctrl == app->ExpandedControl)
+                app->PackControl(false);
+            
         }
         Members->Focused = focused;
     }
@@ -436,18 +429,10 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj)
     app->cmdBar->Clear();
     while (obj != nullptr)
     {
-        if (((ControlContext*) (obj->Context))->Handlers.OnUpdateCommandBarHandler != nullptr)
-        {
-            if (((ControlContext*) (obj->Context))
-                      ->Handlers.OnUpdateCommandBarHandler(
-                            obj, ((ControlContext*) (obj->Context))->Handlers.OnUpdateCommandBarHandlerContext) == true)
-                break;
-        }
-        else
-        {
-            if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
-                break;
-        }
+        // on handler
+        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
+            break;
+        
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
     app->RepaintStatus |= REPAINT_STATUS_DRAW;

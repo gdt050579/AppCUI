@@ -109,23 +109,6 @@ struct ControlContext
 
     // Handlers
     std::unique_ptr<AppCUI::Controls::Handlers::Control> handlers;
-    struct
-    {
-        void* OnAfterMoveHandlerContext;
-        Handlers::UpdateCommandBarHandler OnUpdateCommandBarHandler;
-        void* OnUpdateCommandBarHandlerContext;
-        Handlers::KeyEventHandler OnKeyEventHandler;
-        void* OnKeyEventHandlerContext;
-
-        Handlers::OnFocusHandler OnFocusHandler;
-        void* OnFocusHandlerContext;
-        Handlers::OnFocusHandler OnLoseFocusHandler;
-        void* OnLoseFocusHandlerContext;
-        Handlers::MouseReleasedHandler OnMouseReleasedHandler;
-        void* OnMouseReleasedHandlerContext;
-        Handlers::MousePressedHandler OnMousePressedHandler;
-        void* OnMousePressedHandlerContext;
-    } Handlers;
 
     ControlContext();
 

@@ -631,8 +631,6 @@ ControlContext::ControlContext()
     this->ScrollBars.MaxVerticalValue              = 0;
     this->ScrollBars.OutsideControl                = false;
     this->handlers                                 = nullptr;
-
-    memset(&this->Handlers, 0, sizeof(this->Handlers));
 }
 bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
 {
@@ -1800,47 +1798,6 @@ Handlers::Control* AppCUI::Controls::Control::Handlers()
     GET_CONTROL_HANDLERS(Handlers::Control);
 }
 
-void AppCUI::Controls::Control::SetOnUpdateCommandBarHandler(
-      Handlers::UpdateCommandBarHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnUpdateCommandBarHandler        = handler;
-    CTRLC->Handlers.OnUpdateCommandBarHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetOnKeyEventHandler(Handlers::KeyEventHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnKeyEventHandler        = handler;
-    CTRLC->Handlers.OnKeyEventHandlerContext = objContext;
-}
-
-void AppCUI::Controls::Control::SetOnFocusHandler(Handlers::PaintHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnFocusHandler        = handler;
-    CTRLC->Handlers.OnFocusHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetOnLoseFocusHandler(Handlers::PaintHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnLoseFocusHandler        = handler;
-    CTRLC->Handlers.OnLoseFocusHandlerContext = objContext;
-}
-
-void AppCUI::Controls::Control::SetMousePressedHandler(Handlers::MousePressedHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnMousePressedHandler        = handler;
-    CTRLC->Handlers.OnMousePressedHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetMouseReleasedHandler(Handlers::MouseReleasedHandler handler, void* objContext)
-{
-    CTRLC->Handlers.OnMouseReleasedHandler        = handler;
-    CTRLC->Handlers.OnMouseReleasedHandlerContext = objContext;
-}
-void AppCUI::Controls::Control::SetMouseHandler(
-      Handlers::MousePressedHandler mousePressedHandler,
-      Handlers::MouseReleasedHandler mouseReleasedHandler,
-      void* objContext)
-{
-    SetMousePressedHandler(mousePressedHandler, objContext);
-    SetMouseReleasedHandler(mouseReleasedHandler, objContext);
-}
 void AppCUI::Controls::Control::ExpandView()
 {
     AppCUI::Application::GetApplication()->ExpandControl(this);
