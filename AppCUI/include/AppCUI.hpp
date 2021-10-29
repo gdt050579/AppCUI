@@ -1844,10 +1844,12 @@ namespace Controls
     {
         using namespace AppCUI::Graphics;
         using namespace AppCUI;
+        using namespace AppCUI::Input;
 
         typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
         typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
         typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
+        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
 
         struct OnButtonPressedInterface
         {
@@ -1889,6 +1891,19 @@ namespace Controls
             };
         };
 
+        struct OnKeyEventInterface
+        {
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) = 0;
+        };
+        struct OnKeyEventCallback : public OnKeyEventInterface
+        {
+            OnKeyEventHandler callback;
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) override
+            {
+                return callback(control, keyCode, unicodeChar);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -1916,6 +1931,7 @@ namespace Controls
         {
             Wrapper<PaintControlInterface, PaintControlCallback, PaintControlHandler> PaintControl;
             Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
+            Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             virtual ~Control()
             {
             }
@@ -1925,14 +1941,6 @@ namespace Controls
             Wrapper<OnButtonPressedInterface, OnButtonPressedCallack, OnButtonPressedHandler> OnButtonPressed;
         };
 
-
-        typedef bool (*KeyEventHandler)(
-              AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context);
-
-        typedef void (*MousePressedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
-        typedef void (*MouseReleasedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
         typedef void (*SyntaxHighlightHandler)(
               AppCUI::Controls::Control* control,
               AppCUI::Graphics::Character* characters,

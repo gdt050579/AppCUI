@@ -227,7 +227,6 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             ctrl->OnLoseFocus();
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
-            
         }
         Members->Focused = focused;
     }
@@ -432,7 +431,7 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj)
         // on handler
         if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
             break;
-        
+
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
@@ -691,25 +690,23 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
 
-    bool found = false;
+    bool found  = false;
+    bool result = false;
     while (ctrl != nullptr)
     {
-        // if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
-        //{
-        //    if (((ControlContext*) (ctrl->Context))
-        //              ->Handlers.OnKeyEventHandler(
-        //                    ctrl,
-        //                    KeyCode,
-        //                    unicodeCharacter,
-        //                    ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
-        //    {
-        //        // if a key was handled --> repaint
-        //        found = true;
-        //        RepaintStatus |= REPAINT_STATUS_DRAW;
-        //        break;
-        //    }
-        //}
-        if (ctrl->OnKeyEvent(KeyCode, unicodeCharacter))
+        if (((ControlContext*) (ctrl->Context))->handlers)
+        {
+            const auto h = ((ControlContext*) (ctrl->Context))->handlers.get();
+            if (h->OnKeyEvent.obj)
+                result = h->OnKeyEvent.obj->OnKeyEvent(ctrl, KeyCode, unicodeCharacter);
+            else
+                result = ctrl->OnKeyEvent(KeyCode, unicodeCharacter);
+        }
+        else
+        {
+            result = ctrl->OnKeyEvent(KeyCode, unicodeCharacter);
+        }
+        if (result)
         {
             // if a key was handled --> repaint
             found = true;
@@ -840,16 +837,9 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
             this->PackControl(true);
         MouseLockedControl->SetFocus();
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
-        if (cc->Handlers.OnMousePressedHandler != nullptr)
-            cc->Handlers.OnMousePressedHandler(
-                  MouseLockedControl,
-                  x - cc->ScreenClip.ScreenPosition.X,
-                  y - cc->ScreenClip.ScreenPosition.Y,
-                  button,
-                  cc->Handlers.OnMousePressedHandlerContext);
-        else
-            MouseLockedControl->OnMousePressed(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+
+        MouseLockedControl->OnMousePressed(
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -879,16 +869,8 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
         break;
     case MOUSE_LOCKED_OBJECT_CONTROL:
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
-        if (cc->Handlers.OnMouseReleasedHandler != nullptr)
-            cc->Handlers.OnMouseReleasedHandler(
-                  MouseLockedControl,
-                  x - cc->ScreenClip.ScreenPosition.X,
-                  y - cc->ScreenClip.ScreenPosition.Y,
-                  button,
-                  cc->Handlers.OnMouseReleasedHandlerContext);
-        else
-            MouseLockedControl->OnMouseReleased(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+        MouseLockedControl->OnMouseReleased(
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
         RepaintStatus |= REPAINT_STATUS_DRAW;
         break;
     }
@@ -1204,7 +1186,7 @@ void AppCUI::Internal::Application::RaiseEvent(
             const auto handle = ((ControlContext*) (control->Context))->handlers.get();
             if (handle->OnEvent.obj)
             {
-                if (handle->OnEvent.obj->OnEvent(control, eventType,controlID))
+                if (handle->OnEvent.obj->OnEvent(control, eventType, controlID))
                 {
                     RepaintStatus |= REPAINT_STATUS_DRAW;
                     return;
