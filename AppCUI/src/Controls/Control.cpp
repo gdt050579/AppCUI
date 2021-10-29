@@ -1706,8 +1706,11 @@ void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Graphics::Renderer&)
+void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
 {
+#if defined(APPCUI_ENABLE_CONTROL_BORDER_MODE)
+    renderer.DrawRectSize(0, 0, GetWidth() - 1, GetHeight() - 1, { Color::White, Color::Transparent }, false);
+#endif
 }
 bool AppCUI::Controls::Control::IsInitialized()
 {
