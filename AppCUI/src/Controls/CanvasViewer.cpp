@@ -33,8 +33,7 @@ CanvasViewer::CanvasViewer(
 {
     auto Members = reinterpret_cast<CanvasControlContext*>(this->Context);
 
-    Members->Flags =
-          GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
+    Members->Flags                     = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | ((unsigned int) flags);
     Members->CanvasScrollX             = 0;
     Members->CanvasScrollY             = 0;
     Members->mouseDragX                = 0;

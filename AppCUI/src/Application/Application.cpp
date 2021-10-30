@@ -268,7 +268,6 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     renderer.ResetClip(); // make sure that the entire surface is available
     app->terminal->ScreenCanvas.ExtendAbsoluteClipInAllDirections(1);
     renderer.DrawRectSize(0, 0, ctrl->GetWidth(), ctrl->GetHeight(), { Color::White, Color::Transparent }, false);
-
 #endif
 
     const auto cnt = Members->ControlsCount;

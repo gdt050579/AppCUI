@@ -2468,8 +2468,10 @@ namespace Controls
     };
     enum class ViewerFlags : unsigned int
     {
-        None   = 0,
-        Border = 0x000100,
+        None    = 0,
+        HScroll = 0x000010,
+        VScroll = 0x000020,
+        Border  = 0x000100,
     };
     class EXPORT CanvasViewer : public Control
     {

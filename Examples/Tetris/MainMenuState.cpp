@@ -32,6 +32,9 @@ bool MainMenuState::HandleEvent(
     {
     case AppCUI::Controls::Event::ButtonClicked:
         return DoActionForControl(controlID);
+    case AppCUI::Controls::Event::TerminateApplication:
+        AppCUI::Application::Close();
+        break;
     default:
         break;
     }

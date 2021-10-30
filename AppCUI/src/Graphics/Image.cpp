@@ -62,7 +62,6 @@ unsigned char Image_CharToIndex[256] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
-
 Image::Image()
 {
     Width = Height = 0;
@@ -71,7 +70,7 @@ Image::Image()
 Image::~Image()
 {
     if (Pixels)
-        delete Pixels;
+        delete[] Pixels;
     Width = Height = 0;
     Pixels         = nullptr;
 }
@@ -81,7 +80,7 @@ bool Image::Create(unsigned int width, unsigned int height)
     CHECK(height > 0, false, "Invalid 'height' parameter (should be bigger than 0)");
     if (Pixels)
     {
-        delete Pixels;
+        delete[] Pixels;
         Pixels = nullptr;
         Width = Height = 0;
     }
@@ -104,7 +103,7 @@ bool Image::Create(unsigned int width, unsigned int height, std::string_view ima
     auto s = image.data();
     auto e = s + std::min<>(image.size(), (size_t) width * (size_t) height);
     auto p = Pixels;
-    while (s<e)
+    while (s < e)
     {
         auto val = Image_CharToIndex[*s];
         if (val != 0xFF)
@@ -133,7 +132,7 @@ bool Image::Clear(unsigned int color)
 {
     CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
     unsigned int* s = Pixels;
-    unsigned int* e = s + (size_t)Width * (size_t)Height;
+    unsigned int* e = s + (size_t) Width * (size_t) Height;
     while (s < e)
     {
         (*s) = color;
@@ -167,8 +166,8 @@ bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color) const
 }
 unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
 {
-    if ((x >= this->Width) || (y >= this->Height) || (sz==0))
-        return 0;  // nothing to compute
+    if ((x >= this->Width) || (y >= this->Height) || (sz == 0))
+        return 0; // nothing to compute
     unsigned int e_x = x + sz;
     unsigned int e_y = y + sz;
     if (e_x >= this->Width)
@@ -184,11 +183,11 @@ unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, un
     if ((xSize == 0) || (ySize == 0))
         return 0; // nothing to compute (sanity check)
 
-    while (y<e_y)
+    while (y < e_y)
     {
         unsigned int* p = sPtr;
-        unsigned int* e = p + (size_t)xSize;
-        while (p<e)
+        unsigned int* e = p + (size_t) xSize;
+        while (p < e)
         {
             sum_r += ((*p) >> 16) & 0xFF;
             sum_g += ((*p) >> 8) & 0xFF;

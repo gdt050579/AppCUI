@@ -4,6 +4,7 @@ int main()
 {
     if (AppCUI::Application::Init(
               AppCUI::Application::InitializationFlags::SingleWindowApp |
+              AppCUI::Application::InitializationFlags::Maximized |
               AppCUI::Application::InitializationFlags::EnableFPSMode) == false)
     {
         return 1;

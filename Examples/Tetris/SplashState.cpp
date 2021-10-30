@@ -1,17 +1,28 @@
 #include "SplashState.hpp"
 #include "MainMenuState.hpp"
 
-#include <utility>
 #include <chrono>
 
 SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
-    AppCUI::Utils::LocalString<128> text;
-    text.Format("%u", stateDuration);
+    page   = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
+    viewer = AppCUI::Controls::Factory::ImageViewer::Create(page, "d:c,w:86,h:9", AppCUI::Controls::ViewerFlags::None);
 
-    page    = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    panel   = AppCUI::Controls::Factory::Panel::Create(page, "Tetris", "d:c,w:25%,h:25%");
-    counter = AppCUI::Controls::Factory::Label::Create(panel, text.GetText(), "x:51%,y:52%, w:20%");
+    img.Create(
+          35,
+          7,
+          "77777747777477777747777774774777777"
+          "44774447744444774447744774774774444"
+          "44774447744444774447744774444774444"
+          "44774447777444774447777774774777777"
+          "44774447744444774447747744774444477"
+          "44774447744444774447747744774444477"
+          "44774447777444774447747774774777777");
+
+    viewer->SetImage(
+          img,
+          AppCUI::Graphics::ImageRenderingMethod::PixelTo64ColorsLargeBlock,
+          AppCUI::Graphics::ImageScaleMethod::NoScale);
 }
 
 SplashState::~SplashState()
@@ -32,10 +43,6 @@ bool SplashState::HandleEvent(
 
 bool SplashState::Update()
 {
-    AppCUI::Utils::LocalString<128> text;
-    text.Format("%u", stateDuration - static_cast<unsigned long long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC));
-    counter->SetText(text.GetText());
-
     if ((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC > stateDuration)
     {
         data->machine->PushState<MainMenuState>(data, true);

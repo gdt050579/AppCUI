@@ -30,22 +30,22 @@ class HexViewUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
 
-        const std::uint64_t height     = GetHeight();
-        const std::uint64_t width      = GetWidth();
-        const std::uint64_t bufferSize = height * width;
+        const std::uint32_t height     = GetHeight();
+        const std::uint32_t width      = GetWidth();
+        const auto bufferSize          = static_cast<std::uint64_t>(height) * width;
         const std::uint64_t maxProcess = std::min(bufferSize, fileSize - filePosition);
 
-        for (size_t i = 0; i < maxProcess; i++)
+        for (std::uint64_t i = 0; i < static_cast<std::uint64_t>(maxProcess); i++)
         {
-            const int y = i / width;
-            const int x = i % width;
+            const auto y = static_cast<std::int32_t>(i / width);
+            const auto x = static_cast<std::int32_t>(i % width);
             renderer.WriteCharacter(x, y, fileData[filePosition + i], ColorPair{ Color::White, Color::Transparent });
         }
     }
 
     bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*AsciiCode*/) override
     {
-        const std::uint64_t bufferSize = GetWidth() * GetHeight();
+        const auto bufferSize = static_cast<std::uint64_t>(GetWidth()) * GetHeight();
 
         switch (keyCode)
         {
