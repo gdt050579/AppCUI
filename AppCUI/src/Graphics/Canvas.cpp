@@ -138,7 +138,17 @@ void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
     }
     this->ClipHasBeenCopied = false;
 }
-void Canvas::ExtendAbsoluteCliptToRightBottomCorner()
+void AppCUI::Graphics::Canvas::ExtendAbsoluteClipInAllDirections(int size)
+{
+    if (Clip.Visible)
+    {
+        Clip.Left   = std::max<>(0, Clip.Left - size);
+        Clip.Top    = std::max<>(0, Clip.Top - size);
+        Clip.Right  = std::min<>(Clip.Right + size, static_cast<int>(this->Width) - size);
+        Clip.Bottom = std::min<>(Clip.Bottom + size, static_cast<int>(this->Height) - size);
+    }
+}
+void Canvas::ExtendAbsoluteClipToRightBottomCorner()
 {
     if (Clip.Visible)
     {
@@ -150,12 +160,12 @@ void Canvas::ExtendAbsoluteCliptToRightBottomCorner()
 }
 void Canvas::ClearClip()
 {
-    this->Clip.Left            = 0;
-    this->Clip.Top             = 0;
-    this->Clip.Right           = this->Width - 1;
-    this->Clip.Bottom          = this->Height - 1;
-    this->Clip.Visible         = true;
-    this->ClipHasBeenCopied    = false;
+    this->Clip.Left         = 0;
+    this->Clip.Top          = 0;
+    this->Clip.Right        = this->Width - 1;
+    this->Clip.Bottom       = this->Height - 1;
+    this->Clip.Visible      = true;
+    this->ClipHasBeenCopied = false;
 }
 void Canvas::SetTranslate(int offX, int offY)
 {
