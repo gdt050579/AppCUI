@@ -17,11 +17,7 @@ bool Game::OnEvent(
         return true;
     }
 
-    const bool handled = data->machine->PeekState()->HandleEvent(ctrl, eventType, controlID);
-    data->machine->PeekState()->Update();
-    const bool actionTaken = data->machine->ProcessStackAction();
-
-    return handled || actionTaken;
+    return data->machine->PeekState()->HandleEvent(ctrl, eventType, controlID);
 }
 
 void Game::Paint(AppCUI::Graphics::Renderer& r)

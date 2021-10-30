@@ -6,21 +6,7 @@ PauseState::PauseState(const std::shared_ptr<GameData>& data) : data(data)
     label =
           AppCUI::Controls::Factory::Label::Create(page, "Pause state. Please Esc to resume...", "x:50%,y:50%, w:20%");
 
-    page->SetOnKeyEventHandler(
-          [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
-          {
-              switch (KeyCode)
-              {
-              case AppCUI::Input::Key::Escape:
-                  reinterpret_cast<PauseState*>(Context)->data->machine->PopState();
-                  return true;
-              default:
-                  break;
-              }
-
-              return false;
-          },
-          this);
+    page->Handlers()->OnKeyEvent = this;
 }
 
 PauseState::~PauseState()
@@ -58,4 +44,19 @@ void PauseState::Pause()
 void PauseState::Resume()
 {
     data->tab->SetCurrentTabPage(page);
+}
+
+bool PauseState::OnKeyEvent(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+{
+    switch (keyCode)
+    {
+    case AppCUI::Input::Key::Escape:
+        this->data->machine->PopState();
+        return true;
+    default:
+        break;
+    }
+
+    return false;
 }

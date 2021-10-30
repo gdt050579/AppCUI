@@ -3,7 +3,7 @@
 #include "State.hpp"
 #include "Game.hpp"
 
-class PauseState : public State
+class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventInterface
 {
   public:
     explicit PauseState(const std::shared_ptr<GameData>& data);
@@ -26,6 +26,11 @@ class PauseState : public State
 
     void Pause() override;
     void Resume() override;
+
+    bool OnKeyEvent(
+          AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
+          AppCUI::Input::Key keyCode,
+          char16_t unicodeChar);
 
   private:
     const std::shared_ptr<GameData>& data;

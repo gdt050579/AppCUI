@@ -4,7 +4,7 @@
 #include "Game.hpp"
 #include "RunningState.hpp"
 
-class MainMenuState : public State
+class MainMenuState : public State, public AppCUI::Controls::Handlers::OnKeyEventInterface
 {
   public:
     explicit MainMenuState(const std::shared_ptr<GameData>& data);
@@ -40,4 +40,9 @@ class MainMenuState : public State
   private:
     // TODO: maybe attach a handler on each button instead
     bool DoActionForControl(int controlID);
+
+    bool OnKeyEvent(
+          AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
+          AppCUI::Input::Key keyCode,
+          char16_t unicodeChar);
 };

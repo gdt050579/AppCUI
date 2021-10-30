@@ -12,22 +12,7 @@ RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data)
     stats->SetText("");
     scoreLabel->SetText("");
 
-    page->SetOnKeyEventHandler(
-          [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
-          {
-              switch (KeyCode)
-              {
-              case AppCUI::Input::Key::Escape:
-                  reinterpret_cast<RunningState*>(Context)->data->machine->PushState<PauseState>(
-                        reinterpret_cast<RunningState*>(Context)->data, false);
-                  return true;
-              default:
-                  break;
-              }
-
-              return false;
-          },
-          this);
+    page->Handlers()->OnKeyEvent = this;
 }
 
 RunningState::~RunningState()
@@ -69,4 +54,20 @@ void RunningState::Pause()
 void RunningState::Resume()
 {
     data->tab->SetCurrentTabPage(page);
+}
+
+bool RunningState::OnKeyEvent(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+
+{
+    switch (keyCode)
+    {
+    case AppCUI::Input::Key::Escape:
+        this->data->machine->PushState<PauseState>(this->data, false);
+        return true;
+    default:
+        break;
+    }
+
+    return false;
 }

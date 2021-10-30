@@ -12,79 +12,7 @@ MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
     highScoreButton = AppCUI::Controls::Factory::Button::Create(menu, "HighScore", "d:c,w:25", HighScoreButtonID);
     exitButton      = AppCUI::Controls::Factory::Button::Create(menu, "Exit", "d:b,w:25", ExitButtonID);
 
-    menu->SetOnKeyEventHandler(
-          [](AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context) -> bool
-          {
-              switch (KeyCode)
-              {
-              case AppCUI::Input::Key::Down:
-              {
-                  const auto childrenNo = control->GetChildrenCount();
-
-                  for (auto i = 0U; i < childrenNo; i++)
-                  {
-                      auto child = control->GetChild(i);
-                      if (child->HasFocus())
-                      {
-                          if (i + 1U < childrenNo)
-                          {
-                              control->GetChild(i + 1U)->SetFocus();
-                          }
-                          else
-                          {
-                              control->GetChild(0)->SetFocus();
-                          }
-                          break;
-                      }
-                  }
-              }
-                  return true;
-
-              case AppCUI::Input::Key::Up:
-              {
-                  const auto childrenNo = control->GetChildrenCount();
-
-                  for (auto i = 0U; i < childrenNo; i++)
-                  {
-                      auto child = control->GetChild(i);
-                      if (child->HasFocus())
-                      {
-                          if (i == 0)
-                          {
-                              control->GetChild(childrenNo - 1U)->SetFocus();
-                          }
-                          else
-                          {
-                              control->GetChild(i - 1U)->SetFocus();
-                          }
-                          break;
-                      }
-                  }
-              }
-                  return true;
-
-              case AppCUI::Input::Key::Enter:
-              case AppCUI::Input::Key::Space:
-              {
-                  const auto childrenNo = control->GetChildrenCount();
-
-                  for (auto i = 0U; i < childrenNo; i++)
-                  {
-                      auto child = control->GetChild(i);
-                      if (child->HasFocus())
-                      {
-                          reinterpret_cast<MainMenuState*>(Context)->DoActionForControl(child->GetControlID());
-                          return true;
-                      }
-                  }
-              }
-              default:
-                  break;
-              }
-
-              return false;
-          },
-          this);
+    menu->Handlers()->OnKeyEvent = this;
 }
 
 MainMenuState::~MainMenuState()
@@ -150,4 +78,78 @@ bool MainMenuState::DoActionForControl(int controlID)
     }
 
     return true;
+}
+
+bool MainMenuState::OnKeyEvent(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+
+{
+    switch (keyCode)
+    {
+    case AppCUI::Input::Key::Down:
+    {
+        const auto childrenNo = control->GetChildrenCount();
+
+        for (auto i = 0U; i < childrenNo; i++)
+        {
+            auto child = control->GetChild(i);
+            if (child->HasFocus())
+            {
+                if (i + 1U < childrenNo)
+                {
+                    control->GetChild(i + 1U)->SetFocus();
+                }
+                else
+                {
+                    control->GetChild(0)->SetFocus();
+                }
+                break;
+            }
+        }
+    }
+        return true;
+
+    case AppCUI::Input::Key::Up:
+    {
+        const auto childrenNo = control->GetChildrenCount();
+
+        for (auto i = 0U; i < childrenNo; i++)
+        {
+            auto child = control->GetChild(i);
+            if (child->HasFocus())
+            {
+                if (i == 0)
+                {
+                    control->GetChild(childrenNo - 1U)->SetFocus();
+                }
+                else
+                {
+                    control->GetChild(i - 1U)->SetFocus();
+                }
+                break;
+            }
+        }
+    }
+        return true;
+
+    case AppCUI::Input::Key::Enter:
+    case AppCUI::Input::Key::Space:
+    {
+        const auto childrenNo = control->GetChildrenCount();
+
+        for (auto i = 0U; i < childrenNo; i++)
+        {
+            auto child = control->GetChild(i);
+            if (child->HasFocus())
+            {
+                this->DoActionForControl(child->GetControlID());
+                return true;
+            }
+        }
+    }
+    default:
+        break;
+    }
+
+    return false;
 }
