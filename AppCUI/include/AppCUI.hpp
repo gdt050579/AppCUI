@@ -943,7 +943,7 @@ namespace Utils
                 const char* e = text;
                 while (*e)
                     e++;
-                Set(std::string_view{ text, e - text });
+                Set(std::string_view{ text, static_cast<size_t> (e - text) });
             }
             else
             {
