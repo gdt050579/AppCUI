@@ -1692,7 +1692,7 @@ void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
 {
     AppCUI::Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Graphics::Renderer&)
+void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
 {
 }
 bool AppCUI::Controls::Control::IsInitialized()

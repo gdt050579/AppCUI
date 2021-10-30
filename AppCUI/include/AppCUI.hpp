@@ -1747,7 +1747,8 @@ namespace Graphics
 
         // Clipping & Translate
         void SetAbsoluteClip(const AppCUI::Graphics::Clip& clip);
-        void ExtendAbsoluteCliptToRightBottomCorner();
+        void ExtendAbsoluteClipInAllDirections(int size);
+        void ExtendAbsoluteClipToRightBottomCorner();
         void ClearClip();
         void SetTranslate(int offX, int offY);
 

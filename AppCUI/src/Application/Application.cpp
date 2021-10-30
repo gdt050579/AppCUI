@@ -205,8 +205,7 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
-    if (ctrl == nullptr)
-        return;
+    CHECKRET(ctrl != nullptr, "");
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
     if ((Members->Flags & GATTR_VISIBLE) == 0)
         return;
@@ -247,31 +246,46 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             ctrl->Paint(renderer);
     }
     else
+    {
         ctrl->Paint(renderer);
+    }
 
     if ((Members->Focused) && (Members->Flags & (GATTR_VSCROLL | GATTR_HSCROLL)))
     {
         renderer.ResetClip(); // make sure that the entire surface is available
         if (Members->ScrollBars.OutsideControl)
-            app->terminal->ScreenCanvas.ExtendAbsoluteCliptToRightBottomCorner();
+            app->terminal->ScreenCanvas.ExtendAbsoluteClipToRightBottomCorner();
         ctrl->OnUpdateScrollBars(); // update scroll bars value
         Members->PaintScrollbars(renderer);
     }
 
-    const unsigned int cnt = Members->ControlsCount;
-    const unsigned int idx = Members->CurrentControlIndex;
+#if defined(APPCUI_ENABLE_CONTROL_BORDER_MODE)
+    // draw border before checking any selection below
+    renderer.ResetClip(); // make sure that the entire surface is available
+    app->terminal->ScreenCanvas.ExtendAbsoluteClipInAllDirections(1);
+    renderer.DrawRectSize(0, 0, ctrl->GetWidth(), ctrl->GetHeight(), { Color::White, Color::Transparent }, false);
+
+#endif
+
+    const auto cnt = Members->ControlsCount;
+    const auto idx = Members->CurrentControlIndex;
 
     if (idx >= cnt)
     {
         // no selected control ==> draw all of them
         for (unsigned int tr = 0; tr < cnt; tr++)
+        {
             PaintControl(Members->Controls[tr], renderer, false);
+        }
     }
     else
     {
         // one control is selected (paint controls that are not focused)
         for (unsigned int tr = 1; tr < cnt; tr++)
+        {
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
+        }
+
         // paint focused control
         PaintControl(Members->Controls[idx], renderer, focused);
     }
