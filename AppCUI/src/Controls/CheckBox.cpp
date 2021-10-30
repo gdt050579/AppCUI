@@ -57,6 +57,16 @@ void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 void AppCUI::Controls::CheckBox::OnHotKey()
 {
     SetChecked(!IsChecked());
+    CREATE_CONTROL_CONTEXT(this, Members, );
+    if (Members->handlers)
+    {
+        auto ch = this->Handlers();
+        if (ch->OnCheck.obj)
+        {
+            ch->OnCheck.obj->OnCheck(this, IsChecked());
+            return;
+        }
+    }
     RaiseEvent(Event::CheckedStatusChanged);
 }
 bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
@@ -83,4 +93,9 @@ bool AppCUI::Controls::CheckBox::OnMouseEnter()
 bool AppCUI::Controls::CheckBox::OnMouseLeave()
 {
     return true;
+}
+// handlers covariant
+Handlers::CheckState* CheckBox::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::CheckState);
 }

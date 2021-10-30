@@ -1831,6 +1831,7 @@ namespace Controls
     typedef unsigned int ItemHandle;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
+    class EXPORT Button;
     class EXPORT TextField;
     class EXPORT ListView;
     class EXPORT Tree;
@@ -1841,26 +1842,123 @@ namespace Controls
 
     namespace Handlers
     {
-        typedef void (*AfterResizeHandler)(
-              AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
-        typedef bool (*BeforeResizeHandler)(
-              AppCUI::Controls::Control* control, int newWidth, int newHeight, void* Context);
-        typedef void (*AfterMoveHandler)(AppCUI::Controls::Control* control, int newX, int newY, void* Context);
-        typedef bool (*UpdateCommandBarHandler)(AppCUI::Controls::Control* control, void* Context);
-        typedef bool (*KeyEventHandler)(
-              AppCUI::Controls::Control* control, AppCUI::Input::Key KeyCode, int AsciiCode, void* Context);
-        typedef void (*PaintHandler)(AppCUI::Controls::Control* control, void* Context);
-        typedef void (*OnFocusHandler)(AppCUI::Controls::Control* control, void* Context);
-        typedef bool (*EventHandler)(
-              AppCUI::Controls::Control* control,
-              const void* sender,
-              AppCUI::Controls::Event eventType,
-              int controlID,
-              void* Context);
-        typedef void (*MousePressedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
-        typedef void (*MouseReleasedHandler)(
-              AppCUI::Controls::Control* control, int x, int y, AppCUI::Input::MouseButton button, void* Context);
+        using namespace AppCUI::Graphics;
+        using namespace AppCUI;
+        using namespace AppCUI::Input;
+
+        typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
+        typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
+        typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
+        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
+        typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
+
+        struct OnButtonPressedInterface
+        {
+            virtual void OnButtonPressed(Reference<Controls::Button> r) = 0;
+        };
+        struct OnButtonPressedCallback : public OnButtonPressedInterface
+        {
+            OnButtonPressedHandler callback;
+            virtual void OnButtonPressed(Reference<Controls::Button> r) override
+            {
+                callback(r);
+            };
+        };
+
+        struct PaintControlInterface
+        {
+            virtual void PaintControl(Reference<Controls::Control> control, Renderer& renderer) = 0;
+        };
+        struct PaintControlCallback : public PaintControlInterface
+        {
+            PaintControlHandler callback;
+            virtual void PaintControl(Reference<Controls::Control> control, Renderer& renderer) override
+            {
+                callback(control, renderer);
+            };
+        };
+
+        struct OnEventInterface
+        {
+            virtual bool OnEvent(Reference<Controls::Control> control, Controls::Event eventType, int controlID) = 0;
+        };
+        struct OnEventCallback : public OnEventInterface
+        {
+            OnEventHandler callback;
+            virtual bool OnEvent(
+                  Reference<Controls::Control> control, Controls::Event eventType, int controlID) override
+            {
+                return callback(control, eventType, controlID);
+            };
+        };
+
+        struct OnKeyEventInterface
+        {
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) = 0;
+        };
+        struct OnKeyEventCallback : public OnKeyEventInterface
+        {
+            OnKeyEventHandler callback;
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) override
+            {
+                return callback(control, keyCode, unicodeChar);
+            };
+        };
+
+        struct OnCheckInterface
+        {
+            virtual void OnCheck(Reference<Controls::Control> control, bool value) = 0;
+        };
+        struct OnCheckCallback : public OnCheckInterface
+        {
+            OnCheckHandler callback;
+            virtual void OnCheck(Reference<Controls::Control> control, bool value) override
+            {
+                callback(control, value);
+            };
+        };
+
+        template <typename I, typename C, typename H>
+        class Wrapper
+        {
+            C callbackObj;
+
+          public:
+            I* obj;
+
+          public:
+            Wrapper() : obj(nullptr)
+            {
+            }
+            constexpr inline void operator=(I* implementation)
+            {
+                this->obj = implementation;
+            }
+            constexpr inline void operator=(H callback)
+            {
+                this->callbackObj.callback = callback;
+                this->obj                  = &this->callbackObj;
+            }
+        };
+
+        struct Control
+        {
+            Wrapper<PaintControlInterface, PaintControlCallback, PaintControlHandler> PaintControl;
+            Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
+            Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
+            virtual ~Control()
+            {
+            }
+        };
+        struct Button : public Control
+        {
+            Wrapper<OnButtonPressedInterface, OnButtonPressedCallback, OnButtonPressedHandler> OnButtonPressed;
+        };
+        struct CheckState : public Control
+        {
+            Wrapper<OnCheckInterface, OnCheckCallback, OnCheckHandler> OnCheck;
+        };
+
         typedef void (*SyntaxHighlightHandler)(
               AppCUI::Controls::Control* control,
               AppCUI::Graphics::Character* characters,
@@ -1979,22 +2077,8 @@ namespace Controls
         void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
         void UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
 
-        // handlere
-        void SetOnBeforeResizeHandler(Handlers::BeforeResizeHandler handler, void* Context = nullptr);
-        void SetOnAfterResizeHandler(Handlers::AfterResizeHandler handler, void* Context = nullptr);
-        void SetOnAfterMoveHandler(Handlers::AfterMoveHandler handler, void* Context = nullptr);
-        void SetOnUpdateCommandBarHandler(Handlers::UpdateCommandBarHandler handler, void* Context = nullptr);
-        void SetOnKeyEventHandler(Handlers::KeyEventHandler handler, void* Context = nullptr);
-        void SetPaintHandler(Handlers::PaintHandler handler, void* Context = nullptr);
-        void SetOnFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
-        void SetOnLoseFocusHandler(Handlers::OnFocusHandler handler, void* Context = nullptr);
-        void SetEventHandler(Handlers::EventHandler handler, void* Context = nullptr);
-        void SetMousePressedHandler(Handlers::MousePressedHandler handler, void* Context = nullptr);
-        void SetMouseReleasedHandler(Handlers::MouseReleasedHandler handler, void* Context = nullptr);
-        void SetMouseHandler(
-              Handlers::MousePressedHandler mousePressedHandler,
-              Handlers::MouseReleasedHandler mouseReleasedHandler,
-              void* Context = nullptr);
+        // handlers
+        virtual Handlers::Control* Handlers();
 
         // paint
         virtual void Paint(Graphics::Renderer& renderer);
@@ -2155,6 +2239,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
+        // handlers covariant
+        Handlers::Button* Handlers() override;
+
         friend Factory::Button;
         friend Control;
     };
@@ -2171,6 +2258,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
+        // handlers covariant
+        Handlers::CheckState* Handlers() override;
+
         friend Factory::CheckBox;
         friend Control;
     };
@@ -2186,6 +2276,9 @@ namespace Controls
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+
+        // handlers covariant
+        Handlers::CheckState* Handlers() override;
 
         friend Factory::RadioBox;
         friend Control;

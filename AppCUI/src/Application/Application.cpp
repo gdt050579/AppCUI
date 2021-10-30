@@ -218,23 +218,15 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     {
         if (focused)
         {
-            if (Members->Handlers.OnFocusHandler != nullptr)
-                Members->Handlers.OnFocusHandler(ctrl, Members->Handlers.OnFocusHandlerContext);
-            else
-                ctrl->OnFocus();
+            // on focus (handler)
+            ctrl->OnFocus();
         }
         else
         {
-            if (Members->Handlers.OnLoseFocusHandler != nullptr)
-            {
-                Members->Handlers.OnLoseFocusHandler(ctrl, Members->Handlers.OnFocusHandlerContext);
-            }
-            else
-            {
-                ctrl->OnLoseFocus();
-                if (ctrl == app->ExpandedControl)
-                    app->PackControl(false);
-            }
+            // on lose focus
+            ctrl->OnLoseFocus();
+            if (ctrl == app->ExpandedControl)
+                app->PackControl(false);
         }
         Members->Focused = focused;
     }
@@ -247,8 +239,13 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     }
 
     // draw current control
-    if (Members->Handlers.OnPaintHandler != nullptr)
-        Members->Handlers.OnPaintHandler(ctrl, Members->Handlers.OnPaintHandlerContext);
+    if (Members->handlers)
+    {
+        if (Members->handlers->PaintControl.obj)
+            Members->handlers->PaintControl.obj->PaintControl(ctrl, renderer);
+        else
+            ctrl->Paint(renderer);
+    }
     else
         ctrl->Paint(renderer);
 
@@ -431,18 +428,10 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj)
     app->cmdBar->Clear();
     while (obj != nullptr)
     {
-        if (((ControlContext*) (obj->Context))->Handlers.OnUpdateCommandBarHandler != nullptr)
-        {
-            if (((ControlContext*) (obj->Context))
-                      ->Handlers.OnUpdateCommandBarHandler(
-                            obj, ((ControlContext*) (obj->Context))->Handlers.OnUpdateCommandBarHandlerContext) == true)
-                break;
-        }
-        else
-        {
-            if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
-                break;
-        }
+        // on handler
+        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
+            break;
+
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
     app->RepaintStatus |= REPAINT_STATUS_DRAW;
@@ -701,25 +690,23 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
     else
         ctrl = GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]);
 
-    bool found = false;
+    bool found  = false;
+    bool result = false;
     while (ctrl != nullptr)
     {
-        // if (((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandler != nullptr)
-        //{
-        //    if (((ControlContext*) (ctrl->Context))
-        //              ->Handlers.OnKeyEventHandler(
-        //                    ctrl,
-        //                    KeyCode,
-        //                    unicodeCharacter,
-        //                    ((ControlContext*) (ctrl->Context))->Handlers.OnKeyEventHandlerContext))
-        //    {
-        //        // if a key was handled --> repaint
-        //        found = true;
-        //        RepaintStatus |= REPAINT_STATUS_DRAW;
-        //        break;
-        //    }
-        //}
-        if (ctrl->OnKeyEvent(KeyCode, unicodeCharacter))
+        if (((ControlContext*) (ctrl->Context))->handlers)
+        {
+            const auto h = ((ControlContext*) (ctrl->Context))->handlers.get();
+            if (h->OnKeyEvent.obj)
+                result = h->OnKeyEvent.obj->OnKeyEvent(ctrl, KeyCode, unicodeCharacter);
+            else
+                result = ctrl->OnKeyEvent(KeyCode, unicodeCharacter);
+        }
+        else
+        {
+            result = ctrl->OnKeyEvent(KeyCode, unicodeCharacter);
+        }
+        if (result)
         {
             // if a key was handled --> repaint
             found = true;
@@ -850,16 +837,9 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
             this->PackControl(true);
         MouseLockedControl->SetFocus();
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
-        if (cc->Handlers.OnMousePressedHandler != nullptr)
-            cc->Handlers.OnMousePressedHandler(
-                  MouseLockedControl,
-                  x - cc->ScreenClip.ScreenPosition.X,
-                  y - cc->ScreenClip.ScreenPosition.Y,
-                  button,
-                  cc->Handlers.OnMousePressedHandlerContext);
-        else
-            MouseLockedControl->OnMousePressed(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+
+        MouseLockedControl->OnMousePressed(
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -889,16 +869,8 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
         break;
     case MOUSE_LOCKED_OBJECT_CONTROL:
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
-        if (cc->Handlers.OnMouseReleasedHandler != nullptr)
-            cc->Handlers.OnMouseReleasedHandler(
-                  MouseLockedControl,
-                  x - cc->ScreenClip.ScreenPosition.X,
-                  y - cc->ScreenClip.ScreenPosition.Y,
-                  button,
-                  cc->Handlers.OnMouseReleasedHandlerContext);
-        else
-            MouseLockedControl->OnMouseReleased(
-                  x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+        MouseLockedControl->OnMouseReleased(
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
         RepaintStatus |= REPAINT_STATUS_DRAW;
         break;
     }
@@ -1209,19 +1181,25 @@ void AppCUI::Internal::Application::RaiseEvent(
 {
     while (control != nullptr)
     {
-        if (((ControlContext*) (control->Context))->Handlers.OnEventHandler != nullptr)
+        if (((ControlContext*) (control->Context))->handlers)
         {
-            // if (((ControlContext*) (control->Context))
-            //          ->Handlers.OnEventHandler(
-            //                control,
-            //                sourceControl,
-            //                eventType,
-            //                controlID,
-            //                ((ControlContext*) (control->Context))->Handlers.OnEventHandlerContext) == true)
-            //{
-            //    RepaintStatus |= REPAINT_STATUS_DRAW;
-            //    return;
-            //}
+            const auto handle = ((ControlContext*) (control->Context))->handlers.get();
+            if (handle->OnEvent.obj)
+            {
+                if (handle->OnEvent.obj->OnEvent(control, eventType, controlID))
+                {
+                    RepaintStatus |= REPAINT_STATUS_DRAW;
+                    return;
+                }
+            }
+            else
+            {
+                if (control->OnEvent(sourceControl, eventType, controlID) == true)
+                {
+                    RepaintStatus |= REPAINT_STATUS_DRAW;
+                    return;
+                }
+            }
         }
         else
         {

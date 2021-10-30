@@ -7,16 +7,15 @@ using namespace AppCUI::Dialogs;
 #define MSGBOX_BUTTONS_OK_CANCEL     2
 #define MSGBOX_BUTTONS_YES_NO_CANCEL 3
 
-bool MessageBoxWindowEventHandler(
-      Control* control, const void*, AppCUI::Controls::Event eventType, int controlID, void*)
+bool MessageBoxWindowEventHandler(Reference<Control> control, AppCUI::Controls::Event eventType, int controlID)
 {
     switch (eventType)
     {
     case Event::WindowClose:
-        ((Window*) control)->Exit(Result::Cancel);
+        control.DownCast<Window>()->Exit(Result::Cancel);
         return true;
     case Event::ButtonClicked:
-        ((Window*) control)->Exit(controlID);
+        control.DownCast<Window>()->Exit(controlID);
         return true;
     default:
         return false;
@@ -49,7 +48,8 @@ bool CreateMessageBoxWindow(
         break;
     }
     Factory::Label::Create(wnd, content, "x:1,y:1,w:56,h:3");
-    wnd->SetEventHandler(MessageBoxWindowEventHandler);
+    // wnd->SetEventHandler(MessageBoxWindowEventHandler);
+    wnd->Handlers()->OnEvent = MessageBoxWindowEventHandler;
     if (result != nullptr)
         (*result) = wnd->Show();
     return true;
@@ -72,7 +72,8 @@ void MessageBox::ShowWarning(const AppCUI::Utils::ConstString& title, const AppC
 Result MessageBox::ShowYesNoCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message)
 {
     int result;
-    if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) == false)
+    if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) ==
+        false)
         return Result::Cancel;
     return (Result) result;
 }
