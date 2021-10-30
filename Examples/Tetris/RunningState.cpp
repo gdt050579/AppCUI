@@ -2,17 +2,23 @@
 
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data)
 {
-    page       = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    game       = AppCUI::Controls::Factory::Panel ::Create(page, "-", "t:0,b:0,w:75%,x:0%,a:l");
-    stats      = AppCUI::Controls::Factory::Panel::Create(page, "-", "t:0,b:0,w:25%,x:100%,a:r");
-    scoreLabel = AppCUI::Controls::Factory::Label::Create(stats, "0", "t:0,b:0,w:50%,x:2%,a:l");
+    page        = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
+    leftPanel   = AppCUI::Controls::Factory::Panel::Create(page, "Game", "t:0,b:0,w:75%,x:0%,a:l");
+    rightPanel  = AppCUI::Controls::Factory::Panel::Create(page, "Info", "t:0,b:0,w:25%,x:100%,a:r");
+    stats       = AppCUI::Controls::Factory::Panel::Create(rightPanel, "Stats", "d:t,h:30%");
+    scoreLabel  = AppCUI::Controls::Factory::Label::Create(stats, "0", "t:1,b:0,w:50%,x:2%,a:l");
+    nextPiece   = AppCUI::Controls::Factory::Panel::Create(rightPanel, "Next Pieces", "d:b,h:70%");
+    nextPiece01 = AppCUI::Controls::Factory::Panel::Create(nextPiece, "01", "d:t,h:35%");
+    nextPiece02 = AppCUI::Controls::Factory::Panel::Create(nextPiece, "02", "d:c,h:33%");
+    nextPiece03 = AppCUI::Controls::Factory::Panel::Create(nextPiece, "03", "d:b,h:33%");
 
     page->SetText("");
-    game->SetText("");
-    stats->SetText("");
+    leftPanel->SetText("");
+    rightPanel->SetText("");
     scoreLabel->SetText("");
 
-    page->Handlers()->OnKeyEvent = this;
+    page->Handlers()->OnKeyEvent          = this;
+    nextPiece01->Handlers()->PaintControl = &pci;
 }
 
 RunningState::~RunningState()
@@ -42,6 +48,11 @@ bool RunningState::Update()
 
 void RunningState::Draw(AppCUI::Graphics::Renderer& renderer)
 {
+    if (pieces.empty())
+    {
+        pieces.emplace_back(Piece{ PieceType::I, 3, nextPiece.DownCast<AppCUI::Controls::Control>() });
+    }
+
     renderer.HideCursor();
     renderer.Clear(
           ' ', AppCUI::Graphics::ColorPair{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::DarkBlue });
