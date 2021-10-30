@@ -247,6 +247,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
         else
         {
             ctrl->Paint(renderer);
+        }
     }
     else
     {
