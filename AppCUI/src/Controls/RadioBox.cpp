@@ -71,6 +71,16 @@ void AppCUI::Controls::RadioBox::OnHotKey()
     if (IsChecked() == false)
     {
         SetChecked(true);
+        CREATE_CONTROL_CONTEXT(this, Members, );
+        if (Members->handlers)
+        {
+            auto ch = this->Handlers();
+            if (ch->OnCheck.obj)
+            {
+                ch->OnCheck.obj->OnCheck(this, true);
+                return;
+            }
+        }
         RaiseEvent(Event::CheckedStatusChanged);
     }
 }
@@ -98,4 +108,9 @@ bool AppCUI::Controls::RadioBox::OnMouseEnter()
 bool AppCUI::Controls::RadioBox::OnMouseLeave()
 {
     return true;
+}
+// handlers covariant
+Handlers::CheckState* RadioBox::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::CheckState);
 }

@@ -108,31 +108,7 @@ struct ControlContext
     bool Inited, Focused, MouseIsOver;
 
     // Handlers
-    struct
-    {
-        Handlers::AfterResizeHandler OnAfterResizeHandler;
-        void* OnAfterResizeHandlerContext;
-        Handlers::BeforeResizeHandler OnBeforeResizeHandler;
-        void* OnBeforeResizeHandlerContext;
-        Handlers::AfterMoveHandler OnAfterMoveHandler;
-        void* OnAfterMoveHandlerContext;
-        Handlers::UpdateCommandBarHandler OnUpdateCommandBarHandler;
-        void* OnUpdateCommandBarHandlerContext;
-        Handlers::KeyEventHandler OnKeyEventHandler;
-        void* OnKeyEventHandlerContext;
-        Handlers::PaintHandler OnPaintHandler;
-        void* OnPaintHandlerContext;
-        Handlers::OnFocusHandler OnFocusHandler;
-        void* OnFocusHandlerContext;
-        Handlers::OnFocusHandler OnLoseFocusHandler;
-        void* OnLoseFocusHandlerContext;
-        Handlers::MouseReleasedHandler OnMouseReleasedHandler;
-        void* OnMouseReleasedHandlerContext;
-        Handlers::MousePressedHandler OnMousePressedHandler;
-        void* OnMousePressedHandlerContext;
-        Handlers::EventHandler OnEventHandler;
-        void* OnEventHandlerContext;
-    } Handlers;
+    std::unique_ptr<AppCUI::Controls::Handlers::Control> handlers;
 
     ControlContext();
 
@@ -770,6 +746,13 @@ struct MenuContext
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \
         return retValue;
+#define GET_CONTROL_HANDLERS(type)                                                                                     \
+    if (!this->Context)                                                                                                \
+        return nullptr;                                                                                                \
+    if (!((ControlContext*) (this->Context))->handlers)                                                                \
+        ((ControlContext*) (this->Context))->handlers = std::make_unique<type>();                                      \
+    return (type*) ((((ControlContext*) (this->Context))->handlers).get());
+
 #define CREATE_TYPECONTROL_CONTEXT(type, name, retValue)                                                               \
     type* name = (type*) ((this)->Context);                                                                            \
     if (name == nullptr)                                                                                               \
