@@ -686,6 +686,14 @@ namespace Utils
         {
             return !this->Equals(s);
         }
+        inline operator std::string_view() const
+        {
+            return std::string_view{ this->Text, this->Size };
+        }
+        inline std::string_view ToStringView() const
+        {
+            return std::string_view{ this->Text, this->Size };
+        }
         char& operator[](int poz);
     };
     class EXPORT UnicodeStringBuilder
@@ -928,6 +936,20 @@ namespace Utils
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
+        void Set(const char * text)
+        {
+            if (text)
+            {
+                const char* e = text;
+                while (*e)
+                    e++;
+                Set(std::string_view{ text, static_cast<size_t> (e - text) });
+            }
+            else
+            {
+                Clear();
+            }
+        }
         constexpr inline unsigned short Len() const
         {
             return size;
@@ -944,6 +966,11 @@ namespace Utils
         {
             Set(txt);
             return *this;
+        }
+        inline void Clear()
+        {
+            this->data[0] = 0;
+            this->size    = 0;
         }
     };
 
