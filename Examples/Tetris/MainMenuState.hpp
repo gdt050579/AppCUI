@@ -35,6 +35,7 @@ class MainMenuState : public State, public AppCUI::Controls::Handlers::OnKeyEven
     AppCUI::Utils::Reference<AppCUI::Controls::Panel> menu             = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> startButton     = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> highScoreButton = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> aboutButton     = nullptr;
     AppCUI::Utils::Reference<AppCUI::Controls::Button> exitButton      = nullptr;
 
   private:
