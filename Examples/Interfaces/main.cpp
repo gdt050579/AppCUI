@@ -6,15 +6,17 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 
-class MyWin : public Window, public Handlers::OnButtonPressedInterface, public Handlers::PaintControlInterface
+class MyWin : public Window, public Handlers::OnButtonPressedInterface, public Handlers::PaintControlInterface, public Handlers::OnCheckInterface
 {
   public:
     MyWin() : Window("Test", "d:c,w:40,h:10", WindowFlags::None)
     {
         auto b = this->CreateChildControl<Button>("Push Me", "x:1,y:1,w:10", 123, ButtonFlags::None);
         b->Handlers()->OnButtonPressed = this;
-        auto p                         = this->CreateChildControl<Panel>("","x:12,y:1,w:5,h:2");
+        auto p                         = this->CreateChildControl<Panel>("", "x:12,y:1,w:5,h:2");
         p->Handlers()->PaintControl    = this;
+        auto cb                        = this->CreateChildControl<CheckBox>("I am not checked", "x:1,y:3,w:30", 123);
+        cb->Handlers()->OnCheck        = this;
     }
     void OnButtonPressed(Reference<Button> r)
     {
@@ -24,6 +26,13 @@ class MyWin : public Window, public Handlers::OnButtonPressedInterface, public H
     {
         r.Clear('X', ColorPair{ Color::Red, Color::Black });
     };
+    void OnCheck(Reference<Control> c, bool value)
+    {
+        if (value)
+            c->SetText("I am checked !");
+        else
+            c->SetText("I am not checked !");
+    }
 };
 int main()
 {

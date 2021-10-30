@@ -1850,12 +1850,13 @@ namespace Controls
         typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
         typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
         typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
+        typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
 
         struct OnButtonPressedInterface
         {
             virtual void OnButtonPressed(Reference<Controls::Button> r) = 0;
         };
-        struct OnButtonPressedCallack : public OnButtonPressedInterface
+        struct OnButtonPressedCallback : public OnButtonPressedInterface
         {
             OnButtonPressedHandler callback;
             virtual void OnButtonPressed(Reference<Controls::Button> r) override
@@ -1904,6 +1905,19 @@ namespace Controls
             };
         };
 
+        struct OnCheckInterface
+        {
+            virtual void OnCheck(Reference<Controls::Control> control, bool value) = 0;
+        };
+        struct OnCheckCallback : public OnCheckInterface
+        {
+            OnCheckHandler callback;
+            virtual void OnCheck(Reference<Controls::Control> control, bool value) override
+            {
+                callback(control, value);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -1938,7 +1952,11 @@ namespace Controls
         };
         struct Button : public Control
         {
-            Wrapper<OnButtonPressedInterface, OnButtonPressedCallack, OnButtonPressedHandler> OnButtonPressed;
+            Wrapper<OnButtonPressedInterface, OnButtonPressedCallback, OnButtonPressedHandler> OnButtonPressed;
+        };
+        struct CheckState : public Control
+        {
+            Wrapper<OnCheckInterface, OnCheckCallback, OnCheckHandler> OnCheck;
         };
 
         typedef void (*SyntaxHighlightHandler)(
@@ -2240,6 +2258,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
+        // handlers covariant
+        Handlers::CheckState* Handlers() override;
+
         friend Factory::CheckBox;
         friend Control;
     };
@@ -2255,6 +2276,9 @@ namespace Controls
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+
+        // handlers covariant
+        Handlers::CheckState* Handlers() override;
 
         friend Factory::RadioBox;
         friend Control;

@@ -40,12 +40,23 @@ int main()
     // a handler to handle OnEvent messages
     wnd->Handlers()->OnEvent = [](Reference<Control> c, Event eventType, int ID)
     {
+        if (c->OnEvent(c, eventType, ID))
+            return true;
         if ((eventType == Event::ButtonClicked) && (ID == 1000))
         {
             Application::Close();
             return true;
         }
         return false;
+    };
+
+    auto cb = Factory::CheckBox::Create(wnd, "I am not checked !", "x:1,y:7,w:30", 1234);
+    // a handler to handle check state events
+    cb->Handlers()->OnCheck = [](Reference<Control> c, bool value) {
+        if (value)
+            c->SetText("I am checked !");
+        else
+            c->SetText("I am not checked !");
     };
 
     Application::AddWindow(std::move(wnd));
