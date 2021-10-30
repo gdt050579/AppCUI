@@ -2,6 +2,7 @@
 
 #include "State.hpp"
 #include "Game.hpp"
+#include "MainMenuState.hpp"
 
 class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventInterface
 {
@@ -27,14 +28,18 @@ class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventIn
     void Pause() override;
     void Resume() override;
 
+  private:
+    const std::shared_ptr<GameData>& data;
+
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page                = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> menu                  = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> resumeButton         = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> exitToMainMenuButton = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Button> exitButton           = nullptr;
+
+    bool DoActionForControl(int controlID);
     bool OnKeyEvent(
           AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
           AppCUI::Input::Key keyCode,
           char16_t unicodeChar);
-
-  private:
-    const std::shared_ptr<GameData>& data;
-
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> label  = nullptr;
 };

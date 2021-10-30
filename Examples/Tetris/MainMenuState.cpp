@@ -8,7 +8,7 @@ constexpr unsigned int ExitButtonID      = 0x0004;
 MainMenuState::MainMenuState(const std::shared_ptr<GameData>& data) : data(data)
 {
     page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "d:c");
-    menu            = AppCUI::Controls::Factory::Panel::Create(page, "Menu", "d:c,h:11,w:30");
+    menu            = AppCUI::Controls::Factory::Panel::Create(page, "Main Menu", "d:c,h:11,w:30");
     startButton     = AppCUI::Controls::Factory::Button::Create(menu, "Start", "x:2,y:1,w:25", StartButtonID);
     highScoreButton = AppCUI::Controls::Factory::Button::Create(menu, "HighScore", "x:2,y:3,w:25", HighScoreButtonID);
     aboutButton     = AppCUI::Controls::Factory::Button::Create(menu, "About", "x:2,y:5,w:25", AboutButtonID);
@@ -36,7 +36,7 @@ bool MainMenuState::HandleEvent(
         return DoActionForControl(controlID);
     case AppCUI::Controls::Event::TerminateApplication:
         AppCUI::Application::Close();
-        break;
+        return true;
     default:
         break;
     }
