@@ -330,7 +330,7 @@ bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& init
     this->hstdOut = GetStdHandle(STD_OUTPUT_HANDLE);
     this->hstdIn  = GetStdHandle(STD_INPUT_HANDLE);
     CHECK(GetConsoleMode(this->hstdIn, &originalStdMode), false, "Fail to query input mode !");
-    CHECK(SetConsoleMode(this->hstdIn, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT),
+    CHECK(SetConsoleMode(this->hstdIn, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS),
           false,
           "Fail to set up input reader mode !");
     csbi.cbSize = sizeof(csbi);
