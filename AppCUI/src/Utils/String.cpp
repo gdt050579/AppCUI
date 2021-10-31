@@ -646,7 +646,7 @@ bool AppCUI::Utils::String::AddFormat(const char* format, ...)
 
     return true;
 }
-const char* AppCUI::Utils::String::Format(const char* format, ...)
+std::string_view AppCUI::Utils::String::Format(const char* format, ...)
 {
     va_list args;
     int len, len2;
@@ -670,7 +670,7 @@ const char* AppCUI::Utils::String::Format(const char* format, ...)
     this->Size       = ((unsigned int) len2);
     Text[this->Size] = 0;
 
-    return Text;
+    return std::string_view{ Text, Size };
 }
 
 bool AppCUI::Utils::String::Truncate(unsigned int newText)

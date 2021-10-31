@@ -628,7 +628,7 @@ namespace Utils
 
         bool SetFormat(const char* format, ...);
         bool AddFormat(const char* format, ...);
-        const char* Format(const char* format, ...);
+        std::string_view Format(const char* format, ...);
 
         bool Realloc(unsigned int newSize);
         void Destroy();
@@ -930,6 +930,10 @@ namespace Utils
         {
             return std::string_view{ data, size };
         }
+        constexpr inline operator bool() const
+        {
+            return this->size != 0;
+        }
         void Set(std::string_view txt)
         {
             size = (unsigned short) std::min((size_t) Size, txt.length());
@@ -971,6 +975,10 @@ namespace Utils
         {
             this->data[0] = 0;
             this->size    = 0;
+        }
+        constexpr inline bool Empty() const
+        {
+            return this->size == 0;
         }
     };
 

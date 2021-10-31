@@ -691,7 +691,7 @@ void ListViewControlContext::UpdateSelectionInfo()
         CHECKBK(
               tmp.Create(this->Selection.Status, sizeof(this->Selection.Status), true),
               "Fail to create selection string ");
-        CHECKBK(tmp.Format("[%u/%u]", count, size), "Fail to format selection status string !");
+        CHECKBK(tmp.SetFormat("[%u/%u]", count, size), "Fail to format selection status string !");
         this->Selection.StatusLength = tmp.Len();
         return;
     }
