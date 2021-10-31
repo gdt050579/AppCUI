@@ -628,7 +628,7 @@ namespace Utils
 
         bool SetFormat(const char* format, ...);
         bool AddFormat(const char* format, ...);
-        const char* Format(const char* format, ...);
+        std::string_view Format(const char* format, ...);
 
         bool Realloc(unsigned int newSize);
         void Destroy();
