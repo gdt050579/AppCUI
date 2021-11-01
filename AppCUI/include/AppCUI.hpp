@@ -384,6 +384,10 @@ namespace Utils
         {
             return Reference<C>((C*) (this->ptr));
         }
+        constexpr inline operator size_t()
+        {
+            return (size_t) (this->ptr);
+        }
     };
 } // namespace Utils
 namespace Application
