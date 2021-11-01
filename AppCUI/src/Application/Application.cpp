@@ -218,12 +218,18 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
         if (focused)
         {
             // on focus (handler)
-            ctrl->OnFocus();
+            if ((Members->handlers) && (Members->handlers->OnFocus.obj))
+                Members->handlers->OnFocus.obj->OnFocus(ctrl);
+            else
+                ctrl->OnFocus();
         }
         else
         {
             // on lose focus
-            ctrl->OnLoseFocus();
+            if ((Members->handlers) && (Members->handlers->OnLoseFocus.obj))
+                Members->handlers->OnLoseFocus.obj->OnLoseFocus(ctrl);
+            else
+                ctrl->OnLoseFocus();
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
         }
