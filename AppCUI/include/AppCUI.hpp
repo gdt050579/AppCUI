@@ -940,14 +940,14 @@ namespace Utils
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
-        void Set(const char * text)
+        void Set(const char* text)
         {
             if (text)
             {
                 const char* e = text;
                 while (*e)
                     e++;
-                Set(std::string_view{ text, static_cast<size_t> (e - text) });
+                Set(std::string_view{ text, static_cast<size_t>(e - text) });
             }
             else
             {
@@ -1887,6 +1887,8 @@ namespace Controls
         typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
         typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
         typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
+        typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
+        typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
 
         struct OnButtonPressedInterface
         {
@@ -1954,6 +1956,32 @@ namespace Controls
             };
         };
 
+        struct OnFocusInterface
+        {
+            virtual void OnFocus(Reference<Controls::Control> control) = 0;
+        };
+        struct OnFocusCallback : public OnFocusInterface
+        {
+            OnFocusHandler callback;
+            virtual void OnFocus(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
+        struct OnLoseFocusInterface
+        {
+            virtual void OnLoseFocus(Reference<Controls::Control> control) = 0;
+        };
+        struct OnLoseFocusCallback : public OnLoseFocusInterface
+        {
+            OnLoseFocusHandler callback;
+            virtual void OnLoseFocus(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -1982,6 +2010,8 @@ namespace Controls
             Wrapper<PaintControlInterface, PaintControlCallback, PaintControlHandler> PaintControl;
             Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
+            Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
+            Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
             virtual ~Control()
             {
             }
