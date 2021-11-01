@@ -1792,7 +1792,6 @@ void AppCUI::Controls::Control::OnUpdateScrollBars()
 {
 }
 
-
 Handlers::Control* AppCUI::Controls::Control::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::Control);

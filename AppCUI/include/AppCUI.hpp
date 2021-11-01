@@ -1842,6 +1842,7 @@ namespace Controls
         class EXPORT Window;
         class EXPORT Desktop;
         class EXPORT Tree;
+        class EXPORT Grid;
     }; // namespace Factory
     enum class Event : unsigned int
     {
@@ -1873,6 +1874,7 @@ namespace Controls
     class EXPORT Tree;
     class EXPORT Menu;
     class EXPORT Window;
+    class EXPORT Grid;
 
     using namespace AppCUI::Utils;
 
@@ -3266,6 +3268,16 @@ namespace Controls
                   const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
                   const unsigned int noOfColumns          = 1);
         };
+
+        class EXPORT Grid
+        {
+            Grid() = delete;
+
+          public:
+            static Pointer<AppCUI::Controls::Grid> Create(std::string_view layout);
+            static Reference<AppCUI::Controls::Grid> Create(AppCUI::Controls::Control* parent, std::string_view layout);
+            static Reference<AppCUI::Controls::Grid> Create(AppCUI::Controls::Control& parent, std::string_view layout);
+        };
     } // namespace Factory
 
     class EXPORT Tree : public Control
@@ -3335,6 +3347,18 @@ namespace Controls
         friend Control;
     };
 
+    class EXPORT Grid : public Control
+    {
+      protected:
+        Grid(std::string_view layout);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+
+      private:
+        friend Factory::Grid;
+        friend Control;
+    };
 }; // namespace Controls
 
 namespace Dialogs

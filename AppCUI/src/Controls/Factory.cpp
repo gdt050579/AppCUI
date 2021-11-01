@@ -52,26 +52,19 @@ REFERENCE<Button> Factory::Button::Create(
     return parent.AddControl<AppCUI::Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
 
-
 //======[PASSWORD]===================================================================================
-POINTER<Password> Factory::Password::Create(
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout)
+POINTER<Password> Factory::Password::Create(const AppCUI::Utils::ConstString& caption, std::string_view layout)
 {
     return POINTER<AppCUI::Controls::Password>(new AppCUI::Controls::Password(caption, layout));
 }
 REFERENCE<Password> Factory::Password::Create(
-      Control* parent,
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout)
+      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
 }
 REFERENCE<Password> Factory::Password::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout)
+      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
 {
     return parent.AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
 }
@@ -101,22 +94,14 @@ POINTER<RadioBox> Factory::RadioBox::Create(
     return POINTER<AppCUI::Controls::RadioBox>(new AppCUI::Controls::RadioBox(caption, layout, groupID, controlID));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control* parent,
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout,
-      int groupID,
-      int controlID)
+      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::RadioBox>(
           Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control& parent,
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout,
-      int groupID,
-      int controlID)
+      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
     return parent.AddControl<AppCUI::Controls::RadioBox>(
           Factory::RadioBox::Create(caption, layout, groupID, controlID));
@@ -272,8 +257,7 @@ REFERENCE<Tab> Factory::Tab::Create(
 {
     return parent.AddControl<AppCUI::Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
-POINTER<Tab> Factory::Tab::Create(
-      std::string_view layout, AppCUI::Controls::TabFlags flags, unsigned int tabPageSize)
+POINTER<Tab> Factory::Tab::Create(std::string_view layout, AppCUI::Controls::TabFlags flags, unsigned int tabPageSize)
 {
     return POINTER<AppCUI::Controls::Tab>(new AppCUI::Controls::Tab(layout, flags, tabPageSize));
 }
@@ -301,10 +285,7 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
           Factory::CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags));
 }
 POINTER<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
-      std::string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      std::string_view layout, unsigned int canvasWidth, unsigned int canvasHeight, AppCUI::Controls::ViewerFlags flags)
 {
     return POINTER<AppCUI::Controls::CanvasViewer>(
           new AppCUI::Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
@@ -476,22 +457,33 @@ POINTER<AppCUI::Controls::Tree> Factory::Tree::Create(
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      AppCUI::Controls::Control* parent,
-      std::string_view layout,
-      const TreeFlags flags,
-      const unsigned int noOfColumns)
+      AppCUI::Controls::Control* parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      AppCUI::Controls::Control& parent,
-      std::string_view layout,
-      const TreeFlags flags,
-      const unsigned int noOfColumns)
+      AppCUI::Controls::Control& parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
 {
     return parent.AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+}
+
+//======[GRID]=======================================================================================
+Pointer<AppCUI::Controls::Grid> Factory::Grid::Create(std::string_view layout)
+{
+    return POINTER<AppCUI::Controls::Grid>(new AppCUI::Controls::Grid(layout));
+}
+
+Reference<AppCUI::Controls::Grid> Factory::Grid::Create(AppCUI::Controls::Control* parent, std::string_view layout)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout));
+}
+
+Reference<AppCUI::Controls::Grid> Factory::Grid::Create(AppCUI::Controls::Control& parent, std::string_view layout)
+{
+    return parent.AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout));
 }
 
 #undef VALIDATE_PARENT
