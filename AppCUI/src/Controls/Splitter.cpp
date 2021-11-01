@@ -73,21 +73,18 @@ void Splitter_ResizeComponents(Splitter* control)
         o = Members->Controls[tr];
         if (o != nullptr)
         {
-            if (tr >= 2)
-                o->SetVisible(false);
+            o->SetVisible(tr<2);
             if (tr == 0)
             {
                 if ((Members->Flags & GATTR_VERTICAL) != 0)
-                {
-                    o->MoveTo(0, 0);
+                {                    
                     o->Resize(Members->Layout.Width - sz, Members->Layout.Height);
-                    o->SetVisible(Members->Layout.Width > sz);
+                    o->MoveTo((Members->Layout.Width - sz) - o->GetWidth(), 0);
                 }
                 else
-                {
-                    o->MoveTo(0, 0);
+                {                    
                     o->Resize(Members->Layout.Width, Members->Layout.Height - sz);
-                    o->SetVisible(Members->Layout.Height > sz);
+                    o->MoveTo(0, (Members->Layout.Height - sz)-o->GetHeight());
                 }
                 continue;
             }
@@ -97,13 +94,11 @@ void Splitter_ResizeComponents(Splitter* control)
                 {
                     o->MoveTo(Members->Layout.Width - Members->SecondPanelSize, 0);
                     o->Resize(Members->SecondPanelSize, Members->Layout.Height);
-                    o->SetVisible(Members->SecondPanelSize >= 1);
                 }
                 else
                 {
                     o->MoveTo(0, Members->Layout.Height - Members->SecondPanelSize);
                     o->Resize(Members->Layout.Width, Members->SecondPanelSize);
-                    o->SetVisible(Members->SecondPanelSize >= 1);
                 }
                 continue;
             }
