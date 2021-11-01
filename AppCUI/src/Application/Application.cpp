@@ -215,6 +215,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
           Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
     if (focused != Members->Focused)
     {
+        Members->Focused = focused;
         if (focused)
         {
             // on focus (handler)
@@ -233,7 +234,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
         }
-        Members->Focused = focused;
+        
     }
     // put the other clip
     if (ctrl == app->ExpandedControl)
