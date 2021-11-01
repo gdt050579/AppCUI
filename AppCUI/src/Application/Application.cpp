@@ -145,7 +145,7 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
     }
     auto ptrWin = wnd.get();
-    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)),
+    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)).IsValid(),
           InvalidItemHandle,
           "Fail to add window to desktop !");
     ptrWin->SetFocus();

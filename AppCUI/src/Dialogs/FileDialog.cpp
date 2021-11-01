@@ -568,35 +568,35 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, AppCUI::Controls::Even
         }
         return true;
     case Event::ComboBoxSelectedItemChanged:
-        if (sender == comboType)
+        if (sender == comboType.To<Control>())
         {
             UpdateCurrentExtensionFilter();
             ReloadCurrentPath();
         }
         return true;
     case Event::TextFieldValidate:
-        if (sender == txName)
+        if (sender == txName.To<Control>())
         {
             ProcessTextFieldInput();
         }
         files->SetFocus();
         return true;
     case Event::ListViewCurrentItemChanged:
-        if (sender == lSpecialPaths)
+        if (sender == lSpecialPaths.To<Control>())
         {
             SpecialFoldersUpdatePath();
         }
-        else if (sender == files)
+        else if (sender == files.To<Control>())
         {
             FileListItemChanged();
         }
         return true;
     case Event::ListViewItemClicked:
-        if (sender == lSpecialPaths)
+        if (sender == lSpecialPaths.To<Control>())
         {
             SpecialFoldersUpdatePath();
         }
-        else if (sender == files)
+        else if (sender == files.To<Control>())
         {
             FileListItemClicked();
         }

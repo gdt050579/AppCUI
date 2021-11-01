@@ -1309,7 +1309,7 @@ bool AppCUI::Controls::Control::RemoveControl(Control* control)
 }
 bool AppCUI::Controls::Control::RemoveControlByRef(Reference<Control> control)
 {
-    CHECK(control, false, "Emptry control reference !");
+    CHECK(control.IsValid(), false, "Emptry control reference !");
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
     if (lst == nullptr)

@@ -555,14 +555,14 @@ bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
 void MenuContext::Show(AppCUI::Controls::Menu* me, Reference<AppCUI::Controls::Control> relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize)
 {
     // compute abosolute position
-    while (relativeControl)
+    while (relativeControl.IsValid())
     {
         x += relativeControl->GetX();        
         y += relativeControl->GetY();
         // move to parent        
         relativeControl = relativeControl->GetParent();
         // add parent margins
-        if (relativeControl)
+        if (relativeControl.IsValid())
         {
             x += ((ControlContext*) relativeControl->Context)->Margins.Left;
             y += ((ControlContext*) relativeControl->Context)->Margins.Top;

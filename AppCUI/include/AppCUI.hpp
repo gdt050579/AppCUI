@@ -337,10 +337,6 @@ namespace Utils
         {
         }
 
-        constexpr inline operator bool()
-        {
-            return ptr != nullptr;
-        }
         constexpr inline T* operator->()
         {
             return ptr;
@@ -369,7 +365,7 @@ namespace Utils
         {
             ptr = nullptr;
         }
-        constexpr inline bool Empty() const
+        constexpr inline bool IsValid() const
         {
             return ptr != nullptr;
         }
