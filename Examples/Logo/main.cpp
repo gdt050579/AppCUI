@@ -21,7 +21,7 @@ class LogoWin : public Window
 
     void CreateImage(Reference<Canvas> c)
     {
-        if (!c)
+        if (!c.IsValid())
             return;
         for (int y = 0; y < 15; y++)
         {

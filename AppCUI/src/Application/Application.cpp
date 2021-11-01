@@ -145,7 +145,7 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
     }
     auto ptrWin = wnd.get();
-    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)),
+    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)).IsValid(),
           InvalidItemHandle,
           "Fail to add window to desktop !");
     ptrWin->SetFocus();
@@ -215,6 +215,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
           Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
     if (focused != Members->Focused)
     {
+        Members->Focused = focused;
         if (focused)
         {
             // on focus (handler)
@@ -233,7 +234,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
         }
-        Members->Focused = focused;
+        
     }
     // put the other clip
     if (ctrl == app->ExpandedControl)

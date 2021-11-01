@@ -22,7 +22,7 @@ class RemoveControlExample : public Window
             return true;
         if (eventType == Event::ButtonClicked)
         {
-            if (lb && cb)
+            if (lb.IsValid() && cb.IsValid())
             {
                 this->RemoveControl<Label>(lb);
                 this->RemoveControl<CheckBox>(cb);

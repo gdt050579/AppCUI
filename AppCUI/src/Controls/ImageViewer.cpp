@@ -13,7 +13,7 @@ bool ImageViewer::SetImage(
       AppCUI::Graphics::ImageScaleMethod scale)
 {
     auto c = GetCanvas();
-    CHECK(c, false, "");
+    CHECK(c.IsValid(), false, "");
     auto sz = c->ComputeRenderingSize(img, method, scale);
     CHECK((sz.Width > 0) && (sz.Height > 0), false, "Invalid image size (0x0) --> nothing to render");
     CHECK(c->Resize(sz.Width, sz.Height), false, "Fail to set canvas size to %ux%u", sz.Width, sz.Height);

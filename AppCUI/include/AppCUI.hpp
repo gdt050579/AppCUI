@@ -337,10 +337,6 @@ namespace Utils
         {
         }
 
-        constexpr inline operator bool()
-        {
-            return ptr != nullptr;
-        }
         constexpr inline T* operator->()
         {
             return ptr;
@@ -369,7 +365,7 @@ namespace Utils
         {
             ptr = nullptr;
         }
-        constexpr inline bool Empty() const
+        constexpr inline bool IsValid() const
         {
             return ptr != nullptr;
         }
@@ -387,6 +383,10 @@ namespace Utils
         constexpr inline Reference<C> DownCast()
         {
             return Reference<C>((C*) (this->ptr));
+        }
+        constexpr inline operator size_t()
+        {
+            return (size_t) (this->ptr);
         }
     };
 } // namespace Utils
