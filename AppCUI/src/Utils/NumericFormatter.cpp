@@ -35,20 +35,27 @@ std::string_view NumericFormatter::ToDecStringSigned(long long value)
 {
     bool negative = value < 0;
     char* e       = temp + sizeof(temp) - 1;
-    char* s       = e - 1;
+    char* s       = e;
     *e            = 0;
-    e--;
-
-    do
-    {
-        s--;
-        *s = BaseLettersUpperCase[value % 10];
-        value /= 10;
-    } while (value != 0);
     if (negative)
     {
+        do
+        {
+            s--;
+            *s = BaseLettersUpperCase[-(value % 10)];
+            value /= 10;
+        } while (value != 0);
         s--;
         *s = '-';
+    }
+    else
+    {
+        do
+        {
+            s--;
+            *s = BaseLettersUpperCase[value % 10];
+            value /= 10;
+        } while (value != 0);
     }
     return std::string_view{ s, (size_t) (e - s) };
 }

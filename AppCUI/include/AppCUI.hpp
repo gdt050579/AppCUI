@@ -829,7 +829,7 @@ namespace Utils
 
     }; // namespace Number
 
-    class NumericFormatter
+    class EXPORT NumericFormatter
     {
         char temp[32];
 
