@@ -2969,6 +2969,8 @@ namespace Controls
         HideHorizontalLines = 0x000100,
         HideVerticalLines   = 0x000200,
         HideBoxes           = 0x000400,
+        HideHoveredCell     = 0x000800,
+        HideSelectedCell    = 0x001000
     };
 
     class EXPORT Grid : public Control

@@ -115,7 +115,8 @@ void Grid::DrawBoxes(Renderer& renderer)
         }
     }
 
-    if (context->hoveredCellIndex != InvalidCellIndex)
+    if (context->hoveredCellIndex != InvalidCellIndex &&
+        ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
         const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
         const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
@@ -139,7 +140,8 @@ void Grid::DrawBoxes(Renderer& renderer)
               xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, context->Cfg->Grid.Lines.Box.Hovered);
     }
 
-    if (context->selectedCellIndex != InvalidCellIndex)
+    if (context->selectedCellIndex != InvalidCellIndex &&
+        ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         const auto columnIndex = context->selectedCellIndex % context->columnsNo;
         const auto rowIndex    = context->selectedCellIndex / context->columnsNo;
@@ -203,7 +205,8 @@ void Grid::DrawLines(Renderer& renderer)
         }
     }
 
-    if (context->hoveredCellIndex != InvalidCellIndex)
+    if (context->hoveredCellIndex != InvalidCellIndex &&
+        ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
         const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
         const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
@@ -221,7 +224,8 @@ void Grid::DrawLines(Renderer& renderer)
         renderer.DrawHorizontalLine(xLeft + 1, yBottom, xRight - 1, context->Cfg->Grid.Lines.Horizontal.Hovered, true);
     }
 
-    if (context->selectedCellIndex != InvalidCellIndex)
+    if (context->selectedCellIndex != InvalidCellIndex &&
+        ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         const auto columnIndex = context->selectedCellIndex % context->columnsNo;
         const auto rowIndex    = context->selectedCellIndex / context->columnsNo;
