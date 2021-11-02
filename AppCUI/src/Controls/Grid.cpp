@@ -86,12 +86,50 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
     case AppCUI::Input::MouseButton::Left:
     {
         context->hoveredCellIndex = InvalidCellIndex;
-        const auto index          = ComputeCellNumber(x, y);
-        if (index != InvalidCellIndex)
+        const auto currentIndex   = ComputeCellNumber(x, y);
+        if (currentIndex != InvalidCellIndex)
         {
-            context->selectedCellsIndexes.insert(index);
-            return true;
+            break;
         }
+
+        if (context->selectedCellsIndexes.size() > 0)
+        {
+            auto initialIndex = *context->selectedCellsIndexes.begin();
+            auto lastIndex    = *context->selectedCellsIndexes.rbegin();
+
+            if (initialIndex != currentIndex)
+            {
+                const auto minColumnIndex = initialIndex % context->columnsNo;
+                const auto minRowIndex    = initialIndex / context->columnsNo;
+
+                const auto currentColumnIndex = currentIndex % context->columnsNo;
+                const auto currentRowIndex    = currentIndex / context->columnsNo;
+
+                const auto maxColumnIndex = lastIndex % context->columnsNo;
+                const auto maxRowIndex    = lastIndex / context->columnsNo;
+
+                const auto startColumnIndex = std::min<>(minColumnIndex, currentColumnIndex);
+                const auto startRowIndex    = std::min<>(minRowIndex, currentRowIndex);
+
+                const auto endColumnIndex = std::max<>(currentColumnIndex, maxColumnIndex);
+                const auto endRowIndex    = std::max<>(currentRowIndex, maxRowIndex);
+
+                for (auto i = startColumnIndex; i <= endColumnIndex; i++)
+                {
+                    for (auto j = startRowIndex; j <= endRowIndex; j++)
+                    {
+                        const auto current = context->columnsNo * j + i;
+                        context->selectedCellsIndexes.insert(current);
+                    }
+                }
+            }
+        }
+        else
+        {
+            context->selectedCellsIndexes.insert(currentIndex);
+        }
+
+        return true;
     }
     break;
     case AppCUI::Input::MouseButton::Center:
