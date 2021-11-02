@@ -332,4 +332,9 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
     this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
+
+    this->Grid.Lines.Horizontal = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Vertical   = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Box        = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Background       = ColorPair{ Color::Transparent, Color::DarkBlue };
 }

@@ -470,20 +470,31 @@ REFERENCE<Tree> Factory::Tree::Create(
 }
 
 //======[GRID]=======================================================================================
-Pointer<AppCUI::Controls::Grid> Factory::Grid::Create(std::string_view layout)
+Pointer<AppCUI::Controls::Grid> Factory::Grid::Create(
+      std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, AppCUI::Controls::GridFlags flags)
 {
-    return POINTER<AppCUI::Controls::Grid>(new AppCUI::Controls::Grid(layout));
+    return POINTER<AppCUI::Controls::Grid>(new AppCUI::Controls::Grid(layout, columnsNo, rowsNo, flags));
 }
 
-Reference<AppCUI::Controls::Grid> Factory::Grid::Create(AppCUI::Controls::Control* parent, std::string_view layout)
+Reference<AppCUI::Controls::Grid> Factory::Grid::Create(
+      AppCUI::Controls::Control* parent,
+      std::string_view layout,
+      unsigned int columnsNo,
+      unsigned int rowsNo,
+      AppCUI::Controls::GridFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout));
+    return parent->AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
 
-Reference<AppCUI::Controls::Grid> Factory::Grid::Create(AppCUI::Controls::Control& parent, std::string_view layout)
+Reference<AppCUI::Controls::Grid> Factory::Grid::Create(
+      AppCUI::Controls::Control& parent,
+      std::string_view layout,
+      unsigned int columnsNo,
+      unsigned int rowsNo,
+      AppCUI::Controls::GridFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout));
+    return parent.AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
 
 #undef VALIDATE_PARENT

@@ -630,6 +630,14 @@ class TreeControlContext : public ControlContext
     } filter{};
 };
 
+class GridControlContext : public ControlContext
+{
+  public:
+    unsigned int columnsNo = 0;
+    unsigned int rowsNo    = 0;
+    GridFlags flags        = GridFlags::None;
+};
+
 enum class MenuItemType : unsigned int
 {
     Invalid,

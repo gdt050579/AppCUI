@@ -10,7 +10,8 @@ class SimpleWin : public AppCUI::Controls::Window
                 AppCUI::Controls::WindowFlags::NoCloseButton | AppCUI::Controls::WindowFlags::FixedPosition |
                       AppCUI::Controls::WindowFlags::Maximized)
     {
-        auto grid = AppCUI::Controls::Factory::Grid::Create(this, "d:c,w:100%,h:100%");
+        auto grid = AppCUI::Controls::Factory::Grid::Create(
+              this, "d:c,w:100%,h:100%", 10, 30, AppCUI::Controls::GridFlags::None);
     }
 };
 

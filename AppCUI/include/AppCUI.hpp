@@ -1320,6 +1320,13 @@ namespace Graphics
         MenuSign,
         FourPoints,
 
+        // extended ascii codes (195 / 251C, 194 / 252C, 180 / 2524, 193 / 2534) / Graphics Extended Code Page 1252
+        // https://en.wikipedia.org/wiki/Windows-1252
+        BoxMidleLeft,
+        BoxMidleTop,
+        BoxMidleRight,
+        BoxMidleBottom,
+
         // always last
         Count
     };
@@ -2889,6 +2896,98 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
+    class EXPORT Tree : public Control
+    {
+      protected:
+        Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        void OnUpdateScrollBars() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
+
+        ItemHandle AddItem(
+              const ItemHandle parent,
+              const std::vector<Graphics::CharacterBuffer>& values,
+              const ConstString metadata,
+              void* data        = nullptr,
+              bool process      = false,
+              bool isExpandable = false);
+        bool RemoveItem(const ItemHandle handle, bool process = false);
+        bool ClearItems();
+        ItemHandle GetCurrentItem();
+        const ConstString GetItemText(const ItemHandle handle);
+        ItemData* GetItemData(const ItemHandle handle);
+        ItemData* GetItemData(const size_t index);
+        unsigned int GetItemsCount() const;
+        void SetToggleItemHandle(
+              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
+        bool AddColumnData(
+              const unsigned int index,
+              const ConstString title,
+              const AppCUI::Graphics::TextAlignament headerAlignment,
+              const AppCUI::Graphics::TextAlignament contentAlignment,
+              const unsigned int width = 0xFFFFFFFF);
+
+      private:
+        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
+        bool PaintColumnHeaders(Graphics::Renderer& renderer);
+        bool PaintColumnSeparators(Graphics::Renderer& renderer);
+        bool MoveUp();
+        bool MoveDown();
+        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
+        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
+        bool ToggleExpandRecursive(const ItemHandle handle);
+        bool ToggleItem(const ItemHandle handle);
+        bool IsMouseOnToggleSymbol(int x, int y) const;
+        bool IsMouseOnItem(int x, int y) const;
+        bool IsMouseOnBorder(int x, int y) const;
+        bool IsMouseOnColumnHeader(int x, int y) const;
+        bool IsMouseOnColumnSeparator(int x, int y) const;
+        bool IsMouseOnSearchField(int x, int y) const;
+        bool AdjustElementsOnResize(const int newWidth, const int newHeight);
+        bool AdjustItemsBoundsOnResize();
+        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
+        bool SetColorForItems(const AppCUI::Graphics::ColorPair& color);
+        bool SearchItems();
+        bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
+        bool MarkAllItemsAsNotFound();
+        bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
+
+        friend Factory::Tree;
+        friend Control;
+    };
+
+    enum class GridFlags : unsigned int
+    {
+        None                = 0x000000,
+        HideHorizontalLines = 0x000100,
+        HideVerticalLines   = 0x000200,
+        HideBoxes           = 0x000400,
+    };
+
+    class EXPORT Grid : public Control
+    {
+      protected:
+        Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+
+      private:
+        void DrawBoxes(Graphics::Renderer& renderer);
+        void DrawLines(Graphics::Renderer& renderer);
+
+      private:
+        friend Factory::Grid;
+        friend Control;
+    };
+
     namespace Factory
     {
         class EXPORT Label
@@ -3274,92 +3373,26 @@ namespace Controls
             Grid() = delete;
 
           public:
-            static Pointer<AppCUI::Controls::Grid> Create(std::string_view layout);
-            static Reference<AppCUI::Controls::Grid> Create(AppCUI::Controls::Control* parent, std::string_view layout);
-            static Reference<AppCUI::Controls::Grid> Create(AppCUI::Controls::Control& parent, std::string_view layout);
+            static Pointer<AppCUI::Controls::Grid> Create(
+                  std::string_view layout,
+                  unsigned int columnsNo,
+                  unsigned int rowsNo,
+                  AppCUI::Controls::GridFlags flags);
+            static Reference<AppCUI::Controls::Grid> Create(
+                  AppCUI::Controls::Control* parent,
+                  std::string_view layout,
+                  unsigned int columnsNo,
+                  unsigned int rowsNo,
+                  AppCUI::Controls::GridFlags flags);
+            static Reference<AppCUI::Controls::Grid> Create(
+                  AppCUI::Controls::Control& parent,
+                  std::string_view layout,
+                  unsigned int columnsNo,
+                  unsigned int rowsNo,
+                  AppCUI::Controls::GridFlags flags);
         };
     } // namespace Factory
-
-    class EXPORT Tree : public Control
-    {
-      protected:
-        Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
-
-      public:
-        void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnFocus() override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseOver(int x, int y) override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
-        void OnUpdateScrollBars() override;
-        void OnAfterResize(int newWidth, int newHeight) override;
-
-        ItemHandle AddItem(
-              const ItemHandle parent,
-              const std::vector<Graphics::CharacterBuffer>& values,
-              const ConstString metadata,
-              void* data        = nullptr,
-              bool process      = false,
-              bool isExpandable = false);
-        bool RemoveItem(const ItemHandle handle, bool process = false);
-        bool ClearItems();
-        ItemHandle GetCurrentItem();
-        const ConstString GetItemText(const ItemHandle handle);
-        ItemData* GetItemData(const ItemHandle handle);
-        ItemData* GetItemData(const size_t index);
-        unsigned int GetItemsCount() const;
-        void SetToggleItemHandle(
-              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
-        bool AddColumnData(
-              const unsigned int index,
-              const ConstString title,
-              const AppCUI::Graphics::TextAlignament headerAlignment,
-              const AppCUI::Graphics::TextAlignament contentAlignment,
-              const unsigned int width = 0xFFFFFFFF);
-
-      private:
-        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
-        bool PaintColumnHeaders(Graphics::Renderer& renderer);
-        bool PaintColumnSeparators(Graphics::Renderer& renderer);
-        bool MoveUp();
-        bool MoveDown();
-        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
-        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
-        bool ToggleExpandRecursive(const ItemHandle handle);
-        bool ToggleItem(const ItemHandle handle);
-        bool IsMouseOnToggleSymbol(int x, int y) const;
-        bool IsMouseOnItem(int x, int y) const;
-        bool IsMouseOnBorder(int x, int y) const;
-        bool IsMouseOnColumnHeader(int x, int y) const;
-        bool IsMouseOnColumnSeparator(int x, int y) const;
-        bool IsMouseOnSearchField(int x, int y) const;
-        bool AdjustElementsOnResize(const int newWidth, const int newHeight);
-        bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
-        bool SetColorForItems(const AppCUI::Graphics::ColorPair& color);
-        bool SearchItems();
-        bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
-        bool MarkAllItemsAsNotFound();
-        bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
-
-        friend Factory::Tree;
-        friend Control;
-    };
-
-    class EXPORT Grid : public Control
-    {
-      protected:
-        Grid(std::string_view layout);
-
-      public:
-        void Paint(Graphics::Renderer& renderer) override;
-
-      private:
-        friend Factory::Grid;
-        friend Control;
-    };
-}; // namespace Controls
+};    // namespace Controls
 
 namespace Dialogs
 {
@@ -3716,6 +3749,14 @@ namespace Application
                 } Symbol;
             };
         } Tree;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Horizontal, Vertical, Box;
+            } Lines;
+            Graphics::ColorPair Background;
+        } Grid;
         void SetDarkTheme();
     };
 
@@ -3764,5 +3805,6 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
