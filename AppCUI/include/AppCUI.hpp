@@ -829,6 +829,83 @@ namespace Utils
 
     }; // namespace Number
 
+    class NumericFormatter
+    {
+        char temp[32];
+
+        std::string_view ToHexString(unsigned long long value);
+        std::string_view ToDecStringUnsigned(unsigned long long value);
+        std::string_view ToDecStringSigned(long long value);
+      public:
+        // To HEX
+        inline std::string_view ToHex(unsigned long long value)
+        {
+            return ToHexString(value);
+        }
+        inline std::string_view ToHex(unsigned int value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(unsigned short value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(unsigned char value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(long long value)
+        {
+            return ToHexString(*(unsigned long long*)&value);
+        }
+        inline std::string_view ToHex(int value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToHex(short value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToHex(char value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned char*) &value));
+        }
+
+        // ToDec
+        inline std::string_view ToDec(unsigned long long value)
+        {
+            return ToDecStringUnsigned(value);
+        }
+        inline std::string_view ToDec(unsigned int value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(unsigned short value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(unsigned char value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(long long value)
+        {
+            return ToDecStringSigned(value);
+        }
+        inline std::string_view ToDec(int value)
+        {
+            return ToDecStringSigned((long)value);
+        }
+        inline std::string_view ToDec(short value)
+        {
+            return ToDecStringSigned((long)value);
+        }
+        inline std::string_view ToDec(char value)
+        {
+            return ToDecStringSigned((long)value);
+        }
+    };
+
     enum class StringEncoding : unsigned int
     {
         Ascii = 0,
