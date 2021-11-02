@@ -1,6 +1,9 @@
 #include "ControlContext.hpp"
 
+using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
+
+constexpr unsigned int InvalidCellIndex = 0xFFFFFFFF;
 
 Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
@@ -33,74 +36,63 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
-void Grid::DrawBoxes(Graphics::Renderer& renderer)
+void Grid::OnMousePressed(int x, int y, MouseButton button)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    auto context = reinterpret_cast<GridControlContext*>(Context);
 
-    // define cell dimensions
-    const auto cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
-    const auto cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
-
-    // center matrix
-    const auto startingPointX = static_cast<unsigned int>((context->Layout.Width - cWidth * context->columnsNo) / 2);
-    const auto startingPointY = static_cast<unsigned int>((context->Layout.Height - cHeight * context->rowsNo) / 2);
-
-    for (auto i = 0U; i <= context->columnsNo; i++)
+    switch (button)
     {
-        const auto x = startingPointX + i * cWidth;
-        for (auto j = 0U; j <= context->rowsNo; j++)
-        {
-            const auto y = startingPointY + j * cHeight;
-
-            auto sc = SpecialChars::BoxCrossSingleLine;
-            if (i == 0)
-            {
-                if (j == 0)
-                {
-                    sc = SpecialChars::BoxTopLeftCornerSingleLine;
-                }
-                else if (j == context->rowsNo)
-                {
-                    sc = SpecialChars::BoxBottomLeftCornerSingleLine;
-                }
-                else
-                {
-                    sc = SpecialChars::BoxMidleLeft;
-                }
-            }
-            else if (i == context->columnsNo)
-            {
-                if (j == 0)
-                {
-                    sc = SpecialChars::BoxTopRightCornerSingleLine;
-                }
-                else if (j == context->rowsNo)
-                {
-                    sc = SpecialChars::BoxBottomRightCornerSingleLine;
-                }
-                else
-                {
-                    sc = SpecialChars::BoxMidleRight;
-                }
-            }
-            else
-            {
-                if (j == 0)
-                {
-                    sc = SpecialChars::BoxMidleTop;
-                }
-                else if (j == context->rowsNo)
-                {
-                    sc = SpecialChars::BoxMidleBottom;
-                }
-            }
-
-            renderer.WriteSpecialCharacter(x, y, sc, context->Cfg->Grid.Lines.Box);
-        }
+    case MouseButton::None:
+        break;
+    case MouseButton::Left:
+        context->selectedCellIndex = ComputeCellNumber(x, y);
+        context->hoveredCellIndex  = InvalidCellIndex;
+        break;
+    case MouseButton::Center:
+        break;
+    case MouseButton::Right:
+        break;
+    case MouseButton::DoubleClicked:
+        break;
+    default:
+        break;
     }
 }
 
-void Grid::DrawLines(Graphics::Renderer& renderer)
+void Grid::OnMouseReleased(int x, int y, MouseButton button)
+{
+}
+
+bool Grid::OnMouseDrag(int x, int y, MouseButton button)
+{
+    return false;
+}
+
+bool Grid::OnMouseOver(int x, int y)
+{
+    auto context                        = reinterpret_cast<GridControlContext*>(Context);
+    const auto previousHoveredCellIndex = context->hoveredCellIndex;
+    context->hoveredCellIndex           = ComputeCellNumber(x, y);
+
+    return context->hoveredCellIndex != previousHoveredCellIndex;
+}
+
+bool Grid::OnMouseLeave()
+{
+    auto context                        = reinterpret_cast<GridControlContext*>(Context);
+    const auto previousHoveredCellIndex = context->hoveredCellIndex;
+    context->hoveredCellIndex           = InvalidCellIndex;
+
+    return context->hoveredCellIndex != previousHoveredCellIndex;
+}
+
+void Grid::OnLoseFocus()
+{
+    auto context               = reinterpret_cast<GridControlContext*>(Context);
+    context->selectedCellIndex = InvalidCellIndex;
+}
+
+void Grid::DrawBoxes(Renderer& renderer)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -109,22 +101,94 @@ void Grid::DrawLines(Graphics::Renderer& renderer)
     const auto cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
 
     // center matrix
-    const auto startingPointX = static_cast<unsigned int>((context->Layout.Width - cWidth * context->columnsNo) / 2);
-    const auto startingPointY = static_cast<unsigned int>((context->Layout.Height - cHeight * context->rowsNo) / 2);
+    const auto offsetX = static_cast<unsigned int>((context->Layout.Width - cWidth * context->columnsNo) / 2);
+    const auto offsetY = static_cast<unsigned int>((context->Layout.Height - cHeight * context->rowsNo) / 2);
 
     for (auto i = 0U; i <= context->columnsNo; i++)
     {
-        const auto x = startingPointX + i * cWidth;
+        const auto x = offsetX + i * cWidth;
         for (auto j = 0U; j <= context->rowsNo; j++)
         {
-            const auto y = startingPointY + j * cHeight;
+            const auto y  = offsetY + j * cHeight;
+            const auto sc = ComputeBoxType(i, j);
+            renderer.WriteSpecialCharacter(x, y, sc, context->Cfg->Grid.Lines.Box.Normal);
+        }
+    }
+
+    if (context->hoveredCellIndex != InvalidCellIndex)
+    {
+        const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
+        const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
+
+        const auto xLeft  = offsetX + columnIndex * cWidth;
+        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+
+        const auto yTop    = offsetY + rowIndex * cHeight;
+        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+        renderer.WriteSpecialCharacter(
+              xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, context->Cfg->Grid.Lines.Box.Hovered);
+
+        renderer.WriteSpecialCharacter(
+              xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, context->Cfg->Grid.Lines.Box.Hovered);
+
+        renderer.WriteSpecialCharacter(
+              xLeft, yBottom, SpecialChars::BoxBottomLeftCornerSingleLine, context->Cfg->Grid.Lines.Box.Hovered);
+
+        renderer.WriteSpecialCharacter(
+              xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, context->Cfg->Grid.Lines.Box.Hovered);
+    }
+
+    if (context->selectedCellIndex != InvalidCellIndex)
+    {
+        const auto columnIndex = context->selectedCellIndex % context->columnsNo;
+        const auto rowIndex    = context->selectedCellIndex / context->columnsNo;
+
+        const auto xLeft  = offsetX + columnIndex * cWidth;
+        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+
+        const auto yTop    = offsetY + rowIndex * cHeight;
+        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+        renderer.WriteSpecialCharacter(
+              xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, context->Cfg->Grid.Lines.Box.Selected);
+
+        renderer.WriteSpecialCharacter(
+              xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, context->Cfg->Grid.Lines.Box.Selected);
+
+        renderer.WriteSpecialCharacter(
+              xLeft, yBottom, SpecialChars::BoxBottomLeftCornerSingleLine, context->Cfg->Grid.Lines.Box.Selected);
+
+        renderer.WriteSpecialCharacter(
+              xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, context->Cfg->Grid.Lines.Box.Selected);
+    }
+}
+
+void Grid::DrawLines(Renderer& renderer)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    // define cell dimensions
+    const auto cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
+    const auto cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
+
+    // center matrix
+    const auto offsetX = static_cast<unsigned int>((context->Layout.Width - cWidth * context->columnsNo) / 2);
+    const auto offsetY = static_cast<unsigned int>((context->Layout.Height - cHeight * context->rowsNo) / 2);
+
+    for (auto i = 0U; i <= context->columnsNo; i++)
+    {
+        const auto x = offsetX + i * cWidth;
+        for (auto j = 0U; j <= context->rowsNo; j++)
+        {
+            const auto y = offsetY + j * cHeight;
 
             if ((context->flags & GridFlags::HideHorizontalLines) == GridFlags::None)
             {
                 if (i < context->columnsNo)
                 {
-                    const auto endX = startingPointX + (i + 1) * cWidth;
-                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, context->Cfg->Grid.Lines.Horizontal, true);
+                    const auto endX = offsetX + (i + 1) * cWidth;
+                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, context->Cfg->Grid.Lines.Horizontal.Normal, true);
                 }
             }
 
@@ -132,10 +196,127 @@ void Grid::DrawLines(Graphics::Renderer& renderer)
             {
                 if (j < context->rowsNo)
                 {
-                    const auto endY = startingPointY + (j + 1) * cHeight;
-                    renderer.DrawVerticalLine(x, y + 1, endY - 1, context->Cfg->Grid.Lines.Vertical, true);
+                    const auto endY = offsetY + (j + 1) * cHeight;
+                    renderer.DrawVerticalLine(x, y + 1, endY - 1, context->Cfg->Grid.Lines.Vertical.Normal, true);
                 }
             }
         }
     }
+
+    if (context->hoveredCellIndex != InvalidCellIndex)
+    {
+        const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
+        const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
+
+        const auto xLeft  = offsetX + columnIndex * cWidth;
+        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+
+        const auto yTop    = offsetY + rowIndex * cHeight;
+        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+        renderer.DrawVerticalLine(xLeft, yTop + 1, yBottom - 1, context->Cfg->Grid.Lines.Vertical.Hovered, true);
+        renderer.DrawVerticalLine(xRight, yTop + 1, yBottom - 1, context->Cfg->Grid.Lines.Vertical.Hovered, true);
+
+        renderer.DrawHorizontalLine(xLeft + 1, yTop, xRight - 1, context->Cfg->Grid.Lines.Horizontal.Hovered, true);
+        renderer.DrawHorizontalLine(xLeft + 1, yBottom, xRight - 1, context->Cfg->Grid.Lines.Horizontal.Hovered, true);
+    }
+
+    if (context->selectedCellIndex != InvalidCellIndex)
+    {
+        const auto columnIndex = context->selectedCellIndex % context->columnsNo;
+        const auto rowIndex    = context->selectedCellIndex / context->columnsNo;
+
+        const auto xLeft  = offsetX + columnIndex * cWidth;
+        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+
+        const auto yTop    = offsetY + rowIndex * cHeight;
+        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+        renderer.DrawVerticalLine(xLeft, yTop + 1, yBottom - 1, context->Cfg->Grid.Lines.Vertical.Selected, true);
+        renderer.DrawVerticalLine(xRight, yTop + 1, yBottom - 1, context->Cfg->Grid.Lines.Vertical.Selected, true);
+
+        renderer.DrawHorizontalLine(xLeft + 1, yTop, xRight - 1, context->Cfg->Grid.Lines.Horizontal.Selected, true);
+        renderer.DrawHorizontalLine(xLeft + 1, yBottom, xRight - 1, context->Cfg->Grid.Lines.Horizontal.Selected, true);
+    }
+}
+
+unsigned int Grid::ComputeCellNumber(int x, int y)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    // define cell dimensions
+    const auto cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
+    const auto cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
+
+    // center matrix
+    const auto offsetX = static_cast<unsigned int>((context->Layout.Width - cWidth * context->columnsNo) / 2);
+    const auto offsetY = static_cast<unsigned int>((context->Layout.Height - cHeight * context->rowsNo) / 2);
+
+    const auto endX = static_cast<unsigned int>(context->Layout.Width - offsetX);
+    const auto endY = static_cast<unsigned int>(context->Layout.Height - offsetY);
+
+    if (static_cast<unsigned int>(x) <= offsetX || static_cast<unsigned int>(x) >= endX)
+    {
+        return InvalidCellIndex;
+    }
+
+    if (static_cast<unsigned int>(y) <= offsetY || static_cast<unsigned int>(y) >= endY)
+    {
+        return InvalidCellIndex;
+    }
+
+    const auto columnIndex = (static_cast<unsigned int>(x) - offsetX) / cWidth;
+    const auto rowIndex    = (static_cast<unsigned int>(y) - offsetY) / cHeight;
+    const auto cellIndex   = context->columnsNo * rowIndex + columnIndex;
+
+    return cellIndex;
+}
+
+SpecialChars Grid::ComputeBoxType(unsigned int i, unsigned int j)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (i == 0)
+    {
+        if (j == 0)
+        {
+            return SpecialChars::BoxTopLeftCornerSingleLine;
+        }
+        else if (j == context->rowsNo)
+        {
+            return SpecialChars::BoxBottomLeftCornerSingleLine;
+        }
+        else
+        {
+            return SpecialChars::BoxMidleLeft;
+        }
+    }
+    else if (i == context->columnsNo)
+    {
+        if (j == 0)
+        {
+            return SpecialChars::BoxTopRightCornerSingleLine;
+        }
+        else if (j == context->rowsNo)
+        {
+            return SpecialChars::BoxBottomRightCornerSingleLine;
+        }
+        else
+        {
+            return SpecialChars::BoxMidleRight;
+        }
+    }
+    else
+    {
+        if (j == 0)
+        {
+            return SpecialChars::BoxMidleTop;
+        }
+        else if (j == context->rowsNo)
+        {
+            return SpecialChars::BoxMidleBottom;
+        }
+    }
+
+    return SpecialChars::BoxCrossSingleLine;
 }

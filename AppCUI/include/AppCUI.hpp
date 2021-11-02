@@ -2978,10 +2978,18 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnLoseFocus() override;
 
       private:
         void DrawBoxes(Graphics::Renderer& renderer);
         void DrawLines(Graphics::Renderer& renderer);
+        unsigned int ComputeCellNumber(int x, int y);
+        AppCUI::Graphics::SpecialChars ComputeBoxType(unsigned int i, unsigned int j);
 
       private:
         friend Factory::Grid;
@@ -3753,7 +3761,18 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Horizontal, Vertical, Box;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Horizontal;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Vertical;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Box;
             } Lines;
             Graphics::ColorPair Background;
         } Grid;

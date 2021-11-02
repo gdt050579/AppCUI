@@ -633,9 +633,11 @@ class TreeControlContext : public ControlContext
 class GridControlContext : public ControlContext
 {
   public:
-    unsigned int columnsNo = 0;
-    unsigned int rowsNo    = 0;
-    GridFlags flags        = GridFlags::None;
+    unsigned int columnsNo         = 0;
+    unsigned int rowsNo            = 0;
+    GridFlags flags                = GridFlags::None;
+    unsigned int selectedCellIndex = 0xFFFFFFFF;
+    unsigned int hoveredCellIndex  = 0xFFFFFFFF;
 };
 
 enum class MenuItemType : unsigned int
