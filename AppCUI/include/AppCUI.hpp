@@ -2965,12 +2965,13 @@ namespace Controls
 
     enum class GridFlags : unsigned int
     {
-        None                = 0x000000,
-        HideHorizontalLines = 0x000100,
-        HideVerticalLines   = 0x000200,
-        HideBoxes           = 0x000400,
-        HideHoveredCell     = 0x000800,
-        HideSelectedCell    = 0x001000
+        None                    = 0x000000,
+        HideHorizontalLines     = 0x000100,
+        HideVerticalLines       = 0x000200,
+        HideBoxes               = 0x000400,
+        HideHoveredCell         = 0x000800,
+        HideSelectedCell        = 0x001000,
+        DoNotDrawCellBackground = 0x002000
     };
 
     class EXPORT Grid : public Control
@@ -2992,6 +2993,7 @@ namespace Controls
         void DrawLines(Graphics::Renderer& renderer);
         unsigned int ComputeCellNumber(int x, int y);
         AppCUI::Graphics::SpecialChars ComputeBoxType(unsigned int i, unsigned int j);
+        void DrawCellsBackground(Graphics::Renderer& renderer);
 
       private:
         friend Factory::Grid;
@@ -3776,7 +3778,14 @@ namespace Application
                     Graphics::ColorPair Normal, Selected, Hovered;
                 } Box;
             } Lines;
-            Graphics::ColorPair Background;
+            struct
+            {
+                Graphics::ColorPair Grid;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Cell;
+            } Background;
         } Grid;
         void SetDarkTheme();
     };
