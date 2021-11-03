@@ -638,6 +638,7 @@ class GridControlContext : public ControlContext
     unsigned int rowsNo           = 0;
     GridFlags flags               = GridFlags::None;
     unsigned int hoveredCellIndex = 0xFFFFFFFF;
+    unsigned int anchorCellIndex  = 0xFFFFFFFF;
     std::set<unsigned int> selectedCellsIndexes;
 };
 

@@ -56,6 +56,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         const auto index = ComputeCellNumber(x, y);
         if (index != InvalidCellIndex)
         {
+            context->anchorCellIndex = index;
             context->selectedCellsIndexes.insert(index);
         }
     }
@@ -87,46 +88,36 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
     {
         context->hoveredCellIndex = InvalidCellIndex;
         const auto currentIndex   = ComputeCellNumber(x, y);
-        if (currentIndex != InvalidCellIndex)
+        if (currentIndex == InvalidCellIndex)
         {
             break;
         }
 
-        if (context->selectedCellsIndexes.size() > 0)
+        context->selectedCellsIndexes.clear();
+        context->selectedCellsIndexes.insert(currentIndex);
+
+        if (context->anchorCellIndex != currentIndex)
         {
-            auto initialIndex = *context->selectedCellsIndexes.begin();
-            auto lastIndex    = *context->selectedCellsIndexes.rbegin();
+            const auto anchorColumnIndex = context->anchorCellIndex % context->columnsNo;
+            const auto anchorRowIndex    = context->anchorCellIndex / context->columnsNo;
 
-            if (initialIndex != currentIndex)
+            const auto currentColumnIndex = currentIndex % context->columnsNo;
+            const auto currentRowIndex    = currentIndex / context->columnsNo;
+
+            const auto startColumnIndex = std::min<>(anchorColumnIndex, currentColumnIndex);
+            const auto startRowIndex    = std::min<>(anchorRowIndex, currentRowIndex);
+
+            const auto endColumnIndex = std::max<>(anchorColumnIndex, currentColumnIndex);
+            const auto endRowIndex    = std::max<>(anchorRowIndex, currentRowIndex);
+
+            for (auto i = startColumnIndex; i <= endColumnIndex; i++)
             {
-                const auto minColumnIndex = initialIndex % context->columnsNo;
-                const auto minRowIndex    = initialIndex / context->columnsNo;
-
-                const auto currentColumnIndex = currentIndex % context->columnsNo;
-                const auto currentRowIndex    = currentIndex / context->columnsNo;
-
-                const auto maxColumnIndex = lastIndex % context->columnsNo;
-                const auto maxRowIndex    = lastIndex / context->columnsNo;
-
-                const auto startColumnIndex = std::min<>(minColumnIndex, currentColumnIndex);
-                const auto startRowIndex    = std::min<>(minRowIndex, currentRowIndex);
-
-                const auto endColumnIndex = std::max<>(currentColumnIndex, maxColumnIndex);
-                const auto endRowIndex    = std::max<>(currentRowIndex, maxRowIndex);
-
-                for (auto i = startColumnIndex; i <= endColumnIndex; i++)
+                for (auto j = startRowIndex; j <= endRowIndex; j++)
                 {
-                    for (auto j = startRowIndex; j <= endRowIndex; j++)
-                    {
-                        const auto current = context->columnsNo * j + i;
-                        context->selectedCellsIndexes.insert(current);
-                    }
+                    const auto current = context->columnsNo * j + i;
+                    context->selectedCellsIndexes.insert(current);
                 }
             }
-        }
-        else
-        {
-            context->selectedCellsIndexes.insert(currentIndex);
         }
 
         return true;
