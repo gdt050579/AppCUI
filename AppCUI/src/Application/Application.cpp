@@ -202,7 +202,22 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 {
     return app;
 }
+void UpdateCommandBar(AppCUI::Controls::Control* obj, bool repaint = true)
+{
+    if (!app->cmdBar)
+        return;
+    app->cmdBar->Clear();
+    while (obj != nullptr)
+    {
+        // on handler
+        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
+            break;
 
+        obj = ((ControlContext*) (obj->Context))->Parent;
+    }
+    if (repaint)
+        app->RepaintStatus |= REPAINT_STATUS_DRAW;
+}
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
     CHECKRET(ctrl != nullptr, "");
@@ -223,6 +238,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
                 Members->handlers->OnFocus.obj->OnFocus(ctrl);
             else
                 ctrl->OnFocus();
+            UpdateCommandBar(ctrl, false);
         }
         else
         {
@@ -234,7 +250,6 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
         }
-        
     }
     // put the other clip
     if (ctrl == app->ExpandedControl)
@@ -441,21 +456,6 @@ AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl)
     }
     // altfel nici un copil nu e ok - cer eu
     return ctrl;
-}
-void UpdateCommandBar(AppCUI::Controls::Control* obj)
-{
-    if (!app->cmdBar)
-        return;
-    app->cmdBar->Clear();
-    while (obj != nullptr)
-    {
-        // on handler
-        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
-            break;
-
-        obj = ((ControlContext*) (obj->Context))->Parent;
-    }
-    app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 
 AppCUI::Internal::Application::Application()
