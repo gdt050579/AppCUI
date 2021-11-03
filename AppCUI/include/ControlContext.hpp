@@ -640,6 +640,11 @@ class GridControlContext : public ControlContext
     unsigned int hoveredCellIndex = 0xFFFFFFFF;
     unsigned int anchorCellIndex  = 0xFFFFFFFF;
     std::set<unsigned int> selectedCellsIndexes;
+
+    unsigned int cWidth  = 0U;
+    unsigned int cHeight = 0U;
+    unsigned int offsetX = 0U;
+    unsigned int offsetY = 0U;
 };
 
 enum class MenuItemType : unsigned int

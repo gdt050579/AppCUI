@@ -3246,6 +3246,14 @@ namespace Controls
 
     class EXPORT Grid : public Control
     {
+      private:
+        enum class CellType
+        {
+            Normal   = 0,
+            Selected = 1,
+            Hovered  = 2
+        };
+
       protected:
         Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
 
@@ -3264,6 +3272,9 @@ namespace Controls
         unsigned int ComputeCellNumber(int x, int y);
         AppCUI::Graphics::SpecialChars ComputeBoxType(unsigned int i, unsigned int j);
         void DrawCellsBackground(Graphics::Renderer& renderer);
+        void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int i, unsigned int j);
+        void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int cellIndex);
+        void UpdateCellData();
 
       private:
         friend Factory::Grid;
