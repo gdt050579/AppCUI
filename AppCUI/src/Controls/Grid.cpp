@@ -5,6 +5,8 @@ using namespace AppCUI::Graphics;
 
 constexpr unsigned int InvalidCellIndex = 0xFFFFFFFF;
 
+constexpr unsigned int MenuCommandMergeCells = 0x01;
+
 Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
@@ -18,6 +20,8 @@ Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo,
     context->flags     = flags;
 
     UpdateCellData();
+
+    context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -66,6 +70,10 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     case MouseButton::Center:
         break;
     case MouseButton::Right:
+        if (context->selectedCellsIndexes.size() > 1)
+        {
+            context->rightClickMenu.Show(x, y);
+        }
         break;
     case MouseButton::DoubleClicked:
         break;
@@ -162,6 +170,23 @@ void Grid::OnLoseFocus()
     context->selectedCellsIndexes.clear();
 }
 
+bool AppCUI::Controls::Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
+{
+    if (eventType == Event::Command)
+    {
+        switch (controlID)
+        {
+        case MenuCommandMergeCells:
+            // TODO:
+            break;
+        default:
+            break;
+        }
+    }
+
+    return false;
+}
+
 void Grid::DrawBoxes(Renderer& renderer)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
@@ -177,7 +202,7 @@ void Grid::DrawBoxes(Renderer& renderer)
         }
     }
 
-    const auto drawBoxess = [&](unsigned int cellIndex, CellType cellType)
+    const auto drawBoxes = [&](unsigned int cellIndex, CellType cellType)
     {
         ColorPair color = context->Cfg->Grid.Lines.Box.Hovered;
 
@@ -197,8 +222,8 @@ void Grid::DrawBoxes(Renderer& renderer)
             break;
         }
 
-        const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
-        const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
+        const auto columnIndex = cellIndex % context->columnsNo;
+        const auto rowIndex    = cellIndex / context->columnsNo;
 
         const auto xLeft  = context->offsetX + columnIndex * context->cWidth;
         const auto xRight = context->offsetX + (columnIndex + 1) * context->cWidth;
@@ -215,14 +240,14 @@ void Grid::DrawBoxes(Renderer& renderer)
     if (context->hoveredCellIndex != InvalidCellIndex &&
         ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        drawBoxess(context->hoveredCellIndex, CellType::Hovered);
+        drawBoxes(context->hoveredCellIndex, CellType::Hovered);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         for (const auto& cellIndex : context->selectedCellsIndexes)
         {
-            drawBoxess(cellIndex, CellType::Selected);
+            drawBoxes(cellIndex, CellType::Selected);
         }
     }
 }

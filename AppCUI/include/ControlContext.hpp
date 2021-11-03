@@ -645,6 +645,8 @@ class GridControlContext : public ControlContext
     unsigned int cHeight = 0U;
     unsigned int offsetX = 0U;
     unsigned int offsetY = 0U;
+
+    Menu rightClickMenu;
 };
 
 enum class MenuItemType : unsigned int
