@@ -829,6 +829,276 @@ namespace Utils
 
     }; // namespace Number
 
+    enum class NumericFormatFlags : unsigned short
+    {
+        None      = 0,
+        LowerCase = 0x0001,
+        PlusSign  = 0x0002,
+        MinusSign = 0x0004,
+        HexPrefix = 0x0008,
+        HexSuffix = 0x0010,
+        BinPrefix = 0x0020,
+        OctPrefix = 0x0040,
+    };
+    struct NumericFormat
+    {
+        NumericFormatFlags Flags;
+        unsigned char Base;
+        unsigned char GroupSize;
+        char GroupSeparator;
+        unsigned char DigitsCount;
+        NumericFormat(NumericFormatFlags flags)
+            : Flags(flags), Base(10), GroupSize(0), GroupSeparator(0), DigitsCount(0)
+        {
+        }
+        NumericFormat(NumericFormatFlags flags, unsigned char base)
+            : Flags(flags), Base(base), GroupSize(0), GroupSeparator(0), DigitsCount(0)
+        {
+        }
+        NumericFormat(NumericFormatFlags flags, unsigned char base, unsigned char groupSize, char groupSeparator)
+            : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(0)
+        {
+        }
+        NumericFormat(
+              NumericFormatFlags flags,
+              unsigned char base,
+              unsigned char groupSize,
+              char groupSeparator,
+              unsigned char digitsCount)
+            : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(digitsCount)
+        {
+        }
+    };
+    class EXPORT NumericFormatter
+    {
+        char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
+        char* heapBuffer;
+        std::string_view ToHexString(unsigned long long value);
+        std::string_view ToOctString(unsigned long long value);
+        std::string_view ToBinString(unsigned long long value);
+        std::string_view ToDecStringUnsigned(unsigned long long value);
+        std::string_view ToDecStringSigned(long long value);
+        std::string_view ToBaseUnsigned(unsigned long long value, int base);
+        std::string_view ToBaseSigned(long long value, int base);
+        std::string_view ToGenericBase(unsigned long long value, unsigned long long base);
+        std::string_view ToStringUnsigned(unsigned long long value, NumericFormat fmt);
+        std::string_view ToStringSigned(long long value, NumericFormat fmt);
+
+      public:
+        NumericFormatter() : heapBuffer(nullptr)
+        {
+        }
+        ~NumericFormatter()
+        {
+            if (heapBuffer)
+                delete[] heapBuffer;
+            heapBuffer = nullptr;
+        }
+        // ToHex
+        inline std::string_view ToHex(unsigned long long value)
+        {
+            return ToHexString(value);
+        }
+        inline std::string_view ToHex(unsigned int value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(unsigned short value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(unsigned char value)
+        {
+            return ToHexString((unsigned long long) value);
+        }
+        inline std::string_view ToHex(long long value)
+        {
+            return ToHexString(*(unsigned long long*) &value);
+        }
+        inline std::string_view ToHex(int value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToHex(short value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToHex(char value)
+        {
+            return ToHexString((unsigned long long) (*(unsigned char*) &value));
+        }
+
+        // ToDec
+        inline std::string_view ToDec(unsigned long long value)
+        {
+            return ToDecStringUnsigned(value);
+        }
+        inline std::string_view ToDec(unsigned int value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(unsigned short value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(unsigned char value)
+        {
+            return ToDecStringUnsigned((unsigned long long) value);
+        }
+        inline std::string_view ToDec(long long value)
+        {
+            return ToDecStringSigned(value);
+        }
+        inline std::string_view ToDec(int value)
+        {
+            return ToDecStringSigned((long) value);
+        }
+        inline std::string_view ToDec(short value)
+        {
+            return ToDecStringSigned((long) value);
+        }
+        inline std::string_view ToDec(char value)
+        {
+            return ToDecStringSigned((long) value);
+        }
+
+        // ToOct
+        inline std::string_view ToOct(unsigned long long value)
+        {
+            return ToOctString(value);
+        }
+        inline std::string_view ToOct(unsigned int value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(unsigned short value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(unsigned char value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(long long value)
+        {
+            return ToOctString(*(unsigned long long*) &value);
+        }
+        inline std::string_view ToOct(int value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToOct(short value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToOct(char value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned char*) &value));
+        }
+
+        // ToBin
+        inline std::string_view ToBin(unsigned long long value)
+        {
+            return ToBinString(value);
+        }
+        inline std::string_view ToBin(unsigned int value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(unsigned short value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(unsigned char value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(long long value)
+        {
+            return ToBinString(*(unsigned long long*) &value);
+        }
+        inline std::string_view ToBin(int value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToBin(short value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToBin(char value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned char*) &value));
+        }
+
+        // ToBase
+        inline std::string_view ToBase(unsigned long long value, int base)
+        {
+            return ToBaseUnsigned(value, base);
+        }
+        inline std::string_view ToBase(unsigned int value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(unsigned short value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(unsigned char value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(long long value, int base)
+        {
+            return ToBaseSigned(value, base);
+        }
+        inline std::string_view ToBase(int value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }
+        inline std::string_view ToBase(short value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }
+        inline std::string_view ToBase(char value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }
+
+        // ToString
+        inline std::string_view ToString(unsigned long long value, NumericFormat fmt)
+        {
+            return ToStringUnsigned(value, fmt);
+        }
+        inline std::string_view ToString(unsigned int value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((unsigned long long) value, fmt);
+        }
+        inline std::string_view ToString(unsigned short value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((unsigned long long) value, fmt);
+        }
+        inline std::string_view ToString(unsigned char value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((unsigned long long) value, fmt);
+        }
+        inline std::string_view ToString(long long value, NumericFormat fmt)
+        {
+            return ToStringSigned(value, fmt);
+        }
+        inline std::string_view ToString(int value, NumericFormat fmt)
+        {
+            return ToStringSigned((long) value, fmt);
+        }
+        inline std::string_view ToString(short value, NumericFormat fmt)
+        {
+            return ToStringSigned((long) value, fmt);
+        }
+        inline std::string_view ToString(char value, NumericFormat fmt)
+        {
+            return ToStringSigned((long) value, fmt);
+        }
+    };
+
     enum class StringEncoding : unsigned int
     {
         Ascii = 0,
@@ -3739,6 +4009,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, unsigned short)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
 
 #undef ADD_FLAG_OPERATORS
