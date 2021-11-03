@@ -831,13 +831,18 @@ namespace Utils
 
     class EXPORT NumericFormatter
     {
-        char temp[32];
+        char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
 
         std::string_view ToHexString(unsigned long long value);
+        std::string_view ToOctString(unsigned long long value);
+        std::string_view ToBinString(unsigned long long value);
         std::string_view ToDecStringUnsigned(unsigned long long value);
         std::string_view ToDecStringSigned(long long value);
+        std::string_view ToBaseUnsigned(unsigned long long value, int base);
+        std::string_view ToBaseSigned(long long value, int base);
+        std::string_view ToGenericBase(unsigned long long value, unsigned long long base);
       public:
-        // To HEX
+        // ToHex
         inline std::string_view ToHex(unsigned long long value)
         {
             return ToHexString(value);
@@ -904,6 +909,108 @@ namespace Utils
         {
             return ToDecStringSigned((long)value);
         }
+
+        // ToOct
+        inline std::string_view ToOct(unsigned long long value)
+        {
+            return ToOctString(value);
+        }
+        inline std::string_view ToOct(unsigned int value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(unsigned short value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(unsigned char value)
+        {
+            return ToOctString((unsigned long long) value);
+        }
+        inline std::string_view ToOct(long long value)
+        {
+            return ToOctString(*(unsigned long long*) &value);
+        }
+        inline std::string_view ToOct(int value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToOct(short value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToOct(char value)
+        {
+            return ToOctString((unsigned long long) (*(unsigned char*) &value));
+        }
+
+        // ToBin
+        inline std::string_view ToBin(unsigned long long value)
+        {
+            return ToBinString(value);
+        }
+        inline std::string_view ToBin(unsigned int value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(unsigned short value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(unsigned char value)
+        {
+            return ToBinString((unsigned long long) value);
+        }
+        inline std::string_view ToBin(long long value)
+        {
+            return ToBinString(*(unsigned long long*) &value);
+        }
+        inline std::string_view ToBin(int value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned int*) &value));
+        }
+        inline std::string_view ToBin(short value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned short*) &value));
+        }
+        inline std::string_view ToBin(char value)
+        {
+            return ToBinString((unsigned long long) (*(unsigned char*) &value));
+        }
+    
+        // ToBase
+        inline std::string_view ToBase(unsigned long long value, int base)
+        {
+            return ToBaseUnsigned(value, base);
+        }
+        inline std::string_view ToBase(unsigned int value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(unsigned short value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(unsigned char value, int base)
+        {
+            return ToBaseUnsigned((unsigned long long) value, base);
+        }
+        inline std::string_view ToBase(long long value, int base)
+        {
+            return ToBaseSigned(value, base);
+        }
+        inline std::string_view ToBase(int value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }
+        inline std::string_view ToBase(short value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }
+        inline std::string_view ToBase(char value, int base)
+        {
+            return ToBaseSigned((long) value, base);
+        }      
     };
 
     enum class StringEncoding : unsigned int
