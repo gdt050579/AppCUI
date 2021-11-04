@@ -3603,6 +3603,7 @@ namespace Controls
     {
       private:
         GenericRef GetItemDataAsPointer(const ItemHandle item) const;
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj); 
       protected:
         Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
@@ -3620,13 +3621,20 @@ namespace Controls
               const ItemHandle parent,
               const std::vector<Graphics::CharacterBuffer>& values,
               const ConstString metadata,
-              void* data        = nullptr,
               bool process      = false,
               bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
+
+        bool SetItemData(ItemHandle item, unsigned long long value);
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+
 
         template <typename T>
         Reference<T> GetItemData(const ItemHandle item)
