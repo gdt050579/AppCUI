@@ -2991,7 +2991,7 @@ namespace Controls
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
-            return this->SetItemDataAsPointer(obj.ToGenericRef());
+            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
         }
         template <typename T>
         constexpr inline Reference<T> GetItemData(ItemHandle item) const
