@@ -2888,22 +2888,6 @@ namespace Controls
         WarningInformation = 4,
     };
 
-    union ItemData
-    {
-        void* Pointer;
-        unsigned int UInt32Value;
-        unsigned long long UInt64Value;
-        ItemData() : Pointer(nullptr)
-        {
-        }
-        ItemData(unsigned long long value) : UInt64Value(value)
-        {
-        }
-        ItemData(void* p) : Pointer(p)
-        {
-        }
-    };
-
     class EXPORT ListView : public Control
     {
       private:
@@ -3046,22 +3030,60 @@ namespace Controls
 
     class EXPORT ComboBox : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(unsigned int index) const;
+        bool SetItemDataAsPointer(unsigned int index, GenericRef obj);
+        bool AddItem(const AppCUI::Utils::ConstString& caption, GenericRef userData);
+
       protected:
         ComboBox(std::string_view layout, const AppCUI::Utils::ConstString& text, char itemsSeparator);
 
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        ItemData GetCurrentItemUserData();
-        unsigned int GetItemsCount();
-        unsigned int GetCurrentItemIndex();
+        inline unsigned long long GetCurrentItemUserData(unsigned long long errorValue) const
+        {
+            return GetItemUserData(GetCurrentItemIndex(), errorValue);
+        }
+        template <typename T>
+        inline Reference<T> GetCurrentItemUserData() const
+        {
+            return GetItemDataAsPointer(GetCurrentItemIndex()).ToReference<T>();
+        }
+
+        unsigned int GetItemsCount() const;
+        unsigned int GetCurrentItemIndex() const;
         const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();
-        ItemData GetItemUserData(unsigned int index);
+        
+        unsigned long long GetItemUserData(unsigned int index, unsigned long long errorValue) const;
+        template <typename T>
+        inline Reference<T> GetItemUserData(unsigned int index) const
+        {
+            return GetItemDataAsPointer(index).ToReference<T>();
+        }
+
         const AppCUI::Graphics::CharacterBuffer& GetItemText(unsigned int index);
-        bool SetItemUserData(unsigned int index, ItemData userData);
+
+        bool SetItemUserData(unsigned int index, unsigned long long userData);
+        template <typename T>
+        inline bool SetItemUserData(unsigned int index, Reference<T> userData)
+        {
+            return SetItemDataAsPointer(index, userData.ToGenericRef());
+        }
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
+
+        template <typename T>
+        inline bool AddItem(const AppCUI::Utils::ConstString& caption, Reference<T> obj)
+        {
+            return AddItem(caption, obj.ToGenericRef());
+        }
+        bool AddItem(const AppCUI::Utils::ConstString& caption, unsigned long long usedData);
+        inline bool AddItem(const AppCUI::Utils::ConstString& caption)
+        {
+            return AddItem(caption, GenericRef(nullptr));
+        }
+        
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
@@ -3576,7 +3598,21 @@ namespace Controls
                   const unsigned int noOfColumns          = 1);
         };
     } // namespace Factory
-
+    union ItemData
+    {
+        void* Pointer;
+        unsigned int UInt32Value;
+        unsigned long long UInt64Value;
+        ItemData() : Pointer(nullptr)
+        {
+        }
+        ItemData(unsigned long long value) : UInt64Value(value)
+        {
+        }
+        ItemData(void* p) : Pointer(p)
+        {
+        }
+    };
     class EXPORT Tree : public Control
     {
       protected:

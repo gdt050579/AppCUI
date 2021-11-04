@@ -233,7 +233,7 @@ FileDialogWindow::FileDialogWindow(
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)
         comboType->AddSeparator();
-    comboType->AddItem("All files", ItemData{ ALL_FILES_INDEX });
+    comboType->AddItem("All files", ALL_FILES_INDEX);
     comboType->SetCurentItemIndex(0);
     UpdateCurrentExtensionFilter();
 
@@ -293,7 +293,7 @@ bool FileDialogWindow::ProcessExtensionFilter(const AppCUI::Utils::ConstString& 
         {
             requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
         }
-        CHECK(comboType->AddItem(filterName, ItemData{ this->extensions.size() }),
+        CHECK(comboType->AddItem(filterName, this->extensions.size()),
               false,
               "Failed to add item to combo-box ");
         this->extensions.push_back(requiredExtensions);
@@ -345,7 +345,7 @@ void FileDialogWindow::FileListItemChanged()
         return;
     }
 
-    const unsigned int value = files->GetItemData(index,0);
+    const auto value = files->GetItemData(index,0);
     if (value == 1)
     {
         txName->SetText(files->GetItemText(index, 0));
@@ -423,7 +423,7 @@ void FileDialogWindow::SpecialFoldersUpdatePath()
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
 {
-    unsigned int idx = comboType->GetCurrentItemUserData().UInt32Value;
+    unsigned int idx = (unsigned int)comboType->GetCurrentItemUserData(0);
     if (idx == ALL_FILES_INDEX)
         this->extFilter = nullptr; // no filter
     else

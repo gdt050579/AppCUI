@@ -515,12 +515,15 @@ class ListViewControlContext : public ControlContext
 struct ComboBoxItem
 {
     AppCUI::Graphics::CharacterBuffer Text;
-    AppCUI::Controls::ItemData Data;
+    std::variant<GenericRef,unsigned long long> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
-          const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
+          const AppCUI::Utils::ConstString& caption,
+          std::variant<GenericRef, unsigned long long> userData,
+          unsigned int index,
+          bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&) noexcept;

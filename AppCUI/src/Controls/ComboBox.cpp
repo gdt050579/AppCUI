@@ -13,22 +13,24 @@ using namespace AppCUI::Input;
     auto& i = Members->Items[Members->Indexes.GetUInt32Array()[idx]];                                                  \
     static_cast<void>(i);
 
-static const ItemData null_combobox_item = { nullptr };
+
 
 AppCUI::Graphics::CharacterBuffer
       __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
 
-ComboBoxItem::ComboBoxItem()
+ComboBoxItem::ComboBoxItem() : Data(nullptr)
 {
     this->Separator = false;
     this->Index     = ComboBox::NO_ITEM_SELECTED;
-    this->Data      = { nullptr };
 }
 ComboBoxItem::ComboBoxItem(
-      const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator)
+      const AppCUI::Utils::ConstString& caption,
+      std::variant<GenericRef, unsigned long long> userData,
+      unsigned int index,
+      bool separator)
+    : Data(userData)
 {
     this->Text.Set(caption);
-    this->Data      = userData;
     this->Separator = separator;
     this->Index     = index;
 }
@@ -38,18 +40,17 @@ ComboBoxItem::~ComboBoxItem()
     this->Text.Destroy();
     // LOG_INFO("           after delete = %p", this->Text.GetBuffer());
 }
-ComboBoxItem::ComboBoxItem(const ComboBoxItem& obj)
+ComboBoxItem::ComboBoxItem(const ComboBoxItem& obj) : Data(obj.Data)
 {
     // LOG_INFO("ComBoxItem(copy-ctor) at %p (from %p)", this, &obj);
     // LOG_INFO("           this->Buffer = %p", this->Text.GetBuffer());
     // LOG_INFO("           from->Buffer = %p", obj.Text.GetBuffer());
-    this->Data = obj.Data;
     this->Text.Set(obj.Text);
     this->Separator = obj.Separator;
     this->Index     = obj.Index;
     // LOG_INFO("           after-copy   = %p", this->Text.GetBuffer());
 }
-ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept
+ComboBoxItem::ComboBoxItem(ComboBoxItem&& obj) noexcept : Data(nullptr)
 {
     // LOG_INFO("ComBoxItem(move-ctor) at %p (from %p)", this, &obj);
     std::swap(this->Data, obj.Data);
@@ -77,7 +78,10 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 }
 
 bool ComboBox_AddItem(
-      ComboBox* control, const AppCUI::Utils::ConstString& caption, bool separator, ItemData userData = { nullptr })
+      ComboBox* control,
+      const AppCUI::Utils::ConstString& caption,
+      bool separator,
+      std::variant<GenericRef, unsigned long long> userData)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
     unsigned int itemID  = (unsigned int) Members->Items.size();
@@ -173,14 +177,14 @@ bool AddItemsFromList(ComboBox* cbx, const T* p, size_t len, const char separato
         {
             if (start < p)
             {
-                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false), false, "");
+                CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false, 0ULL), false, "");
             }
             start = p + 1;
         }
     }
     if (start < p)
     {
-        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false), false, "");
+        CHECK(ComboBox_AddItem(cbx, SV_T(start, p - start), false, 0ULL), false, "");
     }
     return true;
 }
@@ -257,27 +261,33 @@ ComboBox::ComboBox(std::string_view layout, const AppCUI::Utils::ConstString& te
 
 }
 
-unsigned int ComboBox::GetItemsCount()
+unsigned int ComboBox::GetItemsCount() const
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, 0);
     return (unsigned int) Members->Indexes.Len();
 }
 
-unsigned int ComboBox::GetCurrentItemIndex()
+unsigned int ComboBox::GetCurrentItemIndex() const
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, ComboBox::NO_ITEM_SELECTED);
     return Members->CurentItemIndex;
 }
-ItemData ComboBox::GetCurrentItemUserData()
+
+unsigned long long ComboBox::GetItemUserData(unsigned int index, unsigned long long errorValue) const
 {
-    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, null_combobox_item);
-    return GetItemUserData(Members->CurentItemIndex);
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, errorValue);
+    CHECK_INDEX(index, errorValue);
+    if (std::holds_alternative<unsigned long long>(i.Data))
+        return std::get<unsigned long long>(i.Data);
+    return errorValue;
 }
-ItemData ComboBox::GetItemUserData(unsigned int index)
+GenericRef ComboBox::GetItemDataAsPointer(unsigned int index) const
 {
-    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, null_combobox_item);
-    CHECK_INDEX(index, null_combobox_item);
-    return i.Data;
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, nullptr);
+    CHECK_INDEX(index, nullptr);
+    if (std::holds_alternative<GenericRef>(i.Data))
+        return std::get<GenericRef>(i.Data);
+    return nullptr;
 }
 
 const AppCUI::Graphics::CharacterBuffer& ComboBox::GetCurrentItemText()
@@ -293,14 +303,32 @@ const AppCUI::Graphics::CharacterBuffer& ComboBox::GetItemText(unsigned int inde
     CHECK_INDEX(index, __temp_comboxitem_reference_object__);
     return i.Text;
 }
-bool ComboBox::SetItemUserData(unsigned int index, ItemData userData)
+bool ComboBox::SetItemDataAsPointer(unsigned int index, GenericRef userData)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     CHECK_INDEX(index, false);
     i.Data = userData;
     return true;
 }
-bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, ItemData userData)
+bool ComboBox::SetItemUserData(unsigned int index, unsigned long long userData)
+{
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+    CHECK_INDEX(index, false);
+    i.Data = userData;
+    return true;
+}
+bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, unsigned long long userData)
+{
+    CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
+    CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
+    if (Members->Items.size() > 0)
+    {
+        Members->CurentItemIndex  = 0;
+        Members->FirstVisibleItem = 0;
+    }
+    return true;
+}
+bool ComboBox::AddItem(const AppCUI::Utils::ConstString& caption, GenericRef userData)
 {
     CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
