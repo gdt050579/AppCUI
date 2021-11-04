@@ -405,7 +405,7 @@ namespace Utils
         {
             return (size_t) (this->ptr);
         }
-        constexpr inline GenericRef ToGenericRef() const
+        inline GenericRef ToGenericRef() const
         {
             return GenericRef(this->ptr);
         }
@@ -2891,7 +2891,7 @@ namespace Controls
     class EXPORT ListView : public Control
     {
       private:
-        GenericRef GetItemDataAsPointer(ItemHandle item);
+        GenericRef GetItemDataAsPointer(ItemHandle item) const;
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
       protected:
         ListView(std::string_view layout, ListViewFlags flags);

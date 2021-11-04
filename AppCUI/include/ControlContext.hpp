@@ -488,9 +488,9 @@ class ListViewControlContext : public ControlContext
     int GetVisibleItemsCount();
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
-    GenericRef GetItemDataAsPointer(ItemHandle item);
+    GenericRef GetItemDataAsPointer(const ItemHandle item) const;
     bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
-    bool GetItemDataAsValue(ItemHandle item, unsigned long long& value);
+    bool GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const;
     bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
     unsigned int GetItemXOffset(ItemHandle item);
     bool SetItemHeight(ItemHandle item, unsigned int Height);

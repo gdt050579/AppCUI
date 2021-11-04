@@ -155,6 +155,7 @@ bool InternalWindowManager::CloseAll()
     const size_t count = tree->GetItemsCount();
     for (size_t tr = 0; tr < count; tr++)
     {
+        //GDT --> tree has index and item handle --> in this case a cast to item handle is performed --> is this expected ? (@gheorghitamutu)
         if (auto win = tree->GetItemData<Window>(tr); win.IsValid())
         {
             win->RemoveMe();

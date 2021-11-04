@@ -18,6 +18,10 @@ constexpr unsigned int LISTVIEW_SEARCH_BAR_WIDTH = 12;
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
     ListViewItem& i = Items.List[index];
 
+#define CONST_PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                \
+    CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
+    const ListViewItem& i = Items.List[index];
+
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
 AppCUI::Graphics::CharacterBuffer
@@ -508,9 +512,9 @@ bool ListViewControlContext::SetItemDataAsValue(ItemHandle item, unsigned long l
     i.Data = value;
     return true;
 }
-bool ListViewControlContext::GetItemDataAsValue(ItemHandle item, unsigned long long& value)
+bool ListViewControlContext::GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const
 {
-    PREPARE_LISTVIEW_ITEM(item, false);
+    CONST_PREPARE_LISTVIEW_ITEM(item, false);
     CHECK(std::holds_alternative<unsigned long long>(i.Data), false, "No value was stored in current item");
     value = std::get<unsigned long long>(i.Data);
     return true;
@@ -521,9 +525,9 @@ bool ListViewControlContext::SetItemDataAsPointer(ItemHandle item, GenericRef ob
     i.Data = obj;
     return true;
 }
-GenericRef ListViewControlContext::GetItemDataAsPointer(ItemHandle item)
+GenericRef ListViewControlContext::GetItemDataAsPointer(const ItemHandle item) const
 {
-    PREPARE_LISTVIEW_ITEM(item, nullptr);
+    CONST_PREPARE_LISTVIEW_ITEM(item, GenericRef(nullptr));
     if (std::holds_alternative<GenericRef>(i.Data))
     {
         return std::get<GenericRef>(i.Data);
@@ -1658,7 +1662,7 @@ bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
 {
     return WRAPPER->SetItemDataAsPointer(item, Data);
 }
-GenericRef ListView::GetItemDataAsPointer(ItemHandle item)
+GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
 {
     return WRAPPER->GetItemDataAsPointer(item);
 }
