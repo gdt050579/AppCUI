@@ -325,6 +325,23 @@ namespace Utils
         }
     };
     template <typename T>
+    class Reference;
+
+    class GenericRef
+    {
+        void* ptr;
+
+      public:
+        GenericRef(void* p) : ptr(p)
+        {
+        }
+        template <typename T>
+        Reference<T> ToReference()
+        {
+            return Reference<T>((T*) ptr);
+        }
+    };
+    template <typename T>
     class Reference
     {
         T* ptr;
@@ -387,6 +404,10 @@ namespace Utils
         constexpr inline operator size_t()
         {
             return (size_t) (this->ptr);
+        }
+        constexpr inline GenericRef ToGenericRef() const
+        {
+            return GenericRef(this->ptr);
         }
     };
 } // namespace Utils
@@ -2866,23 +2887,12 @@ namespace Controls
         ErrorInformation   = 3,
         WarningInformation = 4,
     };
-    union ItemData
-    {
-        void* Pointer;
-        unsigned int UInt32Value;
-        unsigned long long UInt64Value;
-        ItemData() : Pointer(nullptr)
-        {
-        }
-        ItemData(unsigned long long value) : UInt64Value(value)
-        {
-        }
-        ItemData(void* p) : Pointer(p)
-        {
-        }
-    };
+
     class EXPORT ListView : public Control
     {
+      private:
+        Reference<void> GetItemDataAsPointer(ItemHandle item);
+        bool SetItemDataAsPointer(ItemHandle item, Reference<void> obj);
       protected:
         ListView(std::string_view layout, ListViewFlags flags);
 
@@ -2973,7 +2983,23 @@ namespace Controls
         bool SetItemType(ItemHandle item, ListViewItemType type);
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
+
         bool SetItemData(ItemHandle item, ItemData Data);
+
+        bool SetItemDataAsValue(ItemHandle item, unsigned int value);
+        bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
+
+        unsigned int GetItemDataAsValue(ItemHandle item);
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.template DownCast<void>());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetItemData(ItemHandle item) const
+        {
+            return Reference<T>(this->GetItemDataAsPointer(item).template UpCast<T>()));
+        }
         ItemData* GetItemData(ItemHandle item);
         bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
         unsigned int GetItemXOffset(ItemHandle item);
