@@ -325,6 +325,23 @@ namespace Utils
         }
     };
     template <typename T>
+    class Reference;
+
+    class GenericRef
+    {
+        void* ptr;
+
+      public:
+        GenericRef(void* p) : ptr(p)
+        {
+        }
+        template <typename T>
+        Reference<T> ToReference()
+        {
+            return Reference<T>((T*) ptr);
+        }
+    };
+    template <typename T>
     class Reference
     {
         T* ptr;
@@ -387,6 +404,10 @@ namespace Utils
         constexpr inline operator size_t()
         {
             return (size_t) (this->ptr);
+        }
+        inline GenericRef ToGenericRef() const
+        {
+            return GenericRef(this->ptr);
         }
     };
 } // namespace Utils
@@ -2866,23 +2887,12 @@ namespace Controls
         ErrorInformation   = 3,
         WarningInformation = 4,
     };
-    union ItemData
-    {
-        void* Pointer;
-        unsigned int UInt32Value;
-        unsigned long long UInt64Value;
-        ItemData() : Pointer(nullptr)
-        {
-        }
-        ItemData(unsigned long long value) : UInt64Value(value)
-        {
-        }
-        ItemData(void* p) : Pointer(p)
-        {
-        }
-    };
+
     class EXPORT ListView : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(ItemHandle item) const;
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
       protected:
         ListView(std::string_view layout, ListViewFlags flags);
 
@@ -2973,8 +2983,21 @@ namespace Controls
         bool SetItemType(ItemHandle item, ListViewItemType type);
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
-        bool SetItemData(ItemHandle item, ItemData Data);
-        ItemData* GetItemData(ItemHandle item);
+
+
+        bool SetItemData(ItemHandle item, unsigned long long value);
+        unsigned long long GetItemData(ItemHandle item, unsigned long long errorValue);
+
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetItemData(ItemHandle item) const
+        {
+            return this->GetItemDataAsPointer(item).ToReference<T>();
+        }
         bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
         unsigned int GetItemXOffset(ItemHandle item);
         bool SetItemHeight(ItemHandle item, unsigned int Height);
@@ -3007,22 +3030,60 @@ namespace Controls
 
     class EXPORT ComboBox : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(unsigned int index) const;
+        bool SetItemDataAsPointer(unsigned int index, GenericRef obj);
+        bool AddItem(const AppCUI::Utils::ConstString& caption, GenericRef userData);
+
       protected:
         ComboBox(std::string_view layout, const AppCUI::Utils::ConstString& text, char itemsSeparator);
 
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        ItemData GetCurrentItemUserData();
-        unsigned int GetItemsCount();
-        unsigned int GetCurrentItemIndex();
+        inline unsigned long long GetCurrentItemUserData(unsigned long long errorValue) const
+        {
+            return GetItemUserData(GetCurrentItemIndex(), errorValue);
+        }
+        template <typename T>
+        inline Reference<T> GetCurrentItemUserData() const
+        {
+            return GetItemDataAsPointer(GetCurrentItemIndex()).ToReference<T>();
+        }
+
+        unsigned int GetItemsCount() const;
+        unsigned int GetCurrentItemIndex() const;
         const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();
-        ItemData GetItemUserData(unsigned int index);
+        
+        unsigned long long GetItemUserData(unsigned int index, unsigned long long errorValue) const;
+        template <typename T>
+        inline Reference<T> GetItemUserData(unsigned int index) const
+        {
+            return GetItemDataAsPointer(index).ToReference<T>();
+        }
+
         const AppCUI::Graphics::CharacterBuffer& GetItemText(unsigned int index);
-        bool SetItemUserData(unsigned int index, ItemData userData);
+
+        bool SetItemUserData(unsigned int index, unsigned long long userData);
+        template <typename T>
+        inline bool SetItemUserData(unsigned int index, Reference<T> userData)
+        {
+            return SetItemDataAsPointer(index, userData.ToGenericRef());
+        }
         bool SetCurentItemIndex(unsigned int index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
+
+        template <typename T>
+        inline bool AddItem(const AppCUI::Utils::ConstString& caption, Reference<T> obj)
+        {
+            return AddItem(caption, obj.ToGenericRef());
+        }
+        bool AddItem(const AppCUI::Utils::ConstString& caption, unsigned long long usedData);
+        inline bool AddItem(const AppCUI::Utils::ConstString& caption)
+        {
+            return AddItem(caption, GenericRef(nullptr));
+        }
+        
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
@@ -3540,6 +3601,9 @@ namespace Controls
 
     class EXPORT Tree : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(const ItemHandle item) const;
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj); 
       protected:
         Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
@@ -3557,15 +3621,28 @@ namespace Controls
               const ItemHandle parent,
               const std::vector<Graphics::CharacterBuffer>& values,
               const ConstString metadata,
-              void* data        = nullptr,
               bool process      = false,
               bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
-        ItemData* GetItemData(const ItemHandle handle);
-        ItemData* GetItemData(const size_t index);
+
+        bool SetItemData(ItemHandle item, unsigned long long value);
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+
+
+        template <typename T>
+        Reference<T> GetItemData(const ItemHandle item)
+        {
+            return GetItemDataAsPointer(item).ToReference<T>();
+        }
+        unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+
         unsigned int GetItemsCount() const;
         void SetToggleItemHandle(
               const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);

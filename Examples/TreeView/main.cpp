@@ -71,7 +71,6 @@ class TreeExample : public AppCUI::Controls::Window
               InvalidItemHandle,
               { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
               cpath,
-              nullptr,
               false,
               std::filesystem::is_directory(path));
     }
@@ -116,7 +115,6 @@ class TreeExample : public AppCUI::Controls::Window
                           InvalidItemHandle,
                           { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
                           localPath,
-                          nullptr,
                           false,
                           std::filesystem::is_directory(path));
 
@@ -156,7 +154,6 @@ class TreeExample : public AppCUI::Controls::Window
                         *const_cast<CharacterBuffer*>(&pathLastWriteTime),
                         *const_cast<CharacterBuffer*>(&pathSizeText) },
                       cpath,
-                      nullptr,
                       false,
                       p.is_directory());
             }

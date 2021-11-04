@@ -1075,7 +1075,6 @@ ItemHandle Tree::AddItem(
       const ItemHandle parent,
       const std::vector<CharacterBuffer>& values,
       const ConstString metadata,
-      void* data,
       bool process,
       bool isExpandable)
 {
@@ -1085,7 +1084,6 @@ ItemHandle Tree::AddItem(
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     TreeItem ti{ parent, cc->nextItemHandle++, values };
-    ti.data         = ItemData(data);
     ti.isExpandable = isExpandable;
     CHECK(ti.metadata.Set(metadata), false, "");
 
@@ -1201,7 +1199,7 @@ const ConstString Tree::GetItemText(const ItemHandle handle)
     return cs;
 }
 
-ItemData* Tree::GetItemData(const ItemHandle handle)
+GenericRef Tree::GetItemDataAsPointer(const ItemHandle handle) const
 {
     CHECK(Context != nullptr, nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1209,22 +1207,50 @@ ItemData* Tree::GetItemData(const ItemHandle handle)
     const auto it = cc->items.find(handle);
     if (it != cc->items.end())
     {
-        return &it->second.data;
+        if (std::holds_alternative<GenericRef>(it->second.data))
+            return std::get<GenericRef>(it->second.data);
     }
 
     return nullptr;
 }
 
-ItemData* Tree::GetItemData(const size_t index)
+unsigned long long Tree::GetItemData(const size_t index, unsigned long long errorValue)
 {
-    CHECK(Context != nullptr, nullptr, "");
+    CHECK(Context != nullptr, errorValue, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     auto it = cc->items.begin();
     std::advance(it, index);
-    return &it->second.data;
-}
+    if (it != cc->items.end())
+    {
+        if (std::holds_alternative<unsigned long long>(it->second.data))
+            return std::get<unsigned long long>(it->second.data);
+    }
 
+    return errorValue;
+}
+bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    auto it = cc->items.find(item);
+    if (it == cc->items.end())
+        return false;
+    it->second.data = value;
+    return true;
+}
+bool Tree::SetItemData(ItemHandle item, unsigned long long value)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    auto it = cc->items.find(item);
+    if (it == cc->items.end())
+        return false;
+    it->second.data = value;
+    return true;
+}
 unsigned int Tree::GetItemsCount() const
 {
     CHECK(Context != nullptr, 0, "");

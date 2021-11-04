@@ -207,8 +207,8 @@ FileDialogWindow::FileDialogWindow(
           [](AppCUI::Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
                 -> int
           {
-              const auto& v1 = control->GetItemData(item1)->UInt64Value;
-              const auto& v2 = control->GetItemData(item2)->UInt64Value;
+              const auto& v1 = control->GetItemData(item1, 0);
+              const auto& v2 = control->GetItemData(item2, 0);
               if (v1 < v2)
                   return -1;
               if (v1 > v2)
@@ -233,7 +233,7 @@ FileDialogWindow::FileDialogWindow(
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)
         comboType->AddSeparator();
-    comboType->AddItem("All files", ItemData{ ALL_FILES_INDEX });
+    comboType->AddItem("All files", ALL_FILES_INDEX);
     comboType->SetCurentItemIndex(0);
     UpdateCurrentExtensionFilter();
 
@@ -293,7 +293,7 @@ bool FileDialogWindow::ProcessExtensionFilter(const AppCUI::Utils::ConstString& 
         {
             requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
         }
-        CHECK(comboType->AddItem(filterName, ItemData{ this->extensions.size() }),
+        CHECK(comboType->AddItem(filterName, this->extensions.size()),
               false,
               "Failed to add item to combo-box ");
         this->extensions.push_back(requiredExtensions);
@@ -306,7 +306,7 @@ void FileDialogWindow::FileListItemClicked()
     int index = files->GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value = (int) files->GetItemData(index)->UInt32Value;
+    unsigned int value = (int) files->GetItemData(index,0);
     if (value == 0)
     {
         try
@@ -345,7 +345,7 @@ void FileDialogWindow::FileListItemChanged()
         return;
     }
 
-    const unsigned int value = files->GetItemData(index)->UInt32Value;
+    const auto value = files->GetItemData(index,0);
     if (value == 1)
     {
         txName->SetText(files->GetItemText(index, 0));
@@ -423,7 +423,7 @@ void FileDialogWindow::SpecialFoldersUpdatePath()
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
 {
-    unsigned int idx = comboType->GetCurrentItemUserData().UInt32Value;
+    unsigned int idx = (unsigned int)comboType->GetCurrentItemUserData(0);
     if (idx == ALL_FILES_INDEX)
         this->extFilter = nullptr; // no filter
     else
@@ -442,7 +442,7 @@ void FileDialogWindow::ReloadCurrentPath()
     if (currentPath != currentPath.root_path())
     {
         files->AddItem("..", "UP-DIR");
-        files->SetItemData(0, ItemData{ nullptr });
+        files->SetItemData(0, 0);
     }
 
     char size[32];
@@ -492,12 +492,12 @@ void FileDialogWindow::ReloadCurrentPath()
             if (fileEntry.is_directory())
             {
                 this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-                this->files->SetItemData(itemHandle, ItemData{ 1 });
+                this->files->SetItemData(itemHandle, 1);
             }
             else
             {
                 this->files->SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
-                this->files->SetItemData(itemHandle, ItemData{ 2 });
+                this->files->SetItemData(itemHandle, 2);
             }
         }
     }
