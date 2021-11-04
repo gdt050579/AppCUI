@@ -370,7 +370,7 @@ struct ListViewItem
     unsigned int XOffset;
     unsigned int Height;
     ColorPair ItemColor;
-    ItemData Data;
+    std::variant<GenericRef, unsigned long long> Data;
     ListViewItem();
     ListViewItem(const ColorPair col) : ListViewItem()
     {
@@ -487,8 +487,10 @@ class ListViewControlContext : public ControlContext
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
 
-    bool SetItemData(ItemHandle item, ItemData Data);
-    ItemData* GetItemData(ItemHandle item);
+    bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
+    GenericRef GetItemDataAsPointer(ItemHandle item);
+    bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
+    bool GetItemDataAsValue(ItemHandle item, unsigned long long& value);
     bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
     unsigned int GetItemXOffset(ItemHandle item);
     bool SetItemHeight(ItemHandle item, unsigned int Height);

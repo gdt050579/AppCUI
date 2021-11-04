@@ -2888,11 +2888,27 @@ namespace Controls
         WarningInformation = 4,
     };
 
+    union ItemData
+    {
+        void* Pointer;
+        unsigned int UInt32Value;
+        unsigned long long UInt64Value;
+        ItemData() : Pointer(nullptr)
+        {
+        }
+        ItemData(unsigned long long value) : UInt64Value(value)
+        {
+        }
+        ItemData(void* p) : Pointer(p)
+        {
+        }
+    };
+
     class EXPORT ListView : public Control
     {
       private:
-        Reference<void> GetItemDataAsPointer(ItemHandle item);
-        bool SetItemDataAsPointer(ItemHandle item, Reference<void> obj);
+        GenericRef GetItemDataAsPointer(ItemHandle item);
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
       protected:
         ListView(std::string_view layout, ListViewFlags flags);
 
@@ -2984,23 +3000,20 @@ namespace Controls
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
 
-        bool SetItemData(ItemHandle item, ItemData Data);
 
-        bool SetItemDataAsValue(ItemHandle item, unsigned int value);
-        bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
+        bool SetItemData(ItemHandle item, unsigned long long value);
+        unsigned long long GetItemData(ItemHandle item, unsigned long long errorValue);
 
-        unsigned int GetItemDataAsValue(ItemHandle item);
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
-            return this->SetItemDataAsPointer(obj.template DownCast<void>());
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
         }
         template <typename T>
         constexpr inline Reference<T> GetItemData(ItemHandle item) const
         {
-            return Reference<T>(this->GetItemDataAsPointer(item).template UpCast<T>()));
+            return this->GetItemDataAsPointer(item).ToReference<T>();
         }
-        ItemData* GetItemData(ItemHandle item);
         bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
         unsigned int GetItemXOffset(ItemHandle item);
         bool SetItemHeight(ItemHandle item, unsigned int Height);
