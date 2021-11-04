@@ -57,13 +57,11 @@ void InternalWindowManager::UpdateButtonsStatus()
         return;
     }
 
-    const auto data = tree->GetItemData(i);
-    if (data == nullptr || data->Pointer == nullptr)
-    {
+    auto data = tree->GetItemData<Window>(i);
+    if (!data.IsValid())
         return;
-    }
 
-    const auto Members = reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
+    const auto Members = reinterpret_cast<WindowControlContext*>(data->Context);
     if (Members == nullptr)
     {
         return;
@@ -106,9 +104,9 @@ bool InternalWindowManager::RemoveCurrentWindow()
     tmp.Add(" ?");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        if (auto data = tree->GetItemData(current); data != nullptr && data->Pointer != nullptr)
+        if (auto win = tree->GetItemData<Window>(current); win.IsValid())
         {
-            (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+            win->RemoveMe();
         }
         return true;
     }
@@ -134,11 +132,9 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
         return false;
     }
 
-    if (const auto data = tree->GetItemData(i); data != nullptr && data->Pointer != nullptr)
+    if (auto win = tree->GetItemData<Window>(i); win.IsValid())
     {
-        if (const auto Members =
-                  reinterpret_cast<WindowControlContext*>((reinterpret_cast<Window*>(data->Pointer)->Context));
-            Members)
+        if (const auto Members = reinterpret_cast<WindowControlContext*>(win->Context); Members)
         {
             CloseDescendants(Members->windowItemHandle);
         }
@@ -159,9 +155,9 @@ bool InternalWindowManager::CloseAll()
     const size_t count = tree->GetItemsCount();
     for (size_t tr = 0; tr < count; tr++)
     {
-        if (auto data = tree->GetItemData(tr); data != nullptr && data->Pointer != nullptr)
+        if (auto win = tree->GetItemData<Window>(tr); win.IsValid())
         {
-            (reinterpret_cast<Window*>(data->Pointer))->RemoveMe();
+            win->RemoveMe();
         }
     }
 
@@ -172,9 +168,9 @@ bool InternalWindowManager::CloseAll()
 
 void InternalWindowManager::GoToSelectedItem()
 {
-    if (auto data = tree->GetItemData(tree->GetCurrentItem()); data != nullptr && data->Pointer != nullptr)
+    if (auto win = tree->GetItemData<Window>(tree->GetCurrentItem()); win.IsValid())
     {
-        (reinterpret_cast<Window*>(data->Pointer))->SetFocus();
+        win->SetFocus();
     }
 }
 

@@ -580,7 +580,7 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::vector<CharacterBuffer> values;
-    ItemData data{};
+    std::variant<GenericRef,unsigned long long> data{nullptr};
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;

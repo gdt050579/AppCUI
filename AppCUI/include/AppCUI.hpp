@@ -3598,23 +3598,11 @@ namespace Controls
                   const unsigned int noOfColumns          = 1);
         };
     } // namespace Factory
-    union ItemData
-    {
-        void* Pointer;
-        unsigned int UInt32Value;
-        unsigned long long UInt64Value;
-        ItemData() : Pointer(nullptr)
-        {
-        }
-        ItemData(unsigned long long value) : UInt64Value(value)
-        {
-        }
-        ItemData(void* p) : Pointer(p)
-        {
-        }
-    };
+
     class EXPORT Tree : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(const ItemHandle item) const;
       protected:
         Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
@@ -3639,8 +3627,14 @@ namespace Controls
         bool ClearItems();
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
-        ItemData* GetItemData(const ItemHandle handle);
-        ItemData* GetItemData(const size_t index);
+
+        template <typename T>
+        Reference<T> GetItemData(const ItemHandle item)
+        {
+            return GetItemDataAsPointer(item).ToReference<T>();
+        }
+        unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+
         unsigned int GetItemsCount() const;
         void SetToggleItemHandle(
               const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
