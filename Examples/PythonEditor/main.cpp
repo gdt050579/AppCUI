@@ -76,7 +76,7 @@ bool IsKeyword(Graphics::Character* start, unsigned int size)
     }
     return false;
 }
-void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
+void PythonHighligh(Reference<Control>, Graphics::Character* chars, unsigned int charsCount)
 {
     Graphics::Character* end   = chars + charsCount;
     Graphics::Character* start = nullptr;
@@ -148,18 +148,17 @@ void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCoun
     }
 }
 
-
 int main()
 {
     if (!Application::Init())
         return 1;
     auto wnd = Factory::Window::Create("Python Editor", "d:c,w:40,h:20", WindowFlags::Sizeable);
-    Factory::TextArea::Create(
+    auto ta  = Factory::TextArea::Create(
           wnd,
           python_code,
           "x:0,y:0,w:100%,h:100%",
-          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
-          PythonHighligh);
+          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting);
+    ta->Handlers()->OnTextColor = PythonHighligh;
     Application::AddWindow(std::move(wnd));
     Application::Run();
     return 0;

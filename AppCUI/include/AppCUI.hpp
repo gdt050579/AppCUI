@@ -2180,6 +2180,7 @@ namespace Controls
         typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
+        typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
 
         struct OnButtonPressedInterface
         {
@@ -2273,6 +2274,19 @@ namespace Controls
             };
         };
 
+        struct OnTextColorInterface
+        {
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, unsigned int len) = 0;
+        };
+        struct OnTextColorCallback : public OnTextColorInterface
+        {
+            OnTextColorHandler callback;
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, unsigned int len) override
+            {
+                callback(ctrl, chars, len);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2315,12 +2329,11 @@ namespace Controls
         {
             Wrapper<OnCheckInterface, OnCheckCallback, OnCheckHandler> OnCheck;
         };
+        struct TextControl : public Control
+        {
+            Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
+        };
 
-        typedef void (*SyntaxHighlightHandler)(
-              AppCUI::Controls::Control* control,
-              AppCUI::Graphics::Character* characters,
-              unsigned int charactersCount,
-              void* Context);
         typedef int (*ListViewItemComparer)(
               AppCUI::Controls::ListView* control,
               ItemHandle item1,
@@ -2705,12 +2718,7 @@ namespace Controls
     class EXPORT TextField : public Control
     {
       protected:
-        TextField(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              TextFieldFlags flags,
-              Handlers::SyntaxHighlightHandler handler,
-              void* context);
+        TextField(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextFieldFlags flags);
 
       public:
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
@@ -2720,6 +2728,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+
+        // handlers covariant
+        Handlers::TextControl* Handlers() override;
 
         void SelectAll();
         void ClearSelection();
@@ -2743,12 +2754,7 @@ namespace Controls
     class EXPORT TextArea : public Control
     {
       protected:
-        TextArea(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              TextAreaFlags flags,
-              Handlers::SyntaxHighlightHandler handler,
-              void* handlerContext);
+        TextArea(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2761,6 +2767,9 @@ namespace Controls
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);
         virtual ~TextArea();
+
+        // handlers covariant
+        Handlers::TextControl* Handlers() override;
 
         friend Factory::TextArea;
         friend Control;
@@ -2893,6 +2902,7 @@ namespace Controls
       private:
         GenericRef GetItemDataAsPointer(ItemHandle item) const;
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+
       protected:
         ListView(std::string_view layout, ListViewFlags flags);
 
@@ -2984,7 +2994,6 @@ namespace Controls
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
 
-
         bool SetItemData(ItemHandle item, unsigned long long value);
         unsigned long long GetItemData(ItemHandle item, unsigned long long errorValue);
 
@@ -3054,7 +3063,7 @@ namespace Controls
         unsigned int GetItemsCount() const;
         unsigned int GetCurrentItemIndex() const;
         const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();
-        
+
         unsigned long long GetItemUserData(unsigned int index, unsigned long long errorValue) const;
         template <typename T>
         inline Reference<T> GetItemUserData(unsigned int index) const
@@ -3083,7 +3092,7 @@ namespace Controls
         {
             return AddItem(caption, GenericRef(nullptr));
         }
-        
+
         bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
         void DeleteAllItems();
 
@@ -3354,22 +3363,16 @@ namespace Controls
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextFieldFlags flags = AppCUI::Controls::TextFieldFlags::None);
             static Reference<AppCUI::Controls::TextField> Create(
                   AppCUI::Controls::Control& parent,
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextFieldFlags flags = AppCUI::Controls::TextFieldFlags::None);
             static Pointer<AppCUI::Controls::TextField> Create(
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None);
         };
         class EXPORT TextArea
         {
@@ -3380,22 +3383,16 @@ namespace Controls
                   AppCUI::Controls::Control* parent,
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextAreaFlags flags = AppCUI::Controls::TextAreaFlags::None);
             static Reference<AppCUI::Controls::TextArea> Create(
                   AppCUI::Controls::Control& parent,
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextAreaFlags flags = AppCUI::Controls::TextAreaFlags::None);
             static Pointer<AppCUI::Controls::TextArea> Create(
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
+                  AppCUI::Controls::TextAreaFlags flags = AppCUI::Controls::TextAreaFlags::None);
         };
         class EXPORT TabPage
         {
@@ -3603,7 +3600,8 @@ namespace Controls
     {
       private:
         GenericRef GetItemDataAsPointer(const ItemHandle item) const;
-        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj); 
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+
       protected:
         Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
@@ -3634,7 +3632,6 @@ namespace Controls
         {
             return this->SetItemDataAsPointer(obj.ToGenericRef());
         }
-
 
         template <typename T>
         Reference<T> GetItemData(const ItemHandle item)

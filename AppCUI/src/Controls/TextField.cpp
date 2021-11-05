@@ -18,7 +18,14 @@ void TextField_SendTextChangedEvent(TextField* control)
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
     {
-        Members->Syntax.Handler(control, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
+        if (Members->handlers != nullptr)
+        {
+            auto t_h = (AppCUI::Controls::Handlers::TextControl*) Members->handlers.get();
+            if (t_h->OnTextColor.obj)
+            {
+                t_h->OnTextColor.obj->OnTextColor(control, Members->Text.GetBuffer(), Members->Text.Len());
+            }
+        }
     }
     control->RaiseEvent(Event::TextChanged);
 }
@@ -278,28 +285,18 @@ TextField::~TextField()
 TextField::TextField(
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      TextFieldFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      TextFieldFlags flags)
     : Control(new TextFieldControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<TextFieldControlContext*>(this->Context);
     Members->Layout.MinWidth  = 3;
     Members->Layout.MinHeight = 1;
-    Members->Syntax.Handler   = nullptr;
-    Members->Syntax.Context   = nullptr;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     Members->Modified         = true;
 
     this->ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
     TextField_MoveTo(this, 0xFFFF, false);
-    if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
-    {
-        Members->Syntax.Handler = handler;
-        Members->Syntax.Context = handlerContext;
-        ASSERT(handler, "if 'TextFieldFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
-    }
 }
 
 void TextField::SelectAll()
@@ -447,7 +444,22 @@ void TextField::Paint(Graphics::Renderer& renderer)
         {
             if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
             {
-                Members->Syntax.Handler(this, Members->Text.GetBuffer(), Members->Text.Len(), Members->Syntax.Context);
+                if (Members->handlers!=nullptr)
+                {
+                    auto t_h = (AppCUI::Controls::Handlers::TextControl*) Members->handlers.get();
+                    if (t_h->OnTextColor.obj)
+                    {
+                        t_h->OnTextColor.obj->OnTextColor(this, Members->Text.GetBuffer(), Members->Text.Len());
+                    }
+                    else
+                    {
+                        Members->Text.SetColor(params.Color);
+                    }
+                }
+                else
+                {
+                    Members->Text.SetColor(params.Color);
+                }
             }
             else
                 Members->Text.SetColor(params.Color);
@@ -514,4 +526,8 @@ bool TextField::OnMouseEnter()
 bool TextField::OnMouseLeave()
 {
     return true;
+}
+Handlers::TextControl* TextField::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::TextControl);
 }
