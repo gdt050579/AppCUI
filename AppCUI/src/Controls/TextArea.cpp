@@ -214,7 +214,14 @@ void TextAreaControlContext::UpdateLines()
     } while (c < c_End);
     if (this->Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting)
     {
-        this->Syntax.Handler(this->Host, this->Text.GetBuffer(), this->Text.Len(), this->Syntax.Context);
+        if (this->handlers != nullptr)
+        {
+            auto t_h = (AppCUI::Controls::Handlers::TextControl*) this->handlers.get();
+            if (t_h->OnTextColor.obj)
+            {
+                t_h->OnTextColor.obj->OnTextColor(this->Host, this->Text.GetBuffer(), this->Text.Len());
+            }
+        }
     }
     UpdateView();
 }
@@ -884,17 +891,13 @@ TextArea::~TextArea()
 TextArea::TextArea(
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      TextAreaFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
 
     Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 3;
-    Members->Syntax.Handler   = nullptr;
-    Members->Syntax.Context   = nullptr;    
+    Members->Layout.MinHeight = 3;   
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
     ASSERT(Members->Text.Set(caption), "Fail to set text to internal CharactersBuffers object !");
@@ -904,12 +907,6 @@ TextArea::TextArea(
     {
         Members->Flags |= GATTR_VSCROLL;
         Members->ScrollBars.OutsideControl = (((unsigned int) flags & (unsigned int) TextAreaFlags::Border) == 0);
-    }
-    if (Members->Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting)
-    {
-        Members->Syntax.Handler = handler;
-        Members->Syntax.Context = handlerContext;
-        ASSERT(handler, "if 'TextAreaFlags::SyntaxHighlighting` is set a syntaxt highligh handler must be provided");
     }
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;
