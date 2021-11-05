@@ -124,7 +124,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
 
                     CharacterBuffer cb;
                     cb.Add(res->u16string());
-                    OnTreeItemToggle(tree.UpCast<AppCUI::Controls::Control>(), root, &cb);
+                    OnTreeItemToggle(tree, root, &cb);
                 }
 
                 return true;
@@ -135,7 +135,10 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
         return false;
     }
 
-    bool OnTreeItemToggle(AppCUI::Controls::Reference<Controls::Control> ctrl, AppCUI::Controls::ItemHandle handle, void* context) override
+    bool OnTreeItemToggle(
+          AppCUI::Controls::Reference<Controls::Tree> ctrl,
+          AppCUI::Controls::ItemHandle handle,
+          const void* context) override
     {
         const auto cb = reinterpret_cast<CharacterBuffer*>(const_cast<void*>(context));
         std::u16string u16Path;
@@ -152,9 +155,8 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                 unsigned long long pathSize  = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
-                
-                auto tree = ctrl.DownCast<AppCUI::Controls::Tree>();
-                tree->AddItem(
+
+                ctrl->AddItem(
                       handle,
                       { filename,
                         *const_cast<CharacterBuffer*>(&pathLastWriteTime),

@@ -2181,7 +2181,7 @@ namespace Controls
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
-        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Control> control, ItemHandle handle);
+        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle, const void* context);
 
         struct OnButtonPressedInterface
         {
@@ -2290,14 +2290,14 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(Reference<Controls::Control> ctrl, ItemHandle handle, void* context) = 0;
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle, const void* context) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
-            virtual bool OnTreeItemToggle(Reference<Controls::Control> ctrl, ItemHandle handle, void* context) override
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle, const void* context) override
             {
-                return callback(ctrl, handle);
+                return callback(ctrl, handle, context);
             };
         };
 
@@ -3391,7 +3391,7 @@ namespace Controls
             static Pointer<AppCUI::Controls::TextField> Create(
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None);
+                  AppCUI::Controls::TextFieldFlags flags = AppCUI::Controls::TextFieldFlags::None);
         };
         class EXPORT TextArea
         {
