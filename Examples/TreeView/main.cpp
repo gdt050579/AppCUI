@@ -9,37 +9,39 @@
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
-using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Graphics;
 
-class TreeExample : public AppCUI::Controls::Window
+class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Handlers::OnTreeItemToggleInterface
 {
     enum class ControlIds : unsigned int
     {
         ButtonShowOpen = 1
     };
 
-    Reference<Button> open;
-    Reference<TextField> currentFolder;
-    Reference<Splitter> vertical;
-    Reference<Splitter> horizontal;
-    Reference<Tree> tree;
+    AppCUI::Controls::Reference<AppCUI::Controls::Button> open;
+    AppCUI::Controls::Reference<AppCUI::Controls::TextField> currentFolder;
+    AppCUI::Controls::Reference<AppCUI::Controls::Splitter> vertical;
+    AppCUI::Controls::Reference<AppCUI::Controls::Splitter> horizontal;
+    AppCUI::Controls::Reference<AppCUI::Controls::Tree> tree;
 
   public:
-    TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", WindowFlags::Sizeable)
+    TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", AppCUI::Controls::WindowFlags::Sizeable)
     {
-        open = Factory::Button::Create(
+        open = AppCUI::Controls::Factory::Button::Create(
               this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
-        vertical   = Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
-        horizontal = Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
-        currentFolder =
-              Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
-        tree = Factory::Tree::Create(
+        vertical      = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
+        horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
+        currentFolder = AppCUI::Controls::Factory::TextField::Create(
+              this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+        tree = AppCUI::Controls::Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::FilterSearch),
+              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren |
+               AppCUI::Controls::TreeFlags::FilterSearch),
               3);
+
+        tree->Handlers()->OnTreeItemToggle = this;
 
         // TODO: maybe add % for column sizes as well
         tree->AddColumnData(
@@ -47,7 +49,6 @@ class TreeExample : public AppCUI::Controls::Window
         tree->AddColumnData(
               1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
         tree->AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
-        tree->SetToggleItemHandle(PopulateTree);
 
         tree->ClearItems();
         const auto path = std::filesystem::current_path().u16string();
@@ -68,21 +69,24 @@ class TreeExample : public AppCUI::Controls::Window
 
         const auto cpath = std::filesystem::current_path().u16string();
         const auto root  = tree->AddItem(
-              InvalidItemHandle,
+              AppCUI::Controls::InvalidItemHandle,
               { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
               cpath,
               false,
               std::filesystem::is_directory(path));
     }
 
-    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
+    bool OnEvent(
+          AppCUI::Controls::Reference<AppCUI::Controls::Control>,
+          AppCUI::Controls::Event eventType,
+          int controlID) override
     {
         switch (eventType)
         {
-        case Event::WindowClose:
+        case AppCUI::Controls::Event::WindowClose:
             Application::Close();
             return true;
-        case Event::ButtonClicked:
+        case AppCUI::Controls::Event::ButtonClicked:
             switch (static_cast<ControlIds>(controlID))
             {
             case ControlIds::ButtonShowOpen:
@@ -112,7 +116,7 @@ class TreeExample : public AppCUI::Controls::Window
 
                     const auto localPath = path.u16string();
                     const auto root      = tree->AddItem(
-                          InvalidItemHandle,
+                          AppCUI::Controls::InvalidItemHandle,
                           { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
                           localPath,
                           false,
@@ -120,7 +124,7 @@ class TreeExample : public AppCUI::Controls::Window
 
                     CharacterBuffer cb;
                     cb.Add(res->u16string());
-                    PopulateTree(tree, root, &cb);
+                    OnTreeItemToggle(tree.UpCast<AppCUI::Controls::Control>(), root, &cb);
                 }
 
                 return true;
@@ -131,7 +135,7 @@ class TreeExample : public AppCUI::Controls::Window
         return false;
     }
 
-    static bool PopulateTree(Tree& tree, const ItemHandle handle, const void* context)
+    bool OnTreeItemToggle(AppCUI::Controls::Reference<Controls::Control> ctrl, AppCUI::Controls::ItemHandle handle, void* context) override
     {
         const auto cb = reinterpret_cast<CharacterBuffer*>(const_cast<void*>(context));
         std::u16string u16Path;
@@ -148,7 +152,9 @@ class TreeExample : public AppCUI::Controls::Window
                 unsigned long long pathSize  = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
-                tree.AddItem(
+                
+                auto tree = ctrl.DownCast<AppCUI::Controls::Tree>();
+                tree->AddItem(
                       handle,
                       { filename,
                         *const_cast<CharacterBuffer*>(&pathLastWriteTime),

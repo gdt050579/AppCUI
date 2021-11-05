@@ -505,7 +505,7 @@ class ListViewControlContext : public ControlContext
 struct ComboBoxItem
 {
     AppCUI::Graphics::CharacterBuffer Text;
-    std::variant<GenericRef,unsigned long long> Data;
+    std::variant<GenericRef, unsigned long long> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
@@ -570,7 +570,7 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::vector<CharacterBuffer> values;
-    std::variant<GenericRef,unsigned long long> data{nullptr};
+    std::variant<GenericRef, unsigned long long> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;
@@ -588,11 +588,10 @@ class TreeControlContext : public ControlContext
     std::vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
-    unsigned int maxItemsToDraw                                                            = 0;
-    unsigned int offsetTopToDraw                                                           = 0;
-    unsigned int offsetBotToDraw                                                           = 0;
-    bool notProcessed                                                                      = true;
-    std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
+    unsigned int maxItemsToDraw  = 0;
+    unsigned int offsetTopToDraw = 0;
+    unsigned int offsetBotToDraw = 0;
+    bool notProcessed            = true;
     std::vector<ItemHandle> roots;
     std::vector<TreeColumnData> columns;
     unsigned int treeFlags              = 0;

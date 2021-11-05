@@ -892,7 +892,7 @@ namespace Utils
     };
     class EXPORT NumericFormatter
     {
-        char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
+        char temp[72]{}; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
         char* heapBuffer;
         std::string_view ToHexString(unsigned long long value);
         std::string_view ToOctString(unsigned long long value);
@@ -2181,6 +2181,7 @@ namespace Controls
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
+        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Control> control, ItemHandle handle);
 
         struct OnButtonPressedInterface
         {
@@ -2287,6 +2288,19 @@ namespace Controls
             };
         };
 
+        struct OnTreeItemToggleInterface
+        {
+            virtual bool OnTreeItemToggle(Reference<Controls::Control> ctrl, ItemHandle handle, void* context) = 0;
+        };
+        struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
+        {
+            OnTreeItemToggleHandler callback;
+            virtual bool OnTreeItemToggle(Reference<Controls::Control> ctrl, ItemHandle handle, void* context) override
+            {
+                return callback(ctrl, handle);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2340,6 +2354,11 @@ namespace Controls
               ItemHandle item2,
               unsigned int columnIndex,
               void* Context);
+
+        struct Tree : public Control
+        {
+            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+        };
 
     } // namespace Handlers
 
@@ -3615,6 +3634,9 @@ namespace Controls
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
+        // handlers covariant
+        Handlers::Tree* Handlers() override;
+
         ItemHandle AddItem(
               const ItemHandle parent,
               const std::vector<Graphics::CharacterBuffer>& values,
@@ -3642,8 +3664,6 @@ namespace Controls
         ItemHandle GetItemHandleByIndex(const unsigned int index) const;
 
         unsigned int GetItemsCount() const;
-        void SetToggleItemHandle(
-              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
         bool AddColumnData(
               const unsigned int index,
               const ConstString title,

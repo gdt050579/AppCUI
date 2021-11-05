@@ -1071,6 +1071,11 @@ void Tree::OnAfterResize(int newWidth, int newHeight)
     CHECKRET(AdjustElementsOnResize(newWidth, newHeight), "");
 }
 
+Handlers::Tree* Tree::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::Tree);
+}
+
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
       const std::vector<CharacterBuffer>& values,
@@ -1275,18 +1280,6 @@ unsigned int Tree::GetItemsCount() const
     return static_cast<unsigned int>(cc->items.size());
 }
 
-void Tree::SetToggleItemHandle(
-      const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback)
-{
-    CHECKRET(Context != nullptr, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
-    {
-        CHECKRET(callback != nullptr, "");
-        cc->callback = callback;
-    }
-}
-
 bool Tree::AddColumnData(
       const unsigned int index,
       const ConstString title,
@@ -1376,9 +1369,13 @@ bool Tree::ToggleItem(const ItemHandle handle)
     {
         if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
         {
-            if (cc->callback)
+            if (cc->handlers != nullptr)
             {
-                CHECK(cc->callback(*this, handle, &item.metadata), false, "");
+                auto handler = reinterpret_cast<AppCUI::Controls::Handlers::Tree*>(cc->handlers.get());
+                if (handler->OnTreeItemToggle.obj)
+                {
+                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle, &item.metadata);
+                }
             }
         }
     }
