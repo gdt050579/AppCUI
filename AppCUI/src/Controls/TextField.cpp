@@ -515,3 +515,7 @@ bool TextField::OnMouseLeave()
 {
     return true;
 }
+Handlers::TextControl* TextField::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::TextControl);
+}

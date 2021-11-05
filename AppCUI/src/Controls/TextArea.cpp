@@ -962,3 +962,7 @@ void TextArea::SetTabCharacter(char tabCharacter)
 {
     WRAPPER->SetTabCharacter(tabCharacter);
 }
+Handlers::TextControl* TextArea::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::TextControl);
+}

@@ -253,11 +253,6 @@ class TextFieldControlContext : public ControlContext
     {
         int Start, End, Origin;
     } Selection;
-    struct
-    {
-        Handlers::SyntaxHighlightHandler Handler;
-        void* Context;
-    } Syntax;
     bool Modified;
 };
 class TextAreaControlContext : public ControlContext
@@ -279,11 +274,6 @@ class TextAreaControlContext : public ControlContext
     {
         unsigned int Start, End, Origin;
     } Selection;
-    struct
-    {
-        Handlers::SyntaxHighlightHandler Handler;
-        void* Context;
-    } Syntax;
     char tabChar;
     AppCUI::Controls::Control* Host;
 
