@@ -172,34 +172,28 @@ REFERENCE<TextField> Factory::TextField::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextFieldFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::TextField>(
-          Factory::TextField::Create(caption, layout, flags, handler, handlerContext));
+          Factory::TextField::Create(caption, layout, flags));
 }
 REFERENCE<TextField> Factory::TextField::Create(
       AppCUI::Controls::Control& parent,
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextFieldFlags flags)
 {
     return parent.AddControl<AppCUI::Controls::TextField>(
-          Factory::TextField::Create(caption, layout, flags, handler, handlerContext));
+          Factory::TextField::Create(caption, layout, flags));
 }
 POINTER<AppCUI::Controls::TextField> Factory::TextField::Create(
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextFieldFlags flags)
 {
     return POINTER<AppCUI::Controls::TextField>(
-          new AppCUI::Controls::TextField(caption, layout, flags, handler, handlerContext));
+          new AppCUI::Controls::TextField(caption, layout, flags));
 }
 
 //======[TEXTAREA]===================================================================================
@@ -207,34 +201,28 @@ REFERENCE<TextArea> Factory::TextArea::Create(
       AppCUI::Controls::Control* parent,
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextAreaFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<AppCUI::Controls::TextArea>(
-          Factory::TextArea::Create(caption, layout, flags, handler, handlerContext));
+          Factory::TextArea::Create(caption, layout, flags));
 }
 REFERENCE<TextArea> Factory::TextArea::Create(
       AppCUI::Controls::Control& parent,
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextAreaFlags flags)
 {
     return parent.AddControl<AppCUI::Controls::TextArea>(
-          Factory::TextArea::Create(caption, layout, flags, handler, handlerContext));
+          Factory::TextArea::Create(caption, layout, flags));
 }
 POINTER<AppCUI::Controls::TextArea> Factory::TextArea::Create(
       const AppCUI::Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags,
-      Handlers::SyntaxHighlightHandler handler,
-      void* handlerContext)
+      AppCUI::Controls::TextAreaFlags flags)
 {
     return POINTER<AppCUI::Controls::TextArea>(
-          new AppCUI::Controls::TextArea(caption, layout, flags, handler, handlerContext));
+          new AppCUI::Controls::TextArea(caption, layout, flags));
 }
 
 //======[TABPAGE]====================================================================================
