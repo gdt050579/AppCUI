@@ -1229,6 +1229,23 @@ unsigned long long Tree::GetItemData(const size_t index, unsigned long long erro
 
     return errorValue;
 }
+
+ItemHandle Tree::GetItemHandleByIndex(const unsigned int index) const
+{
+    CHECK(Context != nullptr, InvalidItemHandle, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(index < cc->items.size(), InvalidItemHandle, "");
+
+    auto it = cc->items.begin();
+    std::advance(it, index);
+    if (it != cc->items.end())
+    {
+        return it->second.handle;
+    }
+
+    return InvalidItemHandle;
+}
+
 bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
 {
     CHECK(Context != nullptr, false, "");

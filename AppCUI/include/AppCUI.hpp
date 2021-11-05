@@ -3630,7 +3630,7 @@ namespace Controls
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
-            return this->SetItemDataAsPointer(obj.ToGenericRef());
+            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
         }
 
         template <typename T>
@@ -3639,6 +3639,7 @@ namespace Controls
             return GetItemDataAsPointer(item).ToReference<T>();
         }
         unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+        ItemHandle GetItemHandleByIndex(const unsigned int index) const;
 
         unsigned int GetItemsCount() const;
         void SetToggleItemHandle(
