@@ -140,6 +140,7 @@ bool Splitter::SetSecondPanelSize(int newSize)
         newSize = 0;
     Members->SecondPanelSize = newSize;
     Splitter_ResizeComponents(this);
+    RaiseEvent(Event::SplitterRatioChanged);
     return true;
 }
 bool Splitter::HideSecondPanel()

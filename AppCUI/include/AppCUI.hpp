@@ -2153,6 +2153,7 @@ namespace Controls
         TerminateApplication,
         Command,
         NumericSelectorValueChanged,
+        SplitterRatioChanged,
         Custom,
     };
     typedef unsigned int ItemHandle;
