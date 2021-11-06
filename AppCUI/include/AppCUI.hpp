@@ -892,7 +892,7 @@ namespace Utils
     };
     class EXPORT NumericFormatter
     {
-        char temp[72]{}; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
+        char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
         char* heapBuffer;
         std::string_view ToHexString(unsigned long long value);
         std::string_view ToOctString(unsigned long long value);
