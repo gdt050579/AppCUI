@@ -2181,7 +2181,7 @@ namespace Controls
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
-        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle, const void* context);
+        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
 
         struct OnButtonPressedInterface
         {
@@ -2290,14 +2290,15 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle, const void* context) = 0;
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
-            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle, const void* context) override
+            
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
             {
-                return callback(ctrl, handle, context);
+                return callback(ctrl, handle);
             };
         };
 
@@ -3670,6 +3671,8 @@ namespace Controls
               const AppCUI::Graphics::TextAlignament headerAlignment,
               const AppCUI::Graphics::TextAlignament contentAlignment,
               const unsigned int width = 0xFFFFFFFF);
+        const AppCUI::Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
+        bool SetItemMetadata(ItemHandle handle, const AppCUI::Utils::ConstString& metadata);
 
       private:
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;

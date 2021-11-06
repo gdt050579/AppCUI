@@ -15,6 +15,8 @@ constexpr auto MinColumnWidth          = 10U;
 constexpr auto BorderOffset            = 1U;
 constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
+const static AppCUI::Utils::UnicodeStringBuilder cb{};
+
 Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
@@ -1088,27 +1090,25 @@ ItemHandle Tree::AddItem(
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    TreeItem ti{ parent, cc->nextItemHandle++, values };
-    ti.isExpandable = isExpandable;
-    CHECK(ti.metadata.Set(metadata), false, "");
+    cc->items[cc->nextItemHandle]              = { parent, cc->nextItemHandle, values };
+    cc->items[cc->nextItemHandle].isExpandable = isExpandable;
+    CHECK(cc->items[cc->nextItemHandle].metadata.Set(metadata), false, "");
 
     if (parent == InvalidItemHandle)
     {
-        cc->roots.emplace_back(ti.handle);
+        cc->roots.emplace_back(cc->items[cc->nextItemHandle].handle);
     }
     else
     {
-        auto& parentItem = cc->items[parent];
-        ti.depth         = parentItem.depth + 1;
-        parentItem.children.emplace_back(ti.handle);
+        auto& parentItem                    = cc->items[parent];
+        cc->items[cc->nextItemHandle].depth = parentItem.depth + 1;
+        parentItem.children.emplace_back(cc->items[cc->nextItemHandle].handle);
         parentItem.isExpandable = true;
     }
 
-    cc->items[ti.handle] = ti;
-
     if (cc->items.size() == 1)
     {
-        cc->currentSelectedItemHandle = ti.handle;
+        cc->currentSelectedItemHandle = cc->items[cc->nextItemHandle].handle;
     }
 
     if (process)
@@ -1120,7 +1120,7 @@ ItemHandle Tree::AddItem(
         cc->notProcessed = true;
     }
 
-    return ti.handle;
+    return cc->items[cc->nextItemHandle++].handle;
 }
 
 bool Tree::RemoveItem(const ItemHandle handle, bool process)
@@ -1374,7 +1374,7 @@ bool Tree::ToggleItem(const ItemHandle handle)
                 auto handler = reinterpret_cast<AppCUI::Controls::Handlers::Tree*>(cc->handlers.get());
                 if (handler->OnTreeItemToggle.obj)
                 {
-                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle, &item.metadata);
+                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle);
                 }
             }
         }
@@ -1753,6 +1753,34 @@ bool Tree::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
             break;
         }
     } while (ancestorHandle != InvalidItemHandle);
+
+    return true;
+}
+
+const AppCUI::Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle handle)
+{
+    CHECK(Context != nullptr, cb, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    if (cc->items.find(handle) == cc->items.end())
+    {
+        return cb;
+    }
+
+    auto& item = cc->items.at(handle);
+    return item.metadata;
+}
+
+bool Tree::SetItemMetadata(ItemHandle handle, const AppCUI::Utils::ConstString& metadata)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    if (cc->items.find(handle) != cc->items.end())
+    {
+        return false;
+    }
+
+    auto& item = cc->items.at(handle);
+    item.metadata.Set(metadata);
 
     return true;
 }

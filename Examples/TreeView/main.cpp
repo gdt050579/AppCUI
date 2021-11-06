@@ -121,10 +121,13 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                           localPath,
                           false,
                           std::filesystem::is_directory(path));
-
-                    CharacterBuffer cb;
-                    cb.Add(res->u16string());
-                    OnTreeItemToggle(tree, root, &cb);
+                    
+                    auto& metadata = tree->GetItemMetadata(root);
+                    AppCUI::Utils::UnicodeStringBuilder usb;
+                    usb.Add(AppCUI::Utils::ConstString{ metadata });
+                    usb.Add(res->u16string());
+                    tree->SetItemMetadata(root, usb);
+                    OnTreeItemToggle(tree, root);
                 }
 
                 return true;
@@ -136,13 +139,11 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
     }
 
     bool OnTreeItemToggle(
-          AppCUI::Controls::Reference<Controls::Tree> ctrl,
-          AppCUI::Controls::ItemHandle handle,
-          const void* context) override
+          AppCUI::Controls::Reference<Controls::Tree> ctrl, AppCUI::Controls::ItemHandle handle) override
     {
-        const auto cb = reinterpret_cast<CharacterBuffer*>(const_cast<void*>(context));
+        const auto& usb = ctrl->GetItemMetadata(handle);
         std::u16string u16Path;
-        CHECK(cb->ToString(u16Path), false, "");
+        usb.ToString(u16Path);
         const auto fsPath = std::filesystem::path(u16Path);
         try
         {

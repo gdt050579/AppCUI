@@ -574,7 +574,7 @@ struct TreeItem
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;
-    CharacterBuffer metadata;
+    Utils::UnicodeStringBuilder metadata;
     unsigned int depth                = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
