@@ -152,13 +152,15 @@ bool InternalWindowManager::CloseAll()
         return false;
     }
 
-    const size_t count = tree->GetItemsCount();
-    for (size_t tr = 0; tr < count; tr++)
+    const auto count = tree->GetItemsCount();
+    for (auto i = 0U; i < count; i++)
     {
-        //GDT --> tree has index and item handle --> in this case a cast to item handle is performed --> is this expected ? (@gheorghitamutu)
-        if (auto win = tree->GetItemData<Window>(tr); win.IsValid())
+        if (const auto handle = tree->GetItemHandleByIndex(i); handle != InvalidItemHandle)
         {
-            win->RemoveMe();
+            if (auto win = tree->GetItemData<Window>(handle); win.IsValid())
+            {
+                win->RemoveMe();
+            }
         }
     }
 
@@ -234,6 +236,7 @@ bool InternalWindowManager::AddItem(Window* w, const ItemHandle parent, ItemHand
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
     child          = tree->AddItem(parent, { wcc->Text, *const_cast<CharacterBuffer*>(&w->GetTag()) }, "", w);
+    tree->SetItemData(child, Reference<Window>(w));
     return true;
 }
 

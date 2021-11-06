@@ -15,6 +15,8 @@ constexpr auto MinColumnWidth          = 10U;
 constexpr auto BorderOffset            = 1U;
 constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
+const static AppCUI::Utils::UnicodeStringBuilder cb{};
+
 Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
@@ -1071,6 +1073,11 @@ void Tree::OnAfterResize(int newWidth, int newHeight)
     CHECKRET(AdjustElementsOnResize(newWidth, newHeight), "");
 }
 
+Handlers::Tree* Tree::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::Tree);
+}
+
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
       const std::vector<CharacterBuffer>& values,
@@ -1083,27 +1090,25 @@ ItemHandle Tree::AddItem(
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    TreeItem ti{ parent, cc->nextItemHandle++, values };
-    ti.isExpandable = isExpandable;
-    CHECK(ti.metadata.Set(metadata), false, "");
+    cc->items[cc->nextItemHandle]              = { parent, cc->nextItemHandle, values };
+    cc->items[cc->nextItemHandle].isExpandable = isExpandable;
+    CHECK(cc->items[cc->nextItemHandle].metadata.Set(metadata), false, "");
 
     if (parent == InvalidItemHandle)
     {
-        cc->roots.emplace_back(ti.handle);
+        cc->roots.emplace_back(cc->items[cc->nextItemHandle].handle);
     }
     else
     {
-        auto& parentItem = cc->items[parent];
-        ti.depth         = parentItem.depth + 1;
-        parentItem.children.emplace_back(ti.handle);
+        auto& parentItem                    = cc->items[parent];
+        cc->items[cc->nextItemHandle].depth = parentItem.depth + 1;
+        parentItem.children.emplace_back(cc->items[cc->nextItemHandle].handle);
         parentItem.isExpandable = true;
     }
 
-    cc->items[ti.handle] = ti;
-
     if (cc->items.size() == 1)
     {
-        cc->currentSelectedItemHandle = ti.handle;
+        cc->currentSelectedItemHandle = cc->items[cc->nextItemHandle].handle;
     }
 
     if (process)
@@ -1115,7 +1120,7 @@ ItemHandle Tree::AddItem(
         cc->notProcessed = true;
     }
 
-    return ti.handle;
+    return cc->items[cc->nextItemHandle++].handle;
 }
 
 bool Tree::RemoveItem(const ItemHandle handle, bool process)
@@ -1229,6 +1234,23 @@ unsigned long long Tree::GetItemData(const size_t index, unsigned long long erro
 
     return errorValue;
 }
+
+ItemHandle Tree::GetItemHandleByIndex(const unsigned int index) const
+{
+    CHECK(Context != nullptr, InvalidItemHandle, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(index < cc->items.size(), InvalidItemHandle, "");
+
+    auto it = cc->items.begin();
+    std::advance(it, index);
+    if (it != cc->items.end())
+    {
+        return it->second.handle;
+    }
+
+    return InvalidItemHandle;
+}
+
 bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
 {
     CHECK(Context != nullptr, false, "");
@@ -1256,18 +1278,6 @@ unsigned int Tree::GetItemsCount() const
     CHECK(Context != nullptr, 0, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     return static_cast<unsigned int>(cc->items.size());
-}
-
-void Tree::SetToggleItemHandle(
-      const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback)
-{
-    CHECKRET(Context != nullptr, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
-    {
-        CHECKRET(callback != nullptr, "");
-        cc->callback = callback;
-    }
 }
 
 bool Tree::AddColumnData(
@@ -1359,9 +1369,13 @@ bool Tree::ToggleItem(const ItemHandle handle)
     {
         if (cc->treeFlags && TreeFlags::DynamicallyPopulateNodeChildren)
         {
-            if (cc->callback)
+            if (cc->handlers != nullptr)
             {
-                CHECK(cc->callback(*this, handle, &item.metadata), false, "");
+                auto handler = reinterpret_cast<AppCUI::Controls::Handlers::Tree*>(cc->handlers.get());
+                if (handler->OnTreeItemToggle.obj)
+                {
+                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle);
+                }
             }
         }
     }
@@ -1739,6 +1753,34 @@ bool Tree::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
             break;
         }
     } while (ancestorHandle != InvalidItemHandle);
+
+    return true;
+}
+
+const AppCUI::Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle handle)
+{
+    CHECK(Context != nullptr, cb, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    if (cc->items.find(handle) == cc->items.end())
+    {
+        return cb;
+    }
+
+    auto& item = cc->items.at(handle);
+    return item.metadata;
+}
+
+bool Tree::SetItemMetadata(ItemHandle handle, const AppCUI::Utils::ConstString& metadata)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    if (cc->items.find(handle) != cc->items.end())
+    {
+        return false;
+    }
+
+    auto& item = cc->items.at(handle);
+    item.metadata.Set(metadata);
 
     return true;
 }

@@ -2181,6 +2181,7 @@ namespace Controls
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
+        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
 
         struct OnButtonPressedInterface
         {
@@ -2287,6 +2288,20 @@ namespace Controls
             };
         };
 
+        struct OnTreeItemToggleInterface
+        {
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
+        };
+        struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
+        {
+            OnTreeItemToggleHandler callback;
+            
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
+            {
+                return callback(ctrl, handle);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2340,6 +2355,11 @@ namespace Controls
               ItemHandle item2,
               unsigned int columnIndex,
               void* Context);
+
+        struct Tree : public Control
+        {
+            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+        };
 
     } // namespace Handlers
 
@@ -3372,7 +3392,7 @@ namespace Controls
             static Pointer<AppCUI::Controls::TextField> Create(
                   const AppCUI::Utils::ConstString& caption,
                   std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None);
+                  AppCUI::Controls::TextFieldFlags flags = AppCUI::Controls::TextFieldFlags::None);
         };
         class EXPORT TextArea
         {
@@ -3615,6 +3635,9 @@ namespace Controls
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
+        // handlers covariant
+        Handlers::Tree* Handlers() override;
+
         ItemHandle AddItem(
               const ItemHandle parent,
               const std::vector<Graphics::CharacterBuffer>& values,
@@ -3630,7 +3653,7 @@ namespace Controls
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
-            return this->SetItemDataAsPointer(obj.ToGenericRef());
+            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
         }
 
         template <typename T>
@@ -3639,16 +3662,17 @@ namespace Controls
             return GetItemDataAsPointer(item).ToReference<T>();
         }
         unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+        ItemHandle GetItemHandleByIndex(const unsigned int index) const;
 
         unsigned int GetItemsCount() const;
-        void SetToggleItemHandle(
-              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
         bool AddColumnData(
               const unsigned int index,
               const ConstString title,
               const AppCUI::Graphics::TextAlignament headerAlignment,
               const AppCUI::Graphics::TextAlignament contentAlignment,
               const unsigned int width = 0xFFFFFFFF);
+        const AppCUI::Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
+        bool SetItemMetadata(ItemHandle handle, const AppCUI::Utils::ConstString& metadata);
 
       private:
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
