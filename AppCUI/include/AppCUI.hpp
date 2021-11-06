@@ -2153,7 +2153,7 @@ namespace Controls
         TerminateApplication,
         Command,
         NumericSelectorValueChanged,
-        SplitterRatioChanged,
+        SplitterPositionChanged,
         Custom,
     };
     typedef unsigned int ItemHandle;
@@ -2695,7 +2695,10 @@ namespace Controls
         bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        int GetSplitterPosition();
+
+        unsigned int GetFirstPanelSize();
+        unsigned int GetSecondPanelSize();
+
         virtual ~Splitter();
 
         friend Factory::Splitter;

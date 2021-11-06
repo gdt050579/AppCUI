@@ -140,7 +140,7 @@ bool Splitter::SetSecondPanelSize(int newSize)
         newSize = 0;
     Members->SecondPanelSize = newSize;
     Splitter_ResizeComponents(this);
-    RaiseEvent(Event::SplitterRatioChanged);
+    RaiseEvent(Event::SplitterPositionChanged);
     return true;
 }
 bool Splitter::HideSecondPanel()
@@ -336,11 +336,22 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 {
     Splitter_ResizeComponents(this);
 }
-int Splitter::GetSplitterPosition()
+unsigned int Splitter::GetFirstPanelSize()
 {
-    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, -1);
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
+    int value = 0;
     if ((Members->Flags & GATTR_VERTICAL) != 0)
-        return Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value =  Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     else
-        return Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value =  Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+    if (value < 0)
+        value = 0;
+    return (unsigned int) value;
+}
+unsigned int Splitter::GetSecondPanelSize()
+{
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
+    if (Members->SecondPanelSize < 0)
+        return 0;
+    return (unsigned int) Members->SecondPanelSize;
 }

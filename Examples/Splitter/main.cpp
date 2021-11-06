@@ -28,14 +28,19 @@ class MyWin : public Window
         Factory::RadioBox::Create(pright, "Option &2", "x:1,y:2,w:20", 5);
         Factory::RadioBox::Create(pright, "Option &3", "x:1,y:3,w:20", 5);
 
-        l = Factory::Label::Create(pbottom, "Splitter Status", "l:1,b:0,w:90%,h:2");
+        l = Factory::Label::Create(pbottom, "Splitter Status", "l:1,t:0,w:90%,h:2");
         UpdateSplitterStatus();
     }
     void UpdateSplitterStatus()
     {
         LocalString<128> temp;
         if (l.IsValid())
-            l->SetText(temp.Format("VS: %d, HS: %d",v->GetSplitterPosition(),h->GetSplitterPosition()));
+            l->SetText(temp.Format(
+                  "VS: [L=%d,R=%d], HS: [T=%d,B=%d]",
+                  v->GetFirstPanelSize(),
+                  v->GetSecondPanelSize(),
+                  h->GetFirstPanelSize(),
+                  h->GetSecondPanelSize()));
     }
     bool OnEvent(Reference<Control>, AppCUI::Controls::Event eventType, int) override
     {
@@ -53,7 +58,7 @@ class MyWin : public Window
             win->Show();
             return true;
         }
-        if (eventType == AppCUI::Controls::Event::SplitterRatioChanged)
+        if (eventType == AppCUI::Controls::Event::SplitterPositionChanged)
         {
             UpdateSplitterStatus();
             return true;
