@@ -258,6 +258,38 @@ bool PreviousTab(Tab* t)
     return t->SetCurrentTabPageByIndex(
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
+bool Tab_SetCurrentTabPageByIndex(Tab* t, unsigned int index, bool setFocus)
+{
+    CREATE_TYPE_CONTEXT(TabControlContext, t, Members, false);
+    CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
+    bool res   = false;
+    bool found = false;
+    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    {
+        if (tr == index)
+        {
+            // ca sa fortez calcularea focusului
+            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
+            Members->Controls[tr]->SetVisible(true);
+            Members->Controls[tr]->SetEnabled(true);
+            res   = Members->Controls[tr]->SetFocus();
+            found = true;
+        }
+        else
+        {
+            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
+            Members->Controls[tr]->SetVisible(false);
+        }
+    }
+    if (Members->Flags && TabFlags::ListView)
+    {
+        Members->UpdateMargins();
+        AppCUI::Application::RecomputeControlsLayout();
+    }
+    if (found)
+        t->RaiseEvent(Event::TabChanged);
+    return res;
+}
 //===================================================================================================================
 
 TabPage::TabPage(const AppCUI::Utils::ConstString& caption)
@@ -287,35 +319,7 @@ Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
 
 bool Tab::SetCurrentTabPageByIndex(unsigned int index)
 {
-    CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
-    CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
-    bool res   = false;
-    bool found = false;
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
-    {
-        if (tr == index)
-        {
-            // ca sa fortez calcularea focusului
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
-            Members->Controls[tr]->SetVisible(true);
-            Members->Controls[tr]->SetEnabled(true);
-            res                 = Members->Controls[tr]->SetFocus();
-            found               = true;
-        }
-        else
-        {
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
-            Members->Controls[tr]->SetVisible(false);
-        }
-    }
-    if (Members->Flags && TabFlags::ListView)
-    {
-        Members->UpdateMargins();
-        AppCUI::Application::RecomputeControlsLayout();
-    }
-    if (found)
-        this->RaiseEvent(Event::TabChanged);
-    return res;
+    return Tab_SetCurrentTabPageByIndex(this, index, true);
 }
 bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
 {
