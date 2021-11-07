@@ -14,19 +14,17 @@ using namespace AppCUI::Utils;
 class TabNoFocusExample : public Window
 {
     Reference<Tab> tb;
-    Reference<CheckBox> noFocus;
+
 
   public:
     TabNoFocusExample(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
-        tb       = Factory::Tab::Create(this, "l:2,t:6,r:2,b:2", flags);
-        noFocus  = Factory::CheckBox::Create(this, "Don't set focus to Tab when pages are changed !", "l:2,t:4,r:2");
+        tb       = Factory::Tab::Create(this, "l:2,t:4,r:2,b:2", flags);
         auto tx  = Factory::TextField::Create(this, "Some text ....", "l:2,t:2,r:2,h:1");
         auto w_b = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
         
         LocalString<128> tmp;
-        noFocus->SetChecked(true);
 
         for (int tr = 0; tr < tabsCount; tr++)
         {
