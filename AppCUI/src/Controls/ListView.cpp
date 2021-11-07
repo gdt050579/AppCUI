@@ -18,6 +18,10 @@ constexpr unsigned int LISTVIEW_SEARCH_BAR_WIDTH = 12;
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
     ListViewItem& i = Items.List[index];
 
+#define CONST_PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                \
+    CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
+    const ListViewItem& i = Items.List[index];
+
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
 AppCUI::Graphics::CharacterBuffer
@@ -62,35 +66,32 @@ void ListViewColumn::SetWidth(unsigned int width)
     this->Width = (unsigned char) width;
 }
 
-ListViewItem::ListViewItem()
+ListViewItem::ListViewItem() : Data(nullptr)
 {
-    this->Flags            = 0;
-    this->Type             = ListViewItemType::Normal;
-    this->ItemColor        = DefaultColorPair;
-    this->Height           = 1;
-    this->Data.UInt64Value = 0;
-    this->XOffset          = 0;
+    this->Flags     = 0;
+    this->Type      = ListViewItemType::Normal;
+    this->ItemColor = DefaultColorPair;
+    this->Height    = 1;
+    this->XOffset   = 0;
 }
-ListViewItem::ListViewItem(const ListViewItem& obj)
+ListViewItem::ListViewItem(const ListViewItem& obj) : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
     this->ItemColor = obj.ItemColor;
     this->Height    = obj.Height;
-    this->Data      = obj.Data;
     this->XOffset   = obj.XOffset;
     for (unsigned int tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
     {
         this->SubItem[tr] = obj.SubItem[tr];
     }
 }
-ListViewItem::ListViewItem(ListViewItem&& obj) noexcept
+ListViewItem::ListViewItem(ListViewItem&& obj) noexcept : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
     this->ItemColor = obj.ItemColor;
     this->Height    = obj.Height;
-    this->Data      = obj.Data;
     this->XOffset   = obj.XOffset;
     for (unsigned int tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
     {
@@ -505,17 +506,33 @@ bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
     i.Type = type;
     return true;
 }
-
-bool ListViewControlContext::SetItemData(ItemHandle item, ItemData Data)
+bool ListViewControlContext::SetItemDataAsValue(ItemHandle item, unsigned long long value)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-    i.Data = Data;
+    i.Data = value;
     return true;
 }
-ItemData* ListViewControlContext::GetItemData(ItemHandle item)
+bool ListViewControlContext::GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const
 {
-    PREPARE_LISTVIEW_ITEM(item, nullptr);
-    return &i.Data;
+    CONST_PREPARE_LISTVIEW_ITEM(item, false);
+    CHECK(std::holds_alternative<unsigned long long>(i.Data), false, "No value was stored in current item");
+    value = std::get<unsigned long long>(i.Data);
+    return true;
+}
+bool ListViewControlContext::SetItemDataAsPointer(ItemHandle item, GenericRef obj)
+{
+    PREPARE_LISTVIEW_ITEM(item, false);
+    i.Data = obj;
+    return true;
+}
+GenericRef ListViewControlContext::GetItemDataAsPointer(const ItemHandle item) const
+{
+    CONST_PREPARE_LISTVIEW_ITEM(item, GenericRef(nullptr));
+    if (std::holds_alternative<GenericRef>(i.Data))
+    {
+        return std::get<GenericRef>(i.Data);
+    }
+    return GenericRef(nullptr);
 }
 bool ListViewControlContext::SetItemXOffset(ItemHandle item, unsigned int XOffset)
 {
@@ -1641,13 +1658,23 @@ bool ListView::IsItemSelected(ItemHandle item)
 {
     return WRAPPER->IsItemSelected(item);
 }
-bool ListView::SetItemData(ItemHandle item, ItemData Data)
+bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
 {
-    return WRAPPER->SetItemData(item, Data);
+    return WRAPPER->SetItemDataAsPointer(item, Data);
 }
-ItemData* ListView::GetItemData(ItemHandle item)
+GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
 {
-    return WRAPPER->GetItemData(item);
+    return WRAPPER->GetItemDataAsPointer(item);
+}
+bool ListView::SetItemData(ItemHandle item, unsigned long long value)
+{
+    return WRAPPER->SetItemDataAsValue(item, value);
+}
+unsigned long long ListView::GetItemData(ItemHandle item, unsigned long long errorValue)
+{
+    unsigned long long value;
+    CHECK(WRAPPER->GetItemDataAsValue(item, value), errorValue, "");
+    return value;
 }
 bool ListView::SetItemXOffset(ItemHandle item, unsigned int XOffset)
 {

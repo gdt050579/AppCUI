@@ -254,11 +254,6 @@ class TextFieldControlContext : public ControlContext
     {
         int Start, End, Origin;
     } Selection;
-    struct
-    {
-        Handlers::SyntaxHighlightHandler Handler;
-        void* Context;
-    } Syntax;
     bool Modified;
 };
 class TextAreaControlContext : public ControlContext
@@ -280,11 +275,6 @@ class TextAreaControlContext : public ControlContext
     {
         unsigned int Start, End, Origin;
     } Selection;
-    struct
-    {
-        Handlers::SyntaxHighlightHandler Handler;
-        void* Context;
-    } Syntax;
     char tabChar;
     AppCUI::Controls::Control* Host;
 
@@ -371,7 +361,7 @@ struct ListViewItem
     unsigned int XOffset;
     unsigned int Height;
     ColorPair ItemColor;
-    ItemData Data;
+    std::variant<GenericRef, unsigned long long> Data;
     ListViewItem();
     ListViewItem(const ColorPair col) : ListViewItem()
     {
@@ -488,8 +478,10 @@ class ListViewControlContext : public ControlContext
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
 
-    bool SetItemData(ItemHandle item, ItemData Data);
-    ItemData* GetItemData(ItemHandle item);
+    bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
+    GenericRef GetItemDataAsPointer(const ItemHandle item) const;
+    bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
+    bool GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const;
     bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
     unsigned int GetItemXOffset(ItemHandle item);
     bool SetItemHeight(ItemHandle item, unsigned int Height);
@@ -514,12 +506,15 @@ class ListViewControlContext : public ControlContext
 struct ComboBoxItem
 {
     AppCUI::Graphics::CharacterBuffer Text;
-    AppCUI::Controls::ItemData Data;
+    std::variant<GenericRef, unsigned long long> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
-          const AppCUI::Utils::ConstString& caption, ItemData userData, unsigned int index, bool separator = false);
+          const AppCUI::Utils::ConstString& caption,
+          std::variant<GenericRef, unsigned long long> userData,
+          unsigned int index,
+          bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&) noexcept;
@@ -576,11 +571,11 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::vector<CharacterBuffer> values;
-    ItemData data{};
+    std::variant<GenericRef, unsigned long long> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;
-    CharacterBuffer metadata;
+    Utils::UnicodeStringBuilder metadata;
     unsigned int depth                = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
@@ -594,11 +589,10 @@ class TreeControlContext : public ControlContext
     std::vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
-    unsigned int maxItemsToDraw                                                            = 0;
-    unsigned int offsetTopToDraw                                                           = 0;
-    unsigned int offsetBotToDraw                                                           = 0;
-    bool notProcessed                                                                      = true;
-    std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback = nullptr;
+    unsigned int maxItemsToDraw  = 0;
+    unsigned int offsetTopToDraw = 0;
+    unsigned int offsetBotToDraw = 0;
+    bool notProcessed            = true;
     std::vector<ItemHandle> roots;
     std::vector<TreeColumnData> columns;
     unsigned int treeFlags              = 0;

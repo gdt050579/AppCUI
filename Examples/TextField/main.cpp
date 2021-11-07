@@ -6,7 +6,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
-void HighlightNumberAndCapitalLetters(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
+void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* chars, unsigned int charsCount)
 {
     Graphics::Character* end = chars + charsCount;
     while (chars < end)
@@ -40,12 +40,10 @@ class MyWin : public AppCUI::Controls::Window
               this, "this is a large text the expends for over the next lines", "l:19,t:7,r:1,h:3")->SetHotKey('M');
 
         Factory::Label::Create(this, "Syntax &Highlight", "x:1,y:11,w:16");
-        Factory::TextField::Create(
-              this,
-              "Capital Letters and numbers (12345)",
-              "l:19,t:11,r:1",
-              TextFieldFlags::SyntaxHighlighting,
-              HighlightNumberAndCapitalLetters)->SetHotKey('H');
+        auto tf = Factory::TextField::Create(
+              this, "Capital Letters and numbers (12345)", "l:19,t:11,r:1", TextFieldFlags::SyntaxHighlighting);
+        tf->SetHotKey('H');
+        tf->Handlers()->OnTextColor = HighlightNumberAndCapitalLetters;
     }
     bool OnEvent(Reference<Control>, Event eventType, int) override
     {
