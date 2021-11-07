@@ -52,6 +52,43 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
+bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    switch (keyCode)
+    {
+    case AppCUI::Input::Key::Space:
+        if (context->selectedCellsIndexes.size() != 1)
+        {
+            break;
+        }
+        {
+            const auto index    = context->selectedCellsIndexes[0];
+            auto& cellData      = context->data[index];
+            const auto cellType = cellData.first;
+            if (cellType != Grid::CellType::Boolean)
+            {
+                break;
+            }
+
+            auto& content = cellData.second;
+            if (std::holds_alternative<bool>(content) == false)
+            {
+                break;
+            }
+
+            const auto value = std::get<bool>(content);
+            content          = !value;
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
 void Grid::OnMousePressed(int x, int y, MouseButton button)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
@@ -80,7 +117,34 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
             context->rightClickMenu.Show(x, y);
         }
         break;
-    case MouseButton::DoubleClicked:
+    case MouseButton::Left | MouseButton::DoubleClicked:
+    {
+        const auto index = ComputeCellNumber(x, y);
+        if (index == InvalidCellIndex)
+        {
+            break;
+        }
+
+        auto& cellData      = context->data[index];
+        const auto cellType = cellData.first;
+        if (cellType != Grid::CellType::Boolean)
+        {
+            break;
+        }
+
+        auto& content = cellData.second;
+        if (std::holds_alternative<bool>(content) == false)
+        {
+            break;
+        }
+
+        const auto value = std::get<bool>(content);
+        content          = !value;
+    }
+    break;
+    case MouseButton::Center | MouseButton::DoubleClicked:
+        break;
+    case MouseButton::Right| MouseButton::DoubleClicked:
         break;
     default:
         break;

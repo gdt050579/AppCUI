@@ -12,7 +12,7 @@ class SimpleWin : public AppCUI::Controls::Window
                       AppCUI::Controls::WindowFlags::Maximized)
     {
         auto grid = AppCUI::Controls::Factory::Grid::Create(
-              this, "d:c,w:100%,h:100%", 10, 30, AppCUI::Controls::GridFlags::None);
+              this, "d:c,w:100%,h:100%", 10, 20, AppCUI::Controls::GridFlags::None);
 
         auto generator = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
         for (auto i = 0U; i < grid->GetCellsCount(); i++)
