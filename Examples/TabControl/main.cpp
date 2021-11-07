@@ -11,6 +11,54 @@ using namespace AppCUI::Utils;
 #define SHOW_TAB_BUTTON_ID 654321
 #define TAB_MODE_GROUP     101
 
+class TabNoFocusExample : public Window
+{
+    Reference<Tab> tb;
+    Reference<CheckBox> noFocus;
+
+  public:
+    TabNoFocusExample(TabFlags flags, unsigned int tabSize, int tabsCount)
+        : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
+    {
+        tb       = Factory::Tab::Create(this, "l:2,t:6,r:2,b:2", flags);
+        noFocus  = Factory::CheckBox::Create(this, "Don't set focus to Tab when pages are changed !", "l:2,t:4,r:2");
+        auto tx  = Factory::TextField::Create(this, "Some text ....", "l:2,t:2,r:2,h:1");
+        auto w_b = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
+        
+        LocalString<128> tmp;
+        noFocus->SetChecked(true);
+
+        for (int tr = 0; tr < tabsCount; tr++)
+        {
+            tmp.SetFormat("Tab: &%d", tr + 1);
+            auto pg = Factory::TabPage::Create(tb, tmp.GetText());
+            auto lv = Factory::ListView::Create(pg, "d:c");
+            lv->AddColumn("Values", TextAlignament::Left, 20);
+            lv->AddItem(tmp.Format("Field: %d -> Dragos", tr + 1));
+            lv->AddItem(tmp.Format("Field: %d -> Ghiorghita", tr + 1));
+            lv->AddItem(tmp.Format("Field: %d -> Denis", tr + 1));
+            lv->AddItem(tmp.Format("Field: %d -> Andrei", tr + 1));
+
+            w_b.AddSingleChoiceItem(tmp.Format("T:%d", tr + 1), 1000 + tr, tr == 0);
+        }
+        tx->SetFocus();
+    }
+    bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override
+    {
+        if (Window::OnEvent(ctrl, eventType, controlID))
+            return true;
+        if (eventType == Event::Command)
+        {
+            if ((controlID >= 1000) && (controlID < 1100))
+            {
+                tb->SetCurrentTabPageByIndex(controlID - 1000);
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
 class TabExampleWin2 : public Window
 {
     Reference<Tab> tb_h, tb_v;
@@ -152,8 +200,8 @@ class MyWin : public Window
         tabsCount = Factory::NumericSelector::Create(this, 1, 3, 3, "x:14,y:13,w:32");
 
         Factory::Label::Create(this, "Example", "x:1,y:15,w:10");
-        example = Factory::ComboBox::Create(this, "x:14,y:15,w:32", "Normal,Sliders");
-        example->SetCurentItemIndex(1);
+        example = Factory::ComboBox::Create(this, "x:14,y:15,w:32", "Normal,Sliders,NoFocus");
+        example->SetCurentItemIndex(2);
 
         Factory::Button::Create(this, "&Show tab control", "l:16,b:0,w:21", SHOW_TAB_BUTTON_ID);
     }
@@ -180,6 +228,7 @@ class MyWin : public Window
 
         TabExampleWin tw(flags, v_tabSize, v_tabsCount);
         TabExampleWin2 tw2(flags, v_tabSize, v_tabsCount);
+        TabNoFocusExample tnf(flags, v_tabSize, v_tabsCount);
         switch (example->GetCurrentItemIndex())
         {
         case 0:
@@ -187,6 +236,9 @@ class MyWin : public Window
             break;
         case 1:
             tw2.Show();
+            break;
+        case 2:
+            tnf.Show();
             break;
         }
     }
