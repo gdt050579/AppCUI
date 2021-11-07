@@ -3385,7 +3385,13 @@ namespace Controls
         void DrawBoxes(Graphics::Renderer& renderer);
         void DrawLines(Graphics::Renderer& renderer);
         unsigned int ComputeCellNumber(int x, int y);
-        Graphics::SpecialChars ComputeBoxType(unsigned int i, unsigned int j);
+        Graphics::SpecialChars ComputeBoxType(
+              unsigned int colIndex,
+              unsigned int rowIndex,
+              unsigned int startColumnsIndex,
+              unsigned int startRowsIndex,
+              unsigned int endColumnsIndex,
+              unsigned int endRowsIndex);
         void DrawCellsBackground(Graphics::Renderer& renderer);
         void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int i, unsigned int j);
         void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int cellIndex);

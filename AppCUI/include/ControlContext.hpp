@@ -633,7 +633,7 @@ class GridControlContext : public ControlContext
     GridFlags flags               = GridFlags::None;
     unsigned int hoveredCellIndex = 0xFFFFFFFF;
     unsigned int anchorCellIndex  = 0xFFFFFFFF;
-    std::set<unsigned int> selectedCellsIndexes;
+    std::vector<unsigned int> selectedCellsIndexes;
 
     unsigned int cWidth  = 0U;
     unsigned int cHeight = 0U;

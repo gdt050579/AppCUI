@@ -63,7 +63,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         if (index != InvalidCellIndex)
         {
             context->anchorCellIndex = index;
-            context->selectedCellsIndexes.insert(index);
+            context->selectedCellsIndexes.emplace_back(index);
         }
     }
     break;
@@ -104,7 +104,7 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
         }
 
         context->selectedCellsIndexes.clear();
-        context->selectedCellsIndexes.insert(currentIndex);
+        context->selectedCellsIndexes.emplace_back(currentIndex);
 
         if (context->anchorCellIndex != currentIndex)
         {
@@ -125,7 +125,7 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
                 for (auto j = startRowIndex; j <= endRowIndex; j++)
                 {
                     const auto current = context->columnsNo * j + i;
-                    context->selectedCellsIndexes.insert(current);
+                    context->selectedCellsIndexes.emplace_back(current);
                 }
             }
         }
@@ -197,33 +197,16 @@ void Grid::DrawBoxes(Renderer& renderer)
         for (auto j = 0U; j <= context->rowsNo; j++)
         {
             const auto y  = context->offsetY + j * context->cHeight;
-            const auto sc = ComputeBoxType(i, j);
+            const auto sc = ComputeBoxType(i, j, 0U, 0U, context->columnsNo, context->rowsNo);
             renderer.WriteSpecialCharacter(x, y, sc, context->Cfg->Grid.Lines.Box.Normal);
         }
     }
 
-    const auto drawBoxes = [&](unsigned int cellIndex, CellType cellType)
+    if (context->hoveredCellIndex != InvalidCellIndex &&
+        ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        ColorPair color = context->Cfg->Grid.Lines.Box.Hovered;
-
-        switch (cellType)
-        {
-        case AppCUI::Controls::Grid::CellType::Normal:
-            color = context->Cfg->Grid.Lines.Box.Normal;
-            break;
-        case AppCUI::Controls::Grid::CellType::Selected:
-            color = context->Cfg->Grid.Lines.Box.Selected;
-            break;
-        case AppCUI::Controls::Grid::CellType::Hovered:
-            color = context->Cfg->Grid.Lines.Box.Hovered;
-            break;
-        default:
-            color = context->Cfg->Grid.Lines.Box.Normal;
-            break;
-        }
-
-        const auto columnIndex = cellIndex % context->columnsNo;
-        const auto rowIndex    = cellIndex / context->columnsNo;
+        const auto columnIndex = context->hoveredCellIndex % context->columnsNo;
+        const auto rowIndex    = context->hoveredCellIndex / context->columnsNo;
 
         const auto xLeft  = context->offsetX + columnIndex * context->cWidth;
         const auto xRight = context->offsetX + (columnIndex + 1) * context->cWidth;
@@ -231,23 +214,35 @@ void Grid::DrawBoxes(Renderer& renderer)
         const auto yTop    = context->offsetY + rowIndex * context->cHeight;
         const auto yBottom = context->offsetY + (rowIndex + 1) * context->cHeight;
 
+        const auto& color = context->Cfg->Grid.Lines.Box.Hovered;
+
         renderer.WriteSpecialCharacter(xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xLeft, yBottom, SpecialChars::BoxBottomLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, color);
-    };
-
-    if (context->hoveredCellIndex != InvalidCellIndex &&
-        ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
-    {
-        drawBoxes(context->hoveredCellIndex, CellType::Hovered);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
-        for (const auto& cellIndex : context->selectedCellsIndexes)
+        // we assume these are already sorted
+        const auto startCellIndex = context->selectedCellsIndexes[0];
+        const auto endCellIndex   = context->selectedCellsIndexes[context->selectedCellsIndexes.size() - 1];
+
+        const auto sci = startCellIndex % context->columnsNo;
+        const auto sri = startCellIndex / context->columnsNo;
+
+        const auto eci = endCellIndex % context->columnsNo + 1U;
+        const auto eri = endCellIndex / context->columnsNo + 1U;
+
+        for (auto i = sci; i <= eci; i++)
         {
-            drawBoxes(cellIndex, CellType::Selected);
+            const auto x = context->offsetX + i * context->cWidth;
+            for (auto j = sri; j <= eri; j++)
+            {
+                const auto y  = context->offsetY + j * context->cHeight;
+                const auto sc = ComputeBoxType(i, j, sci, sri, eci, eri);
+                renderer.WriteSpecialCharacter(x, y, sc, context->Cfg->Grid.Lines.Box.Selected);
+            }
         }
     }
 }
@@ -363,17 +358,21 @@ unsigned int Grid::ComputeCellNumber(int x, int y)
     return cellIndex;
 }
 
-SpecialChars Grid::ComputeBoxType(unsigned int i, unsigned int j)
+SpecialChars Grid::ComputeBoxType(
+      unsigned int colIndex,
+      unsigned int rowIndex,
+      unsigned int startColumnsIndex,
+      unsigned int startRowsIndex,
+      unsigned int endColumnsIndex,
+      unsigned int endRowsIndex)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-
-    if (i == 0)
+    if (colIndex == startColumnsIndex)
     {
-        if (j == 0)
+        if (rowIndex == startRowsIndex)
         {
             return SpecialChars::BoxTopLeftCornerSingleLine;
         }
-        else if (j == context->rowsNo)
+        else if (rowIndex == endRowsIndex)
         {
             return SpecialChars::BoxBottomLeftCornerSingleLine;
         }
@@ -382,13 +381,13 @@ SpecialChars Grid::ComputeBoxType(unsigned int i, unsigned int j)
             return SpecialChars::BoxMidleLeft;
         }
     }
-    else if (i == context->columnsNo)
+    else if (colIndex == endColumnsIndex)
     {
-        if (j == 0)
+        if (rowIndex == startRowsIndex)
         {
             return SpecialChars::BoxTopRightCornerSingleLine;
         }
-        else if (j == context->rowsNo)
+        else if (rowIndex == endRowsIndex)
         {
             return SpecialChars::BoxBottomRightCornerSingleLine;
         }
@@ -399,11 +398,11 @@ SpecialChars Grid::ComputeBoxType(unsigned int i, unsigned int j)
     }
     else
     {
-        if (j == 0)
+        if (rowIndex == startRowsIndex)
         {
             return SpecialChars::BoxMidleTop;
         }
-        else if (j == context->rowsNo)
+        else if (rowIndex == endRowsIndex)
         {
             return SpecialChars::BoxMidleBottom;
         }
@@ -491,4 +490,33 @@ void AppCUI::Controls::Grid::UpdateCellData()
     // center matrix
     context->offsetX = static_cast<unsigned int>((context->Layout.Width - context->cWidth * context->columnsNo) / 2);
     context->offsetY = static_cast<unsigned int>((context->Layout.Height - context->cHeight * context->rowsNo) / 2);
+
+    // sort selected cells for better drawing
+    struct
+    {
+        const GridControlContext* gcc;
+        bool operator()(unsigned int a, unsigned int b)
+        {
+            const auto aci = a % gcc->columnsNo;
+            const auto ari = a / gcc->columnsNo;
+
+            const auto bci = b % gcc->columnsNo;
+            const auto bri = b / gcc->columnsNo;
+
+            if (ari < bri)
+            {
+                return true;
+            }
+            if (ari == bri)
+            {
+                if (aci < bci)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    } sortingComparator{ context };
+    std::sort(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end(), sortingComparator);
 }
