@@ -1,4 +1,5 @@
 #include "AppCUI.hpp"
+#include <random>
 
 class SimpleWin : public AppCUI::Controls::Window
 {
@@ -12,6 +13,33 @@ class SimpleWin : public AppCUI::Controls::Window
     {
         auto grid = AppCUI::Controls::Factory::Grid::Create(
               this, "d:c,w:100%,h:100%", 10, 30, AppCUI::Controls::GridFlags::None);
+
+        auto generator = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
+        for (auto i = 0U; i < grid->GetCellsCount(); i++)
+        {
+            auto cellType = AppCUI::Controls::Grid::CellType::String;
+
+            if (generator())
+            {
+                cellType = AppCUI::Controls::Grid::CellType::Boolean;
+            }
+
+            switch (cellType)
+            {
+            case AppCUI::Controls::Grid::CellType::Boolean:
+                grid->UpdateCell(i, { cellType,  static_cast<bool>(generator()) });
+                break;
+            case AppCUI::Controls::Grid::CellType::String:
+            {
+                AppCUI::Utils::LocalString<32> value;
+                value.Format("%u", i);
+                grid->UpdateCell(i, { cellType, value });
+            }
+            break;
+            default:
+                break;
+            }
+        }
     }
 };
 

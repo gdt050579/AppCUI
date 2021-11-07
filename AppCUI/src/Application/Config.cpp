@@ -346,4 +346,5 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Grid.Background.Cell.Normal    = this->Grid.Background.Grid;
     this->Grid.Background.Cell.Selected  = ColorPair{ Color::Transparent, Color::Pink };
     this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::DarkRed };
+    this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
 }

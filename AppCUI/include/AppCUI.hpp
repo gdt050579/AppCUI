@@ -3360,12 +3360,18 @@ namespace Controls
 
     class EXPORT Grid : public Control
     {
-      private:
-        enum class CellType
+      public:
+        enum class CellStatus
         {
             Normal   = 0,
             Selected = 1,
             Hovered  = 2
+        };
+
+        enum class CellType
+        {
+            Boolean = 0,
+            String  = 1
         };
 
       protected:
@@ -3381,6 +3387,10 @@ namespace Controls
         void OnLoseFocus() override;
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
+        unsigned int GetCellsCount() const;
+        bool UpdateCell(unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data);
+        bool UpdateCells(const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
+
       private:
         void DrawBoxes(Graphics::Renderer& renderer);
         void DrawLines(Graphics::Renderer& renderer);
@@ -3393,9 +3403,10 @@ namespace Controls
               unsigned int endColumnsIndex,
               unsigned int endRowsIndex);
         void DrawCellsBackground(Graphics::Renderer& renderer);
-        void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int i, unsigned int j);
-        void DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int cellIndex);
-        void UpdateCellData();
+        void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int i, unsigned int j);
+        void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int cellIndex);
+        bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
+        void UpdateGridParameters();
 
       private:
         friend Factory::Grid;
@@ -4177,6 +4188,10 @@ namespace Application
                     Graphics::ColorPair Normal, Selected, Hovered;
                 } Cell;
             } Background;
+            struct
+            {
+                Graphics::ColorPair Normal;
+            } Text;
         } Grid;
         void SetDarkTheme();
     };

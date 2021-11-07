@@ -641,6 +641,8 @@ class GridControlContext : public ControlContext
     unsigned int offsetY = 0U;
 
     Menu rightClickMenu;
+
+    std::map<unsigned int, std::pair<Grid::CellType, std::variant<bool, std::u16string>>> data;
 };
 
 enum class MenuItemType : unsigned int

@@ -19,14 +19,14 @@ Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo,
     context->rowsNo    = rowsNo;
     context->flags     = flags;
 
-    UpdateCellData();
+    UpdateGridParameters();
 
     context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
 }
 
 void Grid::Paint(Renderer& renderer)
 {
-    UpdateCellData();
+    UpdateGridParameters();
 
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -44,6 +44,11 @@ void Grid::Paint(Renderer& renderer)
     if ((context->flags & GridFlags::HideBoxes) == GridFlags::None)
     {
         DrawBoxes(renderer);
+    }
+
+    for (auto const& [key, val] : context->data)
+    {
+        DrawCellContent(renderer, key);
     }
 }
 
@@ -278,22 +283,22 @@ void Grid::DrawLines(Renderer& renderer)
         }
     }
 
-    const auto drawLines = [&](unsigned int cellIndex, CellType cellType)
+    const auto drawLines = [&](unsigned int cellIndex, CellStatus cellType)
     {
         ColorPair vertical   = context->Cfg->Grid.Lines.Vertical.Normal;
         ColorPair horizontal = context->Cfg->Grid.Lines.Horizontal.Normal;
 
         switch (cellType)
         {
-        case AppCUI::Controls::Grid::CellType::Normal:
+        case AppCUI::Controls::Grid::CellStatus::Normal:
             vertical   = context->Cfg->Grid.Lines.Vertical.Normal;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Normal;
             break;
-        case AppCUI::Controls::Grid::CellType::Selected:
+        case AppCUI::Controls::Grid::CellStatus::Selected:
             vertical   = context->Cfg->Grid.Lines.Vertical.Selected;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Selected;
             break;
-        case AppCUI::Controls::Grid::CellType::Hovered:
+        case AppCUI::Controls::Grid::CellStatus::Hovered:
             vertical   = context->Cfg->Grid.Lines.Vertical.Hovered;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Hovered;
             break;
@@ -322,14 +327,14 @@ void Grid::DrawLines(Renderer& renderer)
     if (context->hoveredCellIndex != InvalidCellIndex &&
         ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        drawLines(context->hoveredCellIndex, CellType::Hovered);
+        drawLines(context->hoveredCellIndex, CellStatus::Hovered);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         for (const auto& cellIndex : context->selectedCellsIndexes)
         {
-            drawLines(cellIndex, CellType::Selected);
+            drawLines(cellIndex, CellStatus::Selected);
         }
     }
 }
@@ -419,27 +424,27 @@ void Grid::DrawCellsBackground(Graphics::Renderer& renderer)
     {
         for (auto j = 0U; j < context->rowsNo; j++)
         {
-            DrawCellBackground(renderer, CellType::Normal, i, j);
+            DrawCellBackground(renderer, CellStatus::Normal, i, j);
         }
     }
 
     if (context->hoveredCellIndex != InvalidCellIndex &&
         ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        DrawCellBackground(renderer, CellType::Hovered, context->hoveredCellIndex);
+        DrawCellBackground(renderer, CellStatus::Hovered, context->hoveredCellIndex);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         for (const auto& cellIndex : context->selectedCellsIndexes)
         {
-            DrawCellBackground(renderer, CellType::Selected, cellIndex);
+            DrawCellBackground(renderer, CellStatus::Selected, cellIndex);
         }
     }
 }
 
 void AppCUI::Controls::Grid::DrawCellBackground(
-      Graphics::Renderer& renderer, CellType cellType, unsigned int i, unsigned int j)
+      Graphics::Renderer& renderer, CellStatus cellType, unsigned int i, unsigned int j)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -452,13 +457,13 @@ void AppCUI::Controls::Grid::DrawCellBackground(
     ColorPair color = context->Cfg->Grid.Background.Cell.Normal;
     switch (cellType)
     {
-    case AppCUI::Controls::Grid::CellType::Normal:
+    case AppCUI::Controls::Grid::CellStatus::Normal:
         color = context->Cfg->Grid.Background.Cell.Normal;
         break;
-    case AppCUI::Controls::Grid::CellType::Selected:
+    case AppCUI::Controls::Grid::CellStatus::Selected:
         color = context->Cfg->Grid.Background.Cell.Selected;
         break;
-    case AppCUI::Controls::Grid::CellType::Hovered:
+    case AppCUI::Controls::Grid::CellStatus::Hovered:
         color = context->Cfg->Grid.Background.Cell.Hovered;
         break;
     default:
@@ -469,7 +474,8 @@ void AppCUI::Controls::Grid::DrawCellBackground(
     renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
 }
 
-void AppCUI::Controls::Grid::DrawCellBackground(Graphics::Renderer& renderer, CellType cellType, unsigned int cellIndex)
+void AppCUI::Controls::Grid::DrawCellBackground(
+      Graphics::Renderer& renderer, CellStatus cellType, unsigned int cellIndex)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -479,7 +485,51 @@ void AppCUI::Controls::Grid::DrawCellBackground(Graphics::Renderer& renderer, Ce
     DrawCellBackground(renderer, cellType, columnIndex, rowIndex);
 }
 
-void AppCUI::Controls::Grid::UpdateCellData()
+bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex)
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    const auto cellColumn = cellIndex % context->columnsNo;
+    const auto cellRow    = cellIndex / context->columnsNo;
+
+    const auto x = context->offsetX + cellColumn * context->cWidth + 1; // + 1 -> line
+    const auto y = context->offsetY + cellRow * context->cHeight + 1;   // + 1 -> line
+
+    const auto& content = context->data[cellIndex];
+
+    switch (content.first)
+    {
+    case CellType::Boolean:
+        if (std::holds_alternative<bool>(content.second))
+        {
+            const auto value = std::get<bool>(content.second);
+            if (value)
+            {
+                renderer.WriteSingleLineText(x, y, "True", context->Cfg->Grid.Text.Normal);
+            }
+            else
+            {
+                renderer.WriteSingleLineText(x, y, "False", context->Cfg->Grid.Text.Normal);
+            }
+            return true;
+        }
+        return false;
+    case CellType::String:
+        if (std::holds_alternative<std::u16string>(content.second))
+        {
+            const auto& value = std::get<std::u16string>(content.second);
+            renderer.WriteSingleLineText(x, y, value, context->Cfg->Grid.Text.Normal);
+            return true;
+        }
+        return false;
+    default:
+        break;
+    }
+
+    return false;
+}
+
+void AppCUI::Controls::Grid::UpdateGridParameters()
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -519,4 +569,54 @@ void AppCUI::Controls::Grid::UpdateCellData()
         };
     } sortingComparator{ context };
     std::sort(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end(), sortingComparator);
+}
+
+unsigned int AppCUI::Controls::Grid::GetCellsCount() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    return context->columnsNo * context->rowsNo;
+}
+
+bool AppCUI::Controls::Grid::UpdateCell(
+      unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    CHECK(index < context->columnsNo * context->rowsNo, false, "");
+
+    std::variant<bool, std::u16string> cellData;
+    if (std::holds_alternative<bool>(data.second))
+    {
+        cellData = std::get<bool>(data.second);
+    }
+    else if (std::holds_alternative<ConstString>(data.second))
+    {
+        const auto& cs = std::get<ConstString>(data.second);
+        Utils::UnicodeStringBuilder usb{ cs };
+        std::u16string u16s(usb);
+        cellData = u16s;
+    }
+
+    context->data[index] = { data.first, cellData };
+
+    return true;
+}
+
+bool AppCUI::Controls::Grid::UpdateCells(
+      const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    // transaction so check all bounds/indexes first
+    for (auto const& [key, val] : data)
+    {
+        CHECK(key < context->columnsNo * context->rowsNo, false, "");
+    }
+
+    // start making actual update
+    for (auto const& [key, val] : data)
+    {
+        UpdateCell(key, val);
+    }
+
+    return true;
 }
