@@ -258,6 +258,7 @@ bool PreviousTab(Tab* t)
     return t->SetCurrentTabPageByIndex(
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
+
 //===================================================================================================================
 
 TabPage::TabPage(const AppCUI::Utils::ConstString& caption)
@@ -287,34 +288,31 @@ Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
 
 bool Tab::SetCurrentTabPageByIndex(unsigned int index)
 {
-    CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
+    CREATE_TYPE_CONTEXT(TabControlContext, this, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
-    bool res   = false;
-    bool found = false;
+    bool res = true;
+
+    // hide the rest of the tabs
     for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
     {
-        if (tr == index)
-        {
-            // ca sa fortez calcularea focusului
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
-            Members->Controls[tr]->SetVisible(true);
-            Members->Controls[tr]->SetEnabled(true);
-            res                 = Members->Controls[tr]->SetFocus();
-            found               = true;
-        }
-        else
-        {
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
+        if (tr != index)
             Members->Controls[tr]->SetVisible(false);
-        }
     }
+    // current tab
+    //((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
+    Members->Controls[index]->SetVisible(true);
+    Members->Controls[index]->SetEnabled(true);
+    if (Members->Focused)
+        res = Members->Controls[index]->SetFocus();
+    else
+        Members->CurrentControlIndex = index;
+
     if (Members->Flags && TabFlags::ListView)
     {
         Members->UpdateMargins();
         AppCUI::Application::RecomputeControlsLayout();
     }
-    if (found)
-        this->RaiseEvent(Event::TabChanged);
+    this->RaiseEvent(Event::TabChanged);
     return res;
 }
 bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
