@@ -304,7 +304,164 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             context->selectedCellsIndexes.clear();
             return true;
         }
-        break;
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::C:
+    {
+        auto xLeft  = 0xFFFFFFFFU;
+        auto xRight = 0U;
+
+        auto yTop = 0xFFFFFFFFU;
+        auto yBot = 0U;
+
+        for (const auto& i : context->selectedCellsIndexes)
+        {
+            const auto colIndex = i % context->columnsNo;
+            const auto rowIndex = i / context->columnsNo;
+
+            xLeft  = std::min<>(xLeft, colIndex);
+            xRight = std::max<>(xRight, colIndex);
+
+            yTop = std::min<>(yTop, rowIndex);
+            yBot = std::max<>(yBot, rowIndex);
+        }
+
+        LocalUnicodeStringBuilder<2048> lusb;
+        for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
+        {
+            for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
+            {
+                ConstString cs;
+                const auto current = context->columnsNo * j + i;
+                const auto& it     = context->data.find(current);
+                if (it != context->data.end())
+                {
+                    const auto& content = it->second;
+                    switch (content.first)
+                    {
+                    case CellType::Boolean:
+                        if (std::holds_alternative<bool>(content.second))
+                        {
+                            const auto value = std::get<bool>(content.second);
+                            if (value)
+                            {
+                                cs = "True";
+                            }
+                            else
+                            {
+                                cs = "False";
+                            }
+                        }
+                        break;
+                    case CellType::String:
+                        if (std::holds_alternative<std::u16string>(content.second))
+                        {
+                            const auto& value = std::get<std::u16string>(content.second);
+                            cs                = value;
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                }
+
+                lusb.Add(cs);
+
+                if (i < std::max<>(xLeft, xRight))
+                {
+                    lusb.Add(context->separator);
+                }
+            }
+            lusb.Add("\n");
+        }
+
+        if (AppCUI::OS::Clipboard::SetText(lusb) == false)
+        {
+            const std::string input{ lusb };
+            LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
+        }
+    }
+    break;
+
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::V:
+    {
+        // seems slow - a lower level parser might be better - we'll see
+        LocalUnicodeStringBuilder<2048> lusb{};
+        AppCUI::OS::Clipboard::GetText(lusb);
+
+        const std::u16string input{ lusb };
+
+        size_t last = 0;
+        size_t next = 0;
+        std::vector<std::u16string> lines;
+        lines.reserve(50);
+        while ((next = input.find(u"\n", last)) != std::string::npos)
+        {
+            lines.emplace_back(input.substr(last, next - last));
+            last = next + context->separator.length();
+        }
+        const auto lastLine = input.substr(last);
+        if (lastLine != u"")
+        {
+            lines.emplace_back(lastLine);
+        }
+
+        std::vector<std::u16string> tokens;
+        tokens.reserve(50);
+        for (const auto& line : lines)
+        {
+            size_t last = 0;
+            size_t next = 0;
+            while ((next = line.find(context->separator, last)) != std::string::npos)
+            {
+                tokens.emplace_back(line.substr(last, next - last));
+                last = next + context->separator.length();
+            }
+            tokens.emplace_back(line.substr(last));
+        }
+
+        if (tokens.size() > context->selectedCellsIndexes.size())
+        {
+            const auto delta = context->selectedCellsIndexes.size() - tokens.size() + 1;
+            const auto start = tokens.begin() + context->selectedCellsIndexes.size() - 1U;
+
+            LocalUnicodeStringBuilder<2048> lusbLastToken;
+            for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
+            {
+                lusbLastToken.Add(*i);
+            }
+
+            tokens.erase(start, tokens.end());
+
+            std::u16string lastToken{ lusbLastToken };
+            tokens.emplace_back(lastToken);
+        }
+
+        auto index = context->selectedCellsIndexes.begin();
+        for (const auto& token : tokens)
+        {
+            auto& content = context->data.at(*index);
+
+            switch (content.first)
+            {
+            case CellType::Boolean:
+                if (std::holds_alternative<bool>(content.second))
+                {
+                    content.second = (token.compare(u"True") == 0);
+                }
+                break;
+            case CellType::String:
+                if (std::holds_alternative<std::u16string>(content.second))
+                {
+                    content.second = token;
+                }
+                break;
+            default:
+                break;
+            }
+
+            std::advance(index, 1);
+        }
+    }
+    break;
     default:
         break;
     }
@@ -855,6 +1012,9 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
         };
     } sortingComparator{ context };
     std::sort(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end(), sortingComparator);
+    context->selectedCellsIndexes.erase(
+          std::unique(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end()),
+          context->selectedCellsIndexes.end());
 }
 
 unsigned int AppCUI::Controls::Grid::GetCellsCount() const
@@ -911,4 +1071,17 @@ bool AppCUI::Controls::Grid::UpdateCells(
     }
 
     return true;
+}
+
+const ConstString AppCUI::Controls::Grid::GetSeparator() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    return context->separator;
+}
+
+void AppCUI::Controls::Grid::SetSeparator(ConstString separator)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    Utils::UnicodeStringBuilder usb{ separator };
+    context->separator = usb;
 }

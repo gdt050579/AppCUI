@@ -643,6 +643,7 @@ class GridControlContext : public ControlContext
     Menu rightClickMenu;
 
     std::map<unsigned int, std::pair<Grid::CellType, std::variant<bool, std::u16string>>> data;
+    std::u16string separator = u",";
 };
 
 enum class MenuItemType : unsigned int

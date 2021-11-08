@@ -3392,6 +3392,8 @@ namespace Controls
         std::pair<unsigned int, unsigned int> GetGridDimensions() const;
         bool UpdateCell(unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data);
         bool UpdateCells(const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
+        const ConstString GetSeparator() const;
+        void SetSeparator(ConstString separator);
 
       private:
         void DrawBoxes(Graphics::Renderer& renderer);
