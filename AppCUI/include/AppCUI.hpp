@@ -1418,6 +1418,7 @@ namespace Utils
 
         bool HasSection(std::string_view name) const;
         IniSection GetSection(std::string_view name);
+        IniSection operator[](std::string_view name);
         IniValue GetValue(std::string_view valuePath);
         std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();

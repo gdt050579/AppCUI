@@ -160,6 +160,13 @@ namespace Ini
     {
         AppCUI::Utils::String Name;
         std::unordered_map<unsigned long long, Value> Keys;
+        Section()
+        {
+        }
+        Section(std::string_view name)
+        {
+            Name.Set(name.data(),(unsigned int)name.length());
+        }
     };
     struct Parser
     {
@@ -1034,6 +1041,20 @@ IniSection IniObject::GetSection(std::string_view name)
     if (result == WRAPPER->Sections.cend())
         return IniSection();
     return IniSection(result->second.get());
+}
+IniSection IniObject::operator[](std::string_view name)
+{
+    VALIDATE_INITED(IniSection());
+    if ((name.data() == nullptr) || (name.length() == 0))
+        return IniSection(&(WRAPPER->DefaultSection));
+    auto hash   = __compute_hash__(name);
+    auto result = WRAPPER->Sections.find(hash);
+    if (result != WRAPPER->Sections.cend())
+        return IniSection(result->second.get());
+    auto res = WRAPPER->Sections.emplace(hash, std::make_unique<AppCUI::Ini::Section>(name));
+    return IniSection(res.first->second.get());
+
+       
 }
 std::vector<IniSection> IniObject::GetSections() const
 {
