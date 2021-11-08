@@ -1401,6 +1401,7 @@ namespace Utils
         std::string_view GetName() const;
         IniValue GetValue(std::string_view keyName);
         std::vector<IniValue> GetValues() const;
+        IniValue operator[](std::string_view keyName);
     };
     class EXPORT IniObject
     {

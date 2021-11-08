@@ -148,6 +148,13 @@ namespace Ini
         std::string KeyName;
         std::string KeyValue;
         std::vector<std::string> KeyValues;
+        Value()
+        {
+        }
+        Value(std::string_view keyName)
+        {
+            KeyName = keyName;
+        }
     };
     struct Section
     {
@@ -267,9 +274,11 @@ void AppCUI::Ini::Parser::SkipArrayWord()
 {
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a space, a terminator or a new line
-    
+
     BuffPtr p_start = current;
-    while (current < end) { auto type = Ini_Char_Type[*current];
+    while (current < end)
+    {
+        auto type = Ini_Char_Type[*current];
         if ((type == CHAR_TYPE_SPACE) || (type == CHAR_TYPE_NEW_LINE) || (type == CHAR_TYPE_SECTION_END))
             break;
         if ((*current) == ',')
@@ -561,6 +570,18 @@ IniValue IniSection::GetValue(std::string_view keyName)
     // all good -> value exists
     return IniValue(&value->second);
 }
+IniValue IniSection::operator[](std::string_view keyName)
+{
+    CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) Data);
+    auto hash                   = __compute_hash__(keyName);
+    auto value                  = entry->Keys.find(hash);
+    // if element already exists --> return it
+    if (value != entry->Keys.cend())
+        return IniValue(&value->second);
+    auto res = entry->Keys.emplace(hash, AppCUI::Ini::Value(keyName));
+    return IniValue(& res.first->second);
+}
 std::vector<IniValue> IniSection::GetValues() const
 {
     CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
@@ -580,7 +601,7 @@ std::vector<IniValue> IniSection::GetValues() const
 
 std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
 {
-    auto v = 0U;    
+    auto v = 0U;
     switch (len)
     {
     case 1:
@@ -617,17 +638,15 @@ std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
     default:
         break;
     }
-    RETURNERROR(std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+    RETURNERROR(
+          std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
 std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
 {
     const char* start = txt;
     const char* end   = start + len;
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(len >= 3,
-          std::nullopt,
-          "Value (%s) is too small (expecting at least 3 chars <width>x<height>",
-          start);
+    CHECK(len >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
     unsigned int sz = 0;
     auto p_width    = Number::ToUInt16(
           std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
@@ -656,7 +675,6 @@ std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned 
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
     return AppCUI::Graphics::Size(width, height);
 }
-
 
 std::optional<unsigned long long> IniValue::AsUInt64() const
 {
@@ -817,7 +835,7 @@ bool IniValue::IsArray() const
 unsigned int IniValue::GetArrayCount() const
 {
     VALIDATE_VALUE(0);
-    return (unsigned int)value->KeyValues.size();
+    return (unsigned int) value->KeyValues.size();
 }
 IniValueArray IniValue::operator[](int index) const
 {
@@ -830,7 +848,7 @@ IniValueArray IniValue::operator[](int index) const
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const
 {
-    return Number::ToUInt64(std::string_view(text,len));
+    return Number::ToUInt64(std::string_view(text, len));
 }
 std::optional<long long> IniValueArray::AsInt64() const
 {
@@ -846,7 +864,7 @@ std::optional<int> IniValueArray::AsInt32() const
 }
 std::optional<bool> IniValueArray::AsBool() const
 {
-    return IniValue_ToBool(text,len);
+    return IniValue_ToBool(text, len);
 }
 std::optional<AppCUI::Input::Key> IniValueArray::AsKey() const
 {
@@ -864,7 +882,7 @@ std::optional<float> IniValueArray::AsFloat() const
     return Number::ToFloat(std::string_view(text, len));
 }
 std::optional<double> IniValueArray::AsDouble() const
-{    
+{
     return Number::ToDouble(std::string_view(text, len));
 }
 
