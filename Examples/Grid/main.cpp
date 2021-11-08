@@ -15,29 +15,34 @@ class SimpleWin : public AppCUI::Controls::Window
               this, "d:c,w:100%,h:100%", 10, 20, AppCUI::Controls::GridFlags::None);
 
         auto generator = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
-        for (auto i = 0U; i < grid->GetCellsCount(); i++)
+        const auto dimensions = grid->GetGridDimensions();
+        for (auto i = 0U; i < dimensions.first; i++)
         {
-            auto cellType = AppCUI::Controls::Grid::CellType::String;
+            for (auto j = 0U; j < dimensions.second; j++)
+            {
+                const auto cellIndex = dimensions.first * j + i;
+                auto cellType = AppCUI::Controls::Grid::CellType::String;
 
-            if (generator())
-            {
-                cellType = AppCUI::Controls::Grid::CellType::Boolean;
-            }
+                if (generator())
+                {
+                    cellType = AppCUI::Controls::Grid::CellType::Boolean;
+                }
 
-            switch (cellType)
-            {
-            case AppCUI::Controls::Grid::CellType::Boolean:
-                grid->UpdateCell(i, { cellType,  static_cast<bool>(generator()) });
+                switch (cellType)
+                {
+                case AppCUI::Controls::Grid::CellType::Boolean:
+                    grid->UpdateCell(cellIndex, { cellType,  static_cast<bool>(generator()) });
+                    break;
+                case AppCUI::Controls::Grid::CellType::String:
+                {
+                    AppCUI::Utils::LocalString<32> value;
+                    value.Format("%u | %u -> %u", i, j, cellIndex);
+                    grid->UpdateCell(cellIndex, { cellType, value });
+                }
                 break;
-            case AppCUI::Controls::Grid::CellType::String:
-            {
-                AppCUI::Utils::LocalString<32> value;
-                value.Format("%u", i);
-                grid->UpdateCell(i, { cellType, value });
-            }
-            break;
-            default:
-                break;
+                default:
+                    break;
+                }
             }
         }
     }

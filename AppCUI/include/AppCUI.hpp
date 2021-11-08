@@ -3389,6 +3389,7 @@ namespace Controls
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
         unsigned int GetCellsCount() const;
+        std::pair<unsigned int, unsigned int> GetGridDimensions() const;
         bool UpdateCell(unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data);
         bool UpdateCells(const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
 

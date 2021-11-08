@@ -83,6 +83,228 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             return true;
         }
         break;
+    case AppCUI::Input::Key::Left:
+    case AppCUI::Input::Key::Right:
+    case AppCUI::Input::Key::Up:
+    case AppCUI::Input::Key::Down:
+        if (context->selectedCellsIndexes.size() == 0)
+        {
+            context->anchorCellIndex = 0;
+            context->selectedCellsIndexes.emplace_back(0);
+            return true;
+        }
+
+        if (context->selectedCellsIndexes.size() == 1)
+        {
+            const auto index = context->selectedCellsIndexes[0];
+            auto columnIndex = index % context->columnsNo;
+            auto rowIndex    = index / context->columnsNo;
+
+            if (columnIndex > 0)
+            {
+                columnIndex -= (keyCode == AppCUI::Input::Key::Left);
+            }
+            if (columnIndex < context->columnsNo - 1)
+            {
+                columnIndex += (keyCode == AppCUI::Input::Key::Right);
+            }
+
+            if (rowIndex > 0)
+            {
+                rowIndex -= (keyCode == AppCUI::Input::Key::Up);
+            }
+            if (rowIndex < context->rowsNo - 1)
+            {
+                rowIndex += (keyCode == AppCUI::Input::Key::Down);
+            }
+
+            const auto newCellIndex = context->columnsNo * rowIndex + columnIndex;
+            if (newCellIndex != index)
+            {
+                context->selectedCellsIndexes[0] = newCellIndex;
+                return true;
+            }
+        }
+        break;
+    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        if (context->selectedCellsIndexes.size() == 0)
+        {
+            context->anchorCellIndex = 0;
+            context->selectedCellsIndexes.emplace_back(0);
+            return true;
+        }
+
+        {
+            const auto anchorColumnIndex = context->anchorCellIndex % context->columnsNo;
+            const auto anchorRowIndex    = context->anchorCellIndex / context->columnsNo;
+
+            auto xLeft  = anchorColumnIndex;
+            auto xRight = anchorColumnIndex;
+
+            auto yTop = anchorRowIndex;
+            auto yBot = anchorRowIndex;
+
+            for (const auto& i : context->selectedCellsIndexes)
+            {
+                const auto colIndex = i % context->columnsNo;
+                const auto rowIndex = i / context->columnsNo;
+
+                xLeft  = std::min<>(xLeft, colIndex);
+                xRight = std::max<>(xRight, colIndex);
+
+                yTop = std::min<>(yTop, rowIndex);
+                yBot = std::max<>(yBot, rowIndex);
+            }
+
+            const auto topLeft     = context->columnsNo * yTop + xLeft;
+            const auto topRight    = context->columnsNo * yTop + xRight;
+            const auto bottomLeft  = context->columnsNo * yBot + xLeft;
+            const auto bottomRight = context->columnsNo * yBot + xRight;
+
+            if (context->selectedCellsIndexes.size() == 1)
+            {
+                switch (keyCode)
+                {
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                    if (xLeft > 0)
+                        xLeft -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                    if (xRight < context->columnsNo - 1)
+                        xRight += 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                    if (yBot > 0)
+                        yBot -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                    if (yBot < context->rowsNo - 1)
+                        yBot += 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (topLeft == context->anchorCellIndex)
+            {
+                switch (keyCode)
+                {
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                    if (xRight > 0)
+                        xRight -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                    if (xRight < context->columnsNo - 1)
+                        xRight += 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                    if (yBot > 0)
+                        yBot -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                    if (yBot < context->rowsNo - 1)
+                        yBot += 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (topRight == context->anchorCellIndex)
+            {
+                switch (keyCode)
+                {
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                    if (xLeft > 0)
+                        xLeft -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                    if (xLeft < context->columnsNo - 1)
+                        xLeft += 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                    if (yBot > 0)
+                        yBot -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                    if (yBot < context->rowsNo - 1)
+                        yBot += 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (bottomLeft == context->anchorCellIndex)
+            {
+                switch (keyCode)
+                {
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                    if (xRight > 0)
+                        xRight -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                    if (xRight < context->columnsNo - 1)
+                        xRight += 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                    if (yTop > 0)
+                        yTop -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                    if (yTop < context->rowsNo - 1)
+                        yTop += 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (bottomRight == context->anchorCellIndex)
+            {
+                switch (keyCode)
+                {
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                    if (xLeft > 0)
+                        xLeft -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                    if (xLeft < context->columnsNo - 1)
+                        xLeft += 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                    if (yTop > 0)
+                        yTop -= 1;
+                    break;
+                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                    if (yTop < context->rowsNo - 1)
+                        yTop += 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            context->selectedCellsIndexes.clear();
+            for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
+            {
+                for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
+                {
+                    const auto current = context->columnsNo * j + i;
+                    context->selectedCellsIndexes.emplace_back(current);
+                }
+            }
+
+            return true;
+        }
+        break;
+    case AppCUI::Input::Key::Escape:
+        if (context->selectedCellsIndexes.size() > 0)
+        {
+            context->selectedCellsIndexes.clear();
+            return true;
+        }
+        break;
     default:
         break;
     }
@@ -144,7 +366,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     break;
     case MouseButton::Center | MouseButton::DoubleClicked:
         break;
-    case MouseButton::Right| MouseButton::DoubleClicked:
+    case MouseButton::Right | MouseButton::DoubleClicked:
         break;
     default:
         break;
@@ -639,6 +861,12 @@ unsigned int AppCUI::Controls::Grid::GetCellsCount() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return context->columnsNo * context->rowsNo;
+}
+
+std::pair<unsigned int, unsigned int> AppCUI::Controls::Grid::GetGridDimensions() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    return { context->columnsNo, context->rowsNo };
 }
 
 bool AppCUI::Controls::Grid::UpdateCell(
