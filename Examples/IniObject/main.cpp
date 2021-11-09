@@ -35,7 +35,7 @@ primeNumbers = [1,2,3,5,7,11,13,17,19]
 void CreateMyIni()
 {
     IniObject ini;
-    ini.Create();
+    
     auto s_data = ini["Data"];
     s_data["value"] = 100;
     s_data["x"]     = 120.5;

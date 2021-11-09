@@ -243,6 +243,12 @@ void AddSectionValueToString(std::string& res, std::string value)
     auto quotes        = 0;
     auto double_quotes = 0;
     auto new_lines     = 0;
+    // for empty strings --> add as ""
+    if (value.length()==0)
+    {
+        res += "\"\"";
+        return;
+    }
     for (auto ch : value)
     {
         if ((ch == ' ') || (ch == '\t'))
@@ -1257,18 +1263,29 @@ IniSection IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
-IniSection IniObject::operator[](std::string_view name)
+IniSection IniObject::CreateSection(std::string_view name, bool emptyContent)
 {
-    if (this->Data==nullptr)
+    if (this->Data == nullptr)
     {
         CHECK(this->Create(), IniSection(nullptr), "Fail to create INI object !");
     }
+    // if no name is provided --> return the default section
     if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        if (emptyContent)
+            WRAPPER->DefaultSection.Keys.clear();
         return IniSection(&(WRAPPER->DefaultSection));
+    }
+    // check if the section exists
     auto hash   = __compute_hash__(name);
     auto result = WRAPPER->Sections.find(hash);
     if (result != WRAPPER->Sections.cend())
+    {
+        if (emptyContent)
+            result->second->Keys.clear();
         return IniSection(result->second.get());
+    }
+    // create a new section
     auto res = WRAPPER->Sections.emplace(hash, std::make_unique<AppCUI::Ini::Section>(name));
     return IniSection(res.first->second.get());
 }
