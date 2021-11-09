@@ -635,15 +635,17 @@ class GridControlContext : public ControlContext
     unsigned int anchorCellIndex  = 0xFFFFFFFF;
     std::vector<unsigned int> selectedCellsIndexes;
 
-    unsigned int cWidth  = 0U;
-    unsigned int cHeight = 0U;
-    unsigned int offsetX = 0U;
-    unsigned int offsetY = 0U;
+    unsigned int cWidth           = 0U;
+    unsigned int cHeight          = 0U;
+    unsigned int offsetX          = 0U;
+    unsigned int offsetY          = 0U;
+    const unsigned int headerSize = 1U;
 
     Menu rightClickMenu;
 
     std::map<unsigned int, std::pair<Grid::CellType, std::variant<bool, std::u16string>>> data;
     std::u16string separator = u",";
+    std::vector<std::u16string> headerValues;
 };
 
 enum class MenuItemType : unsigned int

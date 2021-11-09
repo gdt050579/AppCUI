@@ -3355,7 +3355,8 @@ namespace Controls
         HideBoxes               = 0x000400,
         HideHoveredCell         = 0x000800,
         HideSelectedCell        = 0x001000,
-        DoNotDrawCellBackground = 0x002000
+        DoNotDrawCellBackground = 0x002000,
+        HideHeader              = 0x004000
     };
 
     class EXPORT Grid : public Control
@@ -3391,9 +3392,11 @@ namespace Controls
         unsigned int GetCellsCount() const;
         std::pair<unsigned int, unsigned int> GetGridDimensions() const;
         bool UpdateCell(unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data);
-        bool UpdateCells(const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
+        bool UpdateCells(
+              const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
+        bool UpdateHeaderValues(const std::vector<ConstString>& headerValues);
 
       private:
         void DrawBoxes(Graphics::Renderer& renderer);
@@ -3410,6 +3413,7 @@ namespace Controls
         void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int i, unsigned int j);
         void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int cellIndex);
         bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
+        bool DrawHeader(Graphics::Renderer& renderer);
         void UpdateGridParameters();
 
       private:
@@ -4196,6 +4200,7 @@ namespace Application
             {
                 Graphics::ColorPair Normal;
             } Text;
+            Graphics::ColorPair Header;
         } Grid;
         void SetDarkTheme();
     };

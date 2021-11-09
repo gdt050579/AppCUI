@@ -3,9 +3,9 @@
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
-constexpr unsigned int InvalidCellIndex = 0xFFFFFFFF;
+constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
-constexpr unsigned int MenuCommandMergeCells = 0x01;
+constexpr auto MenuCommandMergeCells = 0x01U;
 
 Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
@@ -22,6 +22,7 @@ Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo,
     UpdateGridParameters();
 
     context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
+    context->headerValues.reserve(context->columnsNo);
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -29,6 +30,11 @@ void Grid::Paint(Renderer& renderer)
     UpdateGridParameters();
 
     auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
+    {
+        DrawHeader(renderer);
+    }
 
     if ((context->flags & GridFlags::DoNotDrawCellBackground) == GridFlags::None)
     {
@@ -972,6 +978,53 @@ bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsig
     return false;
 }
 
+bool AppCUI::Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    renderer.FillRect(
+          context->offsetX,
+          context->offsetY - context->headerSize,
+          context->cWidth * context->columnsNo + context->offsetX,
+          context->offsetY - context->headerSize,
+          ' ',
+          context->Cfg->Grid.Header);
+
+    for (auto i = 0U; i <= context->columnsNo; i++)
+    {
+        const auto x = context->offsetX + i * context->cWidth;
+        const auto y = context->offsetY + 0 * context->cHeight - context->headerSize;
+
+        if ((context->flags & GridFlags::HideVerticalLines) == GridFlags::None)
+        {
+            const auto endY = context->offsetY + context->headerSize;
+            renderer.DrawVerticalLine(x, y, endY - 1, context->Cfg->Grid.Lines.Vertical.Normal, true);
+        }
+    }
+
+    auto it = context->headerValues.begin();
+    for (auto i = 0U; i <= context->columnsNo; i++)
+    {
+        if (it == context->headerValues.end())
+        {
+            break;
+        }
+
+        const auto x = context->offsetX + i * context->cWidth;
+        const auto y = context->offsetY + 0 * context->cHeight - context->headerSize;
+
+        if ((context->flags & GridFlags::HideVerticalLines) == GridFlags::None)
+        {
+            const auto endY = context->offsetY + context->headerSize;
+            renderer.WriteSingleLineText(x + 1, y, *it, context->Cfg->Grid.Text.Normal);
+        }
+
+        std::advance(it, 1);
+    }
+
+    return true;
+}
+
 void AppCUI::Controls::Grid::UpdateGridParameters()
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
@@ -982,7 +1035,18 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
 
     // center matrix
     context->offsetX = static_cast<unsigned int>((context->Layout.Width - context->cWidth * context->columnsNo) / 2);
-    context->offsetY = static_cast<unsigned int>((context->Layout.Height - context->cHeight * context->rowsNo) / 2);
+
+    auto deltaHeight = (context->Layout.Height - context->cHeight * context->rowsNo);
+    if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
+    {
+        deltaHeight -= context->headerSize;
+    }
+    context->offsetY = static_cast<unsigned int>(deltaHeight / 2);
+
+    if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
+    {
+        context->offsetY += context->headerSize;
+    }
 
     // sort selected cells for better drawing
     struct
@@ -1084,4 +1148,18 @@ void AppCUI::Controls::Grid::SetSeparator(ConstString separator)
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     Utils::UnicodeStringBuilder usb{ separator };
     context->separator = usb;
+}
+
+bool AppCUI::Controls::Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    context->headerValues.clear();
+    for (const auto& value : headerValues)
+    {
+        LocalUnicodeStringBuilder<1024> lusb{ value };
+        context->headerValues.emplace_back(lusb);
+    }
+
+    return true;
 }
