@@ -36,7 +36,7 @@ int main()
 
     if (ini->HasSection("AppCUI") == false)
     {
-        auto sect             = (*ini)["AppCUI"];
+        auto sect             = ini->CreateSection("AppCUI",true);
         sect["Frontend"]      = "default";
         sect["Size"]          = "default";
         sect["CharacterSize"] = "default";
