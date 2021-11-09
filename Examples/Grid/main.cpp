@@ -12,7 +12,7 @@ class SimpleWin : public AppCUI::Controls::Window
                       AppCUI::Controls::WindowFlags::Maximized)
     {
         auto grid = AppCUI::Controls::Factory::Grid::Create(
-              this, "d:c,w:100%,h:100%", 10, 18, AppCUI::Controls::GridFlags::None);
+              this, "d:c,w:100%,h:100%", 10, 14, AppCUI::Controls::GridFlags::None);
 
         auto generator        = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
         const auto dimensions = grid->GetGridDimensions();
@@ -31,13 +31,17 @@ class SimpleWin : public AppCUI::Controls::Window
                 switch (cellType)
                 {
                 case AppCUI::Controls::Grid::CellType::Boolean:
-                    grid->UpdateCell(cellIndex, { cellType, static_cast<bool>(generator()) });
+                    grid->UpdateCell(
+                          cellIndex,
+                          cellType,
+                          static_cast<bool>(generator()),
+                          AppCUI::Graphics::TextAlignament::Center);
                     break;
                 case AppCUI::Controls::Grid::CellType::String:
                 {
                     AppCUI::Utils::LocalString<32> value;
                     value.Format("%u | %u -> %u", i, j, cellIndex);
-                    grid->UpdateCell(cellIndex, { cellType, value });
+                    grid->UpdateCell(cellIndex, cellType, value, AppCUI::Graphics::TextAlignament::Center);
                 }
                 break;
                 default:
@@ -46,7 +50,15 @@ class SimpleWin : public AppCUI::Controls::Window
             }
         }
 
-        grid->UpdateHeaderValues({ "test01", "test02", "test03", "test04" });
+        grid->UpdateCell(
+              0,
+              AppCUI::Controls::Grid::CellType::String,
+              "testing_super_long_cell_content \nwith spaces and \nnewlines",
+              AppCUI::Graphics::TextAlignament::Center);
+
+        grid->UpdateHeaderValues(
+              { "test01", "test02", "test03", "test04", "test05_super_long_header_value" },
+              AppCUI::Graphics::TextAlignament::Center);
     }
 };
 

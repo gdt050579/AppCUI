@@ -3391,12 +3391,16 @@ namespace Controls
 
         unsigned int GetCellsCount() const;
         std::pair<unsigned int, unsigned int> GetGridDimensions() const;
-        bool UpdateCell(unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data);
-        bool UpdateCells(
-              const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data);
+        bool UpdateCell(
+              unsigned int index,
+              CellType cellType,
+              const std::variant<bool, ConstString>& content,
+              AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
-        bool UpdateHeaderValues(const std::vector<ConstString>& headerValues);
+        bool UpdateHeaderValues(
+              const std::vector<ConstString>& headerValues,
+              AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
 
       private:
         void DrawBoxes(Graphics::Renderer& renderer);

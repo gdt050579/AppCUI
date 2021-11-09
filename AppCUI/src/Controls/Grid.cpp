@@ -22,7 +22,7 @@ Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo,
     UpdateGridParameters();
 
     context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
-    context->headerValues.reserve(context->columnsNo);
+    context->headers.reserve(context->columnsNo);
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -52,7 +52,7 @@ void Grid::Paint(Renderer& renderer)
         DrawBoxes(renderer);
     }
 
-    for (auto const& [key, val] : context->data)
+    for (auto const& [key, val] : context->cells)
     {
         DrawCellContent(renderer, key);
     }
@@ -71,14 +71,14 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
         }
         {
             const auto index    = context->selectedCellsIndexes[0];
-            auto& cellData      = context->data[index];
-            const auto cellType = cellData.first;
+            auto& cellData      = context->cells[index];
+            const auto cellType = cellData.ct;
             if (cellType != Grid::CellType::Boolean)
             {
                 break;
             }
 
-            auto& content = cellData.second;
+            auto& content = cellData.content;
             if (std::holds_alternative<bool>(content) == false)
             {
                 break;
@@ -337,16 +337,16 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             {
                 ConstString cs;
                 const auto current = context->columnsNo * j + i;
-                const auto& it     = context->data.find(current);
-                if (it != context->data.end())
+                const auto& it     = context->cells.find(current);
+                if (it != context->cells.end())
                 {
-                    const auto& content = it->second;
-                    switch (content.first)
+                    const auto& data = it->second;
+                    switch (data.ct)
                     {
                     case CellType::Boolean:
-                        if (std::holds_alternative<bool>(content.second))
+                        if (std::holds_alternative<bool>(data.content))
                         {
-                            const auto value = std::get<bool>(content.second);
+                            const auto value = std::get<bool>(data.content);
                             if (value)
                             {
                                 cs = "True";
@@ -358,9 +358,9 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
                         }
                         break;
                     case CellType::String:
-                        if (std::holds_alternative<std::u16string>(content.second))
+                        if (std::holds_alternative<std::u16string>(data.content))
                         {
-                            const auto& value = std::get<std::u16string>(content.second);
+                            const auto& value = std::get<std::u16string>(data.content);
                             cs                = value;
                         }
                         break;
@@ -444,20 +444,20 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
         auto index = context->selectedCellsIndexes.begin();
         for (const auto& token : tokens)
         {
-            auto& content = context->data.at(*index);
+            auto& data = context->cells.at(*index);
 
-            switch (content.first)
+            switch (data.ct)
             {
             case CellType::Boolean:
-                if (std::holds_alternative<bool>(content.second))
+                if (std::holds_alternative<bool>(data.content))
                 {
-                    content.second = (token.compare(u"True") == 0);
+                    data.content = (token.compare(u"True") == 0);
                 }
                 break;
             case CellType::String:
-                if (std::holds_alternative<std::u16string>(content.second))
+                if (std::holds_alternative<std::u16string>(data.content))
                 {
-                    content.second = token;
+                    data.content = token;
                 }
                 break;
             default:
@@ -510,14 +510,14 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
             break;
         }
 
-        auto& cellData      = context->data[index];
-        const auto cellType = cellData.first;
+        auto& cellData      = context->cells[index];
+        const auto cellType = cellData.ct;
         if (cellType != Grid::CellType::Boolean)
         {
             break;
         }
 
-        auto& content = cellData.second;
+        auto& content = cellData.content;
         if (std::holds_alternative<bool>(content) == false)
         {
             break;
@@ -944,30 +944,38 @@ bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsig
     const auto x = context->offsetX + cellColumn * context->cWidth + 1; // + 1 -> line
     const auto y = context->offsetY + cellRow * context->cHeight + 1;   // + 1 -> line
 
-    const auto& content = context->data[cellIndex];
+    const auto& data = context->cells[cellIndex];
 
-    switch (content.first)
+    WriteTextParams wtp;
+    wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
+    wtp.Color = context->Cfg->Grid.Text.Normal;
+    wtp.X = x;
+    wtp.Y = y;
+    wtp.Width = context->cWidth - 1;
+    wtp.Align = data.ta;
+
+    switch (data.ct)
     {
     case CellType::Boolean:
-        if (std::holds_alternative<bool>(content.second))
+        if (std::holds_alternative<bool>(data.content))
         {
-            const auto value = std::get<bool>(content.second);
+            const auto value = std::get<bool>(data.content);
             if (value)
             {
-                renderer.WriteSingleLineText(x, y, "True", context->Cfg->Grid.Text.Normal);
+                renderer.WriteText("True", wtp);
             }
             else
             {
-                renderer.WriteSingleLineText(x, y, "False", context->Cfg->Grid.Text.Normal);
+                renderer.WriteText("False", wtp);
             }
             return true;
         }
         return false;
     case CellType::String:
-        if (std::holds_alternative<std::u16string>(content.second))
+        if (std::holds_alternative<std::u16string>(data.content))
         {
-            const auto& value = std::get<std::u16string>(content.second);
-            renderer.WriteSingleLineText(x, y, value, context->Cfg->Grid.Text.Normal);
+            const auto& value = std::get<std::u16string>(data.content);
+            renderer.WriteText(value, wtp);
             return true;
         }
         return false;
@@ -1002,21 +1010,26 @@ bool AppCUI::Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
         }
     }
 
-    auto it = context->headerValues.begin();
+    WriteTextParams wtp;
+    wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
+    wtp.Color = context->Cfg->Grid.Text.Normal;
+
+    auto it = context->headers.begin();
     for (auto i = 0U; i <= context->columnsNo; i++)
     {
-        if (it == context->headerValues.end())
+        if (it == context->headers.end())
         {
             break;
         }
 
-        const auto x = context->offsetX + i * context->cWidth;
-        const auto y = context->offsetY + 0 * context->cHeight - context->headerSize;
+        wtp.X     = context->offsetX + i * context->cWidth + 1; // 1 -> line
+        wtp.Y     = context->offsetY + 0 * context->cHeight - context->headerSize;
+        wtp.Width = context->cWidth - 1; // 1 -> line
+        wtp.Align = it->ta;
 
         if ((context->flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            const auto endY = context->offsetY + context->headerSize;
-            renderer.WriteSingleLineText(x + 1, y, *it, context->Cfg->Grid.Text.Normal);
+            renderer.WriteText(it->content, wtp);
         }
 
         std::advance(it, 1);
@@ -1094,45 +1107,28 @@ std::pair<unsigned int, unsigned int> AppCUI::Controls::Grid::GetGridDimensions(
 }
 
 bool AppCUI::Controls::Grid::UpdateCell(
-      unsigned int index, const std::pair<CellType, std::variant<bool, ConstString>>& data)
+      unsigned int index,
+      CellType cellType,
+      const std::variant<bool, ConstString>& content,
+      TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
     std::variant<bool, std::u16string> cellData;
-    if (std::holds_alternative<bool>(data.second))
+    if (std::holds_alternative<bool>(content))
     {
-        cellData = std::get<bool>(data.second);
+        cellData = std::get<bool>(content);
     }
-    else if (std::holds_alternative<ConstString>(data.second))
+    else if (std::holds_alternative<ConstString>(content))
     {
-        const auto& cs = std::get<ConstString>(data.second);
+        const auto& cs = std::get<ConstString>(content);
         Utils::UnicodeStringBuilder usb{ cs };
         std::u16string u16s(usb);
         cellData = u16s;
     }
 
-    context->data[index] = { data.first, cellData };
-
-    return true;
-}
-
-bool AppCUI::Controls::Grid::UpdateCells(
-      const std::map<unsigned int, const std::pair<CellType, std::variant<bool, ConstString>>>& data)
-{
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-
-    // transaction so check all bounds/indexes first
-    for (auto const& [key, val] : data)
-    {
-        CHECK(key < context->columnsNo * context->rowsNo, false, "");
-    }
-
-    // start making actual update
-    for (auto const& [key, val] : data)
-    {
-        UpdateCell(key, val);
-    }
+    context->cells[index] = { textAlignment, cellType, cellData };
 
     return true;
 }
@@ -1150,15 +1146,16 @@ void AppCUI::Controls::Grid::SetSeparator(ConstString separator)
     context->separator = usb;
 }
 
-bool AppCUI::Controls::Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues)
+bool AppCUI::Controls::Grid::UpdateHeaderValues(
+      const std::vector<ConstString>& headerValues, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
-    context->headerValues.clear();
+    context->headers.clear();
     for (const auto& value : headerValues)
     {
         LocalUnicodeStringBuilder<1024> lusb{ value };
-        context->headerValues.emplace_back(lusb);
+        context->headers.push_back({ textAlignment, lusb });
     }
 
     return true;
