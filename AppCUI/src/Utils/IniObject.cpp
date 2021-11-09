@@ -28,7 +28,6 @@ using BuffPtr = const unsigned char*;
 #define VALIDATE_INITED(returnValue)                                                                                   \
     CHECK(Data, returnValue, "Parser object has not been created. Have you called one of the Crete... methods first ?");
 
-
 // we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
 // bitmask is required to fasten some parse operations
 
@@ -239,9 +238,43 @@ unsigned long long __compute_hash__(std::string_view text)
 }
 void AddSectionValueToString(std::string& res, std::string value)
 {
-    res += "\"";
+    // quick_check
+    auto spaces        = 0;
+    auto quotes        = 0;
+    auto double_quotes = 0;
+    auto new_lines     = 0;
+    for (auto ch : value)
+    {
+        if ((ch == ' ') || (ch == '\t'))
+            spaces++;
+        if (ch == '"')
+            double_quotes++;
+        if (ch == '\'')
+            quotes++;
+        if ((ch == '\n') || (ch == '\r'))
+            new_lines++;
+    }
+    std::string_view string_separator = "";
+    if (new_lines > 0)
+        string_separator = "\"\"\"";
+    else
+    {
+        if ((quotes > 0) && (double_quotes == 0))
+            string_separator = "\"";
+        else if ((quotes == 0) && (double_quotes > 0))
+            string_separator = "'";
+        else if ((quotes > 0) && (double_quotes > 0))
+            string_separator = "\"\"\"";
+        else
+        {
+            // no quotes or double_quotes or new_lines
+            if (spaces > 0)
+                string_separator = "\"";
+        }
+    }
+    res += string_separator;
     res += value;
-    res += "\"";
+    res += string_separator;
 }
 void AddSectionToString(std::string& res, AppCUI::Ini::Section& sect)
 {
@@ -951,6 +984,12 @@ void IniValue::operator=(std::string_view value)
     iniValue->KeyValue = value;
     iniValue->KeyValues.clear();
 }
+void IniValue::operator=(const char * value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
+}
 void IniValue::operator=(AppCUI::Graphics::Size value)
 {
     PREPARE_VALUE;
@@ -1224,11 +1263,11 @@ std::string_view IniObject::ToString()
     VALIDATE_INITED(std::string_view());
     WRAPPER->toStringBuffer.reserve(4096);
     WRAPPER->toStringBuffer.clear();
-    
+
     // add default section
     AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
     // add rest of the sections
-    for (auto& entry: WRAPPER->Sections)
+    for (auto& entry : WRAPPER->Sections)
     {
         AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
     }

@@ -41,6 +41,9 @@ void CreateMyIni()
     s_data["x"]     = 120.5;
     s_data["on"]    = false;
     s_data["name"]  = "GDT";
+    s_data["multi_line"] = "I went \n to the market";
+    s_data["dquotes"]    = "a string \"with double qoutes\" !";
+    s_data["squotes"]    = "a string 'with single qoutes' !";
     s_data["key"]   = Key::Backspace | Key::Alt;
     s_data["sz"]    = AppCUI::Graphics::Size(120, 30);
 

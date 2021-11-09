@@ -1391,6 +1391,7 @@ namespace Utils
         void operator=(long long value);
         void operator=(float value);
         void operator=(double value);
+        void operator=(const char* value);
         void operator=(std::string_view value);
         void operator=(AppCUI::Graphics::Size value);
         void operator=(AppCUI::Input::Key value);
