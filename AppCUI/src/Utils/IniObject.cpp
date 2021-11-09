@@ -1259,7 +1259,10 @@ IniSection IniObject::GetSection(std::string_view name)
 }
 IniSection IniObject::operator[](std::string_view name)
 {
-    VALIDATE_INITED(IniSection());
+    if (this->Data==nullptr)
+    {
+        CHECK(this->Create(), IniSection(nullptr), "Fail to create INI object !");
+    }
     if ((name.data() == nullptr) || (name.length() == 0))
         return IniSection(&(WRAPPER->DefaultSection));
     auto hash   = __compute_hash__(name);
