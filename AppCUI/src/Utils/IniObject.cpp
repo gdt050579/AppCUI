@@ -28,6 +28,7 @@ using BuffPtr = const unsigned char*;
 #define VALIDATE_INITED(returnValue)                                                                                   \
     CHECK(Data, returnValue, "Parser object has not been created. Have you called one of the Crete... methods first ?");
 
+
 // we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
 // bitmask is required to fasten some parse operations
 
@@ -911,7 +912,8 @@ void IniValue::operator=(bool value)
     if (value)
         iniValue->KeyValue = "true";
     else
-        iniValue->KeyName = "false";
+        iniValue->KeyValue = "false";
+    iniValue->KeyValues.clear();
 }
 void IniValue::operator=(unsigned int value)
 {
@@ -947,6 +949,7 @@ void IniValue::operator=(std::string_view value)
 {
     PREPARE_VALUE;
     iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
 }
 void IniValue::operator=(AppCUI::Graphics::Size value)
 {

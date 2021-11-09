@@ -35,13 +35,16 @@ primeNumbers = [1,2,3,5,7,11,13,17,19]
 void CreateMyIni()
 {
     IniObject ini;
+    ini.Create();
     auto s_data = ini["Data"];
     s_data["value"] = 100;
     s_data["x"]     = 120.5;
     s_data["on"]    = false;
     s_data["name"]  = "GDT";
+    s_data["key"]   = Key::Backspace | Key::Alt;
+    s_data["sz"]    = AppCUI::Graphics::Size(120, 30);
 
-    LOG_INFO("INI_WRITER\n=====================================================\n%s",ini.ToString());
+    LOG_INFO("INI_WRITER\n=====================================================\n%s",ini.ToString().data());
 }
 int main()
 {
