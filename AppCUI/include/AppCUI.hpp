@@ -1397,6 +1397,7 @@ namespace Utils
         void operator=(AppCUI::Input::Key value);
         void operator=(const std::vector<std::string>& values);
         void operator=(std::vector<std::string>&& values);
+        void operator=(const std::vector<bool>& values);
     };
     class EXPORT IniSection
     {

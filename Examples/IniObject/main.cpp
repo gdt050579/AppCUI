@@ -46,7 +46,8 @@ void CreateMyIni()
     s_data["squotes"]    = "a string 'with single qoutes' !";
     s_data["key"]        = Key::Backspace | Key::Alt;
     s_data["sz"]         = AppCUI::Graphics::Size(120, 30);
-    s_data["colors"]     = std::vector<std::string>{ "red", "green", "blue", "magenta" };
+    s_data["colors"]     = { "red", "green", "blue", "magenta" };
+    s_data["b_array"]    = { true, false, false, true, true };
 
     s_data.UpdateValue("my_value", 12345, true);
     int x = s_data["my_value"].ToInt32(0);

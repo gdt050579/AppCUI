@@ -244,7 +244,7 @@ void AddSectionValueToString(std::string& res, std::string value)
     auto double_quotes = 0;
     auto new_lines     = 0;
     // for empty strings --> add as ""
-    if (value.length()==0)
+    if (value.length() == 0)
     {
         res += "\"\"";
         return;
@@ -697,7 +697,7 @@ std::vector<IniValue> IniSection::GetValues() const
     return res;
 }
 
-template <typename T> 
+template <typename T>
 void UpdateValueForSection(void* sectionData, std::string_view name, T value, bool dontUpdateIfValueExits)
 {
     if (!sectionData)
@@ -757,8 +757,7 @@ void IniSection::UpdateValue(std::string_view name, AppCUI::Input::Key value, bo
 {
     UpdateValueForSection<AppCUI::Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      std::string_view name, const std::vector<std::string>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(std::string_view name, const std::vector<std::string>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const std::vector<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
@@ -1056,7 +1055,7 @@ void IniValue::operator=(std::string_view value)
     iniValue->KeyValue = value;
     iniValue->KeyValues.clear();
 }
-void IniValue::operator=(const char * value)
+void IniValue::operator=(const char* value)
 {
     PREPARE_VALUE;
     iniValue->KeyValue = value;
@@ -1078,7 +1077,7 @@ void IniValue::operator=(AppCUI::Input::Key value)
     iniValue->KeyValue = tmp;
     iniValue->KeyValues.clear();
 }
-void IniValue::operator=(const std::vector<std::string> &values)
+void IniValue::operator=(const std::vector<std::string>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
@@ -1089,6 +1088,17 @@ void IniValue::operator=(std::vector<std::string>&& values)
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
     std::swap(iniValue->KeyValues, values);
+}
+void IniValue::operator=(const std::vector<bool>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val ? "true" : "false");
+    }
 }
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const
