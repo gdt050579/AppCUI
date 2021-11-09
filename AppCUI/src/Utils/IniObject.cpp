@@ -757,6 +757,11 @@ void IniSection::UpdateValue(std::string_view name, AppCUI::Input::Key value, bo
 {
     UpdateValueForSection<AppCUI::Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
+void IniSection::UpdateValue(
+      std::string_view name, const std::vector<std::string>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::vector<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
 //============================================================================= INI Value ===
 
 std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
@@ -1072,6 +1077,18 @@ void IniValue::operator=(AppCUI::Input::Key value)
         return;
     iniValue->KeyValue = tmp;
     iniValue->KeyValues.clear();
+}
+void IniValue::operator=(const std::vector<std::string> &values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues = values;
+}
+void IniValue::operator=(std::vector<std::string>&& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    std::swap(iniValue->KeyValues, values);
 }
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const

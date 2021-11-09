@@ -1395,7 +1395,8 @@ namespace Utils
         void operator=(std::string_view value);
         void operator=(AppCUI::Graphics::Size value);
         void operator=(AppCUI::Input::Key value);
-        
+        void operator=(const std::vector<std::string>& values);
+        void operator=(std::vector<std::string>&& values);
     };
     class EXPORT IniSection
     {
@@ -1427,6 +1428,7 @@ namespace Utils
         void UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits);
         void UpdateValue(std::string_view name, AppCUI::Graphics::Size value, bool dontUpdateIfValueExits);
         void UpdateValue(std::string_view name, AppCUI::Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, const std::vector<std::string>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
@@ -2329,7 +2331,7 @@ namespace Controls
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
-            
+
             virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
             {
                 return callback(ctrl, handle);

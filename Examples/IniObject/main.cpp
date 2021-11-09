@@ -35,17 +35,18 @@ primeNumbers = [1,2,3,5,7,11,13,17,19]
 void CreateMyIni()
 {
     IniObject ini;
-    
-    auto s_data = ini["Data"];
-    s_data["value"] = 100;
-    s_data["x"]     = 120.5;
-    s_data["on"]    = false;
-    s_data["name"]  = "GDT";
+
+    auto s_data          = ini["Data"];
+    s_data["value"]      = 100;
+    s_data["x"]          = 120.5;
+    s_data["on"]         = false;
+    s_data["name"]       = "GDT";
     s_data["multi_line"] = "I went \n to the market";
     s_data["dquotes"]    = "a string \"with double qoutes\" !";
     s_data["squotes"]    = "a string 'with single qoutes' !";
-    s_data["key"]   = Key::Backspace | Key::Alt;
-    s_data["sz"]    = AppCUI::Graphics::Size(120, 30);
+    s_data["key"]        = Key::Backspace | Key::Alt;
+    s_data["sz"]         = AppCUI::Graphics::Size(120, 30);
+    s_data["colors"]     = std::vector<std::string>{ "red", "green", "blue", "magenta" };
 
     s_data.UpdateValue("my_value", 12345, true);
     int x = s_data["my_value"].ToInt32(0);
@@ -59,7 +60,7 @@ void CreateMyIni()
     x = s_data["x"].ToInt32();
     LOG_INFO("3) x is %d and should be 123 ", x);
 
-    LOG_INFO("INI_WRITER\n=====================================================\n%s",ini.ToString().data());
+    LOG_INFO("INI_WRITER\n=====================================================\n%s", ini.ToString().data());
 }
 int main()
 {
