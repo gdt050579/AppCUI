@@ -49,6 +49,7 @@ void CreateMyIni()
     s_data["colors"]     = { "red", "green", "blue", "magenta" };
     s_data["b_array"]    = { true, false, false, true, true };
     s_data["i_array"]    = { 1, 2, 3, 4, 5 };
+    s_data["f_array"]    = { 1.2, 1.3, 1.4 };
 
     s_data.UpdateValue("my_value", 12345, true);
     int x = s_data["my_value"].ToInt32(0);

@@ -982,6 +982,8 @@ namespace Utils
         {
             return ToDecStringSigned((long) value);
         }
+        std::string_view ToDec(float value);
+        std::string_view ToDec(double value);
 
         // ToOct
         inline std::string_view ToOct(unsigned long long value)
@@ -1402,6 +1404,8 @@ namespace Utils
         void operator=(const std::initializer_list<unsigned long long>& values);
         void operator=(const std::initializer_list<int>& values);
         void operator=(const std::initializer_list<long long>& values);
+        void operator=(const std::initializer_list<float>& values);
+        void operator=(const std::initializer_list<double>& values);
     };
     class EXPORT IniSection
     {
@@ -1447,6 +1451,10 @@ namespace Utils
               std::string_view name,
               const std::initializer_list<unsigned long long>& values,
               bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
