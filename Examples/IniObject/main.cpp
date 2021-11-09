@@ -47,6 +47,18 @@ void CreateMyIni()
     s_data["key"]   = Key::Backspace | Key::Alt;
     s_data["sz"]    = AppCUI::Graphics::Size(120, 30);
 
+    s_data.UpdateValue("my_value", 12345, true);
+    int x = s_data["my_value"].ToInt32(0);
+    LOG_INFO("1) x is %d and should be 12345 ", x);
+
+    s_data.UpdateValue("value", 1111, true);
+    x = s_data["value"].ToInt32();
+    LOG_INFO("2) value is %d and should be 100 ", x);
+
+    s_data.UpdateValue("x", 123, false);
+    x = s_data["x"].ToInt32();
+    LOG_INFO("3) x is %d and should be 123 ", x);
+
     LOG_INFO("INI_WRITER\n=====================================================\n%s",ini.ToString().data());
 }
 int main()

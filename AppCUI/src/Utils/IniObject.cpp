@@ -690,6 +690,67 @@ std::vector<IniValue> IniSection::GetValues() const
 
     return res;
 }
+
+template <typename T> 
+void UpdateValueForSection(void* sectionData, std::string_view name, T value, bool dontUpdateIfValueExits)
+{
+    if (!sectionData)
+        return;
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) sectionData);
+
+    if (dontUpdateIfValueExits)
+    {
+        auto hash = __compute_hash__(name);
+        if (entry->Keys.contains(hash))
+            return;
+    }
+    IniSection sect(sectionData);
+    sect[name] = value;
+}
+void IniSection::UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<bool>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<unsigned int>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<unsigned long long>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, int value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<int>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, long long value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<long long>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, float value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<float>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, double value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<double>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, const char* value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const char*>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<std::string_view>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, AppCUI::Graphics::Size value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<AppCUI::Graphics::Size>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, AppCUI::Input::Key value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<AppCUI::Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
+}
 //============================================================================= INI Value ===
 
 std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)

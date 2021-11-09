@@ -1395,6 +1395,7 @@ namespace Utils
         void operator=(std::string_view value);
         void operator=(AppCUI::Graphics::Size value);
         void operator=(AppCUI::Input::Key value);
+        
     };
     class EXPORT IniSection
     {
@@ -1414,6 +1415,18 @@ namespace Utils
         IniValue GetValue(std::string_view keyName);
         std::vector<IniValue> GetValues() const;
         IniValue operator[](std::string_view keyName);
+
+        void UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, int value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, float value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, double value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, const char* value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, AppCUI::Graphics::Size value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, AppCUI::Input::Key value, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
@@ -4085,6 +4098,7 @@ namespace Application
 
     EXPORT Config* GetAppConfig();
     EXPORT AppCUI::Utils::IniObject* GetAppSettings();
+    EXPORT bool SaveAppSettings();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);

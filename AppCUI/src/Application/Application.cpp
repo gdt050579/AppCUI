@@ -181,6 +181,10 @@ AppCUI::Utils::IniObject* AppCUI::Application::GetAppSettings()
     CHECK(app, nullptr, "Application has not been initialized !");
     return &app->settings;
 }
+bool AppCUI::Application::SaveAppSettings()
+{
+    NOT_IMPLEMENTED(false);
+}
 void AppCUI::Application::RecomputeControlsLayout()
 {
     app->ComputePositions();
