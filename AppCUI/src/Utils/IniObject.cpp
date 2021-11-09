@@ -14,6 +14,17 @@ using BuffPtr = const unsigned char*;
     CHECK(Data, returnValue, "Invalid value object (null)");                                                           \
     AppCUI::Ini::Value* value = (AppCUI::Ini::Value*) this->Data;
 
+#define PREPARE_VALUE                                                                                                  \
+    if (!Data)                                                                                                         \
+        return;                                                                                                        \
+    AppCUI::Ini::Value* iniValue = (AppCUI::Ini::Value*) this->Data;
+
+#define WRITE_INI_NUMERIC_VALUE                                                                                        \
+    PREPARE_VALUE;                                                                                                     \
+    NumericFormatter n;                                                                                                \
+    iniValue->KeyValue = n.ToDec(value);                                                                               \
+    iniValue->KeyValues.clear();
+
 #define VALIDATE_INITED(returnValue)                                                                                   \
     CHECK(Data, returnValue, "Parser object has not been created. Have you called one of the Crete... methods first ?");
 
@@ -165,7 +176,7 @@ namespace Ini
         }
         Section(std::string_view name)
         {
-            Name.Set(name.data(),(unsigned int)name.length());
+            Name.Set(name.data(), (unsigned int) name.length());
         }
     };
     struct Parser
@@ -174,6 +185,7 @@ namespace Ini
         BuffPtr end;
         BuffPtr current;
         ParseState state;
+        std::string toStringBuffer;
 
         std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
@@ -223,6 +235,46 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
 unsigned long long __compute_hash__(std::string_view text)
 {
     return __compute_hash__((BuffPtr) text.data(), ((BuffPtr) text.data()) + text.length());
+}
+void AddSectionValueToString(std::string& res, std::string value)
+{
+    res += "\"";
+    res += value;
+    res += "\"";
+}
+void AddSectionToString(std::string& res, AppCUI::Ini::Section& sect)
+{
+    res += "\n";
+    if (sect.Name.Len() > 0)
+    {
+        res += "[";
+        res += sect.Name;
+        res += "]";
+        res += "\n";
+    }
+    // add values
+    for (auto& entry : sect.Keys)
+    {
+        res += entry.second.KeyName;
+        res += " = ";
+        if (entry.second.KeyValues.size() > 0)
+        {
+            auto sz = entry.second.KeyValues.size();
+            res += "[";
+            for (size_t index = 0; index < sz; index++)
+            {
+                if (index > 0)
+                    res += " , ";
+                AddSectionValueToString(res, entry.second.KeyValues[index]);
+            }
+            res += "]";
+        }
+        else
+        {
+            AddSectionValueToString(res, entry.second.KeyValue);
+        }
+        res += "\n";
+    }
 }
 
 void AppCUI::Ini::Parser::SkipSpaces()
@@ -587,7 +639,7 @@ IniValue IniSection::operator[](std::string_view keyName)
     if (value != entry->Keys.cend())
         return IniValue(&value->second);
     auto res = entry->Keys.emplace(hash, AppCUI::Ini::Value(keyName));
-    return IniValue(& res.first->second);
+    return IniValue(&res.first->second);
 }
 std::vector<IniValue> IniSection::GetValues() const
 {
@@ -852,6 +904,66 @@ IniValueArray IniValue::operator[](int index) const
 
     return IniValueArray((std::string_view) value->KeyValues[index]);
 }
+
+void IniValue::operator=(bool value)
+{
+    PREPARE_VALUE;
+    if (value)
+        iniValue->KeyValue = "true";
+    else
+        iniValue->KeyName = "false";
+}
+void IniValue::operator=(unsigned int value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(unsigned long long value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(int value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(long long value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(float value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3f", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(double value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3lf", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(std::string_view value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+}
+void IniValue::operator=(AppCUI::Graphics::Size value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%u x %u", value.Width, value.Height);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(AppCUI::Input::Key value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    if (!AppCUI::Utils::KeyUtils::ToString(value, tmp))
+        return;
+    iniValue->KeyValue = tmp;
+    iniValue->KeyValues.clear();
+}
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const
 {
@@ -1053,8 +1165,6 @@ IniSection IniObject::operator[](std::string_view name)
         return IniSection(result->second.get());
     auto res = WRAPPER->Sections.emplace(hash, std::make_unique<AppCUI::Ini::Section>(name));
     return IniSection(res.first->second.get());
-
-       
 }
 std::vector<IniSection> IniObject::GetSections() const
 {
@@ -1104,6 +1214,23 @@ unsigned int IniObject::GetSectionsCount()
 {
     VALIDATE_INITED(0);
     return (unsigned int) WRAPPER->Sections.size();
+}
+
+std::string_view IniObject::ToString()
+{
+    VALIDATE_INITED(std::string_view());
+    WRAPPER->toStringBuffer.reserve(4096);
+    WRAPPER->toStringBuffer.clear();
+    
+    // add default section
+    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
+    // add rest of the sections
+    for (auto& entry: WRAPPER->Sections)
+    {
+        AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
+    }
+    // return result
+    return (std::string_view) WRAPPER->toStringBuffer;
 }
 
 #undef WRAPPER

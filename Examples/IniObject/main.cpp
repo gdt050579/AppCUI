@@ -32,10 +32,22 @@ primeNumbers = [1,2,3,5,7,11,13,17,19]
 
 )INI";
 
+void CreateMyIni()
+{
+    IniObject ini;
+    auto s_data = ini["Data"];
+    s_data["value"] = 100;
+    s_data["x"]     = 120.5;
+    s_data["on"]    = false;
+    s_data["name"]  = "GDT";
+
+    LOG_INFO("INI_WRITER\n=====================================================\n%s",ini.ToString());
+}
 int main()
 {
     Log::ToStdOut();
     IniObject ini;
+
     CHECK(ini.CreateFromString(ini_string), 1, "Fail to load ini string");
     LOG_INFO("Ini object created ==> Total sections: %d", ini.GetSectionsCount());
     LOG_INFO("Section 'BlaBlabla' status: %d", ini.GetSection("BlaBlaBla").Exists());
@@ -68,7 +80,7 @@ int main()
 
     unsigned int value = Utils::Number::ToUInt32("12345678").value();
     LOG_INFO("Number is %u", value);
-    int x              = Utils::Number::ToInt32("-1").value();
+    int x = Utils::Number::ToInt32("-1").value();
     LOG_INFO("Number is %d", x);
 
     LOG_INFO("List all sections:");
@@ -79,16 +91,19 @@ int main()
     LOG_INFO("List all values for section: Values");
     for (auto v : ini.GetSection("Values").GetValues())
     {
-        LOG_INFO("- %s = %s", v.GetName().data(), v.AsString().value());    
+        LOG_INFO("- %s = %s", v.GetName().data(), v.AsString().value());
     }
 
     LOG_INFO("Hex buffer: %s", ini.GetSection("Strings").GetValue("hexBuffer").ToStringView().data());
 
     auto av = ini.GetSection("Arrays").GetValue("primeNumbers");
     LOG_INFO("Prime nubers: %d", av.GetArrayCount());
-    for (unsigned int tr = 0; tr < av.GetArrayCount();tr++)
+    for (unsigned int tr = 0; tr < av.GetArrayCount(); tr++)
     {
         LOG_INFO(" - %d", av[tr].ToUInt32());
     }
+
+    CreateMyIni();
+
     return 0;
 }

@@ -1383,6 +1383,17 @@ namespace Utils
         {
             return Data != nullptr;
         }
+
+        void operator=(bool value);
+        void operator=(unsigned int value);
+        void operator=(unsigned long long value);
+        void operator=(int value);
+        void operator=(long long value);
+        void operator=(float value);
+        void operator=(double value);
+        void operator=(std::string_view value);
+        void operator=(AppCUI::Graphics::Size value);
+        void operator=(AppCUI::Input::Key value);
     };
     class EXPORT IniSection
     {
@@ -1422,6 +1433,8 @@ namespace Utils
         IniValue GetValue(std::string_view valuePath);
         std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
+
+        std::string_view ToString();
     };
 
 }; // namespace Utils
