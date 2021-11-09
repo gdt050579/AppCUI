@@ -757,9 +757,40 @@ void IniSection::UpdateValue(std::string_view name, AppCUI::Input::Key value, bo
 {
     UpdateValueForSection<AppCUI::Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(std::string_view name, const std::vector<std::string>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::vector<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const std::initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<const char *>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<const char *>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<unsigned long long>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 //============================================================================= INI Value ===
 
@@ -1077,19 +1108,24 @@ void IniValue::operator=(AppCUI::Input::Key value)
     iniValue->KeyValue = tmp;
     iniValue->KeyValues.clear();
 }
-void IniValue::operator=(const std::vector<std::string>& values)
+void IniValue::operator=(const std::initializer_list<std::string>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
     iniValue->KeyValues = values;
 }
-void IniValue::operator=(std::vector<std::string>&& values)
+void IniValue::operator=(const std::initializer_list<const char*>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
-    std::swap(iniValue->KeyValues, values);
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val);
+    }
 }
-void IniValue::operator=(const std::vector<bool>& values)
+void IniValue::operator=(const std::initializer_list<bool>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
@@ -1099,6 +1135,37 @@ void IniValue::operator=(const std::vector<bool>& values)
     {
         iniValue->KeyValues.push_back(val ? "true" : "false");
     }
+}
+template <typename T>
+void IniValueSetVector(void* Data, const std::initializer_list<T>& values)
+{
+    if (!Data)
+        return;
+    AppCUI::Ini::Value* iniValue = (AppCUI::Ini::Value*) Data;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    NumericFormatter n;
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(std::string(n.ToDec(val)));
+    }
+}
+void IniValue::operator=(const std::initializer_list<unsigned int>& values)
+{
+    IniValueSetVector<unsigned int>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<unsigned long long>& values)
+{
+    IniValueSetVector<unsigned long long>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<int>& values)
+{
+    IniValueSetVector<int>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<long long>& values)
+{
+    IniValueSetVector<long long>(this->Data, values);
 }
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const

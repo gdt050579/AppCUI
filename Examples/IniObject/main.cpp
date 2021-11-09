@@ -48,6 +48,7 @@ void CreateMyIni()
     s_data["sz"]         = AppCUI::Graphics::Size(120, 30);
     s_data["colors"]     = { "red", "green", "blue", "magenta" };
     s_data["b_array"]    = { true, false, false, true, true };
+    s_data["i_array"]    = { 1, 2, 3, 4, 5 };
 
     s_data.UpdateValue("my_value", 12345, true);
     int x = s_data["my_value"].ToInt32(0);
@@ -60,6 +61,8 @@ void CreateMyIni()
     s_data.UpdateValue("x", 123, false);
     x = s_data["x"].ToInt32();
     LOG_INFO("3) x is %d and should be 123 ", x);
+
+    s_data.UpdateValue("i_array", { 10, 20, 30 }, false);
 
     LOG_INFO("INI_WRITER\n=====================================================\n%s", ini.ToString().data());
 }
