@@ -5,13 +5,13 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-const char* ini = R"INI(
+/*
 [AppCUI]
 Frontend = default      ; possible values: default,SDL, terminal, windows
 Size = default          ; possible values: a size (width x height), maximized, fullscreen
 CharacterSize = default ; possible values: default, tiny, small, normal, large, huge
 Fixed = false           ; possible values: true or false
-)INI";
+*/
 
 class SimpleWin : public AppCUI::Controls::Window
 {
@@ -28,20 +28,23 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("IniInitialization.log");
-    if (std::filesystem::exists("IniInitialization.ini") == false)
-    {
-        LOG_INFO("IniInitialization.ini is missing (a new one will be created)");
-        AppCUI::OS::File f;
-        CHECK(f.Create("IniInitialization.ini"), 1, "Fail to create IniInitialization.ini");
-        CHECK(f.Write(ini, Utils::String::Len(ini)), false, "Fail to write data to: IniInitialization.ini");
-        f.Close();
-        LOG_INFO("IniInitialization.ini created succesifully. Modify it and re-run this executable");
-        return 0;
-    }
-    Application::InitializationData initData;
-    initData.Flags = Application::InitializationFlags::LoadSettingsFile;
-    if (!Application::Init(initData))
+
+    if (!Application::Init(InitializationFlags::LoadSettingsFile))
         return 1;
+    auto ini = Application::GetAppSettings();
+    CHECK(ini, false, "Application::GetAppSettings() returned a null object ");
+
+    if (ini->HasSection("AppCUI") == false)
+    {
+        auto sect             = (*ini)["AppCUI"];
+        sect["Frontend"]      = "default";
+        sect["Size"]          = "default";
+        sect["CharacterSize"] = "default";
+        sect["Fixed"]         = false;
+        CHECK(Application::SaveAppSettings(), 1, "Fail to save application settings !");
+        LOG_INFO("IniInitialization.ini created succesifully. Modify it and re-run this executable");
+        return 0;       
+    }
     Application::AddWindow(std::make_unique<SimpleWin>());
     Application::Run();
     return 0;
