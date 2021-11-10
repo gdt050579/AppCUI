@@ -307,3 +307,15 @@ std::string_view NumericFormatter::ToStringSigned(long long value, NumericFormat
         return ToStringUnsigned(*(unsigned long long*) &value, fmt);
     }
 }
+std::string_view NumericFormatter::ToDec(float value)
+{
+    String tmp;
+    tmp.Create(this->temp, sizeof(this->temp), true);
+    return tmp.Format("%.3f", value);
+}
+std::string_view NumericFormatter::ToDec(double value)
+{
+    String tmp;
+    tmp.Create(this->temp, sizeof(this->temp), true);
+    return tmp.Format("%.3lf", value);
+}

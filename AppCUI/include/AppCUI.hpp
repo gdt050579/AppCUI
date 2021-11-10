@@ -982,6 +982,8 @@ namespace Utils
         {
             return ToDecStringSigned((long) value);
         }
+        std::string_view ToDec(float value);
+        std::string_view ToDec(double value);
 
         // ToOct
         inline std::string_view ToOct(unsigned long long value)
@@ -1383,6 +1385,27 @@ namespace Utils
         {
             return Data != nullptr;
         }
+
+        void operator=(bool value);
+        void operator=(unsigned int value);
+        void operator=(unsigned long long value);
+        void operator=(int value);
+        void operator=(long long value);
+        void operator=(float value);
+        void operator=(double value);
+        void operator=(const char* value);
+        void operator=(std::string_view value);
+        void operator=(AppCUI::Graphics::Size value);
+        void operator=(AppCUI::Input::Key value);
+        void operator=(const std::initializer_list<const char*>& values);
+        void operator=(const std::initializer_list<std::string>& values);
+        void operator=(const std::initializer_list<bool>& values);
+        void operator=(const std::initializer_list<unsigned int>& values);
+        void operator=(const std::initializer_list<unsigned long long>& values);
+        void operator=(const std::initializer_list<int>& values);
+        void operator=(const std::initializer_list<long long>& values);
+        void operator=(const std::initializer_list<float>& values);
+        void operator=(const std::initializer_list<double>& values);
     };
     class EXPORT IniSection
     {
@@ -1401,6 +1424,41 @@ namespace Utils
         std::string_view GetName() const;
         IniValue GetValue(std::string_view keyName);
         std::vector<IniValue> GetValues() const;
+        IniValue operator[](std::string_view keyName);
+
+        void Clear();
+        bool DeleteValue(std::string_view keyName);
+        bool HasValue(std::string_view keyName);
+
+        void UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, int value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, float value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, double value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, const char* value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, AppCUI::Graphics::Size value, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, AppCUI::Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(std::string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name,
+              const std::initializer_list<unsigned long long>& values,
+              bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(
+              std::string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
@@ -1414,12 +1472,23 @@ namespace Utils
         bool CreateFromString(std::string_view text);
         bool CreateFromFile(const std::filesystem::path& fileName);
         bool Create();
+        void Clear();
 
         bool HasSection(std::string_view name) const;
         IniSection GetSection(std::string_view name);
+        IniSection CreateSection(std::string_view name, bool emptyContent);
+        inline IniSection operator[](std::string_view name)
+        {
+            return CreateSection(name, false);
+        }
         IniValue GetValue(std::string_view valuePath);
         std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
+
+        bool DeleteSection(std::string_view name);
+        bool DeleteValue(std::string_view valuePath);
+
+        std::string_view ToString();
     };
 
 }; // namespace Utils
@@ -2296,7 +2365,7 @@ namespace Controls
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
-            
+
             virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
             {
                 return callback(ctrl, handle);
@@ -4069,6 +4138,7 @@ namespace Application
 
     EXPORT Config* GetAppConfig();
     EXPORT AppCUI::Utils::IniObject* GetAppSettings();
+    EXPORT bool SaveAppSettings();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
