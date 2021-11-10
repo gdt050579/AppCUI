@@ -16,11 +16,11 @@ class SimpleWin : public AppCUI::Controls::Window
 
         auto generator        = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
         const auto dimensions = grid->GetGridDimensions();
-        for (auto i = 0U; i < dimensions.first; i++)
+        for (auto i = 0U; i < dimensions.Width; i++)
         {
-            for (auto j = 0U; j < dimensions.second; j++)
+            for (auto j = 0U; j < dimensions.Height; j++)
             {
-                const auto cellIndex = dimensions.first * j + i;
+                const auto cellIndex = dimensions.Width * j + i;
                 auto cellType        = AppCUI::Controls::Grid::CellType::String;
 
                 if (generator())

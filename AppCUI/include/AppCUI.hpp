@@ -3390,7 +3390,7 @@ namespace Controls
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
         unsigned int GetCellsCount() const;
-        std::pair<unsigned int, unsigned int> GetGridDimensions() const;
+        AppCUI::Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               unsigned int index,
               CellType cellType,

@@ -1100,7 +1100,7 @@ unsigned int AppCUI::Controls::Grid::GetCellsCount() const
     return context->columnsNo * context->rowsNo;
 }
 
-std::pair<unsigned int, unsigned int> AppCUI::Controls::Grid::GetGridDimensions() const
+AppCUI::Graphics::Size AppCUI::Controls::Grid::GetGridDimensions() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return { context->columnsNo, context->rowsNo };
