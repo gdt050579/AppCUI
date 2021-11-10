@@ -625,14 +625,21 @@ class TreeControlContext : public ControlContext
     } filter{};
 };
 
-struct CellData
+enum class GridCellStatus
+{
+    Normal   = 0,
+    Selected = 1,
+    Hovered  = 2
+};
+
+struct GridCellData
 {
     TextAlignament ta = TextAlignament::Left;
     Grid::CellType ct = Grid::CellType::String;
     std::variant<bool, std::u16string> content;
 };
 
-struct HeaderCellData
+struct GridHeaderCellData
 {
     TextAlignament ta = TextAlignament::Left;
     std::u16string content;
@@ -656,9 +663,13 @@ class GridControlContext : public ControlContext
 
     Menu rightClickMenu;
 
-    std::map<unsigned int, CellData> cells;
+    std::map<unsigned int, GridCellData> cells;
     std::u16string separator = u",";
-    std::vector<HeaderCellData> headers;
+    std::vector<GridHeaderCellData> headers;
+
+  public:
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j);
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex);
 };
 
 enum class MenuItemType : unsigned int

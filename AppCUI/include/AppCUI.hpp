@@ -3431,13 +3431,6 @@ namespace Controls
     class EXPORT Grid : public Control
     {
       public:
-        enum class CellStatus
-        {
-            Normal   = 0,
-            Selected = 1,
-            Hovered  = 2
-        };
-
         enum class CellType
         {
             Boolean = 0,
@@ -3483,8 +3476,6 @@ namespace Controls
               unsigned int endColumnsIndex,
               unsigned int endRowsIndex);
         void DrawCellsBackground(Graphics::Renderer& renderer);
-        void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int i, unsigned int j);
-        void DrawCellBackground(Graphics::Renderer& renderer, CellStatus cellType, unsigned int cellIndex);
         bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
         bool DrawHeader(Graphics::Renderer& renderer);
         void UpdateGridParameters();

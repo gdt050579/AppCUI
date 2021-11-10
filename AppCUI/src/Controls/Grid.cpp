@@ -36,7 +36,7 @@ void Grid::Paint(Renderer& renderer)
         DrawHeader(renderer);
     }
 
-    if ((context->flags & GridFlags::DoNotDrawCellBackground) == GridFlags::None)
+    if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
     {
         DrawCellsBackground(renderer);
     }
@@ -732,22 +732,22 @@ void Grid::DrawLines(Renderer& renderer)
         }
     }
 
-    const auto drawLines = [&](unsigned int cellIndex, CellStatus cellType)
+    const auto drawLines = [&](unsigned int cellIndex, GridCellStatus cellType)
     {
         ColorPair vertical   = context->Cfg->Grid.Lines.Vertical.Normal;
         ColorPair horizontal = context->Cfg->Grid.Lines.Horizontal.Normal;
 
         switch (cellType)
         {
-        case AppCUI::Controls::Grid::CellStatus::Normal:
+        case GridCellStatus::Normal:
             vertical   = context->Cfg->Grid.Lines.Vertical.Normal;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Normal;
             break;
-        case AppCUI::Controls::Grid::CellStatus::Selected:
+        case GridCellStatus::Selected:
             vertical   = context->Cfg->Grid.Lines.Vertical.Selected;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Selected;
             break;
-        case AppCUI::Controls::Grid::CellStatus::Hovered:
+        case GridCellStatus::Hovered:
             vertical   = context->Cfg->Grid.Lines.Vertical.Hovered;
             horizontal = context->Cfg->Grid.Lines.Horizontal.Hovered;
             break;
@@ -776,14 +776,14 @@ void Grid::DrawLines(Renderer& renderer)
     if (context->hoveredCellIndex != InvalidCellIndex &&
         ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        drawLines(context->hoveredCellIndex, CellStatus::Hovered);
+        drawLines(context->hoveredCellIndex, GridCellStatus::Hovered);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         for (const auto& cellIndex : context->selectedCellsIndexes)
         {
-            drawLines(cellIndex, CellStatus::Selected);
+            drawLines(cellIndex, GridCellStatus::Selected);
         }
     }
 }
@@ -873,63 +873,58 @@ void Grid::DrawCellsBackground(Graphics::Renderer& renderer)
     {
         for (auto j = 0U; j < context->rowsNo; j++)
         {
-            DrawCellBackground(renderer, CellStatus::Normal, i, j);
+            context->DrawCellBackground(renderer, GridCellStatus::Normal, i, j);
         }
     }
 
     if (context->hoveredCellIndex != InvalidCellIndex &&
         ((context->flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
-        DrawCellBackground(renderer, CellStatus::Hovered, context->hoveredCellIndex);
+        context->DrawCellBackground(renderer, GridCellStatus::Hovered, context->hoveredCellIndex);
     }
 
     if (context->selectedCellsIndexes.size() > 0 && ((context->flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
         for (const auto& cellIndex : context->selectedCellsIndexes)
         {
-            DrawCellBackground(renderer, CellStatus::Selected, cellIndex);
+            context->DrawCellBackground(renderer, GridCellStatus::Selected, cellIndex);
         }
     }
 }
 
-void AppCUI::Controls::Grid::DrawCellBackground(
-      Graphics::Renderer& renderer, CellStatus cellType, unsigned int i, unsigned int j)
+void GridControlContext::DrawCellBackground(
+      Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    const auto xLeft  = this->offsetX + i * this->cWidth;
+    const auto xRight = this->offsetX + (i + 1) * this->cWidth;
 
-    const auto xLeft  = context->offsetX + i * context->cWidth;
-    const auto xRight = context->offsetX + (i + 1) * context->cWidth;
+    const auto yTop    = this->offsetY + j * this->cHeight;
+    const auto yBottom = this->offsetY + (j + 1) * this->cHeight;
 
-    const auto yTop    = context->offsetY + j * context->cHeight;
-    const auto yBottom = context->offsetY + (j + 1) * context->cHeight;
-
-    ColorPair color = context->Cfg->Grid.Background.Cell.Normal;
+    ColorPair color = this->Cfg->Grid.Background.Cell.Normal;
     switch (cellType)
     {
-    case AppCUI::Controls::Grid::CellStatus::Normal:
-        color = context->Cfg->Grid.Background.Cell.Normal;
+    case GridCellStatus::Normal:
+        color = this->Cfg->Grid.Background.Cell.Normal;
         break;
-    case AppCUI::Controls::Grid::CellStatus::Selected:
-        color = context->Cfg->Grid.Background.Cell.Selected;
+    case GridCellStatus::Selected:
+        color = this->Cfg->Grid.Background.Cell.Selected;
         break;
-    case AppCUI::Controls::Grid::CellStatus::Hovered:
-        color = context->Cfg->Grid.Background.Cell.Hovered;
+    case GridCellStatus::Hovered:
+        color = this->Cfg->Grid.Background.Cell.Hovered;
         break;
     default:
-        color = context->Cfg->Grid.Background.Cell.Normal;
+        color = this->Cfg->Grid.Background.Cell.Normal;
         break;
     }
 
     renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
 }
 
-void AppCUI::Controls::Grid::DrawCellBackground(
-      Graphics::Renderer& renderer, CellStatus cellType, unsigned int cellIndex)
+void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-
-    const auto columnIndex = cellIndex % context->columnsNo;
-    const auto rowIndex    = cellIndex / context->columnsNo;
+    const auto columnIndex = cellIndex % this->columnsNo;
+    const auto rowIndex    = cellIndex / this->columnsNo;
 
     DrawCellBackground(renderer, cellType, columnIndex, rowIndex);
 }
@@ -949,8 +944,8 @@ bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsig
     WriteTextParams wtp;
     wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
     wtp.Color = context->Cfg->Grid.Text.Normal;
-    wtp.X = x;
-    wtp.Y = y;
+    wtp.X     = x;
+    wtp.Y     = y;
     wtp.Width = context->cWidth - 1;
     wtp.Align = data.ta;
 
