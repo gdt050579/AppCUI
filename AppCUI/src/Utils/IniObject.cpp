@@ -696,7 +696,17 @@ std::vector<IniValue> IniSection::GetValues() const
 
     return res;
 }
-
+void IniSection::Clear()
+{
+    if (this->Data)
+        ((AppCUI::Ini::Section*) Data)->Keys.clear();
+}
+bool IniSection::DeleteValue(std::string_view keyName)
+{
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    ((AppCUI::Ini::Section*) Data)->Keys.erase(__compute_hash__(keyName));
+    return true;
+}
 template <typename T>
 void UpdateValueForSection(void* sectionData, std::string_view name, T value, bool dontUpdateIfValueExits)
 {
@@ -1357,7 +1367,25 @@ bool IniObject::Create()
     WRAPPER->Clear();
     return true;
 }
-
+void IniObject::Clear()
+{
+    if (this->Data)
+    {
+        WRAPPER->Clear();
+    }
+}
+bool IniObject::DeleteSection(std::string_view name)
+{
+    VALIDATE_INITED(false);
+    // null-strings or empty strings refer to the Default section that always exists
+    if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        WRAPPER->DefaultSection.Keys.clear();
+        return true;
+    }
+    WRAPPER->Sections.erase(__compute_hash__(name));
+    return true;
+}
 bool IniObject::HasSection(std::string_view name) const
 {
     VALIDATE_INITED(false);
@@ -1446,11 +1474,44 @@ IniValue IniObject::GetValue(std::string_view valuePath)
         return IniValue(&value->second);
     }
 }
+bool IniObject::DeleteValue(std::string_view valuePath)
+{
+    // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
+    VALIDATE_INITED(false);
+    const unsigned char* start = (const unsigned char*) valuePath.data();
+    CHECK(start, false, "Invalid value path (expecting a non-null object)");
+    const unsigned char* end = start + valuePath.size();
+    CHECK(start < end, false, "Invalid value path (expecting a non-empty object)");
+    const unsigned char* p = start;
+    while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
+        p++;
+    if (p >= end)
+    {
+        // no section was provided --> using the default one
+        WRAPPER->DefaultSection.Keys.erase(__compute_hash__(start, end));
+        return true;
+    }
+    else
+    {
+        // we have both a section and a value name
+        auto result = WRAPPER->Sections.find(__compute_hash__(start, p));
+        if (result == WRAPPER->Sections.cend())
+            return false;
+        AppCUI::Ini::Section* sect = result->second.get();
+        CHECK(sect, false, "Invalid section (null)");
+        p++;
+        CHECK(p < end, false, "Missing value from path !");
+        sect->Keys.erase(__compute_hash__(p, end));
+        return true;
+    }
+}
 unsigned int IniObject::GetSectionsCount()
 {
     VALIDATE_INITED(0);
     return (unsigned int) WRAPPER->Sections.size();
 }
+
+
 
 std::string_view IniObject::ToString()
 {

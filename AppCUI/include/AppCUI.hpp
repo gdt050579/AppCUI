@@ -1426,6 +1426,9 @@ namespace Utils
         std::vector<IniValue> GetValues() const;
         IniValue operator[](std::string_view keyName);
 
+        void Clear();
+        bool DeleteValue(std::string_view keyName);
+
         void UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits);
         void UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits);
         void UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits);
@@ -1468,6 +1471,7 @@ namespace Utils
         bool CreateFromString(std::string_view text);
         bool CreateFromFile(const std::filesystem::path& fileName);
         bool Create();
+        void Clear();
 
         bool HasSection(std::string_view name) const;
         IniSection GetSection(std::string_view name);
@@ -1479,6 +1483,9 @@ namespace Utils
         IniValue GetValue(std::string_view valuePath);
         std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
+
+        bool DeleteSection(std::string_view name);
+        bool DeleteValue(std::string_view valuePath);
 
         std::string_view ToString();
     };
