@@ -40,8 +40,11 @@ class SimpleWin : public AppCUI::Controls::Window
                 case AppCUI::Controls::Grid::CellType::String:
                 {
                     AppCUI::Utils::LocalString<32> value;
-                    value.Format("%u | %u -> %u", i, j, cellIndex);
-                    grid->UpdateCell(cellIndex, cellType, value, AppCUI::Graphics::TextAlignament::Center);
+                    grid->UpdateCell(
+                          cellIndex,
+                          cellType,
+                          value.Format("%u | %u -> %u", i, j, cellIndex),
+                          AppCUI::Graphics::TextAlignament::Center);
                 }
                 break;
                 default:
