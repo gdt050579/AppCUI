@@ -14,6 +14,17 @@ using BuffPtr = const unsigned char*;
     CHECK(Data, returnValue, "Invalid value object (null)");                                                           \
     AppCUI::Ini::Value* value = (AppCUI::Ini::Value*) this->Data;
 
+#define PREPARE_VALUE                                                                                                  \
+    if (!Data)                                                                                                         \
+        return;                                                                                                        \
+    AppCUI::Ini::Value* iniValue = (AppCUI::Ini::Value*) this->Data;
+
+#define WRITE_INI_NUMERIC_VALUE                                                                                        \
+    PREPARE_VALUE;                                                                                                     \
+    NumericFormatter n;                                                                                                \
+    iniValue->KeyValue = n.ToDec(value);                                                                               \
+    iniValue->KeyValues.clear();
+
 #define VALIDATE_INITED(returnValue)                                                                                   \
     CHECK(Data, returnValue, "Parser object has not been created. Have you called one of the Crete... methods first ?");
 
@@ -148,11 +159,25 @@ namespace Ini
         std::string KeyName;
         std::string KeyValue;
         std::vector<std::string> KeyValues;
+        Value()
+        {
+        }
+        Value(std::string_view keyName)
+        {
+            KeyName = keyName;
+        }
     };
     struct Section
     {
         AppCUI::Utils::String Name;
         std::unordered_map<unsigned long long, Value> Keys;
+        Section()
+        {
+        }
+        Section(std::string_view name)
+        {
+            Name.Set(name.data(), (unsigned int) name.length());
+        }
     };
     struct Parser
     {
@@ -160,6 +185,7 @@ namespace Ini
         BuffPtr end;
         BuffPtr current;
         ParseState state;
+        std::string toStringBuffer;
 
         std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
@@ -209,6 +235,86 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
 unsigned long long __compute_hash__(std::string_view text)
 {
     return __compute_hash__((BuffPtr) text.data(), ((BuffPtr) text.data()) + text.length());
+}
+void AddSectionValueToString(std::string& res, std::string value)
+{
+    // quick_check
+    auto spaces        = 0;
+    auto quotes        = 0;
+    auto double_quotes = 0;
+    auto new_lines     = 0;
+    // for empty strings --> add as ""
+    if (value.length() == 0)
+    {
+        res += "\"\"";
+        return;
+    }
+    for (auto ch : value)
+    {
+        if ((ch == ' ') || (ch == '\t'))
+            spaces++;
+        if (ch == '"')
+            double_quotes++;
+        if (ch == '\'')
+            quotes++;
+        if ((ch == '\n') || (ch == '\r'))
+            new_lines++;
+    }
+    std::string_view string_separator = "";
+    if (new_lines > 0)
+        string_separator = "\"\"\"";
+    else
+    {
+        if ((quotes > 0) && (double_quotes == 0))
+            string_separator = "\"";
+        else if ((quotes == 0) && (double_quotes > 0))
+            string_separator = "'";
+        else if ((quotes > 0) && (double_quotes > 0))
+            string_separator = "\"\"\"";
+        else
+        {
+            // no quotes or double_quotes or new_lines
+            if (spaces > 0)
+                string_separator = "\"";
+        }
+    }
+    res += string_separator;
+    res += value;
+    res += string_separator;
+}
+void AddSectionToString(std::string& res, AppCUI::Ini::Section& sect)
+{
+    res += "\n";
+    if (sect.Name.Len() > 0)
+    {
+        res += "[";
+        res += sect.Name;
+        res += "]";
+        res += "\n";
+    }
+    // add values
+    for (auto& entry : sect.Keys)
+    {
+        res += entry.second.KeyName;
+        res += " = ";
+        if (entry.second.KeyValues.size() > 0)
+        {
+            auto sz = entry.second.KeyValues.size();
+            res += "[";
+            for (size_t index = 0; index < sz; index++)
+            {
+                if (index > 0)
+                    res += " , ";
+                AddSectionValueToString(res, entry.second.KeyValues[index]);
+            }
+            res += "]";
+        }
+        else
+        {
+            AddSectionValueToString(res, entry.second.KeyValue);
+        }
+        res += "\n";
+    }
 }
 
 void AppCUI::Ini::Parser::SkipSpaces()
@@ -267,9 +373,11 @@ void AppCUI::Ini::Parser::SkipArrayWord()
 {
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a space, a terminator or a new line
-    
+
     BuffPtr p_start = current;
-    while (current < end) { auto type = Ini_Char_Type[*current];
+    while (current < end)
+    {
+        auto type = Ini_Char_Type[*current];
         if ((type == CHAR_TYPE_SPACE) || (type == CHAR_TYPE_NEW_LINE) || (type == CHAR_TYPE_SECTION_END))
             break;
         if ((*current) == ',')
@@ -561,6 +669,25 @@ IniValue IniSection::GetValue(std::string_view keyName)
     // all good -> value exists
     return IniValue(&value->second);
 }
+bool IniSection::HasValue(std::string_view keyName)
+{
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) Data);
+    auto value                  = entry->Keys.find(__compute_hash__(keyName));
+    return value != entry->Keys.cend();
+}
+IniValue IniSection::operator[](std::string_view keyName)
+{
+    CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) Data);
+    auto hash                   = __compute_hash__(keyName);
+    auto value                  = entry->Keys.find(hash);
+    // if element already exists --> return it
+    if (value != entry->Keys.cend())
+        return IniValue(&value->second);
+    auto res = entry->Keys.emplace(hash, AppCUI::Ini::Value(keyName));
+    return IniValue(&res.first->second);
+}
 std::vector<IniValue> IniSection::GetValues() const
 {
     CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
@@ -576,11 +703,128 @@ std::vector<IniValue> IniSection::GetValues() const
 
     return res;
 }
+void IniSection::Clear()
+{
+    if (this->Data)
+        ((AppCUI::Ini::Section*) Data)->Keys.clear();
+}
+bool IniSection::DeleteValue(std::string_view keyName)
+{
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    ((AppCUI::Ini::Section*) Data)->Keys.erase(__compute_hash__(keyName));
+    return true;
+}
+template <typename T>
+void UpdateValueForSection(void* sectionData, std::string_view name, T value, bool dontUpdateIfValueExits)
+{
+    if (!sectionData)
+        return;
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) sectionData);
+
+    if (dontUpdateIfValueExits)
+    {
+        auto hash = __compute_hash__(name);
+        if (entry->Keys.contains(hash))
+            return;
+    }
+    IniSection sect(sectionData);
+    sect[name] = value;
+}
+void IniSection::UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<bool>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<unsigned int>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<unsigned long long>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, int value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<int>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, long long value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<long long>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, float value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<float>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, double value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<double>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, const char* value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const char*>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<std::string_view>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, AppCUI::Graphics::Size value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<AppCUI::Graphics::Size>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(std::string_view name, AppCUI::Input::Key value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<AppCUI::Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<const char*>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<unsigned long long>&>(
+          this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<float>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(
+      std::string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const std::initializer_list<double>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
 //============================================================================= INI Value ===
 
 std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
 {
-    auto v = 0U;    
+    auto v = 0U;
     switch (len)
     {
     case 1:
@@ -617,17 +861,15 @@ std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
     default:
         break;
     }
-    RETURNERROR(std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+    RETURNERROR(
+          std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
 std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
 {
     const char* start = txt;
     const char* end   = start + len;
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(len >= 3,
-          std::nullopt,
-          "Value (%s) is too small (expecting at least 3 chars <width>x<height>",
-          start);
+    CHECK(len >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
     unsigned int sz = 0;
     auto p_width    = Number::ToUInt16(
           std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
@@ -656,7 +898,6 @@ std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned 
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
     return AppCUI::Graphics::Size(width, height);
 }
-
 
 std::optional<unsigned long long> IniValue::AsUInt64() const
 {
@@ -817,7 +1058,7 @@ bool IniValue::IsArray() const
 unsigned int IniValue::GetArrayCount() const
 {
     VALIDATE_VALUE(0);
-    return (unsigned int)value->KeyValues.size();
+    return (unsigned int) value->KeyValues.size();
 }
 IniValueArray IniValue::operator[](int index) const
 {
@@ -827,10 +1068,145 @@ IniValueArray IniValue::operator[](int index) const
 
     return IniValueArray((std::string_view) value->KeyValues[index]);
 }
+
+void IniValue::operator=(bool value)
+{
+    PREPARE_VALUE;
+    if (value)
+        iniValue->KeyValue = "true";
+    else
+        iniValue->KeyValue = "false";
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(unsigned int value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(unsigned long long value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(int value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(long long value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(float value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3f", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(double value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3lf", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(std::string_view value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(const char* value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(AppCUI::Graphics::Size value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%u x %u", value.Width, value.Height);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(AppCUI::Input::Key value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    if (!AppCUI::Utils::KeyUtils::ToString(value, tmp))
+        return;
+    iniValue->KeyValue = tmp;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(const std::initializer_list<std::string>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues = values;
+}
+void IniValue::operator=(const std::initializer_list<const char*>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val);
+    }
+}
+void IniValue::operator=(const std::initializer_list<bool>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val ? "true" : "false");
+    }
+}
+template <typename T>
+void IniValueSetVector(void* Data, const std::initializer_list<T>& values)
+{
+    if (!Data)
+        return;
+    AppCUI::Ini::Value* iniValue = (AppCUI::Ini::Value*) Data;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    NumericFormatter n;
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(std::string(n.ToDec(val)));
+    }
+}
+void IniValue::operator=(const std::initializer_list<unsigned int>& values)
+{
+    IniValueSetVector<unsigned int>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<unsigned long long>& values)
+{
+    IniValueSetVector<unsigned long long>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<int>& values)
+{
+    IniValueSetVector<int>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<long long>& values)
+{
+    IniValueSetVector<long long>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<float>& values)
+{
+    IniValueSetVector<float>(this->Data, values);
+}
+void IniValue::operator=(const std::initializer_list<double>& values)
+{
+    IniValueSetVector<double>(this->Data, values);
+}
 //============================================================================= INI Array Value ===
 std::optional<unsigned long long> IniValueArray::AsUInt64() const
 {
-    return Number::ToUInt64(std::string_view(text,len));
+    return Number::ToUInt64(std::string_view(text, len));
 }
 std::optional<long long> IniValueArray::AsInt64() const
 {
@@ -846,7 +1222,7 @@ std::optional<int> IniValueArray::AsInt32() const
 }
 std::optional<bool> IniValueArray::AsBool() const
 {
-    return IniValue_ToBool(text,len);
+    return IniValue_ToBool(text, len);
 }
 std::optional<AppCUI::Input::Key> IniValueArray::AsKey() const
 {
@@ -864,7 +1240,7 @@ std::optional<float> IniValueArray::AsFloat() const
     return Number::ToFloat(std::string_view(text, len));
 }
 std::optional<double> IniValueArray::AsDouble() const
-{    
+{
     return Number::ToDouble(std::string_view(text, len));
 }
 
@@ -998,7 +1374,25 @@ bool IniObject::Create()
     WRAPPER->Clear();
     return true;
 }
-
+void IniObject::Clear()
+{
+    if (this->Data)
+    {
+        WRAPPER->Clear();
+    }
+}
+bool IniObject::DeleteSection(std::string_view name)
+{
+    VALIDATE_INITED(false);
+    // null-strings or empty strings refer to the Default section that always exists
+    if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        WRAPPER->DefaultSection.Keys.clear();
+        return true;
+    }
+    WRAPPER->Sections.erase(__compute_hash__(name));
+    return true;
+}
 bool IniObject::HasSection(std::string_view name) const
 {
     VALIDATE_INITED(false);
@@ -1016,6 +1410,32 @@ IniSection IniObject::GetSection(std::string_view name)
     if (result == WRAPPER->Sections.cend())
         return IniSection();
     return IniSection(result->second.get());
+}
+IniSection IniObject::CreateSection(std::string_view name, bool emptyContent)
+{
+    if (this->Data == nullptr)
+    {
+        CHECK(this->Create(), IniSection(nullptr), "Fail to create INI object !");
+    }
+    // if no name is provided --> return the default section
+    if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        if (emptyContent)
+            WRAPPER->DefaultSection.Keys.clear();
+        return IniSection(&(WRAPPER->DefaultSection));
+    }
+    // check if the section exists
+    auto hash   = __compute_hash__(name);
+    auto result = WRAPPER->Sections.find(hash);
+    if (result != WRAPPER->Sections.cend())
+    {
+        if (emptyContent)
+            result->second->Keys.clear();
+        return IniSection(result->second.get());
+    }
+    // create a new section
+    auto res = WRAPPER->Sections.emplace(hash, std::make_unique<AppCUI::Ini::Section>(name));
+    return IniSection(res.first->second.get());
 }
 std::vector<IniSection> IniObject::GetSections() const
 {
@@ -1061,10 +1481,60 @@ IniValue IniObject::GetValue(std::string_view valuePath)
         return IniValue(&value->second);
     }
 }
+bool IniObject::DeleteValue(std::string_view valuePath)
+{
+    // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
+    VALIDATE_INITED(false);
+    const unsigned char* start = (const unsigned char*) valuePath.data();
+    CHECK(start, false, "Invalid value path (expecting a non-null object)");
+    const unsigned char* end = start + valuePath.size();
+    CHECK(start < end, false, "Invalid value path (expecting a non-empty object)");
+    const unsigned char* p = start;
+    while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
+        p++;
+    if (p >= end)
+    {
+        // no section was provided --> using the default one
+        WRAPPER->DefaultSection.Keys.erase(__compute_hash__(start, end));
+        return true;
+    }
+    else
+    {
+        // we have both a section and a value name
+        auto result = WRAPPER->Sections.find(__compute_hash__(start, p));
+        if (result == WRAPPER->Sections.cend())
+            return false;
+        AppCUI::Ini::Section* sect = result->second.get();
+        CHECK(sect, false, "Invalid section (null)");
+        p++;
+        CHECK(p < end, false, "Missing value from path !");
+        sect->Keys.erase(__compute_hash__(p, end));
+        return true;
+    }
+}
 unsigned int IniObject::GetSectionsCount()
 {
     VALIDATE_INITED(0);
     return (unsigned int) WRAPPER->Sections.size();
+}
+
+
+
+std::string_view IniObject::ToString()
+{
+    VALIDATE_INITED(std::string_view());
+    WRAPPER->toStringBuffer.reserve(4096);
+    WRAPPER->toStringBuffer.clear();
+
+    // add default section
+    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
+    // add rest of the sections
+    for (auto& entry : WRAPPER->Sections)
+    {
+        AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
+    }
+    // return result
+    return (std::string_view) WRAPPER->toStringBuffer;
 }
 
 #undef WRAPPER
