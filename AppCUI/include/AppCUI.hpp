@@ -3458,6 +3458,12 @@ namespace Controls
               CellType cellType,
               const std::variant<bool, ConstString>& content,
               AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
+        bool UpdateCell(
+            unsigned int x,
+            unsigned int y,
+            CellType cellType,
+            const std::variant<bool, ConstString>& content,
+            AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
         bool UpdateHeaderValues(

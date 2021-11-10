@@ -20,8 +20,7 @@ class SimpleWin : public AppCUI::Controls::Window
         {
             for (auto j = 0U; j < dimensions.Height; j++)
             {
-                const auto cellIndex = dimensions.Width * j + i;
-                auto cellType        = AppCUI::Controls::Grid::CellType::String;
+                auto cellType = AppCUI::Controls::Grid::CellType::String;
 
                 if (generator())
                 {
@@ -32,18 +31,16 @@ class SimpleWin : public AppCUI::Controls::Window
                 {
                 case AppCUI::Controls::Grid::CellType::Boolean:
                     grid->UpdateCell(
-                          cellIndex,
-                          cellType,
-                          static_cast<bool>(generator()),
-                          AppCUI::Graphics::TextAlignament::Center);
+                          i, j, cellType, static_cast<bool>(generator()), AppCUI::Graphics::TextAlignament::Center);
                     break;
                 case AppCUI::Controls::Grid::CellType::String:
                 {
                     AppCUI::Utils::LocalString<32> value;
                     grid->UpdateCell(
-                          cellIndex,
+                          i,
+                          j,
                           cellType,
-                          value.Format("%u | %u -> %u", i, j, cellIndex),
+                          value.Format("%u | %u -> %u", i, j, dimensions.Width * j + i),
                           AppCUI::Graphics::TextAlignament::Center);
                 }
                 break;

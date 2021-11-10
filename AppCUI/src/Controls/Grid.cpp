@@ -921,7 +921,8 @@ void GridControlContext::DrawCellBackground(
     renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
 }
 
-void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex)
+void GridControlContext::DrawCellBackground(
+      Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex)
 {
     const auto columnIndex = cellIndex % this->columnsNo;
     const auto rowIndex    = cellIndex / this->columnsNo;
@@ -1124,6 +1125,20 @@ bool AppCUI::Controls::Grid::UpdateCell(
     }
 
     context->cells[index] = { textAlignment, cellType, cellData };
+
+    return true;
+}
+
+bool AppCUI::Controls::Grid::UpdateCell(
+      unsigned int x,
+      unsigned int y,
+      CellType cellType,
+      const std::variant<bool, ConstString>& content,
+      AppCUI::Graphics::TextAlignament textAlignment)
+{
+    const auto context   = reinterpret_cast<GridControlContext*>(Context);
+    const auto cellIndex = context->columnsNo * y + x;
+    CHECK(UpdateCell(cellIndex, cellType, content, textAlignment), false, "");
 
     return true;
 }
