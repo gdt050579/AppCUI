@@ -669,6 +669,13 @@ IniValue IniSection::GetValue(std::string_view keyName)
     // all good -> value exists
     return IniValue(&value->second);
 }
+bool IniSection::HasValue(std::string_view keyName)
+{
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) Data);
+    auto value                  = entry->Keys.find(__compute_hash__(keyName));
+    return value != entry->Keys.cend();
+}
 IniValue IniSection::operator[](std::string_view keyName)
 {
     CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");

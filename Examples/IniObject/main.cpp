@@ -66,6 +66,9 @@ void CreateMyIni()
     s_data.UpdateValue("i_array", { 10, 20, 30 }, false);
 
     LOG_INFO("INI_WRITER\n=====================================================\n%s", ini.ToString().data());
+
+    s_data.DeleteValue("key");
+    LOG_INFO("Has Key shoul be 0: is %d", s_data.HasValue("key"));
 }
 int main()
 {

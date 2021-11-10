@@ -1428,6 +1428,7 @@ namespace Utils
 
         void Clear();
         bool DeleteValue(std::string_view keyName);
+        bool HasValue(std::string_view keyName);
 
         void UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits);
         void UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits);
