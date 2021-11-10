@@ -3418,14 +3418,14 @@ namespace Controls
 
     enum class GridFlags : unsigned int
     {
-        None                    = 0x000000,
-        HideHorizontalLines     = 0x000100,
-        HideVerticalLines       = 0x000200,
-        HideBoxes               = 0x000400,
-        HideHoveredCell         = 0x000800,
-        HideSelectedCell        = 0x001000,
-        DoNotDrawCellBackground = 0x002000,
-        HideHeader              = 0x004000
+        None                  = 0x000000,
+        HideHorizontalLines   = 0x000100,
+        HideVerticalLines     = 0x000200,
+        HideBoxes             = 0x000400,
+        HideHoveredCell       = 0x000800,
+        HideSelectedCell      = 0x001000,
+        TransparentBackground = 0x002000,
+        HideHeader            = 0x004000
     };
 
     class EXPORT Grid : public Control
