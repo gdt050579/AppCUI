@@ -68,7 +68,11 @@ void CreateMyIni()
     LOG_INFO("INI_WRITER\n=====================================================\n%s", ini.ToString().data());
 
     s_data.DeleteValue("key");
-    LOG_INFO("Has Key shoul be 0: is %d", s_data.HasValue("key"));
+    LOG_INFO("Has Key should be 0: is %d", s_data.HasValue("key"));
+    ini.DeleteValue("Data/sz");
+    LOG_INFO("Has sz should be 0: is %d", s_data.HasValue("sz"));
+    ini.DeleteSection("Data");
+    LOG_INFO("Has Data section should be 0: is %d", ini.HasSection("Data"));
 }
 int main()
 {
