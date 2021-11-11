@@ -792,7 +792,8 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
             }
             if (AppCUI::OS::Clipboard::SetText(lusb) == false)
             {
-                LOG_WARNING("Fail to copy string [%s] to the clipboard!");
+                const std::string input{ lusb };
+                LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
             }
         }
         break;

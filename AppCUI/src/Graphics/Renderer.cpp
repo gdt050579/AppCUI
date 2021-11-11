@@ -10,7 +10,8 @@ int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::Speci
     0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
     32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
     0x25B2, 0x25BC, 0x25C4, 0x25BA,                                                 // Trangles
-    0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E                                          // symbols
+    0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E,                                         // symbols
+    0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
 };
 int* SpecialCharacters = nullptr;
 

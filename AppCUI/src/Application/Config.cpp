@@ -332,4 +332,20 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
     this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
+
+    this->Grid.Lines.Horizontal.Normal   = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Horizontal.Selected = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Horizontal.Hovered  = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Lines.Vertical.Normal     = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Vertical.Selected   = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Vertical.Hovered    = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Lines.Box.Normal          = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Box.Selected        = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Box.Hovered         = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Background.Grid           = ColorPair{ Color::Transparent, Color::DarkBlue };
+    this->Grid.Background.Cell.Normal    = this->Grid.Background.Grid;
+    this->Grid.Background.Cell.Selected  = ColorPair{ Color::Transparent, Color::Black };
+    this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::DarkRed };
+    this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 }
