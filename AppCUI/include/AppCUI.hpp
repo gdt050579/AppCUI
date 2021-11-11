@@ -3485,6 +3485,11 @@ namespace Controls
         bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
         bool DrawHeader(Graphics::Renderer& renderer);
         void UpdateGridParameters();
+        bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
+        bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
+        bool ToggleBooleanCell();
+        bool CopySelectedCellsContent() const;
+        bool PasteContentToSelectedCells();
 
       private:
         friend Factory::Grid;

@@ -65,27 +65,8 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
     switch (keyCode)
     {
     case AppCUI::Input::Key::Space:
-        if (context->selectedCellsIndexes.size() != 1)
+        if (ToggleBooleanCell())
         {
-            break;
-        }
-        {
-            const auto index    = context->selectedCellsIndexes[0];
-            auto& cellData      = context->cells[index];
-            const auto cellType = cellData.ct;
-            if (cellType != Grid::CellType::Boolean)
-            {
-                break;
-            }
-
-            auto& content = cellData.content;
-            if (std::holds_alternative<bool>(content) == false)
-            {
-                break;
-            }
-
-            const auto value = std::get<bool>(content);
-            content          = !value;
             return true;
         }
         break;
@@ -93,214 +74,17 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
     case AppCUI::Input::Key::Right:
     case AppCUI::Input::Key::Up:
     case AppCUI::Input::Key::Down:
-        if (context->selectedCellsIndexes.size() == 0)
+        if (MoveSelectedCellByKeys(keyCode))
         {
-            context->anchorCellIndex = 0;
-            context->selectedCellsIndexes.emplace_back(0);
             return true;
-        }
-
-        if (context->selectedCellsIndexes.size() == 1)
-        {
-            const auto index = context->selectedCellsIndexes[0];
-            auto columnIndex = index % context->columnsNo;
-            auto rowIndex    = index / context->columnsNo;
-
-            if (columnIndex > 0)
-            {
-                columnIndex -= (keyCode == AppCUI::Input::Key::Left);
-            }
-            if (columnIndex < context->columnsNo - 1)
-            {
-                columnIndex += (keyCode == AppCUI::Input::Key::Right);
-            }
-
-            if (rowIndex > 0)
-            {
-                rowIndex -= (keyCode == AppCUI::Input::Key::Up);
-            }
-            if (rowIndex < context->rowsNo - 1)
-            {
-                rowIndex += (keyCode == AppCUI::Input::Key::Down);
-            }
-
-            const auto newCellIndex = context->columnsNo * rowIndex + columnIndex;
-            if (newCellIndex != index)
-            {
-                context->selectedCellsIndexes[0] = newCellIndex;
-                return true;
-            }
         }
         break;
     case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
     case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
     case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
     case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-        if (context->selectedCellsIndexes.size() == 0)
+        if (SelectCellsByKeys(keyCode))
         {
-            context->anchorCellIndex = 0;
-            context->selectedCellsIndexes.emplace_back(0);
-            return true;
-        }
-
-        {
-            const auto anchorColumnIndex = context->anchorCellIndex % context->columnsNo;
-            const auto anchorRowIndex    = context->anchorCellIndex / context->columnsNo;
-
-            auto xLeft  = anchorColumnIndex;
-            auto xRight = anchorColumnIndex;
-
-            auto yTop = anchorRowIndex;
-            auto yBot = anchorRowIndex;
-
-            for (const auto& i : context->selectedCellsIndexes)
-            {
-                const auto colIndex = i % context->columnsNo;
-                const auto rowIndex = i / context->columnsNo;
-
-                xLeft  = std::min<>(xLeft, colIndex);
-                xRight = std::max<>(xRight, colIndex);
-
-                yTop = std::min<>(yTop, rowIndex);
-                yBot = std::max<>(yBot, rowIndex);
-            }
-
-            const auto topLeft     = context->columnsNo * yTop + xLeft;
-            const auto topRight    = context->columnsNo * yTop + xRight;
-            const auto bottomLeft  = context->columnsNo * yBot + xLeft;
-            const auto bottomRight = context->columnsNo * yBot + xRight;
-
-            if (context->selectedCellsIndexes.size() == 1)
-            {
-                switch (keyCode)
-                {
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-                    if (xLeft > 0)
-                        xLeft -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-                    if (xRight < context->columnsNo - 1)
-                        xRight += 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-                    if (yBot > 0)
-                        yBot -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-                    if (yBot < context->rowsNo - 1)
-                        yBot += 1;
-                    break;
-                default:
-                    break;
-                }
-            }
-            else if (topLeft == context->anchorCellIndex)
-            {
-                switch (keyCode)
-                {
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-                    if (xRight > 0)
-                        xRight -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-                    if (xRight < context->columnsNo - 1)
-                        xRight += 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-                    if (yBot > 0)
-                        yBot -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-                    if (yBot < context->rowsNo - 1)
-                        yBot += 1;
-                    break;
-                default:
-                    break;
-                }
-            }
-            else if (topRight == context->anchorCellIndex)
-            {
-                switch (keyCode)
-                {
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-                    if (xLeft > 0)
-                        xLeft -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-                    if (xLeft < context->columnsNo - 1)
-                        xLeft += 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-                    if (yBot > 0)
-                        yBot -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-                    if (yBot < context->rowsNo - 1)
-                        yBot += 1;
-                    break;
-                default:
-                    break;
-                }
-            }
-            else if (bottomLeft == context->anchorCellIndex)
-            {
-                switch (keyCode)
-                {
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-                    if (xRight > 0)
-                        xRight -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-                    if (xRight < context->columnsNo - 1)
-                        xRight += 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-                    if (yTop > 0)
-                        yTop -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-                    if (yTop < context->rowsNo - 1)
-                        yTop += 1;
-                    break;
-                default:
-                    break;
-                }
-            }
-            else if (bottomRight == context->anchorCellIndex)
-            {
-                switch (keyCode)
-                {
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-                    if (xLeft > 0)
-                        xLeft -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-                    if (xLeft < context->columnsNo - 1)
-                        xLeft += 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-                    if (yTop > 0)
-                        yTop -= 1;
-                    break;
-                case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
-                    if (yTop < context->rowsNo - 1)
-                        yTop += 1;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            context->selectedCellsIndexes.clear();
-            for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
-            {
-                for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
-                {
-                    const auto current = context->columnsNo * j + i;
-                    context->selectedCellsIndexes.emplace_back(current);
-                }
-            }
-
             return true;
         }
         break;
@@ -311,163 +95,17 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             return true;
         }
     case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::C:
-    {
-        auto xLeft  = 0xFFFFFFFFU;
-        auto xRight = 0U;
-
-        auto yTop = 0xFFFFFFFFU;
-        auto yBot = 0U;
-
-        for (const auto& i : context->selectedCellsIndexes)
+        if (CopySelectedCellsContent())
         {
-            const auto colIndex = i % context->columnsNo;
-            const auto rowIndex = i / context->columnsNo;
-
-            xLeft  = std::min<>(xLeft, colIndex);
-            xRight = std::max<>(xRight, colIndex);
-
-            yTop = std::min<>(yTop, rowIndex);
-            yBot = std::max<>(yBot, rowIndex);
+            return true;
         }
-
-        LocalUnicodeStringBuilder<2048> lusb;
-        for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
-        {
-            for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
-            {
-                ConstString cs;
-                const auto current = context->columnsNo * j + i;
-                const auto& it     = context->cells.find(current);
-                if (it != context->cells.end())
-                {
-                    const auto& data = it->second;
-                    switch (data.ct)
-                    {
-                    case CellType::Boolean:
-                        if (std::holds_alternative<bool>(data.content))
-                        {
-                            const auto value = std::get<bool>(data.content);
-                            if (value)
-                            {
-                                cs = "True";
-                            }
-                            else
-                            {
-                                cs = "False";
-                            }
-                        }
-                        break;
-                    case CellType::String:
-                        if (std::holds_alternative<std::u16string>(data.content))
-                        {
-                            const auto& value = std::get<std::u16string>(data.content);
-                            cs                = value;
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                }
-
-                lusb.Add(cs);
-
-                if (i < std::max<>(xLeft, xRight))
-                {
-                    lusb.Add(context->separator);
-                }
-            }
-            lusb.Add("\n");
-        }
-
-        if (AppCUI::OS::Clipboard::SetText(lusb) == false)
-        {
-            const std::string input{ lusb };
-            LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
-        }
-    }
-    break;
-
+        break;
     case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::V:
-    {
-        // seems slow - a lower level parser might be better - we'll see
-        LocalUnicodeStringBuilder<2048> lusb{};
-        AppCUI::OS::Clipboard::GetText(lusb);
-
-        const std::u16string input{ lusb };
-
-        size_t last = 0;
-        size_t next = 0;
-        std::vector<std::u16string> lines;
-        lines.reserve(50);
-        while ((next = input.find(u"\n", last)) != std::string::npos)
+        if (PasteContentToSelectedCells())
         {
-            lines.emplace_back(input.substr(last, next - last));
-            last = next + context->separator.length();
+            return true;
         }
-        const auto lastLine = input.substr(last);
-        if (lastLine != u"")
-        {
-            lines.emplace_back(lastLine);
-        }
-
-        std::vector<std::u16string> tokens;
-        tokens.reserve(50);
-        for (const auto& line : lines)
-        {
-            size_t last = 0;
-            size_t next = 0;
-            while ((next = line.find(context->separator, last)) != std::string::npos)
-            {
-                tokens.emplace_back(line.substr(last, next - last));
-                last = next + context->separator.length();
-            }
-            tokens.emplace_back(line.substr(last));
-        }
-
-        if (tokens.size() > context->selectedCellsIndexes.size())
-        {
-            const auto delta = context->selectedCellsIndexes.size() - tokens.size() + 1;
-            const auto start = tokens.begin() + context->selectedCellsIndexes.size() - 1U;
-
-            LocalUnicodeStringBuilder<2048> lusbLastToken;
-            for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
-            {
-                lusbLastToken.Add(*i);
-            }
-
-            tokens.erase(start, tokens.end());
-
-            std::u16string lastToken{ lusbLastToken };
-            tokens.emplace_back(lastToken);
-        }
-
-        auto index = context->selectedCellsIndexes.begin();
-        for (const auto& token : tokens)
-        {
-            auto& data = context->cells.at(*index);
-
-            switch (data.ct)
-            {
-            case CellType::Boolean:
-                if (std::holds_alternative<bool>(data.content))
-                {
-                    data.content = (token.compare(u"True") == 0);
-                }
-                break;
-            case CellType::String:
-                if (std::holds_alternative<std::u16string>(data.content))
-                {
-                    data.content = token;
-                }
-                break;
-            default:
-                break;
-            }
-
-            std::advance(index, 1);
-        }
-    }
-    break;
+        break;
     default:
         break;
     }
@@ -1088,6 +726,425 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
     context->selectedCellsIndexes.erase(
           std::unique(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end()),
           context->selectedCellsIndexes.end());
+}
+
+bool AppCUI::Controls::Grid::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->selectedCellsIndexes.size() == 0)
+    {
+        context->anchorCellIndex = 0;
+        context->selectedCellsIndexes.emplace_back(0);
+        return true;
+    }
+
+    if (context->selectedCellsIndexes.size() == 1)
+    {
+        const auto index = context->selectedCellsIndexes[0];
+        auto columnIndex = index % context->columnsNo;
+        auto rowIndex    = index / context->columnsNo;
+
+        if (columnIndex > 0)
+        {
+            columnIndex -= (keyCode == AppCUI::Input::Key::Left);
+        }
+        if (columnIndex < context->columnsNo - 1)
+        {
+            columnIndex += (keyCode == AppCUI::Input::Key::Right);
+        }
+
+        if (rowIndex > 0)
+        {
+            rowIndex -= (keyCode == AppCUI::Input::Key::Up);
+        }
+        if (rowIndex < context->rowsNo - 1)
+        {
+            rowIndex += (keyCode == AppCUI::Input::Key::Down);
+        }
+
+        const auto newCellIndex = context->columnsNo * rowIndex + columnIndex;
+        if (newCellIndex != index)
+        {
+            context->anchorCellIndex         = newCellIndex;
+            context->selectedCellsIndexes[0] = newCellIndex;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->selectedCellsIndexes.size() == 0)
+    {
+        context->anchorCellIndex = 0;
+        context->selectedCellsIndexes.emplace_back(0);
+        return true;
+    }
+
+    {
+        const auto anchorColumnIndex = context->anchorCellIndex % context->columnsNo;
+        const auto anchorRowIndex    = context->anchorCellIndex / context->columnsNo;
+
+        auto xLeft  = anchorColumnIndex;
+        auto xRight = anchorColumnIndex;
+
+        auto yTop = anchorRowIndex;
+        auto yBot = anchorRowIndex;
+
+        for (const auto& i : context->selectedCellsIndexes)
+        {
+            const auto colIndex = i % context->columnsNo;
+            const auto rowIndex = i / context->columnsNo;
+
+            xLeft  = std::min<>(xLeft, colIndex);
+            xRight = std::max<>(xRight, colIndex);
+
+            yTop = std::min<>(yTop, rowIndex);
+            yBot = std::max<>(yBot, rowIndex);
+        }
+
+        const auto topLeft     = context->columnsNo * yTop + xLeft;
+        const auto topRight    = context->columnsNo * yTop + xRight;
+        const auto bottomLeft  = context->columnsNo * yBot + xLeft;
+        const auto bottomRight = context->columnsNo * yBot + xRight;
+
+        if (context->selectedCellsIndexes.size() == 1)
+        {
+            switch (keyCode)
+            {
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                if (xLeft > 0)
+                    xLeft -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                if (xRight < context->columnsNo - 1)
+                    xRight += 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                if (yBot > 0)
+                    yBot -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                if (yBot < context->rowsNo - 1)
+                    yBot += 1;
+                break;
+            default:
+                break;
+            }
+        }
+        else if (topLeft == context->anchorCellIndex)
+        {
+            switch (keyCode)
+            {
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                if (xRight > 0)
+                    xRight -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                if (xRight < context->columnsNo - 1)
+                    xRight += 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                if (yBot > 0)
+                    yBot -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                if (yBot < context->rowsNo - 1)
+                    yBot += 1;
+                break;
+            default:
+                break;
+            }
+        }
+        else if (topRight == context->anchorCellIndex)
+        {
+            switch (keyCode)
+            {
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                if (xLeft > 0)
+                    xLeft -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                if (xLeft < context->columnsNo - 1)
+                    xLeft += 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                if (yBot > 0)
+                    yBot -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                if (yBot < context->rowsNo - 1)
+                    yBot += 1;
+                break;
+            default:
+                break;
+            }
+        }
+        else if (bottomLeft == context->anchorCellIndex)
+        {
+            switch (keyCode)
+            {
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                if (xRight > 0)
+                    xRight -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                if (xRight < context->columnsNo - 1)
+                    xRight += 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                if (yTop > 0)
+                    yTop -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                if (yTop < context->rowsNo - 1)
+                    yTop += 1;
+                break;
+            default:
+                break;
+            }
+        }
+        else if (bottomRight == context->anchorCellIndex)
+        {
+            switch (keyCode)
+            {
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+                if (xLeft > 0)
+                    xLeft -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+                if (xLeft < context->columnsNo - 1)
+                    xLeft += 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+                if (yTop > 0)
+                    yTop -= 1;
+                break;
+            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+                if (yTop < context->rowsNo - 1)
+                    yTop += 1;
+                break;
+            default:
+                break;
+            }
+        }
+
+        context->selectedCellsIndexes.clear();
+        for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
+        {
+            for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
+            {
+                const auto current = context->columnsNo * j + i;
+                context->selectedCellsIndexes.emplace_back(current);
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool AppCUI::Controls::Grid::ToggleBooleanCell()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->selectedCellsIndexes.size() != 1)
+    {
+        return false;
+    }
+    {
+        const auto index    = context->selectedCellsIndexes[0];
+        auto& cellData      = context->cells[index];
+        const auto cellType = cellData.ct;
+        if (cellType != Grid::CellType::Boolean)
+        {
+            return false;
+        }
+
+        auto& content = cellData.content;
+        if (std::holds_alternative<bool>(content) == false)
+        {
+            return false;
+        }
+
+        const auto value = std::get<bool>(content);
+        content          = !value;
+        return true;
+    }
+
+    return false;
+}
+
+bool AppCUI::Controls::Grid::CopySelectedCellsContent() const
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    auto xLeft  = 0xFFFFFFFFU;
+    auto xRight = 0U;
+
+    auto yTop = 0xFFFFFFFFU;
+    auto yBot = 0U;
+
+    for (const auto& i : context->selectedCellsIndexes)
+    {
+        const auto colIndex = i % context->columnsNo;
+        const auto rowIndex = i / context->columnsNo;
+
+        xLeft  = std::min<>(xLeft, colIndex);
+        xRight = std::max<>(xRight, colIndex);
+
+        yTop = std::min<>(yTop, rowIndex);
+        yBot = std::max<>(yBot, rowIndex);
+    }
+
+    LocalUnicodeStringBuilder<2048> lusb;
+    for (auto j = std::min<>(yBot, yTop); j <= std::max<>(yBot, yTop); j++)
+    {
+        for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
+        {
+            ConstString cs;
+            const auto current = context->columnsNo * j + i;
+            const auto& it     = context->cells.find(current);
+            if (it != context->cells.end())
+            {
+                const auto& data = it->second;
+                switch (data.ct)
+                {
+                case CellType::Boolean:
+                    if (std::holds_alternative<bool>(data.content))
+                    {
+                        const auto value = std::get<bool>(data.content);
+                        if (value)
+                        {
+                            cs = "True";
+                        }
+                        else
+                        {
+                            cs = "False";
+                        }
+                    }
+                    break;
+                case CellType::String:
+                    if (std::holds_alternative<std::u16string>(data.content))
+                    {
+                        const auto& value = std::get<std::u16string>(data.content);
+                        cs                = value;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            lusb.Add(cs);
+
+            if (i < std::max<>(xLeft, xRight))
+            {
+                lusb.Add(context->separator);
+            }
+        }
+        lusb.Add("\n");
+    }
+
+    if (AppCUI::OS::Clipboard::SetText(lusb) == false)
+    {
+        const std::string input{ lusb };
+        LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
+        return false;
+    }
+
+    return false;
+}
+
+bool AppCUI::Controls::Grid::PasteContentToSelectedCells()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    // seems slow - a lower level parser might be better - we'll see
+    LocalUnicodeStringBuilder<2048> lusb{};
+    AppCUI::OS::Clipboard::GetText(lusb);
+
+    const std::u16string input{ lusb };
+
+    size_t last = 0;
+    size_t next = 0;
+    std::vector<std::u16string> lines;
+    lines.reserve(50);
+    while ((next = input.find(u"\n", last)) != std::string::npos)
+    {
+        lines.emplace_back(input.substr(last, next - last));
+        last = next + context->separator.length();
+    }
+    const auto lastLine = input.substr(last);
+    if (lastLine != u"")
+    {
+        lines.emplace_back(lastLine);
+    }
+
+    std::vector<std::u16string> tokens;
+    tokens.reserve(50);
+    for (const auto& line : lines)
+    {
+        size_t last = 0;
+        size_t next = 0;
+        while ((next = line.find(context->separator, last)) != std::string::npos)
+        {
+            tokens.emplace_back(line.substr(last, next - last));
+            last = next + context->separator.length();
+        }
+        tokens.emplace_back(line.substr(last));
+    }
+
+    if (tokens.size() > context->selectedCellsIndexes.size())
+    {
+        const auto delta = context->selectedCellsIndexes.size() - tokens.size() + 1;
+        const auto start = tokens.begin() + context->selectedCellsIndexes.size() - 1U;
+
+        LocalUnicodeStringBuilder<2048> lusbLastToken;
+        for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
+        {
+            lusbLastToken.Add(*i);
+        }
+
+        tokens.erase(start, tokens.end());
+
+        std::u16string lastToken{ lusbLastToken };
+        tokens.emplace_back(lastToken);
+    }
+
+    auto index = context->selectedCellsIndexes.begin();
+    for (const auto& token : tokens)
+    {
+        auto& data = context->cells.at(*index);
+
+        switch (data.ct)
+        {
+        case CellType::Boolean:
+            if (std::holds_alternative<bool>(data.content))
+            {
+                data.content = (token.compare(u"True") == 0);
+            }
+            break;
+        case CellType::String:
+            if (std::holds_alternative<std::u16string>(data.content))
+            {
+                data.content = token;
+            }
+            break;
+        default:
+            break;
+        }
+
+        std::advance(index, 1);
+    }
+
+    return false;
 }
 
 unsigned int AppCUI::Controls::Grid::GetCellsCount() const
