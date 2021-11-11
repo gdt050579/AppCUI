@@ -239,6 +239,9 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj, bool repaint = true)
     }
     if (repaint)
         app->RepaintStatus |= REPAINT_STATUS_DRAW;
+    // restore hover if case
+    if (app->cmdBar->OnMouseMove(app->LastMouseX, app->LastMouseY, repaint))
+        app->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
@@ -494,6 +497,8 @@ AppCUI::Internal::Application::Application()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
     this->InitFlags          = AppCUI::Application::InitializationFlags::None;
+    this->LastMouseX         = -1;
+    this->LastMouseY         = -1;
 }
 AppCUI::Internal::Application::~Application()
 {
@@ -923,6 +928,8 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
 void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::MouseButton button)
 {
     AppCUI::Controls::Control* ctrl;
+    LastMouseX = x;
+    LastMouseY = y;
     switch (MouseLockedObject)
     {
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:

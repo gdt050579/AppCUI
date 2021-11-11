@@ -245,6 +245,7 @@ namespace Internal
 
         AppCUI::Application::InitializationFlags InitFlags;
         unsigned int LastWindowID;
+        int LastMouseX, LastMouseY;
         bool Inited;
 
         Application();
