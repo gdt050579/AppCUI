@@ -5,6 +5,7 @@
 #include <string.h>
 #include <vector>
 #include <map>
+#include <set>
 
 using namespace AppCUI;
 using namespace AppCUI::Graphics;
@@ -622,6 +623,53 @@ class TreeControlContext : public ControlContext
         Utils::UnicodeStringBuilder searchText;
         FilterMode mode{ FilterMode::None };
     } filter{};
+};
+
+enum class GridCellStatus
+{
+    Normal   = 0,
+    Selected = 1,
+    Hovered  = 2
+};
+
+struct GridCellData
+{
+    TextAlignament ta = TextAlignament::Left;
+    Grid::CellType ct = Grid::CellType::String;
+    std::variant<bool, std::u16string> content;
+};
+
+struct GridHeaderCellData
+{
+    TextAlignament ta = TextAlignament::Left;
+    std::u16string content;
+};
+
+class GridControlContext : public ControlContext
+{
+  public:
+    unsigned int columnsNo        = 0;
+    unsigned int rowsNo           = 0;
+    GridFlags flags               = GridFlags::None;
+    unsigned int hoveredCellIndex = 0xFFFFFFFF;
+    unsigned int anchorCellIndex  = 0xFFFFFFFF;
+    std::vector<unsigned int> selectedCellsIndexes;
+
+    unsigned int cWidth           = 0U;
+    unsigned int cHeight          = 0U;
+    unsigned int offsetX          = 0U;
+    unsigned int offsetY          = 0U;
+    const unsigned int headerSize = 1U;
+
+    Menu rightClickMenu;
+
+    std::map<unsigned int, GridCellData> cells;
+    std::u16string separator = u",";
+    std::vector<GridHeaderCellData> headers;
+
+  public:
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j);
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex);
 };
 
 enum class MenuItemType : unsigned int
