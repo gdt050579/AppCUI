@@ -15,20 +15,27 @@ using namespace AppCUI::Utils;
 #define COMMAND_ID_ALT_CTRL          7
 #define COMMAND_ID_CTRL_A            8
 #define COMMAND_ID_CTRL_SHIFT_A      9
+#define COMMAND_ID_CHANGE_STATUS     10
 
 class MyWin : public AppCUI::Controls::Window
 {
     Reference<Label> l1;
+    bool status;
 
   public:
     MyWin() : Window("Command Bar Example", "d:c,w:60,h:10", WindowFlags::None)
     {
         l1 = Factory::Label::Create(this, "", "x:1,y:2,w:56");
+        status = true;
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {
         cmd.SetCommand(Key::F1, "Print Hello World", COMMAND_ID_PRINT_HELLO_WORLD);
         cmd.SetCommand(Key::F2, "Print a number", COMMAND_ID_PRINT_A_NUMBER);
+        if (status)
+            cmd.SetCommand(Key::F3, "Status:ON", COMMAND_ID_CHANGE_STATUS);
+        else
+            cmd.SetCommand(Key::F3, "Status:OFF", COMMAND_ID_CHANGE_STATUS);
         cmd.SetCommand(Key::Alt | Key::F1, "Clear text", COMMAND_ID_CLEAR_TEXT);
         cmd.SetCommand(Key::N1, "Numpad or digit", COMMAND_ID_NUMPAD);
         cmd.SetCommand(Key::Enter, "Some action", COMMAND_ID_ENTER);
@@ -55,6 +62,9 @@ class MyWin : public AppCUI::Controls::Window
             case COMMAND_ID_PRINT_A_NUMBER:
                 l1->SetText("12345");
                 break;
+            case COMMAND_ID_CHANGE_STATUS:
+                status = !status;
+                return true;
             case COMMAND_ID_CLEAR_TEXT:
                 l1->SetText("");
                 break;
