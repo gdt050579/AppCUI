@@ -28,9 +28,7 @@ Shortcut = Ctrl+Alt+F5
 hexBuffer = hex:"00 20 FF 30"
 
 [Arrays]
-primeNumbers = [1,2,3,5,7,11,13,17,19]
-
-)INI";
+primeNumbers = [1,2,3,5,7,11,13,17,19])INI";
 
 void CreateMyIni()
 {

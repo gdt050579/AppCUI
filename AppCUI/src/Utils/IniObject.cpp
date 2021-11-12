@@ -368,6 +368,10 @@ void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
             wordEnds--;
         wordEnds++;
     }
+    else
+    {
+        wordEnds = end;
+    }
 }
 void AppCUI::Ini::Parser::SkipArrayWord()
 {
