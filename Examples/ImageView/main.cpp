@@ -6562,7 +6562,7 @@ class MainWin : public Window
 
         Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
         cbMethod = Factory::ComboBox::Create(
-              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,GrayScale,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
         Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
@@ -6579,6 +6579,8 @@ class MainWin : public Window
         case 1:
             return ImageRenderingMethod::PixelTo64ColorsLargeBlock;
         case 2:
+            return ImageRenderingMethod::GrayScale;
+        case 3:
             return ImageRenderingMethod::AsciiArt;
         default:
             return ImageRenderingMethod::PixelTo16ColorsSmallBlock;
@@ -6644,7 +6646,12 @@ class MainWin : public Window
                     {
                         for (unsigned int b = 0; b <= 256; b += 32)
                         {
-                            img.SetPixel(x, y, std::min<>(r, 255U), std::min<>(g, 255U), std::min<>(b, 255U), 255);
+                            img.SetPixel(
+                                  x,
+                                  y,
+                                  { (unsigned char) std::min<>(r, 255U),
+                                    (unsigned char) std::min<>(g, 255U),
+                                    (unsigned char) std::min<>(b, 255U) });
                             x++;
                             if (x == img.GetWidth())
                             {
@@ -6667,7 +6674,7 @@ class MainWin : public Window
                     for (unsigned int x = 0; x < 16; x++)
                     {
                         img.SetPixel(
-                              x, bit - 1, x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1));
+                              x, bit - 1, Pixel( x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1) ));
                     }
                 }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());

@@ -1387,11 +1387,11 @@ inline unsigned int Channel_To_Index16(unsigned int rgbChannelValue)
         return 1;
     return 2;
 }
-Color RGB_to_16Color(unsigned int colorRGB)
+Color RGB_to_16Color(Pixel colorRGB)
 {
-    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);         // blue channel
-    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF);  // green channel
-    unsigned int r = Channel_To_Index16((colorRGB >> 16) & 0xFF); // red channel
+    unsigned int b = Channel_To_Index16(colorRGB.Blue);  // blue channel
+    unsigned int g = Channel_To_Index16(colorRGB.Green); // green channel
+    unsigned int r = Channel_To_Index16(colorRGB.Red);   // red channel
     return _color_map_16_[r * 9 + g * 3 + b];
 }
 
@@ -1402,13 +1402,13 @@ inline unsigned int Channel_Diff(unsigned int v1, unsigned int v2)
     else
         return v2 - v1;
 }
-void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
+void PixelTo64Color(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
 {
     // linear search - not efficient but good enough for the first implementation
     // in the future should be changed to a lookup table
-    unsigned int R = (colorRGB >> 16) & 0xFF;
-    unsigned int G = (colorRGB >> 8) & 0xFF;
-    unsigned int B = (colorRGB) &0xFF;
+    unsigned int R = colorRGB.Red;
+    unsigned int G = colorRGB.Green;
+    unsigned int B = colorRGB.Blue;
 
     unsigned int composeR = 0;
     unsigned int composeG = 0;
@@ -1451,7 +1451,21 @@ void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
         }
     }
 }
-
+void PixelToGrayScaleCharacter(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
+{
+    auto val = colorRGB.ToGrayScale();
+    c        = ColorPair{ Color::White, Color::Black };
+    if (val < 12)
+        ch = SpecialChars::Block0;
+    else if (val<37)
+        ch = SpecialChars::Block25;
+    else if (val < 62)
+        ch = SpecialChars::Block50;
+    else if (val < 87)
+        ch = SpecialChars::Block75;
+    else
+        ch = SpecialChars::Block100;
+}
 void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w     = img.GetWidth();
@@ -1497,6 +1511,28 @@ void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
         }
     }
 }
+void Paint_GrayScale(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w    = img.GetWidth();
+    const auto h    = img.GetHeight();
+    int px          = 0;
+    ColorPair cp    = NoColorPair;
+    SpecialChars sc = SpecialChars::Block100;
+    for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += rap, px += 2)
+        {
+            if (rap == 1)
+                PixelToGrayScaleCharacter(img.GetPixel(img_x, img_y), cp, sc);
+            else
+                PixelToGrayScaleCharacter(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
+
+            // r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
+        }
+    }
+}
 Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
 {
     auto rap       = static_cast<unsigned int>(scale);
@@ -1513,6 +1549,7 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
         h = h / (2 * rap);
         break;
     case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+    case ImageRenderingMethod::GrayScale:
         w = (w * 2) / rap;
         h = h / rap;
         break;
@@ -1538,6 +1575,9 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
         return true;
     case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
         Paint_LargeBlocks(*this, img, x, y, rap);
+        return true;
+    case ImageRenderingMethod::GrayScale:
+        Paint_GrayScale(*this, img, x, y, rap);
         return true;
     case ImageRenderingMethod::AsciiArt:
         NOT_IMPLEMENTED(false);

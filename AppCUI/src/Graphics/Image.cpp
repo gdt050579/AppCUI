@@ -2,33 +2,27 @@
 
 using namespace AppCUI::Graphics;
 
-#define COMPUTE_RGB(r, g, b)                                                                                           \
-    ((((unsigned int) ((r) &0xFF)) << 16) | (((unsigned int) ((g) &0xFF)) << 8) | ((unsigned int) ((b) &0xFF)))
-#define COMPUTE_ARGB(a, r, g, b)                                                                                       \
-    ((((unsigned int) ((a) &0xFF)) << 24) | (((unsigned int) ((r) &0xFF)) << 16) |                                     \
-     (((unsigned int) ((g) &0xFF)) << 8) | ((unsigned int) ((b) &0xFF)))
-
-static const unsigned int Image_ConsoleColors[16] = {
-    COMPUTE_RGB(0, 0, 0),       // Black
-    COMPUTE_RGB(0, 0, 128),     // DarkBlue
-    COMPUTE_RGB(0, 128, 0),     // DarkGreen
-    COMPUTE_RGB(0, 128, 128),   // Teal
-    COMPUTE_RGB(128, 0, 0),     // DarkRed
-    COMPUTE_RGB(128, 0, 128),   // Purple
-    COMPUTE_RGB(128, 128, 0),   // Brown
-    COMPUTE_RGB(192, 192, 192), // LightGray
-    COMPUTE_RGB(128, 128, 128), // DarkGray
-    COMPUTE_RGB(0, 0, 255),     // Blue
-    COMPUTE_RGB(0, 255, 0),     // Green
-    COMPUTE_RGB(0, 255, 255),   // Aqua
-    COMPUTE_RGB(255, 0, 0),     // Red
-    COMPUTE_RGB(255, 0, 255),   // Pink
-    COMPUTE_RGB(255, 255, 0),   // Yellow
-    COMPUTE_RGB(255, 255, 255), // White
+static const Pixel Image_ConsoleColors[16] = {
+    Pixel(0, 0, 0),       // Black
+    Pixel(0, 0, 128),     // DarkBlue
+    Pixel(0, 128, 0),     // DarkGreen
+    Pixel(0, 128, 128),   // Teal
+    Pixel(128, 0, 0),     // DarkRed
+    Pixel(128, 0, 128),   // Purple
+    Pixel(128, 128, 0),   // Brown
+    Pixel(192, 192, 192), // LightGray
+    Pixel(128, 128, 128), // DarkGray
+    Pixel(0, 0, 255),     // Blue
+    Pixel(0, 255, 0),     // Green
+    Pixel(0, 255, 255),   // Aqua
+    Pixel(255, 0, 0),     // Red
+    Pixel(255, 0, 255),   // Pink
+    Pixel(255, 255, 0),   // Yellow
+    Pixel(255, 255, 255), // White
 };
 
 #define CHECK_INDEX(errorValue)                                                                                        \
-    unsigned int* pixel;                                                                                               \
+    Pixel* pixel;                                                                                               \
     CHECK(Pixels != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");         \
     CHECK(x < Width,                                                                                                   \
           errorValue,                                                                                                  \
@@ -85,13 +79,13 @@ bool Image::Create(unsigned int width, unsigned int height)
         Pixels = nullptr;
         Width = Height = 0;
     }
-    Pixels = new unsigned int[width * height];
+    Pixels = new Pixel[width * height];
     CHECK(Pixels != nullptr, false, "Unable to alocate space for an %d x %d image", width, height);
-    unsigned int* s = Pixels;
-    unsigned int* e = s + width * height;
+    auto* s = Pixels;
+    auto* e = s + width * height;
     while (s < e)
     {
-        (*s) = 0;
+        s->ColorValue = 0;
         s++;
     }
     Width  = width;
@@ -114,7 +108,7 @@ bool Image::Create(unsigned int width, unsigned int height, std::string_view ima
     }
     return true;
 }
-bool Image::SetPixel(unsigned int x, unsigned int y, unsigned int color)
+bool Image::SetPixel(unsigned int x, unsigned int y, Pixel color)
 {
     CHECK_INDEX(false);
     *pixel = color;
@@ -129,11 +123,11 @@ bool Image::SetPixel(unsigned int x, unsigned int y, const Color color)
     return true;
 }
 
-bool Image::Clear(unsigned int color)
+bool Image::Clear(Pixel color)
 {
     CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
-    unsigned int* s = Pixels;
-    unsigned int* e = s + (size_t)Width * (size_t)Height;
+    auto* s = Pixels;
+    auto* e = s + (size_t)Width * (size_t)Height;
     while (s < e)
     {
         (*s) = color;
@@ -146,29 +140,21 @@ bool Image::Clear(const Color color)
     VALIDATE_CONSOLE_INDEX;
     return Clear(Image_ConsoleColors[(unsigned int) color]);
 }
-
-bool Image::SetPixel(
-      unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue, unsigned char Alpha)
-{
-    CHECK_INDEX(false);
-    *pixel = COMPUTE_ARGB(Alpha, Red, Green, Blue);
-    return true;
-}
-unsigned int Image::GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue) const
+Pixel Image::GetPixel(unsigned int x, unsigned int y, Pixel invalidIndexValue) const
 {
     CHECK_INDEX(invalidIndexValue);
     return *pixel;
 }
-bool Image::GetPixel(unsigned int x, unsigned int y, unsigned int& color) const
+bool Image::GetPixel(unsigned int x, unsigned int y, Pixel& color) const
 {
     CHECK_INDEX(false);
     color = (*pixel);
     return true;
 }
-unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
+Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
 {
     if ((x >= this->Width) || (y >= this->Height) || (sz==0))
-        return 0;  // nothing to compute
+        return Pixel(0U); // nothing to compute
     unsigned int e_x = x + sz;
     unsigned int e_y = y + sz;
     if (e_x >= this->Width)
@@ -182,17 +168,17 @@ unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, un
     unsigned int sum_g = 0;
     unsigned int sum_b = 0;
     if ((xSize == 0) || (ySize == 0))
-        return 0; // nothing to compute (sanity check)
+        return Pixel(0U); // nothing to compute (sanity check)
 
     while (y<e_y)
     {
-        unsigned int* p = sPtr;
-        unsigned int* e = p + (size_t)xSize;
+        auto* p = sPtr;
+        auto* e = p + (size_t)xSize;
         while (p<e)
         {
-            sum_r += ((*p) >> 16) & 0xFF;
-            sum_g += ((*p) >> 8) & 0xFF;
-            sum_b += (*p) & 0xFF;
+            sum_r += p->Red;
+            sum_g += p->Green;
+            sum_b += p->Blue;
             p++;
         }
         sPtr += Width; // move to next line
@@ -202,7 +188,5 @@ unsigned int Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, un
     const auto result_r            = sum_r / totalPixesl;
     const auto result_g            = sum_g / totalPixesl;
     const auto result_b            = sum_b / totalPixesl;
-    return COMPUTE_RGB(result_r, result_g, result_b);
+    return Pixel(result_r, result_g, result_b);
 }
-#undef COMPUTE_RGB
-#undef COMPUTE_ARGB
