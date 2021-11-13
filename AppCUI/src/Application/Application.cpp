@@ -1108,10 +1108,13 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             }
             toDelete.clear();
         }
+        if (this->cmdBarUpdate)
+        {            
+            UpdateCommandBar();
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        }
         if (RepaintStatus != REPAINT_STATUS_NONE)
         {
-            if (this->cmdBarUpdate)
-                UpdateCommandBar();
             if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
                 ComputePositions();
             if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
@@ -1219,7 +1222,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
     if (ctrl != nullptr)
     {
         RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::Command, command);
-        UpdateCommandBar();
+        this->cmdBarUpdate = true;
     }
 }
 void AppCUI::Internal::Application::RaiseEvent(
