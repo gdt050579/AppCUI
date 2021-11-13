@@ -28,7 +28,7 @@ void CommandBarController::Clear()
     CurrentVersion++;
     if (CurrentVersion == 0)
     {
-        // curat toate campurile
+        // clean all fields
         for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
         {
             CommandBarField* b = &Fields[tr][0];
@@ -39,7 +39,7 @@ void CommandBarController::Clear()
                 b++;
             }
         }
-        // Versiunea nu poate fi niciodata 0 (ala e doar punct de reset - este tot timpul minim 1
+        // Versiunea should always be bigger than 0
         CurrentVersion = 1;
     }
     for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
