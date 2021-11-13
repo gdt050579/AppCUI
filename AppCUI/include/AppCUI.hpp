@@ -1980,6 +1980,16 @@ namespace Graphics
         explicit Pixel(unsigned int value) : ColorValue(value)
         {
         }
+        inline unsigned int ToGrayScale() const
+        {
+            return ((((unsigned int) Red) + ((unsigned int) Blue) + ((unsigned int) Green) + ((unsigned int) Alpha)) *
+                    100U) /
+                   (255U << 2);
+        }
+        inline unsigned int ToGrayScaleIgnoringAlphs() const
+        {
+            return (((((unsigned int) Red) + ((unsigned int) Blue) + ((unsigned int) Green))) * 100U) / (255U * 3);
+        }
     };
     class EXPORT Image
     {
@@ -3474,11 +3484,11 @@ namespace Controls
               const std::variant<bool, ConstString>& content,
               AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
         bool UpdateCell(
-            unsigned int x,
-            unsigned int y,
-            CellType cellType,
-            const std::variant<bool, ConstString>& content,
-            AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
+              unsigned int x,
+              unsigned int y,
+              CellType cellType,
+              const std::variant<bool, ConstString>& content,
+              AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
         bool UpdateHeaderValues(
