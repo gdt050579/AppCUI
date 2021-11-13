@@ -1549,6 +1549,7 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
         h = h / (2 * rap);
         break;
     case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
+    case ImageRenderingMethod::GrayScale:
         w = (w * 2) / rap;
         h = h / rap;
         break;
