@@ -1960,9 +1960,30 @@ namespace Graphics
         Scale10 = 10,
         Scale5  = 20
     };
+    struct EXPORT Pixel
+    {
+        union
+        {
+            unsigned int ColorValue;
+            struct
+            {
+                unsigned char Blue, Green, Red, Alpha;
+            };
+        };
+        Pixel() : ColorValue(0)
+        {
+        }
+        Pixel(unsigned char red, unsigned char green, unsigned char blue)
+            : Red(red), Green(green), Blue(blue), Alpha(255)
+        {
+        }
+        explicit Pixel(unsigned int value) : ColorValue(value)
+        {
+        }
+    };
     class EXPORT Image
     {
-        unsigned int* Pixels;
+        Pixel* Pixels;
         unsigned int Width;
         unsigned int Height;
 
@@ -1972,18 +1993,12 @@ namespace Graphics
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
-        bool SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
-        bool SetPixel(
-              unsigned int x,
-              unsigned int y,
-              unsigned char Red,
-              unsigned char Green,
-              unsigned char Blue,
-              unsigned char Alpha = 255);
-        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
-        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
-        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
-        bool Clear(unsigned int color);
+        bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
+
+        Pixel GetPixel(unsigned int x, unsigned int y, Pixel invalidIndexValue = {}) const;
+        bool GetPixel(unsigned int x, unsigned int y, Pixel& color) const;
+        Pixel ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
+        bool Clear(Pixel color);
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
         {
@@ -1993,7 +2008,7 @@ namespace Graphics
         {
             return Height;
         }
-        inline unsigned int* GetPixelsBuffer() const
+        inline Pixel* GetPixelsBuffer() const
         {
             return Pixels;
         }

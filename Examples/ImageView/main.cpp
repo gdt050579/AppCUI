@@ -6644,7 +6644,12 @@ class MainWin : public Window
                     {
                         for (unsigned int b = 0; b <= 256; b += 32)
                         {
-                            img.SetPixel(x, y, std::min<>(r, 255U), std::min<>(g, 255U), std::min<>(b, 255U), 255);
+                            img.SetPixel(
+                                  x,
+                                  y,
+                                  { (unsigned char) std::min<>(r, 255U),
+                                    (unsigned char) std::min<>(g, 255U),
+                                    (unsigned char) std::min<>(b, 255U) });
                             x++;
                             if (x == img.GetWidth())
                             {
@@ -6667,7 +6672,7 @@ class MainWin : public Window
                     for (unsigned int x = 0; x < 16; x++)
                     {
                         img.SetPixel(
-                              x, bit - 1, x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1));
+                              x, bit - 1, Pixel( x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1) ));
                     }
                 }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());

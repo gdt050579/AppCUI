@@ -1387,11 +1387,11 @@ inline unsigned int Channel_To_Index16(unsigned int rgbChannelValue)
         return 1;
     return 2;
 }
-Color RGB_to_16Color(unsigned int colorRGB)
+Color RGB_to_16Color(Pixel colorRGB)
 {
-    unsigned int b = Channel_To_Index16(colorRGB & 0xFF);         // blue channel
-    unsigned int g = Channel_To_Index16((colorRGB >> 8) & 0xFF);  // green channel
-    unsigned int r = Channel_To_Index16((colorRGB >> 16) & 0xFF); // red channel
+    unsigned int b = Channel_To_Index16(colorRGB.Blue);  // blue channel
+    unsigned int g = Channel_To_Index16(colorRGB.Green); // green channel
+    unsigned int r = Channel_To_Index16(colorRGB.Red);   // red channel
     return _color_map_16_[r * 9 + g * 3 + b];
 }
 
@@ -1402,13 +1402,13 @@ inline unsigned int Channel_Diff(unsigned int v1, unsigned int v2)
     else
         return v2 - v1;
 }
-void PixelTo64Color(unsigned int colorRGB, ColorPair& c, SpecialChars& ch)
+void PixelTo64Color(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
 {
     // linear search - not efficient but good enough for the first implementation
     // in the future should be changed to a lookup table
-    unsigned int R = (colorRGB >> 16) & 0xFF;
-    unsigned int G = (colorRGB >> 8) & 0xFF;
-    unsigned int B = (colorRGB) &0xFF;
+    unsigned int R = colorRGB.Red;
+    unsigned int G = colorRGB.Green;
+    unsigned int B = colorRGB.Blue;
 
     unsigned int composeR = 0;
     unsigned int composeG = 0;
