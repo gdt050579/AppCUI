@@ -48,9 +48,6 @@ void CommandBarController::Clear()
         IndexesCount[tr] = 0;
     }
     RecomputeScreenPos = true;
-    PressedField       = nullptr;
-    HoveredField       = nullptr;
-    LastCommand        = 0;
 }
 bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command)
 {
