@@ -1948,6 +1948,7 @@ namespace Graphics
     {
         PixelTo16ColorsSmallBlock,
         PixelTo64ColorsLargeBlock,
+        GrayScale,
         AsciiArt
     };
     enum class ImageScaleMethod : unsigned int
@@ -1981,12 +1982,6 @@ namespace Graphics
         {
         }
         inline unsigned int ToGrayScale() const
-        {
-            return ((((unsigned int) Red) + ((unsigned int) Blue) + ((unsigned int) Green) + ((unsigned int) Alpha)) *
-                    100U) /
-                   (255U << 2);
-        }
-        inline unsigned int ToGrayScaleIgnoringAlphs() const
         {
             return (((((unsigned int) Red) + ((unsigned int) Blue) + ((unsigned int) Green))) * 100U) / (255U * 3);
         }

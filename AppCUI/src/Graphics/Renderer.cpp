@@ -1451,7 +1451,21 @@ void PixelTo64Color(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
         }
     }
 }
-
+void PixelToGrayScaleCharacter(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
+{
+    auto val = colorRGB.ToGrayScale();
+    c        = ColorPair{ Color::White, Color::Black };
+    if (val < 12)
+        ch = SpecialChars::Block0;
+    else if (val<37)
+        ch = SpecialChars::Block25;
+    else if (val < 62)
+        ch = SpecialChars::Block50;
+    else if (val < 87)
+        ch = SpecialChars::Block75;
+    else
+        ch = SpecialChars::Block100;
+}
 void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w     = img.GetWidth();
@@ -1491,6 +1505,28 @@ void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
                 PixelTo64Color(img.GetPixel(img_x, img_y), cp, sc);
             else
                 PixelTo64Color(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
+
+            // r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
+            r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
+        }
+    }
+}
+void Paint_GrayScale(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+{
+    const auto w    = img.GetWidth();
+    const auto h    = img.GetHeight();
+    int px          = 0;
+    ColorPair cp    = NoColorPair;
+    SpecialChars sc = SpecialChars::Block100;
+    for (unsigned int img_y = 0; img_y < h; img_y += rap, y++)
+    {
+        px = x;
+        for (unsigned int img_x = 0; img_x < w; img_x += rap, px += 2)
+        {
+            if (rap == 1)
+                PixelToGrayScaleCharacter(img.GetPixel(img_x, img_y), cp, sc);
+            else
+                PixelToGrayScaleCharacter(img.ComputeSquareAverageColor(img_x, img_y, rap), cp, sc);
 
             // r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, ColorPair{ cp, Color::Black });
             r.FillHorizontalLineWithSpecialChar(px, y, px + 1, sc, cp);
@@ -1538,6 +1574,9 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
         return true;
     case ImageRenderingMethod::PixelTo64ColorsLargeBlock:
         Paint_LargeBlocks(*this, img, x, y, rap);
+        return true;
+    case ImageRenderingMethod::GrayScale:
+        Paint_GrayScale(*this, img, x, y, rap);
         return true;
     case ImageRenderingMethod::AsciiArt:
         NOT_IMPLEMENTED(false);

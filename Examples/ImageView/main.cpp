@@ -6562,7 +6562,7 @@ class MainWin : public Window
 
         Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
         cbMethod = Factory::ComboBox::Create(
-              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,GrayScale,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
         Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
@@ -6579,6 +6579,8 @@ class MainWin : public Window
         case 1:
             return ImageRenderingMethod::PixelTo64ColorsLargeBlock;
         case 2:
+            return ImageRenderingMethod::GrayScale;
+        case 3:
             return ImageRenderingMethod::AsciiArt;
         default:
             return ImageRenderingMethod::PixelTo16ColorsSmallBlock;
