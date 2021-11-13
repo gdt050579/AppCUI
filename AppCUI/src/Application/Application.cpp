@@ -224,11 +224,17 @@ AppCUI::Internal::Application* AppCUI::Application::GetApplication()
 {
     return app;
 }
-void UpdateCommandBar(AppCUI::Controls::Control* obj, bool repaint = true)
+AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl);
+void UpdateCommandBar()
 {
     if (!app->cmdBar)
         return;
     app->cmdBar->Clear();
+    AppCUI::Controls::Control* obj;
+    if (app->ModalControlsCount == 0)
+        obj = GetFocusedControl(app->AppDesktop);
+    else
+        obj = GetFocusedControl(app->ModalControlsStack[app->ModalControlsCount - 1]);
     while (obj != nullptr)
     {
         // on handler
@@ -236,12 +242,11 @@ void UpdateCommandBar(AppCUI::Controls::Control* obj, bool repaint = true)
             break;
 
         obj = ((ControlContext*) (obj->Context))->Parent;
-    }
-    if (repaint)
-        app->RepaintStatus |= REPAINT_STATUS_DRAW;
+    }       
     // restore hover if case
-    if (app->cmdBar->OnMouseMove(app->LastMouseX, app->LastMouseY, repaint))
-        app->RepaintStatus |= REPAINT_STATUS_DRAW;
+    bool repaint;
+    app->cmdBar->OnMouseMove(app->LastMouseX, app->LastMouseY, repaint);
+    app->cmdBarUpdate = false;
 }
 void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
 {
@@ -263,7 +268,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
                 Members->handlers->OnFocus.obj->OnFocus(ctrl);
             else
                 ctrl->OnFocus();
-            UpdateCommandBar(ctrl, false);
+            app->cmdBarUpdate = true;
         }
         else
         {
@@ -487,6 +492,7 @@ AppCUI::Internal::Application::Application()
 {
     this->terminal           = nullptr;
     this->Inited             = false;
+    this->cmdBarUpdate       = true;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
     this->ExpandedControl    = nullptr;
@@ -1082,11 +1088,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         ModalControlsStack[ModalControlsCount] = ctrl;
         ModalControlsCount++;
     }
-    // update la acceleratori
-    if (ModalControlsCount == 0)
-        UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-    else
-        UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+    // update command bar
+    UpdateCommandBar();
 
     while (LoopStatus == LOOP_STATUS_NORMAL)
     {
@@ -1107,6 +1110,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         }
         if (RepaintStatus != REPAINT_STATUS_NONE)
         {
+            if (this->cmdBarUpdate)
+                UpdateCommandBar();
             if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
                 ComputePositions();
             if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
@@ -1116,8 +1121,10 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 // pentru cazul in care OnFocus sau OnLoseFocus schimba repaint status
                 if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
                     ComputePositions();
+                if (this->cmdBarUpdate)
+                    UpdateCommandBar();
                 if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
-                    Paint();
+                    this->Paint();
                 this->terminal->Update();
             }
             RepaintStatus = REPAINT_STATUS_NONE;
@@ -1180,10 +1187,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     {
         if (ModalControlsCount > 0)
             ModalControlsCount--;
-        if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-        else
-            UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+        UpdateCommandBar();
         if (this->MouseOverControl)
         {
             ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
@@ -1215,12 +1219,7 @@ void AppCUI::Internal::Application::SendCommand(int command)
     if (ctrl != nullptr)
     {
         RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::Command, command);
-        // refac si command bar-ul
-        // update la acceleratori
-        if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-        else
-            UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+        UpdateCommandBar();
     }
 }
 void AppCUI::Internal::Application::RaiseEvent(

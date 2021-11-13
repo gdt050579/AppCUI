@@ -247,6 +247,7 @@ namespace Internal
         unsigned int LastWindowID;
         int LastMouseX, LastMouseY;
         bool Inited;
+        bool cmdBarUpdate;
 
         Application();
         ~Application();
