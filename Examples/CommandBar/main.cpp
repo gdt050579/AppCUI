@@ -18,11 +18,30 @@ using namespace AppCUI::Graphics;
 #define COMMAND_ID_CTRL_SHIFT_A      9
 #define COMMAND_ID_CHANGE_STATUS     10
 
+int cmp_ID = 0;
+
 class MyUserControl : public UserControl
 {
+    Key k;
   public:
     MyUserControl(std::string_view layout) : UserControl("", layout)
     {
+        switch (cmp_ID)
+        {
+        case 0:
+            k = Key ::F5;
+            break;
+        case 1:
+            k = Key::F6;
+            break;
+        case 2:
+            k = Key::F7;
+            break;
+        default:
+            k = Key::F8;
+            break;
+        }
+        cmp_ID++;
     }
     void Paint(AppCUI::Graphics::Renderer& r)
     {
@@ -33,7 +52,7 @@ class MyUserControl : public UserControl
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {
-        cmd.SetCommand(Key::F5, "User Command Specific", COMMAND_ID_PRINT_HELLO_WORLD);
+        cmd.SetCommand(k, "User Command Specific", COMMAND_ID_PRINT_HELLO_WORLD);
         return false;
     }
 };
@@ -65,13 +84,18 @@ class MyWin : public AppCUI::Controls::Window
     MyWin() : Window("Command Bar Example", "d:c,w:60,h:25", WindowFlags::None)
     {
         l1     = Factory::Label::Create(this, "", "x:1,y:2,w:56");
-        auto t = Factory::Tab::Create(this, "x:1,y:3,w:56,h:14", TabFlags::HideTabs);
+        auto t = Factory::Tab::Create(this, "x:1,y:3,w:56,h:14");
         auto tp = Factory::TabPage::Create(t, "TabPage");
         auto v  = Factory::Splitter::Create(tp, "d:c", false);
         auto h = Factory::Splitter::Create(v, "x:1,y:4,w:56,h:10", true);
-        Factory::Button::Create(this, "A botton", "l:1,b:1,w:20", 1234)->SetFocus();
+        Factory::Button::Create(this, "A botton", "l:1,b:1,w:20", 1234);
         h->CreateChildControl<MyUserControl>("x:1,y:4,w:56,h:10");
-        h->CreateChildControl<MyUserControl2>("x:1,y:4,w:56,h:10");
+        v->CreateChildControl<MyUserControl2>("x:1,y:4,w:56,h:10");
+
+        auto t2  = Factory::Tab::Create(h, "d:c");
+        auto tp2= Factory::TabPage::Create(t2, "TabPage");
+        tp2->CreateChildControl<MyUserControl>("d:c");
+
         status = true;
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
