@@ -2,12 +2,6 @@
 
 using namespace AppCUI::Graphics;
 
-//#define COMPUTE_RGB(r, g, b)                                                                                           \
-//    ((((unsigned int) ((r) &0xFF)) << 16) | (((unsigned int) ((g) &0xFF)) << 8) | ((unsigned int) ((b) &0xFF)))
-//#define COMPUTE_ARGB(a, r, g, b)                                                                                       \
-//    ((((unsigned int) ((a) &0xFF)) << 24) | (((unsigned int) ((r) &0xFF)) << 16) |                                     \
-//     (((unsigned int) ((g) &0xFF)) << 8) | ((unsigned int) ((b) &0xFF)))
-
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
     Pixel(0, 0, 128),     // DarkBlue
@@ -196,5 +190,3 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
     const auto result_b            = sum_b / totalPixesl;
     return Pixel(result_r, result_g, result_b);
 }
-#undef COMPUTE_RGB
-#undef COMPUTE_ARGB
