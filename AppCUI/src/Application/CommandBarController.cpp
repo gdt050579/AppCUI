@@ -9,13 +9,23 @@ CommandBarController::CommandBarController(
 {
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
-    CurrentVersion = 0xFFFFFFFF;
-    Clear();
+    ClearCommandUniqueID = 0;
+    for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
+    {
+        CommandBarField* b = &Fields[tr][0];
+        CommandBarField* e = b + (unsigned int) Key::Count;
+        while (b < e)
+        {
+            b->ClearCommandUniqueID = ClearCommandUniqueID;
+            b++;
+        }
+    }
     CurrentShiftKey = AppCUI::Input::Key::None;
     PressedField    = nullptr;
     HoveredField    = nullptr;
     LastCommand     = 0;
     ShiftStatus     = std::string_view("", 0);
+    Clear();
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
 {
@@ -25,23 +35,13 @@ void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned in
 }
 void CommandBarController::Clear()
 {
-    CurrentVersion++;
-    if (CurrentVersion == 0)
-    {
-        // clean all fields
-        for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
-        {
-            CommandBarField* b = &Fields[tr][0];
-            CommandBarField* e = b + (unsigned int) Key::Count;
-            while (b < e)
-            {
-                b->Version = 0;
-                b++;
-            }
-        }
-        // Versiunea should always be bigger than 0
-        CurrentVersion = 1;
-    }
+    // always obtain a new unique ID (whenever a clear command is called)
+    // this allows us NOT to reset all of the previous command (thus being more fast)
+    // as CommandBarController::Clear() is called every time Focus changes -> this technique is important for
+    // performance
+    ClearCommandUniqueID++;
+
+    // Clear shift keys for fast process
     for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
     {
         HasKeys[tr]      = false;
@@ -63,12 +63,12 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::
     CHECK(b->Name.Set(caption), false, "Fail to copy caption");
     CHECK(b->Name.Add(" "), false, "Fail to add extra step !");
 
-    b->Command         = Command;
-    b->KeyCode         = keyCode;
-    b->Version         = CurrentVersion;
-    b->KeyName         = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
-    HasKeys[shift]     = true;
-    RecomputeScreenPos = true;
+    b->Command              = Command;
+    b->KeyCode              = keyCode;
+    b->ClearCommandUniqueID = ClearCommandUniqueID;
+    b->KeyName              = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
+    HasKeys[shift]          = true;
+    RecomputeScreenPos      = true;
     return true;
 }
 void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
@@ -131,7 +131,8 @@ void CommandBarController::ComputeScreenPos()
         int start                     = startPoz;
         while (bf < ef)
         {
-            if (bf->Version == CurrentVersion)
+            // we consider valid only items that were added with a specific ClearCommandUniqueID ID
+            if (bf->ClearCommandUniqueID == this->ClearCommandUniqueID)
             {
                 current->Field = bf;
                 current++;
@@ -241,8 +242,8 @@ int CommandBarController::GetCommandForKey(AppCUI::Input::Key keyCode)
     CHECK(index < (unsigned int) AppCUI::Input::Key::Count, -1, "Invalid key code !");
     CHECK((shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
     CommandBarField* b = &Fields[shift][index];
-    // verific daca e setat
-    if (b->Version != CurrentVersion)
+    // if ClearCommandUniqueID is not thee same as the current one, then its an old item and we discard it
+    if (b->ClearCommandUniqueID != ClearCommandUniqueID)
         return -1;
     return b->Command;
 }
