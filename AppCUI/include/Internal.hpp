@@ -86,7 +86,7 @@ namespace Internal
         AppCUI::Input::Key KeyCode;
         std::string_view KeyName;
         AppCUI::Graphics::CharacterBuffer Name;
-        unsigned int Version;
+        unsigned int ClearCommandUniqueID;
     };
     struct CommandBarFieldIndex
     {
@@ -111,7 +111,7 @@ namespace Internal
         int LastCommand;
         CommandBarField* PressedField;
         CommandBarField* HoveredField;
-        unsigned int CurrentVersion;
+        unsigned int ClearCommandUniqueID;
         bool RecomputeScreenPos;
 
         void ComputeScreenPos();
@@ -247,6 +247,7 @@ namespace Internal
         unsigned int LastWindowID;
         int LastMouseX, LastMouseY;
         bool Inited;
+        bool cmdBarUpdate;
 
         Application();
         ~Application();
