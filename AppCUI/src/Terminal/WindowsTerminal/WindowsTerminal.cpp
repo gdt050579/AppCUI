@@ -84,6 +84,7 @@ bool WindowsTerminal::ResizeConsoleScreenBufferSize(unsigned int width, unsigned
     coord.X     = (SHORT) width;
     coord.Y     = (SHORT) height;
 
+
     CHECK(SetConsoleScreenBufferSize(this->hstdOut, coord),
           false,
           "Fail to resize the console buffer to a %ux%u size (SetConsoleScreenBufferSize has the followin error "
@@ -147,6 +148,60 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
         return currentSize;
 
     CONSOLE_SCREEN_BUFFER_INFOEX csbi;
+    CONSOLE_FONT_INFOEX fnt;
+
+    // check if size is not smaller than the maximum allowed
+    fnt.cbSize = sizeof(fnt);
+    CHECK(GetCurrentConsoleFontEx(this->hstdOut, FALSE, &fnt), Size(), "Fail to get Font information !");
+    CHECK(fnt.dwFontSize.X > 0, Size(), "GetCurrentConsoleFontEx(...) returned an invalid font character width !");
+    CHECK(fnt.dwFontSize.Y > 0, Size(), "GetCurrentConsoleFontEx(...) returned an invalid font character height !");
+    int minWidth  = GetSystemMetrics(SM_CXMIN) / fnt.dwFontSize.X;
+    int minHeight = GetSystemMetrics(SM_CYMIN) / fnt.dwFontSize.Y;    
+    LOG_INFO("Minim size for a console: %dx%d", minWidth, minHeight);
+    CHECK((int) initData.Width >= minWidth,
+          Size(),
+          "Minimal width for a console is %d (requested is %u)",
+          minWidth,
+          initData.Width);
+    CHECK((int) initData.Height >= minHeight,
+          Size(),
+          "Minimal height for a console is %d (requested is %u)",
+          minHeight,
+          initData.Height);
+
+
+    // first resize the window to a smaller value
+    CHECK(ResizeConsoleWindowSize(1, 1), Size(), "");
+    CHECK(ResizeConsoleScreenBufferSize(initData.Width, initData.Height), Size(), "");
+    CHECK(ResizeConsoleWindowSize(initData.Width, initData.Height), Size(), "");
+
+    csbi.cbSize = sizeof(csbi);
+    CHECK(GetConsoleScreenBufferInfoEx(this->hstdOut, &csbi),
+          Size(),
+          "Unable to get console screen buffer info (LastError = 0x%08X)",
+          GetLastError());
+    CHECK(csbi.dwSize.X == initData.Width,
+          Size(),
+          "Console screen buffer width has not changed (curently is %u, expected value is %u)",
+          csbi.dwSize.X,
+          initData.Width);
+    CHECK((csbi.srWindow.Right + 1 - csbi.srWindow.Left) == initData.Width,
+          Size(),
+          "Console window width has not changed (curently is %u, expected value is %u)",
+          (csbi.srWindow.Right + 1 - csbi.srWindow.Left),
+          initData.Width);
+    CHECK(csbi.dwSize.Y == initData.Height,
+          Size(),
+          "Console screen buffer width has not changed (curently is %u, expected value is %u)",
+          csbi.dwSize.Y,
+          initData.Height);
+    CHECK((csbi.srWindow.Bottom + 1 - csbi.srWindow.Top) == initData.Height,
+          Size(),
+          "Console window width has not changed (curently is %u, expected value is %u)",
+          (csbi.srWindow.Bottom + 1 - csbi.srWindow.Top),
+          initData.Height);
+
+    return Size(initData.Width, initData.Height);
 
     // for SetConsoleScreenBufferSize:
     /*
@@ -160,6 +215,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
      * https://docs.microsoft.com/en-us/windows/console/setconsolewindowinfo
      */
 
+    /*
     // if new width is larged then the old width, first resize screen buffer, than window size
     // if new width is smaller then the old width, first resize window size, than screen buffer
     // The height will be kept as it is during this resize
@@ -219,6 +275,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           initData.Height);
 
     return Size(initData.Width, initData.Height);
+    //*/
 }
 
 Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, const Size& currentSize)
