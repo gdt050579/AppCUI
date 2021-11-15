@@ -190,6 +190,22 @@ bool AppCUI::Application::SaveAppSettings()
     CHECK(app->settings.Save(appPath), false, "Fail to save ini setting to file: %s", appPath.string().c_str());
     return true;
 }
+void AppCUI::Application::UpdateAppCUISettings(AppCUI::Utils::IniObject& ini, bool clearExistingSettings)
+{
+    auto sect = ini["AppCUI"];
+    if (clearExistingSettings)
+        sect.Clear();
+    sect.UpdateValue("Frontend", "default", true);
+    sect.UpdateValue("Size", "default", true);
+    sect.UpdateValue("CharacterSize", "default", true);
+    sect.UpdateValue("Fixed", "default", true);
+}
+bool AppCUI::Application::UpdateAppCUISettings(bool clearExistingSettings)
+{
+    CHECK(app, false, "Application has not been initialized !");
+    UpdateAppCUISettings(app->settings, clearExistingSettings);
+    return true;
+}
 void AppCUI::Application::RecomputeControlsLayout()
 {
     app->ComputePositions();
