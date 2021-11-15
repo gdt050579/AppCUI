@@ -356,7 +356,13 @@ bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& init
     csbi.ColorTable[14] = 0x00FFFF;
     csbi.ColorTable[15] = 0xFFFFFF;
 
-    SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
+    // recompute window size
+    csbi.srWindow.Left   = 0;
+    csbi.srWindow.Top    = 0;
+    csbi.srWindow.Right  = csbi.dwSize.X;
+    csbi.srWindow.Bottom = csbi.dwSize.Y;
+
+    auto res = SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
 
     // copy original screen buffer information
     CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
