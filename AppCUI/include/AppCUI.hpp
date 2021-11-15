@@ -4306,6 +4306,7 @@ namespace Application
     EXPORT bool SaveAppSettings();
     EXPORT void UpdateAppCUISettings(AppCUI::Utils::IniObject& ini, bool clearExistingSettings = false);
     EXPORT bool UpdateAppCUISettings(bool clearExistingSettings = false);
+    EXPORT std::filesystem::path GetAppSettingsFile();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);

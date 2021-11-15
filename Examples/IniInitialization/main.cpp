@@ -28,7 +28,7 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("IniInitialization.log");
-
+    LOG_INFO("Settings file: %s", AppCUI::Application::GetAppSettingsFile().c_str());
     if (!Application::Init(InitializationFlags::LoadSettingsFile))
         return 1;
     auto ini = Application::GetAppSettings();

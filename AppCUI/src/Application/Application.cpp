@@ -184,11 +184,17 @@ AppCUI::Utils::IniObject* AppCUI::Application::GetAppSettings()
 bool AppCUI::Application::SaveAppSettings()
 {
     CHECK(app, false, "Application has not been initialized !");
-    auto appPath = AppCUI::OS::GetCurrentApplicationPath();
+    auto appPath = AppCUI::Application::GetAppSettingsFile();
     CHECK(!appPath.empty(), false, "OS::GetCurrentApplicationPath failed !");
-    appPath.replace_extension(".ini");
     CHECK(app->settings.Save(appPath), false, "Fail to save ini setting to file: %s", appPath.string().c_str());
     return true;
+}
+std::filesystem::path AppCUI::Application::GetAppSettingsFile()
+{
+    auto appPath = AppCUI::OS::GetCurrentApplicationPath();
+    CHECK(!appPath.empty(), appPath, "OS::GetCurrentApplicationPath failed !");
+    appPath.replace_extension(".ini");
+    return appPath;
 }
 void AppCUI::Application::UpdateAppCUISettings(AppCUI::Utils::IniObject& ini, bool clearExistingSettings)
 {
