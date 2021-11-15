@@ -1471,6 +1471,7 @@ namespace Utils
 
         bool CreateFromString(std::string_view text);
         bool CreateFromFile(const std::filesystem::path& fileName);
+        bool Save(const std::filesystem::path& fileName);
         bool Create();
         void Clear();
 

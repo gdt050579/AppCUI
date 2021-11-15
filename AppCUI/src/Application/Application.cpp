@@ -184,23 +184,10 @@ AppCUI::Utils::IniObject* AppCUI::Application::GetAppSettings()
 bool AppCUI::Application::SaveAppSettings()
 {
     CHECK(app, false, "Application has not been initialized !");
-    auto iniContent = app->settings.ToString();
-    CHECK(!iniContent.empty(), false, "Fail to create ini content !");
-    auto appPath    = AppCUI::OS::GetCurrentApplicationPath();
+    auto appPath = AppCUI::OS::GetCurrentApplicationPath();
     CHECK(!appPath.empty(), false, "OS::GetCurrentApplicationPath failed !");
     appPath.replace_extension(".ini");
-    AppCUI::OS::File f;
-    CHECK(f.Create(appPath, true), false, "Fail to create file: %s", appPath.string().c_str());
-    if (iniContent.size())
-    {
-        if (!f.Write(iniContent))
-        {
-            LOG_ERROR("Fail to write ini content to file: %s", appPath.string().c_str());
-            f.Close();
-            return false;
-        }
-    }
-    f.Close();
+    CHECK(app->settings.Save(appPath), false, "Fail to save ini setting to file: %s", appPath.string().c_str());
     return true;
 }
 void AppCUI::Application::RecomputeControlsLayout()
