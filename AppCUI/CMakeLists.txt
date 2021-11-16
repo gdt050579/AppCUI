@@ -7,6 +7,7 @@ endif()
 
 # Add libAppCUI
 add_library(AppCUI SHARED)
+set_target_properties(AppCUI PROPERTIES PREFIX "lib")
 
 # Add SDL
 include(FindSDL2)
