@@ -1372,6 +1372,24 @@ bool IniObject::CreateFromFile(const std::filesystem::path& fileName)
     CHECK(bufferSize, false, "Empty INI file");
     return CreateFromString(std::string_view(buf.get(), bufferSize));
 }
+bool IniObject::Save(const std::filesystem::path& fileName)
+{
+    auto iniContent = this->ToString();
+    CHECK(!iniContent.empty(), false, "Fail to create ini content !");
+    AppCUI::OS::File f;
+    CHECK(f.Create(fileName, true), false, "Fail to create file: %s", fileName.string().c_str());
+    if (iniContent.size())
+    {
+        if (!f.Write(iniContent))
+        {
+            LOG_ERROR("Fail to write ini content to file: %s", fileName.string().c_str());
+            f.Close();
+            return false;
+        }
+    }
+    f.Close();
+    return true;
+}
 bool IniObject::Create()
 {
     CHECK(Init(), false, "Fail to initialize parser object !");

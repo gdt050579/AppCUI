@@ -28,7 +28,7 @@ class SimpleWin : public AppCUI::Controls::Window
 int main()
 {
     Log::ToFile("IniInitialization.log");
-
+    LOG_INFO("Settings file: %s", AppCUI::Application::GetAppSettingsFile().c_str());
     if (!Application::Init(InitializationFlags::LoadSettingsFile))
         return 1;
     auto ini = Application::GetAppSettings();
@@ -36,11 +36,7 @@ int main()
 
     if (ini->HasSection("AppCUI") == false)
     {
-        auto sect             = ini->CreateSection("AppCUI",true);
-        sect["Frontend"]      = "default";
-        sect["Size"]          = "default";
-        sect["CharacterSize"] = "default";
-        sect["Fixed"]         = false;
+        Application::UpdateAppCUISettings(true);
         CHECK(Application::SaveAppSettings(), 1, "Fail to save application settings !");
         LOG_INFO("IniInitialization.ini created succesifully. Modify it and re-run this executable");
         return 0;       
