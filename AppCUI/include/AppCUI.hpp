@@ -1,5 +1,8 @@
 #pragma once
 
+// Version MUST be in the following format <Major>.<Minor>
+#define APPCUI_VERSION "1.0"
+
 #include <filesystem>
 #include <map>
 #include <memory>

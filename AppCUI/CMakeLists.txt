@@ -8,6 +8,23 @@ endif()
 # Add libAppCUI
 add_library(AppCUI SHARED)
 
+#versioning
+file(READ "include/AppCUI.hpp" appcui_content)
+string(REGEX MATCH "#define APPCUI_VERSION \"([0-9]+.[0-9])\"" _ ${appcui_content})
+set(APPCUI_VERSION ${CMAKE_MATCH_1})
+message("AppCUI version: ${APPCUI_VERSION}")
+
+set_target_properties(AppCUI PROPERTIES PREFIX "lib")
+set_target_properties(AppCUI PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
+
+if (MSVC)
+    set(WINRC_FOLDER "windows.rc")
+    message("Copy to ${WINRC_FOLDER}")
+    configure_file("resources/windows.rc.in" ${WINRC_FOLDER} @ONLY)  
+    target_sources(AppCUI PRIVATE ${WINRC_FOLDER})
+endif()
+
+
 # Add SDL
 include(FindSDL2)
 include(FindSDL2TTF)
