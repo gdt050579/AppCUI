@@ -17,6 +17,14 @@ message("AppCUI version: ${APPCUI_VERSION}")
 set_target_properties(AppCUI PROPERTIES PREFIX "lib")
 set_target_properties(AppCUI PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
 
+if (MSVC)
+    set(WINRC_FOLDER "windows.rc")
+    message("Copy to ${WINRC_FOLDER}")
+    configure_file("resources/windows.rc.in" ${WINRC_FOLDER} @ONLY)  
+    target_sources(AppCUI PRIVATE ${WINRC_FOLDER})
+endif()
+
+
 # Add SDL
 include(FindSDL2)
 include(FindSDL2TTF)

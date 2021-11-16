@@ -1,0 +1,32 @@
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904E4"
+    {
+      VALUE "CompanyName", "AppCUI Group (2021-2022)"
+      VALUE "FileDescription", "AppCUI Framework library"
+      VALUE "FileVersion", "@APPCUI_VERSION@"
+      VALUE "ProductVersion", "@APPCUI_VERSION@"
+      VALUE "LegalCopyright", "Copyright various authors. Released under the MIT License."
+      VALUE "ProductName", "AppCUI"
+      VALUE "InternalName", "libAppCUI.dll"
+      VALUE "OriginalFilename", "libAppCUI.dll"
+    }
+  }
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0x0409, 1252
+  }
+}
