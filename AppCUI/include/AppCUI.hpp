@@ -1,5 +1,7 @@
 #pragma once
 
+#define APPCUI_VERSION "1.0.0"
+
 #include <filesystem>
 #include <map>
 #include <memory>
