@@ -1,1 +1,1 @@
-add_subdirectory(PNG)
+target_sources(AppCUI PRIVATE lodepng/lodepng.cpp)
