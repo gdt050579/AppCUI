@@ -219,7 +219,7 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
                     delete[] this->Pixels;
                 // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with new
                 this->Pixels = new Pixel[(size_t)resultedWidth * (size_t)resultedHeight];
-                memcpy(this->Pixels,temp,(size_t)resultedWidth * (size_t)resultedHeight);
+                memcpy(this->Pixels,temp,((size_t)resultedWidth * (size_t)resultedHeight)*sizeof(Pixel));
                 this->Width = resultedWidth;
                 this->Height = resultedHeight;
                 free(temp);

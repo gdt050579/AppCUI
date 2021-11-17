@@ -12,6 +12,7 @@ using namespace AppCUI::Utils;
 #define BTN_SHOW_COLOR_PALETTE 1002
 #define BTN_SHOW_COLOR_SCALES  1003
 #define BTN_SHOW_STRING_IMAGE  1004
+#define BTN_SHOW_LOAD_IMAGE    1005
 
 // image taken from https://en.wikipedia.org/wiki/Treasure_Island_Dizzy#/media/File:Treasure_Island_Dizzy.png
 unsigned int dizzy_pixels[] = {
@@ -6552,13 +6553,14 @@ class MainWin : public Window
     Reference<ComboBox> cbScale;
 
   public:
-    MainWin() : Window("Image example", "d:c,w:50,h:17", WindowFlags::None)
+    MainWin() : Window("Image example", "d:c,w:50,h:19", WindowFlags::None)
     {
         Factory::Button::Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         Factory::Button::Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
         Factory::Button::Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
         Factory::Button::Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
         Factory::Button::Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
+        Factory::Button::Create(this, "Load image", "x:1,y:11,w:46", BTN_SHOW_LOAD_IMAGE);
 
         Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
         cbMethod = Factory::ComboBox::Create(
@@ -6674,7 +6676,9 @@ class MainWin : public Window
                     for (unsigned int x = 0; x < 16; x++)
                     {
                         img.SetPixel(
-                              x, bit - 1, Pixel( x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1) ));
+                              x,
+                              bit - 1,
+                              Pixel(x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1)));
                     }
                 }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
@@ -6697,6 +6701,24 @@ class MainWin : public Window
                       "bBbBbBbB");
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
+                return true;
+            }
+            if (controlID == BTN_SHOW_LOAD_IMAGE)
+            {
+                AppCUI::Graphics::Image img;
+                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png",".");
+                if (path.has_value())
+                {
+                    if (img.Load(path.value())==false)
+                    {
+                        AppCUI::Dialogs::MessageBox::ShowError("Error", "Fail to open PNG file !");
+                    }
+                    else
+                    {
+                        ImageWinViewer iwv(img, GetMethod(), GetScale());
+                        iwv.Show();
+                    }
+                }
                 return true;
             }
         }
