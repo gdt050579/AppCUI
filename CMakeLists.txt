@@ -17,7 +17,7 @@ endif()
 
 if (MSVC)
     add_definitions(-DBUILD_FOR_WINDOWS)
-    add_compile_options(-W3)
+    add_compile_options(-W3 /MP)
 elseif (APPLE)
     add_definitions(-DBUILD_FOR_OSX)
     if (DEBUG_BUILD)
