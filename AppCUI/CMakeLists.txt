@@ -10,7 +10,7 @@ add_library(AppCUI SHARED)
 
 #versioning
 file(READ "include/AppCUI.hpp" appcui_content)
-string(REGEX MATCH "#define APPCUI_VERSION \"([0-9]+.[0-9])\"" _ ${appcui_content})
+string(REGEX MATCH "#define APPCUI_VERSION \"([0-9]+.[0-9]+.[0-9]+)\"" _ ${appcui_content})
 set(APPCUI_VERSION ${CMAKE_MATCH_1})
 message("AppCUI version: ${APPCUI_VERSION}")
 
