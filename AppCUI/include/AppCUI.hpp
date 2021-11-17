@@ -1999,8 +1999,10 @@ namespace Graphics
       public:
         Image();
         ~Image();
+        bool Load(const std::filesystem::path& imageFilePath);
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, std::string_view image);
+        bool Create(const unsigned char* imageBuffer, unsigned int size);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
 

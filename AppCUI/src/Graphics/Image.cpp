@@ -1,6 +1,9 @@
 #include "AppCUI.hpp"
+#include "../3rdPartyLibs/PNG/lodepng.h"
 
 using namespace AppCUI::Graphics;
+
+constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -22,7 +25,7 @@ static const Pixel Image_ConsoleColors[16] = {
 };
 
 #define CHECK_INDEX(errorValue)                                                                                        \
-    Pixel* pixel;                                                                                               \
+    Pixel* pixel;                                                                                                      \
     CHECK(Pixels != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");         \
     CHECK(x < Width,                                                                                                   \
           errorValue,                                                                                                  \
@@ -55,7 +58,6 @@ unsigned char Image_CharToIndex[256] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
-
 
 Image::Image()
 {
@@ -98,7 +100,7 @@ bool Image::Create(unsigned int width, unsigned int height, std::string_view ima
     auto s = image.data();
     auto e = s + std::min<>(image.size(), (size_t) width * (size_t) height);
     auto p = Pixels;
-    while (s<e)
+    while (s < e)
     {
         auto val = Image_CharToIndex[*s];
         if (val != 0xFF)
@@ -127,7 +129,7 @@ bool Image::Clear(Pixel color)
 {
     CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
     auto* s = Pixels;
-    auto* e = s + (size_t)Width * (size_t)Height;
+    auto* e = s + (size_t) Width * (size_t) Height;
     while (s < e)
     {
         (*s) = color;
@@ -153,7 +155,7 @@ bool Image::GetPixel(unsigned int x, unsigned int y, Pixel& color) const
 }
 Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
 {
-    if ((x >= this->Width) || (y >= this->Height) || (sz==0))
+    if ((x >= this->Width) || (y >= this->Height) || (sz == 0))
         return Pixel(0U); // nothing to compute
     unsigned int e_x = x + sz;
     unsigned int e_y = y + sz;
@@ -170,11 +172,11 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
     if ((xSize == 0) || (ySize == 0))
         return Pixel(0U); // nothing to compute (sanity check)
 
-    while (y<e_y)
+    while (y < e_y)
     {
         auto* p = sPtr;
-        auto* e = p + (size_t)xSize;
-        while (p<e)
+        auto* e = p + (size_t) xSize;
+        while (p < e)
         {
             sum_r += p->Red;
             sum_g += p->Green;
@@ -189,4 +191,49 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
     const auto result_g            = sum_g / totalPixesl;
     const auto result_b            = sum_b / totalPixesl;
     return Pixel(result_r, result_g, result_b);
+}
+bool Image::Load(const std::filesystem::path& path)
+{
+    AppCUI::OS::File f;
+    CHECK(f.OpenRead(path), false, "Fail to open file: %s", path.string().c_str());
+    unsigned int size = 0;
+    auto res          = f.ReadContentToBuffer(size);
+    f.Close();
+    return Create((const unsigned char*) res.get(), size);
+}
+bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
+{
+    CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
+    unsigned int magic          = *(unsigned int*) imageBuffer;
+    unsigned int resultedWidth  = 0;
+    unsigned int resultedHeight = 0;
+    unsigned char* temp         = nullptr;
+    switch (magic)
+    {
+    case IMAGE_PNG_MAGIC:
+        if (lodepng_decode_memory(&temp, &resultedWidth, &resultedHeight,imageBuffer,size,LodePNGColorType::LCT_RGBA,8)==0)
+        {
+            if (temp!=nullptr)
+            {
+                if (this->Pixels)
+                    delete[] this->Pixels;
+                // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with new
+                this->Pixels = new Pixel[(size_t)resultedWidth * (size_t)resultedHeight];
+                memcpy(this->Pixels,temp,(size_t)resultedWidth * (size_t)resultedHeight);
+                this->Width = resultedWidth;
+                this->Height = resultedHeight;
+                free(temp);
+                return true;
+            }
+            RETURNERROR(false, "No bytes were allocated when decoding PNG !");
+        }
+        else
+        {
+            if (temp)
+                free(temp);
+            RETURNERROR(false, "Fail to decode PNG buffer !");
+        }
+    default:
+        RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic);
+    }
 }
