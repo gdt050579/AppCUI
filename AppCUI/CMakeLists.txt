@@ -73,6 +73,7 @@ target_link_libraries(AppCUI PRIVATE ${CURSES_LIBRARIES} ${SDL2_LIBRARY_RELEASE}
 endif()
 
 add_subdirectory(src)
+target_include_directories(AppCUI PRIVATE src/3rdPartyLibs/lodepng)
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 
 # lodepng defines

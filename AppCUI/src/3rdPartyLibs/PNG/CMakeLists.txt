@@ -1,1 +1,0 @@
-target_sources(AppCUI PRIVATE lodepng.cpp)

@@ -20,6 +20,8 @@ jobs:
       SDL2_PATH: "C:\\SDL"
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Install requests
       run: pip install requests
     - name: Install SDL2
@@ -33,6 +35,8 @@ jobs:
     runs-on: [macos-latest]
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Install sdl
       run: brew install sdl2
     - name: Install sdl2_ttf
@@ -51,6 +55,8 @@ jobs:
       CXX: g++-10
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Update
       run: sudo apt-get update -y
     - name: Install SDL2
