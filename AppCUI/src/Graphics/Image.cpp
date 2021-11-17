@@ -211,16 +211,28 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     switch (magic)
     {
     case IMAGE_PNG_MAGIC:
-        if (lodepng_decode_memory(&temp, &resultedWidth, &resultedHeight,imageBuffer,size,LodePNGColorType::LCT_RGBA,8)==0)
+        if (lodepng_decode_memory(
+                  &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
         {
-            if (temp!=nullptr)
+            if (temp != nullptr)
             {
                 if (this->Pixels)
                     delete[] this->Pixels;
-                // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with new
-                this->Pixels = new Pixel[(size_t)resultedWidth * (size_t)resultedHeight];
-                memcpy(this->Pixels,temp,((size_t)resultedWidth * (size_t)resultedHeight)*sizeof(Pixel));
-                this->Width = resultedWidth;
+                // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
+                // new
+                this->Pixels = new Pixel[(size_t) resultedWidth * (size_t) resultedHeight];
+                auto* p      = this->Pixels;
+                auto e       = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
+                auto* c      = temp;
+                while (c < e)
+                {
+                    p->Red   = *c++;
+                    p->Green = *c++;
+                    p->Blue  = *c++;
+                    p->Alpha = *c++;
+                    p++;
+                }
+                this->Width  = resultedWidth;
                 this->Height = resultedHeight;
                 free(temp);
                 return true;
