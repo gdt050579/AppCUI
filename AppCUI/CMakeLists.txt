@@ -73,7 +73,13 @@ target_link_libraries(AppCUI PRIVATE ${CURSES_LIBRARIES} ${SDL2_LIBRARY_RELEASE}
 endif()
 
 add_subdirectory(src)
+target_include_directories(AppCUI PRIVATE src/3rdPartyLibs/lodepng)
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
+
+# lodepng defines
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_ENCODER)
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_DISK)
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_ANCILLARY_CHUNKS)
 
 # Preserve source file paths in debug mode for shared lib
 if (DEBUG_BUILD)
