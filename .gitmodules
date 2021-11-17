@@ -1,0 +1,3 @@
+[submodule "AppCUI/src/3rdPartyLibs/lodepng"]
+	path = AppCUI/src/3rdPartyLibs/lodepng
+	url = git@github.com:lvandeve/lodepng.git
