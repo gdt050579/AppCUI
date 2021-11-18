@@ -575,7 +575,7 @@ namespace Utils
               bool ascendent,
               void* Context = nullptr);
     };
-    
+
     class BufferView
     {
         const unsigned char* data;
@@ -605,7 +605,7 @@ namespace Utils
             return data;
         }
     };
-    
+
     class EXPORT Buffer
     {
         unsigned char* data;
@@ -647,12 +647,12 @@ namespace Utils
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
-            auto aux = data;
-            data     = b.data;
-            b.data   = aux;
-            auto l   = length;
-            length   = b.length;
-            b.length = l; 
+            const auto aux = data;
+            data           = b.data;
+            b.data         = aux;
+            const auto l   = length;
+            length         = b.length;
+            b.length       = l;
             return *this;
         }
         inline unsigned char& operator[](size_t index) const
@@ -679,9 +679,8 @@ namespace Utils
         {
             return data;
         }
-        
-        Buffer& operator=(const Buffer& b);
 
+        Buffer& operator=(const Buffer& b);
     };
 
     class EXPORT String

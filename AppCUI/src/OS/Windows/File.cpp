@@ -145,26 +145,7 @@ void File::Close()
     }
 }
 
-Buffer File::ReadContent(const std::filesystem::path& path)
-{
-    File f;
-    CHECK(f.OpenRead(path), Buffer(), "Fail to open: %s", path.string().c_str());
-    CHECK(f.SetCurrentPos(0),
-          Buffer(),
-          "Fail to position the current pointer to the start of the file: %s",
-          path.string().c_str());
-    auto file_size = f.GetSize();
-    CHECK(file_size > 0, Buffer(), "Empty file (%s)!", path.string().c_str());
-    CHECK(file_size < 0xFFFFFFF, Buffer(), "File size exceed 0xFFFFF bytes (%s)", path.string().c_str());
-    Buffer buf(file_size);
-    CHECK(f.Read(buf.GetData(), (unsigned int) file_size),
-          Buffer(),
-          "Fail to read %u bytes from the file %s",
-          (unsigned int) file_size,
-          path.string().c_str());
-    f.Close();
-    return buf;
-}
+
 
 #undef VALIDATE_FILE_HANLDE
 #undef F_HNDL
