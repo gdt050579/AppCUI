@@ -1,4 +1,4 @@
-#include <lodepng.h>
+#include "..\3rdPartyLibs\lodepng\lodepng.h"
 #include "AppCUI.hpp"
 
 using namespace AppCUI::Graphics;
