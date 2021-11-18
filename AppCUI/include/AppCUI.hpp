@@ -647,12 +647,8 @@ namespace Utils
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
-            const auto aux = data;
-            data           = b.data;
-            b.data         = aux;
-            const auto l   = length;
-            length         = b.length;
-            b.length       = l;
+            std::swap(data,b.data);
+            std::swap(length, b.length);
             return *this;
         }
         inline unsigned char& operator[](size_t index) const
