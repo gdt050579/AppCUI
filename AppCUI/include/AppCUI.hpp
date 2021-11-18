@@ -652,6 +652,7 @@ namespace Utils
             b.data   = aux;
             auto l   = length;
             length   = b.length;
+            b.length = l; 
             return *this;
         }
         inline unsigned char& operator[](size_t index) const
