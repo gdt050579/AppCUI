@@ -1363,14 +1363,9 @@ bool IniObject::CreateFromString(std::string_view text)
 }
 bool IniObject::CreateFromFile(const std::filesystem::path& fileName)
 {
-    AppCUI::OS::File f;
-    unsigned int bufferSize;
-    CHECK(f.OpenRead(fileName), false, "Fail to open file: %s", fileName.string().c_str());
-    auto buf = f.ReadContentToBuffer(bufferSize);
-    f.Close();
-    CHECK(buf.get(), false, "Unable to read content of ini file: %s", fileName.string().c_str());
-    CHECK(bufferSize, false, "Empty INI file");
-    return CreateFromString(std::string_view(buf.get(), bufferSize));
+    auto buf = AppCUI::OS::File::ReadContent(fileName);
+    CHECK(buf.IsValid(), false, "Unable to read content of ini file: %s", fileName.string().c_str());
+    return CreateFromString(buf);
 }
 bool IniObject::Save(const std::filesystem::path& fileName)
 {

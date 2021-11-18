@@ -194,12 +194,8 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
 }
 bool Image::Load(const std::filesystem::path& path)
 {
-    AppCUI::OS::File f;
-    CHECK(f.OpenRead(path), false, "Fail to open file: %s", path.string().c_str());
-    unsigned int size = 0;
-    auto res          = f.ReadContentToBuffer(size);
-    f.Close();
-    return Create((const unsigned char*) res.get(), size);
+    auto buf = AppCUI::OS::File::ReadContent(path);
+    return Create((const unsigned char*) buf.GetData(), (unsigned int)buf.GetLength());
 }
 bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {

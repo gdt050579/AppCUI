@@ -1638,7 +1638,6 @@ namespace OS
         bool Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
         bool Write(std::string_view text);
         bool Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten);
-        std::unique_ptr<char[]> ReadContentToBuffer(unsigned int& bufferSize);
     };
 
     class EXPORT File : public IFile
@@ -1681,6 +1680,8 @@ namespace OS
         bool SetSize(unsigned long long newSize) override;
         bool SetCurrentPos(unsigned long long newPosition) override;
         void Close() override;
+
+        static AppCUI::Utils::Buffer ReadContent(const std::filesystem::path& path);
     };
 
     class EXPORT Library
