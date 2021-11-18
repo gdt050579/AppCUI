@@ -575,6 +575,114 @@ namespace Utils
               bool ascendent,
               void* Context = nullptr);
     };
+    
+    class BufferView
+    {
+        const unsigned char* data;
+        const size_t length;
+
+      public:
+        BufferView() : data(nullptr), length(0)
+        {
+        }
+        BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
+        {
+        }
+        inline unsigned char operator[](size_t index) const
+        {
+            return data[index];
+        }
+        inline bool IsValid() const
+        {
+            return length > 0;
+        }
+        inline size_t GetLength() const
+        {
+            return length;
+        }
+        inline const unsigned char* GetData() const
+        {
+            return data;
+        }
+    };
+    
+    class EXPORT Buffer
+    {
+        unsigned char* data;
+        size_t length;
+
+      public:
+        ~Buffer();
+        Buffer() : data(nullptr), length(0)
+        {
+        }
+        Buffer(size_t size);
+        Buffer(const Buffer& buf);
+
+        Buffer(void*& ptr, size_t size)
+        {
+            data   = (unsigned char*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(char*& ptr, size_t size)
+        {
+            data   = (unsigned char*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(unsigned char*& ptr, size_t size)
+        {
+            data   = (unsigned char*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(Buffer&& buf) noexcept
+        {
+            data       = buf.data;
+            length     = buf.length;
+            buf.data   = nullptr;
+            buf.length = 0;
+        }
+
+        inline Buffer& operator=(Buffer&& b) noexcept
+        {
+            auto aux = data;
+            data     = b.data;
+            b.data   = aux;
+            auto l   = length;
+            length   = b.length;
+            return *this;
+        }
+        inline unsigned char& operator[](size_t index) const
+        {
+            return data[index];
+        }
+        inline operator BufferView() const
+        {
+            return BufferView((const void*) data, length);
+        }
+        inline operator std::string_view() const
+        {
+            return std::string_view((const char*) data, length);
+        }
+        inline bool IsValid() const
+        {
+            return length > 0;
+        }
+        inline size_t GetLength() const
+        {
+            return length;
+        }
+        inline unsigned char* GetData() const
+        {
+            return data;
+        }
+        
+        Buffer& operator=(const Buffer& b);
+
+    };
+
     class EXPORT String
     {
         char* Text;
