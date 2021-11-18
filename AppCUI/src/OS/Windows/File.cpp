@@ -1,11 +1,11 @@
 #include "Internal.hpp"
 
 using namespace AppCUI::OS;
+using namespace AppCUI::Utils;
 
 #define VALIDATE_FILE_HANLDE(returnValue)                                                                              \
     CHECK(this->FileID.Handle != INVALID_HANDLE_VALUE, returnValue, "File has not been opened !");
 #define F_HNDL ((HANDLE) this->FileID.Handle)
-
 
 File::File()
 {
@@ -17,7 +17,7 @@ File::~File()
 }
 
 bool File::OpenWrite(const std::filesystem::path& path)
-{    
+{
     Close();
     HANDLE hFile = CreateFileW(
           (LPCWSTR) path.u16string().c_str(),
@@ -144,6 +144,8 @@ void File::Close()
         this->FileID.Handle = INVALID_HANDLE_VALUE;
     }
 }
+
+
 
 #undef VALIDATE_FILE_HANLDE
 #undef F_HNDL
