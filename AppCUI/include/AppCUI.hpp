@@ -596,6 +596,10 @@ namespace Utils
         {
             return length > 0;
         }
+        inline bool Empty() const
+        {
+            return length == 0;
+        }
         inline size_t GetLength() const
         {
             return length;
@@ -603,6 +607,19 @@ namespace Utils
         inline const unsigned char* GetData() const
         {
             return data;
+        }
+        inline operator std::string_view() const
+        {
+            return std::string_view((const char *)data, length);
+        }
+        // iterators
+        inline const unsigned char* begin() const
+        {
+            return data;
+        }
+        inline const unsigned char* end() const
+        {
+            return data + length;
         }
     };
 
