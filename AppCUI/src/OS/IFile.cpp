@@ -81,10 +81,11 @@ bool IFile::Write(std::string_view text)
 }
 bool IFile::Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten)
 {
-    return Write(offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);
+    return Write(
+          offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);
 }
 
-//================================================================================================[Static methods from File]===
+//======================================================================================[Static methods from File]===
 Buffer File::ReadContent(const std::filesystem::path& path)
 {
     File f;
@@ -104,4 +105,29 @@ Buffer File::ReadContent(const std::filesystem::path& path)
           path.string().c_str());
     f.Close();
     return buf;
+}
+bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
+{
+    File f;
+    CHECK(buf.GetLength() < 0xFFFFFFF,
+          false,
+          "Buffer size exceed 0xFFFFF bytes --> cannot create (%s)",
+          path.string().c_str());
+    CHECK(f.Create(path, true), false, "Fail to create: %s", path.string().c_str());
+    if (buf.Empty())
+    {
+        f.Close(); // empty file
+        return true;
+    }
+    CHECK(f.Write(buf.GetData(), (unsigned int) buf.GetLength()),
+          false,
+          "Fail to write %u bytes into %s",
+          (unsigned int) buf.GetLength(),
+          path.string().c_str());
+    f.Close();
+    return true;
+}
+bool File::WriteContent(const std::filesystem::path& path, std::string_view text)
+{
+    return WriteContent(path, BufferView(text));
 }

@@ -588,6 +588,9 @@ namespace Utils
         BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
         {
         }
+        BufferView(std::string_view txt) : data((const unsigned char*)txt.data()), length(txt.size())
+        {
+        }
         inline unsigned char operator[](size_t index) const
         {
             return data[index];
@@ -1695,6 +1698,8 @@ namespace OS
         void Close() override;
 
         static AppCUI::Utils::Buffer ReadContent(const std::filesystem::path& path);
+        static bool WriteContent(const std::filesystem::path& path, AppCUI::Utils::BufferView buf);
+        static bool WriteContent(const std::filesystem::path& path, std::string_view text);
     };
 
     class EXPORT Library
