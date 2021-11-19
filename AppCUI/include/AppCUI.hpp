@@ -1699,7 +1699,6 @@ namespace OS
 
         static AppCUI::Utils::Buffer ReadContent(const std::filesystem::path& path);
         static bool WriteContent(const std::filesystem::path& path, AppCUI::Utils::BufferView buf);
-        static bool WriteContent(const std::filesystem::path& path, std::string_view text);
     };
 
     class EXPORT Library

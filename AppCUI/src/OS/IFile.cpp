@@ -127,7 +127,3 @@ bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
     f.Close();
     return true;
 }
-bool File::WriteContent(const std::filesystem::path& path, std::string_view text)
-{
-    return WriteContent(path, BufferView(text));
-}
