@@ -588,7 +588,7 @@ namespace Utils
         BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
         {
         }
-        BufferView(std::string_view txt) : data((const unsigned char*)txt.data()), length(txt.size())
+        BufferView(std::string_view txt) : data((const unsigned char*) txt.data()), length(txt.size())
         {
         }
         inline unsigned char operator[](size_t index) const
@@ -613,7 +613,7 @@ namespace Utils
         }
         inline operator std::string_view() const
         {
-            return std::string_view((const char *)data, length);
+            return std::string_view((const char*) data, length);
         }
         // iterators
         inline const unsigned char* begin() const
@@ -667,7 +667,7 @@ namespace Utils
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
-            std::swap(data,b.data);
+            std::swap(data, b.data);
             std::swap(length, b.length);
             return *this;
         }
@@ -2124,6 +2124,16 @@ namespace Graphics
 
       public:
         Image();
+        Image(const Image& img);
+        Image(Image&& img) noexcept
+        {
+            this->Width  = img.Width;
+            this->Height = img.Height;
+            this->Pixels = img.Pixels;
+            img.Pixels   = nullptr;
+            img.Width    = 0;
+            img.Height   = 0;
+        }
         ~Image();
         bool Load(const std::filesystem::path& imageFilePath);
         bool Create(unsigned int width, unsigned int height);
@@ -2148,6 +2158,14 @@ namespace Graphics
         inline Pixel* GetPixelsBuffer() const
         {
             return Pixels;
+        }
+        Image& operator=(const Image& img);
+        Image& operator=(Image&& img) noexcept
+        {
+            std::swap(this->Pixels,img.Pixels);
+            std::swap(this->Width,img.Width);
+            std::swap(this->Height, img.Height);
+            return *this;
         }
     };
 

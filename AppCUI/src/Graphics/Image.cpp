@@ -71,6 +71,39 @@ Image::~Image()
     Width = Height = 0;
     Pixels         = nullptr;
 }
+Image::Image(const Image& img)
+{
+    if (img.Pixels)
+    {
+        this->Width  = img.Width;
+        this->Height = img.Height;
+        this->Pixels = new Pixel[(size_t)img.Width * (size_t)img.Height];
+        memcpy(this->Pixels, img.Pixels, (size_t) img.Width * (size_t) img.Height * sizeof(Pixel));
+    }
+    else
+    {
+        Width = Height = 0;
+        Pixels         = nullptr;
+    }
+}
+
+Image& Image::operator=(const Image& img)
+{
+    if (Pixels)
+        delete Pixels;
+    Width = Height = 0;
+    Pixels         = nullptr;
+    if (img.Pixels)
+    {
+        this->Width  = img.Width;
+        this->Height = img.Height;
+        this->Pixels = new Pixel[(size_t) img.Width * (size_t) img.Height];
+        memcpy(this->Pixels, img.Pixels, (size_t) img.Width * (size_t) img.Height * sizeof(Pixel));
+    }
+    return *this;
+}
+
+
 bool Image::Create(unsigned int width, unsigned int height)
 {
     CHECK(width > 0, false, "Invalid 'width' parameter (should be bigger than 0)");
@@ -195,7 +228,7 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
 bool Image::Load(const std::filesystem::path& path)
 {
     auto buf = AppCUI::OS::File::ReadContent(path);
-    return Create((const unsigned char*) buf.GetData(), (unsigned int)buf.GetLength());
+    return Create((const unsigned char*) buf.GetData(), (unsigned int) buf.GetLength());
 }
 bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {
