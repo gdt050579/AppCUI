@@ -611,6 +611,15 @@ namespace Utils
         {
             return data;
         }
+        template <typename T>
+        inline const T* GetObject(unsigned int offset = 0)
+        {
+            if (sizeof(T) + offset > length)
+                return nullptr;
+            return reinterpret_cast<const T*>(data + offset);
+        }
+
+
         inline operator std::string_view() const
         {
             return std::string_view((const char*) data, length);
@@ -694,6 +703,13 @@ namespace Utils
         inline unsigned char* GetData() const
         {
             return data;
+        }
+        template <typename T>
+        inline T* GetObject(unsigned int offset = 0)
+        {
+            if (sizeof(T) + offset > length)
+                return nullptr;
+            return reinterpret_cast<const T*>(data + offset);
         }
         void Resize(size_t newSize);
         Buffer& operator=(const Buffer& b);
