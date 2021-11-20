@@ -56,3 +56,37 @@ Buffer& Buffer::operator=(const Buffer& buf)
     }
     return *this;
 }
+void Buffer::Resize(size_t newSize)
+{
+    if (newSize == 0)
+    {
+        // clean all
+        if (data)
+            delete[] data;
+        data   = nullptr;
+        length = 0;
+        return;
+    }
+    if (newSize <= length)
+    {
+        // just set a different size
+        this->length = newSize;
+        return;
+    }
+    // for bigger sizes
+    auto tmp = new unsigned char[newSize];
+    if ((data) && (length))
+    {
+        memcpy(tmp, data, length);
+        delete[] data;
+        data = tmp;
+        tmp += length;
+        auto e = data + newSize;
+        while (tmp < e)
+        {
+            *tmp = 0;
+            tmp++;
+        }
+    }
+    this->length = newSize;
+}

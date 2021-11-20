@@ -695,7 +695,7 @@ namespace Utils
         {
             return data;
         }
-
+        void Resize(size_t newSize);
         Buffer& operator=(const Buffer& b);
     };
 
