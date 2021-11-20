@@ -26,18 +26,18 @@ static const Pixel Image_ConsoleColors[16] = {
 
 #define CHECK_INDEX(errorValue)                                                                                        \
     Pixel* pixel;                                                                                                      \
-    CHECK(Pixels != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");         \
-    CHECK(x < Width,                                                                                                   \
+    CHECK(this->pixels != nullptr, errorValue, "Image was not instantiated yet (have you called Create methods ?)");   \
+    CHECK(x < this->width,                                                                                             \
           errorValue,                                                                                                  \
-          "Invalid X (%d) value. It should be less than %d (the width of the image)",                                  \
+          "Invalid X (%d) value. It should be less than %d (the imageWidth of the image)",                             \
           x,                                                                                                           \
-          Width);                                                                                                      \
-    CHECK(y < Height,                                                                                                  \
+          this->width);                                                                                                \
+    CHECK(y < this->height,                                                                                            \
           errorValue,                                                                                                  \
-          "Invalid Y (%d) value. It should be less than %d (the height of the image)",                                 \
+          "Invalid Y (%d) value. It should be less than %d (the imageHeight of the image)",                            \
           y,                                                                                                           \
-          Height);                                                                                                     \
-    pixel = &Pixels[y * Width + x];
+          this->height);                                                                                               \
+    pixel = &this->pixels[y * this->width + x];
 
 #define VALIDATE_CONSOLE_INDEX                                                                                         \
     CHECK(((unsigned int) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
@@ -61,78 +61,80 @@ unsigned char Image_CharToIndex[256] = {
 
 Image::Image()
 {
-    Width = Height = 0;
-    Pixels         = nullptr;
+    this->width  = 0;
+    this->height = 0;
+    this->pixels = nullptr;
 }
 Image::~Image()
 {
-    if (Pixels)
-        delete Pixels;
-    Width = Height = 0;
-    Pixels         = nullptr;
+    if (this->pixels)
+        delete[] this->pixels;
+    this->width  = 0;
+    this->height = 0;
+    this->pixels = nullptr;
 }
 Image::Image(const Image& img)
 {
-    if (img.Pixels)
+    if (img.pixels)
     {
-        this->Width  = img.Width;
-        this->Height = img.Height;
-        this->Pixels = new Pixel[(size_t)img.Width * (size_t)img.Height];
-        memcpy(this->Pixels, img.Pixels, (size_t) img.Width * (size_t) img.Height * sizeof(Pixel));
+        this->width  = img.width;
+        this->height = img.height;
+        this->pixels = new Pixel[(size_t) img.width * (size_t) img.height];
+        memcpy(this->pixels, img.pixels, (size_t) img.width * (size_t) img.height * sizeof(Pixel));
     }
     else
     {
-        Width = Height = 0;
-        Pixels         = nullptr;
+        this->width = this->height = 0;
+        this->pixels               = nullptr;
     }
 }
 
 Image& Image::operator=(const Image& img)
 {
-    if (Pixels)
-        delete Pixels;
-    Width = Height = 0;
-    Pixels         = nullptr;
-    if (img.Pixels)
+    if (this->pixels)
+        delete[] this->pixels;
+    this->width  = 0;
+    this->height = 0;
+    this->pixels = nullptr;
+    if (img.pixels)
     {
-        this->Width  = img.Width;
-        this->Height = img.Height;
-        this->Pixels = new Pixel[(size_t) img.Width * (size_t) img.Height];
-        memcpy(this->Pixels, img.Pixels, (size_t) img.Width * (size_t) img.Height * sizeof(Pixel));
+        this->width  = img.width;
+        this->height = img.height;
+        this->pixels = new Pixel[(size_t) img.width * (size_t) img.height];
+        memcpy(this->pixels, img.pixels, (size_t) img.width * (size_t) img.height * sizeof(Pixel));
     }
     return *this;
 }
 
-
-bool Image::Create(unsigned int width, unsigned int height)
+bool Image::Create(unsigned int imageWidth, unsigned int imageHeight)
 {
-    CHECK(width > 0, false, "Invalid 'width' parameter (should be bigger than 0)");
-    CHECK(height > 0, false, "Invalid 'height' parameter (should be bigger than 0)");
-    if (Pixels)
+    CHECK(imageWidth > 0, false, "Invalid 'imageWidth' parameter (should be bigger than 0)");
+    CHECK(imageHeight > 0, false, "Invalid 'imageHeight' parameter (should be bigger than 0)");
+    if (this->pixels)
     {
-        delete Pixels;
-        Pixels = nullptr;
-        Width = Height = 0;
+        delete[] this->pixels;
+        this->pixels = nullptr;
+        this->width = this->height = 0;
     }
-    Pixels = new Pixel[width * height];
-    CHECK(Pixels != nullptr, false, "Unable to alocate space for an %d x %d image", width, height);
-    auto* s = Pixels;
-    auto* e = s + width * height;
+    this->pixels = new Pixel[imageWidth * imageHeight];
+    CHECK(this->pixels != nullptr, false, "Unable to alocate space for an %d x %d image", imageWidth, imageHeight);
+    auto* s = this->pixels;
+    auto* e = s + imageWidth * imageHeight;
     while (s < e)
     {
         s->ColorValue = 0;
         s++;
     }
-    Width  = width;
-    Height = height;
+    this->width  = imageWidth;
+    this->height = imageHeight;
     return true;
 }
-bool Image::Create(unsigned int width, unsigned int height, std::string_view image)
+bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, std::string_view image)
 {
-    CHECK(Create(width, height), false, "");
+    CHECK(Create(imageWidth, imageHeight), false, "");
     auto s = image.data();
-    auto e = s + std::min<>(image.size(), (size_t) width * (size_t) height);
-    auto p = Pixels;
+    auto e = s + std::min<>(image.size(), (size_t) imageWidth * (size_t) imageHeight);
+    auto p = this->pixels;
     while (s < e)
     {
         auto val = Image_CharToIndex[*s];
@@ -160,9 +162,9 @@ bool Image::SetPixel(unsigned int x, unsigned int y, const Color color)
 
 bool Image::Clear(Pixel color)
 {
-    CHECK(Pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
-    auto* s = Pixels;
-    auto* e = s + (size_t) Width * (size_t) Height;
+    CHECK(this->pixels != nullptr, false, "Image was not instantiated yet (have you called Create methods ?)");
+    auto* s = this->pixels;
+    auto* e = s + (size_t) this->width * (size_t) this->height;
     while (s < e)
     {
         (*s) = color;
@@ -188,17 +190,17 @@ bool Image::GetPixel(unsigned int x, unsigned int y, Pixel& color) const
 }
 Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
 {
-    if ((x >= this->Width) || (y >= this->Height) || (sz == 0))
+    if ((x >= this->width) || (y >= this->height) || (sz == 0))
         return Pixel(0U); // nothing to compute
     unsigned int e_x = x + sz;
     unsigned int e_y = y + sz;
-    if (e_x >= this->Width)
-        e_x = this->Width;
-    if (e_y >= this->Height)
-        e_y = this->Height;
+    if (e_x >= this->width)
+        e_x = this->width;
+    if (e_y >= this->height)
+        e_y = this->height;
     auto xSize         = e_x - x;
     auto ySize         = e_y - y;
-    auto sPtr          = Pixels + (size_t) Width * (size_t) y + (size_t) x;
+    auto sPtr          = this->pixels + (size_t) this->width * (size_t) y + (size_t) x;
     unsigned int sum_r = 0;
     unsigned int sum_g = 0;
     unsigned int sum_b = 0;
@@ -216,7 +218,7 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
             sum_b += p->Blue;
             p++;
         }
-        sPtr += Width; // move to next line
+        sPtr += this->width; // move to next line
         y++;
     }
     const unsigned int totalPixesl = xSize * ySize;
@@ -245,12 +247,12 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
         {
             if (temp != nullptr)
             {
-                if (this->Pixels)
-                    delete[] this->Pixels;
+                if (this->pixels)
+                    delete[] this->pixels;
                 // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
                 // new
-                this->Pixels = new Pixel[(size_t) resultedWidth * (size_t) resultedHeight];
-                auto* p      = this->Pixels;
+                this->pixels = new Pixel[(size_t) resultedWidth * (size_t) resultedHeight];
+                auto* p      = this->pixels;
                 auto e       = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
                 auto* c      = temp;
                 while (c < e)
@@ -261,8 +263,8 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
                     p->Alpha = *c++;
                     p++;
                 }
-                this->Width  = resultedWidth;
-                this->Height = resultedHeight;
+                this->width  = resultedWidth;
+                this->height = resultedHeight;
                 free(temp);
                 return true;
             }

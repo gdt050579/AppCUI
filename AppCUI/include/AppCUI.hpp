@@ -2118,21 +2118,21 @@ namespace Graphics
     };
     class EXPORT Image
     {
-        Pixel* Pixels;
-        unsigned int Width;
-        unsigned int Height;
+        Pixel* pixels;
+        unsigned int width;
+        unsigned int height;
 
       public:
         Image();
         Image(const Image& img);
         Image(Image&& img) noexcept
         {
-            this->Width  = img.Width;
-            this->Height = img.Height;
-            this->Pixels = img.Pixels;
-            img.Pixels   = nullptr;
-            img.Width    = 0;
-            img.Height   = 0;
+            this->width  = img.width;
+            this->height = img.height;
+            this->pixels = img.pixels;
+            img.pixels   = nullptr;
+            img.width    = 0;
+            img.height   = 0;
         }
         ~Image();
         bool Load(const std::filesystem::path& imageFilePath);
@@ -2149,22 +2149,22 @@ namespace Graphics
         bool Clear(const Color color);
         inline unsigned int GetWidth() const
         {
-            return Width;
+            return width;
         }
         inline unsigned int GetHeight() const
         {
-            return Height;
+            return height;
         }
         inline Pixel* GetPixelsBuffer() const
         {
-            return Pixels;
+            return pixels;
         }
         Image& operator=(const Image& img);
         Image& operator=(Image&& img) noexcept
         {
-            std::swap(this->Pixels,img.Pixels);
-            std::swap(this->Width,img.Width);
-            std::swap(this->Height, img.Height);
+            std::swap(this->pixels,img.pixels);
+            std::swap(this->width,img.width);
+            std::swap(this->height, img.height);
             return *this;
         }
     };
