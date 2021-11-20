@@ -612,7 +612,7 @@ namespace Utils
             return data;
         }
         template <typename T>
-        inline const T* GetObject(unsigned int offset = 0)
+        inline const T* GetObject(unsigned int offset = 0) const
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
@@ -709,7 +709,7 @@ namespace Utils
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
-            return reinterpret_cast<const T*>(data + offset);
+            return reinterpret_cast<T*>(data + offset);
         }
         void Resize(size_t newSize);
         Buffer& operator=(const Buffer& b);
