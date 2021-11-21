@@ -2447,7 +2447,7 @@ namespace Controls
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
-        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Button> r);
+        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
 
         struct OnButtonPressedInterface
         {
@@ -2570,14 +2570,14 @@ namespace Controls
 
         struct OnAfterSetTextInterface
         {
-            virtual void OnAfterSetText(Reference<Controls::Button> r) = 0;
+            virtual void OnAfterSetText(Reference<Controls::Control> control) = 0;
         };
         struct OnAfterSetTextCallback : public OnAfterSetTextInterface
         {
             OnAfterSetTextHandler callback;
-            virtual void OnAfterSetText(Reference<Controls::Button> r) override
+            virtual void OnAfterSetText(Reference<Controls::Control> control) override
             {
-                callback(r);
+                callback(control);
             };
         };
 
