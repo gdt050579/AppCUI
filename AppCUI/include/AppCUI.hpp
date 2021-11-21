@@ -2447,6 +2447,7 @@ namespace Controls
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
+        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Button> r);
 
         struct OnButtonPressedInterface
         {
@@ -2567,6 +2568,20 @@ namespace Controls
             };
         };
 
+        struct OnAfterSetTextInterface
+        {
+            virtual void OnAfterSetText(Reference<Controls::Button> r) = 0;
+        };
+        struct OnAfterSetTextCallback : public OnAfterSetTextInterface
+        {
+            OnAfterSetTextHandler callback;
+            virtual void OnAfterSetText(Reference<Controls::Button> r) override
+            {
+                callback(r);
+            };
+        };
+
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2597,6 +2612,7 @@ namespace Controls
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
             Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
+            Wrapper<OnAfterSetTextInterface, OnAfterSetTextCallback, OnAfterSetTextHandler> OnAfterSetText;
             virtual ~Control()
             {
             }
