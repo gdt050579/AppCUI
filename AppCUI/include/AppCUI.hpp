@@ -2765,7 +2765,7 @@ namespace Controls
         virtual void OnAfterAddControl(Reference<Control> ctrl);
         virtual void OnControlRemoved(Reference<Control> ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
-        virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
+        virtual void OnAfterSetText();
 
         virtual void OnExpandView(AppCUI::Graphics::Clip& expandedClip);
         virtual void OnPackView();
@@ -3010,7 +3010,7 @@ namespace Controls
 
       public:
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
         bool OnMouseEnter() override;
@@ -3050,7 +3050,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        void OnAfterSetText() override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);

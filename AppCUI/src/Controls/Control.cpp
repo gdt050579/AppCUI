@@ -1542,7 +1542,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         if (CTRLC->Text.Set(caption, NoColorPair) == false)
             return false;
     }
-    OnAfterSetText(caption);
+    OnAfterSetText();
     return true;
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
@@ -1552,8 +1552,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer&
     //    return false;
     if (CTRLC->Text.Set(text) == false)
         return false;
-    // GDT: need to rethink this callback
-    // OnAfterSetText(text.data());
+    OnAfterSetText();
     return true;
 }
 const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
@@ -1785,7 +1784,7 @@ bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString&)
+void AppCUI::Controls::Control::OnAfterSetText()
 {
 }
 void AppCUI::Controls::Control::OnUpdateScrollBars()
