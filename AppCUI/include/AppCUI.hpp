@@ -2447,6 +2447,7 @@ namespace Controls
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
+        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
 
         struct OnButtonPressedInterface
         {
@@ -2567,6 +2568,20 @@ namespace Controls
             };
         };
 
+        struct OnAfterSetTextInterface
+        {
+            virtual void OnAfterSetText(Reference<Controls::Control> control) = 0;
+        };
+        struct OnAfterSetTextCallback : public OnAfterSetTextInterface
+        {
+            OnAfterSetTextHandler callback;
+            virtual void OnAfterSetText(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2597,6 +2612,7 @@ namespace Controls
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
             Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
+            Wrapper<OnAfterSetTextInterface, OnAfterSetTextCallback, OnAfterSetTextHandler> OnAfterSetText;
             virtual ~Control()
             {
             }
@@ -2765,7 +2781,7 @@ namespace Controls
         virtual void OnAfterAddControl(Reference<Control> ctrl);
         virtual void OnControlRemoved(Reference<Control> ctrl);
         virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
-        virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
+        virtual void OnAfterSetText();
 
         virtual void OnExpandView(AppCUI::Graphics::Clip& expandedClip);
         virtual void OnPackView();
@@ -3010,7 +3026,7 @@ namespace Controls
 
       public:
         bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
         bool OnMouseEnter() override;
@@ -3050,7 +3066,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        void OnAfterSetText() override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);

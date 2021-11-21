@@ -942,7 +942,7 @@ void TextArea::OnFocus()
 {
     WRAPPER->SelAll();
 }
-void TextArea::OnAfterSetText(const AppCUI::Utils::ConstString&)
+void TextArea::OnAfterSetText()
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->AnalyzeCurrentText();

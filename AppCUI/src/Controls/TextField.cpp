@@ -407,9 +407,9 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 
     return false;
 }
-void TextField::OnAfterSetText(const AppCUI::Utils::ConstString&)
+void TextField::OnAfterSetText()
 {
-    // repozitionez cursorul
+    // reposition cursor at the end of the newly set text
     TextField_MoveTo(this, 0, false);
     TextField_MoveTo(this, 0xFFFF, false);
 }
