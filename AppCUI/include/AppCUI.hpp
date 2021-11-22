@@ -4163,6 +4163,19 @@ namespace Log
         const char* Condition;
         int LineNumber;
     };
+    class EXPORT ErrorList
+    {
+        void* data;
+
+      public:
+        ErrorList();
+        ~ErrorList();
+
+        void Clear();
+        void AddError(const char* format, ...);
+        void AddWarning(const char* format, ...);
+        bool Empty();
+    };
     void EXPORT Report(
           Severity type,
           const char* fileName,
