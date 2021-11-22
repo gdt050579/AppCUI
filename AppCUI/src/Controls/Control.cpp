@@ -1550,9 +1550,8 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
 }
 bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
 {
-    // GDT: need to rethink this callback
-    // if (OnBeforeSetText(text.data()) == false)
-    //    return false;
+    if (OnBeforeSetText((CharacterView)text) == false)
+        return false;
     if (CTRLC->Text.Set(text) == false)
         return false;
     if (CTRLC->handlers->OnAfterSetText.obj)
