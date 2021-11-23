@@ -612,7 +612,7 @@ namespace Utils
             return data;
         }
         template <typename T>
-        inline const T* GetObject(unsigned int offset = 0) const
+        inline Reference<const T> GetObject(unsigned int offset = 0) const
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
@@ -705,7 +705,7 @@ namespace Utils
             return data;
         }
         template <typename T>
-        inline T* GetObject(unsigned int offset = 0)
+        inline Reference<T> GetObject(unsigned int offset = 0)
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
