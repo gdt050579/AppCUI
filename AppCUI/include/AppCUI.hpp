@@ -4172,8 +4172,8 @@ namespace Log
         ~ErrorList();
 
         void Clear();
-        void AddError(const char* format, ...);
-        void AddWarning(const char* format, ...);
+        bool AddError(const char* format, ...);
+        bool AddWarning(const char* format, ...);
         bool Empty() const;
 
         unsigned int GetErrorsCount() const;
