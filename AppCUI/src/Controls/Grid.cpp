@@ -686,7 +686,14 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
     auto deltaHeight = (context->Layout.Height - context->cHeight * context->rowsNo);
     if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
     {
-        deltaHeight -= context->headerSize;
+        if (deltaHeight > context->headerSize)
+        {
+            deltaHeight -= context->headerSize;
+        }
+        else
+        {
+            deltaHeight = 0;
+        }
     }
     context->offsetY = static_cast<unsigned int>(deltaHeight / 2);
 
