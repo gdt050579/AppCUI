@@ -4174,7 +4174,13 @@ namespace Log
         void Clear();
         void AddError(const char* format, ...);
         void AddWarning(const char* format, ...);
-        bool Empty();
+        bool Empty() const;
+
+        unsigned int GetErrorsCount() const;
+        unsigned int GetWarningsCount() const;
+
+        std::string_view GetError(unsigned int index) const;
+        std::string_view GetWarning(unsigned int index) const;
     };
     void EXPORT Report(
           Severity type,

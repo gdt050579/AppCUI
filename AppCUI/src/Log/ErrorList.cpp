@@ -132,12 +132,44 @@ void ErrorList::AddWarning(const char* format, ...)
     p[len2] = 0;
     el->warnings.emplace_back(std::string_view(p, len2));
 }
-bool ErrorList::Empty()
+bool ErrorList::Empty() const
 {
     if (!data)
         return true;
     auto el = reinterpret_cast<InternalErrorList*>(data);
     return el->errors.empty() && el->warnings.empty();
+}
+unsigned int ErrorList::GetErrorsCount() const
+{
+    if (!data)
+        return 0;
+    auto el = reinterpret_cast<InternalErrorList*>(data);
+    return (unsigned int)el->errors.size();
+}
+unsigned int ErrorList::GetWarningsCount() const
+{
+    if (!data)
+        return 0;
+    auto el = reinterpret_cast<InternalErrorList*>(data);
+    return (unsigned int) el->warnings.size();
+}
+std::string_view ErrorList::GetError(unsigned int index) const
+{
+    if (!data)
+        return std::string_view();
+    auto el = reinterpret_cast<InternalErrorList*>(data);
+    if (index >= el->errors.size())
+        return std::string_view();
+    return (std::string_view) (el->errors[index]);
+}
+std::string_view ErrorList::GetWarning(unsigned int index) const
+{
+    if (!data)
+        return std::string_view();
+    auto el = reinterpret_cast<InternalErrorList*>(data);
+    if (index >= el->warnings.size())
+        return std::string_view();
+    return (std::string_view) (el->warnings[index]);
 }
 
 #undef LOCAL_STACK_TEXT_SIZE
