@@ -4181,6 +4181,8 @@ namespace Log
 
         std::string_view GetError(unsigned int index) const;
         std::string_view GetWarning(unsigned int index) const;
+
+        void PopulateListView(AppCUI::Utils::Reference<AppCUI::Controls::ListView> listView) const;
     };
     void EXPORT Report(
           Severity type,

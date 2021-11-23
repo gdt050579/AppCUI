@@ -171,5 +171,35 @@ std::string_view ErrorList::GetWarning(unsigned int index) const
         return std::string_view();
     return (std::string_view) (el->warnings[index]);
 }
-
+void ErrorList::PopulateListView(AppCUI::Utils::Reference<AppCUI::Controls::ListView> listView) const
+{
+    if (!listView.IsValid())
+        return;
+    listView->DeleteAllItems();
+    if (!data)
+        return;
+    auto el = reinterpret_cast<InternalErrorList*>(data);
+    if (el->errors.size()>0)
+    {
+        auto handle = listView->AddItem("Errors");
+        listView->SetItemType(handle, AppCUI::Controls::ListViewItemType::Highlighted);
+        for (auto &text: el->errors)
+        {
+            handle = listView->AddItem(text);
+            listView->SetItemType(handle, AppCUI::Controls::ListViewItemType::ErrorInformation);
+            listView->SetItemXOffset(handle, 2);
+        }
+    }
+    if (el->warnings.size() > 0)
+    {
+        auto handle = listView->AddItem("Warnings");
+        listView->SetItemType(handle, AppCUI::Controls::ListViewItemType::Highlighted);
+        for (auto& text : el->warnings)
+        {
+            handle = listView->AddItem(text);
+            listView->SetItemType(handle, AppCUI::Controls::ListViewItemType::WarningInformation);
+            listView->SetItemXOffset(handle, 2);
+        }
+    }
+}
 #undef LOCAL_STACK_TEXT_SIZE
