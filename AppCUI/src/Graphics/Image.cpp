@@ -1,9 +1,11 @@
 #include <lodepng.h>
 #include "AppCUI.hpp"
+#include "BitmapLoader.hpp"
 
 using namespace AppCUI::Graphics;
 
 constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
+constexpr uint16_t IMAGE_BMP_MAGIC     = 0x4D42;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -235,13 +237,15 @@ bool Image::Load(const std::filesystem::path& path)
 bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
-    unsigned int magic          = *(unsigned int*) imageBuffer;
+    unsigned int magic32        = *(unsigned int*) imageBuffer;
+    uint16_t magic16            = *(uint16_t*) imageBuffer;
     unsigned int resultedWidth  = 0;
     unsigned int resultedHeight = 0;
     unsigned char* temp         = nullptr;
-    switch (magic)
+
+    // PNG
+    if (magic32 == IMAGE_PNG_MAGIC)
     {
-    case IMAGE_PNG_MAGIC:
         if (lodepng_decode_memory(
                   &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
         {
@@ -276,7 +280,13 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
                 free(temp);
             RETURNERROR(false, "Fail to decode PNG buffer !");
         }
-    default:
-        RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic);
     }
+    // BMP
+    if (magic16 == IMAGE_BMP_MAGIC)
+    {
+        CHECK(LoadBMPToImage(*this, imageBuffer, size), false, "Fail to load bitmap to image !");
+    }
+    
+    // unknwon type
+    RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic32);
 }
