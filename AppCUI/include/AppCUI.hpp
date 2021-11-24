@@ -2154,6 +2154,7 @@ namespace Graphics
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool Create(const unsigned char* imageBuffer, unsigned int size);
+        bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
 

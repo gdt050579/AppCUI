@@ -1,9 +1,11 @@
-#include <lodepng.h>
 #include "AppCUI.hpp"
+#include "ImageLoader.hpp"
+#include "string.h"
 
 using namespace AppCUI::Graphics;
 
 constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
+constexpr uint16_t IMAGE_BMP_MAGIC     = 0x4D42;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -232,51 +234,29 @@ bool Image::Load(const std::filesystem::path& path)
     auto buf = AppCUI::OS::File::ReadContent(path);
     return Create((const unsigned char*) buf.GetData(), (unsigned int) buf.GetLength());
 }
+bool Image::CreateFromDIB(const unsigned char* imageBuffer, unsigned int size)
+{
+    CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
+    CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
+    return LoadDIBToImage(*this, imageBuffer, size);
+}
 bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
-    unsigned int magic          = *(unsigned int*) imageBuffer;
-    unsigned int resultedWidth  = 0;
-    unsigned int resultedHeight = 0;
-    unsigned char* temp         = nullptr;
-    switch (magic)
+    CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
+    unsigned int magic32        = *(const unsigned int*) imageBuffer;
+    uint16_t magic16            = *(const uint16_t*) imageBuffer;
+
+
+    if (magic32 == IMAGE_PNG_MAGIC)
     {
-    case IMAGE_PNG_MAGIC:
-        if (lodepng_decode_memory(
-                  &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
-        {
-            if (temp != nullptr)
-            {
-                if (this->pixels)
-                    delete[] this->pixels;
-                // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
-                // new
-                this->pixels = new Pixel[(size_t) resultedWidth * (size_t) resultedHeight];
-                auto* p      = this->pixels;
-                auto e       = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
-                auto* c      = temp;
-                while (c < e)
-                {
-                    p->Red   = *c++;
-                    p->Green = *c++;
-                    p->Blue  = *c++;
-                    p->Alpha = *c++;
-                    p++;
-                }
-                this->width  = resultedWidth;
-                this->height = resultedHeight;
-                free(temp);
-                return true;
-            }
-            RETURNERROR(false, "No bytes were allocated when decoding PNG !");
-        }
-        else
-        {
-            if (temp)
-                free(temp);
-            RETURNERROR(false, "Fail to decode PNG buffer !");
-        }
-    default:
-        RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic);
+        return LoadPNGToImage(*this, imageBuffer, size);
     }
+    if (magic16 == IMAGE_BMP_MAGIC)
+    {
+        return LoadBMPToImage(*this, imageBuffer, size);
+    }
+    
+    // unknwon type
+    RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic32);
 }

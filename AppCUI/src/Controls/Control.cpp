@@ -1542,8 +1542,13 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         if (CTRLC->Text.Set(caption, NoColorPair) == false)
             return false;
     }
-    if (CTRLC->handlers->OnAfterSetText.obj)
-        CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+    if (CTRLC->handlers)
+    {
+        if (CTRLC->handlers->OnAfterSetText.obj)
+            CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+        else
+            OnAfterSetText();
+    }
     else
         OnAfterSetText();
     return true;
@@ -1554,8 +1559,13 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer&
         return false;
     if (CTRLC->Text.Set(text) == false)
         return false;
-    if (CTRLC->handlers->OnAfterSetText.obj)
-        CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+    if (CTRLC->handlers)
+    {
+        if (CTRLC->handlers->OnAfterSetText.obj)
+            CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+        else
+            OnAfterSetText();
+    }
     else
         OnAfterSetText();
     return true;
