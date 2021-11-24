@@ -619,7 +619,6 @@ namespace Utils
             return reinterpret_cast<const T*>(data + offset);
         }
 
-
         inline operator std::string_view() const
         {
             return std::string_view((const char*) data, length);
@@ -2178,8 +2177,8 @@ namespace Graphics
         Image& operator=(const Image& img);
         Image& operator=(Image&& img) noexcept
         {
-            std::swap(this->pixels,img.pixels);
-            std::swap(this->width,img.width);
+            std::swap(this->pixels, img.pixels);
+            std::swap(this->width, img.width);
             std::swap(this->height, img.height);
             return *this;
         }
@@ -2580,7 +2579,6 @@ namespace Controls
                 callback(control);
             };
         };
-
 
         template <typename I, typename C, typename H>
         class Wrapper
@@ -3627,7 +3625,8 @@ namespace Controls
         HideHoveredCell       = 0x000800,
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
-        HideHeader            = 0x004000
+        HideHeader            = 0x004000,
+        DisableZoom           = 0x008000
     };
 
     class EXPORT Grid : public Control
@@ -3686,7 +3685,8 @@ namespace Controls
         void DrawCellsBackground(Graphics::Renderer& renderer);
         bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
         bool DrawHeader(Graphics::Renderer& renderer);
-        void UpdateGridParameters();
+        void UpdateGridParameters(bool dontRecomputeDimensions = false);
+        void UpdateDimensions(int offsetX, int offsetY);
         bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
         bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
         bool ToggleBooleanCell();

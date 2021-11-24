@@ -27,7 +27,7 @@ Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo,
 
 void Grid::Paint(Renderer& renderer)
 {
-    UpdateGridParameters();
+    UpdateGridParameters(true);
 
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -106,9 +106,39 @@ bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
             return true;
         }
         break;
+
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Up:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            UpdateDimensions(0, 1);
+            return true;
+        }
+        break;
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Down:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            UpdateDimensions(0, -1);
+            return true;
+        }
+        break;
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Left:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            UpdateDimensions(1, 0);
+            return true;
+        }
+        break;
+    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Right:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            UpdateDimensions(-1, 0);
+            return true;
+        }
+        break;
     default:
         break;
     }
+
     return false;
 }
 
@@ -672,13 +702,16 @@ bool AppCUI::Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
     return true;
 }
 
-void AppCUI::Controls::Grid::UpdateGridParameters()
+void AppCUI::Controls::Grid::UpdateGridParameters(bool dontRecomputeDimensions)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
     // define cell dimensions
-    context->cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
-    context->cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
+    if (dontRecomputeDimensions == false || context->cWidth == 0 || context->cHeight == 0)
+    {
+        context->cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
+        context->cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
+    }
 
     // center matrix
     context->offsetX = static_cast<unsigned int>((context->Layout.Width - context->cWidth * context->columnsNo) / 2);
@@ -733,6 +766,19 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
     context->selectedCellsIndexes.erase(
           std::unique(context->selectedCellsIndexes.begin(), context->selectedCellsIndexes.end()),
           context->selectedCellsIndexes.end());
+}
+
+void AppCUI::Controls::Grid::UpdateDimensions(int offsetX, int offsetY)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    context->cWidth += offsetX;
+    context->cHeight += offsetY;
+
+    context->cWidth  = std::max<>(1U, context->cWidth);
+    context->cHeight = std::max<>(1U, context->cHeight);
+
+    UpdateGridParameters(true);
 }
 
 bool AppCUI::Controls::Grid::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
