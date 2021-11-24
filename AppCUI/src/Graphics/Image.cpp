@@ -1,5 +1,6 @@
 #include "AppCUI.hpp"
 #include "ImageLoader.hpp"
+#include "string.h"
 
 using namespace AppCUI::Graphics;
 
@@ -247,12 +248,10 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     uint16_t magic16            = *(const uint16_t*) imageBuffer;
 
 
-    // PNG
     if (magic32 == IMAGE_PNG_MAGIC)
     {
         return LoadPNGToImage(*this, imageBuffer, size);
     }
-    // BMP
     if (magic16 == IMAGE_BMP_MAGIC)
     {
         return LoadBMPToImage(*this, imageBuffer, size);
