@@ -33,6 +33,7 @@ struct DIBPaintBuffer
 {
     const unsigned char* px;
     const unsigned char* end;
+    const uint32_t* colorTable;
     uint32_t width;
     uint32_t height;
     const BMP_InfoHeader* header;
@@ -51,6 +52,31 @@ bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
               x,
               y);
         d.px += 3;
+        x++;
+        if (x == d.width)
+        {
+            if (y == 0)
+                return true;
+            d.px += rowPadding;
+            x = 0;
+            y--;
+        }
+    }
+    RETURNERROR(false, "Premature end of bitmap buffer !");
+}
+bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d)
+{
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t rowPadding = (4 - (d.width & 3)) & 3;
+    while (d.px <= d.end)
+    {
+        CHECK(img.SetPixel(x, y, Pixel(d.colorTable[*d.px])),
+              false,
+              "Fail to set pixel on %u,%u coordonates",
+              x,
+              y);
+        d.px++;
         x++;
         if (x == d.width)
         {
@@ -82,14 +108,24 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
           false,
           "Only 1,4,8,16,24,32 bits/pixels are supported !");
     DIBPaintBuffer dpb;
-    dpb.px     = buffer + sizeof(BMP_InfoHeader);
-    dpb.end    = buffer + size;
-    dpb.header = h;
-    dpb.width  = h->width;
-    dpb.height = h->height;
+    dpb.px         = buffer + sizeof(BMP_InfoHeader);
+    dpb.end        = buffer + size;
+    dpb.header     = h;
+    dpb.width      = h->width;
+    dpb.height     = h->height;
+    dpb.colorTable = nullptr;
+
+    if (h->bitsPerPixel == 8)
+    {
+        // we have a color table as well
+        dpb.px += 1024; // 256 entries x 4 (RGBA)
+        dpb.colorTable = reinterpret_cast<const uint32_t*>(buffer + sizeof(BMP_InfoHeader));
+    }
 
     switch (h->bitsPerPixel)
     {
+    case 8:
+        return Paint_256color_DIB(img, dpb);
     case 24:
         return Paint_24bits_DIB(img, dpb);
     }
