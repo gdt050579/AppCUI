@@ -35,15 +35,15 @@ struct DIBPaintBuffer
     const unsigned char* end;
     uint32_t width;
     uint32_t height;
-    uint32_t rowPadding;
     const BMP_InfoHeader* header;
 };
 
 bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
 {
-    uint32_t x = 0;
-    uint32_t y = d.height - 1;
-    while (d.px+3 <= d.end)
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t rowPadding = (4 - ((d.width * 3) & 3)) & 3;
+    while (d.px + 3 <= d.end)
     {
         CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
               false,
@@ -52,11 +52,11 @@ bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
               y);
         d.px += 3;
         x++;
-        if (x==d.width)
+        if (x == d.width)
         {
             if (y == 0)
                 return true;
-            d.px += d.rowPadding;
+            d.px += rowPadding;
             x = 0;
             y--;
         }
@@ -82,12 +82,11 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
           false,
           "Only 1,4,8,16,24,32 bits/pixels are supported !");
     DIBPaintBuffer dpb;
-    dpb.px         = buffer + sizeof(BMP_InfoHeader);
-    dpb.end        = buffer + size;
-    dpb.header     = h;
-    dpb.width      = h->width;
-    dpb.height     = h->height;
-    dpb.rowPadding = (4 - (h->width & 3)) & 3;
+    dpb.px     = buffer + sizeof(BMP_InfoHeader);
+    dpb.end    = buffer + size;
+    dpb.header = h;
+    dpb.width  = h->width;
+    dpb.height = h->height;
 
     switch (h->bitsPerPixel)
     {
