@@ -71,11 +71,7 @@ bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d)
     uint32_t rowPadding = (4 - (d.width & 3)) & 3;
     while (d.px <= d.end)
     {
-        CHECK(img.SetPixel(x, y, Pixel(d.colorTable[*d.px])),
-              false,
-              "Fail to set pixel on %u,%u coordonates",
-              x,
-              y);
+        CHECK(img.SetPixel(x, y, Pixel(d.colorTable[*d.px])), false, "Fail to set pixel on %u,%u coordonates", x, y);
         d.px++;
         x++;
         if (x == d.width)
@@ -101,7 +97,7 @@ bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
 
         for (unsigned int cnt = 0; cnt < 2; cnt++) // two colors per byte
         {
-            CHECK(img.SetPixel(x, y, Pixel(d.colorTable[(val & 0xF0)>>4])),
+            CHECK(img.SetPixel(x, y, Pixel(d.colorTable[(val & 0xF0) >> 4])),
                   false,
                   "Fail to set pixel on %u,%u coordonates",
                   x,
@@ -117,6 +113,40 @@ bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
                 break;
             }
             val = val << 4;
+        }
+        d.px++;
+    }
+    RETURNERROR(false, "Premature end of bitmap buffer !");
+}
+bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
+{
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t pxWidth    = (d.width & 7) == 0 ? (d.width >> 8) : (d.width >> 8) + 1;
+    uint32_t rowPadding = (4 - (pxWidth & 3)) & 3;
+    Color c;
+    while (d.px <= d.end)
+    {
+        auto val = *d.px;
+
+        for (unsigned int cnt = 0; cnt < 8; cnt++) // two colors per byte
+        {
+            if (val & 0x80)
+                c = Color::White;
+            else
+                c = Color::Black;
+            CHECK(img.SetPixel(x, y, c), false, "Fail to set pixel on %u,%u coordonates", x, y);
+            x++;
+            if (x == d.width)
+            {
+                if (y == 0)
+                    return true;
+                d.px += rowPadding;
+                x = 0;
+                y--;
+                break;
+            }
+            val = val << 1;
         }
         d.px++;
     }
@@ -150,6 +180,8 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
 
     switch (h->bitsPerPixel)
     {
+    case 1:
+        return Paint_monochrome_DIB(img, dpb);
     case 4:
         // set color table
         dpb.px += 64; // 16 entries x 4 (RGBA)
