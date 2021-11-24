@@ -89,6 +89,39 @@ bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d)
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
+bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
+{
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t pxWidth    = (d.width & 1) + (d.width >> 1); // for 3 the result is 2, for 8 the result is 4
+    uint32_t rowPadding = (4 - (pxWidth & 3)) & 3;
+    while (d.px <= d.end)
+    {
+        auto val = *d.px;
+
+        for (unsigned int cnt = 0; cnt < 2; cnt++) // two colors per byte
+        {
+            CHECK(img.SetPixel(x, y, Pixel(d.colorTable[(val & 0xF0)>>4])),
+                  false,
+                  "Fail to set pixel on %u,%u coordonates",
+                  x,
+                  y);
+            x++;
+            if (x == d.width)
+            {
+                if (y == 0)
+                    return true;
+                d.px += rowPadding;
+                x = 0;
+                y--;
+                break;
+            }
+            val = val << 4;
+        }
+        d.px++;
+    }
+    RETURNERROR(false, "Premature end of bitmap buffer !");
+}
 bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size)
 {
     CHECK(size > sizeof(BMP_InfoHeader),
@@ -115,16 +148,17 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
     dpb.height     = h->height;
     dpb.colorTable = nullptr;
 
-    if (h->bitsPerPixel == 8)
-    {
-        // we have a color table as well
-        dpb.px += 1024; // 256 entries x 4 (RGBA)
-        dpb.colorTable = reinterpret_cast<const uint32_t*>(buffer + sizeof(BMP_InfoHeader));
-    }
-
     switch (h->bitsPerPixel)
     {
+    case 4:
+        // set color table
+        dpb.px += 64; // 16 entries x 4 (RGBA)
+        dpb.colorTable = reinterpret_cast<const uint32_t*>(buffer + sizeof(BMP_InfoHeader));
+        return Paint_16color_DIB(img, dpb);
     case 8:
+        // set color table
+        dpb.px += 1024; // 256 entries x 4 (RGBA)
+        dpb.colorTable = reinterpret_cast<const uint32_t*>(buffer + sizeof(BMP_InfoHeader));
         return Paint_256color_DIB(img, dpb);
     case 24:
         return Paint_24bits_DIB(img, dpb);
