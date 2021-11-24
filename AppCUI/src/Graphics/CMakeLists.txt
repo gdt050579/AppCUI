@@ -1,1 +1,10 @@
-target_sources(AppCUI PRIVATE Canvas.cpp CharacterBuffer.cpp Clip.cpp Image.cpp ProgressStatus.cpp Rect.cpp Renderer.cpp )
+target_sources(AppCUI PRIVATE 
+	BitmapLoader.cpp 
+	Canvas.cpp 
+	CharacterBuffer.cpp 
+	Clip.cpp 
+	Image.cpp 
+	ProgressStatus.cpp 
+	PNGLoader.cpp
+	Rect.cpp 
+	Renderer.cpp )
