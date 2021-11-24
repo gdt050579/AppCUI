@@ -1,4 +1,4 @@
-#include "BitmapLoader.hpp"
+#include "ImageLoader.hpp"
 
 using namespace AppCUI::Graphics;
 

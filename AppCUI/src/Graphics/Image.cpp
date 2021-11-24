@@ -1,6 +1,5 @@
-#include <lodepng.h>
 #include "AppCUI.hpp"
-#include "BitmapLoader.hpp"
+#include "ImageLoader.hpp"
 
 using namespace AppCUI::Graphics;
 
@@ -239,47 +238,12 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     unsigned int magic32        = *(unsigned int*) imageBuffer;
     uint16_t magic16            = *(uint16_t*) imageBuffer;
-    unsigned int resultedWidth  = 0;
-    unsigned int resultedHeight = 0;
-    unsigned char* temp         = nullptr;
+
 
     // PNG
     if (magic32 == IMAGE_PNG_MAGIC)
     {
-        if (lodepng_decode_memory(
-                  &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
-        {
-            if (temp != nullptr)
-            {
-                if (this->pixels)
-                    delete[] this->pixels;
-                // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
-                // new
-                this->pixels = new Pixel[(size_t) resultedWidth * (size_t) resultedHeight];
-                auto* p      = this->pixels;
-                auto e       = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
-                auto* c      = temp;
-                while (c < e)
-                {
-                    p->Red   = *c++;
-                    p->Green = *c++;
-                    p->Blue  = *c++;
-                    p->Alpha = *c++;
-                    p++;
-                }
-                this->width  = resultedWidth;
-                this->height = resultedHeight;
-                free(temp);
-                return true;
-            }
-            RETURNERROR(false, "No bytes were allocated when decoding PNG !");
-        }
-        else
-        {
-            if (temp)
-                free(temp);
-            RETURNERROR(false, "Fail to decode PNG buffer !");
-        }
+        CHECK(LoadPNGToImage(*this, imageBuffer, size), false, "Fail to load PNG to image !");
     }
     // BMP
     if (magic16 == IMAGE_BMP_MAGIC)
