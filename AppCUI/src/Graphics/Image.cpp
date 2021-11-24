@@ -243,8 +243,8 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
-    unsigned int magic32        = *(unsigned int*) imageBuffer;
-    uint16_t magic16            = *(uint16_t*) imageBuffer;
+    unsigned int magic32        = *(const unsigned int*) imageBuffer;
+    uint16_t magic16            = *(const uint16_t*) imageBuffer;
 
 
     // PNG
