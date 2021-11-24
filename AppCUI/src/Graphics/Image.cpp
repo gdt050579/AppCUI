@@ -243,12 +243,12 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     // PNG
     if (magic32 == IMAGE_PNG_MAGIC)
     {
-        CHECK(LoadPNGToImage(*this, imageBuffer, size), false, "Fail to load PNG to image !");
+        return LoadPNGToImage(*this, imageBuffer, size);
     }
     // BMP
     if (magic16 == IMAGE_BMP_MAGIC)
     {
-        CHECK(LoadBMPToImage(*this, imageBuffer, size), false, "Fail to load bitmap to image !");
+        return LoadBMPToImage(*this, imageBuffer, size);
     }
     
     // unknwon type
