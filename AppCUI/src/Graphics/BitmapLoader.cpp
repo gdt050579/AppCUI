@@ -39,6 +39,31 @@ struct DIBPaintBuffer
     const BMP_InfoHeader* header;
 };
 
+bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d)
+{
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t rowPadding = 0;
+    while (d.px + 4 <= d.end)
+    {
+        CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
+              false,
+              "Fail to set pixel on %u,%u coordonates",
+              x,
+              y);
+        d.px += 4;
+        x++;
+        if (x == d.width)
+        {
+            if (y == 0)
+                return true;
+            d.px += rowPadding;
+            x = 0;
+            y--;
+        }
+    }
+    RETURNERROR(false, "Premature end of bitmap buffer !");
+}
 bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
 {
     uint32_t x          = 0;
@@ -206,6 +231,8 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
         return Paint_256color_DIB(img, dpb);
     case 24:
         return Paint_24bits_DIB(img, dpb);
+    case 32:
+        return Paint_32bits_DIB(img, dpb);
     }
     RETURNERROR(false, "Paint method for %d bits/pixels is not implemeted !", h->bitsPerPixel);
 }
