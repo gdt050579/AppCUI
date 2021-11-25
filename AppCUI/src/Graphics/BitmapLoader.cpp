@@ -168,7 +168,7 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
     auto height = h->height;
     if (isIcon)
     {
-        CHECK((h->height & 1) == 1, false, "Height must be a multiple of 2 --> value is %u ", h->height);
+        CHECK((h->height & 1) == 0, false, "Height must be a multiple of 2 --> value is %u ", h->height);
         height = h->height >> 1;
         CHECK(height == width,
               false,
