@@ -1,4 +1,5 @@
 #include <AppCUI.hpp>
+#include "ControlContext.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
@@ -17,5 +18,8 @@ bool ImageViewer::SetImage(
     auto sz = c->ComputeRenderingSize(img, method, scale);
     CHECK((sz.Width > 0) && (sz.Height > 0), false, "Invalid image size (0x0) --> nothing to render");
     CHECK(c->Resize(sz.Width, sz.Height), false, "Fail to set canvas size to %ux%u", sz.Width, sz.Height);
+    CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
+    Members->MoveScrollTo(0, 0);
     return c->DrawImage(img, 0, 0, method, scale);
+
 }
