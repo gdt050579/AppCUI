@@ -2155,6 +2155,13 @@ namespace Graphics
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool Create(const unsigned char* imageBuffer, unsigned int size);
+        inline bool Create(AppCUI::Utils::BufferView buf)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return Create(buf.GetData(), (unsigned int) buf.GetLength());
+            else
+                return false;
+        }
         bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon);
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
