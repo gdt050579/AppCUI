@@ -3314,6 +3314,8 @@ class ItemTypesDemo : public Window
         lv->SetItemType(h, ListViewItemType::Enphasized_1);
         h = lv->AddItem("Enphasized item (color 2)");
         lv->SetItemType(h, ListViewItemType::Enphasized_2);
+        h = lv->AddItem("Category item");
+        lv->SetItemType(h, ListViewItemType::Category);
 
         Factory::Label::Create(
               this,

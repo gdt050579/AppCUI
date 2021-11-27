@@ -229,6 +229,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     case ListViewItemType::Enphasized_2:
         itemCol = Cfg->ListView.Item.Enphasized2;
         break;
+    case ListViewItemType::Category:
+        itemCol = Cfg->ListView.Item.Category;
+        break;
     default:
         break;
     }
@@ -244,9 +247,29 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
                   (unsigned int) params.Flags - (unsigned int) WriteTextFlags::OverwriteColors);
         }
     }
-
     // prepare params
     params.Color = itemCol;
+
+
+    // for chategory items a special draw is made (only first comlumn is shown)
+    if (item->Type == ListViewItemType::Category)
+    {
+        if (Focused)
+            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->ListView.Focused.Border, true);
+        else
+            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->ListView.Normal.Border, true);
+        params.Align = TextAlignament::Center;
+        params.Width = this->Layout.Width - 2;
+        params.X     = 1;
+        params.Flags |= WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin;
+        if (currentItem)
+            params.Color = Cfg->ListView.FocusColor;
+        renderer.WriteText(*subitem, params);
+        return;
+    }
+
+
+
 
     // first column
     int end_first_column = x + ((int) column->Width);
