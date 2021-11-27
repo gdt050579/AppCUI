@@ -3346,6 +3346,9 @@ class CategoryDemo : public Window
         lv->SetItemType(h, ListViewItemType::Category);
         lv->AddItem("Databases", "20");
         lv->AddItem("Results", "25");
+
+        h = lv->AddItem("Third chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
         lv->AddItem("Conclusions", "27");
     }
 };
