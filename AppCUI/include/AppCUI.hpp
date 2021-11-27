@@ -619,7 +619,6 @@ namespace Utils
             return reinterpret_cast<const T*>(data + offset);
         }
 
-
         inline operator std::string_view() const
         {
             return std::string_view((const char*) data, length);
@@ -2193,8 +2192,8 @@ namespace Graphics
         Image& operator=(const Image& img);
         Image& operator=(Image&& img) noexcept
         {
-            std::swap(this->pixels,img.pixels);
-            std::swap(this->width,img.width);
+            std::swap(this->pixels, img.pixels);
+            std::swap(this->width, img.width);
             std::swap(this->height, img.height);
             return *this;
         }
@@ -2595,7 +2594,6 @@ namespace Controls
                 callback(control);
             };
         };
-
 
         template <typename I, typename C, typename H>
         class Wrapper
@@ -3214,6 +3212,8 @@ namespace Controls
         GrayedOut          = 2,
         ErrorInformation   = 3,
         WarningInformation = 4,
+        Enphasized_1       = 5,
+        Enphasized_2       = 6
     };
 
     class EXPORT ListView : public Control
@@ -4377,7 +4377,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Enphasized1, Enphasized2;
             } Item;
             struct
             {
