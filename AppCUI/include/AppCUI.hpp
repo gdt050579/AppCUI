@@ -2163,6 +2163,13 @@ namespace Graphics
                 return false;
         }
         bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon);
+        inline bool CreateFromDIB(AppCUI::Utils::BufferView buf, bool isIcon)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return CreateFromDIB(buf.GetData(), (unsigned int) buf.GetLength(), isIcon);
+            else
+                return false;
+        }
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
 
