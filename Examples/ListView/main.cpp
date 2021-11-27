@@ -3325,16 +3325,42 @@ class ItemTypesDemo : public Window
     }
 };
 
+class CategoryDemo : public Window
+{
+  public:
+    CategoryDemo() : Window("Category Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:13", ListViewFlags::HideColumns);
+        // columns
+        lv->AddColumn("", TextAlignament::Left, 55);
+        lv->AddColumn("", TextAlignament::Right, 4);
+        // items
+        ItemHandle h;
+        h = lv->AddItem("First chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Introduction", "1");
+        lv->AddItem("Related work", "5");
+        lv->AddItem("Explaining the problem", "11");
+
+        h = lv->AddItem("Second chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Databases", "20");
+        lv->AddItem("Results", "25");
+        lv->AddItem("Conclusions", "27");
+    }
+};
+
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes;
+          rbSelect, rbItemTypes, rbCategory;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:22", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:23", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3360,6 +3386,7 @@ class MyWin : public Window
         rbSelect =
               Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:15,w:56", MY_GROUP);
         rbItemTypes = Factory::RadioBox::Create(this, "Items types", "x:1,y:16,w:56", MY_GROUP);
+        rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:17,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:21", SHOW_DEFAULT_EXAMPLE);
 
@@ -3433,6 +3460,11 @@ class MyWin : public Window
         if (rbItemTypes->IsChecked())
         {
             ItemTypesDemo win;
+            win.Show();
+        }
+        if (rbCategory->IsChecked())
+        {
+            CategoryDemo win;
             win.Show();
         }
     }
