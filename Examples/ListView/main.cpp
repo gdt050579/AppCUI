@@ -3310,10 +3310,10 @@ class ItemTypesDemo : public Window
         lv->SetItemType(h, ListViewItemType::ErrorInformation);
         h = lv->AddItem("Warning item");
         lv->SetItemType(h, ListViewItemType::WarningInformation);
-        h = lv->AddItem("Enphasized item (color 1)");
-        lv->SetItemType(h, ListViewItemType::Enphasized_1);
-        h = lv->AddItem("Enphasized item (color 2)");
-        lv->SetItemType(h, ListViewItemType::Enphasized_2);
+        h = lv->AddItem("Emphasized item (color 1)");
+        lv->SetItemType(h, ListViewItemType::Emphasized_1);
+        h = lv->AddItem("Emphasized item (color 2)");
+        lv->SetItemType(h, ListViewItemType::Emphasized_2);
         h = lv->AddItem("Category item");
         lv->SetItemType(h, ListViewItemType::Category);
 

@@ -220,8 +220,8 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.Item.Inactive     = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Item.Error        = ColorPair{ Color::Red, Color::Transparent };
     this->ListView.Item.Warning      = ColorPair{ Color::Olive, Color::Transparent };
-    this->ListView.Item.Enphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
-    this->ListView.Item.Enphasized2  = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.Item.Emphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
+    this->ListView.Item.Emphasized2  = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.Item.Category     = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };

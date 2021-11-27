@@ -223,11 +223,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     case ListViewItemType::GrayedOut:
         itemCol = Cfg->ListView.Item.Inactive;
         break;
-    case ListViewItemType::Enphasized_1:
-        itemCol = Cfg->ListView.Item.Enphasized1;
+    case ListViewItemType::Emphasized_1:
+        itemCol = Cfg->ListView.Item.Emphasized1;
         break;
-    case ListViewItemType::Enphasized_2:
-        itemCol = Cfg->ListView.Item.Enphasized2;
+    case ListViewItemType::Emphasized_2:
+        itemCol = Cfg->ListView.Item.Emphasized2;
         break;
     case ListViewItemType::Category:
         itemCol = Cfg->ListView.Item.Category;

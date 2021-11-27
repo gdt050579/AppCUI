@@ -3212,8 +3212,8 @@ namespace Controls
         GrayedOut          = 2,
         ErrorInformation   = 3,
         WarningInformation = 4,
-        Enphasized_1       = 5,
-        Enphasized_2       = 6,
+        Emphasized_1       = 5,
+        Emphasized_2       = 6,
         Category           = 7
     };
 
@@ -4378,7 +4378,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Enphasized1, Enphasized2,
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2,
                       Category;
             } Item;
             struct
