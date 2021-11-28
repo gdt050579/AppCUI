@@ -876,6 +876,9 @@ namespace Utils
         UnicodeStringBuilder(
               char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
 
+        UnicodeStringBuilder(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
+
         ~UnicodeStringBuilder();
         void Destroy();
 
@@ -953,6 +956,9 @@ namespace Utils
             Set(charBuffer);
             return *this;
         }
+
+        UnicodeStringBuilder& operator=(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder& operator=(UnicodeStringBuilder&& obj) noexcept;
     };
 
     enum class NumberParseFlags : unsigned int

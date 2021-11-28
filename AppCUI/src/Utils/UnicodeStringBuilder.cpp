@@ -59,13 +59,13 @@ void UnicodeStringBuilder::Create(char16_t* localBuffer, size_t localBufferSize)
     if ((localBuffer == nullptr) || (localBufferSize == 0) || (localBufferSize > MAX_ALLOCATION_SIZE))
     {
         this->chars     = nullptr;
-        this->length      = 0;
+        this->length    = 0;
         this->allocated = 0;
     }
     else
     {
         this->chars     = localBuffer;
-        this->length      = 0;
+        this->length    = 0;
         this->allocated = (unsigned int) (localBufferSize & 0x7FFFFFFF) | LOCAL_BUFFER_FLAG;
     }
 }
@@ -74,7 +74,7 @@ void UnicodeStringBuilder::Destroy()
     if ((!(this->allocated & LOCAL_BUFFER_FLAG)) && (this->chars))
         delete[] this->chars;
     this->chars     = nullptr;
-    this->length      = 0;
+    this->length    = 0;
     this->allocated = 0;
 }
 bool UnicodeStringBuilder::Resize(size_t newSize)
@@ -142,6 +142,55 @@ UnicodeStringBuilder::UnicodeStringBuilder(
     Create(localBuffer, localBufferSize);
     if (!Set(charBuffer))
         Destroy();
+}
+UnicodeStringBuilder::UnicodeStringBuilder(const UnicodeStringBuilder& obj)
+{
+    Create(nullptr, 0);
+    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        Destroy();
+}
+UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
+{
+    if (obj.length & LOCAL_BUFFER_FLAG)
+    {
+        // if this is a local buffer --> copy it
+        this->chars     = nullptr;
+        this->length    = 0;
+        this->allocated = 0;
+        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+            Destroy();
+    }
+    else
+    {
+        this->chars     = obj.chars;
+        this->length    = obj.length;
+        this->allocated = obj.allocated;
+        obj.chars       = nullptr;
+        obj.length      = 0;
+        obj.allocated   = 0;
+    }
+}
+UnicodeStringBuilder& UnicodeStringBuilder::operator=(const UnicodeStringBuilder& obj)
+{
+    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        Destroy();
+    return *this;
+}
+UnicodeStringBuilder& UnicodeStringBuilder::operator=(UnicodeStringBuilder&& obj) noexcept
+{
+    if (obj.length & LOCAL_BUFFER_FLAG)
+    {
+        // if this is a local buffer --> copy it
+        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+            Destroy();
+    }
+    else
+    {
+        std::swap(this->chars, obj.chars);
+        std::swap(this->length, obj.length);
+        std::swap(this->allocated, obj.allocated);
+    }
+    return *this;
 }
 UnicodeStringBuilder::~UnicodeStringBuilder()
 {
