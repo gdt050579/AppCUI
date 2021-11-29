@@ -558,7 +558,8 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 }
 bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
-    return false;
+    TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), true);
+    return true;
 }
 Handlers::TextControl* TextField::Handlers()
 {
