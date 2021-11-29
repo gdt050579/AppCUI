@@ -13,6 +13,8 @@ using namespace AppCUI::Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
+AppCUI::Controls::Menu* textFieldContexMenu = nullptr;
+
 void TextField_SendTextChangedEvent(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
@@ -577,7 +579,17 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     }
     if (button == MouseButton::Right)
     {
-        // show menu
+        if (textFieldContexMenu == nullptr)
+        {
+            textFieldContexMenu = new AppCUI::Controls::Menu();
+            textFieldContexMenu->AddCommandItem("&Copy", 1, Key::Ctrl | Key::C);
+            textFieldContexMenu->AddCommandItem("Cut", 1, Key::Ctrl | Key::X);
+            textFieldContexMenu->AddCommandItem("Paste", 1, Key::Ctrl | Key::V);
+            textFieldContexMenu->AddSeparator();
+            textFieldContexMenu->AddCommandItem("Select &All", 1, Key::Ctrl | Key::A);
+            textFieldContexMenu->AddCommandItem("&Delete selection", 1, Key::Delete);
+        }
+        textFieldContexMenu->Show(this, x, y + 1);
     }
 }
 bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
