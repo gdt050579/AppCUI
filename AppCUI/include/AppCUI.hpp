@@ -3048,6 +3048,8 @@ namespace Controls
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;

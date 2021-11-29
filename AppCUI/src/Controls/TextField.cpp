@@ -33,6 +33,7 @@ void TextField_SendTextChangedEvent(TextField* control)
 void TextField_MoveSelTo(TextField* control, int poz)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    Members->FullSelectionDueToOnFocusEvent = false;
     if (Members->Selection.Start == -1)
         return;
     if (poz == Members->Selection.Origin)
@@ -58,6 +59,7 @@ void TextField_MoveTo(TextField* control, int newPoz, bool selected)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     int c_width = C_WIDTH;
+    Members->FullSelectionDueToOnFocusEvent = false;
     if ((!selected) && (Members->Selection.Start != -1))
         control->ClearSelection();
     if ((static_cast<unsigned>(Members->Cursor.Pos) == Members->Text.Len()) && (newPoz > Members->Cursor.Pos))
@@ -277,22 +279,33 @@ void TextField_PasteFromClipboard(TextField* control)
     TextField_SendTextChangedEvent(control);
     Members->Modified = true;
 }
+int TextField_MouseToTextPos(TextField* control, int x, int y)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, -1);
+    // for sizes too small --> it can not be computed (sanity check)
+    if (Members->Layout.Width <= 2)
+        return -1;
+    int poz = y * (Members->Layout.Width - 2) + (x - 1); // -1 as the first character is space
+    if (poz >= (int) Members->Text.Len())
+        poz = (int) Members->Text.Len();
+    if (poz < 0)
+        poz = 0;
+    return poz;
+}
 //============================================================================
 TextField::~TextField()
 {
     DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-TextField::TextField(
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout,
-      TextFieldFlags flags)
+TextField::TextField(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextFieldFlags flags)
     : Control(new TextFieldControlContext(), caption, layout, false)
 {
-    auto Members              = reinterpret_cast<TextFieldControlContext*>(this->Context);
-    Members->Layout.MinWidth  = 3;
-    Members->Layout.MinHeight = 1;
-    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
-    Members->Modified         = true;
+    auto Members                            = reinterpret_cast<TextFieldControlContext*>(this->Context);
+    Members->Layout.MinWidth                = 3;
+    Members->Layout.MinHeight               = 1;
+    Members->Flags                          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Modified                       = true;
+    Members->FullSelectionDueToOnFocusEvent = false;
 
     this->ClearSelection();
     Members->Cursor.Pos = Members->Cursor.StartOffset = 0;
@@ -306,13 +319,15 @@ void TextField::SelectAll()
     Members->Selection.End   = Members->Text.Len() - 1;
     if (Members->Selection.End < 0)
         ClearSelection();
-    Members->Modified = true;
+    Members->Modified                       = true;
+    Members->FullSelectionDueToOnFocusEvent = false;
 }
 void TextField::ClearSelection()
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
     Members->Selection.Start = Members->Selection.End = Members->Selection.Origin = -1;
     Members->Modified                                                             = true;
+    Members->FullSelectionDueToOnFocusEvent                                       = false;
 }
 
 bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
@@ -444,7 +459,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
         {
             if ((Members->Flags & TextFieldFlags::SyntaxHighlighting) != TextFieldFlags::None)
             {
-                if (Members->handlers!=nullptr)
+                if (Members->handlers != nullptr)
                 {
                     auto t_h = (AppCUI::Controls::Handlers::TextControl*) Members->handlers.get();
                     if (t_h->OnTextColor.obj)
@@ -517,7 +532,9 @@ void TextField::OnAfterResize(int newWidth, int newHeight)
 }
 void TextField::OnFocus()
 {
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
     SelectAll();
+    Members->FullSelectionDueToOnFocusEvent = Members->Text.Len() > 0;
 }
 bool TextField::OnMouseEnter()
 {
@@ -526,6 +543,22 @@ bool TextField::OnMouseEnter()
 bool TextField::OnMouseLeave()
 {
     return true;
+}
+void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
+    if (Members->FullSelectionDueToOnFocusEvent)
+    {
+        Members->FullSelectionDueToOnFocusEvent = false;
+        return;
+    }
+
+    ClearSelection();
+    TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), false);
+}
+bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+{
+    return false;
 }
 Handlers::TextControl* TextField::Handlers()
 {

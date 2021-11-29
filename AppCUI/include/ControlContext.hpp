@@ -255,6 +255,7 @@ class TextFieldControlContext : public ControlContext
         int Start, End, Origin;
     } Selection;
     bool Modified;
+    bool FullSelectionDueToOnFocusEvent;
 };
 class TextAreaControlContext : public ControlContext
 {
