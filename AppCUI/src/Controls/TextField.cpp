@@ -570,8 +570,15 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         return;
     }
 
-    ClearSelection();
-    TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), false);
+    if (button == MouseButton::Left)
+    {
+        ClearSelection();
+        TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), false);
+    }
+    if (button == MouseButton::Right)
+    {
+        // show menu
+    }
 }
 bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
@@ -581,7 +588,6 @@ bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 void TextField::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
-
 }
 Handlers::TextControl* TextField::Handlers()
 {
