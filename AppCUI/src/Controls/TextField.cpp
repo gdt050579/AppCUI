@@ -58,7 +58,7 @@ void TextField_MoveSelTo(TextField* control, int poz)
 void TextField_MoveTo(TextField* control, int newPoz, bool selected)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
-    int c_width = C_WIDTH;
+    int c_width                             = C_WIDTH;
     Members->FullSelectionDueToOnFocusEvent = false;
     if ((!selected) && (Members->Selection.Start != -1))
         control->ClearSelection();
@@ -107,7 +107,7 @@ bool __is_not_op__(unsigned int, Character ch)
         return false;
     return !__is_op__(0, ch);
 }
-void TextField_MoveToNextWord(TextField* control, bool selected)
+void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpacesAfterWord = true)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Cursor.Pos >= (int) Members->Text.Len())
@@ -129,9 +129,12 @@ void TextField_MoveToNextWord(TextField* control, bool selected)
         res = Members->Text.FindNext(Members->Cursor.Pos, __is_not_op__);
     }
     // skip spaces if exists
-    if (res.has_value())
-        res = Members->Text.FindNext(
-              res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    if (skipSpacesAfterWord)
+    {
+        if (res.has_value())
+            res = Members->Text.FindNext(
+                  res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+    }
     if (res.has_value())
         TextField_MoveTo(control, res.value(), selected);
 }
@@ -291,6 +294,13 @@ int TextField_MouseToTextPos(TextField* control, int x, int y)
     if (poz < 0)
         poz = 0;
     return poz;
+}
+void TextField_SelectWorld(TextField* control)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    control->ClearSelection();
+    TextField_MoveToPreviousWord(control, false);
+    TextField_MoveToNextWord(control, true, false);
 }
 //============================================================================
 TextField::~TextField()
@@ -547,6 +557,13 @@ bool TextField::OnMouseLeave()
 void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
+    if (button == (MouseButton::DoubleClicked | MouseButton::Left))
+    {
+        TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), false);
+        TextField_SelectWorld(this);
+        return;
+    }
+
     if (Members->FullSelectionDueToOnFocusEvent)
     {
         Members->FullSelectionDueToOnFocusEvent = false;
@@ -560,6 +577,11 @@ bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {
     TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), true);
     return true;
+}
+void TextField::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
+
 }
 Handlers::TextControl* TextField::Handlers()
 {
