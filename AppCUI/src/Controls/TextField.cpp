@@ -618,7 +618,8 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         if ((Members->handlers) &&
             ((reinterpret_cast<Handlers::TextControl*>(Members->handlers.get()))->OnTextRightClick.obj))
         {
-            (reinterpret_cast<Handlers::TextControl*>(Members->handlers.get()))->OnTextRightClick.obj->OnTextRightClick(this);
+            (reinterpret_cast<Handlers::TextControl*>(Members->handlers.get()))
+                  ->OnTextRightClick.obj->OnTextRightClick(this, x, y);
         }
         else
         {

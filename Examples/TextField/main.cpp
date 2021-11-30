@@ -23,12 +23,13 @@ void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* c
 
 class MyWin : public AppCUI::Controls::Window,
               public AppCUI::Controls::Handlers::OnAfterSetTextInterface,
-              public AppCUI::Controls::Handlers::OnButtonPressedInterface
+              public AppCUI::Controls::Handlers::OnButtonPressedInterface,
+              public AppCUI::Controls::Handlers::OnTextRightClickInterface
 {
     Reference<TextField> tf1;
 
   public:
-    MyWin() : Window("Text Field Example", "d:c,w:70,h:18", WindowFlags::Sizeable)
+    MyWin() : Window("Text Field Example", "d:c,w:70,h:20", WindowFlags::Sizeable)
     {
         Factory::Label::Create(this, "&Normal text", "x:1,y:1,w:15");
         Factory::TextField::Create(this, "a normal text", "l:19,t:1,r:1")->SetHotKey('N');
@@ -56,6 +57,10 @@ class MyWin : public AppCUI::Controls::Window,
         tf1->SetEnabled(false);
 
         Factory::Button::Create(this, "Copy", "r:1,t:13,w:10", 123)->Handlers()->OnButtonPressed = this;
+
+        Factory::Label::Create(this, "Custom menu", "x:1,y:15,w:16");
+        auto tx_custommenu = Factory::TextField::Create(this, "Right click to see a custom menu", "l:19,t:15,r:1,h:1");
+        tx_custommenu->Handlers()->OnTextRightClick = this;
     }
     bool OnEvent(Reference<Control>, Event eventType, int) override
     {
@@ -74,6 +79,9 @@ class MyWin : public AppCUI::Controls::Window,
     void OnAfterSetText(Reference<Control>) override
     {
         Dialogs::MessageBox::ShowNotification("Info", "A new text was set in the text field");
+    }
+    void OnTextRightClick(Reference<Control>, int x, int y) override
+    {
     }
 };
 int main()

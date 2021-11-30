@@ -2469,7 +2469,7 @@ namespace Controls
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
         typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
-        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control);
+        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control, int x, int y);
 
         struct OnButtonPressedInterface
         {
@@ -2578,14 +2578,14 @@ namespace Controls
 
         struct OnTextRightClickInterface
         {
-            virtual void OnTextRightClick(Reference<Controls::Control> ctrl) = 0;
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) = 0;
         };
         struct OnTextRightClickCallback : public OnTextRightClickInterface
         {
             OnTextRightClickHandler callback;
-            virtual void OnTextRightClick(Reference<Controls::Control> ctrl) override
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) override
             {
-                callback(ctrl);
+                callback(ctrl, x, y);
             };
         };
 
