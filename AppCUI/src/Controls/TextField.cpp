@@ -602,17 +602,17 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         return;
     }
 
-    if (Members->FullSelectionDueToOnFocusEvent)
+    if ((button & MouseButton::Left)!=MouseButton::None)
     {
-        Members->FullSelectionDueToOnFocusEvent = false;
-        return;
-    }
-
-    if (button == MouseButton::Left)
-    {
+        if (Members->FullSelectionDueToOnFocusEvent)
+        {
+            Members->FullSelectionDueToOnFocusEvent = false;
+            return;
+        }
         ClearSelection();
         TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), false);
     }
+    Members->FullSelectionDueToOnFocusEvent = false;
     if (button == MouseButton::Right)
     {
         if ((Members->handlers) &&
