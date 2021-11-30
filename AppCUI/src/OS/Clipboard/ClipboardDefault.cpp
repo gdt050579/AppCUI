@@ -14,3 +14,7 @@ bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder&)
 {
     NOT_IMPLEMENTED(false);
 }
+bool Clipboard::HasText()
+{
+    NOT_IMPLEMENTED(false);
+}

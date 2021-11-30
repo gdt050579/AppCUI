@@ -1651,6 +1651,7 @@ namespace OS
         static bool SetText(const AppCUI::Utils::ConstString& text);
         static bool GetText(AppCUI::Utils::UnicodeStringBuilder& text);
         static bool Clear();
+        static bool HasText();
     };
     class EXPORT IFile
     {
@@ -2468,6 +2469,7 @@ namespace Controls
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
         typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
+        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control, int x, int y);
 
         struct OnButtonPressedInterface
         {
@@ -2574,6 +2576,19 @@ namespace Controls
             };
         };
 
+        struct OnTextRightClickInterface
+        {
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) = 0;
+        };
+        struct OnTextRightClickCallback : public OnTextRightClickInterface
+        {
+            OnTextRightClickHandler callback;
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) override
+            {
+                callback(ctrl, x, y);
+            };
+        };
+
         struct OnTreeItemToggleInterface
         {
             virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
@@ -2647,6 +2662,7 @@ namespace Controls
         struct TextControl : public Control
         {
             Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
+            Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
         };
 
         typedef int (*ListViewItemComparer)(
@@ -3048,15 +3064,26 @@ namespace Controls
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
 
         // handlers covariant
         Handlers::TextControl* Handlers() override;
 
+        // selection
         void SelectAll();
         void ClearSelection();
+        bool HasSelection() const;
+        bool GetSelection(unsigned int& start, unsigned int& size) const;
+
+        // clipboard
+        void CopyToClipboard(bool deleteSelectionAfterCopy);
+        void PasteFromClipboard();
 
         virtual ~TextField();
 
@@ -4384,8 +4411,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2,
-                      Category;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
             } Item;
             struct
             {

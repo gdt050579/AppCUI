@@ -34,3 +34,7 @@ bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
     }
     return true;
 }
+bool Clipboard::HasText()
+{
+    return SDL_HasClipboardText();
+}
