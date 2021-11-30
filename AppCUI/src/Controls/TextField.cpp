@@ -13,6 +13,12 @@ using namespace AppCUI::Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
+constexpr int MENUCMD_COPY            = 1200001;
+constexpr int MENUCMD_CUT             = 1200002;
+constexpr int MENUCMD_PASTE           = 1200003;
+constexpr int MENUCMD_SELECT_ALL      = 1200004;
+constexpr int MENUCMD_DELETE_SELECTED = 1200005;
+
 AppCUI::Controls::Menu* textFieldContexMenu = nullptr;
 
 void TextField_SendTextChangedEvent(TextField* control)
@@ -582,15 +588,40 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         if (textFieldContexMenu == nullptr)
         {
             textFieldContexMenu = new AppCUI::Controls::Menu();
-            textFieldContexMenu->AddCommandItem("&Copy", 1, Key::Ctrl | Key::C);
-            textFieldContexMenu->AddCommandItem("Cut", 1, Key::Ctrl | Key::X);
-            textFieldContexMenu->AddCommandItem("Paste", 1, Key::Ctrl | Key::V);
+            textFieldContexMenu->AddCommandItem("&Copy", MENUCMD_COPY, Key::Ctrl | Key::C);
+            textFieldContexMenu->AddCommandItem("Cut", MENUCMD_CUT, Key::Ctrl | Key::X);
+            textFieldContexMenu->AddCommandItem("Paste", MENUCMD_PASTE, Key::Ctrl | Key::V);
             textFieldContexMenu->AddSeparator();
-            textFieldContexMenu->AddCommandItem("Select &All", 1, Key::Ctrl | Key::A);
-            textFieldContexMenu->AddCommandItem("&Delete selection", 1, Key::Delete);
+            textFieldContexMenu->AddCommandItem("Select &All", MENUCMD_SELECT_ALL, Key::Ctrl | Key::A);
+            textFieldContexMenu->AddCommandItem("&Delete selection", MENUCMD_DELETE_SELECTED, Key::Delete);
         }
         textFieldContexMenu->Show(this, x, y + 1);
     }
+}
+bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlID)
+{
+    if (eventType == Event::Command)
+    {
+        switch (controlID)
+        {
+        case MENUCMD_COPY:
+            OnKeyEvent(Key::Ctrl | Key::Insert, 0);
+            return true;
+        case MENUCMD_CUT:
+            OnKeyEvent(Key::Ctrl | Key::V, 0);
+            return true;
+        case MENUCMD_PASTE:
+            OnKeyEvent(Key::Shift | Key::Insert, 0);
+            return true;
+        case MENUCMD_SELECT_ALL:
+            OnKeyEvent(Key::Ctrl | Key::A, 0);
+            return true;
+        case MENUCMD_DELETE_SELECTED:
+            OnKeyEvent(Key::Delete, 0);
+            return true;
+        }
+    }
+    return false;
 }
 bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
 {

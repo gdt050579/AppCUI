@@ -3054,6 +3054,7 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
 
         // handlers covariant
         Handlers::TextControl* Handlers() override;
