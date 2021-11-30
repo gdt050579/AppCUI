@@ -1651,6 +1651,7 @@ namespace OS
         static bool SetText(const AppCUI::Utils::ConstString& text);
         static bool GetText(AppCUI::Utils::UnicodeStringBuilder& text);
         static bool Clear();
+        static bool HasText();
     };
     class EXPORT IFile
     {
