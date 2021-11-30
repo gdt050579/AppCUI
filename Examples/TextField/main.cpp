@@ -6,6 +6,9 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
+constexpr int MENU_CMD_SET_HELLO_WORLD = 1234;
+constexpr int MENU_CMD_CLEAR_TEXT      = 1235;
+
 void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* chars, unsigned int charsCount)
 {
     Graphics::Character* end = chars + charsCount;
@@ -63,8 +66,8 @@ class MyWin : public AppCUI::Controls::Window,
         Factory::Label::Create(this, "Custom menu", "x:1,y:15,w:16");
         tx_custommenu = Factory::TextField::Create(this, "Right click to see a custom menu", "l:19,t:15,r:1,h:1");
         tx_custommenu->Handlers()->OnTextRightClick = this;
-        mnu.AddCommandItem("Set ... Hello World", 1234);
-        mnu.AddCommandItem("Empty text", 1235);
+        mnu.AddCommandItem("Set ... Hello World", MENU_CMD_SET_HELLO_WORLD);
+        mnu.AddCommandItem("Empty text", MENU_CMD_CLEAR_TEXT);
     }
     bool OnEvent(Reference<Control>, Event eventType, int id) override
     {
@@ -75,11 +78,11 @@ class MyWin : public AppCUI::Controls::Window,
         }
         if (eventType == Event::Command)
         {
-            if (id == 1234)
+            if (id == MENU_CMD_SET_HELLO_WORLD)
             {
                 tx_custommenu->SetText("Hello World");
             }
-            if (id == 1235)
+            if (id == MENU_CMD_CLEAR_TEXT)
             {
                 tx_custommenu->SetText("");
             }
