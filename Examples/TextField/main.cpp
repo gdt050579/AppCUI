@@ -27,6 +27,8 @@ class MyWin : public AppCUI::Controls::Window,
               public AppCUI::Controls::Handlers::OnTextRightClickInterface
 {
     Reference<TextField> tf1;
+    Reference<TextField> tx_custommenu;
+    AppCUI::Controls::Menu mnu;
 
   public:
     MyWin() : Window("Text Field Example", "d:c,w:70,h:20", WindowFlags::Sizeable)
@@ -59,14 +61,28 @@ class MyWin : public AppCUI::Controls::Window,
         Factory::Button::Create(this, "Copy", "r:1,t:13,w:10", 123)->Handlers()->OnButtonPressed = this;
 
         Factory::Label::Create(this, "Custom menu", "x:1,y:15,w:16");
-        auto tx_custommenu = Factory::TextField::Create(this, "Right click to see a custom menu", "l:19,t:15,r:1,h:1");
+        tx_custommenu = Factory::TextField::Create(this, "Right click to see a custom menu", "l:19,t:15,r:1,h:1");
         tx_custommenu->Handlers()->OnTextRightClick = this;
+        mnu.AddCommandItem("Set ... Hello World", 1234);
+        mnu.AddCommandItem("Empty text", 1235);
     }
-    bool OnEvent(Reference<Control>, Event eventType, int) override
+    bool OnEvent(Reference<Control>, Event eventType, int id) override
     {
         if (eventType == Event::WindowClose)
         {
             Application::Close();
+            return true;
+        }
+        if (eventType == Event::Command)
+        {
+            if (id == 1234)
+            {
+                tx_custommenu->SetText("Hello World");
+            }
+            if (id == 1235)
+            {
+                tx_custommenu->SetText("");
+            }
             return true;
         }
         return false;
@@ -80,8 +96,9 @@ class MyWin : public AppCUI::Controls::Window,
     {
         Dialogs::MessageBox::ShowNotification("Info", "A new text was set in the text field");
     }
-    void OnTextRightClick(Reference<Control>, int x, int y) override
+    void OnTextRightClick(Reference<Control> control, int x, int y) override
     {
+        mnu.Show(control, x, y + 1);
     }
 };
 int main()
