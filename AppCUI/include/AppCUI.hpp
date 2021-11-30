@@ -3062,6 +3062,8 @@ namespace Controls
 
         void SelectAll();
         void ClearSelection();
+        void CopyToClipboard(bool deleteSelectionAfterCopy);
+        void PasteFromClipboard();
 
         virtual ~TextField();
 

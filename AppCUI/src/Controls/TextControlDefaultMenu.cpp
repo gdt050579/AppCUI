@@ -19,6 +19,7 @@ TextControlDefaultMenu::~TextControlDefaultMenu()
 }
 void TextControlDefaultMenu::Show(Reference<Control> parent, int x, int y, bool hasSelection)
 {
+    menu.SetEnable(this->itemPaste, AppCUI::OS::Clipboard::HasText());
     menu.SetEnable(this->itemCopy, hasSelection);
     menu.SetEnable(this->itemCut, hasSelection);
     menu.SetEnable(this->itemDelete, hasSelection);

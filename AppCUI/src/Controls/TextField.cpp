@@ -263,7 +263,7 @@ void TextField_SetSelection(TextField* control, int start, int end)
         Members->Modified                                    = true;
     }
 }
-void TextField_CopyToClipboard(TextField* control)
+void TextField_CopyToClipboard(TextField* control, bool deleteSelectionAfterCopy)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
 
@@ -273,6 +273,10 @@ void TextField_CopyToClipboard(TextField* control)
               Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
+    }
+    if (deleteSelectionAfterCopy)
+    {
+        TextField_KeyDelete(control);
     }
 }
 void TextField_PasteFromClipboard(TextField* control)
@@ -342,6 +346,14 @@ void TextField::SelectAll()
         ClearSelection();
     Members->Modified                       = true;
     Members->FullSelectionDueToOnFocusEvent = false;
+}
+void TextField::CopyToClipboard(bool deleteSelectionAfterCopy)
+{
+    TextField_CopyToClipboard(this, deleteSelectionAfterCopy);
+}
+void TextField::PasteFromClipboard()
+{
+    TextField_PasteFromClipboard(this);
 }
 void TextField::ClearSelection()
 {
@@ -419,11 +431,14 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
         return true;
     case Key::Ctrl | Key::Insert:
     case Key::Ctrl | Key::C:
-        TextField_CopyToClipboard(this);
+        TextField_CopyToClipboard(this, false);
         return true;
     case Key::Ctrl | Key::V:
     case Key::Shift | Key::Insert:
         TextField_PasteFromClipboard(this);
+        return true;
+    case Key::Ctrl | Key::X:
+        TextField_CopyToClipboard(this, true);
         return true;
 
     case Key::Enter:
@@ -602,16 +617,16 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
         switch (controlID)
         {
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
-            OnKeyEvent(Key::Ctrl | Key::Insert, 0);
+            this->CopyToClipboard(false);
             return true;
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
-            OnKeyEvent(Key::Ctrl | Key::V, 0);
+            this->CopyToClipboard(true);
             return true;
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
-            OnKeyEvent(Key::Shift | Key::Insert, 0);
+            this->PasteFromClipboard();
             return true;
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
-            OnKeyEvent(Key::Ctrl | Key::A, 0);
+            this->SelectAll();
             return true;
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
             OnKeyEvent(Key::Delete, 0);
