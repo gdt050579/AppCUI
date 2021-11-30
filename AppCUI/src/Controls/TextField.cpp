@@ -17,6 +17,13 @@ using namespace AppCUI::Input;
 
 AppCUI::Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
+void AppCUI::Controls::UninitTextFieldDefaultMenu()
+{
+    if (textFieldContexMenu)
+        delete textFieldContexMenu;
+    textFieldContexMenu = nullptr;
+}
+
 void TextField_SendTextChangedEvent(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );

@@ -33,6 +33,8 @@ bool AppCUI::Application::Run()
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
     app->ExecuteEventLoop();
+    LOG_INFO("Uninit text field default menu ");
+    Controls::UninitTextFieldDefaultMenu();
     LOG_INFO("Starting to un-init AppCUI ...");
     app->Uninit();
     Log::Unit();

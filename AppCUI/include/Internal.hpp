@@ -328,4 +328,8 @@ namespace Log
 {
     void Unit(); // needed to release some alocation buffers
 }
+namespace Controls
+{
+    void UninitTextFieldDefaultMenu();
+}
 } // namespace AppCUI
