@@ -1,4 +1,5 @@
 #include "ControlContext.hpp"
+#include "Internal.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
@@ -13,13 +14,8 @@ using namespace AppCUI::Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
-constexpr int MENUCMD_COPY            = 1200001;
-constexpr int MENUCMD_CUT             = 1200002;
-constexpr int MENUCMD_PASTE           = 1200003;
-constexpr int MENUCMD_SELECT_ALL      = 1200004;
-constexpr int MENUCMD_DELETE_SELECTED = 1200005;
 
-AppCUI::Controls::Menu* textFieldContexMenu = nullptr;
+AppCUI::Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
 void TextField_SendTextChangedEvent(TextField* control)
 {
@@ -587,15 +583,9 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     {
         if (textFieldContexMenu == nullptr)
         {
-            textFieldContexMenu = new AppCUI::Controls::Menu();
-            textFieldContexMenu->AddCommandItem("&Copy", MENUCMD_COPY, Key::Ctrl | Key::C);
-            textFieldContexMenu->AddCommandItem("Cut", MENUCMD_CUT, Key::Ctrl | Key::X);
-            textFieldContexMenu->AddCommandItem("Paste", MENUCMD_PASTE, Key::Ctrl | Key::V);
-            textFieldContexMenu->AddSeparator();
-            textFieldContexMenu->AddCommandItem("Select &All", MENUCMD_SELECT_ALL, Key::Ctrl | Key::A);
-            textFieldContexMenu->AddCommandItem("&Delete selection", MENUCMD_DELETE_SELECTED, Key::Delete);
+            textFieldContexMenu = new AppCUI::Internal::TextControlDefaultMenu();
         }
-        textFieldContexMenu->Show(this, x, y + 1);
+        textFieldContexMenu->Show(this, x, y + 1, Members->Selection.Start >= 0);
     }
 }
 bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlID)
@@ -604,19 +594,19 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
     {
         switch (controlID)
         {
-        case MENUCMD_COPY:
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
             OnKeyEvent(Key::Ctrl | Key::Insert, 0);
             return true;
-        case MENUCMD_CUT:
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
             OnKeyEvent(Key::Ctrl | Key::V, 0);
             return true;
-        case MENUCMD_PASTE:
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
             OnKeyEvent(Key::Shift | Key::Insert, 0);
             return true;
-        case MENUCMD_SELECT_ALL:
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
             OnKeyEvent(Key::Ctrl | Key::A, 0);
             return true;
-        case MENUCMD_DELETE_SELECTED:
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
             OnKeyEvent(Key::Delete, 0);
             return true;
         }

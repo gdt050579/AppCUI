@@ -170,6 +170,27 @@ namespace Internal
         bool OnKeyEvent(AppCUI::Input::Key keyCode);
     };
 
+    class TextControlDefaultMenu
+    {
+        AppCUI::Controls::ItemHandle itemCopy;
+        AppCUI::Controls::ItemHandle itemCut;
+        AppCUI::Controls::ItemHandle itemDelete;
+        AppCUI::Controls::ItemHandle itemPaste;
+        AppCUI::Controls::ItemHandle itemSelectAll;
+        AppCUI::Controls::Menu menu;
+
+      public:
+        TextControlDefaultMenu();
+        ~TextControlDefaultMenu();
+        void Show(AppCUI::Utils::Reference<AppCUI::Controls::Control> parent, int x, int y, bool hasSelection);
+
+        static constexpr int TEXTCONTROL_CMD_COPY            = 1200001;
+        static constexpr int TEXTCONTROL_CMD_CUT             = 1200002;
+        static constexpr int TEXTCONTROL_CMD_PASTE           = 1200003;
+        static constexpr int TEXTCONTROL_CMD_SELECT_ALL      = 1200004;
+        static constexpr int TEXTCONTROL_CMD_DELETE_SELECTED = 1200005;
+    };
+
     class ToolTipController
     {
         AppCUI::Graphics::CharacterBuffer Text;
