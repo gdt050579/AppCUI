@@ -14,7 +14,6 @@ using namespace AppCUI::Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
-
 AppCUI::Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
 void AppCUI::Controls::UninitTextFieldDefaultMenu()
@@ -362,7 +361,20 @@ void TextField::ClearSelection()
     Members->Modified                                                             = true;
     Members->FullSelectionDueToOnFocusEvent                                       = false;
 }
-
+bool TextField::HasSelection() const
+{
+    CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
+    return Members->Selection.Start >= 0;
+}
+bool TextField::GetSelection(unsigned int& start, unsigned int& size) const
+{
+    CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
+    if ((Members->Selection.Start < 0) || (Members->Selection.End <= Members->Selection.Start))
+        return false;
+    start = (unsigned int) Members->Selection.Start;
+    size  = (unsigned int) (Members->Selection.End - Members->Selection.Start);
+    return true;
+}
 bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);

@@ -3060,8 +3060,13 @@ namespace Controls
         // handlers covariant
         Handlers::TextControl* Handlers() override;
 
+        // selection
         void SelectAll();
         void ClearSelection();
+        bool HasSelection() const;
+        bool GetSelection(unsigned int& start, unsigned int& size) const;
+
+        // clipboard
         void CopyToClipboard(bool deleteSelectionAfterCopy);
         void PasteFromClipboard();
 
