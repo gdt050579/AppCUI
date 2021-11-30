@@ -2469,6 +2469,7 @@ namespace Controls
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
         typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
+        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control);
 
         struct OnButtonPressedInterface
         {
@@ -2575,6 +2576,19 @@ namespace Controls
             };
         };
 
+        struct OnTextRightClickInterface
+        {
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl) = 0;
+        };
+        struct OnTextRightClickCallback : public OnTextRightClickInterface
+        {
+            OnTextRightClickHandler callback;
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl) override
+            {
+                callback(ctrl);
+            };
+        };
+
         struct OnTreeItemToggleInterface
         {
             virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
@@ -2648,6 +2662,7 @@ namespace Controls
         struct TextControl : public Control
         {
             Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
+            Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
         };
 
         typedef int (*ListViewItemComparer)(
@@ -4396,8 +4411,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2,
-                      Category;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
             } Item;
             struct
             {

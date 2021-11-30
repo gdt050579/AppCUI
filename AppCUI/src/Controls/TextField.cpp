@@ -615,11 +615,19 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
     }
     if (button == MouseButton::Right)
     {
-        if (textFieldContexMenu == nullptr)
+        if ((Members->handlers) &&
+            ((reinterpret_cast<Handlers::TextControl*>(Members->handlers.get()))->OnTextRightClick.obj))
         {
-            textFieldContexMenu = new AppCUI::Internal::TextControlDefaultMenu();
+            (reinterpret_cast<Handlers::TextControl*>(Members->handlers.get()))->OnTextRightClick.obj->OnTextRightClick(this);
         }
-        textFieldContexMenu->Show(this, x, y + 1, Members->Selection.Start >= 0);
+        else
+        {
+            if (textFieldContexMenu == nullptr)
+            {
+                textFieldContexMenu = new AppCUI::Internal::TextControlDefaultMenu();
+            }
+            textFieldContexMenu->Show(this, x, y + 1, Members->Selection.Start >= 0);
+        }
     }
 }
 bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlID)
