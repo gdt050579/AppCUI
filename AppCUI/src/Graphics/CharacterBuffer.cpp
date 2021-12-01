@@ -501,6 +501,40 @@ bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, const Color
     }
     return true;
 }
+bool CharacterBuffer::ConvertToUpper(unsigned int start, unsigned int end)
+{
+    if (end > this->Count)
+        end = this->Count;
+    CHECK(start <= end, false, "Expecting a valid parameter for start (%d) --> should be smaller than %d", start, end);
+    Character* ch   = this->Buffer + start;
+    unsigned int sz = end - start;
+    while (sz)
+    {
+        //GDT: upper/lower case needs to be redesigned
+        if ((ch->Code >= 'a') && (ch->Code <= 'z'))
+            ch->Code -= 32;
+        sz--;
+        ch++;
+    }
+    return true;
+}
+bool CharacterBuffer::ConvertToLower(unsigned int start, unsigned int end)
+{
+    if (end > this->Count)
+        end = this->Count;
+    CHECK(start <= end, false, "Expecting a valid parameter for start (%d) --> should be smaller than %d", start, end);
+    Character* ch   = this->Buffer + start;
+    unsigned int sz = end - start;
+    while (sz)
+    {
+        // GDT: upper/lower case needs to be redesigned
+        if ((ch->Code >= 'A') && (ch->Code <= 'Z'))
+            ch->Code += 32;
+        sz--;
+        ch++;
+    }
+    return true;
+}
 void CharacterBuffer::SetColor(const ColorPair color)
 {
     Character* ch = this->Buffer;
