@@ -13,6 +13,10 @@ TextControlDefaultMenu::TextControlDefaultMenu()
     menu.AddSeparator();
     this->itemSelectAll = menu.AddCommandItem("Select &All", TEXTCONTROL_CMD_SELECT_ALL, Key::Ctrl | Key::A);
     this->itemDelete    = menu.AddCommandItem("&Delete selection", TEXTCONTROL_CMD_DELETE_SELECTED, Key::Delete);
+    menu.AddSeparator();
+    this->itemToUpper =
+          menu.AddCommandItem("To &upper case", TEXTCONTROL_CMD_TO_UPPER, Key::Ctrl | Key::Shift | Key::U);
+    this->itemToLower = menu.AddCommandItem("To &lower case", TEXTCONTROL_CMD_TO_LOWER, Key::Ctrl | Key::U);
 }
 TextControlDefaultMenu::~TextControlDefaultMenu()
 {
@@ -23,5 +27,7 @@ void TextControlDefaultMenu::Show(Reference<Control> parent, int x, int y, bool 
     menu.SetEnable(this->itemCopy, hasSelection);
     menu.SetEnable(this->itemCut, hasSelection);
     menu.SetEnable(this->itemDelete, hasSelection);
+    menu.SetEnable(this->itemToUpper, hasSelection);
+    menu.SetEnable(this->itemToLower, hasSelection);
     menu.Show(parent, x, y);
 }

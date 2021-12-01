@@ -316,6 +316,20 @@ void TextField_SelectWorld(TextField* control)
     TextField_MoveToPreviousWord(control, false);
     TextField_MoveToNextWord(control, true, false);
 }
+void TextField_ToUpper(TextField* control)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    if (Members->Selection.Start < 0)
+        return;
+    Members->Text.ConvertToUpper((unsigned int) Members->Selection.Start, (unsigned int) (Members->Selection.End + 1));
+}
+void TextField_ToLower(TextField* control)
+{
+    CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
+    if (Members->Selection.Start < 0)
+        return;
+    Members->Text.ConvertToLower((unsigned int) Members->Selection.Start, (unsigned int) (Members->Selection.End + 1));
+}
 //============================================================================
 TextField::~TextField()
 {
@@ -441,6 +455,14 @@ bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
     case Key::Ctrl | Key::A:
         SelectAll();
         return true;
+
+    case Key::Ctrl | Key::Shift | Key::U:
+        TextField_ToUpper(this);
+        return true;
+    case Key::Ctrl | Key::U:
+        TextField_ToLower(this);
+        return true;
+
     case Key::Ctrl | Key::Insert:
     case Key::Ctrl | Key::C:
         TextField_CopyToClipboard(this, false);
@@ -602,7 +624,7 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         return;
     }
 
-    if ((button & MouseButton::Left)!=MouseButton::None)
+    if ((button & MouseButton::Left) != MouseButton::None)
     {
         if (Members->FullSelectionDueToOnFocusEvent)
         {
@@ -651,6 +673,12 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
             return true;
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
             OnKeyEvent(Key::Delete, 0);
+            return true;
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
+            TextField_ToUpper(this);
+            return true;
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
+            TextField_ToLower(this);
             return true;
         }
     }

@@ -2040,6 +2040,8 @@ namespace Graphics
         void SetColor(const ColorPair color);
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
         bool CopyString(Utils::String& text);
+        bool ConvertToUpper(unsigned int start, unsigned int end);
+        bool ConvertToLower(unsigned int start, unsigned int end);
 
         int Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
         inline bool Contains(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const

@@ -519,7 +519,7 @@ void TextAreaControlContext::MoveEnd(bool selected)
 }
 bool __is_sign__(unsigned int, Character ch)
 {
-    switch(ch.Code)
+    switch (ch.Code)
     {
     case '!':
     case '@':
@@ -560,7 +560,7 @@ bool __is_sign__(unsigned int, Character ch)
 }
 bool __is_not_sign(unsigned int, Character ch)
 {
-    if ((ch == '\n') || (ch == '\r') || (ch==' ') || (ch=='\t'))
+    if ((ch == '\n') || (ch == '\r') || (ch == ' ') || (ch == '\t'))
         return false;
     return !__is_sign__(0, ch);
 }
@@ -577,11 +577,11 @@ void TextAreaControlContext::MoveToPreviousWord(bool selected)
     auto startPoz                   = View.CurrentPosition - 1;
     auto currentChar                = this->Text.GetBuffer()[startPoz];
     std::optional<unsigned int> res = std::nullopt;
-    
+
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = this->Text.FindPrevious(
-              View.CurrentPosition-1, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+              View.CurrentPosition - 1, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
         if (res.has_value())
             startPoz = res.value();
     }
@@ -713,6 +713,18 @@ void TextAreaControlContext::SetSelection(unsigned int start, unsigned int end)
         Selection.Origin = start;
         Selection.End    = end;
     }
+}
+void TextAreaControlContext::ToUpper()
+{
+    if (Selection.Start == INVALID_SELECTION)
+        return;
+    this->Text.ConvertToUpper(Selection.Start, Selection.End + 1);
+}
+void TextAreaControlContext::ToLower()
+{
+    if (Selection.Start == INVALID_SELECTION)
+        return;
+    this->Text.ConvertToLower(Selection.Start, Selection.End + 1);
 }
 void TextAreaControlContext::CopyToClipboard()
 {
@@ -848,6 +860,13 @@ bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t Uni
     case Key::Ctrl | Key::V:
         PasteFromClipboard();
         return true;
+
+    case Key::Ctrl | Key::Shift | Key::U:
+        ToUpper();
+        return true;
+    case Key::Ctrl | Key::U:
+        ToLower();
+        return true;
     }
     if (UnicodeChar > 0)
     {
@@ -888,17 +907,14 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-TextArea::TextArea(
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout,
-      TextAreaFlags flags)
+TextArea::TextArea(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
 
     Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 3;   
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Layout.MinHeight = 3;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
     // initializam
     ASSERT(Members->Text.Set(caption), "Fail to set text to internal CharactersBuffers object !");
     ASSERT(Members->Lines.Create(128), "Fail to create indexes for line numbers");
@@ -916,9 +932,7 @@ TextArea::TextArea(
     Members->ClearSel();
     Members->AnalyzeCurrentText();
     // all is good
-
 }
-
 
 void TextArea::Paint(Graphics::Renderer& renderer)
 {

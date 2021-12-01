@@ -156,8 +156,9 @@ int main()
     auto ta  = Factory::TextArea::Create(
           wnd,
           python_code,
-          "x:0,y:0,w:100%,h:100%",
-          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting);
+          "d:c",
+          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting |
+                TextAreaFlags::ProcessTabKey);
     ta->Handlers()->OnTextColor = PythonHighligh;
     Application::AddWindow(std::move(wnd));
     Application::Run();
