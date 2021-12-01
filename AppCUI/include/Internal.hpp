@@ -177,6 +177,8 @@ namespace Internal
         AppCUI::Controls::ItemHandle itemDelete;
         AppCUI::Controls::ItemHandle itemPaste;
         AppCUI::Controls::ItemHandle itemSelectAll;
+        AppCUI::Controls::ItemHandle itemToUpper;
+        AppCUI::Controls::ItemHandle itemToLower;
         AppCUI::Controls::Menu menu;
 
       public:
@@ -189,6 +191,8 @@ namespace Internal
         static constexpr int TEXTCONTROL_CMD_PASTE           = 1200003;
         static constexpr int TEXTCONTROL_CMD_SELECT_ALL      = 1200004;
         static constexpr int TEXTCONTROL_CMD_DELETE_SELECTED = 1200005;
+        static constexpr int TEXTCONTROL_CMD_TO_UPPER        = 1200006;
+        static constexpr int TEXTCONTROL_CMD_TO_LOWER        = 1200007;
     };
 
     class ToolTipController

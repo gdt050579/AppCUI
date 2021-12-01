@@ -674,6 +674,12 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
         case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
             OnKeyEvent(Key::Delete, 0);
             return true;
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
+            TextField_ToUpper(this);
+            return true;
+        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
+            TextField_ToLower(this);
+            return true;
         }
     }
     return false;
