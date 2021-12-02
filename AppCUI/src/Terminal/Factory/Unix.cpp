@@ -1,14 +1,14 @@
-#include "Terminal/TerminalFactory.hpp"
+#include "../TerminalFactory.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Application;
 
 #ifdef HAVE_SDL
-#    include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#    include "../SDLTerminal/SDLTerminal.hpp"
 #endif
 
 #ifdef HAVE_CURSES
-#    include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
+#    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 
 std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
