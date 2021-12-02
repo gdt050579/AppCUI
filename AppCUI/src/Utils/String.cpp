@@ -1,5 +1,5 @@
-#include "AppCUI.hpp"
-#include "Internal.hpp"
+#include <AppCUI.hpp>
+#include "../Internal.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

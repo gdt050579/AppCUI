@@ -1,5 +1,5 @@
-#include "Internal.hpp"
-#include "ControlContext.hpp"
+#include "../Internal.hpp"
+#include "../ControlContext.hpp"
 #include <map>
 
 #ifdef MessageBox

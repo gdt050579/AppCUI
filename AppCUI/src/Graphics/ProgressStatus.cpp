@@ -1,4 +1,4 @@
-#include "Internal.hpp"
+#include "../Internal.hpp"
 #include <chrono>
 
 using namespace AppCUI::Graphics;

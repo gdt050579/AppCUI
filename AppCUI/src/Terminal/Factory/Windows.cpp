@@ -1,6 +1,6 @@
 #include <string.h>
-#include "Terminal/TerminalFactory.hpp"
-#include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
+#include "../TerminalFactory.hpp"
+#include "../WindowsTerminal/WindowsTerminal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Application;
