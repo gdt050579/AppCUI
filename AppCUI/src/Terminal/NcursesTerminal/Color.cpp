@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <map>
-#include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
-#include "Internal.hpp"
+#include "NcursesTerminal.hpp"
+#include "../../Internal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Graphics;
