@@ -1,5 +1,5 @@
 #include <AppCUI.hpp>
-#include "../../Internal.hpp"
+#include "Internal.hpp"
 #include <string.h>
 
 using namespace AppCUI::Graphics;

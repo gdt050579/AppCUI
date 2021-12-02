@@ -1,4 +1,4 @@
-#include "../Internal.hpp"
+#include "Internal.hpp"
 #include "../ControlContext.hpp"
 #include <map>
 

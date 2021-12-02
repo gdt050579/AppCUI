@@ -1,5 +1,5 @@
 #include "../ControlContext.hpp"
-#include "../Internal.hpp"
+#include "Internal.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;

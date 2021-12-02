@@ -1,4 +1,4 @@
-#include "../../Internal.hpp"
+#include "Internal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Graphics;
