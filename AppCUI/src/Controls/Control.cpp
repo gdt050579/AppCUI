@@ -1570,6 +1570,36 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer&
         OnAfterSetText();
     return true;
 }
+bool AppCUI::Controls::Control::SetTextWithHotKey(
+      const AppCUI::Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+{
+    CHECK(SetText(caption), false, "");
+    ConstStringObject txt(caption);
+    bool result = false;
+    if (hotKeyTextOffset<txt.Length)
+    {
+        switch (txt.Encoding)
+        {
+        case StringEncoding::Ascii:
+            result = this->SetHotKey(((char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::Unicode16:
+            result = this->SetHotKey(((char16_t*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::CharacterBuffer:
+            result = this->SetHotKey(((Character*) txt.Data)[hotKeyTextOffset].Code);
+            break;
+        case StringEncoding::UTF8:
+            result = this->SetHotKey(((unsigned char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        }
+        if (result)
+        {
+            CTRLC->HotKeyOffset = hotKeyTextOffset;
+        }
+    }
+    return true;
+}
 const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
 {
     return CTRLC->Text;
@@ -1629,6 +1659,10 @@ void AppCUI::Controls::Control::ClearHotKey()
 {
     CTRLC->HotKey       = Key::None;
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+}
+unsigned int AppCUI::Controls::Control::GetHotKeyTextOffset()
+{
+    return CTRLC->HotKeyOffset;
 }
 void AppCUI::Controls::Control::SetControlID(int newID)
 {

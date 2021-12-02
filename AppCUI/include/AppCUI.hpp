@@ -2747,6 +2747,7 @@ namespace Controls
         // hot key
         bool SetHotKey(char16_t hotKey);
         Input::Key GetHotKey();
+        unsigned int GetHotKeyTextOffset();
         void ClearHotKey();
 
         // status
@@ -2779,6 +2780,7 @@ namespace Controls
         // Text
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Graphics::CharacterBuffer& caption);
+        bool SetTextWithHotKey(const AppCUI::Utils::ConstString& caption, unsigned int hotKeyTextOffset);
         const AppCUI::Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
@@ -2791,7 +2793,7 @@ namespace Controls
         // paint
         virtual void Paint(Graphics::Renderer& renderer);
 
-        // Evenimente
+        // virtual methods
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
