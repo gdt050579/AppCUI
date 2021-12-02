@@ -3673,28 +3673,6 @@ namespace Controls
               AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
 
       private:
-        void DrawBoxes(Graphics::Renderer& renderer);
-        void DrawLines(Graphics::Renderer& renderer);
-        unsigned int ComputeCellNumber(int x, int y);
-        Graphics::SpecialChars ComputeBoxType(
-              unsigned int colIndex,
-              unsigned int rowIndex,
-              unsigned int startColumnsIndex,
-              unsigned int startRowsIndex,
-              unsigned int endColumnsIndex,
-              unsigned int endRowsIndex);
-        void DrawCellsBackground(Graphics::Renderer& renderer);
-        bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
-        bool DrawHeader(Graphics::Renderer& renderer);
-        void UpdateGridParameters(bool dontRecomputeDimensions = false);
-        void UpdateDimensions(int offsetX, int offsetY);
-        bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
-        bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
-        bool ToggleBooleanCell();
-        bool CopySelectedCellsContent() const;
-        bool PasteContentToSelectedCells();
-
-      private:
         friend Factory::Grid;
         friend Control;
     };
