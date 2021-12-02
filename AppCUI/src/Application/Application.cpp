@@ -1,5 +1,5 @@
 #include "AppCUI.hpp"
-#include "../ControlContext.hpp"
+#include "ControlContext.hpp"
 #include "Internal.hpp"
 #include "../Terminal/TerminalFactory.hpp"
 #include <math.h>
