@@ -255,6 +255,7 @@ class TextFieldControlContext : public ControlContext
         int Start, End, Origin;
     } Selection;
     bool Modified;
+    bool FullSelectionDueToOnFocusEvent;
 };
 class TextAreaControlContext : public ControlContext
 {
@@ -315,6 +316,8 @@ class TextAreaControlContext : public ControlContext
     void CopyToClipboard();
     void PasteFromClipboard();
     bool HasSelection();
+    void ToUpper();
+    void ToLower();
 
     void SetReadOnly(bool value);
     bool IsReadOnly();

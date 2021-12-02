@@ -39,6 +39,31 @@ struct DIBPaintBuffer
     const BMP_InfoHeader* header;
 };
 
+bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d)
+{
+    uint32_t x          = 0;
+    uint32_t y          = d.height - 1;
+    uint32_t rowPadding = 0;
+    while (d.px + 4 <= d.end)
+    {
+        CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
+              false,
+              "Fail to set pixel on %u,%u coordonates",
+              x,
+              y);
+        d.px += 4;
+        x++;
+        if (x == d.width)
+        {
+            if (y == 0)
+                return true;
+            d.px += rowPadding;
+            x = 0;
+            y--;
+        }
+    }
+    RETURNERROR(false, "Premature end of bitmap buffer !");
+}
 bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
 {
     uint32_t x          = 0;
@@ -152,7 +177,7 @@ bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size)
+bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size, bool isIcon)
 {
     CHECK(size > sizeof(BMP_InfoHeader),
           false,
@@ -163,9 +188,21 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
     CHECK(h->comppresionMethod == BITMAP_COMPRESSION_METHID_BI_RGB,
           false,
           "Only BI_RGB compression method is supported");
-    CHECK(h->width > 0, false, "Invalid width (should be bigger than 0)");
-    CHECK(h->height > 0, false, "Invalid height (should be bigger than 0)");
-    CHECK(img.Create(h->width, h->height), false, "Fail to create a %ux%u image", h->width, h->height);
+    auto width = h->width;
+    CHECK(width > 0, false, "Invalid width (should be bigger than 0)");
+    auto height = h->height;
+    if (isIcon)
+    {
+        CHECK((h->height & 1) == 0, false, "Height must be a multiple of 2 --> value is %u ", h->height);
+        height = h->height >> 1;
+        CHECK(height == width,
+              false,
+              "Expecting height and width to be equal but with = %u, height = %u",
+              width,
+              height);
+    }
+    CHECK(height > 0, false, "Invalid height (should be bigger than 0)");
+    CHECK(img.Create(width, height), false, "Fail to create a %ux%u image", width, height);
     CHECK((h->bitsPerPixel == 1) || (h->bitsPerPixel == 4) || (h->bitsPerPixel == 8) || (h->bitsPerPixel == 16) ||
                 (h->bitsPerPixel == 24) || (h->bitsPerPixel == 32),
           false,
@@ -174,8 +211,8 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
     dpb.px         = buffer + sizeof(BMP_InfoHeader);
     dpb.end        = buffer + size;
     dpb.header     = h;
-    dpb.width      = h->width;
-    dpb.height     = h->height;
+    dpb.width      = width;
+    dpb.height     = height;
     dpb.colorTable = nullptr;
 
     switch (h->bitsPerPixel)
@@ -194,6 +231,8 @@ bool AppCUI::Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, u
         return Paint_256color_DIB(img, dpb);
     case 24:
         return Paint_24bits_DIB(img, dpb);
+    case 32:
+        return Paint_32bits_DIB(img, dpb);
     }
     RETURNERROR(false, "Paint method for %d bits/pixels is not implemeted !", h->bitsPerPixel);
 }
@@ -208,5 +247,5 @@ bool AppCUI::Graphics::LoadBMPToImage(Image& img, const unsigned char* buffer, u
     CHECK(h->magic == BITMAP_WINDOWS_MAGIC, false, "Invalid magic --> expecting 'BM'");
     CHECK(h->size <= size, false, "Size field in bitmap is invalid (%u), should be at least %u", h->size, size);
     // all good
-    return LoadDIBToImage(img, buffer + sizeof(BMP_Header), size - (unsigned int) sizeof(BMP_Header));
+    return LoadDIBToImage(img, buffer + sizeof(BMP_Header), size - (unsigned int) sizeof(BMP_Header), false);
 }

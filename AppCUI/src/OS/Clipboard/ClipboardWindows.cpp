@@ -43,6 +43,10 @@ bool Clipboard::Clear()
     CloseClipboard();
     return true;
 }
+bool Clipboard::HasText()
+{
+    return ((IsClipboardFormatAvailable(CF_TEXT)) || (IsClipboardFormatAvailable(CF_UNICODETEXT)));
+}
 bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
 {
     AppCUI::Utils::ConstStringObject textObj(text);

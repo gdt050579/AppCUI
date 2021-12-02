@@ -234,11 +234,11 @@ bool Image::Load(const std::filesystem::path& path)
     auto buf = AppCUI::OS::File::ReadContent(path);
     return Create((const unsigned char*) buf.GetData(), (unsigned int) buf.GetLength());
 }
-bool Image::CreateFromDIB(const unsigned char* imageBuffer, unsigned int size)
+bool Image::CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
-    return LoadDIBToImage(*this, imageBuffer, size);
+    return LoadDIBToImage(*this, imageBuffer, size, isIcon);
 }
 bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
 {

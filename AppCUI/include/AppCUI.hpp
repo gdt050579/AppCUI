@@ -876,6 +876,9 @@ namespace Utils
         UnicodeStringBuilder(
               char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
 
+        UnicodeStringBuilder(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
+
         ~UnicodeStringBuilder();
         void Destroy();
 
@@ -953,6 +956,9 @@ namespace Utils
             Set(charBuffer);
             return *this;
         }
+
+        UnicodeStringBuilder& operator=(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder& operator=(UnicodeStringBuilder&& obj) noexcept;
     };
 
     enum class NumberParseFlags : unsigned int
@@ -1645,6 +1651,7 @@ namespace OS
         static bool SetText(const AppCUI::Utils::ConstString& text);
         static bool GetText(AppCUI::Utils::UnicodeStringBuilder& text);
         static bool Clear();
+        static bool HasText();
     };
     class EXPORT IFile
     {
@@ -2033,6 +2040,8 @@ namespace Graphics
         void SetColor(const ColorPair color);
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
         bool CopyString(Utils::String& text);
+        bool ConvertToUpper(unsigned int start, unsigned int end);
+        bool ConvertToLower(unsigned int start, unsigned int end);
 
         int Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
         inline bool Contains(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const
@@ -2154,7 +2163,21 @@ namespace Graphics
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, std::string_view image);
         bool Create(const unsigned char* imageBuffer, unsigned int size);
-        bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size);
+        inline bool Create(AppCUI::Utils::BufferView buf)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return Create(buf.GetData(), (unsigned int) buf.GetLength());
+            else
+                return false;
+        }
+        bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon);
+        inline bool CreateFromDIB(AppCUI::Utils::BufferView buf, bool isIcon)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return CreateFromDIB(buf.GetData(), (unsigned int) buf.GetLength(), isIcon);
+            else
+                return false;
+        }
         bool SetPixel(unsigned int x, unsigned int y, const Color color);
         bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
 
@@ -2448,6 +2471,7 @@ namespace Controls
         typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
         typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
         typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
+        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control, int x, int y);
 
         struct OnButtonPressedInterface
         {
@@ -2554,6 +2578,19 @@ namespace Controls
             };
         };
 
+        struct OnTextRightClickInterface
+        {
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) = 0;
+        };
+        struct OnTextRightClickCallback : public OnTextRightClickInterface
+        {
+            OnTextRightClickHandler callback;
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) override
+            {
+                callback(ctrl, x, y);
+            };
+        };
+
         struct OnTreeItemToggleInterface
         {
             virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
@@ -2627,6 +2664,7 @@ namespace Controls
         struct TextControl : public Control
         {
             Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
+            Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
         };
 
         typedef int (*ListViewItemComparer)(
@@ -2709,6 +2747,7 @@ namespace Controls
         // hot key
         bool SetHotKey(char16_t hotKey);
         Input::Key GetHotKey();
+        unsigned int GetHotKeyTextOffset();
         void ClearHotKey();
 
         // status
@@ -2741,6 +2780,7 @@ namespace Controls
         // Text
         bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
         bool SetText(const AppCUI::Graphics::CharacterBuffer& caption);
+        bool SetTextWithHotKey(const AppCUI::Utils::ConstString& caption, unsigned int hotKeyTextOffset);
         const AppCUI::Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
@@ -2753,7 +2793,7 @@ namespace Controls
         // paint
         virtual void Paint(Graphics::Renderer& renderer);
 
-        // Evenimente
+        // virtual methods
         virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
@@ -3028,15 +3068,26 @@ namespace Controls
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
 
         // handlers covariant
         Handlers::TextControl* Handlers() override;
 
+        // selection
         void SelectAll();
         void ClearSelection();
+        bool HasSelection() const;
+        bool GetSelection(unsigned int& start, unsigned int& size) const;
+
+        // clipboard
+        void CopyToClipboard(bool deleteSelectionAfterCopy);
+        void PasteFromClipboard();
 
         virtual ~TextField();
 
@@ -3198,6 +3249,9 @@ namespace Controls
         GrayedOut          = 2,
         ErrorInformation   = 3,
         WarningInformation = 4,
+        Emphasized_1       = 5,
+        Emphasized_2       = 6,
+        Category           = 7
     };
 
     class EXPORT ListView : public Control
@@ -4341,7 +4395,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
             } Item;
             struct
             {

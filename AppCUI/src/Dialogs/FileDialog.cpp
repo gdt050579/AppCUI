@@ -379,13 +379,16 @@ void FileDialogWindow::ProcessTextFieldInput()
     }
 
     std::error_code err;
-    const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
-    if (err)
-    {
-        MessageBox::ShowError(
-              "Error", u"Unable to check path for being a directory: "s + candidateResultedPath.u16string());
-        return;
-    }
+    err.clear();
+    // remove becuase of invalid paths keeps returing an error code, even if the path does not exists
+    //const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
+    const bool isDir = std::filesystem::is_directory(candidateResultedPath);
+    //if (err)
+    //{
+    //    MessageBox::ShowError(
+    //          "Error", u"Unable to check path for being a directory: "s + candidateResultedPath.u16string());
+    //    return;
+    //}
 
     const bool exists = std::filesystem::exists(candidateResultedPath, err);
     if (err)

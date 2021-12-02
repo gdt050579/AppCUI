@@ -215,11 +215,15 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.ColumnSort.HotKey        = ColorPair{ Color::Black, Color::Pink };
     this->ListView.ColumnSort.Separator     = ColorPair{ Color::Gray, Color::Pink };
 
-    this->ListView.Item.Regular          = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Item.Highligheted     = ColorPair{ Color::White, Color::Transparent };
-    this->ListView.Item.Inactive         = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Item.Error            = ColorPair{ Color::Red, Color::Transparent };
-    this->ListView.Item.Warning          = ColorPair{ Color::Olive, Color::Transparent };
+    this->ListView.Item.Regular      = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Item.Highligheted = ColorPair{ Color::White, Color::Transparent };
+    this->ListView.Item.Inactive     = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.Item.Error        = ColorPair{ Color::Red, Color::Transparent };
+    this->ListView.Item.Warning      = ColorPair{ Color::Olive, Color::Transparent };
+    this->ListView.Item.Emphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
+    this->ListView.Item.Emphasized2  = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.Item.Category     = ColorPair{ Color::Yellow, Color::Transparent };
+
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
     this->ListView.InactiveColor         = ColorPair{ Color::Gray, Color::Transparent };
