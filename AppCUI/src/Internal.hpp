@@ -2,9 +2,9 @@
 
 #include "AppCUI.hpp"
 #ifdef _WIN32
-#    include "Platform/Windows/OSDefinitions.hpp"
+#    include "OS/Windows/OSDefinitions.hpp"
 #else
-#    include "Platform/Unix/OSDefinitions.hpp"
+#    include "OS/Unix/OSDefinitions.hpp"
 #endif
 #include <memory>
 
