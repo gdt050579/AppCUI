@@ -662,7 +662,6 @@ class GridControlContext : public ControlContext
     unsigned int cHeight          = 0U;
     unsigned int offsetX          = 0U;
     unsigned int offsetY          = 0U;
-    const unsigned int headerSize = 1U;
 
     Menu rightClickMenu;
 

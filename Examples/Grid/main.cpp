@@ -57,7 +57,12 @@ class SimpleWin : public AppCUI::Controls::Window
               AppCUI::Graphics::TextAlignament::Center);
 
         grid->UpdateHeaderValues(
-              { "test01", "test02", "test03", "test04", "test05_super_long_header_value" },
+              { "test01",
+                "test02",
+                "test03",
+                "test04",
+                "test05_super_long_header_value",
+                "testing_super_long_cell_content \nwith spaces and \nnewlines" },
               AppCUI::Graphics::TextAlignament::Center);
     }
 };

@@ -7,12 +7,15 @@ constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
 constexpr auto MenuCommandMergeCells = 0x01U;
 
+constexpr auto minCellWidth  = 0x03U;
+constexpr auto minCellHeight = 0x03U;
+
 Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
     auto context              = reinterpret_cast<GridControlContext*>(Context);
-    context->Layout.MinHeight = 10;
-    context->Layout.MinWidth  = 10;
+    context->Layout.MinHeight = 20;
+    context->Layout.MinWidth  = 20;
     context->Flags            = GATTR_ENABLE | GATTR_VISIBLE;
 
     context->columnsNo = columnsNo;
@@ -563,6 +566,10 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
+            if ((flags & GridFlags::HideHeader) == GridFlags::None)
+            {
+                return SpecialChars::BoxMidleLeft;
+            }
             return SpecialChars::BoxTopLeftCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
@@ -578,6 +585,10 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
+            if ((flags & GridFlags::HideHeader) == GridFlags::None)
+            {
+                return SpecialChars::BoxMidleRight;
+            }
             return SpecialChars::BoxTopRightCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
@@ -593,6 +604,10 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
+            if ((flags & GridFlags::HideHeader) == GridFlags::None)
+            {
+                return SpecialChars::BoxCrossSingleLine;
+            }
             return SpecialChars::BoxMidleTop;
         }
         else if (rowIndex == endRowsIndex)
@@ -719,17 +734,47 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, unsigned 
 bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 {
     renderer.FillRect(
-          offsetX, offsetY - headerSize, cWidth * columnsNo + offsetX, offsetY - headerSize, ' ', Cfg->Grid.Header);
+          offsetX + 1, offsetY - cHeight + 1, cWidth * columnsNo + offsetX - 1, offsetY - 1, ' ', Cfg->Grid.Header);
 
     for (auto i = 0U; i <= columnsNo; i++)
     {
         const auto x = offsetX + i * cWidth;
-        const auto y = offsetY + 0 * cHeight - headerSize;
+        const auto y = offsetY - cHeight;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            const auto endY = offsetY + headerSize;
+            const auto endY = offsetY + cHeight;
             renderer.DrawVerticalLine(x, y, endY - 1, Cfg->Grid.Lines.Vertical.Normal, true);
+        }
+    }
+
+    if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
+    {
+        renderer.DrawHorizontalLine(
+              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Vertical.Normal, true);
+    }
+
+    if ((flags & GridFlags::HideBoxes) == GridFlags::None)
+    {
+        for (auto i = 0U; i <= columnsNo; i++)
+        {
+            const auto x = offsetX + i * cWidth;
+            const auto y = offsetY - cHeight;
+
+            if (i == 0)
+            {
+                renderer.WriteSpecialCharacter(
+                      x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+            }
+            else if (i == columnsNo)
+            {
+                renderer.WriteSpecialCharacter(
+                      x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+            }
+            else
+            {
+                renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Vertical.Normal);
+            }
         }
     }
 
@@ -741,16 +786,13 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         wtp.X     = offsetX + i * cWidth + 1; // 1 -> line
-        wtp.Y     = offsetY + 0 * cHeight - headerSize;
+        wtp.Y     = offsetY - cHeight / 2 - 1;
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
-        if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
-        {
-            renderer.WriteText(it->content, wtp);
-        }
+        renderer.WriteText(it->content, wtp);
 
-        std::next(it);
+        std::advance(it, 1);
     }
 
     return true;
@@ -771,9 +813,9 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
     auto deltaHeight = (Layout.Height - cHeight * rowsNo);
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
     {
-        if (deltaHeight > headerSize)
+        if (deltaHeight > cHeight)
         {
-            deltaHeight -= headerSize;
+            deltaHeight -= cHeight;
         }
         else
         {
@@ -784,7 +826,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
 
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
     {
-        offsetY += headerSize;
+        offsetY += cHeight;
     }
 
     // sort selected cells for better drawing
@@ -824,8 +866,8 @@ void GridControlContext::UpdateDimensions(int offsetX, int offsetY)
     cWidth += offsetX;
     cHeight += offsetY;
 
-    cWidth  = std::max<>(1U, cWidth);
-    cHeight = std::max<>(1U, cHeight);
+    cWidth  = std::max<>(minCellWidth, cWidth);
+    cHeight = std::max<>(minCellHeight, cHeight);
 
     UpdateGridParameters(true);
 }
@@ -1227,7 +1269,7 @@ bool GridControlContext::PasteContentToSelectedCells()
             break;
         }
 
-        std::next(index);
+        std::advance(index, 1);
     }
 
     return true;
