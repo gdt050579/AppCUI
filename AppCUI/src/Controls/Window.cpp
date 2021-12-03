@@ -389,6 +389,43 @@ bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, con
     UpdateWindowsButtonsPoz((WindowControlContext*) Context);
     return true;
 }
+bool AppCUI::Controls::WindowControlsBar::SetItemTextWithHotKey(
+      ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+{
+    CHECK(SetItemText(itemHandle, caption), false, "");
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    b->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    b->HotKey       = Key::None;
+
+    ConstStringObject txt(caption);
+    char16_t ch = 0;
+    if (hotKeyTextOffset < txt.Length)
+    {
+        switch (txt.Encoding)
+        {
+        case StringEncoding::Ascii:
+            ch = (((char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::Unicode16:
+            ch = (((char16_t*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::CharacterBuffer:
+            ch = (((Character*) txt.Data)[hotKeyTextOffset].Code);
+            break;
+        case StringEncoding::UTF8:
+            ch = (((unsigned char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        }
+        if (ch != 0)
+        {
+            b->HotKey = AppCUI::Utils::KeyUtils::CreateHotKey(ch, Key::Alt);
+            if (b->HotKey != Key::None)
+                b->HotKeyOffset = hotKeyTextOffset;
+        }
+    }
+    return true;
+}
 bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(
       ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
 {
@@ -573,7 +610,7 @@ Window::Window(const AppCUI::Utils::ConstString& caption, std::string_view layou
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
     {
-        ASSERT(MaximizeRestore(),  "Fail to maximize window !");
+        ASSERT(MaximizeRestore(), "Fail to maximize window !");
     }
     if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
     {
@@ -1132,7 +1169,7 @@ int Window::Show()
     CHECK(Members->RecomputeLayout(nullptr), -1, "Fail to recompute layout !");
     this->RecomputeLayout();
     CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
-    
+
     return Members->DialogResult;
 }
 int Window::GetDialogResult()
