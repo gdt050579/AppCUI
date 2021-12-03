@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
+#include <iterator>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;

@@ -1,4 +1,4 @@
-#include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
+#include "WindowsTerminal.hpp"
 #include <string.h>
 
 using namespace AppCUI::Internal;

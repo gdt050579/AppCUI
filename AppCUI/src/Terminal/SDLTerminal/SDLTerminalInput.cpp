@@ -1,4 +1,4 @@
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#include "SDLTerminal.hpp"
 
 using namespace AppCUI::Internal;
 using namespace AppCUI::Input;

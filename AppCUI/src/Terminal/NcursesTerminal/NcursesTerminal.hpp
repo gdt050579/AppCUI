@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Internal.hpp"
+#include "../../Internal.hpp"
 #include <array>
 #include <map>
 

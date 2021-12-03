@@ -1,7 +1,11 @@
 #pragma once
 
 #include "AppCUI.hpp"
-#include "OSDefinitions.hpp"
+#ifdef _WIN32
+#    include "OS/Windows/OSDefinitions.hpp"
+#else
+#    include "OS/Unix/OSDefinitions.hpp"
+#endif
 #include <memory>
 
 #define REPAINT_STATUS_COMPUTE_POSITION 1

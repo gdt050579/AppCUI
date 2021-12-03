@@ -1,4 +1,4 @@
-#include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
+#include "NcursesTerminal.hpp"
 #include "ncurses.h"
 
 const static size_t MAX_TTY_COL = 65535;

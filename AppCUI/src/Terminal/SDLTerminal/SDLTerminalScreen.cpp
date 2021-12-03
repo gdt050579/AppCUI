@@ -1,6 +1,6 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#include "SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
 #include <algorithm>
 #include <array>

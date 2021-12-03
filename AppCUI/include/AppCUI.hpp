@@ -2872,6 +2872,7 @@ namespace Controls
         ItemHandle AddTextItem(
               const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
         bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
+        bool SetItemTextWithHotKey(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption, unsigned int hotKeyOffset);
         bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
