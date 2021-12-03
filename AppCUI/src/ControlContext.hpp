@@ -651,44 +651,47 @@ struct GridHeaderCellData
 class GridControlContext : public ControlContext
 {
   public:
-    unsigned int columnsNo        = 0;
-    unsigned int rowsNo           = 0;
-    GridFlags flags               = GridFlags::None;
-    unsigned int hoveredCellIndex = 0xFFFFFFFF;
-    unsigned int anchorCellIndex  = 0xFFFFFFFF;
-    std::vector<unsigned int> selectedCellsIndexes;
+    uint32_t columnsNo        = 0;
+    uint32_t rowsNo           = 0;
+    GridFlags flags           = GridFlags::None;
+    uint32_t hoveredCellIndex = 0xFFFFFFFF;
+    uint32_t anchorCellIndex  = 0xFFFFFFFF;
+    std::vector<uint32_t> selectedCellsIndexes;
 
-    unsigned int cWidth           = 0U;
-    unsigned int cHeight          = 0U;
-    unsigned int offsetX          = 0U;
-    unsigned int offsetY          = 0U;
+    uint32_t cWidth  = 0U;
+    uint32_t cHeight = 0U;
+    uint32_t offsetX = 0U;
+    uint32_t offsetY = 0U;
 
     Menu rightClickMenu;
 
-    std::map<unsigned int, GridCellData> cells;
-    std::u16string separator = u",";
+    std::map<uint32_t, GridCellData> cells;
+    std::u16string separator{ u"," };
     std::vector<GridHeaderCellData> headers;
 
+    uint32_t viewportOffsetX = 0;
+    uint32_t viewportOffsetY = 0;
+
   public:
-    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j);
-    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex);
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32_t i, uint32_t j);
+    void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32_t cellIndex);
 
   public:
     void DrawBoxes(Graphics::Renderer& renderer);
     void DrawLines(Graphics::Renderer& renderer);
-    unsigned int ComputeCellNumber(int x, int y);
+    uint32_t ComputeCellNumber(int32_t x, int32_t y);
     Graphics::SpecialChars ComputeBoxType(
-          unsigned int colIndex,
-          unsigned int rowIndex,
-          unsigned int startColumnsIndex,
-          unsigned int startRowsIndex,
-          unsigned int endColumnsIndex,
-          unsigned int endRowsIndex);
+          uint32_t colIndex,
+          uint32_t rowIndex,
+          uint32_t startColumnsIndex,
+          uint32_t startRowsIndex,
+          uint32_t endColumnsIndex,
+          uint32_t endRowsIndex);
     void DrawCellsBackground(Graphics::Renderer& renderer);
-    bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
+    bool DrawCellContent(Graphics::Renderer& renderer, uint32_t cellIndex);
     bool DrawHeader(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
-    void UpdateDimensions(int offsetX, int offsetY);
+    void UpdateDimensions(int32_t offsetX, int32_t offsetY);
     bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
     bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
     bool ToggleBooleanCell();

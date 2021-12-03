@@ -2872,7 +2872,8 @@ namespace Controls
         ItemHandle AddTextItem(
               const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
         bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
-        bool SetItemTextWithHotKey(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption, unsigned int hotKeyOffset);
+        bool SetItemTextWithHotKey(
+              ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption, unsigned int hotKeyOffset);
         bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
@@ -3695,7 +3696,7 @@ namespace Controls
         };
 
       protected:
-        Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
+        Grid(std::string_view layout, uint32_t columnsNo, uint32_t rowsNo, GridFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3708,16 +3709,16 @@ namespace Controls
         void OnLoseFocus() override;
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
-        unsigned int GetCellsCount() const;
+        uint32_t GetCellsCount() const;
         AppCUI::Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
-              unsigned int index,
+              uint32_t index,
               CellType cellType,
               const std::variant<bool, ConstString>& content,
               AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
         bool UpdateCell(
-              unsigned int x,
-              unsigned int y,
+              uint32_t x,
+              uint32_t y,
               CellType cellType,
               const std::variant<bool, ConstString>& content,
               AppCUI::Graphics::TextAlignament textAlignment = AppCUI::Graphics::TextAlignament::Left);
