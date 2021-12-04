@@ -5,11 +5,6 @@ using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 
 
-struct __KeyAndSize__
-{
-    const char* Name;
-    unsigned int NameSize;
-};
 static constexpr std::string_view _Key_Modifiers[8] = {
     /* 0 */ "",
     /* 1 */ "Alt+",
@@ -48,7 +43,7 @@ std::string_view AppCUI::Utils::KeyUtils::GetKeyName(AppCUI::Input::Key keyCode)
 std::string_view AppCUI::Utils::KeyUtils::GetKeyNamePadded(AppCUI::Input::Key keyCode)
 {
     unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
-    if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(__KeyAndSize__))))
+    if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(std::string_view))))
         return std::string_view("", 0);
     return _Key_Name_Padded[keyIndex];
 }
