@@ -489,7 +489,7 @@ bool Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool val
 }
 //=========================================================================================================================================================
 bool WindowBarItem::Init(
-      WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText)
+      WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, string_view toolTipText)
 {
     this->Type         = type;
     this->Layout       = layout;
@@ -542,7 +542,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-Window::Window(const Utils::ConstString& caption, std::string_view layout, WindowFlags Flags)
+Window::Window(const Utils::ConstString& caption, string_view layout, WindowFlags Flags)
     : Control(new WindowControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);

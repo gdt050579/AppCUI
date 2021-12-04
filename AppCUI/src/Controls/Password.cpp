@@ -2,7 +2,7 @@
 
 namespace AppCUI::Controls
 {
-Password::Password(const Utils::ConstString& caption, std::string_view layout)
+Password::Password(const Utils::ConstString& caption, string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);

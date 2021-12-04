@@ -84,7 +84,7 @@ void ProgressStatus_Paint_Status()
         canvas->WriteSingleLineText(
               PROGRESS_STATUS_PANEL_WIDTH - 6,
               2,
-              std::string_view(PSData.progressString, 4),
+              string_view(PSData.progressString, 4),
               PSData.App->config.ProgressStatus.Percentage);
         canvas->FillHorizontalLine(
               2,
@@ -101,7 +101,7 @@ void ProgressStatus_Paint_Status()
     canvas->WriteSingleLineText(
           (PROGRESS_STATUS_PANEL_WIDTH - 2) - PSData.timeStringSize,
           4,
-          std::string_view(PSData.timeString, PSData.timeStringSize),
+          string_view(PSData.timeString, PSData.timeStringSize),
           PSData.App->config.ProgressStatus.Time);
 
     PSData.App->terminal->Update();

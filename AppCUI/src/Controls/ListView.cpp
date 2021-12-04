@@ -424,7 +424,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
             renderer.WriteSingleLineText(
                   x_ofs,
                   yPoz,
-                  std::string_view(this->Selection.Status, this->Selection.StatusLength),
+                  string_view(this->Selection.Status, this->Selection.StatusLength),
                   Cfg->ListView.StatusColor);
         }
     }
@@ -1000,7 +1000,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar
                     {
                         temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
                         if (clipboardSeparator != 0)
-                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                            temp.Add(string_view{ &clipboardSeparator, 1 });
                     }
                 }
                 OS::Clipboard::SetText(temp);
@@ -1015,7 +1015,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar
                     {
                         temp.Add(GetFilteredItem(gr)->SubItem[tr]);
                         if (clipboardSeparator != 0)
-                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                            temp.Add(string_view{ &clipboardSeparator, 1 });
                     }
                 }
                 temp.Add("\n");
@@ -1392,7 +1392,7 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(std::string_view layout, ListViewFlags flags)
+ListView::ListView(string_view layout, ListViewFlags flags)
     : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);

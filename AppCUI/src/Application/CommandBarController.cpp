@@ -24,7 +24,7 @@ CommandBarController::CommandBarController(
     PressedField    = nullptr;
     HoveredField    = nullptr;
     LastCommand     = 0;
-    ShiftStatus     = std::string_view("", 0);
+    ShiftStatus     = string_view("", 0);
     Clear();
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)

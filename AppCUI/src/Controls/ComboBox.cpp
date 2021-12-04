@@ -190,7 +190,7 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-ComboBox::ComboBox(std::string_view layout, const Utils::ConstString& text, char itemsSeparator)
+ComboBox::ComboBox(string_view layout, const Utils::ConstString& text, char itemsSeparator)
     : Control(new ComboBoxControlContext(), "", layout, false)
 {
     auto Members                          = reinterpret_cast<ComboBoxControlContext*>(this->Context);
@@ -231,7 +231,7 @@ ComboBox::ComboBox(std::string_view layout, const Utils::ConstString& text, char
         switch (listItems.Encoding)
         {
         case StringEncoding::Ascii:
-            result = AddItemsFromList<char, std::string_view>(
+            result = AddItemsFromList<char, string_view>(
                   this, (const char*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::UTF8:

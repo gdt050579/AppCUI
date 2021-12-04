@@ -162,7 +162,7 @@ bool String::StartsWith(const char* sir1, const char* sir2, bool ignoreCase)
         return (*p2) == 0;
     }
 }
-bool String::StartsWith(std::string_view sir1, std::string_view sir2, bool ignoreCase)
+bool String::StartsWith(string_view sir1, string_view sir2, bool ignoreCase)
 {
     auto p1   = (const unsigned char*) sir1.data();
     auto p2   = (const unsigned char*) sir2.data();
@@ -647,7 +647,7 @@ bool String::AddFormat(const char* format, ...)
 
     return true;
 }
-std::string_view String::Format(const char* format, ...)
+string_view String::Format(const char* format, ...)
 {
     va_list args;
     int len, len2;
@@ -671,7 +671,7 @@ std::string_view String::Format(const char* format, ...)
     this->Size       = ((unsigned int) len2);
     Text[this->Size] = 0;
 
-    return std::string_view{ Text, Size };
+    return string_view{ Text, Size };
 }
 
 bool String::Truncate(unsigned int newText)

@@ -4,7 +4,7 @@
 namespace AppCUI::Controls
 {
 NumericSelector::NumericSelector(
-      const long long minValue, const long long maxValue, long long value, std::string_view layout)
+      const long long minValue, const long long maxValue, long long value, string_view layout)
     : Control(new NumericSelectorControlContext(), "", layout, true)
 {
     auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);

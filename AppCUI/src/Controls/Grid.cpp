@@ -9,7 +9,7 @@ constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
 constexpr auto MenuCommandMergeCells = 0x01U;
 
-Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
+Grid::Grid(string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
     auto context              = reinterpret_cast<GridControlContext*>(Context);

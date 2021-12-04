@@ -183,6 +183,13 @@ inline void Unused(...)
 
 namespace AppCUI
 {
+namespace StdIncludes
+{
+    using std::string_view;
+}
+
+using namespace StdIncludes;
+
 namespace Graphics
 {
     enum class Color : unsigned char
@@ -311,7 +318,7 @@ namespace Graphics
 namespace Utils
 {
     using CharacterView = std::basic_string_view<Graphics::Character>;
-    using ConstString   = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
+    using ConstString   = std::variant<string_view, std::u8string_view, std::u16string_view, CharacterView>;
     template <typename T>
     class Pointer : public std::unique_ptr<T>
     {
@@ -585,7 +592,7 @@ namespace Utils
         BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
         {
         }
-        BufferView(std::string_view txt) : data((const unsigned char*) txt.data()), length(txt.size())
+        BufferView(string_view txt) : data((const unsigned char*) txt.data()), length(txt.size())
         {
         }
         inline unsigned char operator[](size_t index) const
@@ -616,9 +623,9 @@ namespace Utils
             return reinterpret_cast<const T*>(data + offset);
         }
 
-        inline operator std::string_view() const
+        inline operator string_view() const
         {
-            return std::string_view((const char*) data, length);
+            return string_view((const char*) data, length);
         }
         // iterators
         inline const unsigned char* begin() const
@@ -684,9 +691,9 @@ namespace Utils
         {
             return BufferView((const void*) data, length);
         }
-        inline operator std::string_view() const
+        inline operator string_view() const
         {
-            return std::string_view((const char*) data, length);
+            return string_view((const char*) data, length);
         }
         inline bool IsValid() const
         {
@@ -741,7 +748,7 @@ namespace Utils
               unsigned int* resultedDestinationSize = nullptr);
         static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);
         static bool StartsWith(const char* sir, const char* text, bool ignoreCase = false);
-        static bool StartsWith(std::string_view sir1, std::string_view sir2, bool ignoreCase = false);
+        static bool StartsWith(string_view sir1, string_view sir2, bool ignoreCase = false);
         static bool EndsWith(
               const char* sir,
               const char* text,
@@ -788,7 +795,7 @@ namespace Utils
 
         bool SetFormat(const char* format, ...);
         bool AddFormat(const char* format, ...);
-        std::string_view Format(const char* format, ...);
+        string_view Format(const char* format, ...);
 
         bool Realloc(unsigned int newSize);
         void Destroy();
@@ -846,13 +853,13 @@ namespace Utils
         {
             return !this->Equals(s);
         }
-        inline operator std::string_view() const
+        inline operator string_view() const
         {
-            return std::string_view{ this->Text, this->Size };
+            return string_view{ this->Text, this->Size };
         }
-        inline std::string_view ToStringView() const
+        inline string_view ToStringView() const
         {
-            return std::string_view{ this->Text, this->Size };
+            return string_view{ this->Text, this->Size };
         }
         char& operator[](int poz);
     };
@@ -971,27 +978,27 @@ namespace Utils
     namespace Number
     {
         EXPORT std::optional<unsigned long long> ToUInt64(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<unsigned int> ToUInt32(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<unsigned short> ToUInt16(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<unsigned char> ToUInt8(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
         EXPORT std::optional<long long> ToInt64(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<int> ToInt32(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<short> ToInt16(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<char> ToInt8(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
         EXPORT std::optional<float> ToFloat(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT std::optional<double> ToDouble(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
     }; // namespace Number
 
@@ -1039,16 +1046,16 @@ namespace Utils
     {
         char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
         char* heapBuffer;
-        std::string_view ToHexString(unsigned long long value);
-        std::string_view ToOctString(unsigned long long value);
-        std::string_view ToBinString(unsigned long long value);
-        std::string_view ToDecStringUnsigned(unsigned long long value);
-        std::string_view ToDecStringSigned(long long value);
-        std::string_view ToBaseUnsigned(unsigned long long value, int base);
-        std::string_view ToBaseSigned(long long value, int base);
-        std::string_view ToGenericBase(unsigned long long value, unsigned long long base);
-        std::string_view ToStringUnsigned(unsigned long long value, NumericFormat fmt);
-        std::string_view ToStringSigned(long long value, NumericFormat fmt);
+        string_view ToHexString(unsigned long long value);
+        string_view ToOctString(unsigned long long value);
+        string_view ToBinString(unsigned long long value);
+        string_view ToDecStringUnsigned(unsigned long long value);
+        string_view ToDecStringSigned(long long value);
+        string_view ToBaseUnsigned(unsigned long long value, int base);
+        string_view ToBaseSigned(long long value, int base);
+        string_view ToGenericBase(unsigned long long value, unsigned long long base);
+        string_view ToStringUnsigned(unsigned long long value, NumericFormat fmt);
+        string_view ToStringSigned(long long value, NumericFormat fmt);
 
       public:
         NumericFormatter() : heapBuffer(nullptr)
@@ -1061,207 +1068,207 @@ namespace Utils
             heapBuffer = nullptr;
         }
         // ToHex
-        inline std::string_view ToHex(unsigned long long value)
+        inline string_view ToHex(unsigned long long value)
         {
             return ToHexString(value);
         }
-        inline std::string_view ToHex(unsigned int value)
+        inline string_view ToHex(unsigned int value)
         {
             return ToHexString((unsigned long long) value);
         }
-        inline std::string_view ToHex(unsigned short value)
+        inline string_view ToHex(unsigned short value)
         {
             return ToHexString((unsigned long long) value);
         }
-        inline std::string_view ToHex(unsigned char value)
+        inline string_view ToHex(unsigned char value)
         {
             return ToHexString((unsigned long long) value);
         }
-        inline std::string_view ToHex(long long value)
+        inline string_view ToHex(long long value)
         {
             return ToHexString(*(unsigned long long*) &value);
         }
-        inline std::string_view ToHex(int value)
+        inline string_view ToHex(int value)
         {
             return ToHexString((unsigned long long) (*(unsigned int*) &value));
         }
-        inline std::string_view ToHex(short value)
+        inline string_view ToHex(short value)
         {
             return ToHexString((unsigned long long) (*(unsigned short*) &value));
         }
-        inline std::string_view ToHex(char value)
+        inline string_view ToHex(char value)
         {
             return ToHexString((unsigned long long) (*(unsigned char*) &value));
         }
 
         // ToDec
-        inline std::string_view ToDec(unsigned long long value)
+        inline string_view ToDec(unsigned long long value)
         {
             return ToDecStringUnsigned(value);
         }
-        inline std::string_view ToDec(unsigned int value)
+        inline string_view ToDec(unsigned int value)
         {
             return ToDecStringUnsigned((unsigned long long) value);
         }
-        inline std::string_view ToDec(unsigned short value)
+        inline string_view ToDec(unsigned short value)
         {
             return ToDecStringUnsigned((unsigned long long) value);
         }
-        inline std::string_view ToDec(unsigned char value)
+        inline string_view ToDec(unsigned char value)
         {
             return ToDecStringUnsigned((unsigned long long) value);
         }
-        inline std::string_view ToDec(long long value)
+        inline string_view ToDec(long long value)
         {
             return ToDecStringSigned(value);
         }
-        inline std::string_view ToDec(int value)
+        inline string_view ToDec(int value)
         {
             return ToDecStringSigned((long) value);
         }
-        inline std::string_view ToDec(short value)
+        inline string_view ToDec(short value)
         {
             return ToDecStringSigned((long) value);
         }
-        inline std::string_view ToDec(char value)
+        inline string_view ToDec(char value)
         {
             return ToDecStringSigned((long) value);
         }
-        std::string_view ToDec(float value);
-        std::string_view ToDec(double value);
+        string_view ToDec(float value);
+        string_view ToDec(double value);
 
         // ToOct
-        inline std::string_view ToOct(unsigned long long value)
+        inline string_view ToOct(unsigned long long value)
         {
             return ToOctString(value);
         }
-        inline std::string_view ToOct(unsigned int value)
+        inline string_view ToOct(unsigned int value)
         {
             return ToOctString((unsigned long long) value);
         }
-        inline std::string_view ToOct(unsigned short value)
+        inline string_view ToOct(unsigned short value)
         {
             return ToOctString((unsigned long long) value);
         }
-        inline std::string_view ToOct(unsigned char value)
+        inline string_view ToOct(unsigned char value)
         {
             return ToOctString((unsigned long long) value);
         }
-        inline std::string_view ToOct(long long value)
+        inline string_view ToOct(long long value)
         {
             return ToOctString(*(unsigned long long*) &value);
         }
-        inline std::string_view ToOct(int value)
+        inline string_view ToOct(int value)
         {
             return ToOctString((unsigned long long) (*(unsigned int*) &value));
         }
-        inline std::string_view ToOct(short value)
+        inline string_view ToOct(short value)
         {
             return ToOctString((unsigned long long) (*(unsigned short*) &value));
         }
-        inline std::string_view ToOct(char value)
+        inline string_view ToOct(char value)
         {
             return ToOctString((unsigned long long) (*(unsigned char*) &value));
         }
 
         // ToBin
-        inline std::string_view ToBin(unsigned long long value)
+        inline string_view ToBin(unsigned long long value)
         {
             return ToBinString(value);
         }
-        inline std::string_view ToBin(unsigned int value)
+        inline string_view ToBin(unsigned int value)
         {
             return ToBinString((unsigned long long) value);
         }
-        inline std::string_view ToBin(unsigned short value)
+        inline string_view ToBin(unsigned short value)
         {
             return ToBinString((unsigned long long) value);
         }
-        inline std::string_view ToBin(unsigned char value)
+        inline string_view ToBin(unsigned char value)
         {
             return ToBinString((unsigned long long) value);
         }
-        inline std::string_view ToBin(long long value)
+        inline string_view ToBin(long long value)
         {
             return ToBinString(*(unsigned long long*) &value);
         }
-        inline std::string_view ToBin(int value)
+        inline string_view ToBin(int value)
         {
             return ToBinString((unsigned long long) (*(unsigned int*) &value));
         }
-        inline std::string_view ToBin(short value)
+        inline string_view ToBin(short value)
         {
             return ToBinString((unsigned long long) (*(unsigned short*) &value));
         }
-        inline std::string_view ToBin(char value)
+        inline string_view ToBin(char value)
         {
             return ToBinString((unsigned long long) (*(unsigned char*) &value));
         }
 
         // ToBase
-        inline std::string_view ToBase(unsigned long long value, int base)
+        inline string_view ToBase(unsigned long long value, int base)
         {
             return ToBaseUnsigned(value, base);
         }
-        inline std::string_view ToBase(unsigned int value, int base)
+        inline string_view ToBase(unsigned int value, int base)
         {
             return ToBaseUnsigned((unsigned long long) value, base);
         }
-        inline std::string_view ToBase(unsigned short value, int base)
+        inline string_view ToBase(unsigned short value, int base)
         {
             return ToBaseUnsigned((unsigned long long) value, base);
         }
-        inline std::string_view ToBase(unsigned char value, int base)
+        inline string_view ToBase(unsigned char value, int base)
         {
             return ToBaseUnsigned((unsigned long long) value, base);
         }
-        inline std::string_view ToBase(long long value, int base)
+        inline string_view ToBase(long long value, int base)
         {
             return ToBaseSigned(value, base);
         }
-        inline std::string_view ToBase(int value, int base)
+        inline string_view ToBase(int value, int base)
         {
             return ToBaseSigned((long) value, base);
         }
-        inline std::string_view ToBase(short value, int base)
+        inline string_view ToBase(short value, int base)
         {
             return ToBaseSigned((long) value, base);
         }
-        inline std::string_view ToBase(char value, int base)
+        inline string_view ToBase(char value, int base)
         {
             return ToBaseSigned((long) value, base);
         }
 
         // ToString
-        inline std::string_view ToString(unsigned long long value, NumericFormat fmt)
+        inline string_view ToString(unsigned long long value, NumericFormat fmt)
         {
             return ToStringUnsigned(value, fmt);
         }
-        inline std::string_view ToString(unsigned int value, NumericFormat fmt)
+        inline string_view ToString(unsigned int value, NumericFormat fmt)
         {
             return ToStringUnsigned((unsigned long long) value, fmt);
         }
-        inline std::string_view ToString(unsigned short value, NumericFormat fmt)
+        inline string_view ToString(unsigned short value, NumericFormat fmt)
         {
             return ToStringUnsigned((unsigned long long) value, fmt);
         }
-        inline std::string_view ToString(unsigned char value, NumericFormat fmt)
+        inline string_view ToString(unsigned char value, NumericFormat fmt)
         {
             return ToStringUnsigned((unsigned long long) value, fmt);
         }
-        inline std::string_view ToString(long long value, NumericFormat fmt)
+        inline string_view ToString(long long value, NumericFormat fmt)
         {
             return ToStringSigned(value, fmt);
         }
-        inline std::string_view ToString(int value, NumericFormat fmt)
+        inline string_view ToString(int value, NumericFormat fmt)
         {
             return ToStringSigned((long) value, fmt);
         }
-        inline std::string_view ToString(short value, NumericFormat fmt)
+        inline string_view ToString(short value, NumericFormat fmt)
         {
             return ToStringSigned((long) value, fmt);
         }
-        inline std::string_view ToString(char value, NumericFormat fmt)
+        inline string_view ToString(char value, NumericFormat fmt)
         {
             return ToStringSigned((long) value, fmt);
         }
@@ -1303,7 +1310,7 @@ namespace Utils
             switch (obj.index())
             {
             case 0:
-                BuildFromAlternative<std::string_view>(obj, StringEncoding::Ascii);
+                BuildFromAlternative<string_view>(obj, StringEncoding::Ascii);
                 break;
             case 1:
                 BuildFromAlternative<std::u8string_view>(obj, StringEncoding::UTF8);
@@ -1360,19 +1367,19 @@ namespace Utils
         {
             data[0] = 0;
         }
-        FixSizeString(std::string_view txt)
+        FixSizeString(string_view txt)
         {
             Set(txt);
         }
-        constexpr inline operator std::string_view() const
+        constexpr inline operator string_view() const
         {
-            return std::string_view{ data, size };
+            return string_view{ data, size };
         }
         constexpr inline operator bool() const
         {
             return this->size != 0;
         }
-        void Set(std::string_view txt)
+        void Set(string_view txt)
         {
             size = (unsigned short) std::min((size_t) Size, txt.length());
             memcpy(data, txt.data(), size);
@@ -1385,7 +1392,7 @@ namespace Utils
                 const char* e = text;
                 while (*e)
                     e++;
-                Set(std::string_view{ text, static_cast<size_t>(e - text) });
+                Set(string_view{ text, static_cast<size_t>(e - text) });
             }
             else
             {
@@ -1404,7 +1411,7 @@ namespace Utils
         {
             return Size;
         }
-        inline FixSizeString& operator=(std::string_view txt)
+        inline FixSizeString& operator=(string_view txt)
         {
             Set(txt);
             return *this;
@@ -1428,12 +1435,12 @@ namespace Utils
         constexpr static const unsigned int KEY_CODE_MASK  = 0xFF;
 
         // Returns the name of the Key without modifiers
-        static std::string_view GetKeyName(Input::Key keyCode);
-        static std::string_view GetKeyModifierName(Input::Key keyCode);
-        static std::string_view GetKeyNamePadded(Input::Key keyCode);
+        static string_view GetKeyName(Input::Key keyCode);
+        static string_view GetKeyModifierName(Input::Key keyCode);
+        static string_view GetKeyNamePadded(Input::Key keyCode);
         static bool ToString(Input::Key keyCode, char* text, int maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
-        static Input::Key FromString(std::string_view stringRepresentation);
+        static Input::Key FromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16_t hotKey, Input::Key modifier = Input::Key::None);
     };
@@ -1447,7 +1454,7 @@ namespace Utils
         IniValueArray() : text(nullptr), len(0)
         {
         }
-        IniValueArray(std::string_view obj) : text(obj.data()), len((unsigned int) obj.size())
+        IniValueArray(string_view obj) : text(obj.data()), len((unsigned int) obj.size())
         {
         }
 
@@ -1461,9 +1468,9 @@ namespace Utils
         {
             return text;
         }
-        inline std::optional<std::string_view> AsStringView() const
+        inline std::optional<string_view> AsStringView() const
         {
-            return std::string_view(text, len);
+            return string_view(text, len);
         };
         std::optional<Graphics::Size> AsSize() const;
         std::optional<float> AsFloat() const;
@@ -1476,7 +1483,7 @@ namespace Utils
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
-        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
+        string_view ToStringView(string_view defaultValue = string_view{}) const;
         Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
@@ -1503,7 +1510,7 @@ namespace Utils
         std::optional<bool> AsBool() const;
         std::optional<Input::Key> AsKey() const;
         std::optional<const char*> AsString() const;
-        std::optional<std::string_view> AsStringView() const;
+        std::optional<string_view> AsStringView() const;
         std::optional<Graphics::Size> AsSize() const;
         std::optional<float> AsFloat() const;
         std::optional<double> AsDouble() const;
@@ -1515,7 +1522,7 @@ namespace Utils
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
-        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
+        string_view ToStringView(string_view defaultValue = string_view{}) const;
         Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
@@ -1524,7 +1531,7 @@ namespace Utils
         unsigned int GetArrayCount() const;
         IniValueArray operator[](int index) const;
 
-        std::string_view GetName() const;
+        string_view GetName() const;
 
         inline bool HasValue() const
         {
@@ -1539,7 +1546,7 @@ namespace Utils
         void operator=(float value);
         void operator=(double value);
         void operator=(const char* value);
-        void operator=(std::string_view value);
+        void operator=(string_view value);
         void operator=(Graphics::Size value);
         void operator=(Input::Key value);
         void operator=(const std::initializer_list<const char*>& values);
@@ -1566,44 +1573,39 @@ namespace Utils
         {
             return Data != nullptr;
         }
-        std::string_view GetName() const;
-        IniValue GetValue(std::string_view keyName);
+        string_view GetName() const;
+        IniValue GetValue(string_view keyName);
         std::vector<IniValue> GetValues() const;
-        IniValue operator[](std::string_view keyName);
+        IniValue operator[](string_view keyName);
 
         void Clear();
-        bool DeleteValue(std::string_view keyName);
-        bool HasValue(std::string_view keyName);
+        bool DeleteValue(string_view keyName);
+        bool HasValue(string_view keyName);
 
-        void UpdateValue(std::string_view name, bool value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, unsigned int value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, unsigned long long value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, int value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, long long value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, float value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, double value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, const char* value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, std::string_view value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, unsigned int value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, unsigned long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, double value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const char* value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
         void UpdateValue(
-              std::string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits);
+              string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits);
         void UpdateValue(
-              std::string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(std::string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits);
+              string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits);
         void UpdateValue(
-              std::string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits);
+              string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
         void UpdateValue(
-              std::string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              std::string_view name,
-              const std::initializer_list<unsigned long long>& values,
-              bool dontUpdateIfValueExits);
-        void UpdateValue(
-              std::string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              std::string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits);
+              string_view name, const std::initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
@@ -1614,27 +1616,27 @@ namespace Utils
         IniObject();
         ~IniObject();
 
-        bool CreateFromString(std::string_view text);
+        bool CreateFromString(string_view text);
         bool CreateFromFile(const std::filesystem::path& fileName);
         bool Save(const std::filesystem::path& fileName);
         bool Create();
         void Clear();
 
-        bool HasSection(std::string_view name) const;
-        IniSection GetSection(std::string_view name);
-        IniSection CreateSection(std::string_view name, bool emptyContent);
-        inline IniSection operator[](std::string_view name)
+        bool HasSection(string_view name) const;
+        IniSection GetSection(string_view name);
+        IniSection CreateSection(string_view name, bool emptyContent);
+        inline IniSection operator[](string_view name)
         {
             return CreateSection(name, false);
         }
-        IniValue GetValue(std::string_view valuePath);
+        IniValue GetValue(string_view valuePath);
         std::vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
 
-        bool DeleteSection(std::string_view name);
-        bool DeleteValue(std::string_view valuePath);
+        bool DeleteSection(string_view name);
+        bool DeleteValue(string_view valuePath);
 
-        std::string_view ToString();
+        string_view ToString();
     };
 
 }; // namespace Utils
@@ -1671,8 +1673,8 @@ namespace OS
         bool Write(const void* buffer, unsigned int bufferSize);
         bool Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
         bool Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        bool Write(std::string_view text);
-        bool Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten);
+        bool Write(string_view text);
+        bool Write(unsigned long long offset, string_view text, unsigned int& bytesWritten);
     };
 
     class EXPORT File : public IFile
@@ -2158,7 +2160,7 @@ namespace Graphics
         ~Image();
         bool Load(const std::filesystem::path& imageFilePath);
         bool Create(unsigned int width, unsigned int height);
-        bool Create(unsigned int width, unsigned int height, std::string_view image);
+        bool Create(unsigned int width, unsigned int height, string_view image);
         bool Create(const unsigned char* imageBuffer, unsigned int size);
         inline bool Create(Utils::BufferView buf)
         {
@@ -2686,7 +2688,7 @@ namespace Controls
         Reference<Control> AddChildControl(std::unique_ptr<Control> control);
 
         // protected constructor
-        Control(void* context, const Utils::ConstString& caption, std::string_view layout, bool computeHotKey);
+        Control(void* context, const Utils::ConstString& caption, string_view layout, bool computeHotKey);
 
       public:
         template <typename T>
@@ -2845,15 +2847,9 @@ namespace Controls
       public:
         ItemHandle AddCommandItem(const Utils::ConstString& name, int ID, const Utils::ConstString& toolTip = "");
         ItemHandle AddSingleChoiceItem(
-              const Utils::ConstString& name,
-              int ID,
-              bool checked,
-              const Utils::ConstString& toolTip = std::string_view());
+              const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip = string_view());
         ItemHandle AddCheckItem(
-              const Utils::ConstString& name,
-              int ID,
-              bool checked,
-              const Utils::ConstString& toolTip = std::string_view());
+              const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip = string_view());
         ItemHandle AddTextItem(const Utils::ConstString& caption, const Utils::ConstString& toolTip = "");
         bool SetItemText(ItemHandle itemHandle, const Utils::ConstString& caption);
         bool SetItemTextWithHotKey(ItemHandle itemHandle, const Utils::ConstString& caption, unsigned int hotKeyOffset);
@@ -2870,7 +2866,7 @@ namespace Controls
         bool ProcessControlBarItem(unsigned int index);
 
       protected:
-        Window(const Utils::ConstString& caption, std::string_view layout, WindowFlags windowsFlags);
+        Window(const Utils::ConstString& caption, string_view layout, WindowFlags windowsFlags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2906,7 +2902,7 @@ namespace Controls
     };
     class EXPORT Label : public Control
     {
-        Label(const Utils::ConstString& caption, std::string_view layout);
+        Label(const Utils::ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2922,7 +2918,7 @@ namespace Controls
     class EXPORT Button : public Control
     {
       protected:
-        Button(const Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags);
+        Button(const Utils::ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
 
       public:
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
@@ -2943,7 +2939,7 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       protected:
-        CheckBox(const Utils::ConstString& caption, std::string_view layout, int controlID);
+        CheckBox(const Utils::ConstString& caption, string_view layout, int controlID);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -2962,7 +2958,7 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID);
+        RadioBox(const Utils::ConstString& caption, string_view layout, int groupID, int controlID);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -2981,7 +2977,7 @@ namespace Controls
     class EXPORT Splitter : public Control
     {
       protected:
-        Splitter(std::string_view layout, bool vertical);
+        Splitter(string_view layout, bool vertical);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3011,7 +3007,7 @@ namespace Controls
     class EXPORT Password : public Control
     {
       protected:
-        Password(const Utils::ConstString& caption, std::string_view layout);
+        Password(const Utils::ConstString& caption, string_view layout);
 
       public:
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
@@ -3028,7 +3024,7 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       protected:
-        Panel(const Utils::ConstString& caption, std::string_view layout);
+        Panel(const Utils::ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3046,7 +3042,7 @@ namespace Controls
     class EXPORT TextField : public Control
     {
       protected:
-        TextField(const Utils::ConstString& caption, std::string_view layout, TextFieldFlags flags);
+        TextField(const Utils::ConstString& caption, string_view layout, TextFieldFlags flags);
 
       public:
         bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
@@ -3093,7 +3089,7 @@ namespace Controls
     class EXPORT TextArea : public Control
     {
       protected:
-        TextArea(const Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags);
+        TextArea(const Utils::ConstString& caption, string_view layout, TextAreaFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3138,7 +3134,7 @@ namespace Controls
     class EXPORT Tab : public Control
     {
       protected:
-        Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize);
+        Tab(string_view layout, TabFlags flags, unsigned int tabPageSize);
 
       public:
         bool SetCurrentTabPageByIndex(unsigned int index);
@@ -3166,8 +3162,8 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const Utils::ConstString& caption, std::string_view layout);
-        UserControl(std::string_view layout);
+        UserControl(const Utils::ConstString& caption, string_view layout);
+        UserControl(string_view layout);
     };
     enum class ViewerFlags : unsigned int
     {
@@ -3179,7 +3175,7 @@ namespace Controls
       protected:
         CanvasViewer(
               const Utils::ConstString& caption,
-              std::string_view layout,
+              string_view layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
               ViewerFlags flags);
@@ -3203,7 +3199,7 @@ namespace Controls
     class EXPORT ImageViewer : public CanvasViewer
     {
       protected:
-        ImageViewer(const Utils::ConstString& caption, std::string_view layout, ViewerFlags flags);
+        ImageViewer(const Utils::ConstString& caption, string_view layout, ViewerFlags flags);
 
       public:
         bool SetImage(
@@ -3244,7 +3240,7 @@ namespace Controls
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        ListView(std::string_view layout, ListViewFlags flags);
+        ListView(string_view layout, ListViewFlags flags);
 
       public:
         bool Reserve(unsigned int itemsCount);
@@ -3382,7 +3378,7 @@ namespace Controls
         bool AddItem(const Utils::ConstString& caption, GenericRef userData);
 
       protected:
-        ComboBox(std::string_view layout, const Utils::ConstString& text, char itemsSeparator);
+        ComboBox(string_view layout, const Utils::ConstString& text, char itemsSeparator);
 
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
@@ -3485,7 +3481,7 @@ namespace Controls
     class EXPORT NumericSelector : public Control
     {
       protected:
-        NumericSelector(const long long minValue, const long long maxValue, long long value, std::string_view layout);
+        NumericSelector(const long long minValue, const long long maxValue, long long value, string_view layout);
 
       public:
         long long GetValue() const;
@@ -3565,7 +3561,7 @@ namespace Controls
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
+        Tree(string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3667,7 +3663,7 @@ namespace Controls
         };
 
       protected:
-        Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
+        Grid(string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3733,10 +3729,10 @@ namespace Controls
 
           public:
             static Reference<Controls::Label> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, std::string_view layout);
+                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
             static Reference<Controls::Label> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, std::string_view layout);
-            static Pointer<Controls::Label> Create(const Utils::ConstString& caption, std::string_view layout);
+                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
+            static Pointer<Controls::Label> Create(const Utils::ConstString& caption, string_view layout);
         };
         class EXPORT Button
         {
@@ -3746,18 +3742,18 @@ namespace Controls
             static Reference<Controls::Button> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   int controlID     = 0,
                   ButtonFlags flags = ButtonFlags::None);
             static Reference<Controls::Button> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   int controlID     = 0,
                   ButtonFlags flags = ButtonFlags::None);
             static Pointer<Controls::Button> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   int controlID               = 0,
                   Controls::ButtonFlags flags = Controls::ButtonFlags::None);
         };
@@ -3767,10 +3763,10 @@ namespace Controls
 
           public:
             static Reference<Controls::Password> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, std::string_view layout);
+                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
             static Reference<Controls::Password> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, std::string_view layout);
-            static Pointer<Controls::Password> Create(const Utils::ConstString& caption, std::string_view layout);
+                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
+            static Pointer<Controls::Password> Create(const Utils::ConstString& caption, string_view layout);
         };
         class EXPORT CheckBox
         {
@@ -3778,17 +3774,11 @@ namespace Controls
 
           public:
             static Reference<Controls::CheckBox> Create(
-                  Controls::Control* parent,
-                  const Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID = 0);
+                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout, int controlID = 0);
             static Reference<Controls::CheckBox> Create(
-                  Controls::Control& parent,
-                  const Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID = 0);
+                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout, int controlID = 0);
             static Pointer<Controls::CheckBox> Create(
-                  const Utils::ConstString& caption, std::string_view layout, int controlID = 0);
+                  const Utils::ConstString& caption, string_view layout, int controlID = 0);
         };
         class EXPORT RadioBox
         {
@@ -3796,17 +3786,17 @@ namespace Controls
 
           public:
             static Pointer<Controls::RadioBox> Create(
-                  const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID = 0);
+                  const Utils::ConstString& caption, string_view layout, int groupID, int controlID = 0);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   int groupID,
                   int controlID = 0);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   int groupID,
                   int controlID = 0);
         };
@@ -3815,11 +3805,9 @@ namespace Controls
             Splitter() = delete;
 
           public:
-            static Reference<Controls::Splitter> Create(
-                  Controls::Control* parent, std::string_view layout, bool vertical);
-            static Reference<Controls::Splitter> Create(
-                  Controls::Control& parent, std::string_view layout, bool vertical);
-            static Pointer<Controls::Splitter> Create(std::string_view layout, bool vertical);
+            static Reference<Controls::Splitter> Create(Controls::Control* parent, string_view layout, bool vertical);
+            static Reference<Controls::Splitter> Create(Controls::Control& parent, string_view layout, bool vertical);
+            static Pointer<Controls::Splitter> Create(string_view layout, bool vertical);
         };
         class EXPORT Panel
         {
@@ -3827,13 +3815,13 @@ namespace Controls
 
           public:
             static Reference<Controls::Panel> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, std::string_view layout);
+                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
             static Reference<Controls::Panel> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, std::string_view layout);
-            static Pointer<Controls::Panel> Create(const Utils::ConstString& caption, std::string_view layout);
-            static Reference<Controls::Panel> Create(Controls::Control* parent, std::string_view layout);
-            static Reference<Controls::Panel> Create(Controls::Control& parent, std::string_view layout);
-            static Pointer<Controls::Panel> Create(std::string_view layout);
+                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
+            static Pointer<Controls::Panel> Create(const Utils::ConstString& caption, string_view layout);
+            static Reference<Controls::Panel> Create(Controls::Control* parent, string_view layout);
+            static Reference<Controls::Panel> Create(Controls::Control& parent, string_view layout);
+            static Pointer<Controls::Panel> Create(string_view layout);
         };
         class EXPORT TextField
         {
@@ -3843,16 +3831,16 @@ namespace Controls
             static Reference<Controls::TextField> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
             static Reference<Controls::TextField> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
             static Pointer<Controls::TextField> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
         };
         class EXPORT TextArea
@@ -3863,16 +3851,16 @@ namespace Controls
             static Reference<Controls::TextArea> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
             static Reference<Controls::TextArea> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
             static Pointer<Controls::TextArea> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
         };
         class EXPORT TabPage
@@ -3891,16 +3879,16 @@ namespace Controls
           public:
             static Reference<Controls::Tab> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize = 16);
             static Reference<Controls::Tab> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize = 16);
             static Pointer<Controls::Tab> Create(
-                  std::string_view layout,
+                  string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
                   unsigned int tabPageSize = 16);
         };
@@ -3911,38 +3899,38 @@ namespace Controls
           public:
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Pointer<Controls::CanvasViewer> Create(
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Pointer<Controls::CanvasViewer> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
@@ -3953,28 +3941,28 @@ namespace Controls
 
           public:
             static Pointer<Controls::ImageViewer> Create(
-                  std::string_view layout, Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+                  string_view layout, Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Pointer<Controls::ImageViewer> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control* parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control& parent,
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
         };
         class EXPORT ListView
@@ -3983,14 +3971,14 @@ namespace Controls
 
           public:
             static Pointer<Controls::ListView> Create(
-                  std::string_view layout, Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+                  string_view layout, Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox
@@ -3999,19 +3987,17 @@ namespace Controls
 
           public:
             static Pointer<Controls::ComboBox> Create(
-                  std::string_view layout,
-                  const Utils::ConstString& text = std::string_view(),
-                  char itemsSeparator            = ',');
+                  string_view layout, const Utils::ConstString& text = string_view(), char itemsSeparator = ',');
 
             static Reference<Controls::ComboBox> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
-                  const Utils::ConstString& text = std::string_view(),
+                  string_view layout,
+                  const Utils::ConstString& text = string_view(),
                   char itemsSeparator            = ',');
             static Reference<Controls::ComboBox> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
-                  const Utils::ConstString& text = std::string_view(),
+                  string_view layout,
+                  const Utils::ConstString& text = string_view(),
                   char itemsSeparator            = ',');
         };
         class EXPORT NumericSelector
@@ -4020,19 +4006,19 @@ namespace Controls
 
           public:
             static Pointer<Controls::NumericSelector> Create(
-                  const long long minValue, const long long maxValue, long long value, std::string_view layout);
+                  const long long minValue, const long long maxValue, long long value, string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control* parent,
                   const long long minValue,
                   const long long maxValue,
                   long long value,
-                  std::string_view layout);
+                  string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control& parent,
                   const long long minValue,
                   const long long maxValue,
                   long long value,
-                  std::string_view layout);
+                  string_view layout);
         };
         class EXPORT Window
         {
@@ -4041,7 +4027,7 @@ namespace Controls
           public:
             static Pointer<Controls::Window> Create(
                   const Utils::ConstString& caption,
-                  std::string_view layout,
+                  string_view layout,
                   Controls::WindowFlags windowFlags = Controls::WindowFlags::None);
         };
         class EXPORT Desktop
@@ -4058,17 +4044,17 @@ namespace Controls
 
           public:
             static Pointer<Controls::Tree> Create(
-                  std::string_view layout,
+                  string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
                   const unsigned int noOfColumns  = 1);
             static Reference<Controls::Tree> Create(
                   Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
                   const unsigned int noOfColumns  = 1);
             static Reference<Controls::Tree> Create(
                   Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
                   const unsigned int noOfColumns  = 1);
         };
@@ -4079,16 +4065,16 @@ namespace Controls
 
           public:
             static Pointer<Controls::Grid> Create(
-                  std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, Controls::GridFlags flags);
+                  string_view layout, unsigned int columnsNo, unsigned int rowsNo, Controls::GridFlags flags);
             static Reference<Controls::Grid> Create(
                   Controls::Control* parent,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int columnsNo,
                   unsigned int rowsNo,
                   Controls::GridFlags flags);
             static Reference<Controls::Grid> Create(
                   Controls::Control& parent,
-                  std::string_view layout,
+                  string_view layout,
                   unsigned int columnsNo,
                   unsigned int rowsNo,
                   Controls::GridFlags flags);
@@ -4219,7 +4205,7 @@ namespace Application
         FrontendType Frontend;
         CharacterSize CharSize;
         InitializationFlags Flags;
-        std::string_view FontName;
+        string_view FontName;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()

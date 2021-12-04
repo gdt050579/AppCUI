@@ -6,7 +6,7 @@ namespace AppCUI
 using namespace Utils;
 using namespace Input;
 
-static constexpr std::string_view _Key_Modifiers[8] = {
+static constexpr string_view _Key_Modifiers[8] = {
     /* 0 */ "",
     /* 1 */ "Alt+",
     /* 2 */ "Ctrl+",
@@ -16,7 +16,7 @@ static constexpr std::string_view _Key_Modifiers[8] = {
     /* 6 */ "Ctrl+Shift+",
     /* 7 */ "Ctrl+Alt+Shift+",
 };
-static constexpr std::string_view _Key_Name[] = {
+static constexpr string_view _Key_Name[] = {
     "",     "F1",     "F2",       "F3",     "F4",     "F5",     "F6",        "F7",  "F8",   "F9", "F10",
     "F11",  "F12",    "Enter",    "Escape", "Insert", "Delete", "Backspace", "Tab", "Left", "Up", "Down",
     "Righ", "PageUp", "PageDown", "Home",   "End",    "Space",  "A",         "B",   "C",    "D",  "E",
@@ -24,7 +24,7 @@ static constexpr std::string_view _Key_Name[] = {
     "Q",    "R",      "S",        "T",      "U",      "V",      "W",         "X",   "Y",    "Z",  "0",
     "1",    "2",      "3",        "4",      "5",      "6",      "7",         "8",   "9",
 };
-static constexpr std::string_view _Key_Name_Padded[] = {
+static constexpr string_view _Key_Name_Padded[] = {
     "",      " F1 ",   " F2 ",    " F3 ",     " F4 ",       " F5 ",     " F6 ",     " F7 ",        " F8 ",  " F9 ",
     " F10 ", " F11 ",  " F12 ",   " Enter ",  " Escape ",   " Insert ", " Delete ", " Backspace ", " Tab ", " Left ",
     " Up ",  " Down ", " Right ", " PageUp ", " PageDown ", " Home ",   " End ",    " Space ",     " A ",   " B ",
@@ -34,25 +34,25 @@ static constexpr std::string_view _Key_Name_Padded[] = {
     " 6 ",   " 7 ",    " 8 ",     " 9 ",
 };
 
-std::string_view Utils::KeyUtils::GetKeyName(Input::Key keyCode)
+string_view Utils::KeyUtils::GetKeyName(Input::Key keyCode)
 {
     unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
-    if ((keyIndex >= (sizeof(_Key_Name) / sizeof(std::string_view))))
-        return std::string_view("", 0);
+    if ((keyIndex >= (sizeof(_Key_Name) / sizeof(string_view))))
+        return string_view("", 0);
     return _Key_Name[keyIndex];
 }
-std::string_view Utils::KeyUtils::GetKeyNamePadded(Input::Key keyCode)
+string_view Utils::KeyUtils::GetKeyNamePadded(Input::Key keyCode)
 {
     unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
-    if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(std::string_view))))
-        return std::string_view("", 0);
+    if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(string_view))))
+        return string_view("", 0);
     return _Key_Name_Padded[keyIndex];
 }
-std::string_view Utils::KeyUtils::GetKeyModifierName(Input::Key keyCode)
+string_view Utils::KeyUtils::GetKeyModifierName(Input::Key keyCode)
 {
     unsigned int keyIndex = (((unsigned int) keyCode) >> KEY_SHIFT_BITS) & 0x7;
     if (keyIndex > 7)
-        return std::string_view("", 0);
+        return string_view("", 0);
     return _Key_Modifiers[keyIndex];
 }
 bool Utils::KeyUtils::ToString(Input::Key keyCode, char* text, int maxTextSize)
@@ -73,7 +73,7 @@ bool Utils::KeyUtils::ToString(Input::Key keyCode, Utils::String& text)
     CHECK(text.Add(k), false, "");
     return true;
 }
-Input::Key Utils::KeyUtils::FromString(std::string_view stringRepresentation)
+Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
 {
     unsigned int code     = 0;
     unsigned int modifier = 0;

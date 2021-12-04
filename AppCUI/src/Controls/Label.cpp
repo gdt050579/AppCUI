@@ -2,7 +2,7 @@
 
 namespace AppCUI::Controls
 {
-Label::Label(const Utils::ConstString& caption, std::string_view layout)
+Label::Label(const Utils::ConstString& caption, string_view layout)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);

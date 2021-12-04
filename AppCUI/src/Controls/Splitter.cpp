@@ -17,7 +17,7 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr std::string_view splitterToolTipTexts[] = { "Drag to resize panels",
+constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                       "Click to maximize right panel",
                                                       "Click to maximize bottom panel",
                                                       "Click to maximize left panel",
@@ -107,7 +107,7 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-Splitter::Splitter(std::string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
+Splitter::Splitter(string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members         = reinterpret_cast<SplitterControlContext*>(this->Context);
     Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;

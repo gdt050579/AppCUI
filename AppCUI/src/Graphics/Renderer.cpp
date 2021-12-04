@@ -1083,11 +1083,11 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
     DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
     {
-        if (std::holds_alternative<std::string_view>(text))
+        if (std::holds_alternative<string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), &dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<string_view>(text).length(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::string_view>(std::get<std::string_view>(text), dti, params);
+            RenderSingleLineString<string_view>(std::get<string_view>(text), dti, params);
             return true;
         }
         if (std::holds_alternative<CharacterView>(text))
@@ -1120,9 +1120,9 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
         {
             return ProcessMultiLinesString<CharacterView>(std::get<CharacterView>(text), params, *this);
         }
-        if (std::holds_alternative<std::string_view>(text))
+        if (std::holds_alternative<string_view>(text))
         {
-            return ProcessMultiLinesString<std::string_view>(std::get<std::string_view>(text), params, *this);
+            return ProcessMultiLinesString<string_view>(std::get<string_view>(text), params, *this);
         }
         if (std::holds_alternative<std::u16string_view>(text))
         {

@@ -354,7 +354,7 @@ void TextAreaControlContext::DrawLineNumber(
     if (poz < 27)
         temp[28] = '.';
 
-    renderer.WriteSingleLineText(0, pozY, std::string_view(temp + 28, LINE_NUMBERS_WIDTH - 1), lineNumberColor);
+    renderer.WriteSingleLineText(0, pozY, string_view(temp + 28, LINE_NUMBERS_WIDTH - 1), lineNumberColor);
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
@@ -906,7 +906,7 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-TextArea::TextArea(const Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags)
+TextArea::TextArea(const Utils::ConstString& caption, string_view layout, TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);

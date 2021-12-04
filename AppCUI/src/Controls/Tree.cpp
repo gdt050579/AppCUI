@@ -16,7 +16,7 @@ constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
 const static Utils::UnicodeStringBuilder cb{};
 
-Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+Tree::Tree(string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);

@@ -604,7 +604,7 @@ int CharacterBuffer::Find(const Utils::ConstString& text, bool ignoreCase) const
     switch (textObj.Encoding)
     {
     case StringEncoding::Ascii:
-        return FindInCharacterBuffer<std::string_view>(std::get<std::string_view>(text), *this, ignoreCase);
+        return FindInCharacterBuffer<string_view>(std::get<string_view>(text), *this, ignoreCase);
     case StringEncoding::CharacterBuffer:
         return FindInCharacterBuffer<CharacterView>(std::get<CharacterView>(text), *this, ignoreCase);
     case StringEncoding::Unicode16:

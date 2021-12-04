@@ -311,7 +311,7 @@ bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData
     cfi.dwFontSize.X          = 0;
     cfi.nFont                 = 0;
     cfi.FontFamily            = FF_DONTCARE;
-    std::string_view fontName = initData.FontName;
+    string_view fontName = initData.FontName;
     if (fontName.size() == 0)
         fontName = "Consolas"; // default font name
     CHECK(fontName.size() < 32, false, "Invalid font name (should be less than 32 characters) !");

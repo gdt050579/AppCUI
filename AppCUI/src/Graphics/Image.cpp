@@ -131,7 +131,7 @@ bool Image::Create(unsigned int imageWidth, unsigned int imageHeight)
     this->height = imageHeight;
     return true;
 }
-bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, std::string_view image)
+bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, string_view image)
 {
     CHECK(Create(imageWidth, imageHeight), false, "");
     auto s = image.data();

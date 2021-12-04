@@ -13,7 +13,7 @@ constexpr int KEY_TAB         = '\t';
 
 void debugChar(int y, int c, const char* prefix)
 {
-    std::string_view myName = keyname(c);
+    string_view myName = keyname(c);
     move(y, 0);
     clrtoeol();
     addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());

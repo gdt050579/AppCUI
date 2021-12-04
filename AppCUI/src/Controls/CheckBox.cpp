@@ -2,7 +2,7 @@
 
 namespace AppCUI::Controls
 {
-CheckBox::CheckBox(const Utils::ConstString& caption, std::string_view layout, int controlID)
+CheckBox::CheckBox(const Utils::ConstString& caption, string_view layout, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);

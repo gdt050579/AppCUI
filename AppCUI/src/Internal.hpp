@@ -60,7 +60,7 @@ namespace Internal
     {
         int Command, StartScreenPos, EndScreenPos;
         Input::Key KeyCode;
-        std::string_view KeyName;
+        string_view KeyName;
         Graphics::CharacterBuffer Name;
         unsigned int ClearCommandUniqueID;
     };
@@ -80,7 +80,7 @@ namespace Internal
             int Y, Width;
         } BarLayout;
 
-        std::string_view ShiftStatus;
+        string_view ShiftStatus;
 
         Application::Config* Cfg;
         Input::Key CurrentShiftKey;

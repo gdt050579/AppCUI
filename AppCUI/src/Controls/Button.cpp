@@ -2,7 +2,7 @@
 
 namespace AppCUI::Controls
 {
-Button::Button(const Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
+Button::Button(const Utils::ConstString& caption, string_view layout, int controlID, ButtonFlags flags)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);

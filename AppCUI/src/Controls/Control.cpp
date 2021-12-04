@@ -508,7 +508,7 @@ inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsig
     }
     return s;
 }
-bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, Application::Config* Cfg)
+bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Config* Cfg)
 {
     // format: key:value,[key:value],....
     const unsigned char* p     = (const unsigned char*) layout.data();
@@ -901,7 +901,7 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
 
     return true;
 }
-bool ControlContext::UpdateLayoutFormat(std::string_view format)
+bool ControlContext::UpdateLayoutFormat(string_view format)
 {
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
@@ -1213,7 +1213,7 @@ Controls::Control::~Control()
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
 Controls::Control::Control(
-      void* context, const Utils::ConstString& caption, std::string_view layout, bool computeHotKey)
+      void* context, const Utils::ConstString& caption, string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     Application::Config* cfg = Application::GetAppConfig();
