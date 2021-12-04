@@ -191,6 +191,7 @@ namespace StdIncludes
     using std::u8string_view;
     using std::unique_ptr;
     using std::variant;
+    using std::vector;
 } // namespace StdIncludes
 
 using namespace StdIncludes;
@@ -1580,7 +1581,7 @@ namespace Utils
         }
         string_view GetName() const;
         IniValue GetValue(string_view keyName);
-        std::vector<IniValue> GetValues() const;
+        vector<IniValue> GetValues() const;
         IniValue operator[](string_view keyName);
 
         void Clear();
@@ -1635,7 +1636,7 @@ namespace Utils
             return CreateSection(name, false);
         }
         IniValue GetValue(string_view valuePath);
-        std::vector<IniSection> GetSections() const;
+        vector<IniSection> GetSections() const;
         unsigned int GetSectionsCount();
 
         bool DeleteSection(string_view name);
@@ -1764,7 +1765,7 @@ namespace OS
     };
 
     using SpecialFolderMap = std::map<SpecialFolder, FSLocationData>;
-    using RootsVector      = std::vector<FSLocationData>;
+    using RootsVector      = vector<FSLocationData>;
 
     // Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
@@ -3583,7 +3584,7 @@ namespace Controls
 
         ItemHandle AddItem(
               const ItemHandle parent,
-              const std::vector<Graphics::CharacterBuffer>& values,
+              const vector<Graphics::CharacterBuffer>& values,
               const ConstString metadata,
               bool process      = false,
               bool isExpandable = false);
@@ -3697,7 +3698,7 @@ namespace Controls
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
         bool UpdateHeaderValues(
-              const std::vector<ConstString>& headerValues,
+              const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
 
       private:

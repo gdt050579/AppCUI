@@ -414,7 +414,7 @@ class ListViewControlContext : public ControlContext
 
     struct
     {
-        std::vector<ListViewItem> List;
+        vector<ListViewItem> List;
         Utils::Array32 Indexes;
         int FirstVisibleIndex, CurentItemIndex;
     } Items;
@@ -528,7 +528,7 @@ struct ComboBoxItem
 class ComboBoxControlContext : public ControlContext
 {
   public:
-    std::vector<ComboBoxItem> Items;
+    vector<ComboBoxItem> Items;
     Utils::Array32 Indexes;
     unsigned int ExpandedHeight, FirstVisibleItem, VisibleItemsCount, HoveredIndexItem;
     unsigned int CurentItemIndex;
@@ -574,11 +574,11 @@ struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
-    std::vector<CharacterBuffer> values;
+    vector<CharacterBuffer> values;
     variant<GenericRef, unsigned long long> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
-    std::vector<ItemHandle> children;
+    vector<ItemHandle> children;
     Utils::UnicodeStringBuilder metadata;
     unsigned int depth                = 1;
     bool markedAsFound                = false;
@@ -589,16 +589,16 @@ class TreeControlContext : public ControlContext
 {
   public:
     std::map<ItemHandle, TreeItem> items;
-    std::vector<ItemHandle> itemsToDrew;
-    std::vector<ItemHandle> orderedItems;
+    vector<ItemHandle> itemsToDrew;
+    vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     unsigned int maxItemsToDraw  = 0;
     unsigned int offsetTopToDraw = 0;
     unsigned int offsetBotToDraw = 0;
     bool notProcessed            = true;
-    std::vector<ItemHandle> roots;
-    std::vector<TreeColumnData> columns;
+    vector<ItemHandle> roots;
+    vector<TreeColumnData> columns;
     unsigned int treeFlags              = 0;
     unsigned int separatorIndexSelected = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch       = InvalidItemHandle;
@@ -657,7 +657,7 @@ class GridControlContext : public ControlContext
     GridFlags flags               = GridFlags::None;
     unsigned int hoveredCellIndex = 0xFFFFFFFF;
     unsigned int anchorCellIndex  = 0xFFFFFFFF;
-    std::vector<unsigned int> selectedCellsIndexes;
+    vector<unsigned int> selectedCellsIndexes;
 
     unsigned int cWidth           = 0U;
     unsigned int cHeight          = 0U;
@@ -669,7 +669,7 @@ class GridControlContext : public ControlContext
 
     std::map<unsigned int, GridCellData> cells;
     std::u16string separator = u",";
-    std::vector<GridHeaderCellData> headers;
+    vector<GridHeaderCellData> headers;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j);
@@ -734,7 +734,7 @@ struct MenuMousePositionInfo
 constexpr unsigned int MAX_NUMBER_OF_MENU_ITEMS = 256;
 struct MenuContext
 {
-    // std::vector messes up with inter-items pointers when calling copy/move ctor
+    // vector messes up with inter-items pointers when calling copy/move ctor
     // as a result, opening a sub-menu from another is likely to produce a crash (as the pointers will be invalid)
     // switching to regular pointer of unique_ptr type to avoid this
 

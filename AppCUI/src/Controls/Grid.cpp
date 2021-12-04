@@ -1083,7 +1083,7 @@ bool Controls::Grid::PasteContentToSelectedCells()
 
     size_t last = 0;
     size_t next = 0;
-    std::vector<std::u16string> lines;
+    vector<std::u16string> lines;
     lines.reserve(50);
     while ((next = input.find(u"\n", last)) != std::string::npos)
     {
@@ -1096,7 +1096,7 @@ bool Controls::Grid::PasteContentToSelectedCells()
         lines.emplace_back(lastLine);
     }
 
-    std::vector<std::u16string> tokens;
+    vector<std::u16string> tokens;
     tokens.reserve(50);
     for (const auto& line : lines)
     {
@@ -1116,7 +1116,7 @@ bool Controls::Grid::PasteContentToSelectedCells()
         const auto start = tokens.begin() + context->selectedCellsIndexes.size() - 1U;
 
         LocalUnicodeStringBuilder<2048> lusbLastToken;
-        for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
+        for (vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
         {
             lusbLastToken.Add(*i);
         }
@@ -1222,7 +1222,7 @@ void Controls::Grid::SetSeparator(ConstString separator)
     context->separator = usb;
 }
 
-bool Controls::Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, TextAlignament textAlignment)
+bool Controls::Grid::UpdateHeaderValues(const vector<ConstString>& headerValues, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 

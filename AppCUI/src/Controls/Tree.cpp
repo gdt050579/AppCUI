@@ -1080,7 +1080,7 @@ Handlers::Tree* Tree::Handlers()
 
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
-      const std::vector<CharacterBuffer>& values,
+      const vector<CharacterBuffer>& values,
       const ConstString metadata,
       bool process,
       bool isExpandable)

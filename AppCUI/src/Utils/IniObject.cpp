@@ -158,7 +158,7 @@ namespace Ini
     {
         std::string KeyName;
         std::string KeyValue;
-        std::vector<std::string> KeyValues;
+        vector<std::string> KeyValues;
         Value()
         {
         }
@@ -691,11 +691,11 @@ IniValue IniSection::operator[](string_view keyName)
     auto res = entry->Keys.emplace(hash, Ini::Value(keyName));
     return IniValue(&res.first->second);
 }
-std::vector<IniValue> IniSection::GetValues() const
+vector<IniValue> IniSection::GetValues() const
 {
-    CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
+    CHECK(Data, vector<IniValue>(), "Section was not initialized");
 
-    std::vector<IniValue> res;
+    vector<IniValue> res;
     auto sect = ((Ini::Section*) Data);
 
     res.reserve(sect->Keys.size());
@@ -1453,10 +1453,10 @@ IniSection IniObject::CreateSection(string_view name, bool emptyContent)
     auto res = WRAPPER->Sections.emplace(hash, std::make_unique<Ini::Section>(name));
     return IniSection(res.first->second.get());
 }
-std::vector<IniSection> IniObject::GetSections() const
+vector<IniSection> IniObject::GetSections() const
 {
-    VALIDATE_INITED(std::vector<IniSection>());
-    std::vector<IniSection> res;
+    VALIDATE_INITED(vector<IniSection>());
+    vector<IniSection> res;
     res.reserve(WRAPPER->Sections.size());
     for (auto& s : WRAPPER->Sections)
         res.push_back(IniSection(s.second.get()));

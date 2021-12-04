@@ -224,7 +224,7 @@ namespace Internal
         unique_ptr<AbstractTerminal> terminal;
         unique_ptr<CommandBarController> cmdBar;
         unique_ptr<MenuBar> menu;
-        std::vector<Controls::Control*> toDelete;
+        vector<Controls::Control*> toDelete;
 
         Controls::Desktop* AppDesktop;
         ToolTipController ToolTip;

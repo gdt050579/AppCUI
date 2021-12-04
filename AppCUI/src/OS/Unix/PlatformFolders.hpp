@@ -41,7 +41,7 @@ namespace sago
 namespace internal
 {
 #    if !defined(_WIN32) && !defined(__APPLE__)
-    void appendExtraFoldersTokenizer(const char* envName, const char* envValue, std::vector<std::string>& folders);
+    void appendExtraFoldersTokenizer(const char* envName, const char* envValue, vector<std::string>& folders);
 #    endif
 #    ifdef _WIN32
     std::string win32_utf16_to_utf8(const wchar_t* wstr);
@@ -101,14 +101,14 @@ std::string getCacheDir();
  * The string at the lowest index has the highest priority.
  * @param homes A vector that extra folders will be appended to.
  */
-void appendAdditionalDataDirectories(std::vector<std::string>& homes);
+void appendAdditionalDataDirectories(vector<std::string>& homes);
 
 /**
  * This will append extra folders that your program should be looking for config files in.
  * This does not normally include the path returned by GetConfigHome().
  * If you want all the folders you should do something like:
  * @code{.cpp}
- * std::vector<std::string> folders;
+ * vector<std::string> folders;
  * folders.push_back(sago::getConfigHome());
  * sago::appendAdditionalConfigDirectories(folders);
  * for (std::string s& : folders) {
@@ -119,7 +119,7 @@ void appendAdditionalDataDirectories(std::vector<std::string>& homes);
  * The string at the lowest index has the highest priority.
  * @param homes A vector that extra folders will be appended to.
  */
-void appendAdditionalConfigDirectories(std::vector<std::string>& homes);
+void appendAdditionalConfigDirectories(vector<std::string>& homes);
 
 /**
  * The folder that represents the desktop.

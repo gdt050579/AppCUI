@@ -82,9 +82,9 @@ unsigned int __compute_hash__(const char16_t* start, const char16_t* end)
 }
 
 // https://www.cppstories.com/2018/07/string-view-perf-followup/
-std::vector<u16string_view> splitSV(u16string_view strv, u16string_view delims = u" ")
+vector<u16string_view> splitSV(u16string_view strv, u16string_view delims = u" ")
 {
-    std::vector<u16string_view> output;
+    vector<u16string_view> output;
     size_t first = 0;
 
     while (first < strv.size())
@@ -126,8 +126,8 @@ class FileDialogWindow : public Window
     Reference<Controls::Button> btnOK, btnCancel;
     // TODO: Future back and forward option
     // Controls::Button btnBack, btnForward;
-    std::vector<FSLocationData> locations;
-    std::vector<std::set<unsigned int>> extensions;
+    vector<FSLocationData> locations;
+    vector<std::set<unsigned int>> extensions;
     const std::set<unsigned int>* extFilter;
     std::filesystem::path resultedPath;
     std::filesystem::path currentPath;
