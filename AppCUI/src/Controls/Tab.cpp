@@ -1,9 +1,5 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Input;
-using namespace Graphics;
-
 #define TAB_DISPLAY_MODE_TOP    0
 #define TAB_DISPLAY_MODE_BOTTOM 1
 #define TAB_DISPLAY_MODE_LEFT   2
@@ -12,6 +8,8 @@ using namespace Graphics;
 
 #define TAB_DISPLAY_MODE(flags) (((flags) >> 8) & 0xF)
 
+namespace AppCUI
+{
 void TabControlContext::UpdateMargins()
 {
     switch (TAB_DISPLAY_MODE(this->Flags))
@@ -459,3 +457,4 @@ void Tab::OnAfterAddControl(Reference<Control> ctrl)
         Members->CurrentControlIndex = 0;
     }
 }
+} // namespace AppCUI

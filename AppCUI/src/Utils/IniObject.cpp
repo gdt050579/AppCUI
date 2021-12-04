@@ -661,14 +661,13 @@ bool Ini::Parser::AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr v
 std::string_view IniSection::GetName() const
 {
     CHECK(this->Data, "", "");
-    return std::string_view{ ((Ini::Section*) Data)->Name.GetText(),
-                             ((Ini::Section*) Data)->Name.Len() };
+    return std::string_view{ ((Ini::Section*) Data)->Name.GetText(), ((Ini::Section*) Data)->Name.Len() };
 }
 IniValue IniSection::GetValue(std::string_view keyName)
 {
     CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
     Ini::Section* entry = ((Ini::Section*) Data);
-    auto value                  = entry->Keys.find(__compute_hash__(keyName));
+    auto value          = entry->Keys.find(__compute_hash__(keyName));
     CHECK(value != entry->Keys.cend(), IniValue(), "Unable to find key !");
     // all good -> value exists
     return IniValue(&value->second);
@@ -677,15 +676,15 @@ bool IniSection::HasValue(std::string_view keyName)
 {
     CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
     Ini::Section* entry = ((Ini::Section*) Data);
-    auto value                  = entry->Keys.find(__compute_hash__(keyName));
+    auto value          = entry->Keys.find(__compute_hash__(keyName));
     return value != entry->Keys.cend();
 }
 IniValue IniSection::operator[](std::string_view keyName)
 {
     CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
     Ini::Section* entry = ((Ini::Section*) Data);
-    auto hash                   = __compute_hash__(keyName);
-    auto value                  = entry->Keys.find(hash);
+    auto hash           = __compute_hash__(keyName);
+    auto value          = entry->Keys.find(hash);
     // if element already exists --> return it
     if (value != entry->Keys.cend())
         return IniValue(&value->second);
@@ -1534,8 +1533,6 @@ unsigned int IniObject::GetSectionsCount()
     VALIDATE_INITED(0);
     return (unsigned int) WRAPPER->Sections.size();
 }
-
-
 
 std::string_view IniObject::ToString()
 {

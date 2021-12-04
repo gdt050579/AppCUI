@@ -1,9 +1,8 @@
 #include "WindowsTerminal.hpp"
 #include <string.h>
 
-namespace AppCUI
+namespace AppCUI::Internal
 {
-using namespace Internal;
 using namespace Application;
 using namespace Graphics;
 

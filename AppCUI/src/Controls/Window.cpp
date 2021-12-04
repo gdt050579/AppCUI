@@ -1,10 +1,8 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
+namespace AppCUI
+{
 constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
 constexpr unsigned int MAX_TAG_CHARS       = 8U;
 const static CharacterBuffer tempReferenceChBuf;
@@ -426,8 +424,7 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
     }
     return true;
 }
-bool Controls::WindowControlsBar::SetItemToolTip(
-      ItemHandle itemHandle, const Utils::ConstString& caption)
+bool Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const Utils::ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -1154,7 +1151,7 @@ bool Window::Exit(int dialogResult)
 {
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    Members->DialogResult                             = dialogResult;
+    Members->DialogResult                     = dialogResult;
     Application::GetApplication()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
     return true;
 }
@@ -1187,7 +1184,7 @@ Reference<Menu> Window::AddMenu(const Utils::ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);
     CHECK(Members->menu, nullptr, "Application was not initialized with Menu option set up !");
-    ItemHandle itm                 = Members->menu->AddMenu(name);
+    ItemHandle itm         = Members->menu->AddMenu(name);
     Controls::Menu* result = Members->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
     return Reference<Menu>(result);
@@ -1199,3 +1196,4 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
+} // namespace AppCUI

@@ -147,4 +147,4 @@ Key KeyUtils::CreateHotKey(char16_t hotKey, Key modifier)
     result |= static_cast<Key>(((unsigned int) modifier) & ((unsigned int) (Key::Ctrl | Key::Alt | Key::Shift)));
     return result;
 }
-} // namespace AppCUI
+} // namespace AppCUI::Input

@@ -1,11 +1,6 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-using namespace OS;
-
 #define LINE_NUMBERS_WIDTH 4
 #define INVALID_SELECTION  0xFFFFFFFF
 
@@ -24,6 +19,10 @@ using namespace OS;
         MoveSelectionTo(View.CurrentPosition);
 
 #define WRAPPER ((TextAreaControlContext*) this->Context)
+
+namespace AppCUI
+{
+using namespace OS;
 
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
@@ -977,3 +976,4 @@ Handlers::TextControl* TextArea::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);
 }
+} // namespace AppCUI

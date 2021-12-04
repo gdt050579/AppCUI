@@ -1,14 +1,11 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
-Button::Button(
-      const Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
-    : Control(new ControlContext(), caption, layout,true)
+namespace AppCUI::Controls
 {
-    auto Members             = reinterpret_cast<ControlContext*>(this->Context);
+Button::Button(const Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
+    : Control(new ControlContext(), caption, layout, true)
+{
+    auto Members = reinterpret_cast<ControlContext*>(this->Context);
 
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
@@ -24,8 +21,8 @@ Button::Button(
         Members->Layout.MaxHeight = 2;
         Members->Layout.Height    = 2;
     }
-    Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
-    
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
+
     this->SetControlID(controlID);
 }
 
@@ -117,7 +114,7 @@ void Button::OnHotKey()
         {
             bh->OnButtonPressed.obj->OnButtonPressed(this);
             return;
-        }        
+        }
     }
 
     // if no handler is present --> call RaiseEvent
@@ -168,3 +165,4 @@ Handlers::Button* Button::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::Button);
 }
+} // namespace AppCUI::Controls

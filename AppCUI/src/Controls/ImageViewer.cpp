@@ -1,17 +1,14 @@
 #include <AppCUI.hpp>
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-
+namespace AppCUI::Controls
+{
 ImageViewer::ImageViewer(const Utils::ConstString& caption, std::string_view layout, ViewerFlags flags)
-    : CanvasViewer(caption,layout,16,16,flags)
+    : CanvasViewer(caption, layout, 16, 16, flags)
 {
 }
 bool ImageViewer::SetImage(
-      const Graphics::Image& img,
-      Graphics::ImageRenderingMethod method,
-      Graphics::ImageScaleMethod scale)
+      const Graphics::Image& img, Graphics::ImageRenderingMethod method, Graphics::ImageScaleMethod scale)
 {
     auto c = GetCanvas();
     CHECK(c.IsValid(), false, "");
@@ -21,5 +18,5 @@ bool ImageViewer::SetImage(
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
     Members->MoveScrollTo(0, 0);
     return c->DrawImage(img, 0, 0, method, scale);
-
 }
+} // namespace AppCUI::Controls

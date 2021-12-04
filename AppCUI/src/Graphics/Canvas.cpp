@@ -1,10 +1,8 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
-
 Canvas::Canvas()
 {
 }
@@ -188,4 +186,4 @@ bool Canvas::ClearEntireSurface(int character, const ColorPair color)
 {
     return _ClearEntireSurface(character, color);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

@@ -1,13 +1,12 @@
 #include "AppCUI.hpp"
 
-namespace AppCUI
-{
-using namespace Controls;
-using namespace Dialogs;
-
 #define MSGBOX_BUTTONS_OK            1
 #define MSGBOX_BUTTONS_OK_CANCEL     2
 #define MSGBOX_BUTTONS_YES_NO_CANCEL 3
+
+namespace AppCUI::Dialogs
+{
+using namespace Controls;
 
 bool MessageBoxWindowEventHandler(Reference<Control> control, Controls::Event eventType, int controlID)
 {
@@ -86,4 +85,4 @@ Result MessageBox::ShowOkCancel(const Utils::ConstString& title, const Utils::Co
         return Result::Cancel;
     return (Result) result;
 }
-} // namespace AppCUI
+} // namespace AppCUI::Dialogs

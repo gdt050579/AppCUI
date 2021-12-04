@@ -1,10 +1,8 @@
 #include "AppCUI.hpp"
 #include "Internal.hpp"
 
-namespace AppCUI
+namespace AppCUI::Application
 {
-using namespace Application;
-
 CommandBar::CommandBar()
 {
     this->Controller = nullptr;
@@ -19,4 +17,4 @@ bool CommandBar::SetCommand(Input::Key keyCode, const Utils::ConstString& captio
     CHECK(Controller, false, "Command bar controller has not been initialized !");
     return ((Internal::CommandBarController*) this->Controller)->Set(keyCode, caption, CommandID);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Application

@@ -1,8 +1,7 @@
 #include "Internal.hpp"
 
-namespace AppCUI
+namespace AppCUI::Internal
 {
-using namespace Internal;
 using namespace Graphics;
 
 AbstractTerminal::AbstractTerminal()
@@ -57,4 +56,4 @@ void AbstractTerminal::Update()
         }
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal

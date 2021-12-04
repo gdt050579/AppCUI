@@ -1,13 +1,8 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-namespace AppCUI
+namespace AppCUI::Internal
 {
-using namespace Internal;
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
 #define NO_ITEM_SELECTED 0xFFFFFFFF
 
 MenuBarItem::MenuBarItem()
@@ -197,5 +192,5 @@ void MenuBar::Paint(Graphics::Renderer& renderer)
         renderer.WriteText(Items[tr]->Name, params);
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal
 #undef NO_ITEM_SELECTED

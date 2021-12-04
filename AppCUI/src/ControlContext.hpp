@@ -7,7 +7,8 @@
 #include <map>
 #include <set>
 
-using namespace AppCUI;
+namespace AppCUI
+{
 using namespace Graphics;
 using namespace Controls;
 using namespace Utils;
@@ -818,3 +819,4 @@ struct MenuContext
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
+} // namespace AppCUI

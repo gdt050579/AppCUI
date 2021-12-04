@@ -596,4 +596,4 @@ bool NumericSelector::MaxValueReached() const
     return cc->value == cc->maxValue;
 }
 
-} // namespace Controls
+} // namespace AppCUI::Controls

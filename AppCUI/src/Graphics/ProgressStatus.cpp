@@ -1,9 +1,8 @@
 #include "Internal.hpp"
 #include <chrono>
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
 using namespace Internal;
 using namespace std::chrono;
 

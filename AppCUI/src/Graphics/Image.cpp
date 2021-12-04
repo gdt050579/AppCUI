@@ -2,10 +2,8 @@
 #include "ImageLoader.hpp"
 #include "string.h"
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
-
 constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
 constexpr uint16_t IMAGE_BMP_MAGIC     = 0x4D42;
 
@@ -261,4 +259,4 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     // unknwon type
     RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic32);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

@@ -49,7 +49,7 @@
         {                                                                                                              \
             if (!(c))                                                                                                  \
             {                                                                                                          \
-                Log::Report(Log::Severity::Fatal, __FILE__, __FUNCTION__, #c, __LINE__, "%s", error);                  \
+                AppCUI::Log::Report(Log::Severity::Fatal, __FILE__, __FUNCTION__, #c, __LINE__, "%s", error);          \
                 throw error;                                                                                           \
             }                                                                                                          \
         }
@@ -57,7 +57,8 @@
         {                                                                                                              \
             if (!(c))                                                                                                  \
             {                                                                                                          \
-                Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);        \
+                AppCUI::Log::Report(                                                                                   \
+                      Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);              \
                 return (returnValue);                                                                                  \
             }                                                                                                          \
         }
@@ -65,7 +66,8 @@
         {                                                                                                              \
             if (!(c))                                                                                                  \
             {                                                                                                          \
-                Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);        \
+                AppCUI::Log::Report(                                                                                   \
+                      Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);              \
                 return;                                                                                                \
             }                                                                                                          \
         }
@@ -73,18 +75,19 @@
         {                                                                                                              \
             if (!(c))                                                                                                  \
             {                                                                                                          \
-                Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);        \
+                AppCUI::Log::Report(                                                                                   \
+                      Log::Severity::Error, __FILE__, __FUNCTION__, #c, __LINE__, format, ##__VA_ARGS__);              \
                 break;                                                                                                 \
             }                                                                                                          \
         }
 #    define RETURNERROR(returnValue, format, ...)                                                                      \
         {                                                                                                              \
-            Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);            \
+            AppCUI::Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);    \
             return (returnValue);                                                                                      \
         }
 #    define NOT_IMPLEMENTED(returnValue)                                                                               \
         {                                                                                                              \
-            Log::Report(                                                                                               \
+            AppCUI::Log::Report(                                                                                       \
                   Log::Severity::Warning,                                                                              \
                   __FILE__,                                                                                            \
                   __FUNCTION__,                                                                                        \
@@ -94,11 +97,11 @@
             return (returnValue);                                                                                      \
         }
 #    define LOG_INFO(format, ...)                                                                                      \
-        Log::Report(Log::Severity::Information, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+        AppCUI::Log::Report(Log::Severity::Information, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #    define LOG_WARNING(format, ...)                                                                                   \
-        Log::Report(Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+        AppCUI::Log::Report(Log::Severity::Warning, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #    define LOG_ERROR(format, ...)                                                                                     \
-        Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
+        AppCUI::Log::Report(Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);
 #else
 inline void Unused(...)
 {

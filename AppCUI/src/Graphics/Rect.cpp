@@ -1,9 +1,7 @@
 #include "AppCUI.hpp"
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
-
 bool Rect::Create(int x, int y, int width, int height, Alignament align)
 {
     CHECK((width >= 0) && (height >= 0), false, "Invalid width and height (negative values)");
@@ -89,4 +87,4 @@ void Rect::Create(int left, int top, int right, int bottom)
         this->Height = (top - bottom) + 1;
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

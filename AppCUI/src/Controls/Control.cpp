@@ -3,11 +3,8 @@
 #include <cstring>
 #include <string.h>
 
-using namespace Controls;
-using namespace Input;
-using namespace Graphics;
-using namespace Utils;
-
+namespace AppCUI
+{
 #define CTRLC ((ControlContext*) Context)
 
 #define CHAR_TYPE_EOS       0
@@ -1555,7 +1552,7 @@ bool Controls::Control::SetText(const Utils::ConstString& caption, bool updateHo
 }
 bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
 {
-    if (OnBeforeSetText((CharacterView)text) == false)
+    if (OnBeforeSetText((CharacterView) text) == false)
         return false;
     if (CTRLC->Text.Set(text) == false)
         return false;
@@ -1570,13 +1567,12 @@ bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
         OnAfterSetText();
     return true;
 }
-bool Controls::Control::SetTextWithHotKey(
-      const Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+bool Controls::Control::SetTextWithHotKey(const Utils::ConstString& caption, unsigned int hotKeyTextOffset)
 {
     CHECK(SetText(caption), false, "");
     ConstStringObject txt(caption);
     bool result = false;
-    if (hotKeyTextOffset<txt.Length)
+    if (hotKeyTextOffset < txt.Length)
     {
         switch (txt.Encoding)
         {
@@ -1853,3 +1849,4 @@ void Controls::Control::PackView()
 {
     Application::GetApplication()->PackControl(true);
 }
+} // namespace AppCUI

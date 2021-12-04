@@ -1,9 +1,7 @@
 #include "Internal.hpp"
 
-namespace AppCUI
+namespace AppCUI::OS
 {
-using namespace OS;
-
 void AddSpecialFolder(
       REFKNOWNFOLDERID specialFolerID, SpecialFolder specialType, const char* name, SpecialFolderMap& specialFolders)
 {
@@ -18,7 +16,7 @@ void AddSpecialFolder(
         CoTaskMemFree(resultPath);
 }
 
-void OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
+void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 {
     char drivePath[4] = "_:\\";
     std::string name;
@@ -64,7 +62,7 @@ void OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
     AddSpecialFolder(FOLDERID_LocalVideos, SpecialFolder::Videos, "Local Videos", specialFolders);
 }
 
-std::filesystem::path OS::GetCurrentApplicationPath()
+std::filesystem::path GetCurrentApplicationPath()
 {
     WCHAR path[1024];
     DWORD nrChars = GetModuleFileNameW(NULL, path, (sizeof(path) / sizeof(WCHAR)) - 1);
@@ -96,4 +94,4 @@ std::filesystem::path OS::GetCurrentApplicationPath()
         return std::filesystem::path();
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::OS

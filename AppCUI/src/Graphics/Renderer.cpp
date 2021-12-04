@@ -1,9 +1,8 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
 using namespace Utils;
 
 int _special_characters_consolas_unicode_[(unsigned int) Graphics::SpecialChars::Count] = {

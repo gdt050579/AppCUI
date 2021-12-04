@@ -1,7 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-
+namespace AppCUI::Controls
+{
 UserControl::UserControl(const Utils::ConstString& caption, std::string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
@@ -13,3 +13,4 @@ UserControl::UserControl(std::string_view layout) : Control(new ControlContext()
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }
+} // namespace AppCUI::Controls

@@ -1,15 +1,13 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
 #define GATTR_VERTICAL    1024
 #define SPLITTER_BAR_SIZE 1
 
 #define SPLITTER_DRAG_STATUS_NONE 0
 #define SPLITTER_DRAG_STATUS_MOVE 1
 
+namespace AppCUI
+{
 constexpr int MIN_SPLITTER_SIZE = 4;
 
 constexpr int NO_TOOLTIP_TEXT             = -1;
@@ -73,18 +71,18 @@ void Splitter_ResizeComponents(Splitter* control)
         o = Members->Controls[tr];
         if (o != nullptr)
         {
-            o->SetVisible(tr<2);
+            o->SetVisible(tr < 2);
             if (tr == 0)
             {
                 if ((Members->Flags & GATTR_VERTICAL) != 0)
-                {                    
+                {
                     o->Resize(Members->Layout.Width - sz, Members->Layout.Height);
                     o->MoveTo((Members->Layout.Width - sz) - o->GetWidth(), 0);
                 }
                 else
-                {                    
+                {
                     o->Resize(Members->Layout.Width, Members->Layout.Height - sz);
-                    o->MoveTo(0, (Members->Layout.Height - sz)-o->GetHeight());
+                    o->MoveTo(0, (Members->Layout.Height - sz) - o->GetHeight());
                 }
                 continue;
             }
@@ -250,7 +248,7 @@ void Splitter::OnAfterResize(int, int)
 }
 void Splitter::OnFocus()
 {
-    //Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
+    // Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
 }
 bool Splitter::OnBeforeAddControl(Reference<Control> c)
 {
@@ -341,9 +339,9 @@ unsigned int Splitter::GetFirstPanelSize()
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
     int value = 0;
     if ((Members->Flags & GATTR_VERTICAL) != 0)
-        value =  Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value = Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     else
-        value =  Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     if (value < 0)
         value = 0;
     return (unsigned int) value;
@@ -355,3 +353,4 @@ unsigned int Splitter::GetSecondPanelSize()
         return 0;
     return (unsigned int) Members->SecondPanelSize;
 }
+} // namespace AppCUI

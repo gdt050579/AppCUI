@@ -4,7 +4,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-using namespace AppCUI;
+namespace AppCUI::Log
+{
 using namespace Utils;
 
 #define CRITICAL_ERROR_STACK_BUFFER_SIZE 0x10000
@@ -19,18 +20,18 @@ using namespace Utils;
         break;                                                                                                         \
     }
 
-void (*fnMessageLogCallbak)(const Log::Message& msg) = nullptr;
-OS::File* logFile                            = nullptr;
+void (*fnMessageLogCallbak)(const Message& msg) = nullptr;
+OS::File* logFile                               = nullptr;
 
 const char* _severity_type_names_[5] = {
     "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
 };
 
-bool _LogMessage_to_String_(const Log::Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
+bool _LogMessage_to_String_(const Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
 {
     EXIT_IF_ERROR(str.Set(_severity_type_names_[(unsigned int) msg.Type]));
     EXIT_IF_ERROR(str.Add(msg.Content));
-    if (msg.Type != Log::Severity::Information)
+    if (msg.Type != Severity::Information)
     {
         if (multiLine)
         {
@@ -56,8 +57,8 @@ bool _LogMessage_to_String_(const Log::Message& msg, String& str, bool multiLine
     return true;
 }
 
-void Log::Report(
-      Log::Severity severity,
+void Report(
+      Severity severity,
       const char* fileName,
       const char* function,
       const char* condition,
@@ -68,7 +69,7 @@ void Log::Report(
     va_list args;
     int len, len2;
     char Text[CRITICAL_ERROR_STACK_BUFFER_SIZE];
-    Log::Message msg;
+    Message msg;
 
     if (fnMessageLogCallbak == nullptr)
         return;
@@ -101,12 +102,12 @@ void Log::Report(
     fnMessageLogCallbak(msg);
 }
 
-void Log::SetLogCallback(void (*callback)(const Message&))
+void SetLogCallback(void (*callback)(const Message&))
 {
     fnMessageLogCallbak = callback;
 }
 
-void _write_to_file_callback_(const Log::Message& msg)
+void _write_to_file_callback_(const Message& msg)
 {
     LocalString<2048> tmpString;
     if ((_LogMessage_to_String_(msg, tmpString, true, true)) && (logFile))
@@ -114,7 +115,7 @@ void _write_to_file_callback_(const Log::Message& msg)
         logFile->Write(tmpString.GetText(), tmpString.Len());
     }
 }
-bool Log::ToFile(const std::filesystem::path& fileName)
+bool ToFile(const std::filesystem::path& fileName)
 {
     if (logFile == nullptr)
     {
@@ -133,7 +134,7 @@ bool Log::ToFile(const std::filesystem::path& fileName)
 }
 
 #ifdef OutputDebugString
-void _write_to_OutDebugString_(const Log::Message& msg)
+void _write_to_OutDebugString_(const Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, false, true))
@@ -142,7 +143,7 @@ void _write_to_OutDebugString_(const Log::Message& msg)
     }
 }
 #endif
-bool Log::ToOutputDebugString()
+bool ToOutputDebugString()
 {
 #ifdef OutputDebugString
     fnMessageLogCallbak = _write_to_OutDebugString_;
@@ -151,7 +152,7 @@ bool Log::ToOutputDebugString()
     return false; // not on Windows
 }
 
-void _write_to_stderr_callback_(const Log::Message& msg)
+void _write_to_stderr_callback_(const Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, true, true))
@@ -159,13 +160,13 @@ void _write_to_stderr_callback_(const Log::Message& msg)
         std::cerr << tmpString.GetText();
     }
 }
-bool Log::ToStdErr()
+bool ToStdErr()
 {
     fnMessageLogCallbak = _write_to_stderr_callback_;
     return true;
 }
 
-void _write_to_stdout_callback_(const Log::Message& msg)
+void _write_to_stdout_callback_(const Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, true, true))
@@ -173,14 +174,14 @@ void _write_to_stdout_callback_(const Log::Message& msg)
         std::cout << tmpString.GetText();
     }
 }
-bool Log::ToStdOut()
+bool ToStdOut()
 {
     fnMessageLogCallbak = _write_to_stdout_callback_;
     return true;
 }
 
 // only available for internal usage
-void Log::Unit()
+void Unit()
 {
     if (logFile != nullptr)
     {
@@ -189,5 +190,6 @@ void Log::Unit()
         logFile = nullptr;
     }
 }
+} // namespace AppCUI::Log
 #undef EXIT_IF_ERROR
 #undef CHECK_INTERNAL_CONDITION

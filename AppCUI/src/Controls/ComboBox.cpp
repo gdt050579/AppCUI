@@ -1,9 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
+namespace AppCUI
+{
 #define CHECK_INDEX(idx, returnValue)                                                                                  \
     CHECK(idx < (unsigned int) Members->Indexes.Len(),                                                                 \
           returnValue,                                                                                                 \
@@ -12,8 +10,6 @@ using namespace Input;
           (int) Members->Indexes.Len());                                                                               \
     auto& i = Members->Items[Members->Indexes.GetUInt32Array()[idx]];                                                  \
     static_cast<void>(i);
-
-
 
 Graphics::CharacterBuffer
       __temp_comboxitem_reference_object__; // use this as std::option<const T&> is not available yet
@@ -258,7 +254,6 @@ ComboBox::ComboBox(std::string_view layout, const Utils::ConstString& text, char
     Members->VisibleItemsCount = 1;
     Members->CurentItemIndex   = ComboBox::NO_ITEM_SELECTED;
     Members->FirstVisibleItem  = 0;
-
 }
 
 unsigned int ComboBox::GetItemsCount() const
@@ -593,3 +588,4 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         }
     }
 }
+} // namespace AppCUI

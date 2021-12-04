@@ -1,9 +1,7 @@
 #include "ImageLoader.hpp"
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
-
 #pragma pack(push, 1)
 constexpr uint16_t BITMAP_WINDOWS_MAGIC             = 0x4D42;
 constexpr uint32_t BITMAP_COMPRESSION_METHID_BI_RGB = 0;
@@ -179,7 +177,7 @@ bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size, bool isIcon)
+bool LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size, bool isIcon)
 {
     CHECK(size > sizeof(BMP_InfoHeader),
           false,
@@ -238,7 +236,7 @@ bool Graphics::LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned 
     }
     RETURNERROR(false, "Paint method for %d bits/pixels is not implemeted !", h->bitsPerPixel);
 }
-bool Graphics::LoadBMPToImage(Image& img, const unsigned char* buffer, unsigned int size)
+bool LoadBMPToImage(Image& img, const unsigned char* buffer, unsigned int size)
 {
     CHECK(buffer, false, "Expecting a valid (non-null) buffer");
     CHECK(size > sizeof(BMP_Header),
@@ -251,4 +249,4 @@ bool Graphics::LoadBMPToImage(Image& img, const unsigned char* buffer, unsigned 
     // all good
     return LoadDIBToImage(img, buffer + sizeof(BMP_Header), size - (unsigned int) sizeof(BMP_Header), false);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

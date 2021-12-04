@@ -1,11 +1,7 @@
 ﻿#include "ControlContext.hpp"
 #include <AppCUI.hpp>
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
-namespace AppCUI
+namespace AppCUI::Controls
 {
 void GoToNextWindow(ControlContext* Members, int direction)
 {
@@ -82,4 +78,4 @@ bool Desktop::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
     return false;
 }
 
-} // namespace AppCUI
+} // namespace AppCUI::Controls

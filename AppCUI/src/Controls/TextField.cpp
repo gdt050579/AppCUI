@@ -1,10 +1,6 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
 #define C_WIDTH ((Members->Layout.Width - 2) * Members->Layout.Height)
 #define EXIT_IF_READONLY()                                                                                             \
     if ((Members->Flags & TextFieldFlags::Readonly) != TextFieldFlags::None)                                           \
@@ -14,6 +10,8 @@ using namespace Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
+namespace AppCUI::Controls
+{
 Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
 void Controls::UninitTextFieldDefaultMenu()
@@ -268,8 +266,7 @@ void TextField_CopyToClipboard(TextField* control, bool deleteSelectionAfterCopy
 
     if (!TextField_HasSelection(control))
         return;
-    if (!OS::Clipboard::SetText(
-              Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
+    if (!OS::Clipboard::SetText(Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
     }
@@ -697,3 +694,4 @@ Handlers::TextControl* TextField::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);
 }
+} // namespace AppCUI::Controls

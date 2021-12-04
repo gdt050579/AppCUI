@@ -6,10 +6,8 @@
 #    undef MessageBox
 #endif
 
-using namespace Controls;
-using namespace Dialogs;
-using namespace Graphics;
-
+namespace AppCUI::Dialogs
+{
 constexpr int BUTTON_ID_GOTO       = 10000;
 constexpr int BUTTON_ID_CLOSE      = 10001;
 constexpr int BUTTON_ID_CLOSE_ALL  = 10002;
@@ -312,10 +310,11 @@ bool InternalWindowManager::Create()
     return true;
 }
 
-void Dialogs::WindowManager::Show()
+void WindowManager::Show()
 {
     if (InternalWindowManager dlg; dlg.Create())
     {
         dlg.Show();
     }
+}
 }

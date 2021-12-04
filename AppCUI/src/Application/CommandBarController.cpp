@@ -1,9 +1,7 @@
 #include "Internal.hpp"
 
-namespace AppCUI
+namespace AppCUI::Internal
 {
-using namespace Internal;
-using namespace Utils;
 using namespace Input;
 
 CommandBarController::CommandBarController(
@@ -249,4 +247,4 @@ int CommandBarController::GetCommandForKey(Input::Key keyCode)
         return -1;
     return b->Command;
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal

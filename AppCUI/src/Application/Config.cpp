@@ -1,9 +1,9 @@
 #include "AppCUI.hpp"
-namespace AppCUI
+namespace AppCUI::Application
 {
 using namespace Graphics;
 
-void Application::Config::SetDarkTheme()
+void Config::SetDarkTheme()
 {
     this->Desktop.Color                    = ColorPair{ Color::Gray, Color::Black };
     this->Desktop.DesktopFillCharacterCode = 186;
@@ -354,4 +354,4 @@ void Application::Config::SetDarkTheme()
     this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 }
-} // namespace AppCUI
+} // namespace AppCUI::Application

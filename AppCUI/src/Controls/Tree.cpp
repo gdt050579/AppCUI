@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-
 #include <deque>
 #include <queue>
 #include <stack>
@@ -1786,4 +1785,4 @@ bool Tree::SetItemMetadata(ItemHandle handle, const Utils::ConstString& metadata
     return true;
 }
 
-} // namespace Controls
+} // namespace AppCUI::Controls

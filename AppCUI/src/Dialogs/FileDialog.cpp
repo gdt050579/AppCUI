@@ -5,9 +5,9 @@
 
 #define ALL_FILES_INDEX 0xFFFFFFFF
 
-using namespace AppCUI;
+namespace AppCUI
+{
 using namespace OS;
-using namespace Utils;
 using namespace Graphics;
 using namespace Controls;
 using namespace Dialogs;
@@ -204,8 +204,7 @@ FileDialogWindow::FileDialogWindow(
     files->AddColumn("&Size", TextAlignament::Right, 16);
     files->AddColumn("&Modified", TextAlignament::Center, 20);
     files->SetItemCompareFunction(
-          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
-                -> int
+          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*) -> int
           {
               const auto& v1 = control->GetItemData(item1, 0);
               const auto& v2 = control->GetItemData(item2, 0);
@@ -293,9 +292,7 @@ bool FileDialogWindow::ProcessExtensionFilter(const Utils::ConstString& extensio
         {
             requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
         }
-        CHECK(comboType->AddItem(filterName, this->extensions.size()),
-              false,
-              "Failed to add item to combo-box ");
+        CHECK(comboType->AddItem(filterName, this->extensions.size()), false, "Failed to add item to combo-box ");
         this->extensions.push_back(requiredExtensions);
     }
     return true;
@@ -306,7 +303,7 @@ void FileDialogWindow::FileListItemClicked()
     int index = files->GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value = (int) files->GetItemData(index,0);
+    unsigned int value = (int) files->GetItemData(index, 0);
     if (value == 0)
     {
         try
@@ -345,7 +342,7 @@ void FileDialogWindow::FileListItemChanged()
         return;
     }
 
-    const auto value = files->GetItemData(index,0);
+    const auto value = files->GetItemData(index, 0);
     if (value == 1)
     {
         txName->SetText(files->GetItemText(index, 0));
@@ -381,9 +378,9 @@ void FileDialogWindow::ProcessTextFieldInput()
     std::error_code err;
     err.clear();
     // remove becuase of invalid paths keeps returing an error code, even if the path does not exists
-    //const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
+    // const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
     const bool isDir = std::filesystem::is_directory(candidateResultedPath);
-    //if (err)
+    // if (err)
     //{
     //    MessageBox::ShowError(
     //          "Error", u"Unable to check path for being a directory: "s + candidateResultedPath.u16string());
@@ -426,7 +423,7 @@ void FileDialogWindow::SpecialFoldersUpdatePath()
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
 {
-    unsigned int idx = (unsigned int)comboType->GetCurrentItemUserData(0);
+    unsigned int idx = (unsigned int) comboType->GetCurrentItemUserData(0);
     if (idx == ALL_FILES_INDEX)
         this->extFilter = nullptr; // no filter
     else
@@ -609,9 +606,7 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const Utils::ConstString& fileName,
-      const Utils::ConstString& extensionsFilter,
-      const std::filesystem::path& path)
+      const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
     const int res = dlg.Show();
@@ -620,9 +615,7 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const Utils::ConstString& fileName,
-      const Utils::ConstString& extensionsFilter,
-      const std::filesystem::path& path)
+      const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(true, fileName, extensionsFilter, path);
     const int res = dlg.Show();
@@ -630,3 +623,4 @@ std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
         return dlg.GetResultedPath();
     return std::nullopt;
 }
+} // namespace AppCUI

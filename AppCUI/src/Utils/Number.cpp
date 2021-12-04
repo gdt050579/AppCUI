@@ -1,9 +1,7 @@
 #include "AppCUI.hpp"
 
-namespace AppCUI
+namespace AppCUI::Utils::Number
 {
-using namespace Utils;
-
 #define NUMBER_FLAG_NEGATIVE 0x00000001
 #define NUMBER_FLAG_SECOND   0x00000002
 
@@ -165,7 +163,7 @@ inline bool ParseNumber(_parse_number_result_& res, std::string_view text, Numbe
     return true;
 }
 
-std::optional<unsigned long long> Number::ToUInt64(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned long long> ToUInt64(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -173,7 +171,7 @@ std::optional<unsigned long long> Number::ToUInt64(std::string_view text, Number
           "Invalid format for an unsigned long long value");
     return res.Value;
 }
-std::optional<unsigned int> Number::ToUInt32(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned int> ToUInt32(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -182,7 +180,7 @@ std::optional<unsigned int> Number::ToUInt32(std::string_view text, NumberParseF
     CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an unsigned int variable");
     return (unsigned int) (res.Value);
 }
-std::optional<unsigned short> Number::ToUInt16(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned short> ToUInt16(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -191,7 +189,7 @@ std::optional<unsigned short> Number::ToUInt16(std::string_view text, NumberPars
     CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an unsigned short variable");
     return (unsigned short) (res.Value);
 }
-std::optional<unsigned char> Number::ToUInt8(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<unsigned char> ToUInt8(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -200,7 +198,7 @@ std::optional<unsigned char> Number::ToUInt8(std::string_view text, NumberParseF
     CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an unsigned char variable");
     return (unsigned char) (res.Value);
 }
-std::optional<char> Number::ToInt8(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<char> ToInt8(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a char value");
@@ -215,7 +213,7 @@ std::optional<char> Number::ToInt8(std::string_view text, NumberParseFlags flags
         return (char) (res.Value);
     }
 }
-std::optional<short> Number::ToInt16(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<short> ToInt16(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a short value");
@@ -230,7 +228,7 @@ std::optional<short> Number::ToInt16(std::string_view text, NumberParseFlags fla
         return (short) (res.Value);
     }
 }
-std::optional<int> Number::ToInt32(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<int> ToInt32(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an int value");
@@ -245,7 +243,7 @@ std::optional<int> Number::ToInt32(std::string_view text, NumberParseFlags flags
         return (int) (res.Value);
     }
 }
-std::optional<long long> Number::ToInt64(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<long long> ToInt64(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a long long value");
@@ -262,7 +260,7 @@ std::optional<long long> Number::ToInt64(std::string_view text, NumberParseFlags
         return (long long) (res.Value);
     }
 }
-std::optional<float> Number::ToFloat(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<float> ToFloat(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     float f = (float) res.Value;
@@ -272,7 +270,7 @@ std::optional<float> Number::ToFloat(std::string_view text, NumberParseFlags fla
         f = -f;
     return f;
 }
-std::optional<double> Number::ToDouble(std::string_view text, NumberParseFlags flags, unsigned int* size)
+std::optional<double> ToDouble(std::string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     double f = (double) res.Value;
@@ -282,4 +280,4 @@ std::optional<double> Number::ToDouble(std::string_view text, NumberParseFlags f
         f = -f;
     return f;
 }
-} // namespace AppCUI
+} // namespace AppCUI::Utils::Number

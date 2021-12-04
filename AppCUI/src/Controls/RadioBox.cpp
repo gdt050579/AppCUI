@@ -1,23 +1,23 @@
 #include "ControlContext.hpp"
 
+namespace AppCUI::Controls
+{
 using namespace Controls;
 using namespace Graphics;
 using namespace Input;
 
-RadioBox::RadioBox(
-      const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
+RadioBox::RadioBox(const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 1;    
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Layout.MinHeight = 1;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     this->SetControlID(controlID);
     this->SetGroup(groupID);
 }
 
-
-void Controls::RadioBox::Paint(Graphics::Renderer& renderer)
+void RadioBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
@@ -54,7 +54,7 @@ void Controls::RadioBox::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
         renderer.SetCursor(1, 0);
 }
-void Controls::RadioBox::OnHotKey()
+void RadioBox::OnHotKey()
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
     Control* parent = Members->Parent;
@@ -84,7 +84,7 @@ void Controls::RadioBox::OnHotKey()
         RaiseEvent(Event::CheckedStatusChanged);
     }
 }
-bool Controls::RadioBox::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16_t)
 {
     if (KeyCode == Key::Space)
     {
@@ -93,19 +93,19 @@ bool Controls::RadioBox::OnKeyEvent(Input::Key KeyCode, char16_t)
     }
     return false;
 }
-void Controls::RadioBox::OnMouseReleased(int x, int y, Input::MouseButton)
+void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-bool Controls::RadioBox::OnMouseEnter()
+bool RadioBox::OnMouseEnter()
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
     if ((int) Members->Text.Len() >= Members->Layout.Width)
         this->ShowToolTip(Members->Text);
     return true;
 }
-bool Controls::RadioBox::OnMouseLeave()
+bool RadioBox::OnMouseLeave()
 {
     return true;
 }
@@ -114,3 +114,4 @@ Handlers::CheckState* RadioBox::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::CheckState);
 }
+} // namespace AppCUI::Controls

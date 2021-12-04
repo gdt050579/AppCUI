@@ -1,11 +1,9 @@
 #include "ImageLoader.hpp"
 #include <lodepng.h>
 
-namespace AppCUI
+namespace AppCUI::Graphics
 {
-using namespace Graphics;
-
-bool Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuffer, unsigned int size)
+bool LoadPNGToImage(Image& img, const unsigned char* imageBuffer, unsigned int size)
 {
     unsigned int resultedWidth  = 0;
     unsigned int resultedHeight = 0;
@@ -46,4 +44,4 @@ bool Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuffer, unsi
         RETURNERROR(false, "Fail to decode PNG buffer !");
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

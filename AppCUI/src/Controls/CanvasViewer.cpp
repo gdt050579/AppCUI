@@ -1,9 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
+namespace AppCUI
+{
 void CanvasControlContext::MoveScrollTo(int newX, int newY)
 {
     const int imgWidth   = canvas.GetWidth();
@@ -210,3 +208,4 @@ Reference<Canvas> CanvasViewer::GetCanvas()
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, nullptr);
     return Reference<Canvas>(&(Members->canvas));
 }
+} // namespace AppCUI

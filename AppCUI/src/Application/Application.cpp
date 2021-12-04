@@ -4,9 +4,8 @@
 #include "../Terminal/TerminalFactory.hpp"
 #include <math.h>
 
-using namespace AppCUI;
-using namespace Utils;
-using namespace Controls;
+namespace AppCUI
+{
 using namespace Internal;
 
 ApplicationImpl* app = nullptr;
@@ -1457,3 +1456,4 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
 
     this->RepaintStatus = REPAINT_STATUS_ALL;
 }
+} // namespace AppCUI

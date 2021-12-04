@@ -1,9 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Graphics;
-using namespace Input;
-
+namespace AppCUI
+{
 constexpr unsigned int ITEM_FLAG_CHECKED         = 0x0001;
 constexpr unsigned int ITEM_FLAG_SELECTED        = 0x0002;
 constexpr unsigned int COLUMN_DONT_COPY          = 1;
@@ -250,7 +248,6 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // prepare params
     params.Color = itemCol;
 
-
     // for chategory items a special draw is made (only first comlumn is shown)
     if (item->Type == ListViewItemType::Category)
     {
@@ -267,9 +264,6 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         renderer.WriteText(*subitem, params);
         return;
     }
-
-
-
 
     // first column
     int end_first_column = x + ((int) column->Width);
@@ -1529,9 +1523,7 @@ ItemHandle ListView::AddItem(const Utils::ConstString& text, const Utils::ConstS
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2)
+      const Utils::ConstString& text, const Utils::ConstString& subItem1, const Utils::ConstString& subItem2)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1846,3 +1838,4 @@ bool ListView::Reserve(unsigned int itemsCount)
     WRAPPER->Items.List.reserve(itemsCount);
     return WRAPPER->Items.Indexes.Reserve(itemsCount);
 }
+} // namespace AppCUI

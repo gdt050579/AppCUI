@@ -1,10 +1,8 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-namespace AppCUI
+namespace AppCUI::Utils
 {
-using namespace Utils;
-
 Buffer::~Buffer()
 {
     if (data)
@@ -92,4 +90,4 @@ void Buffer::Resize(size_t newSize)
     }
     this->length = newSize;
 }
-} // namespace AppCUI
+} // namespace AppCUI::Utils

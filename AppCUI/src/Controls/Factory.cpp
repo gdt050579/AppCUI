@@ -1,34 +1,28 @@
 #include "ControlContext.hpp"
 
-using namespace Controls;
-using namespace Utils;
-
 #define VALIDATE_PARENT CHECK(parent, nullptr, "Expecting a valid (non-null) parent object !");
 #define POINTER         Utils::Pointer
 #define REFERENCE       Utils::Reference
 
+namespace AppCUI
+{
 //======[LABEL]======================================================================================
 POINTER<Label> Factory::Label::Create(const Utils::ConstString& caption, std::string_view layout)
 {
     return POINTER<Controls::Label>(new Controls::Label(caption, layout));
 }
-REFERENCE<Label> Factory::Label::Create(
-      Control* parent, const Utils::ConstString& caption, std::string_view layout)
+REFERENCE<Label> Factory::Label::Create(Control* parent, const Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Label>(Factory::Label::Create(caption, layout));
 }
-REFERENCE<Label> Factory::Label::Create(
-      Control& parent, const Utils::ConstString& caption, std::string_view layout)
+REFERENCE<Label> Factory::Label::Create(Control& parent, const Utils::ConstString& caption, std::string_view layout)
 {
     return parent.AddControl<Controls::Label>(Factory::Label::Create(caption, layout));
 }
 //======[BUTTON]=====================================================================================
 POINTER<Button> Factory::Button::Create(
-      const Utils::ConstString& caption,
-      std::string_view layout,
-      int controlID,
-      Controls::ButtonFlags flags)
+      const Utils::ConstString& caption, std::string_view layout, int controlID, Controls::ButtonFlags flags)
 {
     return POINTER<Controls::Button>(new Controls::Button(caption, layout, controlID, flags));
 }
@@ -70,8 +64,7 @@ REFERENCE<Password> Factory::Password::Create(
 }
 
 //======[CHECKBOX]===================================================================================
-POINTER<CheckBox> Factory::CheckBox::Create(
-      const Utils::ConstString& caption, std::string_view layout, int controlID)
+POINTER<CheckBox> Factory::CheckBox::Create(const Utils::ConstString& caption, std::string_view layout, int controlID)
 {
     return POINTER<Controls::CheckBox>(new Controls::CheckBox(caption, layout, controlID));
 }
@@ -97,14 +90,12 @@ REFERENCE<RadioBox> Factory::RadioBox::Create(
       Control* parent, const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::RadioBox>(
-          Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent->AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
       Control& parent, const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
-    return parent.AddControl<Controls::RadioBox>(
-          Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent.AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
 
 //======[SPLITTER]===================================================================================
@@ -127,14 +118,12 @@ POINTER<Panel> Factory::Panel::Create(const Utils::ConstString& caption, std::st
 {
     return POINTER<Controls::Panel>(new Controls::Panel(caption, layout));
 }
-REFERENCE<Panel> Factory::Panel::Create(
-      Control* parent, const Utils::ConstString& caption, std::string_view layout)
+REFERENCE<Panel> Factory::Panel::Create(Control* parent, const Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Panel>(Factory::Panel::Create(caption, layout));
 }
-REFERENCE<Panel> Factory::Panel::Create(
-      Control& parent, const Utils::ConstString& caption, std::string_view layout)
+REFERENCE<Panel> Factory::Panel::Create(Control& parent, const Utils::ConstString& caption, std::string_view layout)
 {
     return parent.AddControl<Controls::Panel>(Factory::Panel::Create(caption, layout));
 }
@@ -160,8 +149,7 @@ REFERENCE<TextField> Factory::TextField::Create(
       Controls::TextFieldFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::TextField>(
-          Factory::TextField::Create(caption, layout, flags));
+    return parent->AddControl<Controls::TextField>(Factory::TextField::Create(caption, layout, flags));
 }
 REFERENCE<TextField> Factory::TextField::Create(
       Controls::Control& parent,
@@ -169,16 +157,12 @@ REFERENCE<TextField> Factory::TextField::Create(
       std::string_view layout,
       Controls::TextFieldFlags flags)
 {
-    return parent.AddControl<Controls::TextField>(
-          Factory::TextField::Create(caption, layout, flags));
+    return parent.AddControl<Controls::TextField>(Factory::TextField::Create(caption, layout, flags));
 }
 POINTER<Controls::TextField> Factory::TextField::Create(
-      const Utils::ConstString& caption,
-      std::string_view layout,
-      Controls::TextFieldFlags flags)
+      const Utils::ConstString& caption, std::string_view layout, Controls::TextFieldFlags flags)
 {
-    return POINTER<Controls::TextField>(
-          new Controls::TextField(caption, layout, flags));
+    return POINTER<Controls::TextField>(new Controls::TextField(caption, layout, flags));
 }
 
 //======[TEXTAREA]===================================================================================
@@ -189,8 +173,7 @@ REFERENCE<TextArea> Factory::TextArea::Create(
       Controls::TextAreaFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::TextArea>(
-          Factory::TextArea::Create(caption, layout, flags));
+    return parent->AddControl<Controls::TextArea>(Factory::TextArea::Create(caption, layout, flags));
 }
 REFERENCE<TextArea> Factory::TextArea::Create(
       Controls::Control& parent,
@@ -198,27 +181,21 @@ REFERENCE<TextArea> Factory::TextArea::Create(
       std::string_view layout,
       Controls::TextAreaFlags flags)
 {
-    return parent.AddControl<Controls::TextArea>(
-          Factory::TextArea::Create(caption, layout, flags));
+    return parent.AddControl<Controls::TextArea>(Factory::TextArea::Create(caption, layout, flags));
 }
 POINTER<Controls::TextArea> Factory::TextArea::Create(
-      const Utils::ConstString& caption,
-      std::string_view layout,
-      Controls::TextAreaFlags flags)
+      const Utils::ConstString& caption, std::string_view layout, Controls::TextAreaFlags flags)
 {
-    return POINTER<Controls::TextArea>(
-          new Controls::TextArea(caption, layout, flags));
+    return POINTER<Controls::TextArea>(new Controls::TextArea(caption, layout, flags));
 }
 
 //======[TABPAGE]====================================================================================
-REFERENCE<TabPage> Factory::TabPage::Create(
-      Controls::Control* parent, const Utils::ConstString& caption)
+REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control* parent, const Utils::ConstString& caption)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
 }
-REFERENCE<TabPage> Factory::TabPage::Create(
-      Controls::Control& parent, const Utils::ConstString& caption)
+REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control& parent, const Utils::ConstString& caption)
 {
     return parent.AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
 }
@@ -229,19 +206,13 @@ POINTER<Controls::TabPage> Factory::TabPage::Create(const Utils::ConstString& ca
 
 //======[TAB]========================================================================================
 REFERENCE<Tab> Factory::Tab::Create(
-      Controls::Control* parent,
-      std::string_view layout,
-      Controls::TabFlags flags,
-      unsigned int tabPageSize)
+      Controls::Control* parent, std::string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
 REFERENCE<Tab> Factory::Tab::Create(
-      Controls::Control& parent,
-      std::string_view layout,
-      Controls::TabFlags flags,
-      unsigned int tabPageSize)
+      Controls::Control& parent, std::string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
 {
     return parent.AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
@@ -275,8 +246,7 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
 POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
       std::string_view layout, unsigned int canvasWidth, unsigned int canvasHeight, Controls::ViewerFlags flags)
 {
-    return POINTER<Controls::CanvasViewer>(
-          new Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
+    return POINTER<Controls::CanvasViewer>(new Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
 }
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       Controls::Control* parent,
@@ -313,8 +283,7 @@ POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
 }
 
 //======[IMAGEVIEWER]================================================================================
-POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(
-      std::string_view layout, Controls::ViewerFlags flags)
+POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(std::string_view layout, Controls::ViewerFlags flags)
 {
     return POINTER<Controls::ImageViewer>(new Controls::ImageViewer("", layout, flags));
 }
@@ -353,8 +322,7 @@ REFERENCE<ImageViewer> Factory::ImageViewer::Create(
 }
 
 //======[LISTVIEW]===================================================================================
-POINTER<Controls::ListView> Factory::ListView::Create(
-      std::string_view layout, Controls::ListViewFlags flags)
+POINTER<Controls::ListView> Factory::ListView::Create(std::string_view layout, Controls::ListViewFlags flags)
 {
     return POINTER<Controls::ListView>(new Controls::ListView(layout, flags));
 }
@@ -378,19 +346,13 @@ POINTER<Controls::ComboBox> Factory::ComboBox::Create(
 }
 
 REFERENCE<ComboBox> Factory::ComboBox::Create(
-      Controls::Control* parent,
-      std::string_view layout,
-      const Utils::ConstString& text,
-      char itemsSeparator)
+      Controls::Control* parent, std::string_view layout, const Utils::ConstString& text, char itemsSeparator)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
 }
 REFERENCE<ComboBox> Factory::ComboBox::Create(
-      Controls::Control& parent,
-      std::string_view layout,
-      const Utils::ConstString& text,
-      char itemsSeparator)
+      Controls::Control& parent, std::string_view layout, const Utils::ConstString& text, char itemsSeparator)
 {
     return parent.AddControl<Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
 }
@@ -399,8 +361,7 @@ REFERENCE<ComboBox> Factory::ComboBox::Create(
 POINTER<Controls::NumericSelector> Factory::NumericSelector::Create(
       const long long minValue, const long long maxValue, long long value, std::string_view layout)
 {
-    return POINTER<Controls::NumericSelector>(
-          new Controls::NumericSelector(minValue, maxValue, value, layout));
+    return POINTER<Controls::NumericSelector>(new Controls::NumericSelector(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
       Controls::Control* parent,
@@ -438,8 +399,7 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 }
 
 //======[TREE]=======================================================================================
-POINTER<Controls::Tree> Factory::Tree::Create(
-      std::string_view layout, TreeFlags flags, const unsigned int noOfColumns)
+POINTER<Controls::Tree> Factory::Tree::Create(std::string_view layout, TreeFlags flags, const unsigned int noOfColumns)
 {
     return POINTER<Controls::Tree>(new Controls::Tree(layout, flags, noOfColumns));
 }
@@ -484,7 +444,7 @@ Reference<Controls::Grid> Factory::Grid::Create(
 {
     return parent.AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
-
+} // namespace AppCUI
 #undef VALIDATE_PARENT
 #undef POINTER
 #undef REFERENCE

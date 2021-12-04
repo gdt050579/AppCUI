@@ -1,5 +1,7 @@
 #include "ControlContext.hpp"
 
+namespace AppCUI
+{
 using namespace Input;
 using namespace Graphics;
 
@@ -1220,8 +1222,7 @@ void Controls::Grid::SetSeparator(ConstString separator)
     context->separator = usb;
 }
 
-bool Controls::Grid::UpdateHeaderValues(
-      const std::vector<ConstString>& headerValues, TextAlignament textAlignment)
+bool Controls::Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -1234,3 +1235,4 @@ bool Controls::Grid::UpdateHeaderValues(
 
     return true;
 }
+} // namespace AppCUI
