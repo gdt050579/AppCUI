@@ -11,9 +11,9 @@ using namespace Application;
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 
-std::unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
+unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
 {
-    std::unique_ptr<AbstractTerminal> term = nullptr;
+    unique_ptr<AbstractTerminal> term = nullptr;
 
     switch (initData.Frontend)
     {

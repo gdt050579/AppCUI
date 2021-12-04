@@ -110,7 +110,7 @@ struct ControlContext
     bool Inited, Focused, MouseIsOver;
 
     // Handlers
-    std::unique_ptr<Controls::Handlers::Control> handlers;
+    unique_ptr<Controls::Handlers::Control> handlers;
 
     ControlContext();
 
@@ -211,7 +211,7 @@ struct WindowBarItem
 struct WindowControlContext : public ControlContext
 {
   public:
-    std::unique_ptr<Internal::MenuBar> menu;
+    unique_ptr<Internal::MenuBar> menu;
     Controls::ItemHandle referalItemHandle;
     Controls::ItemHandle windowItemHandle;
     int oldPosX, oldPosY, oldW, oldH;
@@ -736,9 +736,9 @@ struct MenuContext
 {
     // std::vector messes up with inter-items pointers when calling copy/move ctor
     // as a result, opening a sub-menu from another is likely to produce a crash (as the pointers will be invalid)
-    // switching to regular pointer of std::unique_ptr type to avoid this
+    // switching to regular pointer of unique_ptr type to avoid this
 
-    std::unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
+    unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
     unsigned int ItemsCount;
     Menu* Parent;
     Internal::MenuBar* Owner;
@@ -751,7 +751,7 @@ struct MenuContext
     MenuButtonState ButtonUp, ButtonDown;
 
     MenuContext();
-    ItemHandle AddItem(std::unique_ptr<MenuItem> itm);
+    ItemHandle AddItem(unique_ptr<MenuItem> itm);
 
   public:
     // methods

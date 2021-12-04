@@ -6,9 +6,9 @@ namespace AppCUI::Internal
 {
 using namespace Application;
 
-std::unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
+unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
 {
-    std::unique_ptr<AbstractTerminal> term = nullptr;
+    unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.Frontend)
     {
     case FrontendType::Default:

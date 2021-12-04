@@ -187,7 +187,7 @@ namespace Ini
         ParseState state;
         std::string toStringBuffer;
 
-        std::unordered_map<unsigned long long, std::unique_ptr<Ini::Section>> Sections;
+        std::unordered_map<unsigned long long, unique_ptr<Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
         Section* CurrentSection;
         unsigned long long CurrentKeyHash;

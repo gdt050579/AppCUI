@@ -75,7 +75,7 @@ MenuContext::MenuContext()
     this->ButtonUp          = MenuButtonState::Normal;
     this->ButtonDown        = MenuButtonState::Normal;
 }
-ItemHandle MenuContext::AddItem(std::unique_ptr<MenuItem> itm)
+ItemHandle MenuContext::AddItem(unique_ptr<MenuItem> itm)
 {
     if (itm->Type == MenuItemType::Invalid)
         return InvalidItemHandle;

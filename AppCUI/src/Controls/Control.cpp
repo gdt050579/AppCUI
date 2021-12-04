@@ -1256,7 +1256,7 @@ Controls::Control::Control(
     ctx->Inited = true;
 }
 
-Reference<Control> Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
+Reference<Control> Controls::Control::AddChildControl(unique_ptr<Control> ctrl)
 {
     CHECK(ctrl, nullptr, "Invalid control (nullptr)");
     CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");

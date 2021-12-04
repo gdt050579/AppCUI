@@ -119,7 +119,7 @@ namespace Internal
     class MenuBar
     {
         static const constexpr unsigned int MAX_ITEMS = 32;
-        std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
+        unique_ptr<MenuBarItem> Items[MAX_ITEMS];
         Application::Config* Cfg;
         Controls::Control* Parent;
         unsigned int ItemsCount;
@@ -221,9 +221,9 @@ namespace Internal
     {
         Application::Config config;
         Utils::IniObject settings;
-        std::unique_ptr<AbstractTerminal> terminal;
-        std::unique_ptr<CommandBarController> cmdBar;
-        std::unique_ptr<MenuBar> menu;
+        unique_ptr<AbstractTerminal> terminal;
+        unique_ptr<CommandBarController> cmdBar;
+        unique_ptr<MenuBar> menu;
         std::vector<Controls::Control*> toDelete;
 
         Controls::Desktop* AppDesktop;

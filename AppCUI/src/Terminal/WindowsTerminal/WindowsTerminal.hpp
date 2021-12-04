@@ -13,7 +13,7 @@ namespace Internal
         DWORD originalStdMode;
         DWORD stdMode;
         DWORD startTime;
-        std::unique_ptr<CHAR_INFO> ConsoleBuffer;
+        unique_ptr<CHAR_INFO> ConsoleBuffer;
         unsigned int ConsoleBufferCount;
         struct
         {

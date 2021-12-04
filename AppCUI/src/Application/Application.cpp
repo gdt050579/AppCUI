@@ -43,7 +43,7 @@ bool Application::Run()
     app = nullptr;
     return true;
 }
-bool Application::RunSingleApp(std::unique_ptr<Controls::SingleApp> singleApp)
+bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
@@ -95,7 +95,7 @@ void Application::Close()
     if (app)
         app->Terminate();
 }
-ItemHandle Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandle referal)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
@@ -153,7 +153,7 @@ ItemHandle Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandle refera
     ptrWin->SetFocus();
     return resultHandle;
 }
-ItemHandle Application::AddWindow(std::unique_ptr<Window> wnd, Window* referalWindow)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
 {
     if (!referalWindow)
         return Application::AddWindow(std::move(wnd), InvalidItemHandle);

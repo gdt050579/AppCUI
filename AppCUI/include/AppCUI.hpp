@@ -185,8 +185,9 @@ namespace AppCUI
 {
 namespace StdIncludes
 {
+    using std::unique_ptr;
     using std::string_view;
-}
+} // namespace StdIncludes
 
 using namespace StdIncludes;
 
@@ -320,10 +321,10 @@ namespace Utils
     using CharacterView = std::basic_string_view<Graphics::Character>;
     using ConstString   = std::variant<string_view, std::u8string_view, std::u16string_view, CharacterView>;
     template <typename T>
-    class Pointer : public std::unique_ptr<T>
+    class Pointer : public unique_ptr<T>
     {
       public:
-        Pointer(T* obj) : std::unique_ptr<T>(obj)
+        Pointer(T* obj) : unique_ptr<T>(obj)
         {
         }
         operator T*()
@@ -2685,21 +2686,21 @@ namespace Controls
         bool ShowToolTip(const Utils::ConstString& caption, int x, int y);
         void HideToolTip();
 
-        Reference<Control> AddChildControl(std::unique_ptr<Control> control);
+        Reference<Control> AddChildControl(unique_ptr<Control> control);
 
         // protected constructor
         Control(void* context, const Utils::ConstString& caption, string_view layout, bool computeHotKey);
 
       public:
         template <typename T>
-        Reference<T> AddControl(std::unique_ptr<T> control)
+        Reference<T> AddControl(unique_ptr<T> control)
         {
             return this->AddChildControl(std::move(control)).template DownCast<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
         {
-            return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
+            return this->AddControl<T>(unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
 
@@ -4484,10 +4485,10 @@ namespace Application
     EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
-    EXPORT bool RunSingleApp(std::unique_ptr<Controls::SingleApp> singleApp);
+    EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
-          std::unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
-    EXPORT Controls::ItemHandle AddWindow(std::unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+          unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
+    EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
     EXPORT Controls::Menu* AddMenu(const Utils::ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
