@@ -239,8 +239,8 @@ void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
     Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const std::size_t width                  = ScreenCanvas.GetWidth();
-    const std::size_t height                 = ScreenCanvas.GetHeight();
+    const std::size_t width          = ScreenCanvas.GetWidth();
+    const std::size_t height         = ScreenCanvas.GetHeight();
 
     SDL_Rect WindowRect;
     WindowRect.w = charWidth;

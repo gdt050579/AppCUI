@@ -306,11 +306,11 @@ bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData
     if (initData.CharSize == CharacterSize::Default)
         return true; // leave the settings as they are
     CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize                = sizeof(CONSOLE_FONT_INFOEX);
-    cfi.FontWeight            = FW_NORMAL;
-    cfi.dwFontSize.X          = 0;
-    cfi.nFont                 = 0;
-    cfi.FontFamily            = FF_DONTCARE;
+    cfi.cbSize           = sizeof(CONSOLE_FONT_INFOEX);
+    cfi.FontWeight       = FW_NORMAL;
+    cfi.dwFontSize.X     = 0;
+    cfi.nFont            = 0;
+    cfi.FontFamily       = FF_DONTCARE;
     string_view fontName = initData.FontName;
     if (fontName.size() == 0)
         fontName = "Consolas"; // default font name
@@ -670,4 +670,4 @@ bool WindowsTerminal::IsEventAvailable()
         return false;
     return (eventsRead > 0);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal

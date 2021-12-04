@@ -9,6 +9,7 @@ class RemoveControlExample : public Window
     Reference<CheckBox> cb;
     Reference<Label> lb;
     Reference<Button> bt;
+
   public:
     RemoveControlExample() : Window("Remove Example", "d:c,w:60,h:10", WindowFlags::None)
     {

@@ -18,10 +18,10 @@ constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
-                                                      "Click to maximize right panel",
-                                                      "Click to maximize bottom panel",
-                                                      "Click to maximize left panel",
-                                                      "Click to maximize top panel" };
+                                                 "Click to maximize right panel",
+                                                 "Click to maximize bottom panel",
+                                                 "Click to maximize left panel",
+                                                 "Click to maximize top panel" };
 
 SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Members, int x, int y, bool pressed)
 {

@@ -317,4 +317,4 @@ void WindowManager::Show()
         dlg.Show();
     }
 }
-}
+} // namespace AppCUI::Dialogs

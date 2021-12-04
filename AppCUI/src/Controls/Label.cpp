@@ -2,8 +2,7 @@
 
 namespace AppCUI::Controls
 {
-Label::Label(const ConstString& caption, string_view layout)
-    : Control(new ControlContext(), caption, layout, true)
+Label::Label(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinHeight = 1;

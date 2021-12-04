@@ -125,7 +125,7 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
     }
     if (code == 0)
         return Input::Key::None;
-    return (Input::Key) ((modifier << KEY_SHIFT_BITS) | code);
+    return (Input::Key)((modifier << KEY_SHIFT_BITS) | code);
 }
 Key KeyUtils::CreateHotKey(char16_t hotKey, Key modifier)
 {
@@ -147,4 +147,4 @@ Key KeyUtils::CreateHotKey(char16_t hotKey, Key modifier)
     result |= static_cast<Key>(((unsigned int) modifier) & ((unsigned int) (Key::Ctrl | Key::Alt | Key::Shift)));
     return result;
 }
-} // namespace AppCUI::Input
+} // namespace AppCUI

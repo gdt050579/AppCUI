@@ -27,21 +27,13 @@ POINTER<Button> Factory::Button::Create(
     return POINTER<Controls::Button>(new Controls::Button(caption, layout, controlID, flags));
 }
 REFERENCE<Button> Factory::Button::Create(
-      Control* parent,
-      const ConstString& caption,
-      string_view layout,
-      int controlID,
-      Controls::ButtonFlags flags)
+      Control* parent, const ConstString& caption, string_view layout, int controlID, Controls::ButtonFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
 REFERENCE<Button> Factory::Button::Create(
-      Control& parent,
-      const ConstString& caption,
-      string_view layout,
-      int controlID,
-      Controls::ButtonFlags flags)
+      Control& parent, const ConstString& caption, string_view layout, int controlID, Controls::ButtonFlags flags)
 {
     return parent.AddControl<Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
@@ -51,14 +43,12 @@ POINTER<Password> Factory::Password::Create(const ConstString& caption, string_v
 {
     return POINTER<Controls::Password>(new Controls::Password(caption, layout));
 }
-REFERENCE<Password> Factory::Password::Create(
-      Control* parent, const ConstString& caption, string_view layout)
+REFERENCE<Password> Factory::Password::Create(Control* parent, const ConstString& caption, string_view layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Password>(Factory::Password::Create(caption, layout));
 }
-REFERENCE<Password> Factory::Password::Create(
-      Control& parent, const ConstString& caption, string_view layout)
+REFERENCE<Password> Factory::Password::Create(Control& parent, const ConstString& caption, string_view layout)
 {
     return parent.AddControl<Controls::Password>(Factory::Password::Create(caption, layout));
 }
@@ -81,8 +71,7 @@ REFERENCE<CheckBox> Factory::CheckBox::Create(
 }
 
 //======[RADIOBOX]===================================================================================
-POINTER<RadioBox> Factory::RadioBox::Create(
-      const ConstString& caption, string_view layout, int groupID, int controlID)
+POINTER<RadioBox> Factory::RadioBox::Create(const ConstString& caption, string_view layout, int groupID, int controlID)
 {
     return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID));
 }
@@ -143,19 +132,13 @@ REFERENCE<Panel> Factory::Panel::Create(Control& parent, string_view layout)
 
 //======[TEXTFIELD]==================================================================================
 REFERENCE<TextField> Factory::TextField::Create(
-      Controls::Control* parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::TextFieldFlags flags)
+      Controls::Control* parent, const ConstString& caption, string_view layout, Controls::TextFieldFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::TextField>(Factory::TextField::Create(caption, layout, flags));
 }
 REFERENCE<TextField> Factory::TextField::Create(
-      Controls::Control& parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::TextFieldFlags flags)
+      Controls::Control& parent, const ConstString& caption, string_view layout, Controls::TextFieldFlags flags)
 {
     return parent.AddControl<Controls::TextField>(Factory::TextField::Create(caption, layout, flags));
 }
@@ -167,19 +150,13 @@ POINTER<Controls::TextField> Factory::TextField::Create(
 
 //======[TEXTAREA]===================================================================================
 REFERENCE<TextArea> Factory::TextArea::Create(
-      Controls::Control* parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::TextAreaFlags flags)
+      Controls::Control* parent, const ConstString& caption, string_view layout, Controls::TextAreaFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::TextArea>(Factory::TextArea::Create(caption, layout, flags));
 }
 REFERENCE<TextArea> Factory::TextArea::Create(
-      Controls::Control& parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::TextAreaFlags flags)
+      Controls::Control& parent, const ConstString& caption, string_view layout, Controls::TextAreaFlags flags)
 {
     return parent.AddControl<Controls::TextArea>(Factory::TextArea::Create(caption, layout, flags));
 }
@@ -304,19 +281,13 @@ POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(
     return POINTER<Controls::ImageViewer>(new Controls::ImageViewer(caption, layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      Controls::Control* parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::ViewerFlags flags)
+      Controls::Control* parent, const ConstString& caption, string_view layout, Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      Controls::Control& parent,
-      const ConstString& caption,
-      string_view layout,
-      Controls::ViewerFlags flags)
+      Controls::Control& parent, const ConstString& caption, string_view layout, Controls::ViewerFlags flags)
 {
     return parent.AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
 }
@@ -339,8 +310,7 @@ REFERENCE<ListView> Factory::ListView::Create(
 }
 
 //======[COMBOBOX]===================================================================================
-POINTER<Controls::ComboBox> Factory::ComboBox::Create(
-      string_view layout, const ConstString& text, char itemsSeparator)
+POINTER<Controls::ComboBox> Factory::ComboBox::Create(string_view layout, const ConstString& text, char itemsSeparator)
 {
     return POINTER<Controls::ComboBox>(new Controls::ComboBox(layout, text, itemsSeparator));
 }

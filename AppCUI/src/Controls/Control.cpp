@@ -1212,8 +1212,7 @@ Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-Controls::Control::Control(
-      void* context, const ConstString& caption, string_view layout, bool computeHotKey)
+Controls::Control::Control(void* context, const ConstString& caption, string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     Application::Config* cfg = Application::GetAppConfig();

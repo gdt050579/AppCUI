@@ -289,8 +289,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     current->SetFlag(WindowBarItemFlags::Checked);
 }
 //=========================================================================================================================================================
-ItemHandle Controls::WindowControlsBar::AddCommandItem(
-      const ConstString& name, int ID, const ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -346,8 +345,7 @@ ItemHandle Controls::WindowControlsBar::AddCheckItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->ControlBar.Count - 1;
 }
-ItemHandle Controls::WindowControlsBar::AddTextItem(
-      const ConstString& caption, const ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddTextItem(const ConstString& caption, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -507,10 +505,7 @@ bool WindowBarItem::Init(
     return true;
 }
 bool WindowBarItem::Init(
-      WindowBarItemType type,
-      WindowControlsBarLayout layout,
-      const ConstString& name,
-      const ConstString& toolTip)
+      WindowBarItemType type, WindowControlsBarLayout layout, const ConstString& name, const ConstString& toolTip)
 {
     this->Type         = type;
     this->Layout       = layout;

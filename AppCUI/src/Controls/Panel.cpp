@@ -3,8 +3,7 @@
 #define PANEL_ATTR_BORDER 1024
 namespace AppCUI::Controls
 {
-Panel::Panel(const ConstString& caption, string_view layout)
-    : Control(new ControlContext(), caption, layout, false)
+Panel::Panel(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, false)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
     if (Members->Text.Len() == 0)

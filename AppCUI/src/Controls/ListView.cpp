@@ -1392,8 +1392,7 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(string_view layout, ListViewFlags flags)
-    : Control(new ListViewControlContext(), "", layout, false)
+ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
@@ -1522,8 +1521,7 @@ ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem
     CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
     return handle;
 }
-ItemHandle ListView::AddItem(
-      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
+ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1532,10 +1530,7 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3)
+      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2, const ConstString& subItem3)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");

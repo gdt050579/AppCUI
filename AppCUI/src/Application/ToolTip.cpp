@@ -123,4 +123,4 @@ void ToolTipController::Paint(Graphics::Renderer& renderer)
           ScreenClip.ClipRect.Height - (TextRect.GetBottom() + 1));
     renderer.WriteText(this->Text, TxParams);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal

@@ -203,10 +203,7 @@ struct WindowBarItem
     }
     bool Init(WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, string_view toolTipText);
     bool Init(
-          WindowBarItemType type,
-          WindowControlsBarLayout layout,
-          const ConstString& name,
-          const ConstString& toolTip);
+          WindowBarItemType type, WindowControlsBarLayout layout, const ConstString& name, const ConstString& toolTip);
 };
 struct WindowControlContext : public ControlContext
 {
@@ -703,7 +700,7 @@ struct MenuItem
           const ConstString& text,
           int CommandID,
           bool checked,
-          Input::Key shortcutKey);                           // commands
+          Input::Key shortcutKey);                    // commands
     MenuItem(const ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj) = delete;
     MenuItem(MenuItem&& obj)      = delete;

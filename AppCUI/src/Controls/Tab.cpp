@@ -287,8 +287,7 @@ bool Tab_SetCurrentTabPageByIndex(Tab* t, unsigned int index, bool forceFocus)
 }
 //===================================================================================================================
 
-TabPage::TabPage(const ConstString& caption)
-    : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
+TabPage::TabPage(const ConstString& caption) : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;

@@ -1561,6 +1561,6 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
         RETURNERROR(false, "Unknwon rendering method (%u) ", static_cast<unsigned int>(method));
     }
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics
 
 #undef COMPUTE_RGB

@@ -4,7 +4,6 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-
 int main()
 {
     if (!Application::Init())

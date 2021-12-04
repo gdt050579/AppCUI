@@ -37,8 +37,8 @@ bool NcursesTerminal::initScreen()
 void NcursesTerminal::OnFlushToScreen()
 {
     Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width                      = ScreenCanvas.GetWidth();
-    const size_t height                     = ScreenCanvas.GetHeight();
+    const size_t width               = ScreenCanvas.GetWidth();
+    const size_t height              = ScreenCanvas.GetHeight();
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)

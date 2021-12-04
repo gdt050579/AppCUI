@@ -125,8 +125,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(const ConstString& text)
     if (!Set(text))
         Destroy();
 }
-UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const ConstString& text)
+UnicodeStringBuilder::UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const ConstString& text)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(text))

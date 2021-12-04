@@ -38,7 +38,7 @@ constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
 };
 
 // Mapping from Graphics::Color to ncurses colors but only with 8 base colors
-//constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
+// constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
 //    /* Black */ COLOR_BLACK,
 //    /* DarkBlue */ COLOR_BLUE,
 //    /* DarkGreen */ COLOR_GREEN,

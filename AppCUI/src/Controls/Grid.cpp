@@ -1169,10 +1169,7 @@ Graphics::Size Controls::Grid::GetGridDimensions() const
 }
 
 bool Controls::Grid::UpdateCell(
-      unsigned int index,
-      CellType cellType,
-      const variant<bool, ConstString>& content,
-      TextAlignament textAlignment)
+      unsigned int index, CellType cellType, const variant<bool, ConstString>& content, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");

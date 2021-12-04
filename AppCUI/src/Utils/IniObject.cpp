@@ -777,28 +777,23 @@ void IniSection::UpdateValue(string_view name, Input::Key value, bool dontUpdate
 {
     UpdateValueForSection<Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<const char*>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
@@ -813,13 +808,11 @@ void IniSection::UpdateValue(
     UpdateValueForSection<const initializer_list<unsigned long long>&>(
           this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<float>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<double>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
@@ -891,8 +884,8 @@ optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
     CHECK(start < end,
           std::nullopt,
           "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
-    auto p_height = Number::ToUInt16(
-          string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
+    auto p_height =
+          Number::ToUInt16(string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
     CHECK(p_height.has_value(),
           std::nullopt,
           "Expecting a valid format for size - eithed 'width x height' or 'width , height' -> height value is invalid");

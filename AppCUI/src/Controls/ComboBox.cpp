@@ -20,10 +20,7 @@ ComboBoxItem::ComboBoxItem() : Data(nullptr)
     this->Index     = ComboBox::NO_ITEM_SELECTED;
 }
 ComboBoxItem::ComboBoxItem(
-      const ConstString& caption,
-      variant<GenericRef, unsigned long long> userData,
-      unsigned int index,
-      bool separator)
+      const ConstString& caption, variant<GenericRef, unsigned long long> userData, unsigned int index, bool separator)
     : Data(userData)
 {
     this->Text.Set(caption);
@@ -74,10 +71,7 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 }
 
 bool ComboBox_AddItem(
-      ComboBox* control,
-      const ConstString& caption,
-      bool separator,
-      variant<GenericRef, unsigned long long> userData)
+      ComboBox* control, const ConstString& caption, bool separator, variant<GenericRef, unsigned long long> userData)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
     unsigned int itemID  = (unsigned int) Members->Items.size();

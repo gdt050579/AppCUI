@@ -177,8 +177,8 @@ void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
 
 void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEventType::None;
-    evnt.keyCode   = Key::None;
+    evnt.eventType        = SystemEventType::None;
+    evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;

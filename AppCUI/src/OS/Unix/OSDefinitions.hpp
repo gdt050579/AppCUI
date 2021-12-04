@@ -31,4 +31,3 @@ typedef struct
     }
 #define GET_CHARACTER_COLOR(ptrCharInfo) ((ptrCharInfo)->characterColor)
 #define GET_CHARACTER_VALUE(ptrCharInfo) ((ptrCharInfo)->characterCode)
-

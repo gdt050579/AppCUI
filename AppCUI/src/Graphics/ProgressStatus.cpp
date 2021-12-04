@@ -295,4 +295,4 @@ bool ProgressStatus::Update(unsigned long long value)
 {
     return __ProgressStatus_Update(value, nullptr);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Graphics

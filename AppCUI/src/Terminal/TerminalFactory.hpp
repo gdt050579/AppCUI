@@ -10,4 +10,3 @@ namespace Internal
     unique_ptr<AbstractTerminal> GetTerminal(const Application::InitializationData& initData);
 }
 } // namespace AppCUI
-

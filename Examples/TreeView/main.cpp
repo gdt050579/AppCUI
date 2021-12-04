@@ -121,7 +121,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                           localPath,
                           false,
                           std::filesystem::is_directory(path));
-                    
+
                     auto& metadata = tree->GetItemMetadata(root);
                     AppCUI::Utils::UnicodeStringBuilder usb;
                     usb.Add(AppCUI::Utils::ConstString{ metadata });

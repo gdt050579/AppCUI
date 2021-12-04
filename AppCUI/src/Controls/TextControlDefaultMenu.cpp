@@ -31,4 +31,4 @@ void TextControlDefaultMenu::Show(Reference<Control> parent, int x, int y, bool 
     menu.SetEnable(this->itemToLower, hasSelection);
     menu.Show(parent, x, y);
 }
-} // namespace AppCUI
+} // namespace AppCUI::Internal

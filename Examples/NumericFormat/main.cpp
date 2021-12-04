@@ -46,7 +46,7 @@ int main()
     VALIDATE(
           n.ToString(0xFFFFFFFFFFFFFFFFULL, { NumericFormatFlags::None, 2, 4, '-' }),
           "1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111");
-    VALIDATE(n.ToString(-12, { NumericFormatFlags::None, 10}), "-12");
+    VALIDATE(n.ToString(-12, { NumericFormatFlags::None, 10 }), "-12");
     // for (int base = 2;base<=16;base++)
     //{
     //    auto res = n.ToBase(0xFFFFFFFFFFFFFFFFULL, base);

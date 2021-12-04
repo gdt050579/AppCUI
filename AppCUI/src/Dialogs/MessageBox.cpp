@@ -25,11 +25,7 @@ bool MessageBoxWindowEventHandler(Reference<Control> control, Controls::Event ev
 }
 
 bool CreateMessageBoxWindow(
-      const ConstString& title,
-      const ConstString& content,
-      WindowFlags flags,
-      int buttonsType,
-      int* result)
+      const ConstString& title, const ConstString& content, WindowFlags flags, int buttonsType, int* result)
 {
     auto wnd = Factory::Window::Create(title, "d:c,w:60,h:10", flags);
 
