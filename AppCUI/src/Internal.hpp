@@ -23,37 +23,12 @@
 #define LOOP_STATUS_STOP_CURRENT 1
 #define LOOP_STATUS_STOP_APP     2
 
-#define IS_CONTROL_AVAILABLE(ctrl)                                                                                     \
-    ((bool) ((ctrl->Members.Flags & (Flags::GATTR_VISIBLE | Flags::GATTR_VISIBLE)) == (Flags::GATTR_VISIBLE | Flags::GATTR_VISIBLE)))
 
-#define MAX_COMMANDBAR_FIELD_NAME  24
+
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
 #define NEW_LINE_CODE 10
 
-#define SET_CHARACTER_EX(ptrCharInfo, value, color)                                                                    \
-    {                                                                                                                  \
-        if (value >= 0)                                                                                                \
-        {                                                                                                              \
-            SET_CHARACTER_VALUE(ptrCharInfo, value);                                                                   \
-        }                                                                                                              \
-        if (color < 256)                                                                                               \
-        {                                                                                                              \
-            SET_CHARACTER_COLOR(ptrCharInfo, color);                                                                   \
-        }                                                                                                              \
-        else                                                                                                           \
-        {                                                                                                              \
-            if (color != AppCUI::Graphics::Color::NoColor)                                                             \
-            {                                                                                                          \
-                unsigned int temp_color = color;                                                                       \
-                if (color & 256)                                                                                       \
-                    temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0x0F) | (temp_color & 0xFFFFF0);                  \
-                if (color & (256 << 4))                                                                                \
-                    temp_color = (GET_CHARACTER_COLOR(ptrCharInfo) & 0xF0) | (temp_color & 0xFFFF0F);                  \
-                SET_CHARACTER_COLOR(ptrCharInfo, (temp_color & 0xFF));                                                 \
-            }                                                                                                          \
-        }                                                                                                              \
-    }
 
 namespace AppCUI
 {
