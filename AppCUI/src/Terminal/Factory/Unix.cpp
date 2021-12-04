@@ -1,8 +1,5 @@
 #include "../TerminalFactory.hpp"
 
-using namespace Internal;
-using namespace Application;
-
 #ifdef HAVE_SDL
 #    include "../SDLTerminal/SDLTerminal.hpp"
 #endif
@@ -10,6 +7,10 @@ using namespace Application;
 #ifdef HAVE_CURSES
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
+
+namespace AppCUI::Internal
+{
+using namespace Application;
 
 unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
 {
@@ -46,4 +47,5 @@ unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& ini
     CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");
 
     return term;
+}
 }

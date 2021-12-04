@@ -3,7 +3,8 @@
 #include <poll.h>
 #include <string>
 
-using namespace Internal;
+namespace AppCUI::Internal
+{
 using namespace Input;
 
 constexpr int KEY_DELETE      = 0x7F;
@@ -217,4 +218,5 @@ bool NcursesTerminal::IsEventAvailable()
 
 void NcursesTerminal::uninitInput()
 {
+}
 }

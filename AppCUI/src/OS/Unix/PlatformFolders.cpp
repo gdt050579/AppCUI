@@ -61,7 +61,7 @@ static std::string getHome()
     {
         bufsize = 16384;
     }
-    vector<char> buffer;
+    std::vector<char> buffer;
     buffer.resize(bufsize);
     int error_code = getpwuid_r(uid, &pwd, buffer.data(), buffer.size(), &pw);
     if (error_code)
@@ -105,7 +105,7 @@ namespace internal
         if (actualSize > 0)
         {
             // If the converted UTF-8 string could not be in the initial buffer. Allocate one that can hold it.
-            vector<char> buffer(actualSize);
+            std::vector<char> buffer(actualSize);
             actualSize = WideCharToMultiByte(
                   CP_UTF8, 0, wstr, -1, &buffer[0], static_cast<int>(buffer.size()), nullptr, nullptr);
             res = buffer.data();
@@ -201,7 +201,7 @@ static std::string getLinuxFolderDefault(const char* envName, const char* defaul
     return res;
 }
 
-static void appendExtraFolders(const char* envName, const char* defaultValue, vector<std::string>& folders)
+static void appendExtraFolders(const char* envName, const char* defaultValue, std::vector<std::string>& folders)
 {
     const char* envValue = std::getenv(envName);
     if (!envValue)
@@ -218,7 +218,7 @@ namespace sago
 #if !defined(_WIN32) && !defined(__APPLE__)
 namespace internal
 {
-    void appendExtraFoldersTokenizer(const char* envName, const char* envValue, vector<std::string>& folders)
+    void appendExtraFoldersTokenizer(const char* envName, const char* envValue, std::vector<std::string>& folders)
     {
         std::stringstream ss(envValue);
         std::string value;
@@ -274,7 +274,7 @@ std::string getCacheDir()
 #endif
 }
 
-void appendAdditionalDataDirectories(vector<std::string>& homes)
+void appendAdditionalDataDirectories(std::vector<std::string>& homes)
 {
 #ifdef _WIN32
     homes.push_back(GetAppDataCommon());
@@ -283,7 +283,7 @@ void appendAdditionalDataDirectories(vector<std::string>& homes)
 #endif
 }
 
-void appendAdditionalConfigDirectories(vector<std::string>& homes)
+void appendAdditionalConfigDirectories(std::vector<std::string>& homes)
 {
 #ifdef _WIN32
     homes.push_back(GetAppDataCommon());

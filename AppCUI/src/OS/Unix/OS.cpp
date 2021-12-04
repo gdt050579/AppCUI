@@ -3,8 +3,8 @@
 #include "Whereami.hpp"
 #include <sys/mount.h>
 
-using namespace OS;
-
+namespace AppCUI::OS
+{
 void OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 {
     const auto desktop = sago::getDesktopFolder();
@@ -80,4 +80,5 @@ std::filesystem::path OS::GetCurrentApplicationPath()
     delete[] output_buffer;
 
     return current_application_path;
+}
 }

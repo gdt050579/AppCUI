@@ -1,10 +1,10 @@
 #include "NcursesTerminal.hpp"
 #include "ncurses.h"
 
+namespace AppCUI::Internal
+{
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
-
-using namespace Internal;
 
 bool NcursesTerminal::initScreen()
 {
@@ -92,4 +92,5 @@ void NcursesTerminal::RestoreOriginalConsoleSettings()
 void NcursesTerminal::uninitScreen()
 {
     endwin();
+}
 }

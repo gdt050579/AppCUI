@@ -1,7 +1,7 @@
 #include "../../Internal.hpp"
 
-using namespace OS;
-
+namespace AppCUI::OS
+{
 bool Clipboard::Clear()
 {
     NOT_IMPLEMENTED(false);
@@ -17,4 +17,5 @@ bool Clipboard::GetText(Utils::UnicodeStringBuilder&)
 bool Clipboard::HasText()
 {
     NOT_IMPLEMENTED(false);
+}
 }

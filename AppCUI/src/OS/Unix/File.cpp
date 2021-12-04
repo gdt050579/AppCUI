@@ -1,9 +1,9 @@
 #include "../../Internal.hpp"
 
-using namespace OS;
-
 #define INVALID_FILE_HANDLE -1
 
+namespace AppCUI::OS
+{
 File::File()
 {
     this->FileID.fid = INVALID_FILE_HANDLE;
@@ -110,4 +110,5 @@ void File::Close()
         close(FileID.fid);
         this->FileID.fid = INVALID_FILE_HANDLE;
     }
+}
 }

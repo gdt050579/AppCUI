@@ -3,7 +3,8 @@
 #include "NcursesTerminal.hpp"
 #include "../../Internal.hpp"
 
-using namespace Internal;
+namespace AppCUI::Internal
+{
 using namespace Graphics;
 
 constexpr size_t EXTENDED_COLORSET_SIZE = 16;
@@ -180,4 +181,5 @@ void ColorManager::ResetColor()
     if (nrColors == 0)
         return;
     attron(COLOR_PAIR(0));
+}
 }
