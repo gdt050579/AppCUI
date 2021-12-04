@@ -188,6 +188,7 @@ namespace StdIncludes
     using std::optional;
     using std::string_view;
     using std::unique_ptr;
+    using std::variant;
 } // namespace StdIncludes
 
 using namespace StdIncludes;
@@ -320,7 +321,7 @@ namespace Graphics
 namespace Utils
 {
     using CharacterView = std::basic_string_view<Graphics::Character>;
-    using ConstString   = std::variant<string_view, std::u8string_view, std::u16string_view, CharacterView>;
+    using ConstString   = variant<string_view, std::u8string_view, std::u16string_view, CharacterView>;
     template <typename T>
     class Pointer : public unique_ptr<T>
     {
@@ -3683,13 +3684,13 @@ namespace Controls
         bool UpdateCell(
               unsigned int index,
               CellType cellType,
-              const std::variant<bool, ConstString>& content,
+              const variant<bool, ConstString>& content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
         bool UpdateCell(
               unsigned int x,
               unsigned int y,
               CellType cellType,
-              const std::variant<bool, ConstString>& content,
+              const variant<bool, ConstString>& content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);

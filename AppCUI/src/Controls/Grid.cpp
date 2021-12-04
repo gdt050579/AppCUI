@@ -1171,13 +1171,13 @@ Graphics::Size Controls::Grid::GetGridDimensions() const
 bool Controls::Grid::UpdateCell(
       unsigned int index,
       CellType cellType,
-      const std::variant<bool, ConstString>& content,
+      const variant<bool, ConstString>& content,
       TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
-    std::variant<bool, std::u16string> cellData;
+    variant<bool, std::u16string> cellData;
     if (std::holds_alternative<bool>(content))
     {
         cellData = std::get<bool>(content);
@@ -1199,7 +1199,7 @@ bool Controls::Grid::UpdateCell(
       unsigned int x,
       unsigned int y,
       CellType cellType,
-      const std::variant<bool, ConstString>& content,
+      const variant<bool, ConstString>& content,
       Graphics::TextAlignament textAlignment)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);

@@ -21,7 +21,7 @@ ComboBoxItem::ComboBoxItem() : Data(nullptr)
 }
 ComboBoxItem::ComboBoxItem(
       const Utils::ConstString& caption,
-      std::variant<GenericRef, unsigned long long> userData,
+      variant<GenericRef, unsigned long long> userData,
       unsigned int index,
       bool separator)
     : Data(userData)
@@ -77,7 +77,7 @@ bool ComboBox_AddItem(
       ComboBox* control,
       const Utils::ConstString& caption,
       bool separator,
-      std::variant<GenericRef, unsigned long long> userData)
+      variant<GenericRef, unsigned long long> userData)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
     unsigned int itemID  = (unsigned int) Members->Items.size();

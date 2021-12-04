@@ -365,7 +365,7 @@ struct ListViewItem
     unsigned int XOffset;
     unsigned int Height;
     ColorPair ItemColor;
-    std::variant<GenericRef, unsigned long long> Data;
+    variant<GenericRef, unsigned long long> Data;
     ListViewItem();
     ListViewItem(const ColorPair col) : ListViewItem()
     {
@@ -510,13 +510,13 @@ class ListViewControlContext : public ControlContext
 struct ComboBoxItem
 {
     Graphics::CharacterBuffer Text;
-    std::variant<GenericRef, unsigned long long> Data;
+    variant<GenericRef, unsigned long long> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
           const Utils::ConstString& caption,
-          std::variant<GenericRef, unsigned long long> userData,
+          variant<GenericRef, unsigned long long> userData,
           unsigned int index,
           bool separator = false);
     ~ComboBoxItem();
@@ -575,7 +575,7 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     std::vector<CharacterBuffer> values;
-    std::variant<GenericRef, unsigned long long> data{ nullptr };
+    variant<GenericRef, unsigned long long> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
     std::vector<ItemHandle> children;
@@ -640,7 +640,7 @@ struct GridCellData
 {
     TextAlignament ta = TextAlignament::Left;
     Grid::CellType ct = Grid::CellType::String;
-    std::variant<bool, std::u16string> content;
+    variant<bool, std::u16string> content;
 };
 
 struct GridHeaderCellData
