@@ -185,6 +185,7 @@ namespace AppCUI
 {
 namespace StdIncludes
 {
+    using std::initializer_list;
     using std::optional;
     using std::string_view;
     using std::u16string_view;
@@ -1555,15 +1556,15 @@ namespace Utils
         void operator=(string_view value);
         void operator=(Graphics::Size value);
         void operator=(Input::Key value);
-        void operator=(const std::initializer_list<const char*>& values);
-        void operator=(const std::initializer_list<std::string>& values);
-        void operator=(const std::initializer_list<bool>& values);
-        void operator=(const std::initializer_list<unsigned int>& values);
-        void operator=(const std::initializer_list<unsigned long long>& values);
-        void operator=(const std::initializer_list<int>& values);
-        void operator=(const std::initializer_list<long long>& values);
-        void operator=(const std::initializer_list<float>& values);
-        void operator=(const std::initializer_list<double>& values);
+        void operator=(const initializer_list<const char*>& values);
+        void operator=(const initializer_list<std::string>& values);
+        void operator=(const initializer_list<bool>& values);
+        void operator=(const initializer_list<unsigned int>& values);
+        void operator=(const initializer_list<unsigned long long>& values);
+        void operator=(const initializer_list<int>& values);
+        void operator=(const initializer_list<long long>& values);
+        void operator=(const initializer_list<float>& values);
+        void operator=(const initializer_list<double>& values);
     };
     class EXPORT IniSection
     {
@@ -1599,19 +1600,16 @@ namespace Utils
         void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
         void UpdateValue(
-              string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              string_view name, const std::initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits);
+              string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {

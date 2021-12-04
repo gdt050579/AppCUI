@@ -778,50 +778,50 @@ void IniSection::UpdateValue(string_view name, Input::Key value, bool dontUpdate
     UpdateValueForSection<Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<std::string>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<const char*>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<const char*>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<const char*>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<bool>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<int>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<long long>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<unsigned long long>&>(
+    UpdateValueForSection<const initializer_list<unsigned long long>&>(
           this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<float>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<float>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<float>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const std::initializer_list<double>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const std::initializer_list<double>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<double>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 //============================================================================= INI Value ===
 
@@ -1139,13 +1139,13 @@ void IniValue::operator=(Input::Key value)
     iniValue->KeyValue = tmp;
     iniValue->KeyValues.clear();
 }
-void IniValue::operator=(const std::initializer_list<std::string>& values)
+void IniValue::operator=(const initializer_list<std::string>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
     iniValue->KeyValues = values;
 }
-void IniValue::operator=(const std::initializer_list<const char*>& values)
+void IniValue::operator=(const initializer_list<const char*>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
@@ -1156,7 +1156,7 @@ void IniValue::operator=(const std::initializer_list<const char*>& values)
         iniValue->KeyValues.push_back(val);
     }
 }
-void IniValue::operator=(const std::initializer_list<bool>& values)
+void IniValue::operator=(const initializer_list<bool>& values)
 {
     PREPARE_VALUE;
     iniValue->KeyValue.clear();
@@ -1168,7 +1168,7 @@ void IniValue::operator=(const std::initializer_list<bool>& values)
     }
 }
 template <typename T>
-void IniValueSetVector(void* Data, const std::initializer_list<T>& values)
+void IniValueSetVector(void* Data, const initializer_list<T>& values)
 {
     if (!Data)
         return;
@@ -1182,27 +1182,27 @@ void IniValueSetVector(void* Data, const std::initializer_list<T>& values)
         iniValue->KeyValues.push_back(std::string(n.ToDec(val)));
     }
 }
-void IniValue::operator=(const std::initializer_list<unsigned int>& values)
+void IniValue::operator=(const initializer_list<unsigned int>& values)
 {
     IniValueSetVector<unsigned int>(this->Data, values);
 }
-void IniValue::operator=(const std::initializer_list<unsigned long long>& values)
+void IniValue::operator=(const initializer_list<unsigned long long>& values)
 {
     IniValueSetVector<unsigned long long>(this->Data, values);
 }
-void IniValue::operator=(const std::initializer_list<int>& values)
+void IniValue::operator=(const initializer_list<int>& values)
 {
     IniValueSetVector<int>(this->Data, values);
 }
-void IniValue::operator=(const std::initializer_list<long long>& values)
+void IniValue::operator=(const initializer_list<long long>& values)
 {
     IniValueSetVector<long long>(this->Data, values);
 }
-void IniValue::operator=(const std::initializer_list<float>& values)
+void IniValue::operator=(const initializer_list<float>& values)
 {
     IniValueSetVector<float>(this->Data, values);
 }
-void IniValue::operator=(const std::initializer_list<double>& values)
+void IniValue::operator=(const initializer_list<double>& values)
 {
     IniValueSetVector<double>(this->Data, values);
 }
