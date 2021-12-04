@@ -188,6 +188,7 @@ namespace StdIncludes
     using std::optional;
     using std::string_view;
     using std::u16string_view;
+    using std::u8string_view;
     using std::unique_ptr;
     using std::variant;
 } // namespace StdIncludes
@@ -322,7 +323,7 @@ namespace Graphics
 namespace Utils
 {
     using CharacterView = std::basic_string_view<Graphics::Character>;
-    using ConstString   = variant<string_view, std::u8string_view, u16string_view, CharacterView>;
+    using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
     template <typename T>
     class Pointer : public unique_ptr<T>
     {
@@ -1317,7 +1318,7 @@ namespace Utils
                 BuildFromAlternative<string_view>(obj, StringEncoding::Ascii);
                 break;
             case 1:
-                BuildFromAlternative<std::u8string_view>(obj, StringEncoding::UTF8);
+                BuildFromAlternative<u8string_view>(obj, StringEncoding::UTF8);
                 break;
             case 2:
                 BuildFromAlternative<u16string_view>(obj, StringEncoding::Unicode16);
