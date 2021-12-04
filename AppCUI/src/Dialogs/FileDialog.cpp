@@ -82,9 +82,9 @@ unsigned int __compute_hash__(const char16_t* start, const char16_t* end)
 }
 
 // https://www.cppstories.com/2018/07/string-view-perf-followup/
-std::vector<std::u16string_view> splitSV(std::u16string_view strv, std::u16string_view delims = u" ")
+std::vector<u16string_view> splitSV(u16string_view strv, u16string_view delims = u" ")
 {
-    std::vector<std::u16string_view> output;
+    std::vector<u16string_view> output;
     size_t first = 0;
 
     while (first < strv.size())
@@ -94,7 +94,7 @@ std::vector<std::u16string_view> splitSV(std::u16string_view strv, std::u16strin
         if (first != second)
             output.emplace_back(strv.substr(first, second - first));
 
-        if (second == std::u16string_view::npos)
+        if (second == u16string_view::npos)
             break;
 
         first = second + 1;

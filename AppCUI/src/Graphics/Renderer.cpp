@@ -1097,11 +1097,11 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
             RenderSingleLineString<CharacterView>(std::get<CharacterView>(text), dti, params);
             return true;
         }
-        if (std::holds_alternative<std::u16string_view>(text))
+        if (std::holds_alternative<u16string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u16string_view>(text).length(), &dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<u16string_view>(text).length(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::u16string_view>(std::get<std::u16string_view>(text), dti, params);
+            RenderSingleLineString<u16string_view>(std::get<u16string_view>(text), dti, params);
             return true;
         }
         if (std::holds_alternative<std::u8string_view>(text))
@@ -1109,7 +1109,7 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
             LocalUnicodeStringBuilder<1024> tmp(std::get<std::u8string_view>(text));
             if (_Compute_DrawTextInfo_SingleLine_(params, tmp.Len(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::u16string_view>(tmp.ToStringView(), dti, params);
+            RenderSingleLineString<u16string_view>(tmp.ToStringView(), dti, params);
             return true;
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
@@ -1124,14 +1124,14 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
         {
             return ProcessMultiLinesString<string_view>(std::get<string_view>(text), params, *this);
         }
-        if (std::holds_alternative<std::u16string_view>(text))
+        if (std::holds_alternative<u16string_view>(text))
         {
-            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+            return ProcessMultiLinesString<u16string_view>(std::get<u16string_view>(text), params, *this);
         }
         if (std::holds_alternative<std::u8string_view>(text))
         {
             LocalUnicodeStringBuilder<2048> tmp(std::get<std::u8string_view>(text));
-            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+            return ProcessMultiLinesString<u16string_view>(std::get<u16string_view>(text), params, *this);
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
     }

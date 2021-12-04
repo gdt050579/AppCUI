@@ -608,10 +608,10 @@ int CharacterBuffer::Find(const Utils::ConstString& text, bool ignoreCase) const
     case StringEncoding::CharacterBuffer:
         return FindInCharacterBuffer<CharacterView>(std::get<CharacterView>(text), *this, ignoreCase);
     case StringEncoding::Unicode16:
-        return FindInCharacterBuffer<std::u16string_view>(std::get<std::u16string_view>(text), *this, ignoreCase);
+        return FindInCharacterBuffer<u16string_view>(std::get<u16string_view>(text), *this, ignoreCase);
     case StringEncoding::UTF8:
         CHECK(ub.Set(text), -1, "Fail to convert UTF-8 to current internal format !");
-        return FindInCharacterBuffer<std::u16string_view>(ub.ToStringView(), *this, ignoreCase);
+        return FindInCharacterBuffer<u16string_view>(ub.ToStringView(), *this, ignoreCase);
     default:
         RETURNERROR(-1, "Unknwon string encoding type: %d", textObj.Encoding);
     }

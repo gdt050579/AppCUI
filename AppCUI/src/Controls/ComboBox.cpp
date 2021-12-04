@@ -239,7 +239,7 @@ ComboBox::ComboBox(string_view layout, const Utils::ConstString& text, char item
                   this, (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::Unicode16:
-            result = AddItemsFromList<char16_t, std::u16string_view>(
+            result = AddItemsFromList<char16_t, u16string_view>(
                   this, (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::CharacterBuffer:

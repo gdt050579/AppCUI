@@ -187,6 +187,7 @@ namespace StdIncludes
 {
     using std::optional;
     using std::string_view;
+    using std::u16string_view;
     using std::unique_ptr;
     using std::variant;
 } // namespace StdIncludes
@@ -321,7 +322,7 @@ namespace Graphics
 namespace Utils
 {
     using CharacterView = std::basic_string_view<Graphics::Character>;
-    using ConstString   = variant<string_view, std::u8string_view, std::u16string_view, CharacterView>;
+    using ConstString   = variant<string_view, std::u8string_view, u16string_view, CharacterView>;
     template <typename T>
     class Pointer : public unique_ptr<T>
     {
@@ -917,9 +918,9 @@ namespace Utils
         {
             return chars;
         }
-        inline std::u16string_view ToStringView() const
+        inline u16string_view ToStringView() const
         {
-            return std::u16string_view{ chars, (size_t) length };
+            return u16string_view{ chars, (size_t) length };
         }
         inline operator std::string() const
         {
@@ -939,9 +940,9 @@ namespace Utils
             ToPath(temp);
             return temp;
         }
-        inline operator std::u16string_view() const
+        inline operator u16string_view() const
         {
-            return std::u16string_view{ chars, (size_t) length };
+            return u16string_view{ chars, (size_t) length };
         }
         inline UnicodeStringBuilder& operator+=(const Utils::ConstString& text)
         {
@@ -1319,7 +1320,7 @@ namespace Utils
                 BuildFromAlternative<std::u8string_view>(obj, StringEncoding::UTF8);
                 break;
             case 2:
-                BuildFromAlternative<std::u16string_view>(obj, StringEncoding::Unicode16);
+                BuildFromAlternative<u16string_view>(obj, StringEncoding::Unicode16);
                 break;
             case 3:
                 BuildFromAlternative<CharacterView>(obj, StringEncoding::CharacterBuffer);

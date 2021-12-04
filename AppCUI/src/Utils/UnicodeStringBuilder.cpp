@@ -148,7 +148,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(
 UnicodeStringBuilder::UnicodeStringBuilder(const UnicodeStringBuilder& obj)
 {
     Create(nullptr, 0);
-    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
@@ -159,7 +159,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
         this->chars     = nullptr;
         this->length    = 0;
         this->allocated = 0;
-        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
             Destroy();
     }
     else
@@ -174,7 +174,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
 }
 UnicodeStringBuilder& UnicodeStringBuilder::operator=(const UnicodeStringBuilder& obj)
 {
-    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
         Destroy();
     return *this;
 }
@@ -183,7 +183,7 @@ UnicodeStringBuilder& UnicodeStringBuilder::operator=(UnicodeStringBuilder&& obj
     if (obj.length & LOCAL_BUFFER_FLAG)
     {
         // if this is a local buffer --> copy it
-        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
             Destroy();
     }
     else
@@ -297,7 +297,7 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
     else
     {
         output.reserve((size_t) this->length + 1);
-        output = std::u16string_view{ this->chars, this->length };
+        output = u16string_view{ this->chars, this->length };
     }
 }
 void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
@@ -306,7 +306,7 @@ void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
         output.clear();
     else
     {
-        output = std::u16string_view{ this->chars, this->length };
+        output = u16string_view{ this->chars, this->length };
     }
 }
 } // namespace AppCUI
