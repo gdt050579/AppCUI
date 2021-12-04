@@ -1,10 +1,10 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
 
-Password::Password(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+Password::Password(const Utils::ConstString& caption, std::string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
@@ -73,14 +73,14 @@ bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
     if ((KeyCode == (Key::Ctrl | Key::V)) || (KeyCode == (Key::Shift | Key::Insert)))
     {
         LocalUnicodeStringBuilder<2048> temp;
-        if (AppCUI::OS::Clipboard::GetText(temp))
+        if (OS::Clipboard::GetText(temp))
             Members->Text.Add(temp);
         return true;
     }
     
     return false;
 }
-bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Password::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     if (IsChecked() == false)
         return false;
@@ -91,11 +91,11 @@ bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
     }
     return false;
 }
-void Password::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Password::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     SetChecked(false);
 }
-void Password::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Password::OnMousePressed(int, int, Input::MouseButton)
 {
     SetChecked(true);
 }

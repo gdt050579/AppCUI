@@ -1,7 +1,9 @@
 #include "AppCUI.hpp"
 #include <charconv>
 
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace Utils;
 constexpr unsigned int NUMERIC_FORMAT_HEAP_SIZE   = 1024;
 static const char* BaseLettersUpperCase           = "0123456789ABCDEF";
 static const char* BaseLettersLowerCase           = "0123456789abcdef";
@@ -154,7 +156,7 @@ std::string_view NumericFormatter::ToStringUnsigned(unsigned long long value, Nu
     }
     else
     {
-        unsigned char sz = NumberMaxSizeForBase[fmt.Base]; 
+        unsigned char sz = NumberMaxSizeForBase[fmt.Base];
         if (fmt.Base == 2)
         {
             if (value <= 0xFFULL)
@@ -319,3 +321,4 @@ std::string_view NumericFormatter::ToDec(double value)
     tmp.Create(this->temp, sizeof(this->temp), true);
     return tmp.Format("%.3lf", value);
 }
+} // namespace AppCUI

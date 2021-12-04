@@ -1,6 +1,8 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace Utils;
 
 #define NUMBER_FLAG_NEGATIVE 0x00000001
 #define NUMBER_FLAG_SECOND   0x00000002
@@ -280,3 +282,4 @@ std::optional<double> Number::ToDouble(std::string_view text, NumberParseFlags f
         f = -f;
     return f;
 }
+} // namespace AppCUI

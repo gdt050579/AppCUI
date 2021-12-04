@@ -1,10 +1,10 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
 
-CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)
+CheckBox::CheckBox(const Utils::ConstString& caption, std::string_view layout, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);
@@ -14,7 +14,7 @@ CheckBox::CheckBox(const AppCUI::Utils::ConstString& caption, std::string_view l
     this->SetControlID(controlID);
 }
 
-void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
+void Controls::CheckBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
@@ -54,7 +54,7 @@ void AppCUI::Controls::CheckBox::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
         renderer.SetCursor(1, 0);
 }
-void AppCUI::Controls::CheckBox::OnHotKey()
+void Controls::CheckBox::OnHotKey()
 {
     SetChecked(!IsChecked());
     CREATE_CONTROL_CONTEXT(this, Members, );
@@ -69,7 +69,7 @@ void AppCUI::Controls::CheckBox::OnHotKey()
     }
     RaiseEvent(Event::CheckedStatusChanged);
 }
-bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
+bool Controls::CheckBox::OnKeyEvent(Input::Key KeyCode, char16_t)
 {
     if (KeyCode == Key::Space)
     {
@@ -78,19 +78,19 @@ bool AppCUI::Controls::CheckBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t
     }
     return false;
 }
-void AppCUI::Controls::CheckBox::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Controls::CheckBox::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-bool AppCUI::Controls::CheckBox::OnMouseEnter()
+bool Controls::CheckBox::OnMouseEnter()
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
     if ((int) Members->Text.Len() >= Members->Layout.Width)
         this->ShowToolTip(Members->Text);
     return true;
 }
-bool AppCUI::Controls::CheckBox::OnMouseLeave()
+bool Controls::CheckBox::OnMouseLeave()
 {
     return true;
 }

@@ -2,10 +2,12 @@
 #include "../TerminalFactory.hpp"
 #include "../WindowsTerminal/WindowsTerminal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
+namespace AppCUI
+{
+using namespace Internal;
+using namespace Application;
 
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
+std::unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
 {
     std::unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.Frontend)
@@ -22,3 +24,4 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
 
     return term;
 }
+} // namespace AppCUI

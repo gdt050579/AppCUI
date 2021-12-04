@@ -1,7 +1,7 @@
 #include "../TerminalFactory.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
+using namespace Internal;
+using namespace Application;
 
 #ifdef HAVE_SDL
 #    include "../SDLTerminal/SDLTerminal.hpp"
@@ -11,7 +11,7 @@ using namespace AppCUI::Application;
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
+std::unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
 {
     std::unique_ptr<AbstractTerminal> term = nullptr;
 

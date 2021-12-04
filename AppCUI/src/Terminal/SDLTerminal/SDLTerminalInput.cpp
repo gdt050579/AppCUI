@@ -1,7 +1,7 @@
 #include "SDLTerminal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+using namespace Internal;
+using namespace Input;
 
 static Key getShiftState(const SDL_Keymod keyModifiers)
 {
@@ -21,7 +21,7 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool SDLTerminal::initInput(const AppCUI::Application::InitializationData&)
+bool SDLTerminal::initInput(const Application::InitializationData&)
 {
     oldShiftState = Key::None;
 
@@ -155,7 +155,7 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
     oldShiftState = currentShiftState;
 }
 
-void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void SDLTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
     using namespace std::chrono_literals;
 
@@ -222,19 +222,19 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         evnt.eventType = SystemEventType::MouseWheel;
         if (e.wheel.y < 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+            evnt.mouseWheel = Input::MouseWheel::Up;
         }
         else if (e.wheel.y > 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+            evnt.mouseWheel = Input::MouseWheel::Down;
         }
         else if (e.wheel.x > 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Right;
+            evnt.mouseWheel = Input::MouseWheel::Right;
         }
         else if (e.wheel.x < 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Left;
+            evnt.mouseWheel = Input::MouseWheel::Left;
         }
         break;
     default:

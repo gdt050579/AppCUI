@@ -1,8 +1,8 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
+using namespace Controls;
 
-UserControl::UserControl(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+UserControl::UserControl(const Utils::ConstString& caption, std::string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);

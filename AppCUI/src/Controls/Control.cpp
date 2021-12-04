@@ -3,10 +3,10 @@
 #include <cstring>
 #include <string.h>
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Utils;
+using namespace Controls;
+using namespace Input;
+using namespace Graphics;
+using namespace Utils;
 
 #define CTRLC ((ControlContext*) Context)
 
@@ -424,7 +424,7 @@ unsigned char __char_types__[256] = {
 // <xxx> (Arrow left, 3 character, Arrow right)
 #define MINIM_SCORLL_BAR_LENGTH 5
 
-bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config*)
+bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Application::Config*)
 {
     int value = 0;
     LayoutValueType valueType;
@@ -511,7 +511,7 @@ inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsig
     }
     return s;
 }
-bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
+bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, Application::Config* Cfg)
 {
     // format: key:value,[key:value],....
     const unsigned char* p     = (const unsigned char*) layout.data();
@@ -621,7 +621,7 @@ ControlContext::ControlContext()
     this->ControlID                                = 0;
     this->Focused                                  = false;
     this->MouseIsOver                              = false;
-    this->Cfg                                      = AppCUI::Application::GetAppConfig();
+    this->Cfg                                      = Application::GetAppConfig();
     this->HotKeyOffset                             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     this->ScrollBars.LeftMargin                    = 2;
     this->ScrollBars.TopMargin                     = 2;
@@ -1092,7 +1092,7 @@ bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetric
 bool ControlContext::RecomputeLayout(Control* controlParent)
 {
     LayoutMetricData md;
-    AppCUI::Graphics::Size sz;
+    Graphics::Size sz;
 
     if (controlParent == nullptr)
         controlParent = this->Parent;
@@ -1102,7 +1102,7 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     }
     else
     {
-        CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
+        CHECK(Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
     }
     // translate values - X & Y Axes
     md.X            = this->Layout.Format.X.ToInt(sz.Width);
@@ -1211,22 +1211,22 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     }
 }
 //=======================================================================================================================================================
-AppCUI::Controls::Control::~Control()
+Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-AppCUI::Controls::Control::Control(
-      void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey)
+Controls::Control::Control(
+      void* context, const Utils::ConstString& caption, std::string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     ASSERT(cfg != nullptr, "Unable to get config object !");
     this->Context = context;
     auto ctx      = reinterpret_cast<ControlContext*>(this->Context);
     ctx->Inited   = false;
     ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 
-    AppCUI::Utils::ConstStringObject captionObj(caption);
+    Utils::ConstStringObject captionObj(caption);
     if (computeHotKey)
     {
         ctx->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
@@ -1259,7 +1259,7 @@ AppCUI::Controls::Control::Control(
     ctx->Inited = true;
 }
 
-Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
+Reference<Control> Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
 {
     CHECK(ctrl, nullptr, "Invalid control (nullptr)");
     CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
@@ -1295,19 +1295,19 @@ Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Co
     (reinterpret_cast<ControlContext*>(p_ctrl->Context))->RecomputeLayout(this);
     RecomputeLayout();
     // Force a recompute layout on the entire app
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     if (app)
         app->RepaintStatus = REPAINT_STATUS_ALL;
     return p_ctrl;
 }
-bool AppCUI::Controls::Control::RemoveControl(Control* control)
+bool Controls::Control::RemoveControl(Control* control)
 {
     unsigned int index;
     if (GetChildIndex(control, index) == false)
         return false;
     return RemoveControlByID(index);
 }
-bool AppCUI::Controls::Control::RemoveControlByRef(Reference<Control> control)
+bool Controls::Control::RemoveControlByRef(Reference<Control> control)
 {
     CHECK(control.IsValid(), false, "Emptry control reference !");
     Control** lst = CTRLC->Controls;
@@ -1333,7 +1333,7 @@ bool AppCUI::Controls::Control::RemoveControlByRef(Reference<Control> control)
         control.Reset();
     return result;
 }
-bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
+bool Controls::Control::RemoveControlByID(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
           false,
@@ -1354,28 +1354,28 @@ bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
     CTRLC->CurrentControlIndex = 0;
     return true;
 }
-int AppCUI::Controls::Control::GetX() const
+int Controls::Control::GetX() const
 {
     return CTRLC->Layout.X;
 }
-int AppCUI::Controls::Control::GetY() const
+int Controls::Control::GetY() const
 {
     return CTRLC->Layout.Y;
 }
-int AppCUI::Controls::Control::GetWidth() const
+int Controls::Control::GetWidth() const
 {
     return CTRLC->Layout.Width;
 }
-int AppCUI::Controls::Control::GetHeight() const
+int Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetSize(AppCUI::Graphics::Size& size)
+void Controls::Control::GetSize(Graphics::Size& size)
 {
     size.Width  = CTRLC->Layout.Width;
     size.Height = CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetClientSize(AppCUI::Graphics::Size& size)
+void Controls::Control::GetClientSize(Graphics::Size& size)
 {
     int w = CTRLC->Layout.Width - (CTRLC->Margins.Left + CTRLC->Margins.Right);
     int h = CTRLC->Layout.Height - (CTRLC->Margins.Top + CTRLC->Margins.Bottom);
@@ -1386,25 +1386,25 @@ void AppCUI::Controls::Control::GetClientSize(AppCUI::Graphics::Size& size)
     size.Width  = w;
     size.Height = h;
 }
-bool AppCUI::Controls::Control::IsMouseInControl(int x, int y)
+bool Controls::Control::IsMouseInControl(int x, int y)
 {
     return (x >= 0) && (y >= 0) && (x < (CTRLC->Layout.Width)) && (y < (CTRLC->Layout.Height));
 }
-void AppCUI::Controls::Control::SetChecked(const bool value)
+void Controls::Control::SetChecked(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_CHECKED;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_CHECKED);
 }
-void AppCUI::Controls::Control::SetEnabled(const bool value)
+void Controls::Control::SetEnabled(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_ENABLE;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_ENABLE);
 }
-void AppCUI::Controls::Control::SetVisible(const bool value)
+void Controls::Control::SetVisible(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_VISIBLE;
@@ -1412,36 +1412,36 @@ void AppCUI::Controls::Control::SetVisible(const bool value)
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_VISIBLE);
 }
 
-bool AppCUI::Controls::Control::IsChecked() const
+bool Controls::Control::IsChecked() const
 {
     return (((CTRLC->Flags) & GATTR_CHECKED) != 0);
 }
-bool AppCUI::Controls::Control::IsEnabled() const
+bool Controls::Control::IsEnabled() const
 {
     return (((CTRLC->Flags) & GATTR_ENABLE) != 0);
 }
-bool AppCUI::Controls::Control::IsVisible() const
+bool Controls::Control::IsVisible() const
 {
     return (((CTRLC->Flags) & GATTR_VISIBLE) != 0);
 }
-bool AppCUI::Controls::Control::HasFocus() const
+bool Controls::Control::HasFocus() const
 {
     return CTRLC->Focused;
 }
-bool AppCUI::Controls::Control::IsMouseOver() const
+bool Controls::Control::IsMouseOver() const
 {
     return CTRLC->MouseIsOver;
 }
 
-Reference<Control> AppCUI::Controls::Control::GetParent()
+Reference<Control> Controls::Control::GetParent()
 {
     return CTRLC->Parent;
 }
-Control** AppCUI::Controls::Control::GetChildrenList()
+Control** Controls::Control::GetChildrenList()
 {
     return CTRLC->Controls;
 }
-Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
+Reference<Control> Controls::Control::GetChild(unsigned int index)
 {
     CHECK(index < CTRLC->ControlsCount,
           nullptr,
@@ -1450,12 +1450,12 @@ Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
           CTRLC->ControlsCount - 1);
     return CTRLC->Controls[index];
 }
-unsigned int AppCUI::Controls::Control::GetChildernCount()
+unsigned int Controls::Control::GetChildernCount()
 {
     return CTRLC->ControlsCount;
 }
 
-bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
+bool Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
 {
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
@@ -1475,21 +1475,21 @@ bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsign
     return false;
 }
 
-void AppCUI::Controls::Control::MoveTo(int newX, int newY)
+void Controls::Control::MoveTo(int newX, int newY)
 {
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     if (!cfg)
         return;
     if ((newX == CTRLC->Layout.X) && (newY == CTRLC->Layout.Y))
         return;
     CTRLC->Layout.X = newX;
     CTRLC->Layout.Y = newY;
-    AppCUI::Application::RecomputeControlsLayout();
-    AppCUI::Application::Repaint();
+    Application::RecomputeControlsLayout();
+    Application::Repaint();
 }
-bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
+bool Controls::Control::Resize(int newWidth, int newHeight)
 {
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
 
     if (newWidth < CTRLC->Layout.MinWidth)
@@ -1517,7 +1517,7 @@ bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
     RecomputeLayout();
     return true;
 }
-void AppCUI::Controls::Control::RecomputeLayout()
+void Controls::Control::RecomputeLayout()
 {
     for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
     {
@@ -1526,9 +1526,9 @@ void AppCUI::Controls::Control::RecomputeLayout()
     }
     OnAfterResize(CTRLC->Layout.Width, CTRLC->Layout.Height);
 
-    AppCUI::Application::RecomputeControlsLayout();
+    Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey)
+bool Controls::Control::SetText(const Utils::ConstString& caption, bool updateHotKey)
 {
     if (OnBeforeSetText(caption) == false)
         return false;
@@ -1553,7 +1553,7 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         OnAfterSetText();
     return true;
 }
-bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
+bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
 {
     if (OnBeforeSetText((CharacterView)text) == false)
         return false;
@@ -1570,8 +1570,8 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer&
         OnAfterSetText();
     return true;
 }
-bool AppCUI::Controls::Control::SetTextWithHotKey(
-      const AppCUI::Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+bool Controls::Control::SetTextWithHotKey(
+      const Utils::ConstString& caption, unsigned int hotKeyTextOffset)
 {
     CHECK(SetText(caption), false, "");
     ConstStringObject txt(caption);
@@ -1600,46 +1600,46 @@ bool AppCUI::Controls::Control::SetTextWithHotKey(
     }
     return true;
 }
-const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
+const Graphics::CharacterBuffer& Controls::Control::GetText()
 {
     return CTRLC->Text;
 }
-void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
 {
     if (value > maxValue)
         value = maxValue;
     CTRLC->ScrollBars.HorizontalValue    = value;
     CTRLC->ScrollBars.MaxHorizontalValue = maxValue;
 }
-void AppCUI::Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
 {
     if (value > maxValue)
         value = maxValue;
     CTRLC->ScrollBars.VerticalValue    = value;
     CTRLC->ScrollBars.MaxVerticalValue = maxValue;
 }
-int AppCUI::Controls::Control::GetGroup()
+int Controls::Control::GetGroup()
 {
     return CTRLC->GroupID;
 }
-void AppCUI::Controls::Control::SetGroup(int newGroupID)
+void Controls::Control::SetGroup(int newGroupID)
 {
     if (newGroupID >= 0)
         CTRLC->GroupID = newGroupID;
 }
-void AppCUI::Controls::Control::ClearGroup()
+void Controls::Control::ClearGroup()
 {
     CTRLC->GroupID = 0;
 }
 
-bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
+bool Controls::Control::SetHotKey(char16_t hotKey)
 {
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    CTRLC->HotKey       = AppCUI::Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
+    CTRLC->HotKey       = Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
     this->OnHotKeyChanged();
     return CTRLC->HotKey != Key::None;
 }
-bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bottom)
+bool Controls::Control::SetMargins(int left, int top, int right, int bottom)
 {
     CHECK(left >= 0, false, "left margin must be positive values !");
     CHECK(top >= 0, false, "top margin must be positive values !");
@@ -1651,27 +1651,27 @@ bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bot
     CTRLC->Margins.Bottom = bottom;
     return true;
 }
-AppCUI::Input::Key AppCUI::Controls::Control::GetHotKey()
+Input::Key Controls::Control::GetHotKey()
 {
     return CTRLC->HotKey;
 }
-void AppCUI::Controls::Control::ClearHotKey()
+void Controls::Control::ClearHotKey()
 {
     CTRLC->HotKey       = Key::None;
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-unsigned int AppCUI::Controls::Control::GetHotKeyTextOffset()
+unsigned int Controls::Control::GetHotKeyTextOffset()
 {
     return CTRLC->HotKeyOffset;
 }
-void AppCUI::Controls::Control::SetControlID(int newID)
+void Controls::Control::SetControlID(int newID)
 {
     if (newID > 0)
         CTRLC->ControlID = newID;
     else
         CTRLC->ControlID = 0;
 }
-bool AppCUI::Controls::Control::SetFocus()
+bool Controls::Control::SetFocus()
 {
     Control* obj = this;
     Control* p;
@@ -1709,147 +1709,147 @@ bool AppCUI::Controls::Control::SetFocus()
         obj = p;
         p   = ((ControlContext*) (p->Context))->Parent;
     }
-    AppCUI::Application::Repaint();
+    Application::Repaint();
     // acceleratorii
     // UpdateCommandBar(this);
     return true;
 }
-bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& caption)
+bool Controls::Control::ShowToolTip(const Utils::ConstString& caption)
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption);
 }
-bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y)
+bool Controls::Control::ShowToolTip(const Utils::ConstString& caption, int x, int y)
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption, x, y);
 }
-void AppCUI::Controls::Control::HideToolTip()
+void Controls::Control::HideToolTip()
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     if (app)
         app->ToolTip.Hide();
 }
-void AppCUI::Controls::Control::RaiseEvent(Event eventType)
+void Controls::Control::RaiseEvent(Event eventType)
 {
-    AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
+    Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
 }
-void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
+void Controls::Control::RaiseEvent(Event eventType, int ID)
 {
-    AppCUI::Application::RaiseEvent(this, this, eventType, ID);
+    Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
+void Controls::Control::Paint(Graphics::Renderer& renderer)
 {
 }
-bool AppCUI::Controls::Control::IsInitialized()
+bool Controls::Control::IsInitialized()
 {
     CHECK(this->Context, false, "Control context was not initialized !");
     return CTRLC->Inited;
 }
 // Evenimente
-bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key, char16_t)
+bool Controls::Control::OnKeyEvent(Input::Key, char16_t)
 {
     return false;
 }
-void AppCUI::Controls::Control::OnFocus()
+void Controls::Control::OnFocus()
 {
 }
-void AppCUI::Controls::Control::OnLoseFocus()
+void Controls::Control::OnLoseFocus()
 {
 }
-void AppCUI::Controls::Control::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void Controls::Control::OnMouseReleased(int, int, Input::MouseButton)
 {
 }
-void AppCUI::Controls::Control::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Controls::Control::OnMousePressed(int, int, Input::MouseButton)
 {
 }
-bool AppCUI::Controls::Control::OnMouseDrag(int, int, AppCUI::Input::MouseButton)
-{
-    return false;
-}
-bool AppCUI::Controls::Control::OnMouseOver(int, int)
+bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseEnter()
+bool Controls::Control::OnMouseOver(int, int)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseLeave()
+bool Controls::Control::OnMouseEnter()
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseWheel(int, int, AppCUI::Input::MouseWheel)
+bool Controls::Control::OnMouseLeave()
 {
     return false;
 }
-void AppCUI::Controls::Control::OnHotKey()
-{
-}
-void AppCUI::Controls::Control::OnHotKeyChanged()
-{
-}
-bool AppCUI::Controls::Control::OnEvent(Reference<Control>, Event, int)
+bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnUpdateCommandBar(AppCUI::Application::CommandBar&)
+void Controls::Control::OnHotKey()
+{
+}
+void Controls::Control::OnHotKeyChanged()
+{
+}
+bool Controls::Control::OnEvent(Reference<Control>, Event, int)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnBeforeResize(int, int)
+bool Controls::Control::OnUpdateCommandBar(Application::CommandBar&)
+{
+    return false;
+}
+bool Controls::Control::OnBeforeResize(int, int)
 {
     return true;
 }
-bool AppCUI::Controls::Control::OnFrameUpdate()
+bool Controls::Control::OnFrameUpdate()
 {
     return false;
 }
-void AppCUI::Controls::Control::OnAfterResize(int, int)
+void Controls::Control::OnAfterResize(int, int)
 {
 }
-bool AppCUI::Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
+bool Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnControlRemoved(Reference<Control>)
+void Controls::Control::OnControlRemoved(Reference<Control>)
 {
 }
-void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
+void Controls::Control::OnExpandView(Graphics::Clip&)
 {
 }
-void AppCUI::Controls::Control::OnPackView()
+void Controls::Control::OnPackView()
 {
 }
-void AppCUI::Controls::Control::OnAfterAddControl(Reference<Control>)
+void Controls::Control::OnAfterAddControl(Reference<Control>)
 {
     // daca e primul - setez si tab-ul
     if (CTRLC->ControlsCount == 1)
         CTRLC->CurrentControlIndex = 0;
 }
-bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString&)
+bool Controls::Control::OnBeforeSetText(const Utils::ConstString&)
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterSetText()
+void Controls::Control::OnAfterSetText()
 {
 }
-void AppCUI::Controls::Control::OnUpdateScrollBars()
+void Controls::Control::OnUpdateScrollBars()
 {
 }
 
-Handlers::Control* AppCUI::Controls::Control::Handlers()
+Handlers::Control* Controls::Control::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::Control);
 }
 
-void AppCUI::Controls::Control::ExpandView()
+void Controls::Control::ExpandView()
 {
-    AppCUI::Application::GetApplication()->ExpandControl(this);
+    Application::GetApplication()->ExpandControl(this);
 }
-void AppCUI::Controls::Control::PackView()
+void Controls::Control::PackView()
 {
-    AppCUI::Application::GetApplication()->PackControl(true);
+    Application::GetApplication()->PackControl(true);
 }

@@ -6,11 +6,11 @@
 #define ALL_FILES_INDEX 0xFFFFFFFF
 
 using namespace AppCUI;
-using namespace AppCUI::OS;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Controls;
-using namespace AppCUI::Dialogs;
+using namespace OS;
+using namespace Utils;
+using namespace Graphics;
+using namespace Controls;
+using namespace Dialogs;
 using namespace std::literals;
 
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
@@ -107,8 +107,8 @@ class FileDialogWindow : public Window
   public:
     FileDialogWindow(
           bool open,
-          const AppCUI::Utils::ConstString& fileName,
-          const AppCUI::Utils::ConstString& extensionsFilter,
+          const Utils::ConstString& fileName,
+          const Utils::ConstString& extensionsFilter,
           const std::filesystem::path& _path);
 
     bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
@@ -118,7 +118,7 @@ class FileDialogWindow : public Window
     Reference<Controls::Label> lbPath, lbLocation;
     Reference<Controls::Label> lbName, lbExt;
     Reference<Controls::Splitter> splitListView;
-    Reference<AppCUI::Controls::Panel> splitPanelLeft, splitPanelRight;
+    Reference<Controls::Panel> splitPanelLeft, splitPanelRight;
     Reference<Controls::ListView> lSpecialPaths;
     Reference<Controls::ListView> files;
     Reference<Controls::TextField> txName;
@@ -135,7 +135,7 @@ class FileDialogWindow : public Window
     bool openDialog;
 
     void LoadAllSpecialLocations();
-    bool ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensionsFilter);
+    bool ProcessExtensionFilter(const Utils::ConstString& extensionsFilter);
 
     void SpecialFoldersUpdatePath();
     void UpdateCurrentExtensionFilter();
@@ -168,8 +168,8 @@ std::filesystem::path CanonizePath(std::filesystem::path p)
 
 FileDialogWindow::FileDialogWindow(
       bool open,
-      const AppCUI::Utils::ConstString& fileName,
-      const AppCUI::Utils::ConstString& extensionsFilter,
+      const Utils::ConstString& fileName,
+      const Utils::ConstString& extensionsFilter,
       const std::filesystem::path& specifiedPath)
     : Window(open ? "Open" : "Save", "w:78,h:23,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
 {
@@ -204,7 +204,7 @@ FileDialogWindow::FileDialogWindow(
     files->AddColumn("&Size", TextAlignament::Right, 16);
     files->AddColumn("&Modified", TextAlignament::Center, 20);
     files->SetItemCompareFunction(
-          [](AppCUI::Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
+          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*)
                 -> int
           {
               const auto& v1 = control->GetItemData(item1, 0);
@@ -245,7 +245,7 @@ void FileDialogWindow::LoadAllSpecialLocations()
 {
     SpecialFolderMap specialFoldersMap;
     RootsVector rootsVector;
-    AppCUI::OS::GetSpecialFolders(specialFoldersMap, rootsVector);
+    OS::GetSpecialFolders(specialFoldersMap, rootsVector);
 
     for (const auto& root : rootsVector)
     {
@@ -269,7 +269,7 @@ std::filesystem::path FileDialogWindow::GetResultedPath() const
     return resultedPath;
 }
 
-bool FileDialogWindow::ProcessExtensionFilter(const AppCUI::Utils::ConstString& extensiosFilter)
+bool FileDialogWindow::ProcessExtensionFilter(const Utils::ConstString& extensiosFilter)
 {
     // format is: <Name>:ext|<Name>:ext| ...
     //        or: <Name>:ext1,ext2,ext3|<Name>:ext|....
@@ -550,7 +550,7 @@ void FileDialogWindow::UpdateCurrentPath(const std::filesystem::path& newPath)
     ReloadCurrentPath();
 }
 
-bool FileDialogWindow::OnEvent(Reference<Control> sender, AppCUI::Controls::Event eventType, int controlID)
+bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventType, int controlID)
 {
     switch (eventType)
     {
@@ -609,8 +609,8 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, AppCUI::Controls::Even
 }
 
 std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const AppCUI::Utils::ConstString& fileName,
-      const AppCUI::Utils::ConstString& extensionsFilter,
+      const Utils::ConstString& fileName,
+      const Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
@@ -620,8 +620,8 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const AppCUI::Utils::ConstString& fileName,
-      const AppCUI::Utils::ConstString& extensionsFilter,
+      const Utils::ConstString& fileName,
+      const Utils::ConstString& extensionsFilter,
       const std::filesystem::path& path)
 {
     FileDialogWindow dlg(true, fileName, extensionsFilter, path);

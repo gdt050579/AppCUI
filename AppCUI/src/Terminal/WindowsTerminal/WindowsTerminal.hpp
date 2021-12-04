@@ -19,8 +19,8 @@ namespace Internal
         {
             unsigned int x, y;
         } lastMousePosition;
-        AppCUI::Input::Key KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
-        AppCUI::Input::Key shiftState;
+        Input::Key KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
+        Input::Key shiftState;
         bool fpsMode;
 
         bool ResizeConsoleBuffer(unsigned int width, unsigned int height);
@@ -29,22 +29,22 @@ namespace Internal
         void BuildKeyTranslationMatrix();
         bool ResizeConsoleScreenBufferSize(unsigned int width, unsigned int height);
         bool ResizeConsoleWindowSize(unsigned int width, unsigned int height);
-        AppCUI::Graphics::Size FullScreenTerminal();
-        AppCUI::Graphics::Size MaximizeTerminal();
-        AppCUI::Graphics::Size ResizeTerminal(
-              const AppCUI::Application::InitializationData& initData, const AppCUI::Graphics::Size& currentSize);
-        AppCUI::Graphics::Size UpdateTerminalSize(
-              const AppCUI::Application::InitializationData& initData, const AppCUI::Graphics::Size& currentSize);
-        bool ComputeCharacterSize(const AppCUI::Application::InitializationData& initData);
+        Graphics::Size FullScreenTerminal();
+        Graphics::Size MaximizeTerminal();
+        Graphics::Size ResizeTerminal(
+              const Application::InitializationData& initData, const Graphics::Size& currentSize);
+        Graphics::Size UpdateTerminalSize(
+              const Application::InitializationData& initData, const Graphics::Size& currentSize);
+        bool ComputeCharacterSize(const Application::InitializationData& initData);
 
       public:
         WindowsTerminal();
-        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
+        virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt) override;
+        virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual ~WindowsTerminal();
     };

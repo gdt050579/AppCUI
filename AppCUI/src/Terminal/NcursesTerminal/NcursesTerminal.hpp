@@ -18,7 +18,7 @@ namespace AppCUI
 {
 namespace Internal
 {
-    using AppColor = AppCUI::Graphics::Color;
+    using AppColor = Graphics::Color;
 
     constexpr size_t NR_APPCUI_COLORS = 16;
 
@@ -58,11 +58,11 @@ namespace Internal
         TerminalMode mode;
 
       public:
-        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
+        virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt) override;
+        virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual void RestoreOriginalConsoleSettings() override;
 

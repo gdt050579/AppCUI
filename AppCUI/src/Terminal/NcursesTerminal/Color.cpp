@@ -3,8 +3,8 @@
 #include "NcursesTerminal.hpp"
 #include "../../Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Graphics;
+using namespace Internal;
+using namespace Graphics;
 
 constexpr size_t EXTENDED_COLORSET_SIZE = 16;
 constexpr size_t REDUCED_COLORSET_SIZE  = 8;
@@ -16,7 +16,7 @@ constexpr std::array<Color, NR_APPCUI_COLORS> TrueColors = {
 };
 
 #define COLOR_LIGHT(color) ((color) | (1 << 3))
-// Mapping from AppCUI::Graphics::Color to ncurses colors
+// Mapping from Graphics::Color to ncurses colors
 constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
     /* Black */ COLOR_BLACK,
     /* DarkBlue */ COLOR_BLUE,
@@ -37,7 +37,7 @@ constexpr std::array<int, NR_APPCUI_COLORS> appcuiColorToCursesColorExtended = {
     /* White */ COLOR_LIGHT(COLOR_WHITE),
 };
 
-// Mapping from AppCUI::Graphics::Color to ncurses colors but only with 8 base colors
+// Mapping from Graphics::Color to ncurses colors but only with 8 base colors
 //constexpr std::array<int, NR_APPCUI_COLORS* NR_APPCUI_COLORS> appcuiColorToCursesColorReduced = {
 //    /* Black */ COLOR_BLACK,
 //    /* DarkBlue */ COLOR_BLUE,

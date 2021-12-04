@@ -1,16 +1,16 @@
 #include "../../Internal.hpp"
 
-using namespace AppCUI::OS;
+using namespace OS;
 
 bool Clipboard::Clear()
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::SetText(const AppCUI::Utils::ConstString&)
+bool Clipboard::SetText(const Utils::ConstString&)
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder&)
+bool Clipboard::GetText(Utils::UnicodeStringBuilder&)
 {
     NOT_IMPLEMENTED(false);
 }

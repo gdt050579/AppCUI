@@ -7,7 +7,7 @@ namespace AppCUI
 {
 namespace Internal
 {
-    std::unique_ptr<AbstractTerminal> GetTerminal(const AppCUI::Application::InitializationData& initData);
+    std::unique_ptr<AbstractTerminal> GetTerminal(const Application::InitializationData& initData);
 }
 } // namespace AppCUI
 

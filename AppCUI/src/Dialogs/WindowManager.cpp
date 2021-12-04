@@ -6,9 +6,9 @@
 #    undef MessageBox
 #endif
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Dialogs;
-using namespace AppCUI::Graphics;
+using namespace Controls;
+using namespace Dialogs;
+using namespace Graphics;
 
 constexpr int BUTTON_ID_GOTO       = 10000;
 constexpr int BUTTON_ID_CLOSE      = 10001;
@@ -23,7 +23,7 @@ struct WinItemInfo
     bool added;
 };
 
-class InternalWindowManager : public AppCUI::Controls::Window
+class InternalWindowManager : public Controls::Window
 {
     Reference<Tree> tree;
     Reference<Button> btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
@@ -31,7 +31,7 @@ class InternalWindowManager : public AppCUI::Controls::Window
     ItemHandle focusedItem;
 
   public:
-    InternalWindowManager() : AppCUI::Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
+    InternalWindowManager() : Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
     {
     }
     bool Create();
@@ -273,7 +273,7 @@ bool InternalWindowManager::Create()
           "");
 
     // add all existing windows
-    const auto app = AppCUI::Application::GetApplication();
+    const auto app = Application::GetApplication();
     CHECK(app != nullptr, false, "");
     CHECK(app->AppDesktop != nullptr, false, "");
     CHECK(app->AppDesktop->Context != nullptr, false, "");
@@ -312,7 +312,7 @@ bool InternalWindowManager::Create()
     return true;
 }
 
-void AppCUI::Dialogs::WindowManager::Show()
+void Dialogs::WindowManager::Show()
 {
     if (InternalWindowManager dlg; dlg.Create())
     {

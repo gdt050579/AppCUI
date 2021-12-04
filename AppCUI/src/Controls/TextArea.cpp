@@ -1,10 +1,10 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-using namespace AppCUI::OS;
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
+using namespace OS;
 
 #define LINE_NUMBERS_WIDTH 4
 #define INVALID_SELECTION  0xFFFFFFFF
@@ -216,7 +216,7 @@ void TextAreaControlContext::UpdateLines()
     {
         if (this->handlers != nullptr)
         {
-            auto t_h = (AppCUI::Controls::Handlers::TextControl*) this->handlers.get();
+            auto t_h = (Controls::Handlers::TextControl*) this->handlers.get();
             if (t_h->OnTextColor.obj)
             {
                 t_h->OnTextColor.obj->OnTextColor(this->Host, this->Text.GetBuffer(), this->Text.Len());
@@ -730,7 +730,7 @@ void TextAreaControlContext::CopyToClipboard()
 {
     if (this->Selection.Start == INVALID_SELECTION)
         return;
-    if (!AppCUI::OS::Clipboard::SetText(this->Text.SubString(this->Selection.Start, this->Selection.End)))
+    if (!OS::Clipboard::SetText(this->Text.SubString(this->Selection.Start, this->Selection.End)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
     }
@@ -754,7 +754,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
 }
 
-bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16_t UnicodeChar)
 {
     switch (KeyCode)
     {
@@ -907,7 +907,7 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-TextArea::TextArea(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags)
+TextArea::TextArea(const Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
@@ -939,7 +939,7 @@ void TextArea::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
 }
-bool TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool TextArea::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }

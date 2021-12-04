@@ -1,6 +1,8 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Graphics;
 
 Clip::Clip()
 {
@@ -99,3 +101,4 @@ void Clip::Set(const Clip& parent, int x, int y, int width, int height)
     this->ClipRect.Width = this->ClipRect.Height = 0;
     this->Visible                                = false;
 }
+} // namespace AppCUI

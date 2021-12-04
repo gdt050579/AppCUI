@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 using namespace AppCUI;
-using namespace AppCUI::Utils;
+using namespace Utils;
 
 #define CRITICAL_ERROR_STACK_BUFFER_SIZE 0x10000
 #define EXIT_IF_ERROR(condition)                                                                                       \
@@ -20,7 +20,7 @@ using namespace AppCUI::Utils;
     }
 
 void (*fnMessageLogCallbak)(const Log::Message& msg) = nullptr;
-AppCUI::OS::File* logFile                            = nullptr;
+OS::File* logFile                            = nullptr;
 
 const char* _severity_type_names_[5] = {
     "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
@@ -106,7 +106,7 @@ void Log::SetLogCallback(void (*callback)(const Message&))
     fnMessageLogCallbak = callback;
 }
 
-void _write_to_file_callback_(const AppCUI::Log::Message& msg)
+void _write_to_file_callback_(const Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if ((_LogMessage_to_String_(msg, tmpString, true, true)) && (logFile))
@@ -118,7 +118,7 @@ bool Log::ToFile(const std::filesystem::path& fileName)
 {
     if (logFile == nullptr)
     {
-        if ((logFile = new AppCUI::OS::File()) == nullptr)
+        if ((logFile = new OS::File()) == nullptr)
             return false; // fail to allocate memory for File object
     }
     if (logFile->Create(fileName, true) == false)
@@ -133,7 +133,7 @@ bool Log::ToFile(const std::filesystem::path& fileName)
 }
 
 #ifdef OutputDebugString
-void _write_to_OutDebugString_(const AppCUI::Log::Message& msg)
+void _write_to_OutDebugString_(const Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, false, true))
@@ -151,7 +151,7 @@ bool Log::ToOutputDebugString()
     return false; // not on Windows
 }
 
-void _write_to_stderr_callback_(const AppCUI::Log::Message& msg)
+void _write_to_stderr_callback_(const Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, true, true))
@@ -165,7 +165,7 @@ bool Log::ToStdErr()
     return true;
 }
 
-void _write_to_stdout_callback_(const AppCUI::Log::Message& msg)
+void _write_to_stdout_callback_(const Log::Message& msg)
 {
     LocalString<2048> tmpString;
     if (_LogMessage_to_String_(msg, tmpString, true, true))

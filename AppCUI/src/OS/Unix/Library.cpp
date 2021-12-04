@@ -1,6 +1,6 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::OS;
+using namespace OS;
 
 Library::Library()
 {

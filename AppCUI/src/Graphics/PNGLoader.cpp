@@ -1,9 +1,11 @@
 #include "ImageLoader.hpp"
 #include <lodepng.h>
 
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Graphics;
 
-bool AppCUI::Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuffer, unsigned int size)
+bool Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuffer, unsigned int size)
 {
     unsigned int resultedWidth  = 0;
     unsigned int resultedHeight = 0;
@@ -21,9 +23,9 @@ bool AppCUI::Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuff
                   resultedHeight);
 
             // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
-            auto* p      = img.GetPixelsBuffer();
-            auto e       = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
-            auto* c      = temp;
+            auto* p = img.GetPixelsBuffer();
+            auto e  = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
+            auto* c = temp;
             while (c < e)
             {
                 p->Red   = *c++;
@@ -44,3 +46,4 @@ bool AppCUI::Graphics::LoadPNGToImage(Image& img, const unsigned char* imageBuff
         RETURNERROR(false, "Fail to decode PNG buffer !");
     }
 }
+} // namespace AppCUI

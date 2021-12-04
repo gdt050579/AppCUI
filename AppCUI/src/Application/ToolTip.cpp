@@ -1,20 +1,21 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Internal;
+using namespace Graphics;
 
 ToolTipController::ToolTipController()
 {
     this->Visible = false;
     this->Cfg     = nullptr;
 }
-bool ToolTipController::Show(
-      const AppCUI::Utils::ConstString& text, AppCUI::Graphics::Rect& objRect, int screenWidth, int screenHeight)
+bool ToolTipController::Show(const Utils::ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight)
 {
     Visible = false;
     // update Cfg
     if (!this->Cfg)
-        this->Cfg = AppCUI::Application::GetAppConfig();
+        this->Cfg = Application::GetAppConfig();
     CHECK(Text.Set(text), false, "Fail to copy text");
     // compute best size
     auto p        = Text.GetBuffer();
@@ -23,9 +24,9 @@ bool ToolTipController::Show(
     int maxWidth  = screenWidth / 2;
     int w         = 0;
     int bestWidth = 0;
-    while (p<e)
+    while (p < e)
     {
-        if (p->Code ==NEW_LINE_CODE)
+        if (p->Code == NEW_LINE_CODE)
         {
             bestWidth = std::max<>(bestWidth, w);
             p++;
@@ -36,7 +37,7 @@ bool ToolTipController::Show(
         }
         p++;
         w++;
-        if (w>=maxWidth)
+        if (w >= maxWidth)
         {
             bestWidth = maxWidth;
             w         = 0;
@@ -44,7 +45,7 @@ bool ToolTipController::Show(
                 nrLines++;
         }
     }
-    if (w>0)
+    if (w > 0)
     {
         bestWidth = std::max<>(bestWidth, w);
         nrLines++;
@@ -53,8 +54,8 @@ bool ToolTipController::Show(
     nrLines   = std::min<>(nrLines, screenHeight / 4);
     nrLines   = std::max<>(nrLines, 1);   // minimum one line  (sanity check)
     bestWidth = std::max<>(bestWidth, 5); // minimum 5 chars width (sanity check)
-    bestWidth += 2; // one character padding (left & right)
-    
+    bestWidth += 2;                       // one character padding (left & right)
+
     // set TextParams
     if (nrLines == 1)
         TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
@@ -62,23 +63,23 @@ bool ToolTipController::Show(
         TxParams.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
 
     // find best position  (prefer on-top)
-    if (objRect.GetTop()>=(nrLines+1))
+    if (objRect.GetTop() >= (nrLines + 1))
     {
-        const int cx    = objRect.GetCenterX();
-        int x           = cx - bestWidth / 2;
-        auto bestX      = x;
-        x               = std::min<>(x, screenWidth - bestWidth);
-        x               = std::max<>(x, 0);
-        ScreenClip.Set(x, objRect.GetTop() - (nrLines+1), bestWidth, nrLines+1);
+        const int cx = objRect.GetCenterX();
+        int x        = cx - bestWidth / 2;
+        auto bestX   = x;
+        x            = std::min<>(x, screenWidth - bestWidth);
+        x            = std::max<>(x, 0);
+        ScreenClip.Set(x, objRect.GetTop() - (nrLines + 1), bestWidth, nrLines + 1);
         TextRect.Create(0, 0, bestWidth, nrLines, Alignament::TopLeft);
         Arrow.Set(bestWidth / 2 + (bestX - x), nrLines);
         TxParams.X     = 1;
         TxParams.Y     = 0;
         TxParams.Color = Cfg->ToolTip.Text;
-        TxParams.Width = bestWidth-2;
+        TxParams.Width = bestWidth - 2;
         ArrowChar      = SpecialChars::ArrowDown;
 
-        Visible = true; 
+        Visible = true;
         return true;
     }
     // check bottom position
@@ -89,7 +90,7 @@ bool ToolTipController::Show(
         auto bestX   = x;
         x            = std::min<>(x, screenWidth - bestWidth);
         x            = std::max<>(x, 0);
-        ScreenClip.Set(x, objRect.GetBottom() + 1, bestWidth, nrLines+1);
+        ScreenClip.Set(x, objRect.GetBottom() + 1, bestWidth, nrLines + 1);
         TextRect.Create(0, 1, bestWidth, nrLines, Alignament::TopLeft);
         Arrow.Set(bestWidth / 2 + (bestX - x), 0);
         TxParams.X     = 1;
@@ -101,24 +102,26 @@ bool ToolTipController::Show(
         Visible = true;
         return true;
     }
-    // no solution --> ToolTip will not be shown    
+    // no solution --> ToolTip will not be shown
     return false;
 }
 void ToolTipController::Hide()
 {
     this->Visible = false;
 }
-void ToolTipController::Paint(AppCUI::Graphics::Renderer& renderer)
+void ToolTipController::Paint(Graphics::Renderer& renderer)
 {
     if (!Visible)
         return;
-    
-    renderer.FillRect(TextRect.GetLeft(), TextRect.GetTop(), TextRect.GetRight(), TextRect.GetBottom(), ' ', Cfg->ToolTip.Text);
+
+    renderer.FillRect(
+          TextRect.GetLeft(), TextRect.GetTop(), TextRect.GetRight(), TextRect.GetBottom(), ' ', Cfg->ToolTip.Text);
     renderer.WriteSpecialCharacter(Arrow.X, Arrow.Y, ArrowChar, Cfg->ToolTip.Arrow);
     renderer.SetClipMargins(
           TextRect.GetLeft(),
           TextRect.GetTop(),
-          ScreenClip.ClipRect.Width - (TextRect.GetRight()+1),
-          ScreenClip.ClipRect.Height - (TextRect.GetBottom()+1));
+          ScreenClip.ClipRect.Width - (TextRect.GetRight() + 1),
+          ScreenClip.ClipRect.Height - (TextRect.GetBottom() + 1));
     renderer.WriteText(this->Text, TxParams);
 }
+} // namespace AppCUI

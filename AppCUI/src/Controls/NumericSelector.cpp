@@ -1,9 +1,6 @@
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
-
 namespace AppCUI::Controls
 {
 NumericSelector::NumericSelector(
@@ -248,12 +245,12 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         return true;
 
     case Key::Ctrl | Key::C:
-        AppCUI::OS::Clipboard::SetText(cc->stringValue.GetText());
+        OS::Clipboard::SetText(cc->stringValue.GetText());
         return true;
     case Key::Ctrl | Key::V:
     {
         LocalUnicodeStringBuilder<256> b{};
-        AppCUI::OS::Clipboard::GetText(b);
+        OS::Clipboard::GetText(b);
         const std::string output(b);
 
         if (output.empty())
@@ -439,7 +436,7 @@ bool NumericSelector::OnMouseLeave()
     return true;
 }
 
-bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -599,4 +596,4 @@ bool NumericSelector::MaxValueReached() const
     return cc->value == cc->maxValue;
 }
 
-} // namespace AppCUI::Controls
+} // namespace Controls

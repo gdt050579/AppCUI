@@ -1,8 +1,8 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
+using namespace Controls;
+using namespace Input;
+using namespace Graphics;
 
 #define TAB_DISPLAY_MODE_TOP    0
 #define TAB_DISPLAY_MODE_BOTTOM 1
@@ -282,14 +282,14 @@ bool Tab_SetCurrentTabPageByIndex(Tab* t, unsigned int index, bool forceFocus)
     if (Members->Flags && TabFlags::ListView)
     {
         Members->UpdateMargins();
-        AppCUI::Application::RecomputeControlsLayout();
+        Application::RecomputeControlsLayout();
     }
     t->RaiseEvent(Event::TabChanged);
     return res;
 }
 //===================================================================================================================
 
-TabPage::TabPage(const AppCUI::Utils::ConstString& caption)
+TabPage::TabPage(const Utils::ConstString& caption)
     : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);
@@ -331,7 +331,7 @@ Reference<Control> Tab::GetCurrentTab()
         return nullptr;
     return Members->Controls[Members->CurrentControlIndex];
 }
-bool Tab::SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name)
+bool Tab::SetTabPageName(unsigned int index, const Utils::ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab index: %d", index);
@@ -359,7 +359,7 @@ void Tab::OnFocus()
     OnAfterResize(0, 0);
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     Members->UpdateMargins();
-    AppCUI::Application::RecomputeControlsLayout();
+    Application::RecomputeControlsLayout();
 }
 bool Tab::OnMouseLeave()
 {
@@ -382,13 +382,13 @@ bool Tab::OnMouseOver(int x, int y)
     }
     return false;
 }
-void Tab::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void Tab::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)
         SetCurrentTabPageByIndex((unsigned int) Members->HoveredTabIndex);
 }
-bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
+bool Tab::OnKeyEvent(Input::Key keyCode, char16_t)
 {
     switch (keyCode)
     {

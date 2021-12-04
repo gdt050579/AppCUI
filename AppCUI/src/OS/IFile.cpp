@@ -1,7 +1,9 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::OS;
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace OS;
+using namespace Utils;
 
 IFile::~IFile()
 {
@@ -127,3 +129,4 @@ bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
     f.Close();
     return true;
 }
+} // namespace AppCUI

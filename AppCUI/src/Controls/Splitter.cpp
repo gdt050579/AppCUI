@@ -1,8 +1,8 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
 
 #define GATTR_VERTICAL    1024
 #define SPLITTER_BAR_SIZE 1
@@ -203,7 +203,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         }
     }
 }
-bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
+bool Splitter::OnKeyEvent(Input::Key keyCode, char16_t)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if ((Members->Flags & GATTR_VERTICAL) != 0)
@@ -258,12 +258,12 @@ bool Splitter::OnBeforeAddControl(Reference<Control> c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)
+void Splitter::OnMousePressed(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, true);
 }
-void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, false);
@@ -274,7 +274,7 @@ void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
 
     Members->mouseStatus = SplitterMouseStatus::None;
 }
-bool Splitter::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->mouseStatus == SplitterMouseStatus::Drag)

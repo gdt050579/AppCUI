@@ -4,7 +4,7 @@
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
-using namespace AppCUI::Internal;
+using namespace Internal;
 
 bool NcursesTerminal::initScreen()
 {
@@ -36,14 +36,14 @@ bool NcursesTerminal::initScreen()
 
 void NcursesTerminal::OnFlushToScreen()
 {
-    AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
     const size_t width                      = ScreenCanvas.GetWidth();
     const size_t height                     = ScreenCanvas.GetHeight();
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
         {
-            const AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
+            const Graphics::Character ch = charsBuffer[y * width + x];
 
             cchar_t t = { 0, { ch.Code, 0 }, {} };
             colors.SetColor(ch.Color.Foreground, ch.Color.Background);

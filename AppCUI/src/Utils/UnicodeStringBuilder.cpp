@@ -1,7 +1,9 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Utils;
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Utils;
+using namespace Graphics;
 
 constexpr unsigned int LOCAL_BUFFER_FLAG   = 0x80000000;
 constexpr unsigned int MAX_ALLOCATION_SIZE = 0x00FFFFFF;
@@ -18,7 +20,7 @@ void CopyText(char16_t* dest, const T* source, size_t len)
     }
 }
 
-bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
+bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
 {
     // unicode encoding (based on the code described in https://en.wikipedia.org/wiki/UTF-8)
     if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
@@ -117,27 +119,27 @@ UnicodeStringBuilder::UnicodeStringBuilder(char16_t* localBuffer, size_t localBu
 {
     Create(localBuffer, localBufferSize);
 }
-UnicodeStringBuilder::UnicodeStringBuilder(const AppCUI::Utils::ConstString& text)
+UnicodeStringBuilder::UnicodeStringBuilder(const Utils::ConstString& text)
 {
     Create(nullptr, 0);
     if (!Set(text))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const AppCUI::Utils::ConstString& text)
+      char16_t* localBuffer, size_t localBufferSize, const Utils::ConstString& text)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(text))
         Destroy();
 }
-UnicodeStringBuilder::UnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+UnicodeStringBuilder::UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer)
 {
     Create(nullptr, 0);
     if (!Set(charBuffer))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer)
+      char16_t* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(charBuffer))
@@ -196,7 +198,7 @@ UnicodeStringBuilder::~UnicodeStringBuilder()
 {
     Destroy();
 }
-bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
+bool UnicodeStringBuilder::Add(const Utils::ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length + this->length), false, "Fail to resize buffer !");
@@ -241,19 +243,19 @@ bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
 }
-bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
+bool UnicodeStringBuilder::Set(const Utils::ConstString& text)
 {
     this->length = 0;
     return Add(text);
 }
-bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+bool UnicodeStringBuilder::Set(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len()), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars, charBuffer.GetBuffer(), charBuffer.Len());
     this->length = (unsigned int) charBuffer.Len();
     return true;
 }
-bool UnicodeStringBuilder::Add(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+bool UnicodeStringBuilder::Add(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len() + this->length), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars + this->length, charBuffer.GetBuffer(), charBuffer.Len());
@@ -307,3 +309,4 @@ void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
         output = std::u16string_view{ this->chars, this->length };
     }
 }
+} // namespace AppCUI

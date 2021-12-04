@@ -1,9 +1,9 @@
 #include "Internal.hpp"
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
+using namespace Graphics;
+using namespace Controls;
+using namespace Input;
 
 #define CTX ((MenuContext*) this->Context)
 #define CHECK_VALID_ITEM(retValue)     CHECK(menuItem < CTX->ItemsCount, retValue, "Invalid index: %u (should be a value between [0..%u)",(unsigned int)menuItem,CTX->ItemsCount);
@@ -18,11 +18,11 @@ MenuItem::MenuItem()
     Checked           = true;
     SubMenu           = nullptr;
     CommandID         = -1;
-    HotKey            = AppCUI::Input::Key::None;
-    ShortcutKey       = AppCUI::Input::Key::None;
+    HotKey            = Input::Key::None;
+    ShortcutKey       = Input::Key::None;
     HotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, int cmdID, bool checked, AppCUI::Input::Key shortcutKey)
+MenuItem::MenuItem(MenuItemType type, const Utils::ConstString& text, int cmdID, bool checked, Input::Key shortcutKey)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
@@ -35,7 +35,7 @@ MenuItem::MenuItem(MenuItemType type, const AppCUI::Utils::ConstString& text, in
         ShortcutKey = shortcutKey;
     }
 }
-MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
+MenuItem::MenuItem(const Utils::ConstString& text, Menu* subMenu)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
@@ -43,7 +43,7 @@ MenuItem::MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu)
         Type        = MenuItemType::SubMenu;
         Enabled     = true;
         Checked     = false;
-        ShortcutKey = AppCUI::Input::Key::None;
+        ShortcutKey = Input::Key::None;
         SubMenu     = subMenu;
     }
 }
@@ -81,7 +81,7 @@ ItemHandle MenuContext::AddItem(std::unique_ptr<MenuItem> itm)
     this->ItemsCount++;
     return res;
 }
-void MenuContext::Paint(AppCUI::Graphics::Renderer& renderer, bool activ)
+void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
 {
     auto* col = &this->Cfg->Menu.Activ;
     if (!activ)
@@ -309,7 +309,7 @@ bool MenuContext::IsOnMenu(int x, int y)
     ComputeMousePositionInfo(x, y, mpi);
     return mpi.IsOnMenu;
 }
-bool MenuContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
+bool MenuContext::OnMouseWheel(int, int, Input::MouseWheel direction)
 {
     if (this->VisibleItemsCount >= this->ItemsCount)
         return false; // nothing to scroll
@@ -374,9 +374,9 @@ void MenuContext::RunItemAction(unsigned int itemIndex)
 void MenuContext::CloseMenu()
 {
     if (this->Parent)
-        AppCUI::Application::GetApplication()->ShowContextualMenu(this->Parent);
+        Application::GetApplication()->ShowContextualMenu(this->Parent);
     else
-        AppCUI::Application::GetApplication()->CloseContextualMenu();
+        Application::GetApplication()->CloseContextualMenu();
 }
 void MenuContext::UpdateFirstVisibleItem()
 {
@@ -388,7 +388,7 @@ void MenuContext::UpdateFirstVisibleItem()
     if ((this->CurrentItem - this->FirstVisibleItem) >= this->VisibleItemsCount)
         this->FirstVisibleItem = (this->CurrentItem - this->VisibleItemsCount) + 1;
 }
-void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
+void MenuContext::MoveCurrentItemTo(Input::Key keyCode)
 {
     unsigned int idx[MAX_NUMBER_OF_MENU_ITEMS];
     unsigned int idxCount;
@@ -466,7 +466,7 @@ void MenuContext::MoveCurrentItemTo(AppCUI::Input::Key keyCode)
     UpdateFirstVisibleItem();
 }
 // key events
-bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
+bool MenuContext::OnKeyEvent(Input::Key keyCode)
 {
     // check movement keys
     switch (keyCode)
@@ -518,7 +518,7 @@ bool MenuContext::OnKeyEvent(AppCUI::Input::Key keyCode)
     // no binding
     return false;
 }
-bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
+bool MenuContext::ProcessShortCut(Input::Key keyCode)
 {
     for (unsigned int tr=0;tr<this->ItemsCount;tr++)
     {
@@ -552,7 +552,7 @@ bool MenuContext::ProcessShortCut(AppCUI::Input::Key keyCode)
     return false;
 }
 
-void MenuContext::Show(AppCUI::Controls::Menu* me, Reference<AppCUI::Controls::Control> relativeControl, int x, int y, const AppCUI::Graphics::Size& maxSize)
+void MenuContext::Show(Controls::Menu* me, Reference<Controls::Control> relativeControl, int x, int y, const Graphics::Size& maxSize)
 {
     // compute abosolute position
     while (relativeControl.IsValid())
@@ -668,7 +668,7 @@ void MenuContext::Show(AppCUI::Controls::Menu* me, Reference<AppCUI::Controls::C
     this->ButtonUp         = MenuButtonState::Normal;
     this->ButtonDown       = MenuButtonState::Normal;
     // link to application
-    auto* app = AppCUI::Application::GetApplication();
+    auto* app = Application::GetApplication();
     if (app)
         app->ShowContextualMenu(me);
 }
@@ -686,15 +686,15 @@ Menu::~Menu()
     this->Context = nullptr;
 }
 
-ItemHandle Menu::AddCommandItem(const AppCUI::Utils::ConstString& text, int CommandID, AppCUI::Input::Key shortcutKey)
+ItemHandle Menu::AddCommandItem(const Utils::ConstString& text, int CommandID, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Command, text, CommandID, false, shortcutKey));
 }
-ItemHandle Menu::AddCheckItem(const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey)
+ItemHandle Menu::AddCheckItem(const Utils::ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Check, text, CommandID, checked, shortcutKey));
 }
-ItemHandle Menu::AddRadioItem(const AppCUI::Utils::ConstString& text, int CommandID, bool checked, AppCUI::Input::Key shortcutKey)
+ItemHandle Menu::AddRadioItem(const Utils::ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Radio, text, CommandID, checked, shortcutKey));
 }
@@ -702,7 +702,7 @@ ItemHandle Menu::AddSeparator()
 {
     return CTX->AddItem(std::make_unique<MenuItem>());
 }
-ItemHandle Menu::AddSubMenu(const AppCUI::Utils::ConstString& text)
+ItemHandle Menu::AddSubMenu(const Utils::ConstString& text)
 {
     try
     {
@@ -733,11 +733,11 @@ Reference<Menu> Menu::GetSubMenu(ItemHandle menuItem)
     return Reference<Menu>(CTX->Items[(unsigned int) menuItem]->SubMenu);
 }
 
-void Menu::Show(int x, int y, const AppCUI::Graphics::Size& maxSize)
+void Menu::Show(int x, int y, const Graphics::Size& maxSize)
 {
     CTX->Show(this, nullptr, x, y, maxSize);
 }
-void Menu::Show(Reference<Control> parent, int relativeX, int relativeY, const AppCUI::Graphics::Size& maxSize)
+void Menu::Show(Reference<Control> parent, int relativeX, int relativeY, const Graphics::Size& maxSize)
 {
     CTX->Show(this, parent, relativeX, relativeY, maxSize);
 }

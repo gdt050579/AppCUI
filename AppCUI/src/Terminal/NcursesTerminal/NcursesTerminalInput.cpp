@@ -3,8 +3,8 @@
 #include <poll.h>
 #include <string>
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+using namespace Internal;
+using namespace Input;
 
 constexpr int KEY_DELETE      = 0x7F;
 constexpr int INSERT_MODE_KEY = 'i';    // Enter insert mode
@@ -175,7 +175,7 @@ void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
     }
 }
 
-void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
     evnt.eventType = SystemEventType::None;
     evnt.keyCode   = Key::None;

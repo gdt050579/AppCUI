@@ -3,10 +3,10 @@
 #include <poll.h>
 #include <string>
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+using namespace Internal;
+using namespace Input;
 
-bool NcursesTerminal::OnInit(const AppCUI::Application::InitializationData&)
+bool NcursesTerminal::OnInit(const Application::InitializationData&)
 {
     if (!initScreen())
         return false;

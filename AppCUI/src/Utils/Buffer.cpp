@@ -1,7 +1,9 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace Utils;
 
 Buffer::~Buffer()
 {
@@ -90,3 +92,4 @@ void Buffer::Resize(size_t newSize)
     }
     this->length = newSize;
 }
+} // namespace AppCUI

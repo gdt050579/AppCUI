@@ -1,11 +1,11 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
 
 Button::Button(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
+      const Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
     : Control(new ControlContext(), caption, layout,true)
 {
     auto Members             = reinterpret_cast<ControlContext*>(this->Context);
@@ -132,7 +132,7 @@ bool Button::OnKeyEvent(Key KeyCode, char16_t)
     }
     return false;
 }
-bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Button::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     if (IsChecked() == false)
         return false;
@@ -143,13 +143,13 @@ bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
     }
     return false;
 }
-void Button::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Button::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     SetChecked(false);
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-void Button::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Button::OnMousePressed(int, int, Input::MouseButton)
 {
     SetChecked(true);
 }

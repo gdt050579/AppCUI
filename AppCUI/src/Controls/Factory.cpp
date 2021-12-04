@@ -1,488 +1,488 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Utils;
+using namespace Controls;
+using namespace Utils;
 
 #define VALIDATE_PARENT CHECK(parent, nullptr, "Expecting a valid (non-null) parent object !");
-#define POINTER         AppCUI::Utils::Pointer
-#define REFERENCE       AppCUI::Utils::Reference
+#define POINTER         Utils::Pointer
+#define REFERENCE       Utils::Reference
 
 //======[LABEL]======================================================================================
-POINTER<Label> Factory::Label::Create(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+POINTER<Label> Factory::Label::Create(const Utils::ConstString& caption, std::string_view layout)
 {
-    return POINTER<AppCUI::Controls::Label>(new AppCUI::Controls::Label(caption, layout));
+    return POINTER<Controls::Label>(new Controls::Label(caption, layout));
 }
 REFERENCE<Label> Factory::Label::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control* parent, const Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Label>(Factory::Label::Create(caption, layout));
+    return parent->AddControl<Controls::Label>(Factory::Label::Create(caption, layout));
 }
 REFERENCE<Label> Factory::Label::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control& parent, const Utils::ConstString& caption, std::string_view layout)
 {
-    return parent.AddControl<AppCUI::Controls::Label>(Factory::Label::Create(caption, layout));
+    return parent.AddControl<Controls::Label>(Factory::Label::Create(caption, layout));
 }
 //======[BUTTON]=====================================================================================
 POINTER<Button> Factory::Button::Create(
-      const AppCUI::Utils::ConstString& caption,
+      const Utils::ConstString& caption,
       std::string_view layout,
       int controlID,
-      AppCUI::Controls::ButtonFlags flags)
+      Controls::ButtonFlags flags)
 {
-    return POINTER<AppCUI::Controls::Button>(new AppCUI::Controls::Button(caption, layout, controlID, flags));
+    return POINTER<Controls::Button>(new Controls::Button(caption, layout, controlID, flags));
 }
 REFERENCE<Button> Factory::Button::Create(
       Control* parent,
-      const AppCUI::Utils::ConstString& caption,
+      const Utils::ConstString& caption,
       std::string_view layout,
       int controlID,
-      AppCUI::Controls::ButtonFlags flags)
+      Controls::ButtonFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
+    return parent->AddControl<Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
 REFERENCE<Button> Factory::Button::Create(
       Control& parent,
-      const AppCUI::Utils::ConstString& caption,
+      const Utils::ConstString& caption,
       std::string_view layout,
       int controlID,
-      AppCUI::Controls::ButtonFlags flags)
+      Controls::ButtonFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
+    return parent.AddControl<Controls::Button>(Factory::Button::Create(caption, layout, controlID, flags));
 }
 
 //======[PASSWORD]===================================================================================
-POINTER<Password> Factory::Password::Create(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+POINTER<Password> Factory::Password::Create(const Utils::ConstString& caption, std::string_view layout)
 {
-    return POINTER<AppCUI::Controls::Password>(new AppCUI::Controls::Password(caption, layout));
+    return POINTER<Controls::Password>(new Controls::Password(caption, layout));
 }
 REFERENCE<Password> Factory::Password::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control* parent, const Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
+    return parent->AddControl<Controls::Password>(Factory::Password::Create(caption, layout));
 }
 REFERENCE<Password> Factory::Password::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control& parent, const Utils::ConstString& caption, std::string_view layout)
 {
-    return parent.AddControl<AppCUI::Controls::Password>(Factory::Password::Create(caption, layout));
+    return parent.AddControl<Controls::Password>(Factory::Password::Create(caption, layout));
 }
 
 //======[CHECKBOX]===================================================================================
 POINTER<CheckBox> Factory::CheckBox::Create(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)
+      const Utils::ConstString& caption, std::string_view layout, int controlID)
 {
-    return POINTER<AppCUI::Controls::CheckBox>(new AppCUI::Controls::CheckBox(caption, layout, controlID));
+    return POINTER<Controls::CheckBox>(new Controls::CheckBox(caption, layout, controlID));
 }
 REFERENCE<CheckBox> Factory::CheckBox::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)
+      Control* parent, const Utils::ConstString& caption, std::string_view layout, int controlID)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::CheckBox>(Factory::CheckBox::Create(caption, layout, controlID));
+    return parent->AddControl<Controls::CheckBox>(Factory::CheckBox::Create(caption, layout, controlID));
 }
 REFERENCE<CheckBox> Factory::CheckBox::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID)
+      Control& parent, const Utils::ConstString& caption, std::string_view layout, int controlID)
 {
-    return parent.AddControl<AppCUI::Controls::CheckBox>(Factory::CheckBox::Create(caption, layout, controlID));
+    return parent.AddControl<Controls::CheckBox>(Factory::CheckBox::Create(caption, layout, controlID));
 }
 
 //======[RADIOBOX]===================================================================================
 POINTER<RadioBox> Factory::RadioBox::Create(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
+      const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
-    return POINTER<AppCUI::Controls::RadioBox>(new AppCUI::Controls::RadioBox(caption, layout, groupID, controlID));
+    return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
+      Control* parent, const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::RadioBox>(
+    return parent->AddControl<Controls::RadioBox>(
           Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
+      Control& parent, const Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
 {
-    return parent.AddControl<AppCUI::Controls::RadioBox>(
+    return parent.AddControl<Controls::RadioBox>(
           Factory::RadioBox::Create(caption, layout, groupID, controlID));
 }
 
 //======[SPLITTER]===================================================================================
 POINTER<Splitter> Factory::Splitter::Create(std::string_view layout, bool vertical)
 {
-    return POINTER<AppCUI::Controls::Splitter>(new AppCUI::Controls::Splitter(layout, vertical));
+    return POINTER<Controls::Splitter>(new Controls::Splitter(layout, vertical));
 }
 REFERENCE<Splitter> Factory::Splitter::Create(Control* parent, std::string_view layout, bool vertical)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
+    return parent->AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
 }
 REFERENCE<Splitter> Factory::Splitter::Create(Control& parent, std::string_view layout, bool vertical)
 {
-    return parent.AddControl<AppCUI::Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
+    return parent.AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
 }
 
 //======[PANEL]======================================================================================
-POINTER<Panel> Factory::Panel::Create(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+POINTER<Panel> Factory::Panel::Create(const Utils::ConstString& caption, std::string_view layout)
 {
-    return POINTER<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel(caption, layout));
+    return POINTER<Controls::Panel>(new Controls::Panel(caption, layout));
 }
 REFERENCE<Panel> Factory::Panel::Create(
-      Control* parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control* parent, const Utils::ConstString& caption, std::string_view layout)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(caption, layout));
+    return parent->AddControl<Controls::Panel>(Factory::Panel::Create(caption, layout));
 }
 REFERENCE<Panel> Factory::Panel::Create(
-      Control& parent, const AppCUI::Utils::ConstString& caption, std::string_view layout)
+      Control& parent, const Utils::ConstString& caption, std::string_view layout)
 {
-    return parent.AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(caption, layout));
+    return parent.AddControl<Controls::Panel>(Factory::Panel::Create(caption, layout));
 }
 POINTER<Panel> Factory::Panel::Create(std::string_view layout)
 {
-    return POINTER<AppCUI::Controls::Panel>(new AppCUI::Controls::Panel("", layout));
+    return POINTER<Controls::Panel>(new Controls::Panel("", layout));
 }
 REFERENCE<Panel> Factory::Panel::Create(Control* parent, std::string_view layout)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(layout));
+    return parent->AddControl<Controls::Panel>(Factory::Panel::Create(layout));
 }
 REFERENCE<Panel> Factory::Panel::Create(Control& parent, std::string_view layout)
 {
-    return parent.AddControl<AppCUI::Controls::Panel>(Factory::Panel::Create(layout));
+    return parent.AddControl<Controls::Panel>(Factory::Panel::Create(layout));
 }
 
 //======[TEXTFIELD]==================================================================================
 REFERENCE<TextField> Factory::TextField::Create(
-      AppCUI::Controls::Control* parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control* parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags)
+      Controls::TextFieldFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::TextField>(
+    return parent->AddControl<Controls::TextField>(
           Factory::TextField::Create(caption, layout, flags));
 }
 REFERENCE<TextField> Factory::TextField::Create(
-      AppCUI::Controls::Control& parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control& parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags)
+      Controls::TextFieldFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::TextField>(
+    return parent.AddControl<Controls::TextField>(
           Factory::TextField::Create(caption, layout, flags));
 }
-POINTER<AppCUI::Controls::TextField> Factory::TextField::Create(
-      const AppCUI::Utils::ConstString& caption,
+POINTER<Controls::TextField> Factory::TextField::Create(
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextFieldFlags flags)
+      Controls::TextFieldFlags flags)
 {
-    return POINTER<AppCUI::Controls::TextField>(
-          new AppCUI::Controls::TextField(caption, layout, flags));
+    return POINTER<Controls::TextField>(
+          new Controls::TextField(caption, layout, flags));
 }
 
 //======[TEXTAREA]===================================================================================
 REFERENCE<TextArea> Factory::TextArea::Create(
-      AppCUI::Controls::Control* parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control* parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags)
+      Controls::TextAreaFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::TextArea>(
+    return parent->AddControl<Controls::TextArea>(
           Factory::TextArea::Create(caption, layout, flags));
 }
 REFERENCE<TextArea> Factory::TextArea::Create(
-      AppCUI::Controls::Control& parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control& parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags)
+      Controls::TextAreaFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::TextArea>(
+    return parent.AddControl<Controls::TextArea>(
           Factory::TextArea::Create(caption, layout, flags));
 }
-POINTER<AppCUI::Controls::TextArea> Factory::TextArea::Create(
-      const AppCUI::Utils::ConstString& caption,
+POINTER<Controls::TextArea> Factory::TextArea::Create(
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::TextAreaFlags flags)
+      Controls::TextAreaFlags flags)
 {
-    return POINTER<AppCUI::Controls::TextArea>(
-          new AppCUI::Controls::TextArea(caption, layout, flags));
+    return POINTER<Controls::TextArea>(
+          new Controls::TextArea(caption, layout, flags));
 }
 
 //======[TABPAGE]====================================================================================
 REFERENCE<TabPage> Factory::TabPage::Create(
-      AppCUI::Controls::Control* parent, const AppCUI::Utils::ConstString& caption)
+      Controls::Control* parent, const Utils::ConstString& caption)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::TabPage>(Factory::TabPage::Create(caption));
+    return parent->AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
 }
 REFERENCE<TabPage> Factory::TabPage::Create(
-      AppCUI::Controls::Control& parent, const AppCUI::Utils::ConstString& caption)
+      Controls::Control& parent, const Utils::ConstString& caption)
 {
-    return parent.AddControl<AppCUI::Controls::TabPage>(Factory::TabPage::Create(caption));
+    return parent.AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
 }
-POINTER<AppCUI::Controls::TabPage> Factory::TabPage::Create(const AppCUI::Utils::ConstString& caption)
+POINTER<Controls::TabPage> Factory::TabPage::Create(const Utils::ConstString& caption)
 {
-    return POINTER<AppCUI::Controls::TabPage>(new AppCUI::Controls::TabPage(caption));
+    return POINTER<Controls::TabPage>(new Controls::TabPage(caption));
 }
 
 //======[TAB]========================================================================================
 REFERENCE<Tab> Factory::Tab::Create(
-      AppCUI::Controls::Control* parent,
+      Controls::Control* parent,
       std::string_view layout,
-      AppCUI::Controls::TabFlags flags,
+      Controls::TabFlags flags,
       unsigned int tabPageSize)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
+    return parent->AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
 REFERENCE<Tab> Factory::Tab::Create(
-      AppCUI::Controls::Control& parent,
+      Controls::Control& parent,
       std::string_view layout,
-      AppCUI::Controls::TabFlags flags,
+      Controls::TabFlags flags,
       unsigned int tabPageSize)
 {
-    return parent.AddControl<AppCUI::Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
+    return parent.AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
-POINTER<Tab> Factory::Tab::Create(std::string_view layout, AppCUI::Controls::TabFlags flags, unsigned int tabPageSize)
+POINTER<Tab> Factory::Tab::Create(std::string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
 {
-    return POINTER<AppCUI::Controls::Tab>(new AppCUI::Controls::Tab(layout, flags, tabPageSize));
+    return POINTER<Controls::Tab>(new Controls::Tab(layout, flags, tabPageSize));
 }
 
 //======[CANVASVIEWER]===============================================================================
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
-      AppCUI::Controls::Control* parent,
+      Controls::Control* parent,
       std::string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::CanvasViewer>(
+    return parent->AddControl<Controls::CanvasViewer>(
           Factory::CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags));
 }
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
-      AppCUI::Controls::Control& parent,
+      Controls::Control& parent,
       std::string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::CanvasViewer>(
+    return parent.AddControl<Controls::CanvasViewer>(
           Factory::CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags));
 }
-POINTER<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
-      std::string_view layout, unsigned int canvasWidth, unsigned int canvasHeight, AppCUI::Controls::ViewerFlags flags)
+POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
+      std::string_view layout, unsigned int canvasWidth, unsigned int canvasHeight, Controls::ViewerFlags flags)
 {
-    return POINTER<AppCUI::Controls::CanvasViewer>(
-          new AppCUI::Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
+    return POINTER<Controls::CanvasViewer>(
+          new Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
 }
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
-      AppCUI::Controls::Control* parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control* parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::CanvasViewer>(
+    return parent->AddControl<Controls::CanvasViewer>(
           Factory::CanvasViewer::Create(caption, layout, canvasWidth, canvasHeight, flags));
 }
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
-      AppCUI::Controls::Control& parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control& parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::CanvasViewer>(
+    return parent.AddControl<Controls::CanvasViewer>(
           Factory::CanvasViewer::Create(caption, layout, canvasWidth, canvasHeight, flags));
 }
-POINTER<AppCUI::Controls::CanvasViewer> Factory::CanvasViewer::Create(
-      const AppCUI::Utils::ConstString& caption,
+POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
+      const Utils::ConstString& caption,
       std::string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
-    return POINTER<AppCUI::Controls::CanvasViewer>(
-          new AppCUI::Controls::CanvasViewer(caption, layout, canvasWidth, canvasHeight, flags));
+    return POINTER<Controls::CanvasViewer>(
+          new Controls::CanvasViewer(caption, layout, canvasWidth, canvasHeight, flags));
 }
 
 //======[IMAGEVIEWER]================================================================================
-POINTER<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
-      std::string_view layout, AppCUI::Controls::ViewerFlags flags)
+POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(
+      std::string_view layout, Controls::ViewerFlags flags)
 {
-    return POINTER<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer("", layout, flags));
+    return POINTER<Controls::ImageViewer>(new Controls::ImageViewer("", layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      AppCUI::Controls::Control* parent, std::string_view layout, AppCUI::Controls::ViewerFlags flags)
+      Controls::Control* parent, std::string_view layout, Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
+    return parent->AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      AppCUI::Controls::Control& parent, std::string_view layout, AppCUI::Controls::ViewerFlags flags)
+      Controls::Control& parent, std::string_view layout, Controls::ViewerFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
+    return parent.AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
 }
-POINTER<AppCUI::Controls::ImageViewer> Factory::ImageViewer::Create(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, AppCUI::Controls::ViewerFlags flags)
+POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(
+      const Utils::ConstString& caption, std::string_view layout, Controls::ViewerFlags flags)
 {
-    return POINTER<AppCUI::Controls::ImageViewer>(new AppCUI::Controls::ImageViewer(caption, layout, flags));
+    return POINTER<Controls::ImageViewer>(new Controls::ImageViewer(caption, layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      AppCUI::Controls::Control* parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control* parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
+    return parent->AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
 }
 REFERENCE<ImageViewer> Factory::ImageViewer::Create(
-      AppCUI::Controls::Control& parent,
-      const AppCUI::Utils::ConstString& caption,
+      Controls::Control& parent,
+      const Utils::ConstString& caption,
       std::string_view layout,
-      AppCUI::Controls::ViewerFlags flags)
+      Controls::ViewerFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
+    return parent.AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
 }
 
 //======[LISTVIEW]===================================================================================
-POINTER<AppCUI::Controls::ListView> Factory::ListView::Create(
-      std::string_view layout, AppCUI::Controls::ListViewFlags flags)
+POINTER<Controls::ListView> Factory::ListView::Create(
+      std::string_view layout, Controls::ListViewFlags flags)
 {
-    return POINTER<AppCUI::Controls::ListView>(new AppCUI::Controls::ListView(layout, flags));
+    return POINTER<Controls::ListView>(new Controls::ListView(layout, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
-      AppCUI::Controls::Control* parent, std::string_view layout, AppCUI::Controls::ListViewFlags flags)
+      Controls::Control* parent, std::string_view layout, Controls::ListViewFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::ListView>(Factory::ListView::Create(layout, flags));
+    return parent->AddControl<Controls::ListView>(Factory::ListView::Create(layout, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
-      AppCUI::Controls::Control& parent, std::string_view layout, AppCUI::Controls::ListViewFlags flags)
+      Controls::Control& parent, std::string_view layout, Controls::ListViewFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::ListView>(Factory::ListView::Create(layout, flags));
+    return parent.AddControl<Controls::ListView>(Factory::ListView::Create(layout, flags));
 }
 
 //======[COMBOBOX]===================================================================================
-POINTER<AppCUI::Controls::ComboBox> Factory::ComboBox::Create(
-      std::string_view layout, const AppCUI::Utils::ConstString& text, char itemsSeparator)
+POINTER<Controls::ComboBox> Factory::ComboBox::Create(
+      std::string_view layout, const Utils::ConstString& text, char itemsSeparator)
 {
-    return POINTER<AppCUI::Controls::ComboBox>(new AppCUI::Controls::ComboBox(layout, text, itemsSeparator));
+    return POINTER<Controls::ComboBox>(new Controls::ComboBox(layout, text, itemsSeparator));
 }
 
 REFERENCE<ComboBox> Factory::ComboBox::Create(
-      AppCUI::Controls::Control* parent,
+      Controls::Control* parent,
       std::string_view layout,
-      const AppCUI::Utils::ConstString& text,
+      const Utils::ConstString& text,
       char itemsSeparator)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
+    return parent->AddControl<Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
 }
 REFERENCE<ComboBox> Factory::ComboBox::Create(
-      AppCUI::Controls::Control& parent,
+      Controls::Control& parent,
       std::string_view layout,
-      const AppCUI::Utils::ConstString& text,
+      const Utils::ConstString& text,
       char itemsSeparator)
 {
-    return parent.AddControl<AppCUI::Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
+    return parent.AddControl<Controls::ComboBox>(Factory::ComboBox::Create(layout, text, itemsSeparator));
 }
 
 //======[NUMERICSELECTOR]============================================================================
-POINTER<AppCUI::Controls::NumericSelector> Factory::NumericSelector::Create(
+POINTER<Controls::NumericSelector> Factory::NumericSelector::Create(
       const long long minValue, const long long maxValue, long long value, std::string_view layout)
 {
-    return POINTER<AppCUI::Controls::NumericSelector>(
-          new AppCUI::Controls::NumericSelector(minValue, maxValue, value, layout));
+    return POINTER<Controls::NumericSelector>(
+          new Controls::NumericSelector(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
-      AppCUI::Controls::Control* parent,
+      Controls::Control* parent,
       const long long minValue,
       const long long maxValue,
       long long value,
       std::string_view layout)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::NumericSelector>(
+    return parent->AddControl<Controls::NumericSelector>(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
-      AppCUI::Controls::Control& parent,
+      Controls::Control& parent,
       const long long minValue,
       const long long maxValue,
       long long value,
       std::string_view layout)
 {
-    return parent.AddControl<AppCUI::Controls::NumericSelector>(
+    return parent.AddControl<Controls::NumericSelector>(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }
 
 //======[WINDOW]=====================================================================================
-POINTER<AppCUI::Controls::Window> Factory::Window::Create(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, AppCUI::Controls::WindowFlags flags)
+POINTER<Controls::Window> Factory::Window::Create(
+      const Utils::ConstString& caption, std::string_view layout, Controls::WindowFlags flags)
 {
-    return POINTER<AppCUI::Controls::Window>(new AppCUI::Controls::Window(caption, layout, flags));
+    return POINTER<Controls::Window>(new Controls::Window(caption, layout, flags));
 }
 
 //======[DESKTOP]====================================================================================
-POINTER<AppCUI::Controls::Desktop> Factory::Desktop::Create()
+POINTER<Controls::Desktop> Factory::Desktop::Create()
 {
-    return POINTER<AppCUI::Controls::Desktop>(new AppCUI::Controls::Desktop());
+    return POINTER<Controls::Desktop>(new Controls::Desktop());
 }
 
 //======[TREE]=======================================================================================
-POINTER<AppCUI::Controls::Tree> Factory::Tree::Create(
+POINTER<Controls::Tree> Factory::Tree::Create(
       std::string_view layout, TreeFlags flags, const unsigned int noOfColumns)
 {
-    return POINTER<AppCUI::Controls::Tree>(new AppCUI::Controls::Tree(layout, flags, noOfColumns));
+    return POINTER<Controls::Tree>(new Controls::Tree(layout, flags, noOfColumns));
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      AppCUI::Controls::Control* parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+      Controls::Control* parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+    return parent->AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      AppCUI::Controls::Control& parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+      Controls::Control& parent, std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
 {
-    return parent.AddControl<AppCUI::Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+    return parent.AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 //======[GRID]=======================================================================================
-Pointer<AppCUI::Controls::Grid> Factory::Grid::Create(
-      std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, AppCUI::Controls::GridFlags flags)
+Pointer<Controls::Grid> Factory::Grid::Create(
+      std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, Controls::GridFlags flags)
 {
-    return POINTER<AppCUI::Controls::Grid>(new AppCUI::Controls::Grid(layout, columnsNo, rowsNo, flags));
+    return POINTER<Controls::Grid>(new Controls::Grid(layout, columnsNo, rowsNo, flags));
 }
 
-Reference<AppCUI::Controls::Grid> Factory::Grid::Create(
-      AppCUI::Controls::Control* parent,
+Reference<Controls::Grid> Factory::Grid::Create(
+      Controls::Control* parent,
       std::string_view layout,
       unsigned int columnsNo,
       unsigned int rowsNo,
-      AppCUI::Controls::GridFlags flags)
+      Controls::GridFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
+    return parent->AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
 
-Reference<AppCUI::Controls::Grid> Factory::Grid::Create(
-      AppCUI::Controls::Control& parent,
+Reference<Controls::Grid> Factory::Grid::Create(
+      Controls::Control& parent,
       std::string_view layout,
       unsigned int columnsNo,
       unsigned int rowsNo,
-      AppCUI::Controls::GridFlags flags)
+      Controls::GridFlags flags)
 {
-    return parent.AddControl<AppCUI::Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
+    return parent.AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
 
 #undef VALIDATE_PARENT

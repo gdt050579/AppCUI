@@ -1,7 +1,9 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace Utils;
 
 #define ARRAY32_FLAG_STACK_BUFFER 0x80000000
 #define VALIDATE_ALLOCATED_SPACE(requiredItems, returnValue)                                                           \
@@ -200,3 +202,4 @@ bool Array32::Sort(int (*compare)(unsigned int elem1, unsigned int elem2, void* 
     __HeapSortContext<unsigned int>(Data, compare, this->Count, ascendent, Context);
     return true;
 }
+} // namespace AppCUI
