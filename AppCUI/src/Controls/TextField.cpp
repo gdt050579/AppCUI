@@ -121,7 +121,7 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     if (Members->Cursor.Pos >= (int) Members->Text.Len())
         return;
     auto currentChar                = Members->Text.GetBuffer()[Members->Cursor.Pos];
-    std::optional<unsigned int> res = std::nullopt;
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
@@ -153,7 +153,7 @@ void TextField_MoveToPreviousWord(TextField* control, bool selected)
         return;
     auto startPoz                   = Members->Cursor.Pos - 1;
     auto currentChar                = Members->Text.GetBuffer()[startPoz];
-    std::optional<unsigned int> res = std::nullopt;
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {

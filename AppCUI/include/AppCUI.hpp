@@ -185,8 +185,9 @@ namespace AppCUI
 {
 namespace StdIncludes
 {
-    using std::unique_ptr;
+    using std::optional;
     using std::string_view;
+    using std::unique_ptr;
 } // namespace StdIncludes
 
 using namespace StdIncludes;
@@ -978,27 +979,27 @@ namespace Utils
     };
     namespace Number
     {
-        EXPORT std::optional<unsigned long long> ToUInt64(
+        EXPORT optional<unsigned long long> ToUInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned int> ToUInt32(
+        EXPORT optional<unsigned int> ToUInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned short> ToUInt16(
+        EXPORT optional<unsigned short> ToUInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned char> ToUInt8(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-
-        EXPORT std::optional<long long> ToInt64(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<int> ToInt32(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<short> ToInt16(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<char> ToInt8(
+        EXPORT optional<unsigned char> ToUInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
-        EXPORT std::optional<float> ToFloat(
+        EXPORT optional<long long> ToInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<double> ToDouble(
+        EXPORT optional<int> ToInt32(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<short> ToInt16(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<char> ToInt8(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+
+        EXPORT optional<float> ToFloat(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<double> ToDouble(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
     }; // namespace Number
@@ -1459,23 +1460,23 @@ namespace Utils
         {
         }
 
-        std::optional<unsigned long long> AsUInt64() const;
-        std::optional<long long> AsInt64() const;
-        std::optional<unsigned int> AsUInt32() const;
-        std::optional<int> AsInt32() const;
-        std::optional<bool> AsBool() const;
-        std::optional<Input::Key> AsKey() const;
-        inline std::optional<const char*> AsString() const
+        optional<unsigned long long> AsUInt64() const;
+        optional<long long> AsInt64() const;
+        optional<unsigned int> AsUInt32() const;
+        optional<int> AsInt32() const;
+        optional<bool> AsBool() const;
+        optional<Input::Key> AsKey() const;
+        inline optional<const char*> AsString() const
         {
             return text;
         }
-        inline std::optional<string_view> AsStringView() const
+        inline optional<string_view> AsStringView() const
         {
             return string_view(text, len);
         };
-        std::optional<Graphics::Size> AsSize() const;
-        std::optional<float> AsFloat() const;
-        std::optional<double> AsDouble() const;
+        optional<Graphics::Size> AsSize() const;
+        optional<float> AsFloat() const;
+        optional<double> AsDouble() const;
 
         unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
@@ -1504,17 +1505,17 @@ namespace Utils
         }
         IniValue(void* data) : Data(data){};
 
-        std::optional<unsigned long long> AsUInt64() const;
-        std::optional<long long> AsInt64() const;
-        std::optional<unsigned int> AsUInt32() const;
-        std::optional<int> AsInt32() const;
-        std::optional<bool> AsBool() const;
-        std::optional<Input::Key> AsKey() const;
-        std::optional<const char*> AsString() const;
-        std::optional<string_view> AsStringView() const;
-        std::optional<Graphics::Size> AsSize() const;
-        std::optional<float> AsFloat() const;
-        std::optional<double> AsDouble() const;
+        optional<unsigned long long> AsUInt64() const;
+        optional<long long> AsInt64() const;
+        optional<unsigned int> AsUInt32() const;
+        optional<int> AsInt32() const;
+        optional<bool> AsBool() const;
+        optional<Input::Key> AsKey() const;
+        optional<const char*> AsString() const;
+        optional<string_view> AsStringView() const;
+        optional<Graphics::Size> AsSize() const;
+        optional<float> AsFloat() const;
+        optional<double> AsDouble() const;
 
         unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
@@ -2049,9 +2050,9 @@ namespace Graphics
             return Find(text, ignoreCase) != -1;
         }
         int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
-        std::optional<unsigned int> FindNext(
+        optional<unsigned int> FindNext(
               unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
-        std::optional<unsigned int> FindPrevious(
+        optional<unsigned int> FindPrevious(
               unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
@@ -4115,11 +4116,11 @@ namespace Dialogs
         // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
 
       public:
-        static std::optional<std::filesystem::path> ShowSaveFileWindow(
+        static optional<std::filesystem::path> ShowSaveFileWindow(
               const Utils::ConstString& fileName,
               const Utils::ConstString& extensionsFilter,
               const std::filesystem::path& path);
-        static std::optional<std::filesystem::path> ShowOpenFileWindow(
+        static optional<std::filesystem::path> ShowOpenFileWindow(
               const Utils::ConstString& fileName,
               const Utils::ConstString& extensionsFilter,
               const std::filesystem::path& path);

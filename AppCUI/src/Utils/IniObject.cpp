@@ -825,7 +825,7 @@ void IniSection::UpdateValue(
 }
 //============================================================================= INI Value ===
 
-std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
+optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
 {
     auto v = 0U;
     switch (len)
@@ -867,7 +867,7 @@ std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
     RETURNERROR(
           std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-std::optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
+optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
 {
     const char* start = txt;
     const char* end   = start + len;
@@ -902,32 +902,32 @@ std::optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
     return Graphics::Size(width, height);
 }
 
-std::optional<unsigned long long> IniValue::AsUInt64() const
+optional<unsigned long long> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt64(static_cast<string_view>(value->KeyValue));
 }
-std::optional<long long> IniValue::AsInt64() const
+optional<long long> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt64(static_cast<string_view>(value->KeyValue));
 }
-std::optional<unsigned int> IniValue::AsUInt32() const
+optional<unsigned int> IniValue::AsUInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt32(static_cast<string_view>(value->KeyValue));
 }
-std::optional<int> IniValue::AsInt32() const
+optional<int> IniValue::AsInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt32(static_cast<string_view>(value->KeyValue));
 }
-std::optional<bool> IniValue::AsBool() const
+optional<bool> IniValue::AsBool() const
 {
     VALIDATE_VALUE(std::nullopt);
     return IniValue_ToBool(value->KeyValue.c_str(), (unsigned int) value->KeyValue.length());
 }
-std::optional<Input::Key> IniValue::AsKey() const
+optional<Input::Key> IniValue::AsKey() const
 {
     VALIDATE_VALUE(std::nullopt);
     Key k = KeyUtils::FromString((static_cast<string_view>(value->KeyValue)));
@@ -935,27 +935,27 @@ std::optional<Input::Key> IniValue::AsKey() const
         return std::nullopt;
     return k;
 }
-std::optional<const char*> IniValue::AsString() const
+optional<const char*> IniValue::AsString() const
 {
     VALIDATE_VALUE(std::nullopt);
     return value->KeyValue.c_str();
 }
-std::optional<string_view> IniValue::AsStringView() const
+optional<string_view> IniValue::AsStringView() const
 {
     VALIDATE_VALUE(std::nullopt);
     return static_cast<string_view>(value->KeyValue);
 }
-std::optional<Graphics::Size> IniValue::AsSize() const
+optional<Graphics::Size> IniValue::AsSize() const
 {
     VALIDATE_VALUE(std::nullopt);
     return IniValue_ToSize(value->KeyValue.c_str(), (unsigned int) value->KeyValue.size());
 }
-std::optional<float> IniValue::AsFloat() const
+optional<float> IniValue::AsFloat() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToFloat((static_cast<string_view>(value->KeyValue)));
 }
-std::optional<double> IniValue::AsDouble() const
+optional<double> IniValue::AsDouble() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToDouble((static_cast<string_view>(value->KeyValue)));
@@ -1207,42 +1207,42 @@ void IniValue::operator=(const std::initializer_list<double>& values)
     IniValueSetVector<double>(this->Data, values);
 }
 //============================================================================= INI Array Value ===
-std::optional<unsigned long long> IniValueArray::AsUInt64() const
+optional<unsigned long long> IniValueArray::AsUInt64() const
 {
     return Number::ToUInt64(string_view(text, len));
 }
-std::optional<long long> IniValueArray::AsInt64() const
+optional<long long> IniValueArray::AsInt64() const
 {
     return Number::ToInt64(string_view(text, len));
 }
-std::optional<unsigned int> IniValueArray::AsUInt32() const
+optional<unsigned int> IniValueArray::AsUInt32() const
 {
     return Number::ToUInt32(string_view(text, len));
 }
-std::optional<int> IniValueArray::AsInt32() const
+optional<int> IniValueArray::AsInt32() const
 {
     return Number::ToInt32(string_view(text, len));
 }
-std::optional<bool> IniValueArray::AsBool() const
+optional<bool> IniValueArray::AsBool() const
 {
     return IniValue_ToBool(text, len);
 }
-std::optional<Input::Key> IniValueArray::AsKey() const
+optional<Input::Key> IniValueArray::AsKey() const
 {
     Key k = KeyUtils::FromString(string_view(text, len));
     if (k == Key::None)
         return std::nullopt;
     return k;
 }
-std::optional<Graphics::Size> IniValueArray::AsSize() const
+optional<Graphics::Size> IniValueArray::AsSize() const
 {
     return IniValue_ToSize(text, len);
 }
-std::optional<float> IniValueArray::AsFloat() const
+optional<float> IniValueArray::AsFloat() const
 {
     return Number::ToFloat(string_view(text, len));
 }
-std::optional<double> IniValueArray::AsDouble() const
+optional<double> IniValueArray::AsDouble() const
 {
     return Number::ToDouble(string_view(text, len));
 }

@@ -605,7 +605,7 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
     return true;
 }
 
-std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
+optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
@@ -614,7 +614,7 @@ std::optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
         return dlg.GetResultedPath();
     return std::nullopt;
 }
-std::optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
+optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(true, fileName, extensionsFilter, path);

@@ -259,7 +259,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
         else
         {
-            const std::optional<long long> value = Number::ToUInt64(output);
+            const optional<long long> value = Number::ToUInt64(output);
             if (value.has_value())
             {
                 cc->insertionModevalue = value.value();

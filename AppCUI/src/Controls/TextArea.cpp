@@ -575,7 +575,7 @@ void TextAreaControlContext::MoveToPreviousWord(bool selected)
         return;
     auto startPoz                   = View.CurrentPosition - 1;
     auto currentChar                = this->Text.GetBuffer()[startPoz];
-    std::optional<unsigned int> res = std::nullopt;
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
@@ -612,7 +612,7 @@ void TextAreaControlContext::MoveToNextWord(bool selected)
     if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
         return;
     auto currentChar                = this->Text.GetBuffer()[View.CurrentPosition];
-    std::optional<unsigned int> res = std::nullopt;
+    optional<unsigned int> res = std::nullopt;
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = this->Text.FindNext(

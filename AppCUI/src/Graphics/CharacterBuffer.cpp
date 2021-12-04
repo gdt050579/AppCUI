@@ -669,7 +669,7 @@ int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) co
     return 0;
 }
 
-std::optional<unsigned int> CharacterBuffer::FindNext(
+optional<unsigned int> CharacterBuffer::FindNext(
       unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
 {
     CHECK(this->Buffer, std::nullopt, "Object not initialized ");
@@ -684,7 +684,7 @@ std::optional<unsigned int> CharacterBuffer::FindNext(
     }
     return startOffset;
 }
-std::optional<unsigned int> CharacterBuffer::FindPrevious(
+optional<unsigned int> CharacterBuffer::FindPrevious(
       unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
 {
     CHECK(this->Buffer, std::nullopt, "Object not initialized ");

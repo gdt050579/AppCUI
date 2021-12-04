@@ -163,7 +163,7 @@ inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberPars
     return true;
 }
 
-std::optional<unsigned long long> ToUInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<unsigned long long> ToUInt64(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -171,7 +171,7 @@ std::optional<unsigned long long> ToUInt64(string_view text, NumberParseFlags fl
           "Invalid format for an unsigned long long value");
     return res.Value;
 }
-std::optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -180,7 +180,7 @@ std::optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, u
     CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an unsigned int variable");
     return (unsigned int) (res.Value);
 }
-std::optional<unsigned short> ToUInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<unsigned short> ToUInt16(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -189,7 +189,7 @@ std::optional<unsigned short> ToUInt16(string_view text, NumberParseFlags flags,
     CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an unsigned short variable");
     return (unsigned short) (res.Value);
 }
-std::optional<unsigned char> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<unsigned char> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -198,7 +198,7 @@ std::optional<unsigned char> ToUInt8(string_view text, NumberParseFlags flags, u
     CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an unsigned char variable");
     return (unsigned char) (res.Value);
 }
-std::optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a char value");
@@ -213,7 +213,7 @@ std::optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned in
         return (char) (res.Value);
     }
 }
-std::optional<short> ToInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<short> ToInt16(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a short value");
@@ -228,7 +228,7 @@ std::optional<short> ToInt16(string_view text, NumberParseFlags flags, unsigned 
         return (short) (res.Value);
     }
 }
-std::optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an int value");
@@ -243,7 +243,7 @@ std::optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned in
         return (int) (res.Value);
     }
 }
-std::optional<long long> ToInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<long long> ToInt64(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a long long value");
@@ -260,7 +260,7 @@ std::optional<long long> ToInt64(string_view text, NumberParseFlags flags, unsig
         return (long long) (res.Value);
     }
 }
-std::optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     float f = (float) res.Value;
@@ -270,7 +270,7 @@ std::optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned 
         f = -f;
     return f;
 }
-std::optional<double> ToDouble(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<double> ToDouble(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     double f = (double) res.Value;
