@@ -906,7 +906,7 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-TextArea::TextArea(const Utils::ConstString& caption, string_view layout, TextAreaFlags flags)
+TextArea::TextArea(const ConstString& caption, string_view layout, TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);

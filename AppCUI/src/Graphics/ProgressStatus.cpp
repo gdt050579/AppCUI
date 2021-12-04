@@ -145,7 +145,7 @@ void ProgressStatus_ComputeTime(unsigned long long time)
     PSData.timeString[index]   = 0;
     PSData.timeStringSize      = index;
 }
-void ProgressStatus::Init(const Utils::ConstString& Title, unsigned long long maxValue)
+void ProgressStatus::Init(const ConstString& Title, unsigned long long maxValue)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
@@ -176,7 +176,7 @@ void ProgressStatus::Init(const Utils::ConstString& Title, unsigned long long ma
     PSData.StartTime          = std::chrono::steady_clock::now();
     progress_inited           = true;
 }
-bool __ProgressStatus_Update(unsigned long long value, const Utils::ConstString* content)
+bool __ProgressStatus_Update(unsigned long long value, const ConstString* content)
 {
     CHECK(progress_inited,
           true,
@@ -287,7 +287,7 @@ bool __ProgressStatus_Update(unsigned long long value, const Utils::ConstString*
     return false;
 }
 
-bool ProgressStatus::Update(unsigned long long value, const Utils::ConstString& content)
+bool ProgressStatus::Update(unsigned long long value, const ConstString& content)
 {
     return __ProgressStatus_Update(value, &content);
 }

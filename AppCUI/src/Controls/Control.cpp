@@ -1213,7 +1213,7 @@ Controls::Control::~Control()
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
 Controls::Control::Control(
-      void* context, const Utils::ConstString& caption, string_view layout, bool computeHotKey)
+      void* context, const ConstString& caption, string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
     Application::Config* cfg = Application::GetAppConfig();
@@ -1223,7 +1223,7 @@ Controls::Control::Control(
     ctx->Inited   = false;
     ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 
-    Utils::ConstStringObject captionObj(caption);
+    ConstStringObject captionObj(caption);
     if (computeHotKey)
     {
         ctx->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
@@ -1525,7 +1525,7 @@ void Controls::Control::RecomputeLayout()
 
     Application::RecomputeControlsLayout();
 }
-bool Controls::Control::SetText(const Utils::ConstString& caption, bool updateHotKey)
+bool Controls::Control::SetText(const ConstString& caption, bool updateHotKey)
 {
     if (OnBeforeSetText(caption) == false)
         return false;
@@ -1567,7 +1567,7 @@ bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
         OnAfterSetText();
     return true;
 }
-bool Controls::Control::SetTextWithHotKey(const Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+bool Controls::Control::SetTextWithHotKey(const ConstString& caption, unsigned int hotKeyTextOffset)
 {
     CHECK(SetText(caption), false, "");
     ConstStringObject txt(caption);
@@ -1710,13 +1710,13 @@ bool Controls::Control::SetFocus()
     // UpdateCommandBar(this);
     return true;
 }
-bool Controls::Control::ShowToolTip(const Utils::ConstString& caption)
+bool Controls::Control::ShowToolTip(const ConstString& caption)
 {
     auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption);
 }
-bool Controls::Control::ShowToolTip(const Utils::ConstString& caption, int x, int y)
+bool Controls::Control::ShowToolTip(const ConstString& caption, int x, int y)
 {
     auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
@@ -1825,7 +1825,7 @@ void Controls::Control::OnAfterAddControl(Reference<Control>)
     if (CTRLC->ControlsCount == 1)
         CTRLC->CurrentControlIndex = 0;
 }
-bool Controls::Control::OnBeforeSetText(const Utils::ConstString&)
+bool Controls::Control::OnBeforeSetText(const ConstString&)
 {
     return true;
 }

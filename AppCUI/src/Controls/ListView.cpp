@@ -34,7 +34,7 @@ void ListViewColumn::Reset()
     this->Width        = 10;
     this->Name.Clear();
 }
-bool ListViewColumn::SetName(const Utils::ConstString& text)
+bool ListViewColumn::SetName(const ConstString& text)
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -430,7 +430,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     }
 }
 // coloane
-bool ListViewControlContext::AddColumn(const Utils::ConstString& text, TextAlignament Align, unsigned int width)
+bool ListViewControlContext::AddColumn(const ConstString& text, TextAlignament Align, unsigned int width)
 {
     CHECK(Columns.Count < MAX_LISTVIEW_COLUMNS, false, "");
     Columns.List[Columns.Count].Reset();
@@ -466,7 +466,7 @@ int ListViewControlContext::GetNrColumns()
     return Columns.Count;
 }
 
-ItemHandle ListViewControlContext::AddItem(const Utils::ConstString& text)
+ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (unsigned int) Items.List.size();
     Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
@@ -474,7 +474,7 @@ ItemHandle ListViewControlContext::AddItem(const Utils::ConstString& text)
     SetItemText(idx, 0, text);
     return idx;
 }
-bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const Utils::ConstString& text)
+bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     CHECK(subItem < Columns.Count,
@@ -1454,11 +1454,11 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
-bool ListView::AddColumn(const Utils::ConstString& text, TextAlignament Align, unsigned int Size)
+bool ListView::AddColumn(const ConstString& text, TextAlignament Align, unsigned int Size)
 {
     return WRAPPER->AddColumn(text, Align, Size);
 }
-bool ListView::SetColumnText(unsigned int columnIndex, const Utils::ConstString& text)
+bool ListView::SetColumnText(unsigned int columnIndex, const ConstString& text)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count,
           false,
@@ -1511,11 +1511,11 @@ unsigned int ListView::GetColumnsCount()
     return WRAPPER->GetNrColumns();
 }
 
-ItemHandle ListView::AddItem(const Utils::ConstString& text)
+ItemHandle ListView::AddItem(const ConstString& text)
 {
     return WRAPPER->AddItem(text);
 }
-ItemHandle ListView::AddItem(const Utils::ConstString& text, const Utils::ConstString& subItem1)
+ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1523,7 +1523,7 @@ ItemHandle ListView::AddItem(const Utils::ConstString& text, const Utils::ConstS
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text, const Utils::ConstString& subItem1, const Utils::ConstString& subItem2)
+      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1532,10 +1532,10 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1545,11 +1545,11 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3,
-      const Utils::ConstString& subItem4)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1560,12 +1560,12 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3,
-      const Utils::ConstString& subItem4,
-      const Utils::ConstString& subItem5)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1577,13 +1577,13 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3,
-      const Utils::ConstString& subItem4,
-      const Utils::ConstString& subItem5,
-      const Utils::ConstString& subItem6)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1596,14 +1596,14 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3,
-      const Utils::ConstString& subItem4,
-      const Utils::ConstString& subItem5,
-      const Utils::ConstString& subItem6,
-      const Utils::ConstString& subItem7)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6,
+      const ConstString& subItem7)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1617,15 +1617,15 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const Utils::ConstString& text,
-      const Utils::ConstString& subItem1,
-      const Utils::ConstString& subItem2,
-      const Utils::ConstString& subItem3,
-      const Utils::ConstString& subItem4,
-      const Utils::ConstString& subItem5,
-      const Utils::ConstString& subItem6,
-      const Utils::ConstString& subItem7,
-      const Utils::ConstString& subItem8)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6,
+      const ConstString& subItem7,
+      const ConstString& subItem8)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1640,7 +1640,7 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 
-bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const Utils::ConstString& text)
+bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text)
 {
     return WRAPPER->SetItemText(item, subItem, text);
 }

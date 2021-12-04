@@ -51,9 +51,9 @@ bool Clipboard::HasText()
 {
     return ((IsClipboardFormatAvailable(CF_TEXT)) || (IsClipboardFormatAvailable(CF_UNICODETEXT)));
 }
-bool Clipboard::SetText(const Utils::ConstString& text)
+bool Clipboard::SetText(const ConstString& text)
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     CHECK(textObj.Data != nullptr, false, "Text should be different than nullptr !");
 
     Utils::LocalUnicodeStringBuilder<1024> unicode;

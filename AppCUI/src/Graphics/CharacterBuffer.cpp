@@ -280,9 +280,9 @@ bool CharacterBuffer::Set(const CharacterBuffer& obj)
     this->Count = obj.Count;
     return true;
 }
-bool CharacterBuffer::Add(const Utils::ConstString& text, const ColorPair color)
+bool CharacterBuffer::Add(const ConstString& text, const ColorPair color)
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
 
     if (textObj.Length == 0)
@@ -321,19 +321,19 @@ bool CharacterBuffer::Add(const Utils::ConstString& text, const ColorPair color)
     this->Count += (unsigned int) sz;
     return true;
 }
-bool CharacterBuffer::Set(const Utils::ConstString& text, const ColorPair color)
+bool CharacterBuffer::Set(const ConstString& text, const ColorPair color)
 {
     this->Count = 0;
     return Add(text, color);
 }
 bool CharacterBuffer::SetWithHotKey(
-      const Utils::ConstString& text,
+      const ConstString& text,
       unsigned int& hotKeyCharacterPosition,
       Input::Key& hotKey,
       Input::Key hotKeyModifier,
       const ColorPair color)
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
     hotKeyCharacterPosition = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     hotKey                  = Input::Key::None;
@@ -426,9 +426,9 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
     this->Count--;
     return true;
 }
-bool CharacterBuffer::Insert(const Utils::ConstString& text, unsigned int position, const ColorPair color)
+bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, const ColorPair color)
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
 
     if (textObj.Length == 0)
@@ -592,9 +592,9 @@ bool CharacterBuffer::CopyString(Utils::String& text)
 {
     return CopyString(text, 0, this->Count);
 }
-int CharacterBuffer::Find(const Utils::ConstString& text, bool ignoreCase) const
+int CharacterBuffer::Find(const ConstString& text, bool ignoreCase) const
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
 
     CHECK(textObj.Data, -1, "Expecting a valid (non-null) string");

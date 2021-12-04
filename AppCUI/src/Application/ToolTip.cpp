@@ -9,7 +9,7 @@ ToolTipController::ToolTipController()
     this->Visible = false;
     this->Cfg     = nullptr;
 }
-bool ToolTipController::Show(const Utils::ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight)
+bool ToolTipController::Show(const ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight)
 {
     Visible = false;
     // update Cfg

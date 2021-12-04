@@ -290,7 +290,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
 }
 //=========================================================================================================================================================
 ItemHandle Controls::WindowControlsBar::AddCommandItem(
-      const Utils::ConstString& name, int ID, const Utils::ConstString& toolTip)
+      const ConstString& name, int ID, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -306,7 +306,7 @@ ItemHandle Controls::WindowControlsBar::AddCommandItem(
     return Members->ControlBar.Count - 1;
 }
 ItemHandle Controls::WindowControlsBar::AddSingleChoiceItem(
-      const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip)
+      const ConstString& name, int ID, bool checked, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -327,7 +327,7 @@ ItemHandle Controls::WindowControlsBar::AddSingleChoiceItem(
     return Members->ControlBar.Count - 1;
 }
 ItemHandle Controls::WindowControlsBar::AddCheckItem(
-      const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip)
+      const ConstString& name, int ID, bool checked, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -347,7 +347,7 @@ ItemHandle Controls::WindowControlsBar::AddCheckItem(
     return Members->ControlBar.Count - 1;
 }
 ItemHandle Controls::WindowControlsBar::AddTextItem(
-      const Utils::ConstString& caption, const Utils::ConstString& toolTip)
+      const ConstString& caption, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -375,7 +375,7 @@ WindowBarItem* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
           "");
     return b;
 }
-bool Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const Utils::ConstString& caption)
+bool Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -388,7 +388,7 @@ bool Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const Utils
     return true;
 }
 bool Controls::WindowControlsBar::SetItemTextWithHotKey(
-      ItemHandle itemHandle, const Utils::ConstString& caption, unsigned int hotKeyTextOffset)
+      ItemHandle itemHandle, const ConstString& caption, unsigned int hotKeyTextOffset)
 {
     CHECK(SetItemText(itemHandle, caption), false, "");
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
@@ -424,7 +424,7 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
     }
     return true;
 }
-bool Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const Utils::ConstString& caption)
+bool Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -509,8 +509,8 @@ bool WindowBarItem::Init(
 bool WindowBarItem::Init(
       WindowBarItemType type,
       WindowControlsBarLayout layout,
-      const Utils::ConstString& name,
-      const Utils::ConstString& toolTip)
+      const ConstString& name,
+      const ConstString& toolTip)
 {
     this->Type         = type;
     this->Layout       = layout;
@@ -522,14 +522,14 @@ bool WindowBarItem::Init(
     this->HotKey       = Key::None;
     this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     // name
-    Utils::ConstStringObject objName(name);
+    ConstStringObject objName(name);
     CHECK(objName.Length > 0, false, "Expecting a valid item name (non-empty)");
     CHECK(this->Text.SetWithHotKey(name, this->HotKeyOffset, this->HotKey, Key::Alt), false, "Fail to create name !");
     this->Size = this->Text.Len();
     if (type == WindowBarItemType::CheckBox)
         this->Size += 2; // for the checkmark
     // tool tip
-    Utils::ConstStringObject objToolTip(toolTip);
+    ConstStringObject objToolTip(toolTip);
     if (objToolTip.Length > 0)
     {
         CHECK(this->ToolTipText.Set(toolTip), false, "");
@@ -542,7 +542,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-Window::Window(const Utils::ConstString& caption, string_view layout, WindowFlags Flags)
+Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags)
     : Control(new WindowControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);
@@ -1106,7 +1106,7 @@ void Window::OnHotKeyChanged()
     }
     UpdateWindowsButtonsPoz(Members);
 }
-void Window::SetTag(const Utils::ConstString& name, const Utils::ConstString& toolTipText)
+void Window::SetTag(const ConstString& name, const ConstString& toolTipText)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find tag win button
@@ -1180,7 +1180,7 @@ bool Window::IsWindowInResizeMode()
     return (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE);
 }
 
-Reference<Menu> Window::AddMenu(const Utils::ConstString& name)
+Reference<Menu> Window::AddMenu(const ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);
     CHECK(Members->menu, nullptr, "Application was not initialized with Menu option set up !");

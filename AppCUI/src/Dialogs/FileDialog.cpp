@@ -107,8 +107,8 @@ class FileDialogWindow : public Window
   public:
     FileDialogWindow(
           bool open,
-          const Utils::ConstString& fileName,
-          const Utils::ConstString& extensionsFilter,
+          const ConstString& fileName,
+          const ConstString& extensionsFilter,
           const std::filesystem::path& _path);
 
     bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
@@ -135,7 +135,7 @@ class FileDialogWindow : public Window
     bool openDialog;
 
     void LoadAllSpecialLocations();
-    bool ProcessExtensionFilter(const Utils::ConstString& extensionsFilter);
+    bool ProcessExtensionFilter(const ConstString& extensionsFilter);
 
     void SpecialFoldersUpdatePath();
     void UpdateCurrentExtensionFilter();
@@ -168,8 +168,8 @@ std::filesystem::path CanonizePath(std::filesystem::path p)
 
 FileDialogWindow::FileDialogWindow(
       bool open,
-      const Utils::ConstString& fileName,
-      const Utils::ConstString& extensionsFilter,
+      const ConstString& fileName,
+      const ConstString& extensionsFilter,
       const std::filesystem::path& specifiedPath)
     : Window(open ? "Open" : "Save", "w:78,h:23,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
 {
@@ -268,7 +268,7 @@ std::filesystem::path FileDialogWindow::GetResultedPath() const
     return resultedPath;
 }
 
-bool FileDialogWindow::ProcessExtensionFilter(const Utils::ConstString& extensiosFilter)
+bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter)
 {
     // format is: <Name>:ext|<Name>:ext| ...
     //        or: <Name>:ext1,ext2,ext3|<Name>:ext|....
@@ -606,7 +606,7 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
 }
 
 optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
-      const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
+      const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
     const int res = dlg.Show();
@@ -615,7 +615,7 @@ optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
     return std::nullopt;
 }
 optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
-      const Utils::ConstString& fileName, const Utils::ConstString& extensionsFilter, const std::filesystem::path& path)
+      const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(true, fileName, extensionsFilter, path);
     const int res = dlg.Show();

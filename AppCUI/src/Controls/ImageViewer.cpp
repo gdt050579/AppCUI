@@ -3,7 +3,7 @@
 
 namespace AppCUI::Controls
 {
-ImageViewer::ImageViewer(const Utils::ConstString& caption, string_view layout, ViewerFlags flags)
+ImageViewer::ImageViewer(const ConstString& caption, string_view layout, ViewerFlags flags)
     : CanvasViewer(caption, layout, 16, 16, flags)
 {
 }

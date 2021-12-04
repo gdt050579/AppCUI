@@ -425,6 +425,7 @@ namespace Utils
         }
     };
 } // namespace Utils
+using Utils::ConstString;
 namespace Application
 {
     struct Config;
@@ -881,8 +882,8 @@ namespace Utils
       public:
         UnicodeStringBuilder();
         UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize);
-        UnicodeStringBuilder(const Utils::ConstString& text);
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const Utils::ConstString& text);
+        UnicodeStringBuilder(const ConstString& text);
+        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const ConstString& text);
         UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer);
         UnicodeStringBuilder(
               char16_t* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
@@ -893,9 +894,9 @@ namespace Utils
         ~UnicodeStringBuilder();
         void Destroy();
 
-        bool Set(const Utils::ConstString& text);
+        bool Set(const ConstString& text);
         bool Set(const Graphics::CharacterBuffer& charBuffer);
-        bool Add(const Utils::ConstString& text);
+        bool Add(const ConstString& text);
         bool Add(const Graphics::CharacterBuffer& charBuffer);
         bool AddChar(char16_t ch);
         bool Resize(size_t size);
@@ -947,7 +948,7 @@ namespace Utils
         {
             return u16string_view{ chars, (size_t) length };
         }
-        inline UnicodeStringBuilder& operator+=(const Utils::ConstString& text)
+        inline UnicodeStringBuilder& operator+=(const ConstString& text)
         {
             Add(text);
             return *this;
@@ -957,7 +958,7 @@ namespace Utils
             Add(charBuffer);
             return *this;
         }
-        inline UnicodeStringBuilder& operator=(const Utils::ConstString& text)
+        inline UnicodeStringBuilder& operator=(const ConstString& text)
         {
             Set(text);
             return *this;
@@ -1358,7 +1359,7 @@ namespace Utils
             : UnicodeStringBuilder(tempBuffer, size, charBuffer)
         {
         }
-        LocalUnicodeStringBuilder(const Utils::ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text)
+        LocalUnicodeStringBuilder(const ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text)
         {
         }
     };
@@ -1651,7 +1652,7 @@ namespace OS
         Clipboard() = delete;
 
       public:
-        static bool SetText(const Utils::ConstString& text);
+        static bool SetText(const ConstString& text);
         static bool GetText(Utils::UnicodeStringBuilder& text);
         static bool Clear();
         static bool HasText();
@@ -1855,8 +1856,8 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const Utils::ConstString& Title, unsigned long long maxValue = 0);
-        bool EXPORT Update(unsigned long long value, const Utils::ConstString& content);
+        void EXPORT Init(const ConstString& Title, unsigned long long maxValue = 0);
+        bool EXPORT Update(unsigned long long value, const ConstString& content);
         bool EXPORT Update(unsigned long long value);
     }; // namespace ProgressStatus
 
@@ -2026,10 +2027,10 @@ namespace Graphics
         bool Resize(unsigned int size, char16_t character = ' ', const ColorPair color = NoColorPair);
         bool Fill(char16_t character, unsigned int size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
-        bool Add(const Utils::ConstString& text, const ColorPair color = NoColorPair);
-        bool Set(const Utils::ConstString& text, const ColorPair color = NoColorPair);
+        bool Add(const ConstString& text, const ColorPair color = NoColorPair);
+        bool Set(const ConstString& text, const ColorPair color = NoColorPair);
         bool SetWithHotKey(
-              const Utils::ConstString& text,
+              const ConstString& text,
               unsigned int& hotKeyCharacterPosition,
               Input::Key& hotKey,
               Input::Key hotKeyModifier = Input::Key::None,
@@ -2037,7 +2038,7 @@ namespace Graphics
 
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
-        bool Insert(const Utils::ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
+        bool Insert(const ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
         bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
         bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
         void SetColor(const ColorPair color);
@@ -2046,8 +2047,8 @@ namespace Graphics
         bool ConvertToUpper(unsigned int start, unsigned int end);
         bool ConvertToLower(unsigned int start, unsigned int end);
 
-        int Find(const Utils::ConstString& text, bool ignoreCase = true) const;
-        inline bool Contains(const Utils::ConstString& text, bool ignoreCase = true) const
+        int Find(const ConstString& text, bool ignoreCase = true) const;
+        inline bool Contains(const ConstString& text, bool ignoreCase = true) const
         {
             return Find(text, ignoreCase) != -1;
         }
@@ -2265,36 +2266,31 @@ namespace Graphics
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 
         // Texts
-        bool WriteText(const Utils::ConstString& text, const WriteTextParams& params);
+        bool WriteText(const ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
         bool WriteSingleLineCharacterBuffer(
               int x, int y, Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
-        bool WriteSingleLineText(int x, int y, const Utils::ConstString& text, ColorPair color);
-        bool WriteSingleLineText(int x, int y, const Utils::ConstString& text, ColorPair color, TextAlignament align);
+        bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
+        bool WriteSingleLineText(
+              int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
         bool WriteSingleLineText(
               int x,
               int y,
-              const Utils::ConstString& text,
-              ColorPair color,
-              ColorPair hotKeyColor,
-              unsigned int hotKeyOffset);
-        bool WriteSingleLineText(
-              int x,
-              int y,
-              const Utils::ConstString& text,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
               unsigned int hotKeyOffset,
               TextAlignament align);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const Utils::ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, unsigned int width, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(
-              int x, int y, unsigned int width, const Utils::ConstString& text, ColorPair color, TextAlignament align);
+              int x, int y, unsigned int width, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
               int x,
               int y,
               unsigned int width,
-              const Utils::ConstString& text,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
               unsigned int hotKeyOffset);
@@ -2302,7 +2298,7 @@ namespace Graphics
               int x,
               int y,
               unsigned int width,
-              const Utils::ConstString& text,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
               unsigned int hotKeyOffset,
@@ -2685,14 +2681,14 @@ namespace Controls
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
-        bool ShowToolTip(const Utils::ConstString& caption);
-        bool ShowToolTip(const Utils::ConstString& caption, int x, int y);
+        bool ShowToolTip(const ConstString& caption);
+        bool ShowToolTip(const ConstString& caption, int x, int y);
         void HideToolTip();
 
         Reference<Control> AddChildControl(unique_ptr<Control> control);
 
         // protected constructor
-        Control(void* context, const Utils::ConstString& caption, string_view layout, bool computeHotKey);
+        Control(void* context, const ConstString& caption, string_view layout, bool computeHotKey);
 
       public:
         template <typename T>
@@ -2770,9 +2766,9 @@ namespace Controls
         void PackView();
 
         // Text
-        bool SetText(const Utils::ConstString& caption, bool updateHotKey = false);
+        bool SetText(const ConstString& caption, bool updateHotKey = false);
         bool SetText(const Graphics::CharacterBuffer& caption);
-        bool SetTextWithHotKey(const Utils::ConstString& caption, unsigned int hotKeyTextOffset);
+        bool SetTextWithHotKey(const ConstString& caption, unsigned int hotKeyTextOffset);
         const Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
@@ -2811,7 +2807,7 @@ namespace Controls
         virtual bool OnBeforeAddControl(Reference<Control> ctrl);
         virtual void OnAfterAddControl(Reference<Control> ctrl);
         virtual void OnControlRemoved(Reference<Control> ctrl);
-        virtual bool OnBeforeSetText(const Utils::ConstString& text);
+        virtual bool OnBeforeSetText(const ConstString& text);
         virtual void OnAfterSetText();
 
         virtual void OnExpandView(Graphics::Clip& expandedClip);
@@ -2849,15 +2845,15 @@ namespace Controls
         }
 
       public:
-        ItemHandle AddCommandItem(const Utils::ConstString& name, int ID, const Utils::ConstString& toolTip = "");
+        ItemHandle AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip = "");
         ItemHandle AddSingleChoiceItem(
-              const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip = string_view());
+              const ConstString& name, int ID, bool checked, const ConstString& toolTip = string_view());
         ItemHandle AddCheckItem(
-              const Utils::ConstString& name, int ID, bool checked, const Utils::ConstString& toolTip = string_view());
-        ItemHandle AddTextItem(const Utils::ConstString& caption, const Utils::ConstString& toolTip = "");
-        bool SetItemText(ItemHandle itemHandle, const Utils::ConstString& caption);
-        bool SetItemTextWithHotKey(ItemHandle itemHandle, const Utils::ConstString& caption, unsigned int hotKeyOffset);
-        bool SetItemToolTip(ItemHandle itemHandle, const Utils::ConstString& toolTipText);
+              const ConstString& name, int ID, bool checked, const ConstString& toolTip = string_view());
+        ItemHandle AddTextItem(const ConstString& caption, const ConstString& toolTip = "");
+        bool SetItemText(ItemHandle itemHandle, const ConstString& caption);
+        bool SetItemTextWithHotKey(ItemHandle itemHandle, const ConstString& caption, unsigned int hotKeyOffset);
+        bool SetItemToolTip(ItemHandle itemHandle, const ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
         bool IsItemVisible(ItemHandle itemHandle);
@@ -2870,7 +2866,7 @@ namespace Controls
         bool ProcessControlBarItem(unsigned int index);
 
       protected:
-        Window(const Utils::ConstString& caption, string_view layout, WindowFlags windowsFlags);
+        Window(const ConstString& caption, string_view layout, WindowFlags windowsFlags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2885,7 +2881,7 @@ namespace Controls
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
-        void SetTag(const Utils::ConstString& name, const Utils::ConstString& toolTipText);
+        void SetTag(const ConstString& name, const ConstString& toolTipText);
         const Graphics::CharacterBuffer& GetTag();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -2896,7 +2892,7 @@ namespace Controls
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
-        Reference<Menu> AddMenu(const Utils::ConstString& name);
+        Reference<Menu> AddMenu(const ConstString& name);
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
@@ -2906,7 +2902,7 @@ namespace Controls
     };
     class EXPORT Label : public Control
     {
-        Label(const Utils::ConstString& caption, string_view layout);
+        Label(const ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2922,7 +2918,7 @@ namespace Controls
     class EXPORT Button : public Control
     {
       protected:
-        Button(const Utils::ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
+        Button(const ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
 
       public:
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
@@ -2943,7 +2939,7 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       protected:
-        CheckBox(const Utils::ConstString& caption, string_view layout, int controlID);
+        CheckBox(const ConstString& caption, string_view layout, int controlID);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -2962,7 +2958,7 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const Utils::ConstString& caption, string_view layout, int groupID, int controlID);
+        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -3011,7 +3007,7 @@ namespace Controls
     class EXPORT Password : public Control
     {
       protected:
-        Password(const Utils::ConstString& caption, string_view layout);
+        Password(const ConstString& caption, string_view layout);
 
       public:
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
@@ -3028,7 +3024,7 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       protected:
-        Panel(const Utils::ConstString& caption, string_view layout);
+        Panel(const ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3046,7 +3042,7 @@ namespace Controls
     class EXPORT TextField : public Control
     {
       protected:
-        TextField(const Utils::ConstString& caption, string_view layout, TextFieldFlags flags);
+        TextField(const ConstString& caption, string_view layout, TextFieldFlags flags);
 
       public:
         bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
@@ -3093,7 +3089,7 @@ namespace Controls
     class EXPORT TextArea : public Control
     {
       protected:
-        TextArea(const Utils::ConstString& caption, string_view layout, TextAreaFlags flags);
+        TextArea(const ConstString& caption, string_view layout, TextAreaFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3127,7 +3123,7 @@ namespace Controls
     class EXPORT TabPage : public Control
     {
       protected:
-        TabPage(const Utils::ConstString& caption);
+        TabPage(const ConstString& caption);
 
       public:
         bool OnBeforeResize(int newWidth, int newHeight);
@@ -3149,7 +3145,7 @@ namespace Controls
             return SetCurrentTabPageByRef(page.template DownCast<Control>());
         }
         bool SetTabPageTitleSize(unsigned int newSize);
-        bool SetTabPageName(unsigned int index, const Utils::ConstString& name);
+        bool SetTabPageName(unsigned int index, const ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -3166,7 +3162,7 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const Utils::ConstString& caption, string_view layout);
+        UserControl(const ConstString& caption, string_view layout);
         UserControl(string_view layout);
     };
     enum class ViewerFlags : unsigned int
@@ -3178,7 +3174,7 @@ namespace Controls
     {
       protected:
         CanvasViewer(
-              const Utils::ConstString& caption,
+              const ConstString& caption,
               string_view layout,
               unsigned int canvasWidth,
               unsigned int canvasHeight,
@@ -3203,7 +3199,7 @@ namespace Controls
     class EXPORT ImageViewer : public CanvasViewer
     {
       protected:
-        ImageViewer(const Utils::ConstString& caption, string_view layout, ViewerFlags flags);
+        ImageViewer(const ConstString& caption, string_view layout, ViewerFlags flags);
 
       public:
         bool SetImage(
@@ -3260,8 +3256,8 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const Utils::ConstString& text, Graphics::TextAlignament Align, unsigned int Size = 10);
-        bool SetColumnText(unsigned int columnIndex, const Utils::ConstString& text);
+        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, unsigned int Size = 10);
+        bool SetColumnText(unsigned int columnIndex, const ConstString& text);
         bool SetColumnAlignament(unsigned int columnIndex, Graphics::TextAlignament Align);
         bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
         bool SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
@@ -3271,58 +3267,57 @@ namespace Controls
         unsigned int GetColumnsCount();
 
         // items add
-        ItemHandle AddItem(const Utils::ConstString& text);
-        ItemHandle AddItem(const Utils::ConstString& text, const Utils::ConstString& subItem1);
+        ItemHandle AddItem(const ConstString& text);
+        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
+        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
         ItemHandle AddItem(
-              const Utils::ConstString& text, const Utils::ConstString& subItem1, const Utils::ConstString& subItem2);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3);
         ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4);
         ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3,
-              const Utils::ConstString& subItem4);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5);
         ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3,
-              const Utils::ConstString& subItem4,
-              const Utils::ConstString& subItem5);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6);
         ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3,
-              const Utils::ConstString& subItem4,
-              const Utils::ConstString& subItem5,
-              const Utils::ConstString& subItem6);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6,
+              const ConstString& subItem7);
         ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3,
-              const Utils::ConstString& subItem4,
-              const Utils::ConstString& subItem5,
-              const Utils::ConstString& subItem6,
-              const Utils::ConstString& subItem7);
-        ItemHandle AddItem(
-              const Utils::ConstString& text,
-              const Utils::ConstString& subItem1,
-              const Utils::ConstString& subItem2,
-              const Utils::ConstString& subItem3,
-              const Utils::ConstString& subItem4,
-              const Utils::ConstString& subItem5,
-              const Utils::ConstString& subItem6,
-              const Utils::ConstString& subItem7,
-              const Utils::ConstString& subItem8);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6,
+              const ConstString& subItem7,
+              const ConstString& subItem8);
 
         // items properties
-        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const Utils::ConstString& text);
+        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const ConstString& text);
         const Graphics::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
         bool SetItemCheck(ItemHandle item, bool check);
         bool SetItemSelect(ItemHandle item, bool select);
@@ -3379,10 +3374,10 @@ namespace Controls
       private:
         GenericRef GetItemDataAsPointer(unsigned int index) const;
         bool SetItemDataAsPointer(unsigned int index, GenericRef obj);
-        bool AddItem(const Utils::ConstString& caption, GenericRef userData);
+        bool AddItem(const ConstString& caption, GenericRef userData);
 
       protected:
-        ComboBox(string_view layout, const Utils::ConstString& text, char itemsSeparator);
+        ComboBox(string_view layout, const ConstString& text, char itemsSeparator);
 
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
@@ -3420,17 +3415,17 @@ namespace Controls
         void SetNoIndexSelected();
 
         template <typename T>
-        inline bool AddItem(const Utils::ConstString& caption, Reference<T> obj)
+        inline bool AddItem(const ConstString& caption, Reference<T> obj)
         {
             return AddItem(caption, obj.ToGenericRef());
         }
-        bool AddItem(const Utils::ConstString& caption, unsigned long long usedData);
-        inline bool AddItem(const Utils::ConstString& caption)
+        bool AddItem(const ConstString& caption, unsigned long long usedData);
+        inline bool AddItem(const ConstString& caption)
         {
             return AddItem(caption, GenericRef(nullptr));
         }
 
-        bool AddSeparator(const Utils::ConstString& caption = "");
+        bool AddSeparator(const ConstString& caption = "");
         void DeleteAllItems();
 
         bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
@@ -3458,20 +3453,13 @@ namespace Controls
         Menu(const Menu& obj) = delete;
         ~Menu();
 
-        ItemHandle AddCommandItem(
-              const Utils::ConstString& text, int CommandID, Input::Key shortcutKey = Input::Key::None);
+        ItemHandle AddCommandItem(const ConstString& text, int CommandID, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddCheckItem(
-              const Utils::ConstString& text,
-              int CommandID,
-              bool checked           = false,
-              Input::Key shortcutKey = Input::Key::None);
+              const ConstString& text, int CommandID, bool checked = false, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddRadioItem(
-              const Utils::ConstString& text,
-              int CommandID,
-              bool checked           = false,
-              Input::Key shortcutKey = Input::Key::None);
+              const ConstString& text, int CommandID, bool checked = false, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddSeparator();
-        ItemHandle AddSubMenu(const Utils::ConstString& text);
+        ItemHandle AddSubMenu(const ConstString& text);
 
         Reference<Menu> GetSubMenu(ItemHandle menuItem);
 
@@ -3614,7 +3602,7 @@ namespace Controls
               const Graphics::TextAlignament contentAlignment,
               const unsigned int width = 0xFFFFFFFF);
         const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
-        bool SetItemMetadata(ItemHandle handle, const Utils::ConstString& metadata);
+        bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
 
       private:
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
@@ -3733,10 +3721,10 @@ namespace Controls
 
           public:
             static Reference<Controls::Label> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
             static Reference<Controls::Label> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
-            static Pointer<Controls::Label> Create(const Utils::ConstString& caption, string_view layout);
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Label> Create(const ConstString& caption, string_view layout);
         };
         class EXPORT Button
         {
@@ -3745,18 +3733,18 @@ namespace Controls
           public:
             static Reference<Controls::Button> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   int controlID     = 0,
                   ButtonFlags flags = ButtonFlags::None);
             static Reference<Controls::Button> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   int controlID     = 0,
                   ButtonFlags flags = ButtonFlags::None);
             static Pointer<Controls::Button> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   int controlID               = 0,
                   Controls::ButtonFlags flags = Controls::ButtonFlags::None);
@@ -3767,10 +3755,10 @@ namespace Controls
 
           public:
             static Reference<Controls::Password> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
             static Reference<Controls::Password> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
-            static Pointer<Controls::Password> Create(const Utils::ConstString& caption, string_view layout);
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Password> Create(const ConstString& caption, string_view layout);
         };
         class EXPORT CheckBox
         {
@@ -3778,11 +3766,11 @@ namespace Controls
 
           public:
             static Reference<Controls::CheckBox> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout, int controlID = 0);
+                  Controls::Control* parent, const ConstString& caption, string_view layout, int controlID = 0);
             static Reference<Controls::CheckBox> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout, int controlID = 0);
+                  Controls::Control& parent, const ConstString& caption, string_view layout, int controlID = 0);
             static Pointer<Controls::CheckBox> Create(
-                  const Utils::ConstString& caption, string_view layout, int controlID = 0);
+                  const ConstString& caption, string_view layout, int controlID = 0);
         };
         class EXPORT RadioBox
         {
@@ -3790,16 +3778,16 @@ namespace Controls
 
           public:
             static Pointer<Controls::RadioBox> Create(
-                  const Utils::ConstString& caption, string_view layout, int groupID, int controlID = 0);
+                  const ConstString& caption, string_view layout, int groupID, int controlID = 0);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   int groupID,
                   int controlID = 0);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   int groupID,
                   int controlID = 0);
@@ -3819,10 +3807,10 @@ namespace Controls
 
           public:
             static Reference<Controls::Panel> Create(
-                  Controls::Control* parent, const Utils::ConstString& caption, string_view layout);
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
             static Reference<Controls::Panel> Create(
-                  Controls::Control& parent, const Utils::ConstString& caption, string_view layout);
-            static Pointer<Controls::Panel> Create(const Utils::ConstString& caption, string_view layout);
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Panel> Create(const ConstString& caption, string_view layout);
             static Reference<Controls::Panel> Create(Controls::Control* parent, string_view layout);
             static Reference<Controls::Panel> Create(Controls::Control& parent, string_view layout);
             static Pointer<Controls::Panel> Create(string_view layout);
@@ -3834,16 +3822,16 @@ namespace Controls
           public:
             static Reference<Controls::TextField> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
             static Reference<Controls::TextField> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
             static Pointer<Controls::TextField> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
         };
@@ -3854,16 +3842,16 @@ namespace Controls
           public:
             static Reference<Controls::TextArea> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
             static Reference<Controls::TextArea> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
             static Pointer<Controls::TextArea> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
         };
@@ -3872,9 +3860,9 @@ namespace Controls
             TabPage() = delete;
 
           public:
-            static Reference<Controls::TabPage> Create(Controls::Control* parent, const Utils::ConstString& caption);
-            static Reference<Controls::TabPage> Create(Controls::Control& parent, const Utils::ConstString& caption);
-            static Pointer<Controls::TabPage> Create(const Utils::ConstString& caption);
+            static Reference<Controls::TabPage> Create(Controls::Control* parent, const ConstString& caption);
+            static Reference<Controls::TabPage> Create(Controls::Control& parent, const ConstString& caption);
+            static Pointer<Controls::TabPage> Create(const ConstString& caption);
         };
         class EXPORT Tab
         {
@@ -3920,20 +3908,20 @@ namespace Controls
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Pointer<Controls::CanvasViewer> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   unsigned int canvasWidth,
                   unsigned int canvasHeight,
@@ -3955,17 +3943,17 @@ namespace Controls
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Pointer<Controls::ImageViewer> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control* parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::ImageViewer> Create(
                   Controls::Control& parent,
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
         };
@@ -3991,18 +3979,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::ComboBox> Create(
-                  string_view layout, const Utils::ConstString& text = string_view(), char itemsSeparator = ',');
+                  string_view layout, const ConstString& text = string_view(), char itemsSeparator = ',');
 
             static Reference<Controls::ComboBox> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  const Utils::ConstString& text = string_view(),
-                  char itemsSeparator            = ',');
+                  const ConstString& text = string_view(),
+                  char itemsSeparator     = ',');
             static Reference<Controls::ComboBox> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  const Utils::ConstString& text = string_view(),
-                  char itemsSeparator            = ',');
+                  const ConstString& text = string_view(),
+                  char itemsSeparator     = ',');
         };
         class EXPORT NumericSelector
         {
@@ -4030,7 +4018,7 @@ namespace Controls
 
           public:
             static Pointer<Controls::Window> Create(
-                  const Utils::ConstString& caption,
+                  const ConstString& caption,
                   string_view layout,
                   Controls::WindowFlags windowFlags = Controls::WindowFlags::None);
         };
@@ -4094,11 +4082,11 @@ namespace Dialogs
         MessageBox() = delete;
 
       public:
-        static void ShowError(const Utils::ConstString& title, const Utils::ConstString& message);
-        static void ShowNotification(const Utils::ConstString& title, const Utils::ConstString& message);
-        static void ShowWarning(const Utils::ConstString& title, const Utils::ConstString& message);
-        static Result ShowOkCancel(const Utils::ConstString& title, const Utils::ConstString& message);
-        static Result ShowYesNoCancel(const Utils::ConstString& title, const Utils::ConstString& message);
+        static void ShowError(const ConstString& title, const ConstString& message);
+        static void ShowNotification(const ConstString& title, const ConstString& message);
+        static void ShowWarning(const ConstString& title, const ConstString& message);
+        static Result ShowOkCancel(const ConstString& title, const ConstString& message);
+        static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
     };
 
     class EXPORT FileDialog
@@ -4119,13 +4107,9 @@ namespace Dialogs
 
       public:
         static optional<std::filesystem::path> ShowSaveFileWindow(
-              const Utils::ConstString& fileName,
-              const Utils::ConstString& extensionsFilter,
-              const std::filesystem::path& path);
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
         static optional<std::filesystem::path> ShowOpenFileWindow(
-              const Utils::ConstString& fileName,
-              const Utils::ConstString& extensionsFilter,
-              const std::filesystem::path& path);
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
     };
     class EXPORT WindowManager
     {
@@ -4235,7 +4219,7 @@ namespace Application
       public:
         CommandBar();
         void Init(void* controller);
-        bool SetCommand(Input::Key keyCode, const Utils::ConstString& caption, int CommandID);
+        bool SetCommand(Input::Key keyCode, const ConstString& caption, int CommandID);
     };
 
     struct Config
@@ -4492,7 +4476,7 @@ namespace Application
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
     EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
-    EXPORT Controls::Menu* AddMenu(const Utils::ConstString& name);
+    EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
     EXPORT void Repaint();

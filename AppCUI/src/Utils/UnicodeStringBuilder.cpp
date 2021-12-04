@@ -119,14 +119,14 @@ UnicodeStringBuilder::UnicodeStringBuilder(char16_t* localBuffer, size_t localBu
 {
     Create(localBuffer, localBufferSize);
 }
-UnicodeStringBuilder::UnicodeStringBuilder(const Utils::ConstString& text)
+UnicodeStringBuilder::UnicodeStringBuilder(const ConstString& text)
 {
     Create(nullptr, 0);
     if (!Set(text))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const Utils::ConstString& text)
+      char16_t* localBuffer, size_t localBufferSize, const ConstString& text)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(text))
@@ -198,7 +198,7 @@ UnicodeStringBuilder::~UnicodeStringBuilder()
 {
     Destroy();
 }
-bool UnicodeStringBuilder::Add(const Utils::ConstString& text)
+bool UnicodeStringBuilder::Add(const ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length + this->length), false, "Fail to resize buffer !");
@@ -243,7 +243,7 @@ bool UnicodeStringBuilder::Add(const Utils::ConstString& text)
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
 }
-bool UnicodeStringBuilder::Set(const Utils::ConstString& text)
+bool UnicodeStringBuilder::Set(const ConstString& text)
 {
     this->length = 0;
     return Add(text);

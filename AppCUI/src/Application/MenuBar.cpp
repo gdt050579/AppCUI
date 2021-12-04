@@ -30,7 +30,7 @@ Menu* MenuBar::GetMenu(ItemHandle itemHandle)
           (unsigned int) itemHandle);
     return &Items[(unsigned int) itemHandle]->Mnu;
 }
-ItemHandle MenuBar::AddMenu(const Utils::ConstString& name)
+ItemHandle MenuBar::AddMenu(const ConstString& name)
 {
     CHECK(this->ItemsCount < MenuBar::MAX_ITEMS,
           ItemHandle{ NO_ITEM_SELECTED },

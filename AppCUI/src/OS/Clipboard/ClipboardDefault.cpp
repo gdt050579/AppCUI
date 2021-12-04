@@ -6,7 +6,7 @@ bool Clipboard::Clear()
 {
     NOT_IMPLEMENTED(false);
 }
-bool Clipboard::SetText(const Utils::ConstString&)
+bool Clipboard::SetText(const ConstString&)
 {
     NOT_IMPLEMENTED(false);
 }

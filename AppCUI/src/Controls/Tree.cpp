@@ -1770,7 +1770,7 @@ const Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle handle)
     return item.metadata;
 }
 
-bool Tree::SetItemMetadata(ItemHandle handle, const Utils::ConstString& metadata)
+bool Tree::SetItemMetadata(ItemHandle handle, const ConstString& metadata)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

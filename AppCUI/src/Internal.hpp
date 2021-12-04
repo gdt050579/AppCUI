@@ -99,7 +99,7 @@ namespace Internal
         void Paint(Graphics::Renderer& renderer);
         void Clear();
         void SetDesktopSize(unsigned int width, unsigned int height);
-        bool Set(Input::Key keyCode, const Utils::ConstString& caption, int Command);
+        bool Set(Input::Key keyCode, const ConstString& caption, int Command);
         bool SetShiftKey(Input::Key keyCode);
         bool OnMouseMove(int x, int y, bool& repaint);
         bool OnMouseDown();
@@ -134,7 +134,7 @@ namespace Internal
       public:
         MenuBar(Controls::Control* parent = nullptr, int x = 0, int y = 0);
 
-        Controls::ItemHandle AddMenu(const Utils::ConstString& name);
+        Controls::ItemHandle AddMenu(const ConstString& name);
         Controls::Menu* GetMenu(Controls::ItemHandle itemHandle);
         void RecomputePositions();
         void SetWidth(unsigned int value);
@@ -187,7 +187,7 @@ namespace Internal
 
       public:
         ToolTipController();
-        bool Show(const Utils::ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight);
+        bool Show(const ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight);
         void Hide();
         void Paint(Graphics::Renderer& renderer);
     };
@@ -281,8 +281,8 @@ namespace Internal
               Utils::Reference<Controls::Control> sourceControl,
               Controls::Event eventType,
               int controlID);
-        bool SetToolTip(Controls::Control* control, const Utils::ConstString& text);
-        bool SetToolTip(Controls::Control* control, const Utils::ConstString& text, int x, int y);
+        bool SetToolTip(Controls::Control* control, const ConstString& text);
+        bool SetToolTip(Controls::Control* control, const ConstString& text, int x, int y);
 
         void ArrangeWindows(Application::ArangeWindowsMethod method);
     };

@@ -20,7 +20,7 @@ ComboBoxItem::ComboBoxItem() : Data(nullptr)
     this->Index     = ComboBox::NO_ITEM_SELECTED;
 }
 ComboBoxItem::ComboBoxItem(
-      const Utils::ConstString& caption,
+      const ConstString& caption,
       variant<GenericRef, unsigned long long> userData,
       unsigned int index,
       bool separator)
@@ -75,7 +75,7 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 
 bool ComboBox_AddItem(
       ComboBox* control,
-      const Utils::ConstString& caption,
+      const ConstString& caption,
       bool separator,
       variant<GenericRef, unsigned long long> userData)
 {
@@ -190,7 +190,7 @@ ComboBox::~ComboBox()
 {
     DELETE_CONTROL_CONTEXT(ComboBoxControlContext);
 }
-ComboBox::ComboBox(string_view layout, const Utils::ConstString& text, char itemsSeparator)
+ComboBox::ComboBox(string_view layout, const ConstString& text, char itemsSeparator)
     : Control(new ComboBoxControlContext(), "", layout, false)
 {
     auto Members                          = reinterpret_cast<ComboBoxControlContext*>(this->Context);
@@ -201,7 +201,7 @@ ComboBox::ComboBox(string_view layout, const Utils::ConstString& text, char item
     unsigned int initialAllocatedElements = 16;
     unsigned int count                    = 0;
 
-    Utils::ConstStringObject listItems(text);
+    ConstStringObject listItems(text);
     switch (listItems.Encoding)
     {
     case StringEncoding::Ascii:
@@ -312,7 +312,7 @@ bool ComboBox::SetItemUserData(unsigned int index, unsigned long long userData)
     i.Data = userData;
     return true;
 }
-bool ComboBox::AddItem(const Utils::ConstString& caption, unsigned long long userData)
+bool ComboBox::AddItem(const ConstString& caption, unsigned long long userData)
 {
     CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
@@ -323,7 +323,7 @@ bool ComboBox::AddItem(const Utils::ConstString& caption, unsigned long long use
     }
     return true;
 }
-bool ComboBox::AddItem(const Utils::ConstString& caption, GenericRef userData)
+bool ComboBox::AddItem(const ConstString& caption, GenericRef userData)
 {
     CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
@@ -334,7 +334,7 @@ bool ComboBox::AddItem(const Utils::ConstString& caption, GenericRef userData)
     }
     return true;
 }
-bool ComboBox::AddSeparator(const Utils::ConstString& caption)
+bool ComboBox::AddSeparator(const ConstString& caption)
 {
     return ComboBox_AddItem(this, caption, true, { nullptr });
 }

@@ -205,8 +205,8 @@ struct WindowBarItem
     bool Init(
           WindowBarItemType type,
           WindowControlsBarLayout layout,
-          const Utils::ConstString& name,
-          const Utils::ConstString& toolTip);
+          const ConstString& name,
+          const ConstString& toolTip);
 };
 struct WindowControlContext : public ControlContext
 {
@@ -384,7 +384,7 @@ struct ListViewColumn
     TextAlignament Align;
 
     void Reset();
-    bool SetName(const Utils::ConstString& text);
+    bool SetName(const ConstString& text);
     bool SetAlign(TextAlignament align);
     void SetWidth(unsigned int width);
 };
@@ -451,14 +451,14 @@ class ListViewControlContext : public ControlContext
 
     // columns
     void UpdateColumnsWidth();
-    bool AddColumn(const Utils::ConstString& text, TextAlignament Align, unsigned int width = 10);
+    bool AddColumn(const ConstString& text, TextAlignament Align, unsigned int width = 10);
     bool DeleteColumn(unsigned int index);
     void DeleteAllColumns();
     int GetNrColumns();
 
     // itemuri
-    ItemHandle AddItem(const Utils::ConstString& text);
-    bool SetItemText(ItemHandle item, unsigned int subItem, const Utils::ConstString& text);
+    ItemHandle AddItem(const ConstString& text);
+    bool SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text);
     Graphics::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
@@ -515,7 +515,7 @@ struct ComboBoxItem
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
-          const Utils::ConstString& caption,
+          const ConstString& caption,
           variant<GenericRef, unsigned long long> userData,
           unsigned int index,
           bool separator = false);
@@ -700,11 +700,11 @@ struct MenuItem
     MenuItem(); // line
     MenuItem(
           MenuItemType type,
-          const Utils::ConstString& text,
+          const ConstString& text,
           int CommandID,
           bool checked,
           Input::Key shortcutKey);                           // commands
-    MenuItem(const Utils::ConstString& text, Menu* subMenu); // submenu
+    MenuItem(const ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj) = delete;
     MenuItem(MenuItem&& obj)      = delete;
     ~MenuItem();

@@ -25,8 +25,8 @@ bool MessageBoxWindowEventHandler(Reference<Control> control, Controls::Event ev
 }
 
 bool CreateMessageBoxWindow(
-      const Utils::ConstString& title,
-      const Utils::ConstString& content,
+      const ConstString& title,
+      const ConstString& content,
       WindowFlags flags,
       int buttonsType,
       int* result)
@@ -55,22 +55,22 @@ bool CreateMessageBoxWindow(
         (*result) = wnd->Show();
     return true;
 }
-void MessageBox::ShowError(const Utils::ConstString& title, const Utils::ConstString& message)
+void MessageBox::ShowError(const ConstString& title, const ConstString& message)
 {
     int result;
     CreateMessageBoxWindow(title, message, WindowFlags::ErrorWindow, MSGBOX_BUTTONS_OK, &result);
 }
-void MessageBox::ShowNotification(const Utils::ConstString& title, const Utils::ConstString& message)
+void MessageBox::ShowNotification(const ConstString& title, const ConstString& message)
 {
     int result;
     CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_OK, &result);
 }
-void MessageBox::ShowWarning(const Utils::ConstString& title, const Utils::ConstString& message)
+void MessageBox::ShowWarning(const ConstString& title, const ConstString& message)
 {
     int result;
     CreateMessageBoxWindow(title, message, WindowFlags::WarningWindow, MSGBOX_BUTTONS_OK, &result);
 }
-Result MessageBox::ShowYesNoCancel(const Utils::ConstString& title, const Utils::ConstString& message)
+Result MessageBox::ShowYesNoCancel(const ConstString& title, const ConstString& message)
 {
     int result;
     if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_YES_NO_CANCEL, &result) ==
@@ -78,7 +78,7 @@ Result MessageBox::ShowYesNoCancel(const Utils::ConstString& title, const Utils:
         return Result::Cancel;
     return (Result) result;
 }
-Result MessageBox::ShowOkCancel(const Utils::ConstString& title, const Utils::ConstString& message)
+Result MessageBox::ShowOkCancel(const ConstString& title, const ConstString& message)
 {
     int result;
     if (CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MSGBOX_BUTTONS_OK_CANCEL, &result) == false)

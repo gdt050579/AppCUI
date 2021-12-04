@@ -8,9 +8,9 @@ bool Clipboard::Clear()
     return true;
 }
 
-bool Clipboard::SetText(const Utils::ConstString& text)
+bool Clipboard::SetText(const ConstString& text)
 {
-    Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     if (textObj.Encoding == StringEncoding::Ascii)
     {
         // GDT: temporary fix - we can't guarantee that text is a NULL terminated string

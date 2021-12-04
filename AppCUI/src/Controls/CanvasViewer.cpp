@@ -22,7 +22,7 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
 }
 
 CanvasViewer::CanvasViewer(
-      const Utils::ConstString& caption,
+      const ConstString& caption,
       string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,

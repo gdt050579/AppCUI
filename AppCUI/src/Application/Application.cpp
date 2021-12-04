@@ -162,7 +162,7 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
         return Application::AddWindow(std::move(wnd), InvalidItemHandle);
     return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
 }
-Controls::Menu* Application::AddMenu(const Utils::ConstString& name)
+Controls::Menu* Application::AddMenu(const ConstString& name)
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
@@ -1270,11 +1270,11 @@ void ApplicationImpl::RaiseEvent(
         control = control->GetParent();
     }
 }
-bool ApplicationImpl::SetToolTip(Controls::Control* control, const Utils::ConstString& text)
+bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text)
 {
     return SetToolTip(control, text, -1, -1);
 }
-bool ApplicationImpl::SetToolTip(Controls::Control* control, const Utils::ConstString& text, int x, int y)
+bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text, int x, int y)
 {
     if (!control)
         control = this->AppDesktop;

@@ -2,7 +2,7 @@
 
 namespace AppCUI::Controls
 {
-UserControl::UserControl(const Utils::ConstString& caption, string_view layout)
+UserControl::UserControl(const ConstString& caption, string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);

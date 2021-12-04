@@ -1078,7 +1078,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     return true;
 }
 
-bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& params)
+bool Renderer::WriteText(const ConstString& text, const WriteTextParams& params)
 {
     DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
@@ -1137,7 +1137,7 @@ bool Renderer::WriteText(const Utils::ConstString& text, const WriteTextParams& 
     }
     RETURNERROR(false, "Missing `WriteTextFlags::MultipleLines` or `WriteTextFlags::SingleLine` from params.Flags !");
 }
-bool Renderer::WriteSingleLineText(int x, int y, const Utils::ConstString& text, ColorPair color)
+bool Renderer::WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors);
     params.X     = x;
@@ -1145,7 +1145,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const Utils::ConstString& text,
     params.Color = color;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, const Utils::ConstString& text, ColorPair color, TextAlignament align)
+bool Renderer::WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors, align);
     params.X     = x;
@@ -1154,7 +1154,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const Utils::ConstString& text,
     return WriteText(text, params);
 }
 bool Renderer::WriteSingleLineText(
-      int x, int y, const Utils::ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
+      int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
 {
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
@@ -1168,7 +1168,7 @@ bool Renderer::WriteSingleLineText(
 bool Renderer::WriteSingleLineText(
       int x,
       int y,
-      const Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset,
@@ -1183,7 +1183,7 @@ bool Renderer::WriteSingleLineText(
     params.HotKeyPosition = hotKeyOffset;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const Utils::ConstString& text, ColorPair color)
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.X     = x;
@@ -1193,7 +1193,7 @@ bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const Utils
     return WriteText(text, params);
 }
 bool Renderer::WriteSingleLineText(
-      int x, int y, unsigned int width, const Utils::ConstString& text, ColorPair color, TextAlignament align)
+      int x, int y, unsigned int width, const ConstString& text, ColorPair color, TextAlignament align)
 {
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth, align);
@@ -1207,7 +1207,7 @@ bool Renderer::WriteSingleLineText(
       int x,
       int y,
       unsigned int width,
-      const Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset)
@@ -1227,7 +1227,7 @@ bool Renderer::WriteSingleLineText(
       int x,
       int y,
       unsigned int width,
-      const Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset,

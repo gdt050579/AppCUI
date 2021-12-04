@@ -27,7 +27,7 @@ MenuItem::MenuItem()
     ShortcutKey  = Input::Key::None;
     HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-MenuItem::MenuItem(MenuItemType type, const Utils::ConstString& text, int cmdID, bool checked, Input::Key shortcutKey)
+MenuItem::MenuItem(MenuItemType type, const ConstString& text, int cmdID, bool checked, Input::Key shortcutKey)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
@@ -40,7 +40,7 @@ MenuItem::MenuItem(MenuItemType type, const Utils::ConstString& text, int cmdID,
         ShortcutKey = shortcutKey;
     }
 }
-MenuItem::MenuItem(const Utils::ConstString& text, Menu* subMenu)
+MenuItem::MenuItem(const ConstString& text, Menu* subMenu)
 {
     Type = MenuItemType::Invalid;
     if (Name.SetWithHotKey(text, HotKeyOffset, HotKey))
@@ -708,15 +708,15 @@ Menu::~Menu()
     this->Context = nullptr;
 }
 
-ItemHandle Menu::AddCommandItem(const Utils::ConstString& text, int CommandID, Input::Key shortcutKey)
+ItemHandle Menu::AddCommandItem(const ConstString& text, int CommandID, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Command, text, CommandID, false, shortcutKey));
 }
-ItemHandle Menu::AddCheckItem(const Utils::ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
+ItemHandle Menu::AddCheckItem(const ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Check, text, CommandID, checked, shortcutKey));
 }
-ItemHandle Menu::AddRadioItem(const Utils::ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
+ItemHandle Menu::AddRadioItem(const ConstString& text, int CommandID, bool checked, Input::Key shortcutKey)
 {
     return CTX->AddItem(std::make_unique<MenuItem>(MenuItemType::Radio, text, CommandID, checked, shortcutKey));
 }
@@ -724,7 +724,7 @@ ItemHandle Menu::AddSeparator()
 {
     return CTX->AddItem(std::make_unique<MenuItem>());
 }
-ItemHandle Menu::AddSubMenu(const Utils::ConstString& text)
+ItemHandle Menu::AddSubMenu(const ConstString& text)
 {
     try
     {

@@ -50,7 +50,7 @@ void CommandBarController::Clear()
     HoveredField       = nullptr;
     RecomputeScreenPos = true;
 }
-bool CommandBarController::Set(Input::Key keyCode, const Utils::ConstString& caption, int Command)
+bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, int Command)
 {
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
     CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");

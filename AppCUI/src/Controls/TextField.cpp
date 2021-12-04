@@ -332,7 +332,7 @@ TextField::~TextField()
 {
     DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-TextField::TextField(const Utils::ConstString& caption, string_view layout, TextFieldFlags flags)
+TextField::TextField(const ConstString& caption, string_view layout, TextFieldFlags flags)
     : Control(new TextFieldControlContext(), caption, layout, false)
 {
     auto Members                            = reinterpret_cast<TextFieldControlContext*>(this->Context);
