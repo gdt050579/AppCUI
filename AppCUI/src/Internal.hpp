@@ -23,12 +23,9 @@
 #define LOOP_STATUS_STOP_CURRENT 1
 #define LOOP_STATUS_STOP_APP     2
 
-
-
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
 #define NEW_LINE_CODE 10
-
 
 namespace AppCUI
 {
@@ -52,9 +49,9 @@ namespace Internal
         SystemEventType eventType;
         int mouseX, mouseY;
         unsigned int newWidth, newHeight;
-        AppCUI::Input::MouseButton mouseButton;
-        AppCUI::Input::MouseWheel mouseWheel;
-        AppCUI::Input::Key keyCode;
+        Input::MouseButton mouseButton;
+        Input::MouseWheel mouseWheel;
+        Input::Key keyCode;
         char16_t unicodeCharacter;
         bool updateFrames;
     };
@@ -62,9 +59,9 @@ namespace Internal
     struct CommandBarField
     {
         int Command, StartScreenPos, EndScreenPos;
-        AppCUI::Input::Key KeyCode;
-        std::string_view KeyName;
-        AppCUI::Graphics::CharacterBuffer Name;
+        Input::Key KeyCode;
+        string_view KeyName;
+        Graphics::CharacterBuffer Name;
         unsigned int ClearCommandUniqueID;
     };
     struct CommandBarFieldIndex
@@ -73,8 +70,8 @@ namespace Internal
     };
     class CommandBarController
     {
-        CommandBarField Fields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) AppCUI::Input::Key::Count];
-        CommandBarFieldIndex VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) AppCUI::Input::Key::Count];
+        CommandBarField Fields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) Input::Key::Count];
+        CommandBarFieldIndex VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) Input::Key::Count];
         int IndexesCount[MAX_COMMANDBAR_SHIFTSTATES];
         bool HasKeys[MAX_COMMANDBAR_SHIFTSTATES];
 
@@ -83,10 +80,10 @@ namespace Internal
             int Y, Width;
         } BarLayout;
 
-        std::string_view ShiftStatus;
+        string_view ShiftStatus;
 
-        AppCUI::Application::Config* Cfg;
-        AppCUI::Input::Key CurrentShiftKey;
+        Application::Config* Cfg;
+        Input::Key CurrentShiftKey;
         int LastCommand;
         CommandBarField* PressedField;
         CommandBarField* HoveredField;
@@ -98,23 +95,23 @@ namespace Internal
         CommandBarField* MousePositionToField(int x, int y);
 
       public:
-        CommandBarController(unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg);
-        void Paint(AppCUI::Graphics::Renderer& renderer);
+        CommandBarController(unsigned int desktopWidth, unsigned int desktopHeight, Application::Config* cfg);
+        void Paint(Graphics::Renderer& renderer);
         void Clear();
         void SetDesktopSize(unsigned int width, unsigned int height);
-        bool Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command);
-        bool SetShiftKey(AppCUI::Input::Key keyCode);
+        bool Set(Input::Key keyCode, const ConstString& caption, int Command);
+        bool SetShiftKey(Input::Key keyCode);
         bool OnMouseMove(int x, int y, bool& repaint);
         bool OnMouseDown();
         bool OnMouseUp(int& command);
-        int GetCommandForKey(AppCUI::Input::Key keyCode);
+        int GetCommandForKey(Input::Key keyCode);
     };
 
     struct MenuBarItem
     {
-        AppCUI::Controls::Menu Mnu;
-        AppCUI::Graphics::CharacterBuffer Name;
-        AppCUI::Input::Key HotKey;
+        Controls::Menu Mnu;
+        Graphics::CharacterBuffer Name;
+        Input::Key HotKey;
         unsigned int HotKeyOffset;
         int X;
         MenuBarItem();
@@ -122,9 +119,9 @@ namespace Internal
     class MenuBar
     {
         static const constexpr unsigned int MAX_ITEMS = 32;
-        std::unique_ptr<MenuBarItem> Items[MAX_ITEMS];
-        AppCUI::Application::Config* Cfg;
-        AppCUI::Controls::Control* Parent;
+        unique_ptr<MenuBarItem> Items[MAX_ITEMS];
+        Application::Config* Cfg;
+        Controls::Control* Parent;
         unsigned int ItemsCount;
         unsigned int OpenedItem;
         unsigned int HoveredItem;
@@ -135,35 +132,35 @@ namespace Internal
         void Open(unsigned int menuIndex);
 
       public:
-        MenuBar(AppCUI::Controls::Control* parent = nullptr, int x = 0, int y = 0);
+        MenuBar(Controls::Control* parent = nullptr, int x = 0, int y = 0);
 
-        AppCUI::Controls::ItemHandle AddMenu(const AppCUI::Utils::ConstString& name);
-        AppCUI::Controls::Menu* GetMenu(AppCUI::Controls::ItemHandle itemHandle);
+        Controls::ItemHandle AddMenu(const ConstString& name);
+        Controls::Menu* GetMenu(Controls::ItemHandle itemHandle);
         void RecomputePositions();
         void SetWidth(unsigned int value);
-        void Paint(AppCUI::Graphics::Renderer& renderer);
+        void Paint(Graphics::Renderer& renderer);
         bool OnMouseMove(int x, int y, bool& repaint);
-        bool OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
+        bool OnMousePressed(int x, int y, Input::MouseButton button);
         void Close();
         bool IsOpened();
-        bool OnKeyEvent(AppCUI::Input::Key keyCode);
+        bool OnKeyEvent(Input::Key keyCode);
     };
 
     class TextControlDefaultMenu
     {
-        AppCUI::Controls::ItemHandle itemCopy;
-        AppCUI::Controls::ItemHandle itemCut;
-        AppCUI::Controls::ItemHandle itemDelete;
-        AppCUI::Controls::ItemHandle itemPaste;
-        AppCUI::Controls::ItemHandle itemSelectAll;
-        AppCUI::Controls::ItemHandle itemToUpper;
-        AppCUI::Controls::ItemHandle itemToLower;
-        AppCUI::Controls::Menu menu;
+        Controls::ItemHandle itemCopy;
+        Controls::ItemHandle itemCut;
+        Controls::ItemHandle itemDelete;
+        Controls::ItemHandle itemPaste;
+        Controls::ItemHandle itemSelectAll;
+        Controls::ItemHandle itemToUpper;
+        Controls::ItemHandle itemToLower;
+        Controls::Menu menu;
 
       public:
         TextControlDefaultMenu();
         ~TextControlDefaultMenu();
-        void Show(AppCUI::Utils::Reference<AppCUI::Controls::Control> parent, int x, int y, bool hasSelection);
+        void Show(Utils::Reference<Controls::Control> parent, int x, int y, bool hasSelection);
 
         static constexpr int TEXTCONTROL_CMD_COPY            = 1200001;
         static constexpr int TEXTCONTROL_CMD_CUT             = 1200002;
@@ -176,27 +173,23 @@ namespace Internal
 
     class ToolTipController
     {
-        AppCUI::Graphics::CharacterBuffer Text;
-        AppCUI::Application::Config* Cfg;
-        AppCUI::Graphics::Rect TextRect;
-        AppCUI::Graphics::Point Arrow;
-        AppCUI::Graphics::SpecialChars ArrowChar;
-        AppCUI::Graphics::WriteTextParams TxParams;
+        Graphics::CharacterBuffer Text;
+        Application::Config* Cfg;
+        Graphics::Rect TextRect;
+        Graphics::Point Arrow;
+        Graphics::SpecialChars ArrowChar;
+        Graphics::WriteTextParams TxParams;
 
       public:
-        AppCUI::Graphics::Clip ScreenClip;
+        Graphics::Clip ScreenClip;
 
         bool Visible;
 
       public:
         ToolTipController();
-        bool Show(
-              const AppCUI::Utils::ConstString& text,
-              AppCUI::Graphics::Rect& objRect,
-              int screenWidth,
-              int screenHeight);
+        bool Show(const ConstString& text, Graphics::Rect& objRect, int screenWidth, int screenHeight);
         void Hide();
-        void Paint(AppCUI::Graphics::Renderer& renderer);
+        void Paint(Graphics::Renderer& renderer);
     };
 
     class AbstractTerminal
@@ -206,97 +199,97 @@ namespace Internal
 
       public:
         unsigned int LastCursorX, LastCursorY;
-        AppCUI::Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
+        Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
         bool Inited, LastCursorVisibility;
 
-        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) = 0;
-        virtual void RestoreOriginalConsoleSettings()                                = 0;
-        virtual void OnUninit()                                                      = 0;
-        virtual void OnFlushToScreen()                                               = 0;
-        virtual bool OnUpdateCursor()                                                = 0;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)             = 0;
-        virtual bool IsEventAvailable()                                              = 0;
+        virtual bool OnInit(const Application::InitializationData& initData) = 0;
+        virtual void RestoreOriginalConsoleSettings()                        = 0;
+        virtual void OnUninit()                                              = 0;
+        virtual void OnFlushToScreen()                                       = 0;
+        virtual bool OnUpdateCursor()                                        = 0;
+        virtual void GetSystemEvent(Internal::SystemEvent& evnt)             = 0;
+        virtual bool IsEventAvailable()                                      = 0;
 
         virtual ~AbstractTerminal();
 
-        bool Init(const AppCUI::Application::InitializationData& initData);
+        bool Init(const Application::InitializationData& initData);
         void Uninit();
         void Update();
     };
 
-    struct Application
+    struct ApplicationImpl
     {
-        AppCUI::Application::Config config;
-        AppCUI::Utils::IniObject settings;
-        std::unique_ptr<AbstractTerminal> terminal;
-        std::unique_ptr<CommandBarController> cmdBar;
-        std::unique_ptr<MenuBar> menu;
-        std::vector<AppCUI::Controls::Control*> toDelete;
+        Application::Config config;
+        Utils::IniObject settings;
+        unique_ptr<AbstractTerminal> terminal;
+        unique_ptr<CommandBarController> cmdBar;
+        unique_ptr<MenuBar> menu;
+        vector<Controls::Control*> toDelete;
 
-        AppCUI::Controls::Desktop* AppDesktop;
+        Controls::Desktop* AppDesktop;
         ToolTipController ToolTip;
-        AppCUI::Application::CommandBar CommandBarWrapper;
+        Application::CommandBar CommandBarWrapper;
 
-        AppCUI::Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
-        AppCUI::Controls::Control* MouseLockedControl;
-        AppCUI::Controls::Control* MouseOverControl;
-        AppCUI::Controls::Control* ExpandedControl;
-        AppCUI::Controls::Menu* VisibleMenu;
+        Controls::Control* ModalControlsStack[MAX_MODAL_CONTROLS_STACK];
+        Controls::Control* MouseLockedControl;
+        Controls::Control* MouseOverControl;
+        Controls::Control* ExpandedControl;
+        Controls::Menu* VisibleMenu;
         unsigned int ModalControlsCount;
         int LoopStatus;
         unsigned int RepaintStatus;
         int MouseLockedObject;
 
-        AppCUI::Application::InitializationFlags InitFlags;
+        Application::InitializationFlags InitFlags;
         unsigned int LastWindowID;
         int LastMouseX, LastMouseY;
         bool Inited;
         bool cmdBarUpdate;
 
-        Application();
-        ~Application();
+        ApplicationImpl();
+        ~ApplicationImpl();
 
         void Destroy();
         void ComputePositions();
-        void ProcessKeyPress(AppCUI::Input::Key keyCode, char16_t unicodeCharacter);
-        void ProcessShiftState(AppCUI::Input::Key ShiftState);
-        void ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y);
+        void ProcessKeyPress(Input::Key keyCode, char16_t unicodeCharacter);
+        void ProcessShiftState(Input::Key ShiftState);
+        void ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);
-        void OnMouseDown(int x, int y, AppCUI::Input::MouseButton button);
-        void OnMouseUp(int x, int y, AppCUI::Input::MouseButton button);
-        void OnMouseMove(int x, int y, AppCUI::Input::MouseButton button);
-        void OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+        void OnMouseDown(int x, int y, Input::MouseButton button);
+        void OnMouseUp(int x, int y, Input::MouseButton button);
+        void OnMouseMove(int x, int y, Input::MouseButton button);
+        void OnMouseWheel(int x, int y, Input::MouseWheel direction);
         void SendCommand(int command);
         void Terminate();
 
         // Pack/Expand
         void PackControl(bool redraw);
-        bool ExpandControl(AppCUI::Controls::Control* ctrl);
+        bool ExpandControl(Controls::Control* ctrl);
 
         // Menu
         void CloseContextualMenu();
-        void ShowContextualMenu(AppCUI::Controls::Menu* mnu);
+        void ShowContextualMenu(Controls::Menu* mnu);
 
         // Common implementations
-        void LoadSettingsFile(AppCUI::Application::InitializationData& initData);
-        bool Init(AppCUI::Application::InitializationData& initData);
+        void LoadSettingsFile(Application::InitializationData& initData);
+        bool Init(Application::InitializationData& initData);
         bool Uninit();
-        bool ExecuteEventLoop(AppCUI::Controls::Control* control = nullptr);
+        bool ExecuteEventLoop(Controls::Control* control = nullptr);
         void Paint();
         void RaiseEvent(
-              AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
-              AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
-              AppCUI::Controls::Event eventType,
+              Utils::Reference<Controls::Control> control,
+              Utils::Reference<Controls::Control> sourceControl,
+              Controls::Event eventType,
               int controlID);
-        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text);
-        bool SetToolTip(AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y);
+        bool SetToolTip(Controls::Control* control, const ConstString& text);
+        bool SetToolTip(Controls::Control* control, const ConstString& text, int x, int y);
 
-        void ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method);
+        void ArrangeWindows(Application::ArangeWindowsMethod method);
     };
 } // namespace Internal
 namespace Application
 {
-    AppCUI::Internal::Application* GetApplication();
+    Internal::ApplicationImpl* GetApplication();
 }
 namespace Utils
 {

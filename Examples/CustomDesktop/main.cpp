@@ -31,7 +31,7 @@ class MyDeskop : public Desktop
 int main()
 {
     InitializationData initData;
-    initData.CustomDesktopConstructor = []()-> Desktop* { return new MyDeskop(); };
+    initData.CustomDesktopConstructor = []() -> Desktop* { return new MyDeskop(); };
     initData.Flags                    = InitializationFlags::CommandBar | InitializationFlags::Menu;
     if (!Application::Init(initData))
         return 1;

@@ -6706,10 +6706,10 @@ class MainWin : public Window
             if (controlID == BTN_SHOW_LOAD_IMAGE)
             {
                 AppCUI::Graphics::Image img;
-                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png,bmp",".");
+                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png,bmp", ".");
                 if (path.has_value())
                 {
-                    if (img.Load(path.value())==false)
+                    if (img.Load(path.value()) == false)
                     {
                         AppCUI::Dialogs::MessageBox::ShowError("Error", "Fail to open PNG file !");
                     }

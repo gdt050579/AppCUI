@@ -1,7 +1,9 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::OS;
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace OS;
+using namespace Utils;
 
 #define VALIDATE_FILE_HANLDE(returnValue)                                                                              \
     CHECK(this->FileID.Handle != INVALID_HANDLE_VALUE, returnValue, "File has not been opened !");
@@ -144,8 +146,7 @@ void File::Close()
         this->FileID.Handle = INVALID_HANDLE_VALUE;
     }
 }
-
-
+} // namespace AppCUI
 
 #undef VALIDATE_FILE_HANLDE
 #undef F_HNDL

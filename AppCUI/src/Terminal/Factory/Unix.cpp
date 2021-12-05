@@ -1,8 +1,5 @@
 #include "../TerminalFactory.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
-
 #ifdef HAVE_SDL
 #    include "../SDLTerminal/SDLTerminal.hpp"
 #endif
@@ -11,9 +8,13 @@ using namespace AppCUI::Application;
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
+namespace AppCUI::Internal
 {
-    std::unique_ptr<AbstractTerminal> term = nullptr;
+using namespace Application;
+
+unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
+{
+    unique_ptr<AbstractTerminal> term = nullptr;
 
     switch (initData.Frontend)
     {
@@ -46,4 +47,5 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
     CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");
 
     return term;
+}
 }

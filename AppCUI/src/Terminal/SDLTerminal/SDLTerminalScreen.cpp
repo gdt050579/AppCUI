@@ -10,9 +10,10 @@
 
 CMRC_DECLARE(font);
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
-using namespace AppCUI::Application;
+namespace AppCUI::Internal
+{
+using namespace Input;
+using namespace Application;
 
 namespace fs = std::filesystem;
 
@@ -238,9 +239,9 @@ SDL_Texture* SDLTerminal::renderCharacter(
 void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
-    AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const std::size_t width                  = ScreenCanvas.GetWidth();
-    const std::size_t height                 = ScreenCanvas.GetHeight();
+    Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    const std::size_t width          = ScreenCanvas.GetWidth();
+    const std::size_t height         = ScreenCanvas.GetHeight();
 
     SDL_Rect WindowRect;
     WindowRect.w = charWidth;
@@ -250,7 +251,7 @@ void SDLTerminal::OnFlushToScreen()
     {
         for (std::size_t x = 0; x < width; x++)
         {
-            AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
+            Graphics::Character ch = charsBuffer[y * width + x];
 
             SDL_Texture* glyphTexture = renderCharacter(
                   ch.PackedValue,
@@ -290,4 +291,5 @@ void SDLTerminal::uninitScreen()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
 }

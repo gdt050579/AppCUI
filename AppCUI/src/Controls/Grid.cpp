@@ -1,13 +1,15 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Input;
+using namespace Graphics;
 
 constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
 constexpr auto MenuCommandMergeCells = 0x01U;
 
-Grid::Grid(std::string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
+Grid::Grid(string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
     auto context              = reinterpret_cast<GridControlContext*>(Context);
@@ -58,49 +60,49 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
-bool AppCUI::Controls::Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool Controls::Grid::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
     switch (keyCode)
     {
-    case AppCUI::Input::Key::Space:
+    case Input::Key::Space:
         if (ToggleBooleanCell())
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Left:
-    case AppCUI::Input::Key::Right:
-    case AppCUI::Input::Key::Up:
-    case AppCUI::Input::Key::Down:
+    case Input::Key::Left:
+    case Input::Key::Right:
+    case Input::Key::Up:
+    case Input::Key::Down:
         if (MoveSelectedCellByKeys(keyCode))
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+    case Input::Key::Shift | Input::Key::Left:
+    case Input::Key::Shift | Input::Key::Right:
+    case Input::Key::Shift | Input::Key::Up:
+    case Input::Key::Shift | Input::Key::Down:
         if (SelectCellsByKeys(keyCode))
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Escape:
+    case Input::Key::Escape:
         if (context->selectedCellsIndexes.size() > 0)
         {
             context->selectedCellsIndexes.clear();
             return true;
         }
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::C:
+    case Input::Key::Ctrl | Input::Key::C:
         if (CopySelectedCellsContent())
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::V:
+    case Input::Key::Ctrl | Input::Key::V:
         if (PasteContentToSelectedCells())
         {
             return true;
@@ -184,9 +186,9 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
 
     switch (button)
     {
-    case AppCUI::Input::MouseButton::None:
+    case Input::MouseButton::None:
         break;
-    case AppCUI::Input::MouseButton::Left:
+    case Input::MouseButton::Left:
     {
         context->hoveredCellIndex = InvalidCellIndex;
         const auto currentIndex   = ComputeCellNumber(x, y);
@@ -225,11 +227,11 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
         return true;
     }
     break;
-    case AppCUI::Input::MouseButton::Center:
+    case Input::MouseButton::Center:
         break;
-    case AppCUI::Input::MouseButton::Right:
+    case Input::MouseButton::Right:
         break;
-    case AppCUI::Input::MouseButton::DoubleClicked:
+    case Input::MouseButton::DoubleClicked:
         break;
     default:
         break;
@@ -262,7 +264,7 @@ void Grid::OnLoseFocus()
     context->selectedCellsIndexes.clear();
 }
 
-bool AppCUI::Controls::Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
+bool Controls::Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
 {
     if (eventType == Event::Command)
     {
@@ -568,7 +570,7 @@ void GridControlContext::DrawCellBackground(
     DrawCellBackground(renderer, cellType, columnIndex, rowIndex);
 }
 
-bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex)
+bool Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -620,7 +622,7 @@ bool AppCUI::Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsig
     return false;
 }
 
-bool AppCUI::Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
+bool Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -672,7 +674,7 @@ bool AppCUI::Controls::Grid::DrawHeader(Graphics::Renderer& renderer)
     return true;
 }
 
-void AppCUI::Controls::Grid::UpdateGridParameters()
+void Controls::Grid::UpdateGridParameters()
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -735,7 +737,7 @@ void AppCUI::Controls::Grid::UpdateGridParameters()
           context->selectedCellsIndexes.end());
 }
 
-bool AppCUI::Controls::Grid::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
+bool Controls::Grid::MoveSelectedCellByKeys(Input::Key keyCode)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -754,20 +756,20 @@ bool AppCUI::Controls::Grid::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
 
         if (columnIndex > 0)
         {
-            columnIndex -= (keyCode == AppCUI::Input::Key::Left);
+            columnIndex -= (keyCode == Input::Key::Left);
         }
         if (columnIndex < context->columnsNo - 1)
         {
-            columnIndex += (keyCode == AppCUI::Input::Key::Right);
+            columnIndex += (keyCode == Input::Key::Right);
         }
 
         if (rowIndex > 0)
         {
-            rowIndex -= (keyCode == AppCUI::Input::Key::Up);
+            rowIndex -= (keyCode == Input::Key::Up);
         }
         if (rowIndex < context->rowsNo - 1)
         {
-            rowIndex += (keyCode == AppCUI::Input::Key::Down);
+            rowIndex += (keyCode == Input::Key::Down);
         }
 
         const auto newCellIndex = context->columnsNo * rowIndex + columnIndex;
@@ -782,7 +784,7 @@ bool AppCUI::Controls::Grid::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
     return false;
 }
 
-bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
+bool Controls::Grid::SelectCellsByKeys(Input::Key keyCode)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -824,19 +826,19 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
         {
             switch (keyCode)
             {
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+            case Input::Key::Shift | Input::Key::Left:
                 if (xLeft > 0)
                     xLeft -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+            case Input::Key::Shift | Input::Key::Right:
                 if (xRight < context->columnsNo - 1)
                     xRight += 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+            case Input::Key::Shift | Input::Key::Up:
                 if (yBot > 0)
                     yBot -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+            case Input::Key::Shift | Input::Key::Down:
                 if (yBot < context->rowsNo - 1)
                     yBot += 1;
                 break;
@@ -848,19 +850,19 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
         {
             switch (keyCode)
             {
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+            case Input::Key::Shift | Input::Key::Left:
                 if (xRight > 0)
                     xRight -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+            case Input::Key::Shift | Input::Key::Right:
                 if (xRight < context->columnsNo - 1)
                     xRight += 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+            case Input::Key::Shift | Input::Key::Up:
                 if (yBot > 0)
                     yBot -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+            case Input::Key::Shift | Input::Key::Down:
                 if (yBot < context->rowsNo - 1)
                     yBot += 1;
                 break;
@@ -872,19 +874,19 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
         {
             switch (keyCode)
             {
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+            case Input::Key::Shift | Input::Key::Left:
                 if (xLeft > 0)
                     xLeft -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+            case Input::Key::Shift | Input::Key::Right:
                 if (xLeft < context->columnsNo - 1)
                     xLeft += 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+            case Input::Key::Shift | Input::Key::Up:
                 if (yBot > 0)
                     yBot -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+            case Input::Key::Shift | Input::Key::Down:
                 if (yBot < context->rowsNo - 1)
                     yBot += 1;
                 break;
@@ -896,19 +898,19 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
         {
             switch (keyCode)
             {
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+            case Input::Key::Shift | Input::Key::Left:
                 if (xRight > 0)
                     xRight -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+            case Input::Key::Shift | Input::Key::Right:
                 if (xRight < context->columnsNo - 1)
                     xRight += 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+            case Input::Key::Shift | Input::Key::Up:
                 if (yTop > 0)
                     yTop -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+            case Input::Key::Shift | Input::Key::Down:
                 if (yTop < context->rowsNo - 1)
                     yTop += 1;
                 break;
@@ -920,19 +922,19 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
         {
             switch (keyCode)
             {
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+            case Input::Key::Shift | Input::Key::Left:
                 if (xLeft > 0)
                     xLeft -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+            case Input::Key::Shift | Input::Key::Right:
                 if (xLeft < context->columnsNo - 1)
                     xLeft += 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+            case Input::Key::Shift | Input::Key::Up:
                 if (yTop > 0)
                     yTop -= 1;
                 break;
-            case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+            case Input::Key::Shift | Input::Key::Down:
                 if (yTop < context->rowsNo - 1)
                     yTop += 1;
                 break;
@@ -957,7 +959,7 @@ bool AppCUI::Controls::Grid::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     return false;
 }
 
-bool AppCUI::Controls::Grid::ToggleBooleanCell()
+bool Controls::Grid::ToggleBooleanCell()
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -988,7 +990,7 @@ bool AppCUI::Controls::Grid::ToggleBooleanCell()
     return false;
 }
 
-bool AppCUI::Controls::Grid::CopySelectedCellsContent() const
+bool Controls::Grid::CopySelectedCellsContent() const
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -1059,7 +1061,7 @@ bool AppCUI::Controls::Grid::CopySelectedCellsContent() const
         lusb.Add("\n");
     }
 
-    if (AppCUI::OS::Clipboard::SetText(lusb) == false)
+    if (OS::Clipboard::SetText(lusb) == false)
     {
         const std::string input{ lusb };
         LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
@@ -1069,19 +1071,19 @@ bool AppCUI::Controls::Grid::CopySelectedCellsContent() const
     return false;
 }
 
-bool AppCUI::Controls::Grid::PasteContentToSelectedCells()
+bool Controls::Grid::PasteContentToSelectedCells()
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
     // seems slow - a lower level parser might be better - we'll see
     LocalUnicodeStringBuilder<2048> lusb{};
-    AppCUI::OS::Clipboard::GetText(lusb);
+    OS::Clipboard::GetText(lusb);
 
     const std::u16string input{ lusb };
 
     size_t last = 0;
     size_t next = 0;
-    std::vector<std::u16string> lines;
+    vector<std::u16string> lines;
     lines.reserve(50);
     while ((next = input.find(u"\n", last)) != std::string::npos)
     {
@@ -1094,7 +1096,7 @@ bool AppCUI::Controls::Grid::PasteContentToSelectedCells()
         lines.emplace_back(lastLine);
     }
 
-    std::vector<std::u16string> tokens;
+    vector<std::u16string> tokens;
     tokens.reserve(50);
     for (const auto& line : lines)
     {
@@ -1114,7 +1116,7 @@ bool AppCUI::Controls::Grid::PasteContentToSelectedCells()
         const auto start = tokens.begin() + context->selectedCellsIndexes.size() - 1U;
 
         LocalUnicodeStringBuilder<2048> lusbLastToken;
-        for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
+        for (vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
         {
             lusbLastToken.Add(*i);
         }
@@ -1154,28 +1156,25 @@ bool AppCUI::Controls::Grid::PasteContentToSelectedCells()
     return false;
 }
 
-unsigned int AppCUI::Controls::Grid::GetCellsCount() const
+unsigned int Controls::Grid::GetCellsCount() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return context->columnsNo * context->rowsNo;
 }
 
-AppCUI::Graphics::Size AppCUI::Controls::Grid::GetGridDimensions() const
+Graphics::Size Controls::Grid::GetGridDimensions() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return { context->columnsNo, context->rowsNo };
 }
 
-bool AppCUI::Controls::Grid::UpdateCell(
-      unsigned int index,
-      CellType cellType,
-      const std::variant<bool, ConstString>& content,
-      TextAlignament textAlignment)
+bool Controls::Grid::UpdateCell(
+      unsigned int index, CellType cellType, const variant<bool, ConstString>& content, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
-    std::variant<bool, std::u16string> cellData;
+    variant<bool, std::u16string> cellData;
     if (std::holds_alternative<bool>(content))
     {
         cellData = std::get<bool>(content);
@@ -1193,12 +1192,12 @@ bool AppCUI::Controls::Grid::UpdateCell(
     return true;
 }
 
-bool AppCUI::Controls::Grid::UpdateCell(
+bool Controls::Grid::UpdateCell(
       unsigned int x,
       unsigned int y,
       CellType cellType,
-      const std::variant<bool, ConstString>& content,
-      AppCUI::Graphics::TextAlignament textAlignment)
+      const variant<bool, ConstString>& content,
+      Graphics::TextAlignament textAlignment)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);
     const auto cellIndex = context->columnsNo * y + x;
@@ -1207,21 +1206,20 @@ bool AppCUI::Controls::Grid::UpdateCell(
     return true;
 }
 
-const ConstString AppCUI::Controls::Grid::GetSeparator() const
+const ConstString Controls::Grid::GetSeparator() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return context->separator;
 }
 
-void AppCUI::Controls::Grid::SetSeparator(ConstString separator)
+void Controls::Grid::SetSeparator(ConstString separator)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     Utils::UnicodeStringBuilder usb{ separator };
     context->separator = usb;
 }
 
-bool AppCUI::Controls::Grid::UpdateHeaderValues(
-      const std::vector<ConstString>& headerValues, TextAlignament textAlignment)
+bool Controls::Grid::UpdateHeaderValues(const vector<ConstString>& headerValues, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -1234,3 +1232,4 @@ bool AppCUI::Controls::Grid::UpdateHeaderValues(
 
     return true;
 }
+} // namespace AppCUI

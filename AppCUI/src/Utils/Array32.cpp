@@ -1,8 +1,6 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Utils;
-
 #define ARRAY32_FLAG_STACK_BUFFER 0x80000000
 #define VALIDATE_ALLOCATED_SPACE(requiredItems, returnValue)                                                           \
     if ((requiredItems) > (Allocated & 0x7FFFFFFF))                                                                    \
@@ -10,6 +8,8 @@ using namespace AppCUI::Utils;
         CHECK(Grow(requiredItems), returnValue, "Fail to allocate space for %d items", (requiredItems));               \
     }
 
+namespace AppCUI::Utils
+{
 template <typename T>
 void __HeapSortContext(
       T* Data, int (*cmpFunc)(T elem1, T elem2, void* Context), int nrElements, bool ascendent, void* Context)
@@ -200,3 +200,4 @@ bool Array32::Sort(int (*compare)(unsigned int elem1, unsigned int elem2, void* 
     __HeapSortContext<unsigned int>(Data, compare, this->Count, ascendent, Context);
     return true;
 }
+} // namespace AppCUI::Utils

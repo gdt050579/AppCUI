@@ -15,7 +15,6 @@ class TabNoFocusExample : public Window
 {
     Reference<Tab> tb;
 
-
   public:
     TabNoFocusExample(TabFlags flags, unsigned int tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
@@ -23,7 +22,7 @@ class TabNoFocusExample : public Window
         tb       = Factory::Tab::Create(this, "l:2,t:4,r:2,b:2", flags);
         auto tx  = Factory::TextField::Create(this, "Some text ....", "l:2,t:2,r:2,h:1");
         auto w_b = this->GetControlBar(WindowControlsBarLayout::BottomBarFromLeft);
-        
+
         LocalString<128> tmp;
 
         for (int tr = 0; tr < tabsCount; tr++)

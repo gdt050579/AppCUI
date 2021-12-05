@@ -1,26 +1,23 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
+namespace AppCUI::Internal
+{
 #define NO_ITEM_SELECTED 0xFFFFFFFF
 
 MenuBarItem::MenuBarItem()
 {
-    this->HotKey       = AppCUI::Input::Key::None;
-    this->HotKeyOffset = AppCUI::Graphics::CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    this->HotKey       = Input::Key::None;
+    this->HotKeyOffset = Graphics::CharacterBuffer::INVALID_HOTKEY_OFFSET;
     this->X            = 0;
 }
-MenuBar::MenuBar(AppCUI::Controls::Control* parent, int x, int y)
+MenuBar::MenuBar(Controls::Control* parent, int x, int y)
 {
     this->ItemsCount  = 0;
     this->Width       = 0;
     this->OpenedItem  = NO_ITEM_SELECTED;
     this->HoveredItem = NO_ITEM_SELECTED;
-    this->Cfg         = AppCUI::Application::GetAppConfig();
+    this->Cfg         = Application::GetAppConfig();
     this->X           = x;
     this->Y           = y;
     this->Parent      = parent;
@@ -33,7 +30,7 @@ Menu* MenuBar::GetMenu(ItemHandle itemHandle)
           (unsigned int) itemHandle);
     return &Items[(unsigned int) itemHandle]->Mnu;
 }
-ItemHandle MenuBar::AddMenu(const AppCUI::Utils::ConstString& name)
+ItemHandle MenuBar::AddMenu(const ConstString& name)
 {
     CHECK(this->ItemsCount < MenuBar::MAX_ITEMS,
           ItemHandle{ NO_ITEM_SELECTED },
@@ -106,7 +103,7 @@ void MenuBar::Open(unsigned int menuIndex)
         ((MenuContext*) (Items[menuIndex]->Mnu.Context))->Owner = this;
     }
 }
-bool MenuBar::OnMousePressed(int x, int y, AppCUI::Input::MouseButton /*button*/)
+bool MenuBar::OnMousePressed(int x, int y, Input::MouseButton /*button*/)
 {
     unsigned int idx = MousePositionToItem(x, y);
     if (idx != this->OpenedItem)
@@ -125,7 +122,7 @@ bool MenuBar::IsOpened()
 {
     return this->OpenedItem != NO_ITEM_SELECTED;
 }
-bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
+bool MenuBar::OnKeyEvent(Input::Key keyCode)
 {
     if (IsOpened())
     {
@@ -157,12 +154,12 @@ bool MenuBar::OnKeyEvent(AppCUI::Input::Key keyCode)
                 Open(tr);
                 return true;
             }
-        }        
+        }
     }
     // nothing to process
     return false;
 }
-void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
+void MenuBar::Paint(Graphics::Renderer& renderer)
 {
     renderer.FillHorizontalLine(this->X, this->Y, this->X + Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
     WriteTextParams params(
@@ -195,4 +192,5 @@ void MenuBar::Paint(AppCUI::Graphics::Renderer& renderer)
         renderer.WriteText(Items[tr]->Name, params);
     }
 }
+} // namespace AppCUI::Internal
 #undef NO_ITEM_SELECTED

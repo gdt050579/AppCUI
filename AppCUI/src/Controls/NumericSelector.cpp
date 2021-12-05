@@ -1,13 +1,10 @@
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
-
 namespace AppCUI::Controls
 {
 NumericSelector::NumericSelector(
-      const long long minValue, const long long maxValue, long long value, std::string_view layout)
+      const long long minValue, const long long maxValue, long long value, string_view layout)
     : Control(new NumericSelectorControlContext(), "", layout, true)
 {
     auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
@@ -248,12 +245,12 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         return true;
 
     case Key::Ctrl | Key::C:
-        AppCUI::OS::Clipboard::SetText(cc->stringValue.GetText());
+        OS::Clipboard::SetText(cc->stringValue.GetText());
         return true;
     case Key::Ctrl | Key::V:
     {
         LocalUnicodeStringBuilder<256> b{};
-        AppCUI::OS::Clipboard::GetText(b);
+        OS::Clipboard::GetText(b);
         const std::string output(b);
 
         if (output.empty())
@@ -262,7 +259,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
         else
         {
-            const std::optional<long long> value = Number::ToUInt64(output);
+            const optional<long long> value = Number::ToUInt64(output);
             if (value.has_value())
             {
                 cc->insertionModevalue = value.value();
@@ -439,7 +436,7 @@ bool NumericSelector::OnMouseLeave()
     return true;
 }
 
-bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);

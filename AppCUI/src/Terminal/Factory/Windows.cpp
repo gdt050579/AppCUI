@@ -2,12 +2,13 @@
 #include "../TerminalFactory.hpp"
 #include "../WindowsTerminal/WindowsTerminal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
-
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
+namespace AppCUI::Internal
 {
-    std::unique_ptr<AbstractTerminal> term = nullptr;
+using namespace Application;
+
+unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
+{
+    unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.Frontend)
     {
     case FrontendType::Default:
@@ -22,3 +23,4 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
 
     return term;
 }
+} // namespace AppCUI::Internal

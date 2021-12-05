@@ -6,10 +6,10 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Utils;
 
-
-class Ball: public UserControl
+class Ball : public UserControl
 {
     int x, y, addX, addY;
+
   public:
     Ball() : UserControl("d:c")
     {
@@ -22,12 +22,12 @@ class Ball: public UserControl
         y += addY;
         if (x < 0)
         {
-            x = 0;
+            x    = 0;
             addX = 1;
         }
         if (x > this->GetWidth())
         {
-            x = this->GetWidth();
+            x    = this->GetWidth();
             addX = -1;
         }
         if (y < 0)
@@ -41,7 +41,7 @@ class Ball: public UserControl
             addY = -1;
         }
     }
-    void Paint(AppCUI::Graphics::Renderer & r)
+    void Paint(AppCUI::Graphics::Renderer& r)
     {
         r.Clear(' ', ColorPair{ Color::White, Color::Black });
         r.WriteSpecialCharacter(x, y, SpecialChars::CircleFilled, ColorPair{ Color::Aqua, Color::Black });
@@ -51,6 +51,7 @@ class FramesExample : public Window
 {
     Reference<Ball> ball;
     int counter;
+
   public:
     FramesExample() : Window("Test", "d:c,w:40,h:10", WindowFlags::None), counter(0)
     {
@@ -64,7 +65,7 @@ class FramesExample : public Window
             ball->Update();
             counter = 0;
         }
-        
+
         return true;
     }
 };

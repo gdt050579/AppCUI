@@ -1,11 +1,6 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-using namespace AppCUI::OS;
-
 #define LINE_NUMBERS_WIDTH 4
 #define INVALID_SELECTION  0xFFFFFFFF
 
@@ -24,6 +19,10 @@ using namespace AppCUI::OS;
         MoveSelectionTo(View.CurrentPosition);
 
 #define WRAPPER ((TextAreaControlContext*) this->Context)
+
+namespace AppCUI
+{
+using namespace OS;
 
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
@@ -216,7 +215,7 @@ void TextAreaControlContext::UpdateLines()
     {
         if (this->handlers != nullptr)
         {
-            auto t_h = (AppCUI::Controls::Handlers::TextControl*) this->handlers.get();
+            auto t_h = (Controls::Handlers::TextControl*) this->handlers.get();
             if (t_h->OnTextColor.obj)
             {
                 t_h->OnTextColor.obj->OnTextColor(this->Host, this->Text.GetBuffer(), this->Text.Len());
@@ -355,7 +354,7 @@ void TextAreaControlContext::DrawLineNumber(
     if (poz < 27)
         temp[28] = '.';
 
-    renderer.WriteSingleLineText(0, pozY, std::string_view(temp + 28, LINE_NUMBERS_WIDTH - 1), lineNumberColor);
+    renderer.WriteSingleLineText(0, pozY, string_view(temp + 28, LINE_NUMBERS_WIDTH - 1), lineNumberColor);
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
@@ -574,9 +573,9 @@ void TextAreaControlContext::MoveToPreviousWord(bool selected)
         return;
     if (View.CurrentPosition <= start)
         return;
-    auto startPoz                   = View.CurrentPosition - 1;
-    auto currentChar                = this->Text.GetBuffer()[startPoz];
-    std::optional<unsigned int> res = std::nullopt;
+    auto startPoz              = View.CurrentPosition - 1;
+    auto currentChar           = this->Text.GetBuffer()[startPoz];
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
@@ -612,8 +611,8 @@ void TextAreaControlContext::MoveToNextWord(bool selected)
     CLEAR_SELECTION;
     if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
         return;
-    auto currentChar                = this->Text.GetBuffer()[View.CurrentPosition];
-    std::optional<unsigned int> res = std::nullopt;
+    auto currentChar           = this->Text.GetBuffer()[View.CurrentPosition];
+    optional<unsigned int> res = std::nullopt;
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = this->Text.FindNext(
@@ -730,7 +729,7 @@ void TextAreaControlContext::CopyToClipboard()
 {
     if (this->Selection.Start == INVALID_SELECTION)
         return;
-    if (!AppCUI::OS::Clipboard::SetText(this->Text.SubString(this->Selection.Start, this->Selection.End)))
+    if (!OS::Clipboard::SetText(this->Text.SubString(this->Selection.Start, this->Selection.End)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
     }
@@ -754,7 +753,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
 }
 
-bool TextAreaControlContext::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar)
+bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16_t UnicodeChar)
 {
     switch (KeyCode)
     {
@@ -907,7 +906,7 @@ TextArea::~TextArea()
 {
     DELETE_CONTROL_CONTEXT(TextAreaControlContext);
 }
-TextArea::TextArea(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextAreaFlags flags)
+TextArea::TextArea(const ConstString& caption, string_view layout, TextAreaFlags flags)
     : Control(new TextAreaControlContext(), "", layout, false)
 {
     auto Members = reinterpret_cast<TextAreaControlContext*>(this->Context);
@@ -939,7 +938,7 @@ void TextArea::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
 }
-bool TextArea::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool TextArea::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
@@ -977,3 +976,4 @@ Handlers::TextControl* TextArea::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);
 }
+} // namespace AppCUI

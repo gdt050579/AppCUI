@@ -114,9 +114,9 @@ class TicTacToeWin : public AppCUI::Controls::Window
     Reference<TicTacToeTable> game;
 
   public:
-    TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18",WindowFlags::None)
+    TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18", WindowFlags::None)
     {
-        game = this->CreateChildControl<TicTacToeTable>("x:2,y:1,w:14,h:14");        
+        game = this->CreateChildControl<TicTacToeTable>("x:2,y:1,w:14,h:14");
     }
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {

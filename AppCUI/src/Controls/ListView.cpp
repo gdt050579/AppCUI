@@ -1,9 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
+namespace AppCUI
+{
 constexpr unsigned int ITEM_FLAG_CHECKED         = 0x0001;
 constexpr unsigned int ITEM_FLAG_SELECTED        = 0x0002;
 constexpr unsigned int COLUMN_DONT_COPY          = 1;
@@ -24,7 +22,7 @@ constexpr unsigned int LISTVIEW_SEARCH_BAR_WIDTH = 12;
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
-AppCUI::Graphics::CharacterBuffer
+Graphics::CharacterBuffer
       __temp_listviewitem_reference_object__; // use this as std::option<const T&> is not available yet
 
 void ListViewColumn::Reset()
@@ -36,7 +34,7 @@ void ListViewColumn::Reset()
     this->Width        = 10;
     this->Name.Clear();
 }
-bool ListViewColumn::SetName(const AppCUI::Utils::ConstString& text)
+bool ListViewColumn::SetName(const ConstString& text)
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -250,7 +248,6 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // prepare params
     params.Color = itemCol;
 
-
     // for chategory items a special draw is made (only first comlumn is shown)
     if (item->Type == ListViewItemType::Category)
     {
@@ -267,9 +264,6 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         renderer.WriteText(*subitem, params);
         return;
     }
-
-
-
 
     // first column
     int end_first_column = x + ((int) column->Width);
@@ -430,13 +424,13 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
             renderer.WriteSingleLineText(
                   x_ofs,
                   yPoz,
-                  std::string_view(this->Selection.Status, this->Selection.StatusLength),
+                  string_view(this->Selection.Status, this->Selection.StatusLength),
                   Cfg->ListView.StatusColor);
         }
     }
 }
 // coloane
-bool ListViewControlContext::AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int width)
+bool ListViewControlContext::AddColumn(const ConstString& text, TextAlignament Align, unsigned int width)
 {
     CHECK(Columns.Count < MAX_LISTVIEW_COLUMNS, false, "");
     Columns.List[Columns.Count].Reset();
@@ -472,7 +466,7 @@ int ListViewControlContext::GetNrColumns()
     return Columns.Count;
 }
 
-ItemHandle ListViewControlContext::AddItem(const AppCUI::Utils::ConstString& text)
+ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (unsigned int) Items.List.size();
     Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
@@ -480,7 +474,7 @@ ItemHandle ListViewControlContext::AddItem(const AppCUI::Utils::ConstString& tex
     SetItemText(idx, 0, text);
     return idx;
 }
-bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text)
+bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     CHECK(subItem < Columns.Count,
@@ -491,7 +485,7 @@ bool ListViewControlContext::SetItemText(ItemHandle item, unsigned int subItem, 
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
     return true;
 }
-AppCUI::Graphics::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
+Graphics::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, unsigned int subItem)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
     CHECK(subItem < Columns.Count,
@@ -788,7 +782,7 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         SendMsg(Event::ListViewCurrentItemChanged);
 }
-bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
     ListViewItem* lvi;
@@ -1006,10 +1000,10 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
                     {
                         temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
                         if (clipboardSeparator != 0)
-                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                            temp.Add(string_view{ &clipboardSeparator, 1 });
                     }
                 }
-                AppCUI::OS::Clipboard::SetText(temp);
+                OS::Clipboard::SetText(temp);
             }
             return true;
         case Key::Ctrl | Key::Alt | Key::Insert:
@@ -1021,12 +1015,12 @@ bool ListViewControlContext::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t Uni
                     {
                         temp.Add(GetFilteredItem(gr)->SubItem[tr]);
                         if (clipboardSeparator != 0)
-                            temp.Add(std::string_view{ &clipboardSeparator, 1 });
+                            temp.Add(string_view{ &clipboardSeparator, 1 });
                     }
                 }
                 temp.Add("\n");
             }
-            AppCUI::OS::Clipboard::SetText(temp);
+            OS::Clipboard::SetText(temp);
             return true;
         };
         // caut sort
@@ -1082,14 +1076,14 @@ bool ListViewControlContext::MouseToHeader(int x, int, unsigned int& HeaderIndex
     HeaderIndex       = INVALID_COLUMN_INDEX;
     return false;
 }
-void ListViewControlContext::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void ListViewControlContext::OnMouseReleased(int, int, Input::MouseButton)
 {
     Columns.ResizeModeEnabled         = false;
     Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
     Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
 }
-void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     if (((Flags & ListViewFlags::HideColumns) == ListViewFlags::None))
     {
@@ -1144,13 +1138,13 @@ void ListViewControlContext::OnMousePressed(int x, int y, AppCUI::Input::MouseBu
             }
             else
             {
-                if (((button & AppCUI::Input::MouseButton::DoubleClicked) != AppCUI::Input::MouseButton::None))
+                if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
                     SendMsg(Event::ListViewItemClicked);
             }
         }
     }
 }
-bool ListViewControlContext::OnMouseDrag(int x, int, AppCUI::Input::MouseButton)
+bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -1190,15 +1184,15 @@ bool ListViewControlContext::OnMouseOver(int x, int y)
     }
     return false;
 }
-bool ListViewControlContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
+bool ListViewControlContext::OnMouseWheel(int, int, Input::MouseWheel direction)
 {
     switch (direction)
     {
-    case AppCUI::Input::MouseWheel::Up:
+    case Input::MouseWheel::Up:
         if (this->Items.FirstVisibleIndex > 0)
             this->Items.FirstVisibleIndex--;
         return true;
-    case AppCUI::Input::MouseWheel::Down:
+    case Input::MouseWheel::Down:
         if (this->Items.FirstVisibleIndex >= 0)
         {
             if (((size_t) this->Items.FirstVisibleIndex) + 1 < this->Items.Indexes.Len())
@@ -1206,9 +1200,9 @@ bool ListViewControlContext::OnMouseWheel(int, int, AppCUI::Input::MouseWheel di
             return true;
         }
         break;
-    case AppCUI::Input::MouseWheel::Left:
+    case Input::MouseWheel::Left:
         return OnKeyEvent(Key::Left, 0);
-    case AppCUI::Input::MouseWheel::Right:
+    case Input::MouseWheel::Right:
         return OnKeyEvent(Key::Right, 0);
     }
     return false;
@@ -1398,8 +1392,7 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(std::string_view layout, ListViewFlags flags)
-    : Control(new ListViewControlContext(), "", layout, false)
+ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
@@ -1438,7 +1431,7 @@ void ListView::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     Members->Paint(renderer);
 }
-bool ListView::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool ListView::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
@@ -1460,11 +1453,11 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
-bool ListView::AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int Size)
+bool ListView::AddColumn(const ConstString& text, TextAlignament Align, unsigned int Size)
 {
     return WRAPPER->AddColumn(text, Align, Size);
 }
-bool ListView::SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text)
+bool ListView::SetColumnText(unsigned int columnIndex, const ConstString& text)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count,
           false,
@@ -1517,21 +1510,18 @@ unsigned int ListView::GetColumnsCount()
     return WRAPPER->GetNrColumns();
 }
 
-ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text)
+ItemHandle ListView::AddItem(const ConstString& text)
 {
     return WRAPPER->AddItem(text);
 }
-ItemHandle ListView::AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1)
+ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
     CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
     return handle;
 }
-ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2)
+ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1540,10 +1530,7 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3)
+      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2, const ConstString& subItem3)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1553,11 +1540,11 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3,
-      const AppCUI::Utils::ConstString& subItem4)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1568,12 +1555,12 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3,
-      const AppCUI::Utils::ConstString& subItem4,
-      const AppCUI::Utils::ConstString& subItem5)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1585,13 +1572,13 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3,
-      const AppCUI::Utils::ConstString& subItem4,
-      const AppCUI::Utils::ConstString& subItem5,
-      const AppCUI::Utils::ConstString& subItem6)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1604,14 +1591,14 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3,
-      const AppCUI::Utils::ConstString& subItem4,
-      const AppCUI::Utils::ConstString& subItem5,
-      const AppCUI::Utils::ConstString& subItem6,
-      const AppCUI::Utils::ConstString& subItem7)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6,
+      const ConstString& subItem7)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1625,15 +1612,15 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 ItemHandle ListView::AddItem(
-      const AppCUI::Utils::ConstString& text,
-      const AppCUI::Utils::ConstString& subItem1,
-      const AppCUI::Utils::ConstString& subItem2,
-      const AppCUI::Utils::ConstString& subItem3,
-      const AppCUI::Utils::ConstString& subItem4,
-      const AppCUI::Utils::ConstString& subItem5,
-      const AppCUI::Utils::ConstString& subItem6,
-      const AppCUI::Utils::ConstString& subItem7,
-      const AppCUI::Utils::ConstString& subItem8)
+      const ConstString& text,
+      const ConstString& subItem1,
+      const ConstString& subItem2,
+      const ConstString& subItem3,
+      const ConstString& subItem4,
+      const ConstString& subItem5,
+      const ConstString& subItem6,
+      const ConstString& subItem7,
+      const ConstString& subItem8)
 {
     ItemHandle handle = WRAPPER->AddItem(text);
     CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
@@ -1648,11 +1635,11 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 
-bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text)
+bool ListView::SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text)
 {
     return WRAPPER->SetItemText(item, subItem, text);
 }
-const AppCUI::Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
+const Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, unsigned int subItemIndex)
 {
     auto obj = WRAPPER->GetItemText(item, subItemIndex);
     if (obj)
@@ -1784,19 +1771,19 @@ void ListView::SetClipboardSeparator(char ch)
 {
     WRAPPER->SetClipboardSeparator(ch);
 }
-void ListView::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void ListView::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
     WRAPPER->OnMouseReleased(x, y, button);
 }
-void ListView::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void ListView::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     WRAPPER->OnMousePressed(x, y, button);
 }
-bool ListView::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool ListView::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     return WRAPPER->OnMouseDrag(x, y, button);
 }
-bool ListView::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
     return WRAPPER->OnMouseWheel(x, y, direction);
 }
@@ -1846,3 +1833,4 @@ bool ListView::Reserve(unsigned int itemsCount)
     WRAPPER->Items.List.reserve(itemsCount);
     return WRAPPER->Items.Indexes.Reserve(itemsCount);
 }
+} // namespace AppCUI

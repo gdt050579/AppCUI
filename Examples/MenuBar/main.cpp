@@ -12,14 +12,13 @@ std::string_view KeyWords[] = { "if",      "do",         "while",   "until",   "
 std::string_view Types[]    = { "bool",   "char",   "int",     "short",    "long",    "float",
                              "double", "size_t", "char8_t", "char16_t", "char32_t" };
 
-
 class ContextMenuExample : public Window
 {
     Menu ctxMenu;
 
   public:
     ContextMenuExample() : Window("Context menu", "d:c,w:64,h:10", WindowFlags::None)
-    {        
+    {
         Factory::Label::Create(this, "Right click below to open a contextual menu", "x:1,y:1,w:62,h:2");
         ctxMenu.AddCommandItem("Command &1", 100);
         ctxMenu.AddCommandItem("Command &2", 200);

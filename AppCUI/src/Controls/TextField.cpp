@@ -1,10 +1,6 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
 #define C_WIDTH ((Members->Layout.Width - 2) * Members->Layout.Height)
 #define EXIT_IF_READONLY()                                                                                             \
     if ((Members->Flags & TextFieldFlags::Readonly) != TextFieldFlags::None)                                           \
@@ -14,9 +10,11 @@ using namespace AppCUI::Input;
 
 #define DEFAULT_TEXT_COLOR 0xFFFFFFFF
 
-AppCUI::Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
+namespace AppCUI::Controls
+{
+Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
-void AppCUI::Controls::UninitTextFieldDefaultMenu()
+void UninitTextFieldDefaultMenu()
 {
     if (textFieldContexMenu)
         delete textFieldContexMenu;
@@ -30,7 +28,7 @@ void TextField_SendTextChangedEvent(TextField* control)
     {
         if (Members->handlers != nullptr)
         {
-            auto t_h = (AppCUI::Controls::Handlers::TextControl*) Members->handlers.get();
+            auto t_h = (Controls::Handlers::TextControl*) Members->handlers.get();
             if (t_h->OnTextColor.obj)
             {
                 t_h->OnTextColor.obj->OnTextColor(control, Members->Text.GetBuffer(), Members->Text.Len());
@@ -122,8 +120,8 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Cursor.Pos >= (int) Members->Text.Len())
         return;
-    auto currentChar                = Members->Text.GetBuffer()[Members->Cursor.Pos];
-    std::optional<unsigned int> res = std::nullopt;
+    auto currentChar           = Members->Text.GetBuffer()[Members->Cursor.Pos];
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
@@ -153,9 +151,9 @@ void TextField_MoveToPreviousWord(TextField* control, bool selected)
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Cursor.Pos == 0)
         return;
-    auto startPoz                   = Members->Cursor.Pos - 1;
-    auto currentChar                = Members->Text.GetBuffer()[startPoz];
-    std::optional<unsigned int> res = std::nullopt;
+    auto startPoz              = Members->Cursor.Pos - 1;
+    auto currentChar           = Members->Text.GetBuffer()[startPoz];
+    optional<unsigned int> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
@@ -268,8 +266,7 @@ void TextField_CopyToClipboard(TextField* control, bool deleteSelectionAfterCopy
 
     if (!TextField_HasSelection(control))
         return;
-    if (!AppCUI::OS::Clipboard::SetText(
-              Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
+    if (!OS::Clipboard::SetText(Members->Text.SubString(Members->Selection.Start, (size_t) Members->Selection.End + 1)))
     {
         LOG_WARNING("Fail to copy string to the clipboard");
     }
@@ -283,7 +280,7 @@ void TextField_PasteFromClipboard(TextField* control)
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
     LocalUnicodeStringBuilder<2048> temp;
-    if (AppCUI::OS::Clipboard::GetText(temp) == false)
+    if (OS::Clipboard::GetText(temp) == false)
     {
         LOG_WARNING("Fail to retrive a text from the clipboard.");
         return;
@@ -335,7 +332,7 @@ TextField::~TextField()
 {
     DELETE_CONTROL_CONTEXT(TextFieldControlContext);
 }
-TextField::TextField(const AppCUI::Utils::ConstString& caption, std::string_view layout, TextFieldFlags flags)
+TextField::TextField(const ConstString& caption, string_view layout, TextFieldFlags flags)
     : Control(new TextFieldControlContext(), caption, layout, false)
 {
     auto Members                            = reinterpret_cast<TextFieldControlContext*>(this->Context);
@@ -389,7 +386,7 @@ bool TextField::GetSelection(unsigned int& start, unsigned int& size) const
     size  = (unsigned int) (Members->Selection.End - Members->Selection.Start);
     return true;
 }
-bool TextField::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool TextField::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
 
@@ -531,7 +528,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
             {
                 if (Members->handlers != nullptr)
                 {
-                    auto t_h = (AppCUI::Controls::Handlers::TextControl*) Members->handlers.get();
+                    auto t_h = (Controls::Handlers::TextControl*) Members->handlers.get();
                     if (t_h->OnTextColor.obj)
                     {
                         t_h->OnTextColor.obj->OnTextColor(this, Members->Text.GetBuffer(), Members->Text.Len());
@@ -614,7 +611,7 @@ bool TextField::OnMouseLeave()
 {
     return true;
 }
-void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void TextField::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
     if (button == (MouseButton::DoubleClicked | MouseButton::Left))
@@ -647,7 +644,7 @@ void TextField::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         {
             if (textFieldContexMenu == nullptr)
             {
-                textFieldContexMenu = new AppCUI::Internal::TextControlDefaultMenu();
+                textFieldContexMenu = new Internal::TextControlDefaultMenu();
             }
             textFieldContexMenu->Show(this, x, y + 1, Members->Selection.Start >= 0);
         }
@@ -659,37 +656,37 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
     {
         switch (controlID)
         {
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
             this->CopyToClipboard(false);
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
             this->CopyToClipboard(true);
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
             this->PasteFromClipboard();
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
             this->SelectAll();
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
             OnKeyEvent(Key::Delete, 0);
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
             TextField_ToUpper(this);
             return true;
-        case AppCUI::Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
             TextField_ToLower(this);
             return true;
         }
     }
     return false;
 }
-bool TextField::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool TextField::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), true);
     return true;
 }
-void TextField::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void TextField::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
 }
@@ -697,3 +694,4 @@ Handlers::TextControl* TextField::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);
 }
+} // namespace AppCUI::Controls

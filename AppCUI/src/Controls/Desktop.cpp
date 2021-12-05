@@ -1,10 +1,8 @@
 ﻿#include "ControlContext.hpp"
 #include <AppCUI.hpp>
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
+namespace AppCUI::Controls
+{
 void GoToNextWindow(ControlContext* Members, int direction)
 {
     if (!Members)
@@ -34,18 +32,18 @@ Desktop::Desktop() : Control(new ControlContext(), "", "x:0,y:0,w:1,h:1", false)
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }
 
-void Desktop::Paint(AppCUI::Graphics::Renderer& renderer)
+void Desktop::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);
 }
-bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
+bool Desktop::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, false);
     switch (keyCode)
     {
     case Key::Escape:
-        AppCUI::Application::Close();
+        Application::Close();
         return true;
     case Key::Ctrl | Key::Tab:
         GoToNextWindow(Members, 1);
@@ -54,7 +52,7 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
         GoToNextWindow(Members, -1);
         return true;
     case Key::Alt | Key::N0:
-        AppCUI::Dialogs::WindowManager::Show();
+        Dialogs::WindowManager::Show();
         return true;
     }
     // check controls hot keys
@@ -79,3 +77,5 @@ bool Desktop::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*UnicodeChar*/)
     }
     return false;
 }
+
+} // namespace AppCUI::Controls

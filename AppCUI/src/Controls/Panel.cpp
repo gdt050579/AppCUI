@@ -1,16 +1,12 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
 #define PANEL_ATTR_BORDER 1024
-
-Panel::Panel(const AppCUI::Utils::ConstString& caption, std::string_view layout)
-    : Control(new ControlContext(), caption, layout, false)
+namespace AppCUI::Controls
+{
+Panel::Panel(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, false)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
-    if (Members->Text.Len()==0)
+    if (Members->Text.Len() == 0)
     {
         Members->Flags = GATTR_VISIBLE | GATTR_ENABLE;
     }
@@ -33,12 +29,14 @@ void Panel::Paint(Graphics::Renderer& renderer)
         {
             WriteTextParams params(
                   WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
-                  WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin, TextAlignament::Left);
-            params.X              = 3;
-            params.Y              = 0;
-            params.Color          = Members->Cfg->Panel.NormalColor;
-            params.Width          = Members->Layout.Width - 6;
+                        WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
+                  TextAlignament::Left);
+            params.X     = 3;
+            params.Y     = 0;
+            params.Color = Members->Cfg->Panel.NormalColor;
+            params.Width = Members->Layout.Width - 6;
             renderer.WriteText(Members->Text, params);
         }
     }
 }
+} // namespace AppCUI::Controls

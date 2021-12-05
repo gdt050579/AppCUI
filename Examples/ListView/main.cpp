@@ -3353,7 +3353,6 @@ class CategoryDemo : public Window
     }
 };
 
-
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,

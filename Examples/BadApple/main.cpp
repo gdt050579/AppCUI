@@ -48,7 +48,7 @@ class VideoScreen : public AppCUI::Controls::UserControl
             currentFrame++;
             return true;
         }
-            
+
         return false;
     }
 

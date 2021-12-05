@@ -3,8 +3,9 @@
 #include <poll.h>
 #include <string>
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Input;
 
 constexpr int KEY_DELETE      = 0x7F;
 constexpr int INSERT_MODE_KEY = 'i';    // Enter insert mode
@@ -13,7 +14,7 @@ constexpr int KEY_TAB         = '\t';
 
 void debugChar(int y, int c, const char* prefix)
 {
-    std::string_view myName = keyname(c);
+    string_view myName = keyname(c);
     move(y, 0);
     clrtoeol();
     addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
@@ -175,10 +176,10 @@ void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
     }
 }
 
-void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEventType::None;
-    evnt.keyCode   = Key::None;
+    evnt.eventType        = SystemEventType::None;
+    evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;
@@ -217,4 +218,5 @@ bool NcursesTerminal::IsEventAvailable()
 
 void NcursesTerminal::uninitInput()
 {
+}
 }

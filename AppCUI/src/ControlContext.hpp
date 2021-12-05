@@ -7,11 +7,12 @@
 #include <map>
 #include <set>
 
-using namespace AppCUI;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Controls;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Input;
+namespace AppCUI
+{
+using namespace Graphics;
+using namespace Controls;
+using namespace Utils;
+using namespace Input;
 
 constexpr unsigned int GATTR_ENABLE   = 0x000001;
 constexpr unsigned int GATTR_VISIBLE  = 0x000002;
@@ -69,7 +70,7 @@ struct LayoutMetricData
 struct ControlContext
 {
   public:
-    AppCUI::Graphics::Clip ScreenClip, ExpandedViewClip;
+    Graphics::Clip ScreenClip, ExpandedViewClip;
     struct
     {
         struct
@@ -99,17 +100,17 @@ struct ControlContext
     } ScrollBars;
     int ControlID;
     int GroupID;
-    AppCUI::Input::Key HotKey;
+    Input::Key HotKey;
     unsigned int HotKeyOffset;
     unsigned int Flags, ControlsCount, CurrentControlIndex;
-    AppCUI::Controls::Control** Controls;
-    AppCUI::Controls::Control* Parent;
-    AppCUI::Application::Config* Cfg;
-    AppCUI::Graphics::CharacterBuffer Text;
+    Controls::Control** Controls;
+    Controls::Control* Parent;
+    Application::Config* Cfg;
+    Graphics::CharacterBuffer Text;
     bool Inited, Focused, MouseIsOver;
 
     // Handlers
-    std::unique_ptr<AppCUI::Controls::Handlers::Control> handlers;
+    unique_ptr<Controls::Handlers::Control> handlers;
 
     ControlContext();
 
@@ -123,7 +124,7 @@ struct ControlContext
     bool ProcessTLBAnchors(LayoutInformation& inf);
     bool ProcessTRBAnchors(LayoutInformation& inf);
     bool ProcessLTRBAnchors(LayoutInformation& inf);
-    bool UpdateLayoutFormat(std::string_view format);
+    bool UpdateLayoutFormat(string_view format);
     void SetControlSize(unsigned int width, unsigned int heigh);
     bool RecomputeLayout_PointAndSize(const LayoutMetricData& md);
     bool RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetricData& md);
@@ -164,8 +165,8 @@ enum class WindowBarItemFlags : unsigned char
 struct WindowControlContext;
 struct WindowBarItem
 {
-    AppCUI::Graphics::CharacterBuffer ToolTipText;
-    AppCUI::Graphics::CharacterBuffer Text;
+    Graphics::CharacterBuffer ToolTipText;
+    Graphics::CharacterBuffer Text;
     int Size, X, Y, ID;
     unsigned int HotKeyOffset;
     Key HotKey;
@@ -200,19 +201,16 @@ struct WindowBarItem
     {
         Flags = static_cast<WindowBarItemFlags>(((unsigned char) Flags) & (~((unsigned char) flg)));
     }
-    bool Init(WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText);
+    bool Init(WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, string_view toolTipText);
     bool Init(
-          WindowBarItemType type,
-          WindowControlsBarLayout layout,
-          const AppCUI::Utils::ConstString& name,
-          const AppCUI::Utils::ConstString& toolTip);
+          WindowBarItemType type, WindowControlsBarLayout layout, const ConstString& name, const ConstString& toolTip);
 };
 struct WindowControlContext : public ControlContext
 {
   public:
-    std::unique_ptr<AppCUI::Internal::MenuBar> menu;
-    AppCUI::Controls::ItemHandle referalItemHandle;
-    AppCUI::Controls::ItemHandle windowItemHandle;
+    unique_ptr<Internal::MenuBar> menu;
+    Controls::ItemHandle referalItemHandle;
+    Controls::ItemHandle windowItemHandle;
     int oldPosX, oldPosY, oldW, oldH;
     int dragStatus, dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
@@ -277,7 +275,7 @@ class TextAreaControlContext : public ControlContext
         unsigned int Start, End, Origin;
     } Selection;
     char tabChar;
-    AppCUI::Controls::Control* Host;
+    Controls::Control* Host;
 
     void ComputeVisibleLinesAndRows();
 
@@ -324,7 +322,7 @@ class TextAreaControlContext : public ControlContext
 
     void SetToolTip(char* ss);
     void Paint(Graphics::Renderer& renderer);
-    bool OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t UnicodeChar);
+    bool OnKeyEvent(Input::Key KeyCode, char16_t UnicodeChar);
     void OnAfterResize();
     void AnalyzeCurrentText();
     void SetSelection(unsigned int start, unsigned int end);
@@ -347,7 +345,7 @@ struct TabControlContext : public ControlContext
 };
 struct CanvasControlContext : public ControlContext
 {
-    AppCUI::Graphics::Canvas canvas;
+    Graphics::Canvas canvas;
     int CanvasScrollX, CanvasScrollY, mouseDragX, mouseDragY;
     bool dragModeEnabled;
     void MoveScrollTo(int newX, int newY);
@@ -364,7 +362,7 @@ struct ListViewItem
     unsigned int XOffset;
     unsigned int Height;
     ColorPair ItemColor;
-    std::variant<GenericRef, unsigned long long> Data;
+    variant<GenericRef, unsigned long long> Data;
     ListViewItem();
     ListViewItem(const ColorPair col) : ListViewItem()
     {
@@ -383,7 +381,7 @@ struct ListViewColumn
     TextAlignament Align;
 
     void Reset();
-    bool SetName(const AppCUI::Utils::ConstString& text);
+    bool SetName(const ConstString& text);
     bool SetAlign(TextAlignament align);
     void SetWidth(unsigned int width);
 };
@@ -413,7 +411,7 @@ class ListViewControlContext : public ControlContext
 
     struct
     {
-        std::vector<ListViewItem> List;
+        vector<ListViewItem> List;
         Utils::Array32 Indexes;
         int FirstVisibleIndex, CurentItemIndex;
     } Items;
@@ -450,15 +448,15 @@ class ListViewControlContext : public ControlContext
 
     // columns
     void UpdateColumnsWidth();
-    bool AddColumn(const AppCUI::Utils::ConstString& text, TextAlignament Align, unsigned int width = 10);
+    bool AddColumn(const ConstString& text, TextAlignament Align, unsigned int width = 10);
     bool DeleteColumn(unsigned int index);
     void DeleteAllColumns();
     int GetNrColumns();
 
     // itemuri
-    ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
-    bool SetItemText(ItemHandle item, unsigned int subItem, const AppCUI::Utils::ConstString& text);
-    AppCUI::Graphics::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
+    ItemHandle AddItem(const ConstString& text);
+    bool SetItemText(ItemHandle item, unsigned int subItem, const ConstString& text);
+    Graphics::CharacterBuffer* GetItemText(ItemHandle item, unsigned int subItem);
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
@@ -491,14 +489,14 @@ class ListViewControlContext : public ControlContext
     unsigned int GetItemHeight(ItemHandle item);
 
     void Paint(Graphics::Renderer& renderer);
-    void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button);
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
     bool MouseToHeader(int x, int y, unsigned int& HeaderIndex, unsigned int& HeaderColumnIndex);
-    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
-    bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
-    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
-    bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
+    bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar);
     void SendMsg(Event eventType);
     bool Sort();
 
@@ -508,14 +506,14 @@ class ListViewControlContext : public ControlContext
 
 struct ComboBoxItem
 {
-    AppCUI::Graphics::CharacterBuffer Text;
-    std::variant<GenericRef, unsigned long long> Data;
+    Graphics::CharacterBuffer Text;
+    variant<GenericRef, unsigned long long> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
-          const AppCUI::Utils::ConstString& caption,
-          std::variant<GenericRef, unsigned long long> userData,
+          const ConstString& caption,
+          variant<GenericRef, unsigned long long> userData,
           unsigned int index,
           bool separator = false);
     ~ComboBoxItem();
@@ -527,8 +525,8 @@ struct ComboBoxItem
 class ComboBoxControlContext : public ControlContext
 {
   public:
-    std::vector<ComboBoxItem> Items;
-    AppCUI::Utils::Array32 Indexes;
+    vector<ComboBoxItem> Items;
+    Utils::Array32 Indexes;
     unsigned int ExpandedHeight, FirstVisibleItem, VisibleItemsCount, HoveredIndexItem;
     unsigned int CurentItemIndex;
 };
@@ -573,11 +571,11 @@ struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
-    std::vector<CharacterBuffer> values;
-    std::variant<GenericRef, unsigned long long> data{ nullptr };
+    vector<CharacterBuffer> values;
+    variant<GenericRef, unsigned long long> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
-    std::vector<ItemHandle> children;
+    vector<ItemHandle> children;
     Utils::UnicodeStringBuilder metadata;
     unsigned int depth                = 1;
     bool markedAsFound                = false;
@@ -588,16 +586,16 @@ class TreeControlContext : public ControlContext
 {
   public:
     std::map<ItemHandle, TreeItem> items;
-    std::vector<ItemHandle> itemsToDrew;
-    std::vector<ItemHandle> orderedItems;
+    vector<ItemHandle> itemsToDrew;
+    vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     unsigned int maxItemsToDraw  = 0;
     unsigned int offsetTopToDraw = 0;
     unsigned int offsetBotToDraw = 0;
     bool notProcessed            = true;
-    std::vector<ItemHandle> roots;
-    std::vector<TreeColumnData> columns;
+    vector<ItemHandle> roots;
+    vector<TreeColumnData> columns;
     unsigned int treeFlags              = 0;
     unsigned int separatorIndexSelected = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch       = InvalidItemHandle;
@@ -639,7 +637,7 @@ struct GridCellData
 {
     TextAlignament ta = TextAlignament::Left;
     Grid::CellType ct = Grid::CellType::String;
-    std::variant<bool, std::u16string> content;
+    variant<bool, std::u16string> content;
 };
 
 struct GridHeaderCellData
@@ -656,7 +654,7 @@ class GridControlContext : public ControlContext
     GridFlags flags               = GridFlags::None;
     unsigned int hoveredCellIndex = 0xFFFFFFFF;
     unsigned int anchorCellIndex  = 0xFFFFFFFF;
-    std::vector<unsigned int> selectedCellsIndexes;
+    vector<unsigned int> selectedCellsIndexes;
 
     unsigned int cWidth           = 0U;
     unsigned int cHeight          = 0U;
@@ -668,7 +666,7 @@ class GridControlContext : public ControlContext
 
     std::map<unsigned int, GridCellData> cells;
     std::u16string separator = u",";
-    std::vector<GridHeaderCellData> headers;
+    vector<GridHeaderCellData> headers;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j);
@@ -688,8 +686,8 @@ struct MenuItem
 {
     CharacterBuffer Name;
     unsigned int HotKeyOffset;
-    AppCUI::Input::Key HotKey;
-    AppCUI::Input::Key ShortcutKey;
+    Input::Key HotKey;
+    Input::Key ShortcutKey;
     MenuItemType Type;
     int CommandID;
     bool Enabled;
@@ -699,11 +697,11 @@ struct MenuItem
     MenuItem(); // line
     MenuItem(
           MenuItemType type,
-          const AppCUI::Utils::ConstString& text,
+          const ConstString& text,
           int CommandID,
           bool checked,
-          AppCUI::Input::Key shortcutKey);                           // commands
-    MenuItem(const AppCUI::Utils::ConstString& text, Menu* subMenu); // submenu
+          Input::Key shortcutKey);                    // commands
+    MenuItem(const ConstString& text, Menu* subMenu); // submenu
     MenuItem(const MenuItem& obj) = delete;
     MenuItem(MenuItem&& obj)      = delete;
     ~MenuItem();
@@ -733,16 +731,16 @@ struct MenuMousePositionInfo
 constexpr unsigned int MAX_NUMBER_OF_MENU_ITEMS = 256;
 struct MenuContext
 {
-    // std::vector messes up with inter-items pointers when calling copy/move ctor
+    // vector messes up with inter-items pointers when calling copy/move ctor
     // as a result, opening a sub-menu from another is likely to produce a crash (as the pointers will be invalid)
-    // switching to regular pointer of std::unique_ptr type to avoid this
+    // switching to regular pointer of unique_ptr type to avoid this
 
-    std::unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
+    unique_ptr<MenuItem> Items[MAX_NUMBER_OF_MENU_ITEMS];
     unsigned int ItemsCount;
     Menu* Parent;
-    AppCUI::Internal::MenuBar* Owner;
-    AppCUI::Graphics::Clip ScreenClip;
-    AppCUI::Application::Config* Cfg;
+    Internal::MenuBar* Owner;
+    Graphics::Clip ScreenClip;
+    Application::Config* Cfg;
     unsigned int FirstVisibleItem;
     unsigned int VisibleItemsCount;
     unsigned int CurrentItem;
@@ -750,11 +748,11 @@ struct MenuContext
     MenuButtonState ButtonUp, ButtonDown;
 
     MenuContext();
-    ItemHandle AddItem(std::unique_ptr<MenuItem> itm);
+    ItemHandle AddItem(unique_ptr<MenuItem> itm);
 
   public:
     // methods
-    void Paint(AppCUI::Graphics::Renderer& renderer, bool activ);
+    void Paint(Graphics::Renderer& renderer, bool activ);
 
     void RunItemAction(unsigned int index);
     void CloseMenu();
@@ -762,7 +760,7 @@ struct MenuContext
     // Move
     void UpdateFirstVisibleItem();
     void CreateAvailableItemsList(unsigned int* indexes, unsigned int& count);
-    void MoveCurrentItemTo(AppCUI::Input::Key keyCode);
+    void MoveCurrentItemTo(Input::Key keyCode);
 
     // Check
     bool SetChecked(unsigned int index, bool status);
@@ -772,19 +770,19 @@ struct MenuContext
     bool OnMouseMove(int x, int y, bool& repaint);
     MousePressedResult OnMousePressed(int x, int y);
     bool IsOnMenu(int x, int y);
-    bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
 
     // key events
-    bool OnKeyEvent(AppCUI::Input::Key keyCode);
-    bool ProcessShortCut(AppCUI::Input::Key keyCode);
+    bool OnKeyEvent(Input::Key keyCode);
+    bool ProcessShortCut(Input::Key keyCode);
 
     // Show
     void Show(
-          AppCUI::Controls::Menu* me,
-          Reference<AppCUI::Controls::Control> relativeControl,
+          Controls::Menu* me,
+          Reference<Controls::Control> relativeControl,
           int x,
           int y,
-          const AppCUI::Graphics::Size& maxSize);
+          const Graphics::Size& maxSize);
 };
 
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
@@ -818,3 +816,4 @@ struct MenuContext
         delete c;                                                                                                      \
         Context = nullptr;                                                                                             \
     }
+} // namespace AppCUI

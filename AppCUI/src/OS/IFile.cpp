@@ -1,7 +1,9 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::OS;
-using namespace AppCUI::Utils;
+namespace AppCUI
+{
+using namespace OS;
+using namespace Utils;
 
 IFile::~IFile()
 {
@@ -75,11 +77,11 @@ bool IFile::Write(const void* buffer, unsigned int bufferSize, unsigned int& byt
     return this->WriteBuffer(buffer, bufferSize, bytesWritten);
 }
 
-bool IFile::Write(std::string_view text)
+bool IFile::Write(string_view text)
 {
     return Write(reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()));
 }
-bool IFile::Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten)
+bool IFile::Write(unsigned long long offset, string_view text, unsigned int& bytesWritten)
 {
     return Write(
           offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);
@@ -127,3 +129,4 @@ bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
     f.Close();
     return true;
 }
+} // namespace AppCUI

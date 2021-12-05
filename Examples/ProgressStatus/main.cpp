@@ -11,7 +11,7 @@ using namespace AppCUI::Graphics;
 class MyWin : public AppCUI::Controls::Window
 {
   public:
-    MyWin() : Window("Progress status", "d:c,w:70,h:9",WindowFlags::None)
+    MyWin() : Window("Progress status", "d:c,w:70,h:9", WindowFlags::None)
     {
         Factory::Button::Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
         Factory::Label::Create(

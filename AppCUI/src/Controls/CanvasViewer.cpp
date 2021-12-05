@@ -1,9 +1,7 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
+namespace AppCUI
+{
 void CanvasControlContext::MoveScrollTo(int newX, int newY)
 {
     const int imgWidth   = canvas.GetWidth();
@@ -24,8 +22,8 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
 }
 
 CanvasViewer::CanvasViewer(
-      const AppCUI::Utils::ConstString& caption,
-      std::string_view layout,
+      const ConstString& caption,
+      string_view layout,
       unsigned int canvasWidth,
       unsigned int canvasHeight,
       ViewerFlags flags)
@@ -104,7 +102,7 @@ void CanvasViewer::OnUpdateScrollBars()
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
 }
 
-bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
+bool CanvasViewer::OnKeyEvent(Input::Key KeyCode, char16_t)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
 
@@ -160,37 +158,37 @@ bool CanvasViewer::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
     }
     return false;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseWheel(int, int, AppCUI::Input::MouseWheel direction)
+bool Controls::CanvasViewer::OnMouseWheel(int, int, Input::MouseWheel direction)
 {
     switch (direction)
     {
-    case AppCUI::Input::MouseWheel::Up:
+    case Input::MouseWheel::Up:
         return OnKeyEvent(Key::Up, 0);
-    case AppCUI::Input::MouseWheel::Down:
+    case Input::MouseWheel::Down:
         return OnKeyEvent(Key::Down, 0);
-    case AppCUI::Input::MouseWheel::Left:
+    case Input::MouseWheel::Left:
         return OnKeyEvent(Key::Left, 0);
-    case AppCUI::Input::MouseWheel::Right:
+    case Input::MouseWheel::Right:
         return OnKeyEvent(Key::Right, 0);
     }
     return false;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseEnter()
+bool Controls::CanvasViewer::OnMouseEnter()
 {
     return true;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseLeave()
+bool Controls::CanvasViewer::OnMouseLeave()
 {
     return true;
 }
-void AppCUI::Controls::CanvasViewer::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)
+void Controls::CanvasViewer::OnMousePressed(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     Members->mouseDragX      = Members->CanvasScrollX - x;
     Members->mouseDragY      = Members->CanvasScrollY - y;
     Members->dragModeEnabled = true;
 }
-bool AppCUI::Controls::CanvasViewer::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Controls::CanvasViewer::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
     if (!Members->dragModeEnabled)
@@ -198,7 +196,7 @@ bool AppCUI::Controls::CanvasViewer::OnMouseDrag(int x, int y, AppCUI::Input::Mo
     Members->MoveScrollTo(Members->mouseDragX + x, Members->mouseDragY + y);
     return true;
 }
-void AppCUI::Controls::CanvasViewer::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button)
+void Controls::CanvasViewer::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
     // last update
     OnMouseDrag(x, y, button);
@@ -210,3 +208,4 @@ Reference<Canvas> CanvasViewer::GetCanvas()
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, nullptr);
     return Reference<Canvas>(&(Members->canvas));
 }
+} // namespace AppCUI

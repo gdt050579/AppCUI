@@ -12,10 +12,11 @@ using namespace AppCUI::Controls;
 class SimpleWin : public AppCUI::Controls::Window
 {
   public:
-    SimpleWin() : Window("Log Example", "d:c,w:40,h:10",WindowFlags::None)
+    SimpleWin() : Window("Log Example", "d:c,w:40,h:10", WindowFlags::None)
     {
         LOG_INFO("Creating Simple Win");
-        Factory::Label::Create(this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
+        Factory::Label::Create(
+              this, "xxx", "xxxxx:1,y:1,w:36,h:5"); // this should produce an error as 'xxxxx:1' is invalid
     }
     bool OnEvent(Reference<Control>, Event eventType, int) override
     {
