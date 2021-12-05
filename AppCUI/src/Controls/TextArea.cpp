@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 
 #define LINE_NUMBERS_WIDTH 4
-#define INVALID_SELECTION  0xFFFFFFFF
 
 #define CLEAR_SELECTION                                                                                                \
     if ((!selected) && (Selection.Start != INVALID_SELECTION))                                                         \
@@ -23,7 +22,7 @@
 namespace AppCUI
 {
 using namespace OS;
-
+constexpr unsigned int INVALID_SELECTION = 0xFFFFFFFFU;
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
     unsigned int extraY = 0;

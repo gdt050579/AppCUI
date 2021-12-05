@@ -8,8 +8,6 @@
         return;                                                                                                        \
     };
 
-#define DEFAULT_TEXT_COLOR 0xFFFFFFFF
-
 namespace AppCUI::Controls
 {
 Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;

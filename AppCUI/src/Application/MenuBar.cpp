@@ -3,7 +3,7 @@
 
 namespace AppCUI::Internal
 {
-#define NO_ITEM_SELECTED 0xFFFFFFFF
+constexpr unsigned int NO_ITEM_SELECTED = 0xFFFFFFFFU;
 
 MenuBarItem::MenuBarItem()
 {
@@ -193,4 +193,3 @@ void MenuBar::Paint(Graphics::Renderer& renderer)
     }
 }
 } // namespace AppCUI::Internal
-#undef NO_ITEM_SELECTED
