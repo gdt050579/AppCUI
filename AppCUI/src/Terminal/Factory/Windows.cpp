@@ -6,7 +6,7 @@ namespace AppCUI::Internal
 {
 using namespace Application;
 
-unique_ptr<AbstractTerminal> Internal::GetTerminal(const InitializationData& initData)
+unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
 {
     unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.Frontend)

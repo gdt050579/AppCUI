@@ -5,7 +5,7 @@
 
 namespace AppCUI::OS
 {
-void OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
+void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 {
     const auto desktop = sago::getDesktopFolder();
     if (!desktop.empty())
@@ -59,7 +59,7 @@ void OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 
 static std::filesystem::path current_application_path;
 
-std::filesystem::path OS::GetCurrentApplicationPath()
+std::filesystem::path GetCurrentApplicationPath()
 {
     if (!current_application_path.empty())
     {

@@ -14,7 +14,7 @@ namespace AppCUI::Controls
 {
 Internal::TextControlDefaultMenu* textFieldContexMenu = nullptr;
 
-void Controls::UninitTextFieldDefaultMenu()
+void UninitTextFieldDefaultMenu()
 {
     if (textFieldContexMenu)
         delete textFieldContexMenu;
