@@ -1,5 +1,7 @@
 #include "SDLTerminal.hpp"
 
+namespace AppCUI::Internal
+{
 using namespace Internal;
 using namespace Input;
 
@@ -249,4 +251,5 @@ bool SDLTerminal::IsEventAvailable()
 
 void SDLTerminal::uninitInput()
 {
+}
 }

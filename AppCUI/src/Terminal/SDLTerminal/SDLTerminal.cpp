@@ -1,9 +1,8 @@
 #include <string>
 #include "SDLTerminal.hpp"
 
-using namespace Internal;
-using namespace Input;
-
+namespace AppCUI::Internal
+{
 bool SDLTerminal::OnInit(const Application::InitializationData& initData)
 {
     if (!initScreen(initData))
@@ -17,4 +16,5 @@ void SDLTerminal::OnUninit()
 {
     uninitInput();
     uninitScreen();
+}
 }

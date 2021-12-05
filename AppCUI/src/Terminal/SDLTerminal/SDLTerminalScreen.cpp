@@ -10,7 +10,8 @@
 
 CMRC_DECLARE(font);
 
-using namespace Internal;
+namespace AppCUI::Internal
+{
 using namespace Input;
 using namespace Application;
 
@@ -290,4 +291,5 @@ void SDLTerminal::uninitScreen()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
 }
