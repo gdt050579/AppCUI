@@ -67,7 +67,7 @@ void CheckBox::OnHotKey()
     }
     RaiseEvent(Event::CheckedStatusChanged);
 }
-bool CheckBox::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool CheckBox::OnKeyEvent(Input::Key KeyCode, char16)
 {
     if (KeyCode == Key::Space)
     {

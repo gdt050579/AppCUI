@@ -654,7 +654,7 @@ void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
     UPDATE_SELECTION;
 }
 
-void TextAreaControlContext::AddChar(char16_t ch)
+void TextAreaControlContext::AddChar(char16 ch)
 {
     if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
         return;
@@ -752,7 +752,7 @@ void TextAreaControlContext::PasteFromClipboard()
     }
 }
 
-bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16_t UnicodeChar)
+bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16 UnicodeChar)
 {
     switch (KeyCode)
     {
@@ -937,7 +937,7 @@ void TextArea::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
 }
-bool TextArea::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }

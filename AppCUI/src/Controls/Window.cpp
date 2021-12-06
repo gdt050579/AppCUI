@@ -395,7 +395,7 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
     b->HotKey       = Key::None;
 
     ConstStringObject txt(caption);
-    char16_t ch = 0;
+    char16 ch = 0;
     if (hotKeyTextOffset < txt.Length)
     {
         switch (txt.Encoding)
@@ -404,7 +404,7 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
             ch = (((char*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::Unicode16:
-            ch = (((char16_t*) txt.Data)[hotKeyTextOffset]);
+            ch = (((char16*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::CharacterBuffer:
             ch = (((Character*) txt.Data)[hotKeyTextOffset].Code);
@@ -1022,7 +1022,7 @@ bool Window::OnEvent(Reference<Control>, Event eventType, int)
     }
     return false;
 }
-bool Window::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool Window::OnKeyEvent(Input::Key KeyCode, char16)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);

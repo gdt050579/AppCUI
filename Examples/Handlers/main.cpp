@@ -14,7 +14,7 @@ int main()
     auto wnd = Factory::Window::Create("Test", "d:c,w:40,h:10");
 
     // a handler to handle key event for wnd
-    wnd->Handlers()->OnKeyEvent = [](Reference<Control> c, Key keyCode, char16_t unicodeChar)
+    wnd->Handlers()->OnKeyEvent = [](Reference<Control> c, Key keyCode, char16 unicodeChar)
     {
         if (keyCode == Key::Backspace)
         {

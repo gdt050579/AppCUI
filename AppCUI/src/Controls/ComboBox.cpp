@@ -205,7 +205,7 @@ ComboBox::ComboBox(string_view layout, const ConstString& text, char itemsSepara
         count = ComputeItemsCount<char8_t>((const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
         break;
     case StringEncoding::Unicode16:
-        count = ComputeItemsCount<char16_t>((const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
+        count = ComputeItemsCount<char16>((const char16*) listItems.Data, listItems.Length, itemsSeparator);
         break;
     case StringEncoding::CharacterBuffer:
         count = ComputeItemsCount<Character>((const Character*) listItems.Data, listItems.Length, itemsSeparator);
@@ -233,8 +233,8 @@ ComboBox::ComboBox(string_view layout, const ConstString& text, char itemsSepara
                   this, (const char8_t*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::Unicode16:
-            result = AddItemsFromList<char16_t, u16string_view>(
-                  this, (const char16_t*) listItems.Data, listItems.Length, itemsSeparator);
+            result = AddItemsFromList<char16, u16string_view>(
+                  this, (const char16*) listItems.Data, listItems.Length, itemsSeparator);
             break;
         case StringEncoding::CharacterBuffer:
             result = AddItemsFromList<Character, CharacterView>(
@@ -355,7 +355,7 @@ void ComboBox::SetNoIndexSelected()
     RaiseEvent(Event::ComboBoxSelectedItemChanged);
 }
 
-bool ComboBox::OnKeyEvent(Input::Key keyCode, char16_t)
+bool ComboBox::OnKeyEvent(Input::Key keyCode, char16)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     switch (keyCode)

@@ -37,7 +37,7 @@ void Desktop::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
     renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);
 }
-bool Desktop::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
+bool Desktop::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, false);
     switch (keyCode)

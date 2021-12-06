@@ -1579,7 +1579,7 @@ bool Controls::Control::SetTextWithHotKey(const ConstString& caption, unsigned i
             result = this->SetHotKey(((char*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::Unicode16:
-            result = this->SetHotKey(((char16_t*) txt.Data)[hotKeyTextOffset]);
+            result = this->SetHotKey(((char16*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::CharacterBuffer:
             result = this->SetHotKey(((Character*) txt.Data)[hotKeyTextOffset].Code);
@@ -1627,7 +1627,7 @@ void Controls::Control::ClearGroup()
     CTRLC->GroupID = 0;
 }
 
-bool Controls::Control::SetHotKey(char16_t hotKey)
+bool Controls::Control::SetHotKey(char16 hotKey)
 {
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     CTRLC->HotKey       = Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
@@ -1744,7 +1744,7 @@ bool Controls::Control::IsInitialized()
     return CTRLC->Inited;
 }
 // Evenimente
-bool Controls::Control::OnKeyEvent(Input::Key, char16_t)
+bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
 }

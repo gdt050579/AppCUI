@@ -558,7 +558,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
     }
 }
 
-bool Tree::OnKeyEvent(Input::Key keyCode, char16_t character)
+bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

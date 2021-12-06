@@ -127,7 +127,7 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
         return Input::Key::None;
     return (Input::Key)((modifier << KEY_SHIFT_BITS) | code);
 }
-Key KeyUtils::CreateHotKey(char16_t hotKey, Key modifier)
+Key KeyUtils::CreateHotKey(char16 hotKey, Key modifier)
 {
     Key result = Key::None;
     if ((hotKey >= 'a') && (hotKey <= 'z'))

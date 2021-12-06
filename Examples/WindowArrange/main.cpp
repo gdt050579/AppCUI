@@ -14,7 +14,7 @@ using namespace AppCUI::Input;
 class MyWin : public Window
 {
   public:
-    MyWin(std::string_view name, char16_t hotKey) : Window(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable)
+    MyWin(std::string_view name, char16 hotKey) : Window(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable)
     {
         this->SetHotKey(hotKey);
     }
@@ -68,7 +68,7 @@ int main()
     {
         winName[4]  = '0' + tr / 10;
         winName[5]  = '0' + tr % 10;
-        char16_t hk = 0;
+        char16 hk = 0;
         if (tr < 10)
             hk = '0' + tr;
         auto w = std::make_unique<MyWin>(winName, hk);

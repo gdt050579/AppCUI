@@ -64,12 +64,12 @@ void ConvertSizeToString(uint64 size, char result[32])
     }
 }
 
-unsigned int __compute_hash__(const char16_t* start, const char16_t* end)
+unsigned int __compute_hash__(const char16* start, const char16* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
     unsigned int hash       = 0x811c9dc5;
-    const char16_t* p_start = (const char16_t*) start;
-    const char16_t* p_end   = (const char16_t*) end;
+    const char16* p_start = (const char16*) start;
+    const char16* p_end   = (const char16*) end;
 
     while (p_start < p_end)
     {

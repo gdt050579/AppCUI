@@ -782,7 +782,7 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         SendMsg(Event::ListViewCurrentItemChanged);
 }
-bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
     ListViewItem* lvi;
@@ -1431,7 +1431,7 @@ void ListView::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     Members->Paint(renderer);
 }
-bool ListView::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool ListView::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }

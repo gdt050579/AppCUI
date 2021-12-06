@@ -385,7 +385,7 @@ void Tab::OnMouseReleased(int, int, Input::MouseButton)
     if (Members->HoveredTabIndex >= 0)
         SetCurrentTabPageByIndex((unsigned int) Members->HoveredTabIndex);
 }
-bool Tab::OnKeyEvent(Input::Key keyCode, char16_t)
+bool Tab::OnKeyEvent(Input::Key keyCode, char16)
 {
     switch (keyCode)
     {

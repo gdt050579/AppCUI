@@ -47,7 +47,7 @@ void Password::Paint(Graphics::Renderer& renderer)
         renderer.SetCursor(1 + sz, 0);
 }
 
-bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
+bool Password::OnKeyEvent(Key KeyCode, char16 characterCode)
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
     if (characterCode > 0)

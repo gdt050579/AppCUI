@@ -277,7 +277,7 @@ namespace Graphics
         {
             struct
             {
-                char16_t Code;
+                char16 Code;
                 ColorPair Color;
             };
             unsigned int PackedValue;
@@ -290,11 +290,11 @@ namespace Graphics
         {
             return Code != value;
         }
-        inline constexpr bool operator==(char16_t value) const
+        inline constexpr bool operator==(char16 value) const
         {
             return Code == value;
         }
-        inline constexpr bool operator!=(char16_t value) const
+        inline constexpr bool operator!=(char16 value) const
         {
             return Code != value;
         }
@@ -302,7 +302,7 @@ namespace Graphics
         {
             return Code > value;
         }
-        inline constexpr bool operator>(char16_t value) const
+        inline constexpr bool operator>(char16 value) const
         {
             return Code > value;
         }
@@ -310,7 +310,7 @@ namespace Graphics
         {
             return Code < value;
         }
-        inline constexpr bool operator<(char16_t value) const
+        inline constexpr bool operator<(char16 value) const
         {
             return Code < value;
         }
@@ -318,7 +318,7 @@ namespace Graphics
         {
             return Code >= value;
         }
-        inline constexpr bool operator>=(char16_t value) const
+        inline constexpr bool operator>=(char16 value) const
         {
             return Code >= value;
         }
@@ -326,11 +326,11 @@ namespace Graphics
         {
             return Code <= value;
         }
-        inline constexpr bool operator<=(char16_t value) const
+        inline constexpr bool operator<=(char16 value) const
         {
             return Code <= value;
         }
-        inline constexpr operator char16_t() const
+        inline constexpr operator char16() const
         {
             return Code;
         }
@@ -888,20 +888,20 @@ namespace Utils
     };
     class EXPORT UnicodeStringBuilder
     {
-        char16_t* chars;
+        char16* chars;
         unsigned int length;
         unsigned int allocated;
 
-        void Create(char16_t* localBuffer, size_t localBufferSize);
+        void Create(char16* localBuffer, size_t localBufferSize);
 
       public:
         UnicodeStringBuilder();
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize);
         UnicodeStringBuilder(const ConstString& text);
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const ConstString& text);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const ConstString& text);
         UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer);
         UnicodeStringBuilder(
-              char16_t* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
+              char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
 
         UnicodeStringBuilder(const UnicodeStringBuilder& obj);
         UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
@@ -913,7 +913,7 @@ namespace Utils
         bool Set(const Graphics::CharacterBuffer& charBuffer);
         bool Add(const ConstString& text);
         bool Add(const Graphics::CharacterBuffer& charBuffer);
-        bool AddChar(char16_t ch);
+        bool AddChar(char16 ch);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
@@ -933,7 +933,7 @@ namespace Utils
         {
             return length;
         }
-        inline const char16_t* GetString() const
+        inline const char16* GetString() const
         {
             return chars;
         }
@@ -1147,15 +1147,15 @@ namespace Utils
         }
         inline string_view ToDec(int value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
         inline string_view ToDec(short value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
         inline string_view ToDec(char value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
         string_view ToDec(float value);
         string_view ToDec(double value);
@@ -1251,15 +1251,15 @@ namespace Utils
         }
         inline string_view ToBase(int value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
         inline string_view ToBase(short value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
         inline string_view ToBase(char value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
 
         // ToString
@@ -1285,15 +1285,15 @@ namespace Utils
         }
         inline string_view ToString(int value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
         inline string_view ToString(short value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
         inline string_view ToString(char value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
     };
 
@@ -1364,7 +1364,7 @@ namespace Utils
     template <size_t size>
     class LocalUnicodeStringBuilder : public UnicodeStringBuilder
     {
-        char16_t tempBuffer[size];
+        char16 tempBuffer[size];
 
       public:
         LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size)
@@ -1465,7 +1465,7 @@ namespace Utils
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
 
-        static Input::Key CreateHotKey(char16_t hotKey, Input::Key modifier = Input::Key::None);
+        static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
 
     class EXPORT IniValueArray
@@ -2038,8 +2038,8 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
-        bool Resize(unsigned int size, char16_t character = ' ', const ColorPair color = NoColorPair);
-        bool Fill(char16_t character, unsigned int size, const ColorPair color = NoColorPair);
+        bool Resize(unsigned int size, char16 character = ' ', const ColorPair color = NoColorPair);
+        bool Fill(char16 character, unsigned int size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
         bool Add(const ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const ConstString& text, const ColorPair color = NoColorPair);
@@ -2470,7 +2470,7 @@ namespace Controls
         typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
         typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
         typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
-        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
+        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
         typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
         typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
         typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
@@ -2521,12 +2521,12 @@ namespace Controls
 
         struct OnKeyEventInterface
         {
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) = 0;
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) = 0;
         };
         struct OnKeyEventCallback : public OnKeyEventInterface
         {
             OnKeyEventHandler callback;
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) override
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) override
             {
                 return callback(control, keyCode, unicodeChar);
             };
@@ -2747,7 +2747,7 @@ namespace Controls
         void ClearGroup();
 
         // hot key
-        bool SetHotKey(char16_t hotKey);
+        bool SetHotKey(char16 hotKey);
         Input::Key GetHotKey();
         unsigned int GetHotKeyTextOffset();
         void ClearHotKey();
@@ -2796,7 +2796,7 @@ namespace Controls
         virtual void Paint(Graphics::Renderer& renderer);
 
         // virtual methods
-        virtual bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar);
+        virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
         virtual void OnFocus();
@@ -2900,7 +2900,7 @@ namespace Controls
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
@@ -2939,7 +2939,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2958,7 +2958,7 @@ namespace Controls
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2977,7 +2977,7 @@ namespace Controls
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2995,7 +2995,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool SetSecondPanelSize(int newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
@@ -3028,7 +3028,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
@@ -3059,7 +3059,7 @@ namespace Controls
         TextField(const ConstString& caption, string_view layout, TextFieldFlags flags);
 
       public:
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
@@ -3107,7 +3107,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -3165,7 +3165,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Reference<Control> GetCurrentTab();
@@ -3197,7 +3197,7 @@ namespace Controls
       public:
         ~CanvasViewer();
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
@@ -3259,7 +3259,7 @@ namespace Controls
       public:
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
@@ -3442,7 +3442,7 @@ namespace Controls
         bool AddSeparator(const ConstString& caption = "");
         void DeleteAllItems();
 
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
@@ -3508,7 +3508,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
@@ -3529,7 +3529,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
 
         friend Factory::Desktop;
         friend Control;
@@ -3571,7 +3571,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnFocus() override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
@@ -3673,7 +3673,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;

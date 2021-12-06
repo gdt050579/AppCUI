@@ -10,7 +10,7 @@ std::string_view KeyWords[] = { "if",      "do",         "while",   "until",   "
                                 "struct",  "union",      "auto",    "try",     "catch",    "hrow",   "finally",
                                 "extends", "implements", "public",  "private", "protected" };
 std::string_view Types[]    = { "bool",   "char",   "int",     "short",    "long",    "float",
-                             "double", "size_t", "char8_t", "char16_t", "char32_t" };
+                             "double", "size_t", "char8_t", "char16", "char32_t" };
 
 class ContextMenuExample : public Window
 {

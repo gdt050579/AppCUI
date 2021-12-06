@@ -197,7 +197,7 @@ void TextField_DeleteSelected(TextField* control)
     control->ClearSelection();
     Members->Modified = true;
 }
-void TextField_AddChar(TextField* control, char16_t ch)
+void TextField_AddChar(TextField* control, char16 ch)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
@@ -384,7 +384,7 @@ bool TextField::GetSelection(unsigned int& start, unsigned int& size) const
     size  = (unsigned int) (Members->Selection.End - Members->Selection.Start);
     return true;
 }
-bool TextField::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool TextField::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
 

@@ -144,7 +144,7 @@ void NumericSelector::Paint(Renderer& renderer)
     }
 }
 
-bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
+bool NumericSelector::OnKeyEvent(Key keyCode, char16 unicodeChar)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
