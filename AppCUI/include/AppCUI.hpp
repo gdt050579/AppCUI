@@ -2147,7 +2147,7 @@ namespace Graphics
         {
         }
         Pixel(unsigned char red, unsigned char green, unsigned char blue)
-            : Red(red), Green(green), Blue(blue), Alpha(255)
+            : Blue(blue), Green(green), Red(red), Alpha(255)
         {
         }
         explicit Pixel(unsigned int value) : ColorValue(value)
