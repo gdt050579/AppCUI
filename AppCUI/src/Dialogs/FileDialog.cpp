@@ -3,7 +3,7 @@
 #include <stack>
 #include <vector>
 
-#define ALL_FILES_INDEX 0xFFFFFFFF
+
 
 namespace AppCUI
 {
@@ -16,6 +16,8 @@ using namespace std::literals;
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
 #    include <sys/stat.h>
 #endif
+
+constexpr unsigned int ALL_FILES_INDEX = 0xFFFFFFFFU;
 
 // Currently not all compilers support clock_cast (including gcc)
 // AppleClang supports std::chrono::file_clock::to_time_t, but gcc or VS doesn't
