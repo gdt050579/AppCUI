@@ -170,7 +170,7 @@ namespace Ini
     struct Section
     {
         Utils::String Name;
-        std::unordered_map<unsigned long long, Value> Keys;
+        std::unordered_map<uint64, Value> Keys;
         Section()
         {
         }
@@ -187,10 +187,10 @@ namespace Ini
         ParseState state;
         std::string toStringBuffer;
 
-        std::unordered_map<unsigned long long, unique_ptr<Ini::Section>> Sections;
+        std::unordered_map<uint64, unique_ptr<Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
         Section* CurrentSection;
-        unsigned long long CurrentKeyHash;
+        uint64 CurrentKeyHash;
         BuffPtr CurrentKeyNamePtr;
         unsigned int CurrentKeyNameLen;
 
@@ -220,10 +220,10 @@ namespace Ini
 }; // namespace Ini
 } // namespace AppCUI
 
-unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
+uint64 __compute_hash__(BuffPtr p_start, BuffPtr p_end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned long long hash = 0xcbf29ce484222325ULL;
+    uint64 hash = 0xcbf29ce484222325ULL;
     while (p_start < p_end)
     {
         hash = hash ^ (Ini_LoweCaseTable[*p_start]);
@@ -232,7 +232,7 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
     }
     return hash;
 }
-unsigned long long __compute_hash__(string_view text)
+uint64 __compute_hash__(string_view text)
 {
     return __compute_hash__((BuffPtr) text.data(), ((BuffPtr) text.data()) + text.length());
 }
@@ -624,7 +624,7 @@ bool Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 }
 bool Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 {
-    unsigned long long hash = __compute_hash__(nameStart, nameEnd);
+    uint64 hash = __compute_hash__(nameStart, nameEnd);
     auto& sect              = Sections[hash];
     if (sect.get() == nullptr)
     {
@@ -741,9 +741,9 @@ void IniSection::UpdateValue(string_view name, unsigned int value, bool dontUpda
 {
     UpdateValueForSection<unsigned int>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, unsigned long long value, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<unsigned long long>(this->Data, name, value, dontUpdateIfValueExits);
+    UpdateValueForSection<uint64>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, int value, bool dontUpdateIfValueExits)
 {
@@ -803,9 +803,9 @@ void IniSection::UpdateValue(
     UpdateValueForSection<const initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<unsigned long long>&>(
+    UpdateValueForSection<const initializer_list<uint64>&>(
           this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
@@ -895,7 +895,7 @@ optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
     return Graphics::Size(width, height);
 }
 
-optional<unsigned long long> IniValue::AsUInt64() const
+optional<uint64> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt64(static_cast<string_view>(value->KeyValue));
@@ -954,7 +954,7 @@ optional<double> IniValue::AsDouble() const
     return Number::ToDouble((static_cast<string_view>(value->KeyValue)));
 }
 
-unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValue::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -1078,7 +1078,7 @@ void IniValue::operator=(unsigned int value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
-void IniValue::operator=(unsigned long long value)
+void IniValue::operator=(uint64 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
@@ -1179,9 +1179,9 @@ void IniValue::operator=(const initializer_list<unsigned int>& values)
 {
     IniValueSetVector<unsigned int>(this->Data, values);
 }
-void IniValue::operator=(const initializer_list<unsigned long long>& values)
+void IniValue::operator=(const initializer_list<uint64>& values)
 {
-    IniValueSetVector<unsigned long long>(this->Data, values);
+    IniValueSetVector<uint64>(this->Data, values);
 }
 void IniValue::operator=(const initializer_list<int>& values)
 {
@@ -1200,7 +1200,7 @@ void IniValue::operator=(const initializer_list<double>& values)
     IniValueSetVector<double>(this->Data, values);
 }
 //============================================================================= INI Array Value ===
-optional<unsigned long long> IniValueArray::AsUInt64() const
+optional<uint64> IniValueArray::AsUInt64() const
 {
     return Number::ToUInt64(string_view(text, len));
 }
@@ -1240,7 +1240,7 @@ optional<double> IniValueArray::AsDouble() const
     return Number::ToDouble(string_view(text, len));
 }
 
-unsigned long long IniValueArray::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValueArray::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())

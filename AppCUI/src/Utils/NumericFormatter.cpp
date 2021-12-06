@@ -12,7 +12,7 @@ static const unsigned char NumberMaxSizeForBase[] = {
     23 /*9*/, 22 /*10*/, 21 /*11*/, 20 /*12*/, 20 /*13*/, 19 /*14*/, 19 /*15*/, 18 /*16*/
 };
 
-string_view NumericFormatter::ToGenericBase(unsigned long long value, unsigned long long base)
+string_view NumericFormatter::ToGenericBase(uint64 value, uint64 base)
 {
     // it is assume that `base` is between 2 and 35 (checked before calling this private method)
     char* e = temp + sizeof(temp) - 1;
@@ -26,7 +26,7 @@ string_view NumericFormatter::ToGenericBase(unsigned long long value, unsigned l
     } while (value > 0);
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToHexString(unsigned long long value)
+string_view NumericFormatter::ToHexString(uint64 value)
 {
     char* e = temp + sizeof(temp) - 1;
     char* s = e;
@@ -39,7 +39,7 @@ string_view NumericFormatter::ToHexString(unsigned long long value)
     } while (value > 0);
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToOctString(unsigned long long value)
+string_view NumericFormatter::ToOctString(uint64 value)
 {
     char* e = temp + sizeof(temp) - 1;
     char* s = e;
@@ -52,7 +52,7 @@ string_view NumericFormatter::ToOctString(unsigned long long value)
     } while (value > 0);
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToBinString(unsigned long long value)
+string_view NumericFormatter::ToBinString(uint64 value)
 {
     char* e = temp + sizeof(temp) - 1;
     char* s = e;
@@ -68,7 +68,7 @@ string_view NumericFormatter::ToBinString(unsigned long long value)
     } while (value > 0);
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToDecStringUnsigned(unsigned long long value)
+string_view NumericFormatter::ToDecStringUnsigned(uint64 value)
 {
     char* e = temp + sizeof(temp) - 1;
     char* s = e;
@@ -109,7 +109,7 @@ string_view NumericFormatter::ToDecStringSigned(long long value)
     }
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToBaseUnsigned(unsigned long long value, int base)
+string_view NumericFormatter::ToBaseUnsigned(uint64 value, int base)
 {
     CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)
@@ -132,19 +132,19 @@ string_view NumericFormatter::ToBaseSigned(long long value, int base)
     switch (base)
     {
     case 2:
-        return ToBinString(*(unsigned long long*) &value);
+        return ToBinString(*(uint64*) &value);
     case 8:
-        return ToOctString(*(unsigned long long*) &value);
+        return ToOctString(*(uint64*) &value);
     case 10:
         return ToDecStringSigned(value);
     case 16:
-        return ToHexString(*(unsigned long long*) &value);
+        return ToHexString(*(uint64*) &value);
     default:
-        return ToGenericBase(*(unsigned long long*) &value, base);
+        return ToGenericBase(*(uint64*) &value, base);
     }
 }
 
-string_view NumericFormatter::ToStringUnsigned(unsigned long long value, NumericFormat fmt)
+string_view NumericFormatter::ToStringUnsigned(uint64 value, NumericFormat fmt)
 {
     CHECK((fmt.Base >= 2) && (fmt.Base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", fmt.Base);
     char* s;
@@ -302,11 +302,11 @@ string_view NumericFormatter::ToStringSigned(long long value, NumericFormat fmt)
     {
         // need to convert to unsigned (there is a known bug if value is the minimum possible value of long long)
         fmt.Flags |= NumericFormatFlags::MinusSign;
-        return ToStringUnsigned((unsigned long long) (-value), fmt);
+        return ToStringUnsigned((uint64) (-value), fmt);
     }
     else
     {
-        return ToStringUnsigned(*(unsigned long long*) &value, fmt);
+        return ToStringUnsigned(*(uint64*) &value, fmt);
     }
 }
 string_view NumericFormatter::ToDec(float value)

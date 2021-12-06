@@ -16,19 +16,19 @@ bool IFile::WriteBuffer(const void*, unsigned int, unsigned int&)
 {
     NOT_IMPLEMENTED(false);
 }
-unsigned long long IFile::GetSize()
+uint64 IFile::GetSize()
 {
     NOT_IMPLEMENTED(0);
 }
-unsigned long long IFile::GetCurrentPos()
+uint64 IFile::GetCurrentPos()
 {
     NOT_IMPLEMENTED(0);
 }
-bool IFile::SetSize(unsigned long long)
+bool IFile::SetSize(uint64)
 {
     NOT_IMPLEMENTED(false);
 }
-bool IFile::SetCurrentPos(unsigned long long)
+bool IFile::SetCurrentPos(uint64)
 {
     NOT_IMPLEMENTED(false);
 }
@@ -54,14 +54,14 @@ bool IFile::Write(const void* buffer, unsigned int bufferSize)
     CHECK(temp == bufferSize, false, "Unable to write %lld bytes required (only %lld were written)", bufferSize, temp);
     return true;
 }
-bool IFile::Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool IFile::Read(uint64 offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
 {
     bytesRead = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
     CHECK(this->ReadBuffer(buffer, bufferSize, bytesRead), false, "Fail to read %lld bytes", bufferSize);
     return true;
 }
-bool IFile::Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool IFile::Write(uint64 offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
 {
     bytesWritten = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
@@ -81,7 +81,7 @@ bool IFile::Write(string_view text)
 {
     return Write(reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()));
 }
-bool IFile::Write(unsigned long long offset, string_view text, unsigned int& bytesWritten)
+bool IFile::Write(uint64 offset, string_view text, unsigned int& bytesWritten)
 {
     return Write(
           offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);

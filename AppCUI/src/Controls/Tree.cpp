@@ -1219,7 +1219,7 @@ GenericRef Tree::GetItemDataAsPointer(const ItemHandle handle) const
     return nullptr;
 }
 
-unsigned long long Tree::GetItemData(const size_t index, unsigned long long errorValue)
+uint64 Tree::GetItemData(const size_t index, uint64 errorValue)
 {
     CHECK(Context != nullptr, errorValue, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1228,8 +1228,8 @@ unsigned long long Tree::GetItemData(const size_t index, unsigned long long erro
     std::advance(it, index);
     if (it != cc->items.end())
     {
-        if (std::holds_alternative<unsigned long long>(it->second.data))
-            return std::get<unsigned long long>(it->second.data);
+        if (std::holds_alternative<uint64>(it->second.data))
+            return std::get<uint64>(it->second.data);
     }
 
     return errorValue;
@@ -1262,7 +1262,7 @@ bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
     it->second.data = value;
     return true;
 }
-bool Tree::SetItemData(ItemHandle item, unsigned long long value)
+bool Tree::SetItemData(ItemHandle item, uint64 value)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

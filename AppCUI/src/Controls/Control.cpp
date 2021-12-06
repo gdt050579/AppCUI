@@ -1599,14 +1599,14 @@ const Graphics::CharacterBuffer& Controls::Control::GetText()
 {
     return CTRLC->Text;
 }
-void Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateHScrollBar(uint64 value, uint64 maxValue)
 {
     if (value > maxValue)
         value = maxValue;
     CTRLC->ScrollBars.HorizontalValue    = value;
     CTRLC->ScrollBars.MaxHorizontalValue = maxValue;
 }
-void Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateVScrollBar(uint64 value, uint64 maxValue)
 {
     if (value > maxValue)
         value = maxValue;

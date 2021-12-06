@@ -20,7 +20,7 @@ ComboBoxItem::ComboBoxItem() : Data(nullptr)
     this->Index     = ComboBox::NO_ITEM_SELECTED;
 }
 ComboBoxItem::ComboBoxItem(
-      const ConstString& caption, variant<GenericRef, unsigned long long> userData, unsigned int index, bool separator)
+      const ConstString& caption, variant<GenericRef, uint64> userData, unsigned int index, bool separator)
     : Data(userData)
 {
     this->Text.Set(caption);
@@ -71,7 +71,7 @@ ComboBoxItem& ComboBoxItem::operator=(ComboBoxItem&& obj) noexcept
 }
 
 bool ComboBox_AddItem(
-      ComboBox* control, const ConstString& caption, bool separator, variant<GenericRef, unsigned long long> userData)
+      ComboBox* control, const ConstString& caption, bool separator, variant<GenericRef, uint64> userData)
 {
     CREATE_TYPE_CONTEXT(ComboBoxControlContext, control, Members, false);
     unsigned int itemID  = (unsigned int) Members->Items.size();
@@ -262,12 +262,12 @@ unsigned int ComboBox::GetCurrentItemIndex() const
     return Members->CurentItemIndex;
 }
 
-unsigned long long ComboBox::GetItemUserData(unsigned int index, unsigned long long errorValue) const
+uint64 ComboBox::GetItemUserData(unsigned int index, uint64 errorValue) const
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, errorValue);
     CHECK_INDEX(index, errorValue);
-    if (std::holds_alternative<unsigned long long>(i.Data))
-        return std::get<unsigned long long>(i.Data);
+    if (std::holds_alternative<uint64>(i.Data))
+        return std::get<uint64>(i.Data);
     return errorValue;
 }
 GenericRef ComboBox::GetItemDataAsPointer(unsigned int index) const
@@ -299,14 +299,14 @@ bool ComboBox::SetItemDataAsPointer(unsigned int index, GenericRef userData)
     i.Data = userData;
     return true;
 }
-bool ComboBox::SetItemUserData(unsigned int index, unsigned long long userData)
+bool ComboBox::SetItemUserData(unsigned int index, uint64 userData)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
     CHECK_INDEX(index, false);
     i.Data = userData;
     return true;
 }
-bool ComboBox::AddItem(const ConstString& caption, unsigned long long userData)
+bool ComboBox::AddItem(const ConstString& caption, uint64 userData)
 {
     CHECK(ComboBox_AddItem(this, caption, false, userData), false, "");
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);

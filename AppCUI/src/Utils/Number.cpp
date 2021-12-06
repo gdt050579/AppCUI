@@ -35,7 +35,7 @@ unsigned char __base_translation__[256] = {
 
 struct _parse_number_result_
 {
-    unsigned long long Value;
+    uint64 Value;
     long double SecondValue;
     unsigned int Flags;
     unsigned int Base;
@@ -102,14 +102,14 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
 
     // compute
     unsigned char charValue;
-    unsigned long long newValue;
+    uint64 newValue;
     res.Value = 0;
     while (start < end)
     {
         charValue = __base_translation__[*start];
         if (charValue >= res.Base)
             break;
-        newValue = (res.Value * res.Base) + (unsigned long long) charValue;
+        newValue = (res.Value * res.Base) + (uint64) charValue;
         CHECK(newValue > res.Value, false, "Integer overflow !");
         res.Value = newValue;
         start++;
@@ -121,8 +121,8 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     {
         start++;
         res.SecondValue            = 0;
-        unsigned long long devide  = 1;
-        unsigned long long s_value = 0;
+        uint64 devide  = 1;
+        uint64 s_value = 0;
         res.Flags |= NUMBER_FLAG_SECOND;
         // consider only base 10
         while (start < end)
@@ -130,7 +130,7 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
             charValue = __base_translation__[*start];
             if (charValue >= 10)
                 break;
-            newValue = (s_value * 10) + (unsigned long long) charValue;
+            newValue = (s_value * 10) + (uint64) charValue;
             CHECK(newValue > s_value, false, "Integer overflow (2)!");
             s_value = newValue;
             devide *= 10;
@@ -163,12 +163,12 @@ inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberPars
     return true;
 }
 
-optional<unsigned long long> ToUInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint64> ToUInt64(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
           std::nullopt,
-          "Invalid format for an unsigned long long value");
+          "Invalid format for an uint64 value");
     return res.Value;
 }
 optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, unsigned int* size)
@@ -254,7 +254,7 @@ optional<long long> ToInt64(string_view text, NumberParseFlags flags, unsigned i
     }
     else
     {
-        CHECK(res.Value <= ((unsigned long long) ((1ULL << 63) - 1)),
+        CHECK(res.Value <= ((uint64) ((1ULL << 63) - 1)),
               std::nullopt,
               "Value can not be stored in a long long variable");
         return (long long) (res.Value);

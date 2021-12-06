@@ -41,7 +41,7 @@ std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-void ConvertSizeToString(unsigned long long size, char result[32])
+void ConvertSizeToString(uint64 size, char result[32])
 {
     result[31] = 0;
     int poz    = 30;
@@ -477,7 +477,7 @@ void FileDialogWindow::ReloadCurrentPath()
                         continue; // extension is filtered
                     }
                 }
-                ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+                ConvertSizeToString((uint64) fileEntry.file_size(), size);
             }
 
             const time_t date{ getLastModifiedTime(fileEntry) };

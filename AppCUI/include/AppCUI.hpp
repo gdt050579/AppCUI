@@ -190,14 +190,13 @@ namespace AppCUI
 using uint64 = uint64_t;
 using uint32 = uint32_t;
 using uint16 = uint16_t;
-using uint8 = uint8_t;
-using int64 = int64_t;
-using int32 = int32_t;
-using int16 = int16_t;
-using int8 = int8_t;
-using char8 = char8_t;
+using uint8  = uint8_t;
+using int64  = int64_t;
+using int32  = int32_t;
+using int16  = int16_t;
+using int8   = int8_t;
+using char8  = char8_t;
 using char16 = char16_t;
-
 
 namespace StdIncludes
 {
@@ -1001,7 +1000,7 @@ namespace Utils
     };
     namespace Number
     {
-        EXPORT optional<unsigned long long> ToUInt64(
+        EXPORT optional<uint64> ToUInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<unsigned int> ToUInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
@@ -1070,15 +1069,15 @@ namespace Utils
     {
         char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
         char* heapBuffer;
-        string_view ToHexString(unsigned long long value);
-        string_view ToOctString(unsigned long long value);
-        string_view ToBinString(unsigned long long value);
-        string_view ToDecStringUnsigned(unsigned long long value);
+        string_view ToHexString(uint64 value);
+        string_view ToOctString(uint64 value);
+        string_view ToBinString(uint64 value);
+        string_view ToDecStringUnsigned(uint64 value);
         string_view ToDecStringSigned(long long value);
-        string_view ToBaseUnsigned(unsigned long long value, int base);
+        string_view ToBaseUnsigned(uint64 value, int base);
         string_view ToBaseSigned(long long value, int base);
-        string_view ToGenericBase(unsigned long long value, unsigned long long base);
-        string_view ToStringUnsigned(unsigned long long value, NumericFormat fmt);
+        string_view ToGenericBase(uint64 value, uint64 base);
+        string_view ToStringUnsigned(uint64 value, NumericFormat fmt);
         string_view ToStringSigned(long long value, NumericFormat fmt);
 
       public:
@@ -1092,55 +1091,55 @@ namespace Utils
             heapBuffer = nullptr;
         }
         // ToHex
-        inline string_view ToHex(unsigned long long value)
+        inline string_view ToHex(uint64 value)
         {
             return ToHexString(value);
         }
         inline string_view ToHex(unsigned int value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
         inline string_view ToHex(unsigned short value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
         inline string_view ToHex(unsigned char value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
         inline string_view ToHex(long long value)
         {
-            return ToHexString(*(unsigned long long*) &value);
+            return ToHexString(*(uint64*) &value);
         }
         inline string_view ToHex(int value)
         {
-            return ToHexString((unsigned long long) (*(unsigned int*) &value));
+            return ToHexString((uint64) (*(unsigned int*) &value));
         }
         inline string_view ToHex(short value)
         {
-            return ToHexString((unsigned long long) (*(unsigned short*) &value));
+            return ToHexString((uint64) (*(unsigned short*) &value));
         }
         inline string_view ToHex(char value)
         {
-            return ToHexString((unsigned long long) (*(unsigned char*) &value));
+            return ToHexString((uint64) (*(unsigned char*) &value));
         }
 
         // ToDec
-        inline string_view ToDec(unsigned long long value)
+        inline string_view ToDec(uint64 value)
         {
             return ToDecStringUnsigned(value);
         }
         inline string_view ToDec(unsigned int value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
         inline string_view ToDec(unsigned short value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
         inline string_view ToDec(unsigned char value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
         inline string_view ToDec(long long value)
         {
@@ -1162,89 +1161,89 @@ namespace Utils
         string_view ToDec(double value);
 
         // ToOct
-        inline string_view ToOct(unsigned long long value)
+        inline string_view ToOct(uint64 value)
         {
             return ToOctString(value);
         }
         inline string_view ToOct(unsigned int value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
         inline string_view ToOct(unsigned short value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
         inline string_view ToOct(unsigned char value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
         inline string_view ToOct(long long value)
         {
-            return ToOctString(*(unsigned long long*) &value);
+            return ToOctString(*(uint64*) &value);
         }
         inline string_view ToOct(int value)
         {
-            return ToOctString((unsigned long long) (*(unsigned int*) &value));
+            return ToOctString((uint64) (*(unsigned int*) &value));
         }
         inline string_view ToOct(short value)
         {
-            return ToOctString((unsigned long long) (*(unsigned short*) &value));
+            return ToOctString((uint64) (*(unsigned short*) &value));
         }
         inline string_view ToOct(char value)
         {
-            return ToOctString((unsigned long long) (*(unsigned char*) &value));
+            return ToOctString((uint64) (*(unsigned char*) &value));
         }
 
         // ToBin
-        inline string_view ToBin(unsigned long long value)
+        inline string_view ToBin(uint64 value)
         {
             return ToBinString(value);
         }
         inline string_view ToBin(unsigned int value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
         inline string_view ToBin(unsigned short value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
         inline string_view ToBin(unsigned char value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
         inline string_view ToBin(long long value)
         {
-            return ToBinString(*(unsigned long long*) &value);
+            return ToBinString(*(uint64*) &value);
         }
         inline string_view ToBin(int value)
         {
-            return ToBinString((unsigned long long) (*(unsigned int*) &value));
+            return ToBinString((uint64) (*(unsigned int*) &value));
         }
         inline string_view ToBin(short value)
         {
-            return ToBinString((unsigned long long) (*(unsigned short*) &value));
+            return ToBinString((uint64) (*(unsigned short*) &value));
         }
         inline string_view ToBin(char value)
         {
-            return ToBinString((unsigned long long) (*(unsigned char*) &value));
+            return ToBinString((uint64) (*(unsigned char*) &value));
         }
 
         // ToBase
-        inline string_view ToBase(unsigned long long value, int base)
+        inline string_view ToBase(uint64 value, int base)
         {
             return ToBaseUnsigned(value, base);
         }
         inline string_view ToBase(unsigned int value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
         inline string_view ToBase(unsigned short value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
         inline string_view ToBase(unsigned char value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
         inline string_view ToBase(long long value, int base)
         {
@@ -1264,21 +1263,21 @@ namespace Utils
         }
 
         // ToString
-        inline string_view ToString(unsigned long long value, NumericFormat fmt)
+        inline string_view ToString(uint64 value, NumericFormat fmt)
         {
             return ToStringUnsigned(value, fmt);
         }
         inline string_view ToString(unsigned int value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
         inline string_view ToString(unsigned short value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
         inline string_view ToString(unsigned char value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
         inline string_view ToString(long long value, NumericFormat fmt)
         {
@@ -1482,7 +1481,7 @@ namespace Utils
         {
         }
 
-        optional<unsigned long long> AsUInt64() const;
+        optional<uint64> AsUInt64() const;
         optional<long long> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
@@ -1500,7 +1499,7 @@ namespace Utils
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
         long long ToInt64(long long defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
@@ -1527,7 +1526,7 @@ namespace Utils
         }
         IniValue(void* data) : Data(data){};
 
-        optional<unsigned long long> AsUInt64() const;
+        optional<uint64> AsUInt64() const;
         optional<long long> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
@@ -1539,7 +1538,7 @@ namespace Utils
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
         long long ToInt64(long long defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
@@ -1564,7 +1563,7 @@ namespace Utils
 
         void operator=(bool value);
         void operator=(unsigned int value);
-        void operator=(unsigned long long value);
+        void operator=(uint64 value);
         void operator=(int value);
         void operator=(long long value);
         void operator=(float value);
@@ -1577,7 +1576,7 @@ namespace Utils
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
         void operator=(const initializer_list<unsigned int>& values);
-        void operator=(const initializer_list<unsigned long long>& values);
+        void operator=(const initializer_list<uint64>& values);
         void operator=(const initializer_list<int>& values);
         void operator=(const initializer_list<long long>& values);
         void operator=(const initializer_list<float>& values);
@@ -1608,7 +1607,7 @@ namespace Utils
 
         void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, unsigned int value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, unsigned long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
@@ -1623,8 +1622,7 @@ namespace Utils
         void UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
@@ -1681,10 +1679,10 @@ namespace OS
         // virtual methods
         virtual bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
         virtual bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        virtual unsigned long long GetSize();
-        virtual unsigned long long GetCurrentPos();
-        virtual bool SetSize(unsigned long long newSize);
-        virtual bool SetCurrentPos(unsigned long long newPosition);
+        virtual uint64 GetSize();
+        virtual uint64 GetCurrentPos();
+        virtual bool SetSize(uint64 newSize);
+        virtual bool SetCurrentPos(uint64 newPosition);
         virtual void Close();
 
         // other methods
@@ -1692,10 +1690,10 @@ namespace OS
         bool Write(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
         bool Read(void* buffer, unsigned int bufferSize);
         bool Write(const void* buffer, unsigned int bufferSize);
-        bool Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
+        bool Read(uint64 offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
+        bool Write(uint64 offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
         bool Write(string_view text);
-        bool Write(unsigned long long offset, string_view text, unsigned int& bytesWritten);
+        bool Write(uint64 offset, string_view text, unsigned int& bytesWritten);
     };
 
     class EXPORT File : public IFile
@@ -1703,7 +1701,7 @@ namespace OS
         union
         {
             void* Handle;
-            unsigned long long u64Value;
+            uint64 u64Value;
             unsigned int u32Value;
             int fid;
         } FileID;
@@ -1733,10 +1731,10 @@ namespace OS
 
         bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) override;
         bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten) override;
-        unsigned long long GetSize() override;
-        unsigned long long GetCurrentPos() override;
-        bool SetSize(unsigned long long newSize) override;
-        bool SetCurrentPos(unsigned long long newPosition) override;
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
         void Close() override;
 
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
@@ -1872,9 +1870,9 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const ConstString& Title, unsigned long long maxValue = 0);
-        bool EXPORT Update(unsigned long long value, const ConstString& content);
-        bool EXPORT Update(unsigned long long value);
+        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0);
+        bool EXPORT Update(uint64 value, const ConstString& content);
+        bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
 
     enum class WriteTextFlags : unsigned int
@@ -2788,8 +2786,8 @@ namespace Controls
         const Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
-        void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
-        void UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
+        void UpdateHScrollBar(uint64 value, uint64 maxValue);
+        void UpdateVScrollBar(uint64 value, uint64 maxValue);
 
         // handlers
         virtual Handlers::Control* Handlers();
@@ -3342,8 +3340,8 @@ namespace Controls
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
 
-        bool SetItemData(ItemHandle item, unsigned long long value);
-        unsigned long long GetItemData(ItemHandle item, unsigned long long errorValue);
+        bool SetItemData(ItemHandle item, uint64 value);
+        uint64 GetItemData(ItemHandle item, uint64 errorValue);
 
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
@@ -3398,7 +3396,7 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        inline unsigned long long GetCurrentItemUserData(unsigned long long errorValue) const
+        inline uint64 GetCurrentItemUserData(uint64 errorValue) const
         {
             return GetItemUserData(GetCurrentItemIndex(), errorValue);
         }
@@ -3412,7 +3410,7 @@ namespace Controls
         unsigned int GetCurrentItemIndex() const;
         const Graphics::CharacterBuffer& GetCurrentItemText();
 
-        unsigned long long GetItemUserData(unsigned int index, unsigned long long errorValue) const;
+        uint64 GetItemUserData(unsigned int index, uint64 errorValue) const;
         template <typename T>
         inline Reference<T> GetItemUserData(unsigned int index) const
         {
@@ -3421,7 +3419,7 @@ namespace Controls
 
         const Graphics::CharacterBuffer& GetItemText(unsigned int index);
 
-        bool SetItemUserData(unsigned int index, unsigned long long userData);
+        bool SetItemUserData(unsigned int index, uint64 userData);
         template <typename T>
         inline bool SetItemUserData(unsigned int index, Reference<T> userData)
         {
@@ -3435,7 +3433,7 @@ namespace Controls
         {
             return AddItem(caption, obj.ToGenericRef());
         }
-        bool AddItem(const ConstString& caption, unsigned long long usedData);
+        bool AddItem(const ConstString& caption, uint64 usedData);
         inline bool AddItem(const ConstString& caption)
         {
             return AddItem(caption, GenericRef(nullptr));
@@ -3595,7 +3593,7 @@ namespace Controls
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
 
-        bool SetItemData(ItemHandle item, unsigned long long value);
+        bool SetItemData(ItemHandle item, uint64 value);
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
@@ -3607,7 +3605,7 @@ namespace Controls
         {
             return GetItemDataAsPointer(item).ToReference<T>();
         }
-        unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+        uint64 GetItemData(const size_t index, uint64 errorValue);
         ItemHandle GetItemHandleByIndex(const unsigned int index) const;
 
         unsigned int GetItemsCount() const;
