@@ -29,8 +29,8 @@ struct FontUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         constexpr ColorPair textColor = ColorPair{ Color::White, Color::Transparent };
-        const std::uint64_t height    = GetHeight();
-        const std::uint64_t width     = GetWidth();
+        const uint64 height    = GetHeight();
+        const uint64 width     = GetWidth();
 
         for (int i = 0; i < 256; i++)
         {
