@@ -1013,7 +1013,7 @@ namespace Utils
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<int> ToInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<short> ToInt16(
+        EXPORT optional<int16> ToInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<char> ToInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
@@ -1115,7 +1115,7 @@ namespace Utils
         {
             return ToHexString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToHex(short value)
+        inline string_view ToHex(int16 value)
         {
             return ToHexString((uint64) (*(uint16*) &value));
         }
@@ -1149,7 +1149,7 @@ namespace Utils
         {
             return ToDecStringSigned((int64) value);
         }
-        inline string_view ToDec(short value)
+        inline string_view ToDec(int16 value)
         {
             return ToDecStringSigned((int64) value);
         }
@@ -1185,7 +1185,7 @@ namespace Utils
         {
             return ToOctString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToOct(short value)
+        inline string_view ToOct(int16 value)
         {
             return ToOctString((uint64) (*(uint16*) &value));
         }
@@ -1219,7 +1219,7 @@ namespace Utils
         {
             return ToBinString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToBin(short value)
+        inline string_view ToBin(int16 value)
         {
             return ToBinString((uint64) (*(uint16*) &value));
         }
@@ -1253,7 +1253,7 @@ namespace Utils
         {
             return ToBaseSigned((int64) value, base);
         }
-        inline string_view ToBase(short value, int base)
+        inline string_view ToBase(int16 value, int base)
         {
             return ToBaseSigned((int64) value, base);
         }
@@ -1287,7 +1287,7 @@ namespace Utils
         {
             return ToStringSigned((int64) value, fmt);
         }
-        inline string_view ToString(short value, NumericFormat fmt)
+        inline string_view ToString(int16 value, NumericFormat fmt)
         {
             return ToStringSigned((int64) value, fmt);
         }

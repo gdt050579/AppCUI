@@ -213,19 +213,19 @@ optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* si
         return (char) (res.Value);
     }
 }
-optional<short> ToInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int16> ToInt16(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
-    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a short value");
+    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a int16 value");
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
-        CHECK(res.Value <= ((1ULL << 15)), std::nullopt, "Value can not be stored in a short variable");
-        return (short) (-((int64) (res.Value)));
+        CHECK(res.Value <= ((1ULL << 15)), std::nullopt, "Value can not be stored in a int16 variable");
+        return (int16) (-((int64) (res.Value)));
     }
     else
     {
-        CHECK(res.Value <= ((1ULL << 15) - 1), std::nullopt, "Value can not be stored in a short variable");
-        return (short) (res.Value);
+        CHECK(res.Value <= ((1ULL << 15) - 1), std::nullopt, "Value can not be stored in a int16 variable");
+        return (int16) (res.Value);
     }
 }
 optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* size)
