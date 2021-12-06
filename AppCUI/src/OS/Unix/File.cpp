@@ -69,7 +69,7 @@ bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int
     return true;
 }
 
-unsigned long long File::GetSize()
+uint64 File::GetSize()
 {
     struct stat st;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
@@ -77,7 +77,7 @@ unsigned long long File::GetSize()
     return st.st_size;
 }
 
-unsigned long long File::GetCurrentPos()
+uint64 File::GetCurrentPos()
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
     off_t position = lseek(this->FileID.fid, 0, SEEK_CUR);
@@ -85,7 +85,7 @@ unsigned long long File::GetCurrentPos()
     return position;
 }
 
-bool File::SetSize(unsigned long long newSize)
+bool File::SetSize(uint64 newSize)
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.")
     CHECK(SetCurrentPos(newSize), false, "ERROR: %s", strerror(errno));
@@ -93,7 +93,7 @@ bool File::SetSize(unsigned long long newSize)
     return true;
 }
 
-bool File::SetCurrentPos(unsigned long long newPosition)
+bool File::SetCurrentPos(uint64 newPosition)
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
     off_t position    = newPosition;
