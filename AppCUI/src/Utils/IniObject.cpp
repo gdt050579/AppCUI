@@ -749,9 +749,9 @@ void IniSection::UpdateValue(string_view name, int value, bool dontUpdateIfValue
 {
     UpdateValueForSection<int>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<long long>(this->Data, name, value, dontUpdateIfValueExits);
+    UpdateValueForSection<int64>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, float value, bool dontUpdateIfValueExits)
 {
@@ -793,9 +793,9 @@ void IniSection::UpdateValue(string_view name, const initializer_list<int>& valu
 {
     UpdateValueForSection<const initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<int64>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
       string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
@@ -900,7 +900,7 @@ optional<uint64> IniValue::AsUInt64() const
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt64(static_cast<string_view>(value->KeyValue));
 }
-optional<long long> IniValue::AsInt64() const
+optional<int64> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt64(static_cast<string_view>(value->KeyValue));
@@ -970,7 +970,7 @@ unsigned int IniValue::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValue::ToInt64(long long defaultValue) const
+int64 IniValue::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -1086,7 +1086,7 @@ void IniValue::operator=(int value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
-void IniValue::operator=(long long value)
+void IniValue::operator=(int64 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
@@ -1187,9 +1187,9 @@ void IniValue::operator=(const initializer_list<int>& values)
 {
     IniValueSetVector<int>(this->Data, values);
 }
-void IniValue::operator=(const initializer_list<long long>& values)
+void IniValue::operator=(const initializer_list<int64>& values)
 {
-    IniValueSetVector<long long>(this->Data, values);
+    IniValueSetVector<int64>(this->Data, values);
 }
 void IniValue::operator=(const initializer_list<float>& values)
 {
@@ -1204,7 +1204,7 @@ optional<uint64> IniValueArray::AsUInt64() const
 {
     return Number::ToUInt64(string_view(text, len));
 }
-optional<long long> IniValueArray::AsInt64() const
+optional<int64> IniValueArray::AsInt64() const
 {
     return Number::ToInt64(string_view(text, len));
 }
@@ -1256,7 +1256,7 @@ unsigned int IniValueArray::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValueArray::ToInt64(long long defaultValue) const
+int64 IniValueArray::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())

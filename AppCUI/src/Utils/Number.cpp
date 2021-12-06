@@ -205,7 +205,7 @@ optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* si
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
         CHECK(res.Value <= ((1ULL << 7)), std::nullopt, "Value can not be stored in a char variable");
-        return (char) (-((long long) (res.Value)));
+        return (char) (-((int64) (res.Value)));
     }
     else
     {
@@ -220,7 +220,7 @@ optional<short> ToInt16(string_view text, NumberParseFlags flags, unsigned int* 
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
         CHECK(res.Value <= ((1ULL << 15)), std::nullopt, "Value can not be stored in a short variable");
-        return (short) (-((long long) (res.Value)));
+        return (short) (-((int64) (res.Value)));
     }
     else
     {
@@ -235,7 +235,7 @@ optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* si
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
         CHECK(res.Value <= ((1ULL << 31)), std::nullopt, "Value can not be stored in an int variable");
-        return (int) (-((long long) (res.Value)));
+        return (int) (-((int64) (res.Value)));
     }
     else
     {
@@ -243,21 +243,21 @@ optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* si
         return (int) (res.Value);
     }
 }
-optional<long long> ToInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int64> ToInt64(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
-    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a long long value");
+    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a int64 value");
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
-        CHECK(res.Value <= ((1ULL << 63)), std::nullopt, "Value can not be stored in a long long variable");
-        return (-((long long) (res.Value)));
+        CHECK(res.Value <= ((1ULL << 63)), std::nullopt, "Value can not be stored in a int64 variable");
+        return (-((int64) (res.Value)));
     }
     else
     {
         CHECK(res.Value <= ((uint64) ((1ULL << 63) - 1)),
               std::nullopt,
-              "Value can not be stored in a long long variable");
-        return (long long) (res.Value);
+              "Value can not be stored in a int64 variable");
+        return (int64) (res.Value);
     }
 }
 optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned int* size)

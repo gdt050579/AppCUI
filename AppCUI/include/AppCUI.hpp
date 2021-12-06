@@ -1009,7 +1009,7 @@ namespace Utils
         EXPORT optional<unsigned char> ToUInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
-        EXPORT optional<long long> ToInt64(
+        EXPORT optional<int64> ToInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<int> ToInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
@@ -1073,12 +1073,12 @@ namespace Utils
         string_view ToOctString(uint64 value);
         string_view ToBinString(uint64 value);
         string_view ToDecStringUnsigned(uint64 value);
-        string_view ToDecStringSigned(long long value);
+        string_view ToDecStringSigned(int64 value);
         string_view ToBaseUnsigned(uint64 value, int base);
-        string_view ToBaseSigned(long long value, int base);
+        string_view ToBaseSigned(int64 value, int base);
         string_view ToGenericBase(uint64 value, uint64 base);
         string_view ToStringUnsigned(uint64 value, NumericFormat fmt);
-        string_view ToStringSigned(long long value, NumericFormat fmt);
+        string_view ToStringSigned(int64 value, NumericFormat fmt);
 
       public:
         NumericFormatter() : heapBuffer(nullptr)
@@ -1107,7 +1107,7 @@ namespace Utils
         {
             return ToHexString((uint64) value);
         }
-        inline string_view ToHex(long long value)
+        inline string_view ToHex(int64 value)
         {
             return ToHexString(*(uint64*) &value);
         }
@@ -1141,7 +1141,7 @@ namespace Utils
         {
             return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(long long value)
+        inline string_view ToDec(int64 value)
         {
             return ToDecStringSigned(value);
         }
@@ -1177,7 +1177,7 @@ namespace Utils
         {
             return ToOctString((uint64) value);
         }
-        inline string_view ToOct(long long value)
+        inline string_view ToOct(int64 value)
         {
             return ToOctString(*(uint64*) &value);
         }
@@ -1211,7 +1211,7 @@ namespace Utils
         {
             return ToBinString((uint64) value);
         }
-        inline string_view ToBin(long long value)
+        inline string_view ToBin(int64 value)
         {
             return ToBinString(*(uint64*) &value);
         }
@@ -1245,7 +1245,7 @@ namespace Utils
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(long long value, int base)
+        inline string_view ToBase(int64 value, int base)
         {
             return ToBaseSigned(value, base);
         }
@@ -1279,7 +1279,7 @@ namespace Utils
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(long long value, NumericFormat fmt)
+        inline string_view ToString(int64 value, NumericFormat fmt)
         {
             return ToStringSigned(value, fmt);
         }
@@ -1482,7 +1482,7 @@ namespace Utils
         }
 
         optional<uint64> AsUInt64() const;
-        optional<long long> AsInt64() const;
+        optional<int64> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
         optional<bool> AsBool() const;
@@ -1501,7 +1501,7 @@ namespace Utils
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
@@ -1527,7 +1527,7 @@ namespace Utils
         IniValue(void* data) : Data(data){};
 
         optional<uint64> AsUInt64() const;
-        optional<long long> AsInt64() const;
+        optional<int64> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
         optional<bool> AsBool() const;
@@ -1540,7 +1540,7 @@ namespace Utils
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
@@ -1565,7 +1565,7 @@ namespace Utils
         void operator=(unsigned int value);
         void operator=(uint64 value);
         void operator=(int value);
-        void operator=(long long value);
+        void operator=(int64 value);
         void operator=(float value);
         void operator=(double value);
         void operator=(const char* value);
@@ -1578,7 +1578,7 @@ namespace Utils
         void operator=(const initializer_list<unsigned int>& values);
         void operator=(const initializer_list<uint64>& values);
         void operator=(const initializer_list<int>& values);
-        void operator=(const initializer_list<long long>& values);
+        void operator=(const initializer_list<int64>& values);
         void operator=(const initializer_list<float>& values);
         void operator=(const initializer_list<double>& values);
     };
@@ -1609,7 +1609,7 @@ namespace Utils
         void UpdateValue(string_view name, unsigned int value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, double value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const char* value, bool dontUpdateIfValueExits);
@@ -1620,7 +1620,7 @@ namespace Utils
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
@@ -3487,16 +3487,16 @@ namespace Controls
     class EXPORT NumericSelector : public Control
     {
       protected:
-        NumericSelector(const long long minValue, const long long maxValue, long long value, string_view layout);
+        NumericSelector(const int64 minValue, const int64 maxValue, int64 value, string_view layout);
 
       public:
-        long long GetValue() const;
-        void SetValue(const long long value);
-        void SetMinValue(const long long minValue);
-        void SetMaxValue(const long long maxValue);
+        int64 GetValue() const;
+        void SetValue(const int64 value);
+        void SetMinValue(const int64 minValue);
+        void SetMaxValue(const int64 maxValue);
 
       private:
-        bool IsValidValue(const long long value) const;
+        bool IsValidValue(const int64 value) const;
         bool IsValueInsertedWrong() const;
         bool GetRenderColor(Graphics::ColorPair& color) const;
         bool FormatTextField();
@@ -4012,18 +4012,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::NumericSelector> Create(
-                  const long long minValue, const long long maxValue, long long value, string_view layout);
+                  const int64 minValue, const int64 maxValue, int64 value, string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control* parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
                   string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control& parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
                   string_view layout);
         };
         class EXPORT Window

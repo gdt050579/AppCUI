@@ -1064,7 +1064,7 @@ void Tree::OnUpdateScrollBars()
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     const auto it         = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-    const long long index = it - cc->itemsToDrew.begin();
+    const int64 index = it - cc->itemsToDrew.begin();
     UpdateVScrollBar(index, std::max<size_t>(cc->itemsToDrew.size() - 1, 0));
 }
 

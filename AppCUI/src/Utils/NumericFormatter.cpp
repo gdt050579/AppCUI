@@ -81,7 +81,7 @@ string_view NumericFormatter::ToDecStringUnsigned(uint64 value)
     } while (value > 0);
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToDecStringSigned(long long value)
+string_view NumericFormatter::ToDecStringSigned(int64 value)
 {
     bool negative = value < 0;
     char* e       = temp + sizeof(temp) - 1;
@@ -126,7 +126,7 @@ string_view NumericFormatter::ToBaseUnsigned(uint64 value, int base)
         return ToGenericBase(value, base);
     }
 }
-string_view NumericFormatter::ToBaseSigned(long long value, int base)
+string_view NumericFormatter::ToBaseSigned(int64 value, int base)
 {
     CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)
@@ -296,11 +296,11 @@ string_view NumericFormatter::ToStringUnsigned(uint64 value, NumericFormat fmt)
     }
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToStringSigned(long long value, NumericFormat fmt)
+string_view NumericFormatter::ToStringSigned(int64 value, NumericFormat fmt)
 {
     if ((fmt.Base == 10) && (value < 0))
     {
-        // need to convert to unsigned (there is a known bug if value is the minimum possible value of long long)
+        // need to convert to unsigned (there is a known bug if value is the minimum possible value of int64)
         fmt.Flags |= NumericFormatFlags::MinusSign;
         return ToStringUnsigned((uint64) (-value), fmt);
     }

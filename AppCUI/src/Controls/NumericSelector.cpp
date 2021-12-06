@@ -4,7 +4,7 @@
 namespace AppCUI::Controls
 {
 NumericSelector::NumericSelector(
-      const long long minValue, const long long maxValue, long long value, string_view layout)
+      const int64 minValue, const int64 maxValue, int64 value, string_view layout)
     : Control(new NumericSelectorControlContext(), "", layout, true)
 {
     auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
@@ -18,14 +18,14 @@ NumericSelector::NumericSelector(
     this->SetValue(value);
 }
 
-long long NumericSelector::GetValue() const
+int64 NumericSelector::GetValue() const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
     return cc->value;
 }
 
-void NumericSelector::SetValue(const long long value)
+void NumericSelector::SetValue(const int64 value)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -46,7 +46,7 @@ void NumericSelector::SetValue(const long long value)
     RaiseEvent(Event::NumericSelectorValueChanged);
 }
 
-void NumericSelector::SetMinValue(const long long minValue)
+void NumericSelector::SetMinValue(const int64 minValue)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -56,7 +56,7 @@ void NumericSelector::SetMinValue(const long long minValue)
     SetValue(std::min<>(std::max<>(cc->value, minValue), cc->maxValue));
 }
 
-void NumericSelector::SetMaxValue(const long long maxValue)
+void NumericSelector::SetMaxValue(const int64 maxValue)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -259,7 +259,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
         else
         {
-            const optional<long long> value = Number::ToUInt64(output);
+            const optional<int64> value = Number::ToUInt64(output);
             if (value.has_value())
             {
                 cc->insertionModevalue = value.value();
@@ -276,14 +276,14 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
     case Key::PageUp:
     {
         const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+              static_cast<int64>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value + percentFive);
     }
         return true;
     case Key::PageDown:
     {
         const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+              static_cast<int64>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value - percentFive);
     }
         return true;
@@ -361,20 +361,20 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
         }
         else if (IsOnTextField(x, y))
         {
-            const long long& max = cc->maxValue;
-            const long long& min = cc->minValue;
+            const int64& max = cc->maxValue;
+            const int64& min = cc->minValue;
 
-            const long long valueIntervalLength = max - min;
+            const int64 valueIntervalLength = max - min;
 
-            const long long& lowerBound = cc->buttonPadding;
-            const long long upperBound  = static_cast<long long>(this->GetWidth()) - cc->buttonPadding - 1LL;
+            const int64& lowerBound = cc->buttonPadding;
+            const int64 upperBound  = static_cast<int64>(this->GetWidth()) - cc->buttonPadding - 1LL;
 
-            const long long boundIntervalLength = upperBound - lowerBound;
+            const int64 boundIntervalLength = upperBound - lowerBound;
 
             cc->sliderPosition = x - lowerBound;
             const double ratio = static_cast<double>(cc->sliderPosition) / boundIntervalLength;
 
-            SetValue(min + static_cast<long long>(valueIntervalLength * ratio));
+            SetValue(min + static_cast<int64>(valueIntervalLength * ratio));
         }
         break;
     default:
@@ -449,20 +449,20 @@ bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button)
 
         if (IsOnTextField(x, y) && cc->isMouseLeftClickPressed)
         {
-            const long long& max = cc->maxValue;
-            const long long& min = cc->minValue;
+            const int64& max = cc->maxValue;
+            const int64& min = cc->minValue;
 
-            const long long valueIntervalLength = max - min;
+            const int64 valueIntervalLength = max - min;
 
-            const long long& lowerBound = cc->buttonPadding;
-            const long long upperBound  = static_cast<long long>(this->GetWidth()) - cc->buttonPadding - 1LL;
+            const int64& lowerBound = cc->buttonPadding;
+            const int64 upperBound  = static_cast<int64>(this->GetWidth()) - cc->buttonPadding - 1LL;
 
-            const long long boundIntervalLength = upperBound - lowerBound;
+            const int64 boundIntervalLength = upperBound - lowerBound;
 
             cc->sliderPosition = x - lowerBound;
             const double ratio = static_cast<double>(cc->sliderPosition) / boundIntervalLength;
 
-            SetValue(min + static_cast<long long>(valueIntervalLength * ratio));
+            SetValue(min + static_cast<int64>(valueIntervalLength * ratio));
 
             return true;
         }
@@ -501,7 +501,7 @@ bool NumericSelector::OnMouseOver(int x, int y)
     return true;
 }
 
-bool NumericSelector::IsValidValue(const long long) const
+bool NumericSelector::IsValidValue(const int64) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);

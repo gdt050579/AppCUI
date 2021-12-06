@@ -329,15 +329,15 @@ REFERENCE<ComboBox> Factory::ComboBox::Create(
 
 //======[NUMERICSELECTOR]============================================================================
 POINTER<Controls::NumericSelector> Factory::NumericSelector::Create(
-      const long long minValue, const long long maxValue, long long value, string_view layout)
+      const int64 minValue, const int64 maxValue, int64 value, string_view layout)
 {
     return POINTER<Controls::NumericSelector>(new Controls::NumericSelector(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
       Controls::Control* parent,
-      const long long minValue,
-      const long long maxValue,
-      long long value,
+      const int64 minValue,
+      const int64 maxValue,
+      int64 value,
       string_view layout)
 {
     VALIDATE_PARENT;
@@ -346,9 +346,9 @@ REFERENCE<NumericSelector> Factory::NumericSelector::Create(
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
       Controls::Control& parent,
-      const long long minValue,
-      const long long maxValue,
-      long long value,
+      const int64 minValue,
+      const int64 maxValue,
+      int64 value,
       string_view layout)
 {
     return parent.AddControl<Controls::NumericSelector>(
