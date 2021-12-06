@@ -18,7 +18,7 @@ bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t len
         if (characterSize == 1)
             ((unsigned char*) temp)[length] = 0;
         else if (characterSize == 2)
-            ((unsigned short*) temp)[length] = 0;
+            ((uint16*) temp)[length] = 0;
     }
     GlobalUnlock(hMem);
     CHECK(temp, false, "Global Lock failed !");

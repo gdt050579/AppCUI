@@ -830,7 +830,7 @@ optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
             return false;
         break;
     case 2:
-        v = (*((const unsigned short*) txt)) | 0x2020;
+        v = (*((const uint16*) txt)) | 0x2020;
         if (v == INI_VALUE_ON)
             return true;
         if (v == INI_VALUE_NO)

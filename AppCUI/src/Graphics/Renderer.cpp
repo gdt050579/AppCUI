@@ -428,7 +428,7 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (unsigned short) (character & 0xFFFF);
+        tmp.Code = (uint16) (character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;

@@ -1004,7 +1004,7 @@ namespace Utils
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<unsigned int> ToUInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<unsigned short> ToUInt16(
+        EXPORT optional<uint16> ToUInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<unsigned char> ToUInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
@@ -1025,7 +1025,7 @@ namespace Utils
 
     }; // namespace Number
 
-    enum class NumericFormatFlags : unsigned short
+    enum class NumericFormatFlags : uint16
     {
         None      = 0,
         LowerCase = 0x0001,
@@ -1099,7 +1099,7 @@ namespace Utils
         {
             return ToHexString((uint64) value);
         }
-        inline string_view ToHex(unsigned short value)
+        inline string_view ToHex(uint16 value)
         {
             return ToHexString((uint64) value);
         }
@@ -1117,7 +1117,7 @@ namespace Utils
         }
         inline string_view ToHex(short value)
         {
-            return ToHexString((uint64) (*(unsigned short*) &value));
+            return ToHexString((uint64) (*(uint16*) &value));
         }
         inline string_view ToHex(char value)
         {
@@ -1133,7 +1133,7 @@ namespace Utils
         {
             return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(unsigned short value)
+        inline string_view ToDec(uint16 value)
         {
             return ToDecStringUnsigned((uint64) value);
         }
@@ -1169,7 +1169,7 @@ namespace Utils
         {
             return ToOctString((uint64) value);
         }
-        inline string_view ToOct(unsigned short value)
+        inline string_view ToOct(uint16 value)
         {
             return ToOctString((uint64) value);
         }
@@ -1187,7 +1187,7 @@ namespace Utils
         }
         inline string_view ToOct(short value)
         {
-            return ToOctString((uint64) (*(unsigned short*) &value));
+            return ToOctString((uint64) (*(uint16*) &value));
         }
         inline string_view ToOct(char value)
         {
@@ -1203,7 +1203,7 @@ namespace Utils
         {
             return ToBinString((uint64) value);
         }
-        inline string_view ToBin(unsigned short value)
+        inline string_view ToBin(uint16 value)
         {
             return ToBinString((uint64) value);
         }
@@ -1221,7 +1221,7 @@ namespace Utils
         }
         inline string_view ToBin(short value)
         {
-            return ToBinString((uint64) (*(unsigned short*) &value));
+            return ToBinString((uint64) (*(uint16*) &value));
         }
         inline string_view ToBin(char value)
         {
@@ -1237,7 +1237,7 @@ namespace Utils
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(unsigned short value, int base)
+        inline string_view ToBase(uint16 value, int base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
@@ -1271,7 +1271,7 @@ namespace Utils
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(unsigned short value, NumericFormat fmt)
+        inline string_view ToString(uint16 value, NumericFormat fmt)
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
@@ -1378,12 +1378,12 @@ namespace Utils
         {
         }
     };
-    template <unsigned short Size>
+    template <uint16 Size>
     class FixSizeString
     {
         static_assert(Size > 0);
         char data[Size + 1];
-        unsigned short size;
+        uint16 size;
 
       public:
         FixSizeString() : size(0)
@@ -1404,7 +1404,7 @@ namespace Utils
         }
         void Set(string_view txt)
         {
-            size = (unsigned short) std::min((size_t) Size, txt.length());
+            size = (uint16) std::min((size_t) Size, txt.length());
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
@@ -1422,7 +1422,7 @@ namespace Utils
                 Clear();
             }
         }
-        constexpr inline unsigned short Len() const
+        constexpr inline uint16 Len() const
         {
             return size;
         }
@@ -1430,7 +1430,7 @@ namespace Utils
         {
             return data;
         }
-        constexpr inline unsigned short MaxSize() const
+        constexpr inline uint16 MaxSize() const
         {
             return Size;
         }
@@ -2053,7 +2053,7 @@ namespace Graphics
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(const ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
-        bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
+        bool InsertChar(uint16 characterCode, unsigned int position, const ColorPair color = NoColorPair);
         bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
         void SetColor(const ColorPair color);
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
@@ -3235,7 +3235,7 @@ namespace Controls
         SearchMode                    = 0x008000,
         HideSearchBar                 = 0x010000
     };
-    enum class ListViewItemType : unsigned short
+    enum class ListViewItemType : uint16
     {
         Normal             = 0,
         Highlighted        = 1,
@@ -4519,7 +4519,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, unsigned short)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, unsigned int)
 

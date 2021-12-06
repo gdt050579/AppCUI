@@ -180,14 +180,14 @@ optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, unsign
     CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an unsigned int variable");
     return (unsigned int) (res.Value);
 }
-optional<unsigned short> ToUInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint16> ToUInt16(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
           std::nullopt,
-          "Invalid format for an unsigned short value");
-    CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an unsigned short variable");
-    return (unsigned short) (res.Value);
+          "Invalid format for an uint16 value");
+    CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an uint16 variable");
+    return (uint16) (res.Value);
 }
 optional<unsigned char> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
 {

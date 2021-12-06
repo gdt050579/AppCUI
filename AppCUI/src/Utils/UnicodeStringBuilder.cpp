@@ -27,7 +27,7 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
     {
         CHECK(p + 1 < end, false, "Invalid unicode sequence (missing one extra character after 110xxxx)");
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (110xxxx should be followed by 10xxxxxx)");
-        result.Value  = (((unsigned short) ((*p) & 0x1F)) << 6) | ((unsigned short) ((*(p + 1)) & 63));
+        result.Value  = (((uint16) ((*p) & 0x1F)) << 6) | ((uint16) ((*(p + 1)) & 63));
         result.Length = 2;
         return true;
     }
@@ -36,8 +36,8 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
         CHECK(p + 2 < end, false, "Invalid unicode sequence (missing two extra characters after 1110xxxx)");
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (1110xxxx should be followed by 10xxxxxx)");
         CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 0x0F)) << 12) | (((unsigned short) ((*(p + 1)) & 63)) << 6) |
-                       ((unsigned short) ((*(p + 2)) & 63));
+        result.Value = (((uint16) ((*p) & 0x0F)) << 12) | (((uint16) ((*(p + 1)) & 63)) << 6) |
+                       ((uint16) ((*(p + 2)) & 63));
         result.Length = 3;
         return true;
     }
@@ -47,8 +47,8 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (11110xxx should be followed by 10xxxxxx)");
         CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
         CHECK((p[3] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 7)) << 18) | (((unsigned short) ((*(p + 1)) & 63)) << 12) |
-                       (((unsigned short) ((*(p + 2)) & 63)) << 6) | ((unsigned short) ((*(p + 3)) & 63));
+        result.Value = (((uint16) ((*p) & 7)) << 18) | (((uint16) ((*(p + 1)) & 63)) << 12) |
+                       (((uint16) ((*(p + 2)) & 63)) << 6) | ((uint16) ((*(p + 3)) & 63));
         result.Length = 4;
         return true;
     }

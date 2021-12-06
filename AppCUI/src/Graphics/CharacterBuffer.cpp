@@ -490,7 +490,7 @@ bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, con
     return true;
 }
 
-bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
+bool CharacterBuffer::InsertChar(uint16 characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(((size_t) this->Count) + 1, false);
     CHECK(position <= this->Count,

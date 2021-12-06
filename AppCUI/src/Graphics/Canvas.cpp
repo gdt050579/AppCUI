@@ -54,10 +54,10 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     for (unsigned int tr = 0; tr < height; tr++, p += width)
         ofs_tmp[tr] = p;
 
-    unsigned short chr = ' ';
+    uint16 chr = ' ';
 
     if ((fillCharacter >= 0) && (fillCharacter <= 0xFFFF))
-        chr = (unsigned short) (fillCharacter & 0xFFFF);
+        chr = (uint16) (fillCharacter & 0xFFFF);
     // copy from Characters to tmp
     unsigned int min_w = std::min<>(this->Width, width);
     unsigned int min_h = std::min<>(this->Height, height);
