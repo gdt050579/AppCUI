@@ -205,7 +205,7 @@ bool UnicodeStringBuilder::Add(const ConstString& text)
     switch (obj.Encoding)
     {
     case StringEncoding::Ascii:
-        CopyText<unsigned char>(this->chars + this->length, (const unsigned char*) obj.Data, obj.Length);
+        CopyText<uint8>(this->chars + this->length, (const uint8*) obj.Data, obj.Length);
         this->length += (unsigned int) obj.Length;
         return true;
     case StringEncoding::CharacterBuffer:
@@ -284,7 +284,7 @@ void UnicodeStringBuilder::ToString(std::string& output) const
             }
             else
             {
-                output.push_back(static_cast<unsigned char>(*p));
+                output.push_back(static_cast<uint8>(*p));
             }
         }
     }

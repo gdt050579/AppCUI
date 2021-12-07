@@ -61,7 +61,7 @@ void ListViewColumn::SetWidth(unsigned int width)
 {
     width       = std::max<>(width, MINIM_COLUMN_WIDTH);
     width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
-    this->Width = (unsigned char) width;
+    this->Width = (uint8) width;
 }
 
 ListViewItem::ListViewItem() : Data(nullptr)

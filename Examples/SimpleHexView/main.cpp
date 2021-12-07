@@ -88,15 +88,15 @@ class HexViewUserControl : public UserControl
         std::ifstream fileStream(filePath);
         fileData.reserve(fileSize);
         std::copy(
-              std::istream_iterator<unsigned char>(fileStream),
-              std::istream_iterator<unsigned char>(),
+              std::istream_iterator<uint8>(fileStream),
+              std::istream_iterator<uint8>(),
               std::back_inserter(fileData));
 
         return true;
     }
 
   private:
-    std::vector<unsigned char> fileData;
+    std::vector<uint8> fileData;
     uint64 filePosition;
     uint64 fileSize;
 };

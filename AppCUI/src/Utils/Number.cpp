@@ -5,7 +5,7 @@ namespace AppCUI::Utils::Number
 #define NUMBER_FLAG_NEGATIVE 0x00000001
 #define NUMBER_FLAG_SECOND   0x00000002
 
-unsigned char __base_translation__[256] = {
+uint8 __base_translation__[256] = {
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   255, 255, 255, 255, 255, 255, 255, 10,
@@ -43,9 +43,9 @@ struct _parse_number_result_
     NumberParseFlags ParseFlags;
 };
 
-bool _parse_number_string_buffer_(const unsigned char* start, const unsigned char* end, _parse_number_result_& res)
+bool _parse_number_string_buffer_(const uint8* start, const uint8* end, _parse_number_result_& res)
 {
-    const unsigned char* original_start = start;
+    const uint8* original_start = start;
     SKIP_SPACES;
     VALIDATE_END_OF_STREAM;
 
@@ -101,7 +101,7 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
     }
 
     // compute
-    unsigned char charValue;
+    uint8 charValue;
     uint64 newValue;
     res.Value = 0;
     while (start < end)
@@ -152,9 +152,9 @@ bool _parse_number_string_buffer_(const unsigned char* start, const unsigned cha
 
 inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberParseFlags flags, unsigned int* size)
 {
-    const unsigned char* start = reinterpret_cast<const unsigned char*>(text.data());
+    const uint8* start = reinterpret_cast<const uint8*>(text.data());
     CHECK(start, false, "Expecting a non-null string to convert to number !");
-    const unsigned char* end = start + text.size();
+    const uint8* end = start + text.size();
     CHECK(start < end, false, "Expecting a non-empty string to convert to number !");
 
     res.ParseFlags = flags;
@@ -189,14 +189,14 @@ optional<uint16> ToUInt16(string_view text, NumberParseFlags flags, unsigned int
     CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an uint16 variable");
     return (uint16) (res.Value);
 }
-optional<unsigned char> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint8> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
           std::nullopt,
-          "Invalid format for an unsigned char value");
-    CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an unsigned char variable");
-    return (unsigned char) (res.Value);
+          "Invalid format for an uint8 value");
+    CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an uint8 variable");
+    return (uint8) (res.Value);
 }
 optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* size)
 {

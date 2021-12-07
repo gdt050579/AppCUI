@@ -5,7 +5,9 @@
 #include <stdarg.h>
 #include <string.h>
 
-const unsigned char string_lowercase_table[256] = {
+using namespace AppCUI;
+
+const uint8 string_lowercase_table[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -47,8 +49,8 @@ const unsigned char string_lowercase_table[256] = {
 #define VALIDATE_STRINGS_TO_COMPARE                                                                                    \
     CHECK(sir1, false, "Expecting a valid (non-null) first parameter !");                                              \
     CHECK(sir2, false, "Expecting a valid (non-null) first parameter !");                                              \
-    const unsigned char* p1 = (const unsigned char*) sir1;                                                             \
-    const unsigned char* p2 = (const unsigned char*) sir2;
+    const uint8* p1 = (const uint8*) sir1;                                                             \
+    const uint8* p2 = (const uint8*) sir2;
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
     if ((requiredSpace) > (Allocated & 0x7FFFFFFF))                                                                    \
@@ -164,8 +166,8 @@ bool String::StartsWith(const char* sir1, const char* sir2, bool ignoreCase)
 }
 bool String::StartsWith(string_view sir1, string_view sir2, bool ignoreCase)
 {
-    auto p1   = (const unsigned char*) sir1.data();
-    auto p2   = (const unsigned char*) sir2.data();
+    auto p1   = (const uint8*) sir1.data();
+    auto p2   = (const uint8*) sir2.data();
     auto p1_e = p1 + sir1.length();
     auto p2_e = p2 + sir2.length();
     CHECK(p1, false, "");
@@ -229,11 +231,11 @@ bool String::Contains(const char* sir, const char* textToFind, bool ignoreCase)
           "Invalid parameters (both 'sir' and 'textToFind' must not be null)");
     if ((*textToFind) == 0)
         return true; // empty string exists in every strings
-    const unsigned char* p_sir  = (const unsigned char*) sir;
-    const unsigned char* p_find = (const unsigned char*) textToFind;
-    const unsigned char* ps;
-    const unsigned char* pf;
-    unsigned char char_to_find = *(p_find);
+    const uint8* p_sir  = (const uint8*) sir;
+    const uint8* p_find = (const uint8*) textToFind;
+    const uint8* ps;
+    const uint8* pf;
+    uint8 char_to_find = *(p_find);
 
     if (ignoreCase)
     {

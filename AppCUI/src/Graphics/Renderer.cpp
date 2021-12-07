@@ -1305,7 +1305,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, Graphics::CharacterB
 //=========================================================================[IMAGE]===================
 struct _RGB_Color_
 {
-    unsigned char Red, Green, Blue;
+    uint8 Red, Green, Blue;
     Color c;
 };
 static const _RGB_Color_ _console_colors_[16] = {

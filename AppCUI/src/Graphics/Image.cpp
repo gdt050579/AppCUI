@@ -44,7 +44,7 @@ static const Pixel Image_ConsoleColors[16] = {
 #define VALIDATE_CONSOLE_INDEX                                                                                         \
     CHECK(((unsigned int) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
 
-unsigned char Image_CharToIndex[256] = {
+uint8 Image_CharToIndex[256] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0,    0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0,    0xFF, 0,    1,    2,    3,    4,    5,    6,    7,    8,
@@ -232,15 +232,15 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
 bool Image::Load(const std::filesystem::path& path)
 {
     auto buf = OS::File::ReadContent(path);
-    return Create((const unsigned char*) buf.GetData(), (unsigned int) buf.GetLength());
+    return Create((const uint8*) buf.GetData(), (unsigned int) buf.GetLength());
 }
-bool Image::CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon)
+bool Image::CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
     return LoadDIBToImage(*this, imageBuffer, size, isIcon);
 }
-bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
+bool Image::Create(const uint8* imageBuffer, unsigned int size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");

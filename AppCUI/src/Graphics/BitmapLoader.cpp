@@ -3,7 +3,7 @@
 namespace AppCUI::Graphics
 {
 #pragma pack(push, 1)
-constexpr uint16 BITMAP_WINDOWS_MAGIC             = 0x4D42;
+constexpr uint16 BITMAP_WINDOWS_MAGIC               = 0x4D42;
 constexpr uint32_t BITMAP_COMPRESSION_METHID_BI_RGB = 0;
 struct BMP_Header
 {
@@ -31,8 +31,8 @@ struct BMP_InfoHeader
 
 struct DIBPaintBuffer
 {
-    const unsigned char* px;
-    const unsigned char* end;
+    const uint8* px;
+    const uint8* end;
     const uint32_t* colorTable;
     uint32_t width;
     uint32_t height;
@@ -177,7 +177,7 @@ bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size, bool isIcon)
+bool LoadDIBToImage(Image& img, const uint8* buffer, unsigned int size, bool isIcon)
 {
     CHECK(size > sizeof(BMP_InfoHeader),
           false,
@@ -236,7 +236,7 @@ bool LoadDIBToImage(Image& img, const unsigned char* buffer, unsigned int size, 
     }
     RETURNERROR(false, "Paint method for %d bits/pixels is not implemeted !", h->bitsPerPixel);
 }
-bool LoadBMPToImage(Image& img, const unsigned char* buffer, unsigned int size)
+bool LoadBMPToImage(Image& img, const uint8* buffer, unsigned int size)
 {
     CHECK(buffer, false, "Expecting a valid (non-null) buffer");
     CHECK(size > sizeof(BMP_Header),

@@ -14,7 +14,7 @@ Buffer::Buffer(size_t size)
 {
     if (size > 0)
     {
-        data   = new unsigned char[size];
+        data   = new uint8[size];
         length = size;
     }
     else
@@ -27,7 +27,7 @@ Buffer::Buffer(const Buffer& buf)
 {
     if ((buf.data) && (buf.length))
     {
-        data = new unsigned char[buf.length];
+        data = new uint8[buf.length];
         memcpy(data, buf.data, buf.length);
         length = buf.length;
     }
@@ -45,7 +45,7 @@ Buffer& Buffer::operator=(const Buffer& buf)
     length = 0;
     if ((buf.data) && (buf.length))
     {
-        data = new unsigned char[buf.length];
+        data = new uint8[buf.length];
         memcpy(data, buf.data, buf.length);
         length = buf.length;
     }
@@ -74,7 +74,7 @@ void Buffer::Resize(size_t newSize)
         return;
     }
     // for bigger sizes
-    auto tmp = new unsigned char[newSize];
+    auto tmp = new uint8[newSize];
     if ((data) && (length))
     {
         memcpy(tmp, data, length);

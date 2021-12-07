@@ -6,7 +6,7 @@ using namespace AppCUI;
 using namespace Utils;
 using namespace Input;
 
-using BuffPtr = const unsigned char*;
+using BuffPtr = const uint8*;
 
 #define WRAPPER ((Ini::Parser*) Data)
 
@@ -55,7 +55,7 @@ using BuffPtr = const unsigned char*;
         RETURNERROR(returnValue, errorMessage);                                                                        \
     }
 
-const unsigned char Ini_LoweCaseTable[256] = {
+const uint8 Ini_LoweCaseTable[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -69,7 +69,7 @@ const unsigned char Ini_LoweCaseTable[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-unsigned char Ini_Char_Type[256] = {
+uint8 Ini_Char_Type[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
@@ -392,7 +392,7 @@ void Ini::Parser::SkipArrayWord()
 bool Ini::Parser::SkipString(bool& multiLineFormat)
 {
     // asume that current character is either ' or "
-    unsigned char currentChar = *current;
+    uint8 currentChar = *current;
     if ((current + 2) < end)
         multiLineFormat = ((current[1] == currentChar) && (current[2] == currentChar));
     else
@@ -1459,11 +1459,11 @@ IniValue IniObject::GetValue(string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(IniValue());
-    const unsigned char* start = (const unsigned char*) valuePath.data();
+    const uint8* start = (const uint8*) valuePath.data();
     CHECK(start, IniValue(), "Invalid value path (expecting a non-null object)");
-    const unsigned char* end = start + valuePath.size();
+    const uint8* end = start + valuePath.size();
     CHECK(start < end, IniValue(), "Invalid value path (expecting a non-empty object)");
-    const unsigned char* p = start;
+    const uint8* p = start;
     while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
         p++;
     if (p >= end)
@@ -1494,11 +1494,11 @@ bool IniObject::DeleteValue(string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(false);
-    const unsigned char* start = (const unsigned char*) valuePath.data();
+    const uint8* start = (const uint8*) valuePath.data();
     CHECK(start, false, "Invalid value path (expecting a non-null object)");
-    const unsigned char* end = start + valuePath.size();
+    const uint8* end = start + valuePath.size();
     CHECK(start < end, false, "Invalid value path (expecting a non-empty object)");
-    const unsigned char* p = start;
+    const uint8* p = start;
     while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
         p++;
     if (p >= end)

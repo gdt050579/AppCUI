@@ -16,7 +16,7 @@ bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t len
     {
         memcpy(temp, buf, length * characterSize);
         if (characterSize == 1)
-            ((unsigned char*) temp)[length] = 0;
+            ((uint8*) temp)[length] = 0;
         else if (characterSize == 2)
             ((uint16*) temp)[length] = 0;
     }

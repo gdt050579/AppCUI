@@ -214,7 +214,7 @@ using namespace StdIncludes;
 
 namespace Graphics
 {
-    enum class Color : unsigned char
+    enum class Color : uint8
     {
         Black       = 0x00,
         DarkBlue    = 0x01,
@@ -605,20 +605,20 @@ namespace Utils
 
     class BufferView
     {
-        const unsigned char* data;
+        const uint8* data;
         const size_t length;
 
       public:
         BufferView() : data(nullptr), length(0)
         {
         }
-        BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
+        BufferView(const void* ptr, size_t len) : data((const uint8*) ptr), length(len)
         {
         }
-        BufferView(string_view txt) : data((const unsigned char*) txt.data()), length(txt.size())
+        BufferView(string_view txt) : data((const uint8*) txt.data()), length(txt.size())
         {
         }
-        inline unsigned char operator[](size_t index) const
+        inline uint8 operator[](size_t index) const
         {
             return data[index];
         }
@@ -634,7 +634,7 @@ namespace Utils
         {
             return length;
         }
-        inline const unsigned char* GetData() const
+        inline const uint8* GetData() const
         {
             return data;
         }
@@ -651,11 +651,11 @@ namespace Utils
             return string_view((const char*) data, length);
         }
         // iterators
-        inline const unsigned char* begin() const
+        inline const uint8* begin() const
         {
             return data;
         }
-        inline const unsigned char* end() const
+        inline const uint8* end() const
         {
             return data + length;
         }
@@ -663,7 +663,7 @@ namespace Utils
 
     class EXPORT Buffer
     {
-        unsigned char* data;
+        uint8* data;
         size_t length;
 
       public:
@@ -676,19 +676,19 @@ namespace Utils
 
         Buffer(void*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
         Buffer(char*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
-        Buffer(unsigned char*& ptr, size_t size)
+        Buffer(uint8*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
@@ -706,7 +706,7 @@ namespace Utils
             std::swap(length, b.length);
             return *this;
         }
-        inline unsigned char& operator[](size_t index) const
+        inline uint8& operator[](size_t index) const
         {
             return data[index];
         }
@@ -726,7 +726,7 @@ namespace Utils
         {
             return length;
         }
-        inline unsigned char* GetData() const
+        inline uint8* GetData() const
         {
             return data;
         }
@@ -1006,7 +1006,7 @@ namespace Utils
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<uint16> ToUInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<unsigned char> ToUInt8(
+        EXPORT optional<uint8> ToUInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
         EXPORT optional<int64> ToInt64(
@@ -1039,28 +1039,28 @@ namespace Utils
     struct NumericFormat
     {
         NumericFormatFlags Flags;
-        unsigned char Base;
-        unsigned char GroupSize;
+        uint8 Base;
+        uint8 GroupSize;
         char GroupSeparator;
-        unsigned char DigitsCount;
+        uint8 DigitsCount;
         NumericFormat(NumericFormatFlags flags)
             : Flags(flags), Base(10), GroupSize(0), GroupSeparator(0), DigitsCount(0)
         {
         }
-        NumericFormat(NumericFormatFlags flags, unsigned char base)
+        NumericFormat(NumericFormatFlags flags, uint8 base)
             : Flags(flags), Base(base), GroupSize(0), GroupSeparator(0), DigitsCount(0)
         {
         }
-        NumericFormat(NumericFormatFlags flags, unsigned char base, unsigned char groupSize, char groupSeparator)
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator)
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(0)
         {
         }
         NumericFormat(
               NumericFormatFlags flags,
-              unsigned char base,
-              unsigned char groupSize,
+              uint8 base,
+              uint8 groupSize,
               char groupSeparator,
-              unsigned char digitsCount)
+              uint8 digitsCount)
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(digitsCount)
         {
         }
@@ -1103,7 +1103,7 @@ namespace Utils
         {
             return ToHexString((uint64) value);
         }
-        inline string_view ToHex(unsigned char value)
+        inline string_view ToHex(uint8 value)
         {
             return ToHexString((uint64) value);
         }
@@ -1121,7 +1121,7 @@ namespace Utils
         }
         inline string_view ToHex(char value)
         {
-            return ToHexString((uint64) (*(unsigned char*) &value));
+            return ToHexString((uint64) (*(uint8*) &value));
         }
 
         // ToDec
@@ -1137,7 +1137,7 @@ namespace Utils
         {
             return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(unsigned char value)
+        inline string_view ToDec(uint8 value)
         {
             return ToDecStringUnsigned((uint64) value);
         }
@@ -1173,7 +1173,7 @@ namespace Utils
         {
             return ToOctString((uint64) value);
         }
-        inline string_view ToOct(unsigned char value)
+        inline string_view ToOct(uint8 value)
         {
             return ToOctString((uint64) value);
         }
@@ -1191,7 +1191,7 @@ namespace Utils
         }
         inline string_view ToOct(char value)
         {
-            return ToOctString((uint64) (*(unsigned char*) &value));
+            return ToOctString((uint64) (*(uint8*) &value));
         }
 
         // ToBin
@@ -1207,7 +1207,7 @@ namespace Utils
         {
             return ToBinString((uint64) value);
         }
-        inline string_view ToBin(unsigned char value)
+        inline string_view ToBin(uint8 value)
         {
             return ToBinString((uint64) value);
         }
@@ -1225,7 +1225,7 @@ namespace Utils
         }
         inline string_view ToBin(char value)
         {
-            return ToBinString((uint64) (*(unsigned char*) &value));
+            return ToBinString((uint64) (*(uint8*) &value));
         }
 
         // ToBase
@@ -1241,7 +1241,7 @@ namespace Utils
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(unsigned char value, int base)
+        inline string_view ToBase(uint8 value, int base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
@@ -1275,7 +1275,7 @@ namespace Utils
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(unsigned char value, NumericFormat fmt)
+        inline string_view ToString(uint8 value, NumericFormat fmt)
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
@@ -1787,7 +1787,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned char
+    enum class Alignament : uint8
     {
         TopLeft = 0,
         Top,
@@ -2140,13 +2140,13 @@ namespace Graphics
             unsigned int ColorValue;
             struct
             {
-                unsigned char Blue, Green, Red, Alpha;
+                uint8 Blue, Green, Red, Alpha;
             };
         };
         Pixel() : ColorValue(0)
         {
         }
-        Pixel(unsigned char red, unsigned char green, unsigned char blue)
+        Pixel(uint8 red, uint8 green, uint8 blue)
             : Blue(blue), Green(green), Red(red), Alpha(255)
         {
         }
@@ -2180,7 +2180,7 @@ namespace Graphics
         bool Load(const std::filesystem::path& imageFilePath);
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, string_view image);
-        bool Create(const unsigned char* imageBuffer, unsigned int size);
+        bool Create(const uint8* imageBuffer, unsigned int size);
         inline bool Create(Utils::BufferView buf)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
@@ -2188,7 +2188,7 @@ namespace Graphics
             else
                 return false;
         }
-        bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon);
+        bool CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon);
         inline bool CreateFromDIB(Utils::BufferView buf, bool isIcon)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
@@ -2842,7 +2842,7 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlsBarLayout : unsigned char
+    enum class WindowControlsBarLayout : uint8
     {
         None               = 0,
         TopBarFromLeft     = 1,
