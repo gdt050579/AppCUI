@@ -120,7 +120,7 @@ void Button::OnHotKey()
     // if no handler is present --> call RaiseEvent
     RaiseEvent(Event::ButtonClicked);
 }
-bool Button::OnKeyEvent(Key KeyCode, char16_t)
+bool Button::OnKeyEvent(Key KeyCode, char16)
 {
     if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
     {

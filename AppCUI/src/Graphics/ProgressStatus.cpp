@@ -23,10 +23,10 @@ struct ProgressStatusData
     CharacterBuffer Title;
     CharacterBuffer Text;
 
-    unsigned long long MaxValue;
+    uint64 MaxValue;
     bool Showed;
     time_point<steady_clock> StartTime;
-    unsigned long long Ellapsed, LastEllapsed;
+    uint64 Ellapsed, LastEllapsed;
     Clip WindowClip;
     ApplicationImpl* App;
     char progressString[5];
@@ -106,7 +106,7 @@ void ProgressStatus_Paint_Status()
 
     PSData.App->terminal->Update();
 }
-void ProgressStatus_ComputeTime(unsigned long long time)
+void ProgressStatus_ComputeTime(uint64 time)
 {
     if (time == 0)
     {
@@ -145,7 +145,7 @@ void ProgressStatus_ComputeTime(unsigned long long time)
     PSData.timeString[index]   = 0;
     PSData.timeStringSize      = index;
 }
-void ProgressStatus::Init(const ConstString& Title, unsigned long long maxValue)
+void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
@@ -176,7 +176,7 @@ void ProgressStatus::Init(const ConstString& Title, unsigned long long maxValue)
     PSData.StartTime          = std::chrono::steady_clock::now();
     progress_inited           = true;
 }
-bool __ProgressStatus_Update(unsigned long long value, const ConstString* content)
+bool __ProgressStatus_Update(uint64 value, const ConstString* content)
 {
     CHECK(progress_inited,
           true,
@@ -187,7 +187,7 @@ bool __ProgressStatus_Update(unsigned long long value, const ConstString* conten
     if (PSData.MaxValue > 0)
     {
         if (value < PSData.MaxValue)
-            newProgress = (unsigned int) ((value * (unsigned long long) 100) / PSData.MaxValue);
+            newProgress = (unsigned int) ((value * (uint64) 100) / PSData.MaxValue);
         else
             newProgress = 100;
         if (newProgress != PSData.Progress)
@@ -235,8 +235,8 @@ bool __ProgressStatus_Update(unsigned long long value, const ConstString* conten
                     ProgressStatus_ComputeTime(0);
                 else
                     ProgressStatus_ComputeTime(
-                          (((unsigned long long) (100 - PSData.Progress)) * PSData.Ellapsed) /
-                          ((unsigned long long) PSData.Progress));
+                          (((uint64) (100 - PSData.Progress)) * PSData.Ellapsed) /
+                          ((uint64) PSData.Progress));
             }
             else
                 ProgressStatus_ComputeTime(PSData.Ellapsed);
@@ -287,11 +287,11 @@ bool __ProgressStatus_Update(unsigned long long value, const ConstString* conten
     return false;
 }
 
-bool ProgressStatus::Update(unsigned long long value, const ConstString& content)
+bool ProgressStatus::Update(uint64 value, const ConstString& content)
 {
     return __ProgressStatus_Update(value, &content);
 }
-bool ProgressStatus::Update(unsigned long long value)
+bool ProgressStatus::Update(uint64 value)
 {
     return __ProgressStatus_Update(value, nullptr);
 }

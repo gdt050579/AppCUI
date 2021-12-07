@@ -31,22 +31,22 @@ class HexViewUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
 
-        const std::uint64_t height     = GetHeight();
-        const std::uint64_t width      = GetWidth();
-        const std::uint64_t bufferSize = height * width;
-        const std::uint64_t maxProcess = std::min(bufferSize, fileSize - filePosition);
+        const uint64 height     = GetHeight();
+        const uint64 width      = GetWidth();
+        const uint64 bufferSize = height * width;
+        const uint64 maxProcess = std::min(bufferSize, fileSize - filePosition);
 
-        for (size_t i = 0; i < maxProcess; i++)
+        for (uint64 i = 0; i < maxProcess; i++)
         {
-            const int y = i / width;
-            const int x = i % width;
+            const int y = static_cast<int>(i / width);
+            const int x = static_cast<int>(i % width);
             renderer.WriteCharacter(x, y, fileData[filePosition + i], ColorPair{ Color::White, Color::Transparent });
         }
     }
 
-    bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t /*AsciiCode*/) override
+    bool OnKeyEvent(AppCUI::Input::Key keyCode, char16 /*AsciiCode*/) override
     {
-        const std::uint64_t bufferSize = GetWidth() * GetHeight();
+        const uint64 bufferSize = (uint64)GetWidth() * (uint64)GetHeight();
 
         switch (keyCode)
         {
@@ -88,17 +88,17 @@ class HexViewUserControl : public UserControl
         std::ifstream fileStream(filePath);
         fileData.reserve(fileSize);
         std::copy(
-              std::istream_iterator<unsigned char>(fileStream),
-              std::istream_iterator<unsigned char>(),
+              std::istream_iterator<uint8>(fileStream),
+              std::istream_iterator<uint8>(),
               std::back_inserter(fileData));
 
         return true;
     }
 
   private:
-    std::vector<unsigned char> fileData;
-    uint64_t filePosition;
-    uint64_t fileSize;
+    std::vector<uint8> fileData;
+    uint64 filePosition;
+    uint64 fileSize;
 };
 
 class SimpleHexView : public AppCUI::Controls::Window

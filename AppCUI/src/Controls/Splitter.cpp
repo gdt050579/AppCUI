@@ -201,7 +201,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         }
     }
 }
-bool Splitter::OnKeyEvent(Input::Key keyCode, char16_t)
+bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if ((Members->Flags & GATTR_VERTICAL) != 0)

@@ -55,7 +55,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
         CharacterBuffer filename;
         filename.Set(std::filesystem::current_path().filename().u16string());
         const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
-        unsigned long long pathSize  = 0;
+        uint64 pathSize  = 0;
         CharacterBuffer pathSizeText;
         try
         {
@@ -102,7 +102,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                     filename.Set(path.filename().u16string());
                     const auto pathLastWriteTime = GetLastFileWriteText(path);
 
-                    unsigned long long pathSize = 0;
+                    uint64 pathSize = 0;
                     CharacterBuffer pathSizeText;
                     try
                     {
@@ -153,7 +153,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                 CharacterBuffer filename;
                 filename.Set(p.path().filename().u16string());
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
-                unsigned long long pathSize  = p.file_size();
+                uint64 pathSize  = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
 
@@ -208,7 +208,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
 #endif
     }
 
-    static const CharacterBuffer GetTextFromNumber(const unsigned long long value)
+    static const CharacterBuffer GetTextFromNumber(const uint64 value)
     {
         constexpr auto SIZE = 20;
         char cValue[SIZE]   = { 0 };

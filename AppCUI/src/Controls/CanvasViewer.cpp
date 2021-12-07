@@ -102,7 +102,7 @@ void CanvasViewer::OnUpdateScrollBars()
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
 }
 
-bool CanvasViewer::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool CanvasViewer::OnKeyEvent(Input::Key KeyCode, char16)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
 

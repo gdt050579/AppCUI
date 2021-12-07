@@ -727,7 +727,7 @@ void ApplicationImpl::ComputePositions()
     for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
-void ApplicationImpl::ProcessKeyPress(Input::Key KeyCode, char16_t unicodeCharacter)
+void ApplicationImpl::ProcessKeyPress(Input::Key KeyCode, char16 unicodeCharacter)
 {
     Reference<Control> ctrl = nullptr;
 

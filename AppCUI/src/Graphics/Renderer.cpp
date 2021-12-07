@@ -428,7 +428,7 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (unsigned short) (character & 0xFFFF);
+        tmp.Code = (uint16) (character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -1305,7 +1305,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, Graphics::CharacterB
 //=========================================================================[IMAGE]===================
 struct _RGB_Color_
 {
-    unsigned char Red, Green, Blue;
+    uint8 Red, Green, Blue;
     Color c;
 };
 static const _RGB_Color_ _console_colors_[16] = {

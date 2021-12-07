@@ -467,7 +467,7 @@ void WindowsTerminal::OnFlushToScreen()
     while (c < e)
     {
         d->Char.UnicodeChar = c->Code;
-        d->Attributes       = ((unsigned char) c->Color.Foreground) | (((unsigned char) (c->Color.Background)) << 4);
+        d->Attributes       = ((uint8) c->Color.Foreground) | (((uint8) (c->Color.Background)) << 4);
         d++;
         c++;
     }

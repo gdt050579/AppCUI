@@ -6651,9 +6651,9 @@ class MainWin : public Window
                             img.SetPixel(
                                   x,
                                   y,
-                                  { (unsigned char) std::min<>(r, 255U),
-                                    (unsigned char) std::min<>(g, 255U),
-                                    (unsigned char) std::min<>(b, 255U) });
+                                  { (uint8) std::min<>(r, 255U),
+                                    (uint8) std::min<>(g, 255U),
+                                    (uint8) std::min<>(b, 255U) });
                             x++;
                             if (x == img.GetWidth())
                             {

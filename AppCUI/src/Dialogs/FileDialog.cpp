@@ -41,7 +41,7 @@ std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-void ConvertSizeToString(unsigned long long size, char result[32])
+void ConvertSizeToString(uint64 size, char result[32])
 {
     result[31] = 0;
     int poz    = 30;
@@ -64,12 +64,12 @@ void ConvertSizeToString(unsigned long long size, char result[32])
     }
 }
 
-unsigned int __compute_hash__(const char16_t* start, const char16_t* end)
+unsigned int __compute_hash__(const char16* start, const char16* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
     unsigned int hash       = 0x811c9dc5;
-    const char16_t* p_start = (const char16_t*) start;
-    const char16_t* p_end   = (const char16_t*) end;
+    const char16* p_start = (const char16*) start;
+    const char16* p_end   = (const char16*) end;
 
     while (p_start < p_end)
     {
@@ -477,7 +477,7 @@ void FileDialogWindow::ReloadCurrentPath()
                         continue; // extension is filtered
                     }
                 }
-                ConvertSizeToString((unsigned long long) fileEntry.file_size(), size);
+                ConvertSizeToString((uint64) fileEntry.file_size(), size);
             }
 
             const time_t date{ getLastModifiedTime(fileEntry) };

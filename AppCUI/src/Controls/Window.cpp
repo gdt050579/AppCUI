@@ -3,8 +3,8 @@
 
 namespace AppCUI
 {
-constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
-constexpr unsigned int MAX_TAG_CHARS       = 8U;
+constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
+constexpr unsigned int MAX_TAG_CHARS = 8U;
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -395,7 +395,7 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
     b->HotKey       = Key::None;
 
     ConstStringObject txt(caption);
-    char16_t ch = 0;
+    char16 ch = 0;
     if (hotKeyTextOffset < txt.Length)
     {
         switch (txt.Encoding)
@@ -404,13 +404,13 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
             ch = (((char*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::Unicode16:
-            ch = (((char16_t*) txt.Data)[hotKeyTextOffset]);
+            ch = (((char16*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::CharacterBuffer:
             ch = (((Character*) txt.Data)[hotKeyTextOffset].Code);
             break;
         case StringEncoding::UTF8:
-            ch = (((unsigned char*) txt.Data)[hotKeyTextOffset]);
+            ch = (((uint8*) txt.Data)[hotKeyTextOffset]);
             break;
         }
         if (ch != 0)
@@ -486,8 +486,7 @@ bool Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool val
     RETURNERROR(false, "This method can only be applied on Check and Radio items");
 }
 //=========================================================================================================================================================
-bool WindowBarItem::Init(
-      WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, string_view toolTipText)
+bool WindowBarItem::Init(WindowBarItemType type, WindowControlsBarLayout layout, uint8 size, string_view toolTipText)
 {
     this->Type         = type;
     this->Layout       = layout;
@@ -751,11 +750,11 @@ void Window::Paint(Graphics::Renderer& renderer)
         // separators
         if (drawSeparators)
         {
-            if ((unsigned char) btn->Flags & (unsigned char) WindowBarItemFlags::LeftGroupMarker)
+            if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::LeftGroupMarker)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
             else if (fromLeft)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
-            if ((unsigned char) btn->Flags & (unsigned char) WindowBarItemFlags::RightGroupMarker)
+            if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::RightGroupMarker)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
             else if (!fromLeft)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
@@ -1022,7 +1021,7 @@ bool Window::OnEvent(Reference<Control>, Event eventType, int)
     }
     return false;
 }
-bool Window::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool Window::OnKeyEvent(Input::Key KeyCode, char16)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);

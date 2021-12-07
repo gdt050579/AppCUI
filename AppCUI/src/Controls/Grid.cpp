@@ -60,7 +60,7 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
-bool Controls::Grid::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool Controls::Grid::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 

@@ -190,14 +190,13 @@ namespace AppCUI
 using uint64 = uint64_t;
 using uint32 = uint32_t;
 using uint16 = uint16_t;
-using uint8 = uint8_t;
-using int64 = int64_t;
-using int32 = int32_t;
-using int16 = int16_t;
-using int8 = int8_t;
-using char8 = char8_t;
+using uint8  = uint8_t;
+using int64  = int64_t;
+using int32  = int32_t;
+using int16  = int16_t;
+using int8   = int8_t;
+using char8  = char8_t;
 using char16 = char16_t;
-
 
 namespace StdIncludes
 {
@@ -215,7 +214,7 @@ using namespace StdIncludes;
 
 namespace Graphics
 {
-    enum class Color : unsigned char
+    enum class Color : uint8
     {
         Black       = 0x00,
         DarkBlue    = 0x01,
@@ -278,7 +277,7 @@ namespace Graphics
         {
             struct
             {
-                char16_t Code;
+                char16 Code;
                 ColorPair Color;
             };
             unsigned int PackedValue;
@@ -291,11 +290,11 @@ namespace Graphics
         {
             return Code != value;
         }
-        inline constexpr bool operator==(char16_t value) const
+        inline constexpr bool operator==(char16 value) const
         {
             return Code == value;
         }
-        inline constexpr bool operator!=(char16_t value) const
+        inline constexpr bool operator!=(char16 value) const
         {
             return Code != value;
         }
@@ -303,7 +302,7 @@ namespace Graphics
         {
             return Code > value;
         }
-        inline constexpr bool operator>(char16_t value) const
+        inline constexpr bool operator>(char16 value) const
         {
             return Code > value;
         }
@@ -311,7 +310,7 @@ namespace Graphics
         {
             return Code < value;
         }
-        inline constexpr bool operator<(char16_t value) const
+        inline constexpr bool operator<(char16 value) const
         {
             return Code < value;
         }
@@ -319,7 +318,7 @@ namespace Graphics
         {
             return Code >= value;
         }
-        inline constexpr bool operator>=(char16_t value) const
+        inline constexpr bool operator>=(char16 value) const
         {
             return Code >= value;
         }
@@ -327,11 +326,11 @@ namespace Graphics
         {
             return Code <= value;
         }
-        inline constexpr bool operator<=(char16_t value) const
+        inline constexpr bool operator<=(char16 value) const
         {
             return Code <= value;
         }
-        inline constexpr operator char16_t() const
+        inline constexpr operator char16() const
         {
             return Code;
         }
@@ -606,20 +605,20 @@ namespace Utils
 
     class BufferView
     {
-        const unsigned char* data;
+        const uint8* data;
         const size_t length;
 
       public:
         BufferView() : data(nullptr), length(0)
         {
         }
-        BufferView(const void* ptr, size_t len) : data((const unsigned char*) ptr), length(len)
+        BufferView(const void* ptr, size_t len) : data((const uint8*) ptr), length(len)
         {
         }
-        BufferView(string_view txt) : data((const unsigned char*) txt.data()), length(txt.size())
+        BufferView(string_view txt) : data((const uint8*) txt.data()), length(txt.size())
         {
         }
-        inline unsigned char operator[](size_t index) const
+        inline uint8 operator[](size_t index) const
         {
             return data[index];
         }
@@ -635,7 +634,7 @@ namespace Utils
         {
             return length;
         }
-        inline const unsigned char* GetData() const
+        inline const uint8* GetData() const
         {
             return data;
         }
@@ -652,11 +651,11 @@ namespace Utils
             return string_view((const char*) data, length);
         }
         // iterators
-        inline const unsigned char* begin() const
+        inline const uint8* begin() const
         {
             return data;
         }
-        inline const unsigned char* end() const
+        inline const uint8* end() const
         {
             return data + length;
         }
@@ -664,7 +663,7 @@ namespace Utils
 
     class EXPORT Buffer
     {
-        unsigned char* data;
+        uint8* data;
         size_t length;
 
       public:
@@ -677,19 +676,19 @@ namespace Utils
 
         Buffer(void*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
         Buffer(char*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
-        Buffer(unsigned char*& ptr, size_t size)
+        Buffer(uint8*& ptr, size_t size)
         {
-            data   = (unsigned char*) ptr;
+            data   = (uint8*) ptr;
             length = size;
             ptr    = nullptr;
         }
@@ -707,7 +706,7 @@ namespace Utils
             std::swap(length, b.length);
             return *this;
         }
-        inline unsigned char& operator[](size_t index) const
+        inline uint8& operator[](size_t index) const
         {
             return data[index];
         }
@@ -727,7 +726,7 @@ namespace Utils
         {
             return length;
         }
-        inline unsigned char* GetData() const
+        inline uint8* GetData() const
         {
             return data;
         }
@@ -889,20 +888,19 @@ namespace Utils
     };
     class EXPORT UnicodeStringBuilder
     {
-        char16_t* chars;
+        char16* chars;
         unsigned int length;
         unsigned int allocated;
 
-        void Create(char16_t* localBuffer, size_t localBufferSize);
+        void Create(char16* localBuffer, size_t localBufferSize);
 
       public:
         UnicodeStringBuilder();
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize);
         UnicodeStringBuilder(const ConstString& text);
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const ConstString& text);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const ConstString& text);
         UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer);
-        UnicodeStringBuilder(
-              char16_t* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
 
         UnicodeStringBuilder(const UnicodeStringBuilder& obj);
         UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
@@ -914,7 +912,7 @@ namespace Utils
         bool Set(const Graphics::CharacterBuffer& charBuffer);
         bool Add(const ConstString& text);
         bool Add(const Graphics::CharacterBuffer& charBuffer);
-        bool AddChar(char16_t ch);
+        bool AddChar(char16 ch);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
@@ -934,7 +932,7 @@ namespace Utils
         {
             return length;
         }
-        inline const char16_t* GetString() const
+        inline const char16* GetString() const
         {
             return chars;
         }
@@ -1001,20 +999,20 @@ namespace Utils
     };
     namespace Number
     {
-        EXPORT optional<unsigned long long> ToUInt64(
+        EXPORT optional<uint64> ToUInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<unsigned int> ToUInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<unsigned short> ToUInt16(
+        EXPORT optional<uint16> ToUInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<unsigned char> ToUInt8(
+        EXPORT optional<uint8> ToUInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
 
-        EXPORT optional<long long> ToInt64(
+        EXPORT optional<int64> ToInt64(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<int> ToInt32(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<short> ToInt16(
+        EXPORT optional<int16> ToInt16(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
         EXPORT optional<char> ToInt8(
               string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
@@ -1026,7 +1024,7 @@ namespace Utils
 
     }; // namespace Number
 
-    enum class NumericFormatFlags : unsigned short
+    enum class NumericFormatFlags : uint16
     {
         None      = 0,
         LowerCase = 0x0001,
@@ -1040,28 +1038,23 @@ namespace Utils
     struct NumericFormat
     {
         NumericFormatFlags Flags;
-        unsigned char Base;
-        unsigned char GroupSize;
+        uint8 Base;
+        uint8 GroupSize;
         char GroupSeparator;
-        unsigned char DigitsCount;
+        uint8 DigitsCount;
         NumericFormat(NumericFormatFlags flags)
             : Flags(flags), Base(10), GroupSize(0), GroupSeparator(0), DigitsCount(0)
         {
         }
-        NumericFormat(NumericFormatFlags flags, unsigned char base)
+        NumericFormat(NumericFormatFlags flags, uint8 base)
             : Flags(flags), Base(base), GroupSize(0), GroupSeparator(0), DigitsCount(0)
         {
         }
-        NumericFormat(NumericFormatFlags flags, unsigned char base, unsigned char groupSize, char groupSeparator)
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator)
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(0)
         {
         }
-        NumericFormat(
-              NumericFormatFlags flags,
-              unsigned char base,
-              unsigned char groupSize,
-              char groupSeparator,
-              unsigned char digitsCount)
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator, uint8 digitsCount)
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(digitsCount)
         {
         }
@@ -1070,16 +1063,16 @@ namespace Utils
     {
         char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
         char* heapBuffer;
-        string_view ToHexString(unsigned long long value);
-        string_view ToOctString(unsigned long long value);
-        string_view ToBinString(unsigned long long value);
-        string_view ToDecStringUnsigned(unsigned long long value);
-        string_view ToDecStringSigned(long long value);
-        string_view ToBaseUnsigned(unsigned long long value, int base);
-        string_view ToBaseSigned(long long value, int base);
-        string_view ToGenericBase(unsigned long long value, unsigned long long base);
-        string_view ToStringUnsigned(unsigned long long value, NumericFormat fmt);
-        string_view ToStringSigned(long long value, NumericFormat fmt);
+        string_view ToHexString(uint64 value);
+        string_view ToOctString(uint64 value);
+        string_view ToBinString(uint64 value);
+        string_view ToDecStringUnsigned(uint64 value);
+        string_view ToDecStringSigned(int64 value);
+        string_view ToBaseUnsigned(uint64 value, int base);
+        string_view ToBaseSigned(int64 value, int base);
+        string_view ToGenericBase(uint64 value, uint64 base);
+        string_view ToStringUnsigned(uint64 value, NumericFormat fmt);
+        string_view ToStringSigned(int64 value, NumericFormat fmt);
 
       public:
         NumericFormatter() : heapBuffer(nullptr)
@@ -1092,209 +1085,209 @@ namespace Utils
             heapBuffer = nullptr;
         }
         // ToHex
-        inline string_view ToHex(unsigned long long value)
+        inline string_view ToHex(uint64 value)
         {
             return ToHexString(value);
         }
         inline string_view ToHex(unsigned int value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
-        inline string_view ToHex(unsigned short value)
+        inline string_view ToHex(uint16 value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
-        inline string_view ToHex(unsigned char value)
+        inline string_view ToHex(uint8 value)
         {
-            return ToHexString((unsigned long long) value);
+            return ToHexString((uint64) value);
         }
-        inline string_view ToHex(long long value)
+        inline string_view ToHex(int64 value)
         {
-            return ToHexString(*(unsigned long long*) &value);
+            return ToHexString(*(uint64*) &value);
         }
         inline string_view ToHex(int value)
         {
-            return ToHexString((unsigned long long) (*(unsigned int*) &value));
+            return ToHexString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToHex(short value)
+        inline string_view ToHex(int16 value)
         {
-            return ToHexString((unsigned long long) (*(unsigned short*) &value));
+            return ToHexString((uint64) (*(uint16*) &value));
         }
         inline string_view ToHex(char value)
         {
-            return ToHexString((unsigned long long) (*(unsigned char*) &value));
+            return ToHexString((uint64) (*(uint8*) &value));
         }
 
         // ToDec
-        inline string_view ToDec(unsigned long long value)
+        inline string_view ToDec(uint64 value)
         {
             return ToDecStringUnsigned(value);
         }
         inline string_view ToDec(unsigned int value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(unsigned short value)
+        inline string_view ToDec(uint16 value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(unsigned char value)
+        inline string_view ToDec(uint8 value)
         {
-            return ToDecStringUnsigned((unsigned long long) value);
+            return ToDecStringUnsigned((uint64) value);
         }
-        inline string_view ToDec(long long value)
+        inline string_view ToDec(int64 value)
         {
             return ToDecStringSigned(value);
         }
         inline string_view ToDec(int value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
-        inline string_view ToDec(short value)
+        inline string_view ToDec(int16 value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
         inline string_view ToDec(char value)
         {
-            return ToDecStringSigned((long) value);
+            return ToDecStringSigned((int64) value);
         }
         string_view ToDec(float value);
         string_view ToDec(double value);
 
         // ToOct
-        inline string_view ToOct(unsigned long long value)
+        inline string_view ToOct(uint64 value)
         {
             return ToOctString(value);
         }
         inline string_view ToOct(unsigned int value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
-        inline string_view ToOct(unsigned short value)
+        inline string_view ToOct(uint16 value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
-        inline string_view ToOct(unsigned char value)
+        inline string_view ToOct(uint8 value)
         {
-            return ToOctString((unsigned long long) value);
+            return ToOctString((uint64) value);
         }
-        inline string_view ToOct(long long value)
+        inline string_view ToOct(int64 value)
         {
-            return ToOctString(*(unsigned long long*) &value);
+            return ToOctString(*(uint64*) &value);
         }
         inline string_view ToOct(int value)
         {
-            return ToOctString((unsigned long long) (*(unsigned int*) &value));
+            return ToOctString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToOct(short value)
+        inline string_view ToOct(int16 value)
         {
-            return ToOctString((unsigned long long) (*(unsigned short*) &value));
+            return ToOctString((uint64) (*(uint16*) &value));
         }
         inline string_view ToOct(char value)
         {
-            return ToOctString((unsigned long long) (*(unsigned char*) &value));
+            return ToOctString((uint64) (*(uint8*) &value));
         }
 
         // ToBin
-        inline string_view ToBin(unsigned long long value)
+        inline string_view ToBin(uint64 value)
         {
             return ToBinString(value);
         }
         inline string_view ToBin(unsigned int value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
-        inline string_view ToBin(unsigned short value)
+        inline string_view ToBin(uint16 value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
-        inline string_view ToBin(unsigned char value)
+        inline string_view ToBin(uint8 value)
         {
-            return ToBinString((unsigned long long) value);
+            return ToBinString((uint64) value);
         }
-        inline string_view ToBin(long long value)
+        inline string_view ToBin(int64 value)
         {
-            return ToBinString(*(unsigned long long*) &value);
+            return ToBinString(*(uint64*) &value);
         }
         inline string_view ToBin(int value)
         {
-            return ToBinString((unsigned long long) (*(unsigned int*) &value));
+            return ToBinString((uint64) (*(unsigned int*) &value));
         }
-        inline string_view ToBin(short value)
+        inline string_view ToBin(int16 value)
         {
-            return ToBinString((unsigned long long) (*(unsigned short*) &value));
+            return ToBinString((uint64) (*(uint16*) &value));
         }
         inline string_view ToBin(char value)
         {
-            return ToBinString((unsigned long long) (*(unsigned char*) &value));
+            return ToBinString((uint64) (*(uint8*) &value));
         }
 
         // ToBase
-        inline string_view ToBase(unsigned long long value, int base)
+        inline string_view ToBase(uint64 value, int base)
         {
             return ToBaseUnsigned(value, base);
         }
         inline string_view ToBase(unsigned int value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(unsigned short value, int base)
+        inline string_view ToBase(uint16 value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(unsigned char value, int base)
+        inline string_view ToBase(uint8 value, int base)
         {
-            return ToBaseUnsigned((unsigned long long) value, base);
+            return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(long long value, int base)
+        inline string_view ToBase(int64 value, int base)
         {
             return ToBaseSigned(value, base);
         }
         inline string_view ToBase(int value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
-        inline string_view ToBase(short value, int base)
+        inline string_view ToBase(int16 value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
         inline string_view ToBase(char value, int base)
         {
-            return ToBaseSigned((long) value, base);
+            return ToBaseSigned((int64) value, base);
         }
 
         // ToString
-        inline string_view ToString(unsigned long long value, NumericFormat fmt)
+        inline string_view ToString(uint64 value, NumericFormat fmt)
         {
             return ToStringUnsigned(value, fmt);
         }
         inline string_view ToString(unsigned int value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(unsigned short value, NumericFormat fmt)
+        inline string_view ToString(uint16 value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(unsigned char value, NumericFormat fmt)
+        inline string_view ToString(uint8 value, NumericFormat fmt)
         {
-            return ToStringUnsigned((unsigned long long) value, fmt);
+            return ToStringUnsigned((uint64) value, fmt);
         }
-        inline string_view ToString(long long value, NumericFormat fmt)
+        inline string_view ToString(int64 value, NumericFormat fmt)
         {
             return ToStringSigned(value, fmt);
         }
         inline string_view ToString(int value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
-        inline string_view ToString(short value, NumericFormat fmt)
+        inline string_view ToString(int16 value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
         inline string_view ToString(char value, NumericFormat fmt)
         {
-            return ToStringSigned((long) value, fmt);
+            return ToStringSigned((int64) value, fmt);
         }
     };
 
@@ -1365,7 +1358,7 @@ namespace Utils
     template <size_t size>
     class LocalUnicodeStringBuilder : public UnicodeStringBuilder
     {
-        char16_t tempBuffer[size];
+        char16 tempBuffer[size];
 
       public:
         LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size)
@@ -1379,12 +1372,12 @@ namespace Utils
         {
         }
     };
-    template <unsigned short Size>
+    template <uint16 Size>
     class FixSizeString
     {
         static_assert(Size > 0);
         char data[Size + 1];
-        unsigned short size;
+        uint16 size;
 
       public:
         FixSizeString() : size(0)
@@ -1405,7 +1398,7 @@ namespace Utils
         }
         void Set(string_view txt)
         {
-            size = (unsigned short) std::min((size_t) Size, txt.length());
+            size = (uint16) std::min((size_t) Size, txt.length());
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
@@ -1423,7 +1416,7 @@ namespace Utils
                 Clear();
             }
         }
-        constexpr inline unsigned short Len() const
+        constexpr inline uint16 Len() const
         {
             return size;
         }
@@ -1431,7 +1424,7 @@ namespace Utils
         {
             return data;
         }
-        constexpr inline unsigned short MaxSize() const
+        constexpr inline uint16 MaxSize() const
         {
             return Size;
         }
@@ -1466,7 +1459,7 @@ namespace Utils
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
 
-        static Input::Key CreateHotKey(char16_t hotKey, Input::Key modifier = Input::Key::None);
+        static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
 
     class EXPORT IniValueArray
@@ -1482,8 +1475,8 @@ namespace Utils
         {
         }
 
-        optional<unsigned long long> AsUInt64() const;
-        optional<long long> AsInt64() const;
+        optional<uint64> AsUInt64() const;
+        optional<int64> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
         optional<bool> AsBool() const;
@@ -1500,9 +1493,9 @@ namespace Utils
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
@@ -1527,8 +1520,8 @@ namespace Utils
         }
         IniValue(void* data) : Data(data){};
 
-        optional<unsigned long long> AsUInt64() const;
-        optional<long long> AsInt64() const;
+        optional<uint64> AsUInt64() const;
+        optional<int64> AsInt64() const;
         optional<unsigned int> AsUInt32() const;
         optional<int> AsInt32() const;
         optional<bool> AsBool() const;
@@ -1539,9 +1532,9 @@ namespace Utils
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
         unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
@@ -1564,9 +1557,9 @@ namespace Utils
 
         void operator=(bool value);
         void operator=(unsigned int value);
-        void operator=(unsigned long long value);
+        void operator=(uint64 value);
         void operator=(int value);
-        void operator=(long long value);
+        void operator=(int64 value);
         void operator=(float value);
         void operator=(double value);
         void operator=(const char* value);
@@ -1577,9 +1570,9 @@ namespace Utils
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
         void operator=(const initializer_list<unsigned int>& values);
-        void operator=(const initializer_list<unsigned long long>& values);
+        void operator=(const initializer_list<uint64>& values);
         void operator=(const initializer_list<int>& values);
-        void operator=(const initializer_list<long long>& values);
+        void operator=(const initializer_list<int64>& values);
         void operator=(const initializer_list<float>& values);
         void operator=(const initializer_list<double>& values);
     };
@@ -1608,9 +1601,9 @@ namespace Utils
 
         void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, unsigned int value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, unsigned long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, double value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const char* value, bool dontUpdateIfValueExits);
@@ -1621,10 +1614,9 @@ namespace Utils
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(
-              string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
@@ -1681,10 +1673,10 @@ namespace OS
         // virtual methods
         virtual bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
         virtual bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        virtual unsigned long long GetSize();
-        virtual unsigned long long GetCurrentPos();
-        virtual bool SetSize(unsigned long long newSize);
-        virtual bool SetCurrentPos(unsigned long long newPosition);
+        virtual uint64 GetSize();
+        virtual uint64 GetCurrentPos();
+        virtual bool SetSize(uint64 newSize);
+        virtual bool SetCurrentPos(uint64 newPosition);
         virtual void Close();
 
         // other methods
@@ -1692,10 +1684,10 @@ namespace OS
         bool Write(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
         bool Read(void* buffer, unsigned int bufferSize);
         bool Write(const void* buffer, unsigned int bufferSize);
-        bool Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
+        bool Read(uint64 offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
+        bool Write(uint64 offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
         bool Write(string_view text);
-        bool Write(unsigned long long offset, string_view text, unsigned int& bytesWritten);
+        bool Write(uint64 offset, string_view text, unsigned int& bytesWritten);
     };
 
     class EXPORT File : public IFile
@@ -1703,7 +1695,7 @@ namespace OS
         union
         {
             void* Handle;
-            unsigned long long u64Value;
+            uint64 u64Value;
             unsigned int u32Value;
             int fid;
         } FileID;
@@ -1733,10 +1725,10 @@ namespace OS
 
         bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) override;
         bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten) override;
-        unsigned long long GetSize() override;
-        unsigned long long GetCurrentPos() override;
-        bool SetSize(unsigned long long newSize) override;
-        bool SetCurrentPos(unsigned long long newPosition) override;
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
         void Close() override;
 
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
@@ -1789,7 +1781,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned char
+    enum class Alignament : uint8
     {
         TopLeft = 0,
         Top,
@@ -1872,9 +1864,9 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const ConstString& Title, unsigned long long maxValue = 0);
-        bool EXPORT Update(unsigned long long value, const ConstString& content);
-        bool EXPORT Update(unsigned long long value);
+        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0);
+        bool EXPORT Update(uint64 value, const ConstString& content);
+        bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
 
     enum class WriteTextFlags : unsigned int
@@ -2040,8 +2032,8 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
-        bool Resize(unsigned int size, char16_t character = ' ', const ColorPair color = NoColorPair);
-        bool Fill(char16_t character, unsigned int size, const ColorPair color = NoColorPair);
+        bool Resize(unsigned int size, char16 character = ' ', const ColorPair color = NoColorPair);
+        bool Fill(char16 character, unsigned int size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
         bool Add(const ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const ConstString& text, const ColorPair color = NoColorPair);
@@ -2055,7 +2047,7 @@ namespace Graphics
         bool Delete(unsigned int start, unsigned int end);
         bool DeleteChar(unsigned int position);
         bool Insert(const ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
-        bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
+        bool InsertChar(uint16 characterCode, unsigned int position, const ColorPair color = NoColorPair);
         bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
         void SetColor(const ColorPair color);
         bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
@@ -2142,14 +2134,13 @@ namespace Graphics
             unsigned int ColorValue;
             struct
             {
-                unsigned char Blue, Green, Red, Alpha;
+                uint8 Blue, Green, Red, Alpha;
             };
         };
         Pixel() : ColorValue(0)
         {
         }
-        Pixel(unsigned char red, unsigned char green, unsigned char blue)
-            : Red(red), Green(green), Blue(blue), Alpha(255)
+        Pixel(uint8 red, uint8 green, uint8 blue) : Blue(blue), Green(green), Red(red), Alpha(255)
         {
         }
         explicit Pixel(unsigned int value) : ColorValue(value)
@@ -2182,7 +2173,7 @@ namespace Graphics
         bool Load(const std::filesystem::path& imageFilePath);
         bool Create(unsigned int width, unsigned int height);
         bool Create(unsigned int width, unsigned int height, string_view image);
-        bool Create(const unsigned char* imageBuffer, unsigned int size);
+        bool Create(const uint8* imageBuffer, unsigned int size);
         inline bool Create(Utils::BufferView buf)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
@@ -2190,7 +2181,7 @@ namespace Graphics
             else
                 return false;
         }
-        bool CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon);
+        bool CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon);
         inline bool CreateFromDIB(Utils::BufferView buf, bool isIcon)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
@@ -2450,7 +2441,7 @@ namespace Controls
         SplitterPositionChanged,
         Custom,
     };
-    typedef unsigned int ItemHandle;
+    using ItemHandle                       = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
     class EXPORT Button;
@@ -2469,17 +2460,17 @@ namespace Controls
         using namespace AppCUI;
         using namespace Input;
 
-        typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
-        typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
-        typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
-        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
-        typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
-        typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
-        typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
-        typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
-        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
-        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
-        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control, int x, int y);
+        using OnButtonPressedHandler = void (*)(Reference<Controls::Button> r);
+        using PaintControlHandler    = void (*)(Reference<Controls::Control> control, Renderer& renderer);
+        using OnEventHandler     = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
+        using OnKeyEventHandler  = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
+        using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
+        using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
+        using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
+        using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
+        using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
+        using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
+        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, unsigned int len);
 
         struct OnButtonPressedInterface
         {
@@ -2523,12 +2514,12 @@ namespace Controls
 
         struct OnKeyEventInterface
         {
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) = 0;
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) = 0;
         };
         struct OnKeyEventCallback : public OnKeyEventInterface
         {
             OnKeyEventHandler callback;
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) override
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) override
             {
                 return callback(control, keyCode, unicodeChar);
             };
@@ -2675,7 +2666,7 @@ namespace Controls
             Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
         };
 
-        typedef int (*ListViewItemComparer)(
+        using ListViewItemComparer = int (*)(
               Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context);
 
         struct Tree : public Control
@@ -2749,7 +2740,7 @@ namespace Controls
         void ClearGroup();
 
         // hot key
-        bool SetHotKey(char16_t hotKey);
+        bool SetHotKey(char16 hotKey);
         Input::Key GetHotKey();
         unsigned int GetHotKeyTextOffset();
         void ClearHotKey();
@@ -2788,8 +2779,8 @@ namespace Controls
         const Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
-        void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
-        void UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
+        void UpdateHScrollBar(uint64 value, uint64 maxValue);
+        void UpdateVScrollBar(uint64 value, uint64 maxValue);
 
         // handlers
         virtual Handlers::Control* Handlers();
@@ -2798,7 +2789,7 @@ namespace Controls
         virtual void Paint(Graphics::Renderer& renderer);
 
         // virtual methods
-        virtual bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar);
+        virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
         virtual void OnFocus();
@@ -2844,7 +2835,7 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlsBarLayout : unsigned char
+    enum class WindowControlsBarLayout : uint8
     {
         None               = 0,
         TopBarFromLeft     = 1,
@@ -2902,7 +2893,7 @@ namespace Controls
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
@@ -2941,7 +2932,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2960,7 +2951,7 @@ namespace Controls
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2979,7 +2970,7 @@ namespace Controls
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2997,7 +2988,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool SetSecondPanelSize(int newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
@@ -3030,7 +3021,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
@@ -3061,7 +3052,7 @@ namespace Controls
         TextField(const ConstString& caption, string_view layout, TextFieldFlags flags);
 
       public:
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
@@ -3109,7 +3100,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -3167,7 +3158,7 @@ namespace Controls
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Reference<Control> GetCurrentTab();
@@ -3199,7 +3190,7 @@ namespace Controls
       public:
         ~CanvasViewer();
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
@@ -3237,7 +3228,7 @@ namespace Controls
         SearchMode                    = 0x008000,
         HideSearchBar                 = 0x010000
     };
-    enum class ListViewItemType : unsigned short
+    enum class ListViewItemType : uint16
     {
         Normal             = 0,
         Highlighted        = 1,
@@ -3261,7 +3252,7 @@ namespace Controls
       public:
         bool Reserve(unsigned int itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
@@ -3342,8 +3333,8 @@ namespace Controls
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
 
-        bool SetItemData(ItemHandle item, unsigned long long value);
-        unsigned long long GetItemData(ItemHandle item, unsigned long long errorValue);
+        bool SetItemData(ItemHandle item, uint64 value);
+        uint64 GetItemData(ItemHandle item, uint64 errorValue);
 
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
@@ -3398,7 +3389,7 @@ namespace Controls
       public:
         static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        inline unsigned long long GetCurrentItemUserData(unsigned long long errorValue) const
+        inline uint64 GetCurrentItemUserData(uint64 errorValue) const
         {
             return GetItemUserData(GetCurrentItemIndex(), errorValue);
         }
@@ -3412,7 +3403,7 @@ namespace Controls
         unsigned int GetCurrentItemIndex() const;
         const Graphics::CharacterBuffer& GetCurrentItemText();
 
-        unsigned long long GetItemUserData(unsigned int index, unsigned long long errorValue) const;
+        uint64 GetItemUserData(unsigned int index, uint64 errorValue) const;
         template <typename T>
         inline Reference<T> GetItemUserData(unsigned int index) const
         {
@@ -3421,7 +3412,7 @@ namespace Controls
 
         const Graphics::CharacterBuffer& GetItemText(unsigned int index);
 
-        bool SetItemUserData(unsigned int index, unsigned long long userData);
+        bool SetItemUserData(unsigned int index, uint64 userData);
         template <typename T>
         inline bool SetItemUserData(unsigned int index, Reference<T> userData)
         {
@@ -3435,7 +3426,7 @@ namespace Controls
         {
             return AddItem(caption, obj.ToGenericRef());
         }
-        bool AddItem(const ConstString& caption, unsigned long long usedData);
+        bool AddItem(const ConstString& caption, uint64 usedData);
         inline bool AddItem(const ConstString& caption)
         {
             return AddItem(caption, GenericRef(nullptr));
@@ -3444,7 +3435,7 @@ namespace Controls
         bool AddSeparator(const ConstString& caption = "");
         void DeleteAllItems();
 
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
@@ -3489,16 +3480,16 @@ namespace Controls
     class EXPORT NumericSelector : public Control
     {
       protected:
-        NumericSelector(const long long minValue, const long long maxValue, long long value, string_view layout);
+        NumericSelector(const int64 minValue, const int64 maxValue, int64 value, string_view layout);
 
       public:
-        long long GetValue() const;
-        void SetValue(const long long value);
-        void SetMinValue(const long long minValue);
-        void SetMaxValue(const long long maxValue);
+        int64 GetValue() const;
+        void SetValue(const int64 value);
+        void SetMinValue(const int64 minValue);
+        void SetMaxValue(const int64 maxValue);
 
       private:
-        bool IsValidValue(const long long value) const;
+        bool IsValidValue(const int64 value) const;
         bool IsValueInsertedWrong() const;
         bool GetRenderColor(Graphics::ColorPair& color) const;
         bool FormatTextField();
@@ -3510,7 +3501,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
@@ -3531,7 +3522,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
 
         friend Factory::Desktop;
         friend Control;
@@ -3573,7 +3564,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnFocus() override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
@@ -3595,7 +3586,7 @@ namespace Controls
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
 
-        bool SetItemData(ItemHandle item, unsigned long long value);
+        bool SetItemData(ItemHandle item, uint64 value);
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
@@ -3607,7 +3598,7 @@ namespace Controls
         {
             return GetItemDataAsPointer(item).ToReference<T>();
         }
-        unsigned long long GetItemData(const size_t index, unsigned long long errorValue);
+        uint64 GetItemData(const size_t index, uint64 errorValue);
         ItemHandle GetItemHandleByIndex(const unsigned int index) const;
 
         unsigned int GetItemsCount() const;
@@ -3675,7 +3666,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
@@ -4014,18 +4005,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::NumericSelector> Create(
-                  const long long minValue, const long long maxValue, long long value, string_view layout);
+                  const int64 minValue, const int64 maxValue, int64 value, string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control* parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
                   string_view layout);
             static Reference<Controls::NumericSelector> Create(
                   Controls::Control& parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
                   string_view layout);
         };
         class EXPORT Window
@@ -4521,7 +4512,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, unsigned short)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, unsigned int)
 

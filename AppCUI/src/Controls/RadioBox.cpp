@@ -84,7 +84,7 @@ void RadioBox::OnHotKey()
         RaiseEvent(Event::CheckedStatusChanged);
     }
 }
-bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16_t)
+bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16)
 {
     if (KeyCode == Key::Space)
     {

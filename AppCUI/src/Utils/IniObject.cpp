@@ -6,7 +6,7 @@ using namespace AppCUI;
 using namespace Utils;
 using namespace Input;
 
-using BuffPtr = const unsigned char*;
+using BuffPtr = const uint8*;
 
 #define WRAPPER ((Ini::Parser*) Data)
 
@@ -55,7 +55,7 @@ using BuffPtr = const unsigned char*;
         RETURNERROR(returnValue, errorMessage);                                                                        \
     }
 
-const unsigned char Ini_LoweCaseTable[256] = {
+const uint8 Ini_LoweCaseTable[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -69,7 +69,7 @@ const unsigned char Ini_LoweCaseTable[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-unsigned char Ini_Char_Type[256] = {
+uint8 Ini_Char_Type[256] = {
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
@@ -170,7 +170,7 @@ namespace Ini
     struct Section
     {
         Utils::String Name;
-        std::unordered_map<unsigned long long, Value> Keys;
+        std::unordered_map<uint64, Value> Keys;
         Section()
         {
         }
@@ -187,10 +187,10 @@ namespace Ini
         ParseState state;
         std::string toStringBuffer;
 
-        std::unordered_map<unsigned long long, unique_ptr<Ini::Section>> Sections;
+        std::unordered_map<uint64, unique_ptr<Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
         Section* CurrentSection;
-        unsigned long long CurrentKeyHash;
+        uint64 CurrentKeyHash;
         BuffPtr CurrentKeyNamePtr;
         unsigned int CurrentKeyNameLen;
 
@@ -220,10 +220,10 @@ namespace Ini
 }; // namespace Ini
 } // namespace AppCUI
 
-unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
+uint64 __compute_hash__(BuffPtr p_start, BuffPtr p_end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned long long hash = 0xcbf29ce484222325ULL;
+    uint64 hash = 0xcbf29ce484222325ULL;
     while (p_start < p_end)
     {
         hash = hash ^ (Ini_LoweCaseTable[*p_start]);
@@ -232,7 +232,7 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
     }
     return hash;
 }
-unsigned long long __compute_hash__(string_view text)
+uint64 __compute_hash__(string_view text)
 {
     return __compute_hash__((BuffPtr) text.data(), ((BuffPtr) text.data()) + text.length());
 }
@@ -392,7 +392,7 @@ void Ini::Parser::SkipArrayWord()
 bool Ini::Parser::SkipString(bool& multiLineFormat)
 {
     // asume that current character is either ' or "
-    unsigned char currentChar = *current;
+    uint8 currentChar = *current;
     if ((current + 2) < end)
         multiLineFormat = ((current[1] == currentChar) && (current[2] == currentChar));
     else
@@ -624,7 +624,7 @@ bool Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 }
 bool Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 {
-    unsigned long long hash = __compute_hash__(nameStart, nameEnd);
+    uint64 hash = __compute_hash__(nameStart, nameEnd);
     auto& sect              = Sections[hash];
     if (sect.get() == nullptr)
     {
@@ -741,17 +741,17 @@ void IniSection::UpdateValue(string_view name, unsigned int value, bool dontUpda
 {
     UpdateValueForSection<unsigned int>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, unsigned long long value, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<unsigned long long>(this->Data, name, value, dontUpdateIfValueExits);
+    UpdateValueForSection<uint64>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, int value, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<int>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, long long value, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<long long>(this->Data, name, value, dontUpdateIfValueExits);
+    UpdateValueForSection<int64>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, float value, bool dontUpdateIfValueExits)
 {
@@ -793,9 +793,9 @@ void IniSection::UpdateValue(string_view name, const initializer_list<int>& valu
 {
     UpdateValueForSection<const initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, const initializer_list<long long>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<long long>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<int64>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
       string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits)
@@ -803,9 +803,9 @@ void IniSection::UpdateValue(
     UpdateValueForSection<const initializer_list<unsigned int>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(
-      string_view name, const initializer_list<unsigned long long>& values, bool dontUpdateIfValueExits)
+      string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<unsigned long long>&>(
+    UpdateValueForSection<const initializer_list<uint64>&>(
           this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
@@ -830,7 +830,7 @@ optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
             return false;
         break;
     case 2:
-        v = (*((const unsigned short*) txt)) | 0x2020;
+        v = (*((const uint16*) txt)) | 0x2020;
         if (v == INI_VALUE_ON)
             return true;
         if (v == INI_VALUE_NO)
@@ -895,12 +895,12 @@ optional<Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
     return Graphics::Size(width, height);
 }
 
-optional<unsigned long long> IniValue::AsUInt64() const
+optional<uint64> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt64(static_cast<string_view>(value->KeyValue));
 }
-optional<long long> IniValue::AsInt64() const
+optional<int64> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt64(static_cast<string_view>(value->KeyValue));
@@ -954,7 +954,7 @@ optional<double> IniValue::AsDouble() const
     return Number::ToDouble((static_cast<string_view>(value->KeyValue)));
 }
 
-unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValue::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -970,7 +970,7 @@ unsigned int IniValue::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValue::ToInt64(long long defaultValue) const
+int64 IniValue::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -1078,7 +1078,7 @@ void IniValue::operator=(unsigned int value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
-void IniValue::operator=(unsigned long long value)
+void IniValue::operator=(uint64 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
@@ -1086,7 +1086,7 @@ void IniValue::operator=(int value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
-void IniValue::operator=(long long value)
+void IniValue::operator=(int64 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
@@ -1179,17 +1179,17 @@ void IniValue::operator=(const initializer_list<unsigned int>& values)
 {
     IniValueSetVector<unsigned int>(this->Data, values);
 }
-void IniValue::operator=(const initializer_list<unsigned long long>& values)
+void IniValue::operator=(const initializer_list<uint64>& values)
 {
-    IniValueSetVector<unsigned long long>(this->Data, values);
+    IniValueSetVector<uint64>(this->Data, values);
 }
 void IniValue::operator=(const initializer_list<int>& values)
 {
     IniValueSetVector<int>(this->Data, values);
 }
-void IniValue::operator=(const initializer_list<long long>& values)
+void IniValue::operator=(const initializer_list<int64>& values)
 {
-    IniValueSetVector<long long>(this->Data, values);
+    IniValueSetVector<int64>(this->Data, values);
 }
 void IniValue::operator=(const initializer_list<float>& values)
 {
@@ -1200,11 +1200,11 @@ void IniValue::operator=(const initializer_list<double>& values)
     IniValueSetVector<double>(this->Data, values);
 }
 //============================================================================= INI Array Value ===
-optional<unsigned long long> IniValueArray::AsUInt64() const
+optional<uint64> IniValueArray::AsUInt64() const
 {
     return Number::ToUInt64(string_view(text, len));
 }
-optional<long long> IniValueArray::AsInt64() const
+optional<int64> IniValueArray::AsInt64() const
 {
     return Number::ToInt64(string_view(text, len));
 }
@@ -1240,7 +1240,7 @@ optional<double> IniValueArray::AsDouble() const
     return Number::ToDouble(string_view(text, len));
 }
 
-unsigned long long IniValueArray::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValueArray::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -1256,7 +1256,7 @@ unsigned int IniValueArray::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValueArray::ToInt64(long long defaultValue) const
+int64 IniValueArray::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -1459,11 +1459,11 @@ IniValue IniObject::GetValue(string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(IniValue());
-    const unsigned char* start = (const unsigned char*) valuePath.data();
+    const uint8* start = (const uint8*) valuePath.data();
     CHECK(start, IniValue(), "Invalid value path (expecting a non-null object)");
-    const unsigned char* end = start + valuePath.size();
+    const uint8* end = start + valuePath.size();
     CHECK(start < end, IniValue(), "Invalid value path (expecting a non-empty object)");
-    const unsigned char* p = start;
+    const uint8* p = start;
     while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
         p++;
     if (p >= end)
@@ -1494,11 +1494,11 @@ bool IniObject::DeleteValue(string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(false);
-    const unsigned char* start = (const unsigned char*) valuePath.data();
+    const uint8* start = (const uint8*) valuePath.data();
     CHECK(start, false, "Invalid value path (expecting a non-null object)");
-    const unsigned char* end = start + valuePath.size();
+    const uint8* end = start + valuePath.size();
     CHECK(start < end, false, "Invalid value path (expecting a non-empty object)");
-    const unsigned char* p = start;
+    const uint8* p = start;
     while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
         p++;
     if (p >= end)

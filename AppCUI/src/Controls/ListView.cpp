@@ -61,7 +61,7 @@ void ListViewColumn::SetWidth(unsigned int width)
 {
     width       = std::max<>(width, MINIM_COLUMN_WIDTH);
     width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
-    this->Width = (unsigned char) width;
+    this->Width = (uint8) width;
 }
 
 ListViewItem::ListViewItem() : Data(nullptr)
@@ -529,17 +529,17 @@ bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
     i.Type = type;
     return true;
 }
-bool ListViewControlContext::SetItemDataAsValue(ItemHandle item, unsigned long long value)
+bool ListViewControlContext::SetItemDataAsValue(ItemHandle item, uint64 value)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.Data = value;
     return true;
 }
-bool ListViewControlContext::GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const
+bool ListViewControlContext::GetItemDataAsValue(const ItemHandle item, uint64& value) const
 {
     CONST_PREPARE_LISTVIEW_ITEM(item, false);
-    CHECK(std::holds_alternative<unsigned long long>(i.Data), false, "No value was stored in current item");
-    value = std::get<unsigned long long>(i.Data);
+    CHECK(std::holds_alternative<uint64>(i.Data), false, "No value was stored in current item");
+    value = std::get<uint64>(i.Data);
     return true;
 }
 bool ListViewControlContext::SetItemDataAsPointer(ItemHandle item, GenericRef obj)
@@ -782,7 +782,7 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         SendMsg(Event::ListViewCurrentItemChanged);
 }
-bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
     ListViewItem* lvi;
@@ -1431,7 +1431,7 @@ void ListView::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(ListViewControlContext, Members, );
     Members->Paint(renderer);
 }
-bool ListView::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool ListView::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
@@ -1682,13 +1682,13 @@ GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
 {
     return WRAPPER->GetItemDataAsPointer(item);
 }
-bool ListView::SetItemData(ItemHandle item, unsigned long long value)
+bool ListView::SetItemData(ItemHandle item, uint64 value)
 {
     return WRAPPER->SetItemDataAsValue(item, value);
 }
-unsigned long long ListView::GetItemData(ItemHandle item, unsigned long long errorValue)
+uint64 ListView::GetItemData(ItemHandle item, uint64 errorValue)
 {
-    unsigned long long value;
+    uint64 value;
     CHECK(WRAPPER->GetItemDataAsValue(item, value), errorValue, "");
     return value;
 }

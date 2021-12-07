@@ -18,7 +18,7 @@ using namespace Utils;
         CHECK(Grow(requiredSpace), returnValue, "Fail to allocate space for %z bytes", (size_t) (requiredSpace));      \
     }
 
-constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2);
+constexpr bool IgnoreCaseEquals(char16 code1, char16 code2);
 
 template <typename T>
 size_t CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col)
@@ -49,7 +49,7 @@ size_t CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCha
             continue;
         }
         // no new_line --> direct copy
-        dest->Code = (char16_t) (*source);
+        dest->Code = (char16) (*source);
         dest++;
         source++;
     }
@@ -94,7 +94,7 @@ size_t CopyStringToCharBufferWidthHotKey(
                 // found a hotkey
                 hotKeyPos = (unsigned int) (source - start);
                 source++; // skip `&` character
-                dest->Code = (char16_t) (*source);
+                dest->Code = (char16) (*source);
                 dest++;
                 source++;
                 hotKeyFound = true;
@@ -102,7 +102,7 @@ size_t CopyStringToCharBufferWidthHotKey(
             }
         }
         // no new_line --> direct copy
-        dest->Code = (char16_t) (*source);
+        dest->Code = (char16) (*source);
         dest++;
         source++;
     }
@@ -158,7 +158,7 @@ int FindInCharacterBuffer(const T& sv, const CharacterView& charView, bool ignor
     return -1;
 }
 
-constexpr bool IgnoreCaseEquals(char16_t code1, char16_t code2)
+constexpr bool IgnoreCaseEquals(char16 code1, char16 code2)
 {
     // GDT: temporary implementation ==> should be addapted for UNICODE characters as well
     if ((code1 >= 'A') && (code1 <= 'Z'))
@@ -225,7 +225,7 @@ bool CharacterBuffer::Grow(size_t newSize)
     Allocated = (unsigned int) alingSize;
     return true;
 }
-bool CharacterBuffer::Resize(unsigned int size, char16_t character, const ColorPair color)
+bool CharacterBuffer::Resize(unsigned int size, char16 character, const ColorPair color)
 {
     if (size == this->Count)
         return true; // nothing to do
@@ -249,7 +249,7 @@ bool CharacterBuffer::Resize(unsigned int size, char16_t character, const ColorP
     this->Count = size;
     return true;
 }
-bool CharacterBuffer::Fill(char16_t character, unsigned int size, const ColorPair color)
+bool CharacterBuffer::Fill(char16 character, unsigned int size, const ColorPair color)
 {
     Character c;
 
@@ -306,12 +306,12 @@ bool CharacterBuffer::Add(const ConstString& text, const ColorPair color)
               this->Buffer + this->Count, (const Character*) textObj.Data, textObj.Length, color);
         break;
     case StringEncoding::Unicode16:
-        sz = CopyStringToCharBuffer<char16_t>(
-              this->Buffer + this->Count, (const char16_t*) textObj.Data, textObj.Length, color);
+        sz = CopyStringToCharBuffer<char16>(
+              this->Buffer + this->Count, (const char16*) textObj.Data, textObj.Length, color);
         break;
     case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        sz = CopyStringToCharBuffer<char16_t>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color);
+        sz = CopyStringToCharBuffer<char16>(this->Buffer + this->Count, ub.GetString(), ub.Len(), color);
         break;
     default:
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
@@ -356,12 +356,12 @@ bool CharacterBuffer::SetWithHotKey(
               this->Buffer, (const Character*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringEncoding::Unicode16:
-        sz = CopyStringToCharBufferWidthHotKey<char16_t>(
-              this->Buffer, (const char16_t*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
+        sz = CopyStringToCharBufferWidthHotKey<char16>(
+              this->Buffer, (const char16*) textObj.Data, textObj.Length, color, hotKeyCharacterPosition);
         break;
     case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        sz = CopyStringToCharBufferWidthHotKey<char16_t>(
+        sz = CopyStringToCharBufferWidthHotKey<char16>(
               this->Buffer, ub.GetString(), ub.Len(), color, hotKeyCharacterPosition);
         break;
     default:
@@ -467,12 +467,12 @@ bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, con
               this->Buffer + position, (const Character*) textObj.Data, textObj.Length, color);
         break;
     case StringEncoding::Unicode16:
-        writtenChars = CopyStringToCharBuffer<char16_t>(
-              this->Buffer + position, (const char16_t*) textObj.Data, textObj.Length, color);
+        writtenChars = CopyStringToCharBuffer<char16>(
+              this->Buffer + position, (const char16*) textObj.Data, textObj.Length, color);
         break;
     case StringEncoding::UTF8:
         CHECK(ub.Set(text), false, "Fail to convert UTF-8 to current internal format !");
-        writtenChars = CopyStringToCharBuffer<char16_t>(this->Buffer + position, ub.GetString(), ub.Len(), color);
+        writtenChars = CopyStringToCharBuffer<char16>(this->Buffer + position, ub.GetString(), ub.Len(), color);
         break;
     default:
         RETURNERROR(false, "Unknwon string encoding type: %d", textObj.Encoding);
@@ -490,7 +490,7 @@ bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, con
     return true;
 }
 
-bool CharacterBuffer::InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color)
+bool CharacterBuffer::InsertChar(uint16 characterCode, unsigned int position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(((size_t) this->Count) + 1, false);
     CHECK(position <= this->Count,
@@ -645,7 +645,7 @@ int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) co
     }
     else
     {
-        char16_t s_c, d_c;
+        char16 s_c, d_c;
         while ((s < s_end) && (d < d_end))
         {
             s_c = s->Code;
@@ -725,7 +725,7 @@ bool CharacterBuffer::ToString(std::u16string& output) const
     const Character* p = this->Buffer;
     const Character* e = p + this->Count;
     output.reserve(this->Count);
-    char16_t tmp[1] = { 0 };
+    char16 tmp[1] = { 0 };
     output          = tmp;
     while (p < e)
     {

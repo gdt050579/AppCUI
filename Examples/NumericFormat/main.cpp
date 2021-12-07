@@ -44,7 +44,7 @@ int main()
     VALIDATE(n.ToString(1234567890, { NumericFormatFlags::PlusSign, 10, 3, ',' }), "+1,234,567,890");
     VALIDATE(n.ToString(12, { NumericFormatFlags::PlusSign, 10, 3, '_', 6 }), "+000_012");
     VALIDATE(
-          n.ToString(0xFFFFFFFFFFFFFFFFULL, { NumericFormatFlags::None, 2, 4, '-' }),
+          n.ToString((uint64)0xFFFFFFFFFFFFFFFFULL, { NumericFormatFlags::None, 2, 4, '-' }),
           "1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111-1111");
     VALIDATE(n.ToString(-12, { NumericFormatFlags::None, 10 }), "-12");
     // for (int base = 2;base<=16;base++)

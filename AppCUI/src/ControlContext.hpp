@@ -22,7 +22,7 @@ constexpr unsigned int GATTR_VSCROLL  = 0x000010;
 constexpr unsigned int GATTR_HSCROLL  = 0x000020;
 constexpr unsigned int GATTR_EXPANDED = 0x000040;
 
-enum class LayoutFormatMode : unsigned short
+enum class LayoutFormatMode : uint16
 {
     None,
     PointAndSize,
@@ -36,14 +36,14 @@ enum class LayoutFormatMode : unsigned short
 
     LeftTopRightBottomAnchors
 };
-enum class LayoutValueType : unsigned short
+enum class LayoutValueType : uint16
 {
     CharacterOffset = 0,
     Percentage
 };
 struct LayoutValue
 {
-    short Value;
+    int16 Value;
     LayoutValueType Type;
     inline int ToInt(int parentSize) const
     {
@@ -92,10 +92,10 @@ struct ControlContext
     {
         unsigned int TopMargin;
         unsigned int LeftMargin;
-        unsigned long long MaxHorizontalValue;
-        unsigned long long MaxVerticalValue;
-        unsigned long long HorizontalValue;
-        unsigned long long VerticalValue;
+        uint64 MaxHorizontalValue;
+        uint64 MaxVerticalValue;
+        uint64 HorizontalValue;
+        uint64 VerticalValue;
         bool OutsideControl;
     } ScrollBars;
     int ControlID;
@@ -308,7 +308,7 @@ class TextAreaControlContext : public ControlContext
     void MoveToPreviousWord(bool selected);
     void MoveToStartOfTheFile(bool selected);
     void MoveToEndOfTheFile(bool selected);
-    void AddChar(char16_t ch);
+    void AddChar(char16 ch);
     void KeyDelete();
     void KeyBack();
     void CopyToClipboard();
@@ -322,7 +322,7 @@ class TextAreaControlContext : public ControlContext
 
     void SetToolTip(char* ss);
     void Paint(Graphics::Renderer& renderer);
-    bool OnKeyEvent(Input::Key KeyCode, char16_t UnicodeChar);
+    bool OnKeyEvent(Input::Key KeyCode, char16 UnicodeChar);
     void OnAfterResize();
     void AnalyzeCurrentText();
     void SetSelection(unsigned int start, unsigned int end);
@@ -358,11 +358,11 @@ struct ListViewItem
 {
     CharacterBuffer SubItem[MAX_LISTVIEW_COLUMNS];
     ListViewItemType Type;
-    unsigned short Flags;
+    uint16 Flags;
     unsigned int XOffset;
     unsigned int Height;
     ColorPair ItemColor;
-    variant<GenericRef, unsigned long long> Data;
+    variant<GenericRef, uint64> Data;
     ListViewItem();
     ListViewItem(const ColorPair col) : ListViewItem()
     {
@@ -377,7 +377,7 @@ struct ListViewColumn
     unsigned int HotKeyOffset;
     unsigned int Flags;
     Key HotKeyCode;
-    unsigned short Width;
+    uint16 Width;
     TextAlignament Align;
 
     void Reset();
@@ -481,8 +481,8 @@ class ListViewControlContext : public ControlContext
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
     GenericRef GetItemDataAsPointer(const ItemHandle item) const;
-    bool SetItemDataAsValue(ItemHandle item, unsigned long long value);
-    bool GetItemDataAsValue(const ItemHandle item, unsigned long long& value) const;
+    bool SetItemDataAsValue(ItemHandle item, uint64 value);
+    bool GetItemDataAsValue(const ItemHandle item, uint64& value) const;
     bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
     unsigned int GetItemXOffset(ItemHandle item);
     bool SetItemHeight(ItemHandle item, unsigned int Height);
@@ -496,7 +496,7 @@ class ListViewControlContext : public ControlContext
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool OnMouseOver(int x, int y);
     void SetSortColumn(unsigned int colIndex);
-    bool OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar);
+    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
     bool Sort();
 
@@ -507,13 +507,13 @@ class ListViewControlContext : public ControlContext
 struct ComboBoxItem
 {
     Graphics::CharacterBuffer Text;
-    variant<GenericRef, unsigned long long> Data;
+    variant<GenericRef, uint64> Data;
     unsigned int Index;
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
           const ConstString& caption,
-          variant<GenericRef, unsigned long long> userData,
+          variant<GenericRef, uint64> userData,
           unsigned int index,
           bool separator = false);
     ~ComboBoxItem();
@@ -534,17 +534,17 @@ class ComboBoxControlContext : public ControlContext
 class NumericSelectorControlContext : public ControlContext
 {
   public:
-    long long minValue;
-    long long maxValue;
-    long long value;
+    int64 minValue;
+    int64 maxValue;
+    int64 value;
 
     const int buttonPadding = 4;
     LocalString<256> stringValue;
     bool intoInsertionMode       = false;
     bool wasMinusPressed         = false;
-    long long insertionModevalue = 0;
+    int64 insertionModevalue = 0;
     bool wrongValueInserted      = false;
-    long long sliderPosition     = 0;
+    int64 sliderPosition     = 0;
     bool isMouseLeftClickPressed = false;
 
     enum class IsMouseOn
@@ -572,7 +572,7 @@ struct TreeItem
     ItemHandle parent{ InvalidItemHandle };
     ItemHandle handle{ InvalidItemHandle };
     vector<CharacterBuffer> values;
-    variant<GenericRef, unsigned long long> data{ nullptr };
+    variant<GenericRef, uint64> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
     vector<ItemHandle> children;
