@@ -5,7 +5,7 @@
 namespace AppCUI::Graphics
 {
 constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
-constexpr uint16_t IMAGE_BMP_MAGIC     = 0x4D42;
+constexpr uint16 IMAGE_BMP_MAGIC     = 0x4D42;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -245,7 +245,7 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
     unsigned int magic32 = *(const unsigned int*) imageBuffer;
-    uint16_t magic16     = *(const uint16_t*) imageBuffer;
+    uint16 magic16     = *(const uint16*) imageBuffer;
 
     if (magic32 == IMAGE_PNG_MAGIC)
     {

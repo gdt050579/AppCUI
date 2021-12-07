@@ -3,14 +3,14 @@
 namespace AppCUI::Graphics
 {
 #pragma pack(push, 1)
-constexpr uint16_t BITMAP_WINDOWS_MAGIC             = 0x4D42;
+constexpr uint16 BITMAP_WINDOWS_MAGIC             = 0x4D42;
 constexpr uint32_t BITMAP_COMPRESSION_METHID_BI_RGB = 0;
 struct BMP_Header
 {
-    uint16_t magic;
+    uint16 magic;
     uint32_t size;
-    uint16_t reserved_1;
-    uint16_t reserved_2;
+    uint16 reserved_1;
+    uint16 reserved_2;
     uint32_t pixelOffset;
 };
 struct BMP_InfoHeader
@@ -18,8 +18,8 @@ struct BMP_InfoHeader
     uint32_t sizeOfHeader;
     uint32_t width;
     uint32_t height;
-    uint16_t colorPlanes;
-    uint16_t bitsPerPixel;
+    uint16 colorPlanes;
+    uint16 bitsPerPixel;
     uint32_t comppresionMethod;
     uint32_t imageSize;
     uint32_t horizontalResolution;
