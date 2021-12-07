@@ -900,8 +900,7 @@ namespace Utils
         UnicodeStringBuilder(const ConstString& text);
         UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const ConstString& text);
         UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer);
-        UnicodeStringBuilder(
-              char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
 
         UnicodeStringBuilder(const UnicodeStringBuilder& obj);
         UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
@@ -1055,12 +1054,7 @@ namespace Utils
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(0)
         {
         }
-        NumericFormat(
-              NumericFormatFlags flags,
-              uint8 base,
-              uint8 groupSize,
-              char groupSeparator,
-              uint8 digitsCount)
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator, uint8 digitsCount)
             : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(digitsCount)
         {
         }
@@ -2146,8 +2140,7 @@ namespace Graphics
         Pixel() : ColorValue(0)
         {
         }
-        Pixel(uint8 red, uint8 green, uint8 blue)
-            : Blue(blue), Green(green), Red(red), Alpha(255)
+        Pixel(uint8 red, uint8 green, uint8 blue) : Blue(blue), Green(green), Red(red), Alpha(255)
         {
         }
         explicit Pixel(unsigned int value) : ColorValue(value)
@@ -2448,7 +2441,7 @@ namespace Controls
         SplitterPositionChanged,
         Custom,
     };
-    using ItemHandle = uint32;
+    using ItemHandle                       = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
     class EXPORT Button;
@@ -2467,17 +2460,17 @@ namespace Controls
         using namespace AppCUI;
         using namespace Input;
 
-        typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
-        typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
-        typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
-        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
-        typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
-        typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
-        typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
-        typedef void (*OnTextColorHandler)(Reference<Controls::Control> control, Character* chars, unsigned int len);
-        typedef bool (*OnTreeItemToggleHandler)(Reference<Controls::Tree> control, ItemHandle handle);
-        typedef void (*OnAfterSetTextHandler)(Reference<Controls::Control> control);
-        typedef void (*OnTextRightClickHandler)(Reference<Controls::Control> control, int x, int y);
+        using OnButtonPressedHandler = void (*)(Reference<Controls::Button> r);
+        using PaintControlHandler    = void (*)(Reference<Controls::Control> control, Renderer& renderer);
+        using OnEventHandler     = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
+        using OnKeyEventHandler  = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
+        using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
+        using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
+        using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
+        using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
+        using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
+        using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
+        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, unsigned int len);
 
         struct OnButtonPressedInterface
         {
@@ -2673,7 +2666,7 @@ namespace Controls
             Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
         };
 
-        typedef int (*ListViewItemComparer)(
+        using ListViewItemComparer = int (*)(
               Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context);
 
         struct Tree : public Control
