@@ -2448,7 +2448,7 @@ namespace Controls
         SplitterPositionChanged,
         Custom,
     };
-    typedef unsigned int ItemHandle;
+    using ItemHandle = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
     class EXPORT Button;
