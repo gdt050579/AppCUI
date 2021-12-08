@@ -1444,9 +1444,9 @@ namespace Utils
     class EXPORT KeyUtils
     {
       public:
-        constexpr static const unsigned int KEY_SHIFT_MASK = 0x7000;
-        constexpr static const unsigned int KEY_SHIFT_BITS = 12;
-        constexpr static const unsigned int KEY_CODE_MASK  = 0xFF;
+        constexpr static const uint32 KEY_SHIFT_MASK = 0x7000;
+        constexpr static const uint32 KEY_SHIFT_BITS = 12;
+        constexpr static const uint32 KEY_CODE_MASK  = 0xFF;
 
         // Returns the name of the Key without modifiers
         static string_view GetKeyName(Input::Key keyCode);
@@ -1885,9 +1885,9 @@ namespace Graphics
         ColorPair Color;
         ColorPair HotKeyColor;
         TextAlignament Align;
-        unsigned int HotKeyPosition;
+        uint32 HotKeyPosition;
         int X, Y;
-        unsigned int Width;
+        uint32 Width;
 
         WriteTextParams() : Flags(WriteTextFlags::None), Align(TextAlignament::Left)
         {
