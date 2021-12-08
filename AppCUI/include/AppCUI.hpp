@@ -2128,7 +2128,7 @@ namespace Graphics
     {
         union
         {
-            unsigned int ColorValue;
+            uint32 ColorValue;
             struct
             {
                 uint8 Blue, Green, Red, Alpha;
@@ -2140,12 +2140,12 @@ namespace Graphics
         Pixel(uint8 red, uint8 green, uint8 blue) : Blue(blue), Green(green), Red(red), Alpha(255)
         {
         }
-        explicit Pixel(unsigned int value) : ColorValue(value)
+        explicit Pixel(uint32 value) : ColorValue(value)
         {
         }
-        inline unsigned int ToGrayScale() const
+        inline uint32 ToGrayScale() const
         {
-            return (((((unsigned int) Red) + ((unsigned int) Blue) + ((unsigned int) Green))) * 100U) / (255U * 3);
+            return (((((uint32) Red) + ((uint32) Blue) + ((uint32) Green))) * 100U) / (255U * 3);
         }
     };
     class EXPORT Image
