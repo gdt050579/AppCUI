@@ -2222,7 +2222,7 @@ namespace Graphics
       protected:
         Character* Characters;
         Character** OffsetRows;
-        unsigned int Width, Height;
+        uint32 Width, Height;
         int TranslateX, TranslateY;
         struct
         {
@@ -2232,7 +2232,7 @@ namespace Graphics
         bool ClipHasBeenCopied;
         struct
         {
-            unsigned int X, Y;
+            uint32 X, Y;
             bool Visible;
         } Cursor;
 
@@ -2247,22 +2247,21 @@ namespace Graphics
       public:
         // Horizontal lines
         bool FillHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
-        bool FillHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillHorizontalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
         bool FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
         bool DrawHorizontalLine(int left, int y, int right, const ColorPair color, bool singleLine = true);
 
         // Vertical lines
         bool FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
-        bool FillVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillVerticalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
         bool FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
         bool DrawVerticalLine(int x, int top, int bottom, const ColorPair color, bool singleLine = true);
 
         // Rectangle
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
-        bool FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color);
+        bool FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, const ColorPair color);
         bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(
-              int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
+        bool DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, bool doubleLine);
 
         // Characters
         bool GetCharacter(int x, int y, Character& c);
@@ -2278,34 +2277,34 @@ namespace Graphics
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
-              int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset);
+              int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, uint32 hotKeyOffset);
         bool WriteSingleLineText(
               int x,
               int y,
               const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
-              unsigned int hotKeyOffset,
+              uint32 hotKeyOffset,
               TextAlignament align);
-        bool WriteSingleLineText(int x, int y, unsigned int width, const ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, uint32 width, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(
-              int x, int y, unsigned int width, const ConstString& text, ColorPair color, TextAlignament align);
-        bool WriteSingleLineText(
-              int x,
-              int y,
-              unsigned int width,
-              const ConstString& text,
-              ColorPair color,
-              ColorPair hotKeyColor,
-              unsigned int hotKeyOffset);
+              int x, int y, uint32 width, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
               int x,
               int y,
-              unsigned int width,
+              uint32 width,
               const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
-              unsigned int hotKeyOffset,
+              uint32 hotKeyOffset);
+        bool WriteSingleLineText(
+              int x,
+              int y,
+              uint32 width,
+              const ConstString& text,
+              ColorPair color,
+              ColorPair hotKeyColor,
+              uint32 hotKeyOffset,
               TextAlignament align);
 
         // Canvas & Images
