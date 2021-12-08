@@ -49,7 +49,7 @@ const uint8 string_lowercase_table[256] = {
 #define VALIDATE_STRINGS_TO_COMPARE                                                                                    \
     CHECK(sir1, false, "Expecting a valid (non-null) first parameter !");                                              \
     CHECK(sir2, false, "Expecting a valid (non-null) first parameter !");                                              \
-    const uint8* p1 = (const uint8*) sir1;                                                             \
+    const uint8* p1 = (const uint8*) sir1;                                                                             \
     const uint8* p2 = (const uint8*) sir2;
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
@@ -65,7 +65,7 @@ char tempCharForReferenceReturn;
 namespace AppCUI::Utils
 {
 // Statical functions
-unsigned int String::Len(const char* string)
+uint32 String::Len(const char* string)
 {
     if (string == nullptr)
         return 0;
@@ -74,15 +74,15 @@ unsigned int String::Len(const char* string)
     {
         string++;
     }
-    return (unsigned int) (string - p);
+    return (uint32) (string - p);
 }
 bool String::Add(
       char* destination,
       const char* source,
-      unsigned int maxDestinationSize,
-      unsigned int destinationSize,
-      unsigned int sourceSize,
-      unsigned int* resultedDestinationSize)
+      uint32 maxDestinationSize,
+      uint32 destinationSize,
+      uint32 sourceSize,
+      uint32* resultedDestinationSize)
 {
     PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
     COMPUTE_TEXT_SIZE(destination, destinationSize);
@@ -104,9 +104,9 @@ bool String::Add(
 bool String::Set(
       char* destination,
       const char* source,
-      unsigned int maxDestinationSize,
-      unsigned int sourceSize,
-      unsigned int* resultedDestinationSize)
+      uint32 maxDestinationSize,
+      uint32 sourceSize,
+      uint32* resultedDestinationSize)
 {
     PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
 
@@ -196,7 +196,7 @@ bool String::StartsWith(string_view sir1, string_view sir2, bool ignoreCase)
         return true;
     }
 }
-bool String::EndsWith(const char* sir1, const char* sir2, bool ignoreCase, unsigned int sir1Size, unsigned int sir2Size)
+bool String::EndsWith(const char* sir1, const char* sir2, bool ignoreCase, uint32 sir1Size, uint32 sir2Size)
 {
     VALIDATE_STRINGS_TO_COMPARE
     COMPUTE_TEXT_SIZE(sir1, sir1Size);
@@ -338,7 +338,7 @@ void String::Destroy()
     Size = Allocated = 0;
 }
 
-bool String::Create(unsigned int initialAllocatedBufferSize)
+bool String::Create(uint32 initialAllocatedBufferSize)
 {
     CHECK(initialAllocatedBufferSize == 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
     initialAllocatedBufferSize = ((initialAllocatedBufferSize | 15) + 1) & 0x7FFFFFFF;
@@ -360,14 +360,14 @@ bool String::Create(unsigned int initialAllocatedBufferSize)
 bool String::Create(const char* text)
 {
     CHECK(text, false, "Expecting a non-null string !");
-    unsigned int len = String::Len(text);
+    uint32 len = String::Len(text);
     CHECK(Create(len + 1), false, "Fail to create string buffer with len: %d", len);
     MEMCOPY(this->Text, text, len + 1);
     Size            = len + 1;
     this->Text[len] = 0;
     return true;
 }
-bool String::Create(char* buffer, unsigned int bufferSize, bool emptyString)
+bool String::Create(char* buffer, uint32 bufferSize, bool emptyString)
 {
     CHECK(buffer, false, "Expecting a valid (non-null) buffer");
     CHECK(bufferSize >= 1, false, "bufferSize must be bigger than 1");
@@ -403,13 +403,13 @@ void String::Clear()
     }
 }
 
-bool String::Realloc(unsigned int newSize)
+bool String::Realloc(uint32 newSize)
 {
     if (newSize <= (Allocated & 0x7FFFFFFF))
         return true;
     return Grow(newSize);
 }
-bool String::Grow(unsigned int newSize)
+bool String::Grow(uint32 newSize)
 {
     newSize = ((newSize | 15) + 1) & 0x7FFFFFFF;
     if (newSize <= (Allocated & 0x7FFFFFFF))
@@ -429,7 +429,7 @@ bool String::Grow(unsigned int newSize)
 
 // ============================================================================================[ADD
 // FUNCTIONS]=====================
-bool String::Add(const char* text, unsigned int txSize)
+bool String::Add(const char* text, uint32 txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
@@ -456,7 +456,7 @@ bool String::AddChar(char ch)
     temp[1] = 0;
     return this->Add(temp, 1);
 }
-bool String::AddChars(char ch, unsigned int count)
+bool String::AddChars(char ch, uint32 count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
@@ -475,7 +475,7 @@ bool String::AddChars(char ch, unsigned int count)
 
 // ============================================================================================[SET
 // FUNCTIONS]=====================
-bool String::Set(const char* text, unsigned int txSize)
+bool String::Set(const char* text, uint32 txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
@@ -494,7 +494,7 @@ bool String::Set(const String* text)
     CHECK(text, false, "Expecting a non-null first parameter !");
     return this->Set(text->Text, text->Size);
 }
-bool String::SetChars(char ch, unsigned int count)
+bool String::SetChars(char ch, uint32 count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
@@ -511,7 +511,7 @@ bool String::SetChars(char ch, unsigned int count)
     return true;
 }
 
-bool String::InsertChar(char character, unsigned int position)
+bool String::InsertChar(char character, uint32 position)
 {
     CHECK(character, false, "NULL character can not be added !");
     VALIDATE_ALLOCATED_SPACE(this->Size + 2, false);
@@ -534,7 +534,7 @@ bool String::InsertChar(char character, unsigned int position)
     }
     return true;
 }
-bool String::DeleteChar(unsigned int position)
+bool String::DeleteChar(uint32 position)
 {
     CHECK(position < this->Size,
           false,
@@ -554,7 +554,7 @@ bool String::DeleteChar(unsigned int position)
     }
     return true;
 }
-bool String::Delete(unsigned int start, unsigned int end)
+bool String::Delete(uint32 start, uint32 end)
 {
     CHECK(end <= this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", end, this->Size);
     CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
@@ -576,8 +576,8 @@ int String::GetChar(int index) const
     if (Text == nullptr)
         return 0;
     if ((index >= 0) && (index < (int) Size))
-        return Text[(unsigned int) index];
-    unsigned int idx = (unsigned int) (-index);
+        return Text[(uint32) index];
+    uint32 idx = (uint32) (-index);
     if (idx < Size)
         return Text[Size - idx];
     return 0;
@@ -590,7 +590,7 @@ bool String::SetChar(int index, char value)
         Text[index] = value;
         return true;
     }
-    unsigned int idx = (unsigned int) (-index);
+    uint32 idx = (uint32) (-index);
     if (idx < Size)
     {
         Text[Size + idx] = value;
@@ -609,7 +609,7 @@ bool String::SetFormat(const char* format, ...)
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2, false);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, false);
 
     va_start(args, format);
     len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -619,7 +619,7 @@ bool String::SetFormat(const char* format, ...)
         Clear();
         RETURNERROR(false, "Fail on vsnprintf !");
     }
-    this->Size       = (unsigned int) len2;
+    this->Size       = (uint32) len2;
     Text[this->Size] = 0;
 
     return true;
@@ -634,7 +634,7 @@ bool String::AddFormat(const char* format, ...)
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2 + this->Size, false);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2 + this->Size, false);
 
     va_start(args, format);
     len2 = vsnprintf(Text + this->Size, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -644,7 +644,7 @@ bool String::AddFormat(const char* format, ...)
         Clear();
         RETURNERROR(false, "Fail on vsnprintf !");
     }
-    this->Size += (unsigned int) len2;
+    this->Size += (uint32) len2;
     Text[this->Size] = 0;
 
     return true;
@@ -660,7 +660,7 @@ string_view String::Format(const char* format, ...)
     va_end(args);
     CHECK(len >= 0, nullptr, "Invalid format (unable to format your string) !");
 
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2, nullptr);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, nullptr);
 
     va_start(args, format);
     len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -670,13 +670,13 @@ string_view String::Format(const char* format, ...)
         Clear();
         RETURNERROR(nullptr, "Fail on vsnprintf !");
     }
-    this->Size       = ((unsigned int) len2);
+    this->Size       = ((uint32) len2);
     Text[this->Size] = 0;
 
     return string_view{ Text, Size };
 }
 
-bool String::Truncate(unsigned int newText)
+bool String::Truncate(uint32 newText)
 {
     if (newText <= Size)
     {
@@ -783,7 +783,7 @@ void String::ConvertToInternalNewLineFormat()
         o++;
         s++;
     }
-    this->Size -= (unsigned int) (s - o);
+    this->Size -= (uint32) (s - o);
     this->Text[this->Size] = 0;
 }
 } // namespace AppCUI::Utils

@@ -741,10 +741,10 @@ namespace Utils
     class EXPORT String
     {
         char* Text;
-        unsigned int Size;
-        unsigned int Allocated;
+        uint32 Size;
+        uint32 Allocated;
 
-        bool Grow(unsigned int newSize);
+        bool Grow(uint32 newSize);
 
       public:
         String(void);
@@ -752,45 +752,45 @@ namespace Utils
         ~String(void);
 
         // Static functions
-        static unsigned int Len(const char* string);
+        static uint32 Len(const char* string);
         static bool Add(
               char* destination,
               const char* source,
-              unsigned int maxDestinationSize,
-              unsigned int destinationSize          = 0xFFFFFFFF,
-              unsigned int sourceSize               = 0xFFFFFFFF,
-              unsigned int* resultedDestinationSize = nullptr);
+              uint32 maxDestinationSize,
+              uint32 destinationSize          = 0xFFFFFFFF,
+              uint32 sourceSize               = 0xFFFFFFFF,
+              uint32* resultedDestinationSize = nullptr);
         static bool Set(
               char* destination,
               const char* source,
-              unsigned int maxDestinationSize,
-              unsigned int sourceSize               = 0xFFFFFFFF,
-              unsigned int* resultedDestinationSize = nullptr);
+              uint32 maxDestinationSize,
+              uint32 sourceSize               = 0xFFFFFFFF,
+              uint32* resultedDestinationSize = nullptr);
         static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);
         static bool StartsWith(const char* sir, const char* text, bool ignoreCase = false);
         static bool StartsWith(string_view sir1, string_view sir2, bool ignoreCase = false);
         static bool EndsWith(
               const char* sir,
               const char* text,
-              bool ignoreCase          = false,
-              unsigned int sirTextSize = 0xFFFFFFFF,
-              unsigned int textSize    = 0xFFFFFFFF);
+              bool ignoreCase    = false,
+              uint32 sirTextSize = 0xFFFFFFFF,
+              uint32 textSize    = 0xFFFFFFFF);
         static bool Contains(const char* sir, const char* textToFind, bool ignoreCase = false);
         static int Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
         // Create string object
-        bool Create(unsigned int initialAllocatedBuffer = 64);
+        bool Create(uint32 initialAllocatedBuffer = 64);
         bool Create(const char* text);
-        bool Create(char* buffer, unsigned int bufferSize, bool emptyString = false);
+        bool Create(char* buffer, uint32 bufferSize, bool emptyString = false);
 
         const char* GetText() const
         {
             return Text;
         }
-        unsigned int Len() const
+        uint32 Len() const
         {
             return Size;
         }
-        unsigned int GetAllocatedSize() const
+        uint32 GetAllocatedSize() const
         {
             return Allocated & 0x7FFFFFFF;
         }
@@ -798,28 +798,28 @@ namespace Utils
         int GetChar(int index) const;
         bool SetChar(int index, char value);
 
-        bool Add(const char* text, unsigned int size = 0xFFFFFFFF);
+        bool Add(const char* text, uint32 size = 0xFFFFFFFF);
         bool Add(const String& text);
         bool Add(const String* text);
         bool AddChar(char ch);
-        bool AddChars(char ch, unsigned int count);
+        bool AddChars(char ch, uint32 count);
 
-        bool InsertChar(char character, unsigned int position);
-        bool DeleteChar(unsigned int position);
-        bool Delete(unsigned int start, unsigned int end);
+        bool InsertChar(char character, uint32 position);
+        bool DeleteChar(uint32 position);
+        bool Delete(uint32 start, uint32 end);
 
-        bool Set(const char* text, unsigned int size = 0xFFFFFFFF);
+        bool Set(const char* text, uint32 size = 0xFFFFFFFF);
         bool Set(const String& text);
         bool Set(const String* text);
-        bool SetChars(char ch, unsigned int count);
+        bool SetChars(char ch, uint32 count);
 
         bool SetFormat(const char* format, ...);
         bool AddFormat(const char* format, ...);
         string_view Format(const char* format, ...);
 
-        bool Realloc(unsigned int newSize);
+        bool Realloc(uint32 newSize);
         void Destroy();
-        bool Truncate(unsigned int newSize);
+        bool Truncate(uint32 newSize);
         void Clear();
 
         bool StartsWith(const char* text, bool ignoreCase = false) const;
