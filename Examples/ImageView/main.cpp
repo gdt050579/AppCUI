@@ -6651,9 +6651,9 @@ class MainWin : public Window
                             img.SetPixel(
                                   x,
                                   y,
-                                  { (unsigned char) std::min<>(r, 255U),
-                                    (unsigned char) std::min<>(g, 255U),
-                                    (unsigned char) std::min<>(b, 255U) });
+                                  { (uint8) std::min<>(r, 255U),
+                                    (uint8) std::min<>(g, 255U),
+                                    (uint8) std::min<>(b, 255U) });
                             x++;
                             if (x == img.GetWidth())
                             {
@@ -6706,10 +6706,10 @@ class MainWin : public Window
             if (controlID == BTN_SHOW_LOAD_IMAGE)
             {
                 AppCUI::Graphics::Image img;
-                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png,bmp",".");
+                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png,bmp", ".");
                 if (path.has_value())
                 {
-                    if (img.Load(path.value())==false)
+                    if (img.Load(path.value()) == false)
                     {
                         AppCUI::Dialogs::MessageBox::ShowError("Error", "Fail to open PNG file !");
                     }

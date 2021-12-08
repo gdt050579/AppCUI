@@ -5,15 +5,15 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
-class MyControl: public UserControl
+class MyControl : public UserControl
 {
   public:
     MyControl(std::string_view layout) : UserControl(layout)
     {
-    } 
+    }
     void Paint(AppCUI::Graphics::Renderer& renderer) override
     {
-        renderer.Clear(' ', ColorPair{ Color::Black, Color::Red });        
+        renderer.Clear(' ', ColorPair{ Color::Black, Color::Red });
     }
     bool OnMouseEnter() override
     {
@@ -30,7 +30,7 @@ class MyControl: public UserControl
 class ToolTipExampleWin : public AppCUI::Controls::Window
 {
   public:
-    ToolTipExampleWin() : Window("Tool tip example", "d:c,w:40,h:9",WindowFlags::None)
+    ToolTipExampleWin() : Window("Tool tip example", "d:c,w:40,h:9", WindowFlags::None)
     {
         Factory::Label::Create(
               this,

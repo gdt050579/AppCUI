@@ -20,4 +20,3 @@
 #define GET_CHARACTER_COLOR(ptrCharInfo) ((ptrCharInfo)->Attributes)
 #define GET_CHARACTER_VALUE(ptrCharInfo) ((ptrCharInfo)->Char.UnicodeChar)
 #define KEYTRANSLATION_MATRIX_SIZE       256
-

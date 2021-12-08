@@ -1,9 +1,9 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Controls;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Controls;
+using namespace Input;
 
 TextControlDefaultMenu::TextControlDefaultMenu()
 {
@@ -23,7 +23,7 @@ TextControlDefaultMenu::~TextControlDefaultMenu()
 }
 void TextControlDefaultMenu::Show(Reference<Control> parent, int x, int y, bool hasSelection)
 {
-    menu.SetEnable(this->itemPaste, AppCUI::OS::Clipboard::HasText());
+    menu.SetEnable(this->itemPaste, OS::Clipboard::HasText());
     menu.SetEnable(this->itemCopy, hasSelection);
     menu.SetEnable(this->itemCut, hasSelection);
     menu.SetEnable(this->itemDelete, hasSelection);
@@ -31,3 +31,4 @@ void TextControlDefaultMenu::Show(Reference<Control> parent, int x, int y, bool 
     menu.SetEnable(this->itemToLower, hasSelection);
     menu.Show(parent, x, y);
 }
+} // namespace AppCUI::Internal

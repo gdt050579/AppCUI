@@ -1,7 +1,9 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Input;
+using namespace Graphics;
 
 constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
@@ -90,7 +92,7 @@ bool Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
             return true;
         }
         break;
-    case AppCUI::Input::Key::Escape:
+    case Input::Key::Escape:
         if (context->selectedCellsIndexes.size() > 0)
         {
             context->selectedCellsIndexes.clear();
@@ -216,9 +218,9 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
 
     switch (button)
     {
-    case AppCUI::Input::MouseButton::None:
+    case Input::MouseButton::None:
         break;
-    case AppCUI::Input::MouseButton::Left:
+    case Input::MouseButton::Left:
     {
         context->hoveredCellIndex = InvalidCellIndex;
         const auto currentIndex   = context->ComputeCellNumber(x, y);
@@ -257,11 +259,11 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
         return true;
     }
     break;
-    case AppCUI::Input::MouseButton::Center:
+    case Input::MouseButton::Center:
         break;
-    case AppCUI::Input::MouseButton::Right:
+    case Input::MouseButton::Right:
         break;
-    case AppCUI::Input::MouseButton::DoubleClicked:
+    case Input::MouseButton::DoubleClicked:
         break;
     default:
         break;
@@ -885,20 +887,20 @@ bool GridControlContext::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
 
         if (columnIndex > 0)
         {
-            columnIndex -= (keyCode == AppCUI::Input::Key::Left);
+            columnIndex -= (keyCode == Input::Key::Left);
         }
         if (columnIndex < columnsNo - 1)
         {
-            columnIndex += (keyCode == AppCUI::Input::Key::Right);
+            columnIndex += (keyCode == Input::Key::Right);
         }
 
         if (rowIndex > 0)
         {
-            rowIndex -= (keyCode == AppCUI::Input::Key::Up);
+            rowIndex -= (keyCode == Input::Key::Up);
         }
         if (rowIndex < rowsNo - 1)
         {
-            rowIndex += (keyCode == AppCUI::Input::Key::Down);
+            rowIndex += (keyCode == Input::Key::Down);
         }
 
         const auto newCellIndex = columnsNo * rowIndex + columnIndex;
@@ -1178,7 +1180,7 @@ bool GridControlContext::CopySelectedCellsContent() const
         lusb.Add("\n");
     }
 
-    if (AppCUI::OS::Clipboard::SetText(lusb) == false)
+    if (OS::Clipboard::SetText(lusb) == false)
     {
         const std::string input{ lusb };
         LOG_WARNING("Failed to copy string [%s] to the clipboard!", input.c_str());
@@ -1192,13 +1194,13 @@ bool GridControlContext::PasteContentToSelectedCells()
 {
     // seems slow - a lower level parser might be better - we'll see
     LocalUnicodeStringBuilder<2048> lusb{};
-    AppCUI::OS::Clipboard::GetText(lusb);
+    OS::Clipboard::GetText(lusb);
 
     const std::u16string input{ lusb };
 
     size_t last = 0;
     size_t next = 0;
-    std::vector<std::u16string> lines;
+    vector<std::u16string> lines;
     lines.reserve(50);
     while ((next = input.find(u"\n", last)) != std::string::npos)
     {
@@ -1211,7 +1213,7 @@ bool GridControlContext::PasteContentToSelectedCells()
         lines.emplace_back(lastLine);
     }
 
-    std::vector<std::u16string> tokens;
+    vector<std::u16string> tokens;
     tokens.reserve(50);
     for (const auto& line : lines)
     {
@@ -1231,7 +1233,7 @@ bool GridControlContext::PasteContentToSelectedCells()
         const auto start = tokens.begin() + selectedCellsIndexes.size() - 1U;
 
         LocalUnicodeStringBuilder<2048> lusbLastToken;
-        for (std::vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
+        for (vector<std::u16string>::iterator i = start; i != tokens.end(); i++)
         {
             lusbLastToken.Add(*i);
         }
@@ -1270,3 +1272,4 @@ bool GridControlContext::PasteContentToSelectedCells()
 
     return true;
 }
+} // namespace AppCUI

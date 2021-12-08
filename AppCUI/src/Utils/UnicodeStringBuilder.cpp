@@ -1,31 +1,33 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Utils;
-using namespace AppCUI::Graphics;
+namespace AppCUI
+{
+using namespace Utils;
+using namespace Graphics;
 
 constexpr unsigned int LOCAL_BUFFER_FLAG   = 0x80000000;
 constexpr unsigned int MAX_ALLOCATION_SIZE = 0x00FFFFFF;
 
 template <typename T>
-void CopyText(char16_t* dest, const T* source, size_t len)
+void CopyText(char16* dest, const T* source, size_t len)
 {
     while (len > 0)
     {
-        *dest = (char16_t) (*source);
+        *dest = (char16) (*source);
         dest++;
         source++;
         len--;
     }
 }
 
-bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
+bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
 {
     // unicode encoding (based on the code described in https://en.wikipedia.org/wiki/UTF-8)
     if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
     {
         CHECK(p + 1 < end, false, "Invalid unicode sequence (missing one extra character after 110xxxx)");
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (110xxxx should be followed by 10xxxxxx)");
-        result.Value  = (((unsigned short) ((*p) & 0x1F)) << 6) | ((unsigned short) ((*(p + 1)) & 63));
+        result.Value  = (((uint16) ((*p) & 0x1F)) << 6) | ((uint16) ((*(p + 1)) & 63));
         result.Length = 2;
         return true;
     }
@@ -34,8 +36,8 @@ bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t
         CHECK(p + 2 < end, false, "Invalid unicode sequence (missing two extra characters after 1110xxxx)");
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (1110xxxx should be followed by 10xxxxxx)");
         CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 0x0F)) << 12) | (((unsigned short) ((*(p + 1)) & 63)) << 6) |
-                       ((unsigned short) ((*(p + 2)) & 63));
+        result.Value = (((uint16) ((*p) & 0x0F)) << 12) | (((uint16) ((*(p + 1)) & 63)) << 6) |
+                       ((uint16) ((*(p + 2)) & 63));
         result.Length = 3;
         return true;
     }
@@ -45,8 +47,8 @@ bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (11110xxx should be followed by 10xxxxxx)");
         CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
         CHECK((p[3] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((unsigned short) ((*p) & 7)) << 18) | (((unsigned short) ((*(p + 1)) & 63)) << 12) |
-                       (((unsigned short) ((*(p + 2)) & 63)) << 6) | ((unsigned short) ((*(p + 3)) & 63));
+        result.Value = (((uint16) ((*p) & 7)) << 18) | (((uint16) ((*(p + 1)) & 63)) << 12) |
+                       (((uint16) ((*(p + 2)) & 63)) << 6) | ((uint16) ((*(p + 3)) & 63));
         result.Length = 4;
         return true;
     }
@@ -54,7 +56,7 @@ bool AppCUI::Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t
     RETURNERROR(false, "Invalid UTF-8 encoding ");
 }
 
-void UnicodeStringBuilder::Create(char16_t* localBuffer, size_t localBufferSize)
+void UnicodeStringBuilder::Create(char16* localBuffer, size_t localBufferSize)
 {
     if ((localBuffer == nullptr) || (localBufferSize == 0) || (localBufferSize > MAX_ALLOCATION_SIZE))
     {
@@ -87,10 +89,10 @@ bool UnicodeStringBuilder::Resize(size_t newSize)
     CHECK(alingSize >= newSize, false, "Integer overflow (x86 case) for %z size!", newSize);
     // make sure that the aligned size (8-bytes aligned) is smaller that 0x00FFFFFF
     CHECK(alingSize <= MAX_ALLOCATION_SIZE, false, "Size must be smaller than 0x00FFFFFF");
-    char16_t* newBuf;
+    char16* newBuf;
     try
     {
-        newBuf = new char16_t[alingSize];
+        newBuf = new char16[alingSize];
     }
     catch (...)
     {
@@ -100,7 +102,7 @@ bool UnicodeStringBuilder::Resize(size_t newSize)
     {
         if (this->length > 0)
         {
-            memcpy(newBuf, this->chars, sizeof(char16_t) * this->length);
+            memcpy(newBuf, this->chars, sizeof(char16) * this->length);
         }
         if (!(this->allocated & LOCAL_BUFFER_FLAG))
             delete[] this->chars;
@@ -113,31 +115,30 @@ UnicodeStringBuilder::UnicodeStringBuilder()
 {
     Create(nullptr, 0);
 }
-UnicodeStringBuilder::UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize)
+UnicodeStringBuilder::UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize)
 {
     Create(localBuffer, localBufferSize);
 }
-UnicodeStringBuilder::UnicodeStringBuilder(const AppCUI::Utils::ConstString& text)
+UnicodeStringBuilder::UnicodeStringBuilder(const ConstString& text)
 {
     Create(nullptr, 0);
     if (!Set(text))
         Destroy();
 }
-UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const AppCUI::Utils::ConstString& text)
+UnicodeStringBuilder::UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const ConstString& text)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(text))
         Destroy();
 }
-UnicodeStringBuilder::UnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+UnicodeStringBuilder::UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer)
 {
     Create(nullptr, 0);
     if (!Set(charBuffer))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(
-      char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer)
+      char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer)
 {
     Create(localBuffer, localBufferSize);
     if (!Set(charBuffer))
@@ -146,7 +147,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(
 UnicodeStringBuilder::UnicodeStringBuilder(const UnicodeStringBuilder& obj)
 {
     Create(nullptr, 0);
-    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
@@ -157,7 +158,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
         this->chars     = nullptr;
         this->length    = 0;
         this->allocated = 0;
-        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
             Destroy();
     }
     else
@@ -172,7 +173,7 @@ UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
 }
 UnicodeStringBuilder& UnicodeStringBuilder::operator=(const UnicodeStringBuilder& obj)
 {
-    if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
         Destroy();
     return *this;
 }
@@ -181,7 +182,7 @@ UnicodeStringBuilder& UnicodeStringBuilder::operator=(UnicodeStringBuilder&& obj
     if (obj.length & LOCAL_BUFFER_FLAG)
     {
         // if this is a local buffer --> copy it
-        if (!Set(std::u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
             Destroy();
     }
     else
@@ -196,7 +197,7 @@ UnicodeStringBuilder::~UnicodeStringBuilder()
 {
     Destroy();
 }
-bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
+bool UnicodeStringBuilder::Add(const ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length + this->length), false, "Fail to resize buffer !");
@@ -204,7 +205,7 @@ bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
     switch (obj.Encoding)
     {
     case StringEncoding::Ascii:
-        CopyText<unsigned char>(this->chars + this->length, (const unsigned char*) obj.Data, obj.Length);
+        CopyText<uint8>(this->chars + this->length, (const uint8*) obj.Data, obj.Length);
         this->length += (unsigned int) obj.Length;
         return true;
     case StringEncoding::CharacterBuffer:
@@ -212,7 +213,7 @@ bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
         this->length += (unsigned int) obj.Length;
         return true;
     case StringEncoding::Unicode16:
-        memcpy(this->chars + this->length, obj.Data, sizeof(char16_t) * obj.Length);
+        memcpy(this->chars + this->length, obj.Data, sizeof(char16) * obj.Length);
         this->length += (unsigned int) obj.Length;
         return true;
     case StringEncoding::UTF8:
@@ -241,26 +242,26 @@ bool UnicodeStringBuilder::Add(const AppCUI::Utils::ConstString& text)
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
 }
-bool UnicodeStringBuilder::Set(const AppCUI::Utils::ConstString& text)
+bool UnicodeStringBuilder::Set(const ConstString& text)
 {
     this->length = 0;
     return Add(text);
 }
-bool UnicodeStringBuilder::Set(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+bool UnicodeStringBuilder::Set(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len()), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars, charBuffer.GetBuffer(), charBuffer.Len());
     this->length = (unsigned int) charBuffer.Len();
     return true;
 }
-bool UnicodeStringBuilder::Add(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+bool UnicodeStringBuilder::Add(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len() + this->length), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars + this->length, charBuffer.GetBuffer(), charBuffer.Len());
     this->length += (unsigned int) charBuffer.Len();
     return true;
 }
-bool UnicodeStringBuilder::AddChar(char16_t ch)
+bool UnicodeStringBuilder::AddChar(char16 ch)
 {
     CHECK(Resize(this->length + 1), false, "Fail to resize buffer !");
     this->chars[this->length] = ch;
@@ -275,7 +276,7 @@ void UnicodeStringBuilder::ToString(std::string& output) const
     {
         output.reserve(static_cast<size_t>(this->length + 1));
 
-        for (char16_t* p = this->chars; p < this->chars + this->length; p++)
+        for (char16* p = this->chars; p < this->chars + this->length; p++)
         {
             if (*p >= 0x80)
             {
@@ -283,7 +284,7 @@ void UnicodeStringBuilder::ToString(std::string& output) const
             }
             else
             {
-                output.push_back(static_cast<unsigned char>(*p));
+                output.push_back(static_cast<uint8>(*p));
             }
         }
     }
@@ -295,7 +296,7 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
     else
     {
         output.reserve((size_t) this->length + 1);
-        output = std::u16string_view{ this->chars, this->length };
+        output = u16string_view{ this->chars, this->length };
     }
 }
 void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
@@ -304,6 +305,7 @@ void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
         output.clear();
     else
     {
-        output = std::u16string_view{ this->chars, this->length };
+        output = u16string_view{ this->chars, this->length };
     }
 }
+} // namespace AppCUI

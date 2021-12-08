@@ -7,12 +7,12 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Input;
 using namespace AppCUI::Utils;
 
-#define MENU_CMD_SAVE           1000
-#define MENU_CMD_OPEN           1001
-#define MENU_CMD_CLEAR          1002
-#define MENU_CMD_RED            1003
-#define MENU_CMD_GREEN          1004
-#define MENU_CMD_BLUE           1005
+#define MENU_CMD_SAVE  1000
+#define MENU_CMD_OPEN  1001
+#define MENU_CMD_CLEAR 1002
+#define MENU_CMD_RED   1003
+#define MENU_CMD_GREEN 1004
+#define MENU_CMD_BLUE  1005
 
 std::string_view colors[] = {
     "red",        "yellow",       "blue",           "brown",         "orange",     "green",
@@ -21,36 +21,37 @@ std::string_view colors[] = {
     "cerulean",   "apricot",      "scarlet",        "green yellow",  "indigo",     "gray"
 };
 
-class MyUserControl: public AppCUI::Controls::UserControl
+class MyUserControl : public AppCUI::Controls::UserControl
 {
     Menu ctxMenu;
 
   public:
     Color squareColor;
     bool smallMenu;
+
   public:
     MyUserControl();
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
     void OnMousePressed(int x, int y, MouseButton button) override;
 };
-MyUserControl::MyUserControl (): UserControl("x:50%,y:50%,w:2,h:1")
+MyUserControl::MyUserControl() : UserControl("x:50%,y:50%,w:2,h:1")
 {
     squareColor = Color::Red;
     smallMenu   = false;
     // build a menu
     ctxMenu.AddCommandItem("&Save content", MENU_CMD_SAVE, Key::F2);
     ctxMenu.AddCommandItem("&Open content", MENU_CMD_OPEN, Key::F3);
-    auto cmd1 = ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR, Key::R|Key::Ctrl|Key::Alt);
+    auto cmd1 = ctxMenu.AddCommandItem("&Reset content", MENU_CMD_CLEAR, Key::R | Key::Ctrl | Key::Alt);
     ctxMenu.SetEnable(cmd1, false);
     ctxMenu.AddSeparator();
-    auto flg1 = ctxMenu.AddCheckItem("Flag &1",100);
+    auto flg1 = ctxMenu.AddCheckItem("Flag &1", 100);
     ctxMenu.SetChecked(flg1, true);
-    ctxMenu.AddCheckItem("Flag &2",200);
-    ctxMenu.AddCheckItem("Flag &3",300);
+    ctxMenu.AddCheckItem("Flag &2", 200);
+    ctxMenu.AddCheckItem("Flag &3", 300);
     ctxMenu.AddSeparator();
-    ctxMenu.AddRadioItem("Select option &A",350,true);
-    ctxMenu.AddRadioItem("Select option &B",351);
-    ctxMenu.AddRadioItem("Select option &C",352);
+    ctxMenu.AddRadioItem("Select option &A", 350, true);
+    ctxMenu.AddRadioItem("Select option &B", 351);
+    ctxMenu.AddRadioItem("Select option &C", 352);
     ctxMenu.AddSeparator();
     auto smHandle = ctxMenu.AddSubMenu("Co&lor");
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Red", MENU_CMD_RED, true);
@@ -58,12 +59,13 @@ MyUserControl::MyUserControl (): UserControl("x:50%,y:50%,w:2,h:1")
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue", MENU_CMD_BLUE);
     ctxMenu.GetSubMenu(smHandle)->AddSeparator();
     auto smOther = ctxMenu.GetSubMenu(smHandle)->AddSubMenu("&Other");
-    for (unsigned int tr = 0; tr < sizeof(colors) / sizeof(colors[0]);tr++)
+    for (unsigned int tr = 0; tr < sizeof(colors) / sizeof(colors[0]); tr++)
     {
         ctxMenu.GetSubMenu(smHandle)->GetSubMenu(smOther)->AddRadioItem(colors[tr], 2000 + tr, tr == 0);
     }
     ctxMenu.AddSeparator();
-    ctxMenu.AddCommandItem("An item with a large caption with multiple characters", 1234, Key::Q | Key::Ctrl | Key::Alt);
+    ctxMenu.AddCommandItem(
+          "An item with a large caption with multiple characters", 1234, Key::Q | Key::Ctrl | Key::Alt);
 }
 void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
 {
@@ -83,10 +85,14 @@ class ContextMenuExample : public AppCUI::Controls::Window
 {
     Reference<MyUserControl> m;
     Reference<CheckBox> cb;
+
   public:
     ContextMenuExample() : Window("Context menu", "d:c,w:64,h:10", WindowFlags::None)
     {
-        Factory::Label::Create(this, "Right click on the red-square below to view a context menu\nTIP: Use mouse wheel to scroll menus", "x:1,y:1,w:62,h:2");
+        Factory::Label::Create(
+              this,
+              "Right click on the red-square below to view a context menu\nTIP: Use mouse wheel to scroll menus",
+              "x:1,y:1,w:62,h:2");
         cb = Factory::CheckBox::Create(this, "Small contextual menu with scroll", "x:1,y:6,w:62");
         m  = this->AddControl<MyUserControl>(std::make_unique<MyUserControl>());
     }

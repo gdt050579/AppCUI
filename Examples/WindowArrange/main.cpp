@@ -5,16 +5,16 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 
-#define COMMAND_ID_MAXIMIZE_ALL     1000
-#define COMMAND_ID_CASCADE          1001
-#define COMMAND_ID_VERTICAL         1002
-#define COMMAND_ID_HORIZONTAL       1003
-#define COMMAND_ID_GRID             1004
+#define COMMAND_ID_MAXIMIZE_ALL 1000
+#define COMMAND_ID_CASCADE      1001
+#define COMMAND_ID_VERTICAL     1002
+#define COMMAND_ID_HORIZONTAL   1003
+#define COMMAND_ID_GRID         1004
 
-class MyWin: public Window
+class MyWin : public Window
 {
   public:
-    MyWin(std::string_view name, char16_t hotKey) : Window(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable)
+    MyWin(std::string_view name, char16 hotKey) : Window(name, "x:1,y:1,w:10,h:5", WindowFlags::Sizeable)
     {
         this->SetHotKey(hotKey);
     }
@@ -62,13 +62,13 @@ int main()
 {
     if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
-    unsigned int winCount = 10; 
+    unsigned int winCount = 10;
     char winName[]        = "Win xx";
-    for (unsigned int tr=1;tr<=winCount;tr++)
+    for (unsigned int tr = 1; tr <= winCount; tr++)
     {
-        winName[4] = '0' + tr / 10;
-        winName[5] = '0' + tr % 10;
-        char16_t hk = 0;
+        winName[4]  = '0' + tr / 10;
+        winName[5]  = '0' + tr % 10;
+        char16 hk = 0;
         if (tr < 10)
             hk = '0' + tr;
         auto w = std::make_unique<MyWin>(winName, hk);
@@ -77,7 +77,7 @@ int main()
         if (tr == 2)
             w->SetTag("Numbers", "Plenty of numbers ....");
         Application::AddWindow(std::move(w));
-    }    
+    }
     Application::Run();
     return 0;
 }

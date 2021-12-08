@@ -2,10 +2,10 @@
 #include "ImageLoader.hpp"
 #include "string.h"
 
-using namespace AppCUI::Graphics;
-
+namespace AppCUI::Graphics
+{
 constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
-constexpr uint16_t IMAGE_BMP_MAGIC     = 0x4D42;
+constexpr uint16 IMAGE_BMP_MAGIC     = 0x4D42;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -44,7 +44,7 @@ static const Pixel Image_ConsoleColors[16] = {
 #define VALIDATE_CONSOLE_INDEX                                                                                         \
     CHECK(((unsigned int) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
 
-unsigned char Image_CharToIndex[256] = {
+uint8 Image_CharToIndex[256] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0,    0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0,    0xFF, 0,    1,    2,    3,    4,    5,    6,    7,    8,
@@ -131,7 +131,7 @@ bool Image::Create(unsigned int imageWidth, unsigned int imageHeight)
     this->height = imageHeight;
     return true;
 }
-bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, std::string_view image)
+bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, string_view image)
 {
     CHECK(Create(imageWidth, imageHeight), false, "");
     auto s = image.data();
@@ -231,22 +231,21 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
 }
 bool Image::Load(const std::filesystem::path& path)
 {
-    auto buf = AppCUI::OS::File::ReadContent(path);
-    return Create((const unsigned char*) buf.GetData(), (unsigned int) buf.GetLength());
+    auto buf = OS::File::ReadContent(path);
+    return Create((const uint8*) buf.GetData(), (unsigned int) buf.GetLength());
 }
-bool Image::CreateFromDIB(const unsigned char* imageBuffer, unsigned int size, bool isIcon)
+bool Image::CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
     return LoadDIBToImage(*this, imageBuffer, size, isIcon);
 }
-bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
+bool Image::Create(const uint8* imageBuffer, unsigned int size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
-    unsigned int magic32        = *(const unsigned int*) imageBuffer;
-    uint16_t magic16            = *(const uint16_t*) imageBuffer;
-
+    unsigned int magic32 = *(const unsigned int*) imageBuffer;
+    uint16 magic16     = *(const uint16*) imageBuffer;
 
     if (magic32 == IMAGE_PNG_MAGIC)
     {
@@ -256,7 +255,8 @@ bool Image::Create(const unsigned char* imageBuffer, unsigned int size)
     {
         return LoadBMPToImage(*this, imageBuffer, size);
     }
-    
+
     // unknwon type
     RETURNERROR(false, "Unknwon image type --> unable to identify magic ! (0x%08X)", magic32);
 }
+} // namespace AppCUI::Graphics

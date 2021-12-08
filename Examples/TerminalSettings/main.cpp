@@ -8,8 +8,8 @@ int main()
 {
     Log::ToFile("TerminalSettings.log");
     Application::InitializationData initData;
-    initData.Width = 120;
-    initData.Height = 80;
+    initData.Width    = 120;
+    initData.Height   = 80;
     initData.CharSize = Application::CharacterSize::Normal;
     if (!Application::Init(initData))
         return 1;

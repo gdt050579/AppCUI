@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-
 #include <deque>
 #include <queue>
 #include <stack>
@@ -15,9 +14,9 @@ constexpr auto MinColumnWidth          = 10U;
 constexpr auto BorderOffset            = 1U;
 constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
-const static AppCUI::Utils::UnicodeStringBuilder cb{};
+const static Utils::UnicodeStringBuilder cb{};
 
-Tree::Tree(std::string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+Tree::Tree(string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
@@ -559,7 +558,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
     }
 }
 
-bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
+bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -790,7 +789,7 @@ bool Tree::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t character)
                     lusb.Add(value);
                 }
             }
-            if (AppCUI::OS::Clipboard::SetText(lusb) == false)
+            if (OS::Clipboard::SetText(lusb) == false)
             {
                 const std::string input{ lusb };
                 LOG_WARNING("Fail to copy string [%s] to the clipboard!", input.c_str());
@@ -937,16 +936,16 @@ void Tree::OnFocus()
     }
 }
 
-void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void Tree::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     switch (button)
     {
-    case AppCUI::Input::MouseButton::None:
+    case Input::MouseButton::None:
         break;
-    case AppCUI::Input::MouseButton::Left:
+    case Input::MouseButton::Left:
         switch (cc->isMouseOn)
         {
         case TreeControlContext::IsMouseOn::Border:
@@ -990,11 +989,11 @@ void Tree::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
             break;
         }
         break;
-    case AppCUI::Input::MouseButton::Center:
+    case Input::MouseButton::Center:
         break;
-    case AppCUI::Input::MouseButton::Right:
+    case Input::MouseButton::Right:
         break;
-    case AppCUI::Input::MouseButton::DoubleClicked:
+    case Input::MouseButton::DoubleClicked:
         break;
     default:
         break;
@@ -1038,19 +1037,19 @@ bool Tree::OnMouseOver(int x, int y)
     return false;
 }
 
-bool Tree::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+bool Tree::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
     switch (direction)
     {
-    case AppCUI::Input::MouseWheel::None:
+    case Input::MouseWheel::None:
         break;
-    case AppCUI::Input::MouseWheel::Up:
+    case Input::MouseWheel::Up:
         return MoveUp();
-    case AppCUI::Input::MouseWheel::Down:
+    case Input::MouseWheel::Down:
         return MoveDown();
-    case AppCUI::Input::MouseWheel::Left:
+    case Input::MouseWheel::Left:
         break;
-    case AppCUI::Input::MouseWheel::Right:
+    case Input::MouseWheel::Right:
         break;
     default:
         break;
@@ -1065,7 +1064,7 @@ void Tree::OnUpdateScrollBars()
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     const auto it         = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-    const long long index = it - cc->itemsToDrew.begin();
+    const int64 index = it - cc->itemsToDrew.begin();
     UpdateVScrollBar(index, std::max<size_t>(cc->itemsToDrew.size() - 1, 0));
 }
 
@@ -1081,7 +1080,7 @@ Handlers::Tree* Tree::Handlers()
 
 ItemHandle Tree::AddItem(
       const ItemHandle parent,
-      const std::vector<CharacterBuffer>& values,
+      const vector<CharacterBuffer>& values,
       const ConstString metadata,
       bool process,
       bool isExpandable)
@@ -1220,7 +1219,7 @@ GenericRef Tree::GetItemDataAsPointer(const ItemHandle handle) const
     return nullptr;
 }
 
-unsigned long long Tree::GetItemData(const size_t index, unsigned long long errorValue)
+uint64 Tree::GetItemData(const size_t index, uint64 errorValue)
 {
     CHECK(Context != nullptr, errorValue, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1229,8 +1228,8 @@ unsigned long long Tree::GetItemData(const size_t index, unsigned long long erro
     std::advance(it, index);
     if (it != cc->items.end())
     {
-        if (std::holds_alternative<unsigned long long>(it->second.data))
-            return std::get<unsigned long long>(it->second.data);
+        if (std::holds_alternative<uint64>(it->second.data))
+            return std::get<uint64>(it->second.data);
     }
 
     return errorValue;
@@ -1263,7 +1262,7 @@ bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
     it->second.data = value;
     return true;
 }
-bool Tree::SetItemData(ItemHandle item, unsigned long long value)
+bool Tree::SetItemData(ItemHandle item, uint64 value)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1372,7 +1371,7 @@ bool Tree::ToggleItem(const ItemHandle handle)
         {
             if (cc->handlers != nullptr)
             {
-                auto handler = reinterpret_cast<AppCUI::Controls::Handlers::Tree*>(cc->handlers.get());
+                auto handler = reinterpret_cast<Controls::Handlers::Tree*>(cc->handlers.get());
                 if (handler->OnTreeItemToggle.obj)
                 {
                     handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle);
@@ -1758,7 +1757,7 @@ bool Tree::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
     return true;
 }
 
-const AppCUI::Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle handle)
+const Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle handle)
 {
     CHECK(Context != nullptr, cb, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1771,7 +1770,7 @@ const AppCUI::Utils::UnicodeStringBuilder& Tree::GetItemMetadata(ItemHandle hand
     return item.metadata;
 }
 
-bool Tree::SetItemMetadata(ItemHandle handle, const AppCUI::Utils::ConstString& metadata)
+bool Tree::SetItemMetadata(ItemHandle handle, const ConstString& metadata)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

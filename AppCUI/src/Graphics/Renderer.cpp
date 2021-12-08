@@ -1,10 +1,11 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Utils;
+namespace AppCUI::Graphics
+{
+using namespace Utils;
 
-int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::SpecialChars::Count] = {
+int _special_characters_consolas_unicode_[(unsigned int) Graphics::SpecialChars::Count] = {
     0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
     0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
     0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
@@ -28,20 +29,19 @@ int* SpecialCharacters = nullptr;
         {                                                                                                              \
             ptrCharInfo->Code = (value);                                                                               \
         }                                                                                                              \
-        if (color.Foreground != AppCUI::Graphics::Color::Transparent)                                                  \
+        if (color.Foreground != Graphics::Color::Transparent)                                                          \
         {                                                                                                              \
             ptrCharInfo->Color.Foreground = color.Foreground;                                                          \
         }                                                                                                              \
-        if (color.Background != AppCUI::Graphics::Color::Transparent)                                                  \
+        if (color.Background != Graphics::Color::Transparent)                                                          \
         {                                                                                                              \
             ptrCharInfo->Color.Background = color.Background;                                                          \
         }                                                                                                              \
     }
 #define NO_TRANSPARENCY(color)                                                                                         \
-    ((color.Foreground != AppCUI::Graphics::Color::Transparent) &&                                                     \
-     (color.Background != AppCUI::Graphics::Color::Transparent))
+    ((color.Foreground != Graphics::Color::Transparent) && (color.Background != Graphics::Color::Transparent))
 
-using namespace AppCUI::Graphics;
+using namespace Graphics;
 
 #define TRANSLATE_X_COORDONATE(x) x += this->TranslateX;
 #define TRANSLATE_Y_COORDONATE(y) y += this->TranslateY;
@@ -397,11 +397,11 @@ bool Renderer::GetCharacter(int x, int y, Character& c)
     }
     else
     {
-        if (c.Color.Foreground != AppCUI::Graphics::Color::Transparent)
+        if (c.Color.Foreground != Graphics::Color::Transparent)
         {
             c.Color.Foreground = p->Color.Foreground;
         }
-        if (c.Color.Background != AppCUI::Graphics::Color::Transparent)
+        if (c.Color.Background != Graphics::Color::Transparent)
         {
             c.Color.Background = p->Color.Background;
         }
@@ -428,7 +428,7 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (unsigned short) (character & 0xFFFF);
+        tmp.Code = (uint16) (character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -504,18 +504,10 @@ bool Renderer::DrawHorizontalLine(int left, int y, int right, const ColorPair co
 {
     if (singleLine)
         return FillHorizontalLine(
-              left,
-              y,
-              right,
-              SpecialCharacters[(unsigned int) AppCUI::Graphics::SpecialChars::BoxHorizontalSingleLine],
-              color);
+              left, y, right, SpecialCharacters[(unsigned int) Graphics::SpecialChars::BoxHorizontalSingleLine], color);
     else
         return FillHorizontalLine(
-              left,
-              y,
-              right,
-              SpecialCharacters[(unsigned int) AppCUI::Graphics::SpecialChars::BoxHorizontalDoubleLine],
-              color);
+              left, y, right, SpecialCharacters[(unsigned int) Graphics::SpecialChars::BoxHorizontalDoubleLine], color);
 }
 bool Renderer::FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color)
 {
@@ -562,18 +554,10 @@ bool Renderer::DrawVerticalLine(int x, int top, int bottom, const ColorPair colo
 {
     if (singleLine)
         return FillVerticalLine(
-              x,
-              top,
-              bottom,
-              SpecialCharacters[(unsigned int) AppCUI::Graphics::SpecialChars::BoxVerticalSingleLine],
-              color);
+              x, top, bottom, SpecialCharacters[(unsigned int) Graphics::SpecialChars::BoxVerticalSingleLine], color);
     else
         return FillVerticalLine(
-              x,
-              top,
-              bottom,
-              SpecialCharacters[(unsigned int) AppCUI::Graphics::SpecialChars::BoxVerticalDoubleLine],
-              color);
+              x, top, bottom, SpecialCharacters[(unsigned int) Graphics::SpecialChars::BoxVerticalDoubleLine], color);
 }
 bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color)
 {
@@ -1094,16 +1078,16 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     return true;
 }
 
-bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params)
+bool Renderer::WriteText(const ConstString& text, const WriteTextParams& params)
 {
     DrawTextInfo dti;
     if ((params.Flags & WriteTextFlags::SingleLine) != WriteTextFlags::None)
     {
-        if (std::holds_alternative<std::string_view>(text))
+        if (std::holds_alternative<string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::string_view>(text).length(), &dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<string_view>(text).length(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::string_view>(std::get<std::string_view>(text), dti, params);
+            RenderSingleLineString<string_view>(std::get<string_view>(text), dti, params);
             return true;
         }
         if (std::holds_alternative<CharacterView>(text))
@@ -1113,19 +1097,19 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
             RenderSingleLineString<CharacterView>(std::get<CharacterView>(text), dti, params);
             return true;
         }
-        if (std::holds_alternative<std::u16string_view>(text))
+        if (std::holds_alternative<u16string_view>(text))
         {
-            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<std::u16string_view>(text).length(), &dti) == false)
+            if (_Compute_DrawTextInfo_SingleLine_(params, std::get<u16string_view>(text).length(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::u16string_view>(std::get<std::u16string_view>(text), dti, params);
+            RenderSingleLineString<u16string_view>(std::get<u16string_view>(text), dti, params);
             return true;
         }
-        if (std::holds_alternative<std::u8string_view>(text))
+        if (std::holds_alternative<u8string_view>(text))
         {
-            LocalUnicodeStringBuilder<1024> tmp(std::get<std::u8string_view>(text));
+            LocalUnicodeStringBuilder<1024> tmp(std::get<u8string_view>(text));
             if (_Compute_DrawTextInfo_SingleLine_(params, tmp.Len(), &dti) == false)
                 return false;
-            RenderSingleLineString<std::u16string_view>(tmp.ToStringView(), dti, params);
+            RenderSingleLineString<u16string_view>(tmp.ToStringView(), dti, params);
             return true;
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
@@ -1136,24 +1120,24 @@ bool Renderer::WriteText(const AppCUI::Utils::ConstString& text, const WriteText
         {
             return ProcessMultiLinesString<CharacterView>(std::get<CharacterView>(text), params, *this);
         }
-        if (std::holds_alternative<std::string_view>(text))
+        if (std::holds_alternative<string_view>(text))
         {
-            return ProcessMultiLinesString<std::string_view>(std::get<std::string_view>(text), params, *this);
+            return ProcessMultiLinesString<string_view>(std::get<string_view>(text), params, *this);
         }
-        if (std::holds_alternative<std::u16string_view>(text))
+        if (std::holds_alternative<u16string_view>(text))
         {
-            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+            return ProcessMultiLinesString<u16string_view>(std::get<u16string_view>(text), params, *this);
         }
-        if (std::holds_alternative<std::u8string_view>(text))
+        if (std::holds_alternative<u8string_view>(text))
         {
-            LocalUnicodeStringBuilder<2048> tmp(std::get<std::u8string_view>(text));
-            return ProcessMultiLinesString<std::u16string_view>(std::get<std::u16string_view>(text), params, *this);
+            LocalUnicodeStringBuilder<2048> tmp(std::get<u8string_view>(text));
+            return ProcessMultiLinesString<u16string_view>(std::get<u16string_view>(text), params, *this);
         }
         RETURNERROR(false, "Invalid ConstString type (specialized template was not implemented)");
     }
     RETURNERROR(false, "Missing `WriteTextFlags::MultipleLines` or `WriteTextFlags::SingleLine` from params.Flags !");
 }
-bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color)
+bool Renderer::WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors);
     params.X     = x;
@@ -1161,8 +1145,7 @@ bool Renderer::WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstStrin
     params.Color = color;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(
-      int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
+bool Renderer::WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors, align);
     params.X     = x;
@@ -1171,12 +1154,7 @@ bool Renderer::WriteSingleLineText(
     return WriteText(text, params);
 }
 bool Renderer::WriteSingleLineText(
-      int x,
-      int y,
-      const AppCUI::Utils::ConstString& text,
-      ColorPair color,
-      ColorPair hotKeyColor,
-      unsigned int hotKeyOffset)
+      int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, unsigned int hotKeyOffset)
 {
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
@@ -1190,7 +1168,7 @@ bool Renderer::WriteSingleLineText(
 bool Renderer::WriteSingleLineText(
       int x,
       int y,
-      const AppCUI::Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset,
@@ -1205,8 +1183,7 @@ bool Renderer::WriteSingleLineText(
     params.HotKeyPosition = hotKeyOffset;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineText(
-      int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color)
+bool Renderer::WriteSingleLineText(int x, int y, unsigned int width, const ConstString& text, ColorPair color)
 {
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.X     = x;
@@ -1216,7 +1193,7 @@ bool Renderer::WriteSingleLineText(
     return WriteText(text, params);
 }
 bool Renderer::WriteSingleLineText(
-      int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align)
+      int x, int y, unsigned int width, const ConstString& text, ColorPair color, TextAlignament align)
 {
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth, align);
@@ -1230,7 +1207,7 @@ bool Renderer::WriteSingleLineText(
       int x,
       int y,
       unsigned int width,
-      const AppCUI::Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset)
@@ -1250,7 +1227,7 @@ bool Renderer::WriteSingleLineText(
       int x,
       int y,
       unsigned int width,
-      const AppCUI::Utils::ConstString& text,
+      const ConstString& text,
       ColorPair color,
       ColorPair hotKeyColor,
       unsigned int hotKeyOffset,
@@ -1268,8 +1245,7 @@ bool Renderer::WriteSingleLineText(
     params.Width          = width;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineCharacterBuffer(
-      int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency)
+bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, Graphics::CharacterBuffer& charBuffer, bool noTransparency)
 {
     CHECK_VISIBLE;
     // check size
@@ -1329,7 +1305,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(
 //=========================================================================[IMAGE]===================
 struct _RGB_Color_
 {
-    unsigned char Red, Green, Blue;
+    uint8 Red, Green, Blue;
     Color c;
 };
 static const _RGB_Color_ _console_colors_[16] = {
@@ -1457,7 +1433,7 @@ void PixelToGrayScaleCharacter(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
     c        = ColorPair{ Color::White, Color::Black };
     if (val < 12)
         ch = SpecialChars::Block0;
-    else if (val<37)
+    else if (val < 37)
         ch = SpecialChars::Block25;
     else if (val < 62)
         ch = SpecialChars::Block50;
@@ -1466,7 +1442,7 @@ void PixelToGrayScaleCharacter(Pixel colorRGB, ColorPair& c, SpecialChars& ch)
     else
         ch = SpecialChars::Block100;
 }
-void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+void Paint_SmallBlocks(Renderer& r, const Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w     = img.GetWidth();
     const auto h     = img.GetHeight();
@@ -1489,7 +1465,7 @@ void Paint_SmallBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
         }
     }
 }
-void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+void Paint_LargeBlocks(Renderer& r, const Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w    = img.GetWidth();
     const auto h    = img.GetHeight();
@@ -1511,7 +1487,7 @@ void Paint_LargeBlocks(Renderer& r, const AppCUI::Graphics::Image& img, int x, i
         }
     }
 }
-void Paint_GrayScale(Renderer& r, const AppCUI::Graphics::Image& img, int x, int y, unsigned int rap)
+void Paint_GrayScale(Renderer& r, const Graphics::Image& img, int x, int y, unsigned int rap)
 {
     const auto w    = img.GetWidth();
     const auto h    = img.GetHeight();
@@ -1585,5 +1561,6 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
         RETURNERROR(false, "Unknwon rendering method (%u) ", static_cast<unsigned int>(method));
     }
 }
+} // namespace AppCUI::Graphics
 
 #undef COMPUTE_RGB

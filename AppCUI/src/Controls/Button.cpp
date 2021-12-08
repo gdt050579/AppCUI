@@ -1,14 +1,11 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
-Button::Button(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags)
-    : Control(new ControlContext(), caption, layout,true)
+namespace AppCUI::Controls
 {
-    auto Members             = reinterpret_cast<ControlContext*>(this->Context);
+Button::Button(const ConstString& caption, string_view layout, int controlID, ButtonFlags flags)
+    : Control(new ControlContext(), caption, layout, true)
+{
+    auto Members = reinterpret_cast<ControlContext*>(this->Context);
 
     if ((flags & ButtonFlags::Flat) != ButtonFlags::None)
     {
@@ -24,8 +21,8 @@ Button::Button(
         Members->Layout.MaxHeight = 2;
         Members->Layout.Height    = 2;
     }
-    Members->Flags         = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
-    
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | flags;
+
     this->SetControlID(controlID);
 }
 
@@ -117,13 +114,13 @@ void Button::OnHotKey()
         {
             bh->OnButtonPressed.obj->OnButtonPressed(this);
             return;
-        }        
+        }
     }
 
     // if no handler is present --> call RaiseEvent
     RaiseEvent(Event::ButtonClicked);
 }
-bool Button::OnKeyEvent(Key KeyCode, char16_t)
+bool Button::OnKeyEvent(Key KeyCode, char16)
 {
     if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
     {
@@ -132,7 +129,7 @@ bool Button::OnKeyEvent(Key KeyCode, char16_t)
     }
     return false;
 }
-bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Button::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     if (IsChecked() == false)
         return false;
@@ -143,13 +140,13 @@ bool Button::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
     }
     return false;
 }
-void Button::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Button::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     SetChecked(false);
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-void Button::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Button::OnMousePressed(int, int, Input::MouseButton)
 {
     SetChecked(true);
 }
@@ -168,3 +165,4 @@ Handlers::Button* Button::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::Button);
 }
+} // namespace AppCUI::Controls

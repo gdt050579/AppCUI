@@ -3,9 +3,9 @@
 #include "Whereami.hpp"
 #include <sys/mount.h>
 
-using namespace AppCUI::OS;
-
-void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
+namespace AppCUI::OS
+{
+void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
 {
     const auto desktop = sago::getDesktopFolder();
     if (!desktop.empty())
@@ -59,7 +59,7 @@ void AppCUI::OS::GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector
 
 static std::filesystem::path current_application_path;
 
-std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
+std::filesystem::path GetCurrentApplicationPath()
 {
     if (!current_application_path.empty())
     {
@@ -80,4 +80,5 @@ std::filesystem::path AppCUI::OS::GetCurrentApplicationPath()
     delete[] output_buffer;
 
     return current_application_path;
+}
 }

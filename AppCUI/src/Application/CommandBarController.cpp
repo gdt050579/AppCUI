@@ -1,11 +1,11 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Input;
 
 CommandBarController::CommandBarController(
-      unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg)
+      unsigned int desktopWidth, unsigned int desktopHeight, Application::Config* cfg)
 {
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
@@ -20,11 +20,11 @@ CommandBarController::CommandBarController(
             b++;
         }
     }
-    CurrentShiftKey = AppCUI::Input::Key::None;
+    CurrentShiftKey = Input::Key::None;
     PressedField    = nullptr;
     HoveredField    = nullptr;
     LastCommand     = 0;
-    ShiftStatus     = std::string_view("", 0);
+    ShiftStatus     = string_view("", 0);
     Clear();
 }
 void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
@@ -50,13 +50,13 @@ void CommandBarController::Clear()
     HoveredField       = nullptr;
     RecomputeScreenPos = true;
 }
-bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command)
+bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, int Command)
 {
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
     CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
     unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = ((unsigned int) keyCode) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) AppCUI::Input::Key::Count, false, "Invalid key code !");
+    unsigned int shift = ((unsigned int) keyCode) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (unsigned int) Input::Key::Count, false, "Invalid key code !");
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, false, "Invalid shift combination !");
 
     CommandBarField* b = &Fields[shift][index];
@@ -66,12 +66,12 @@ bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::
     b->Command              = Command;
     b->KeyCode              = keyCode;
     b->ClearCommandUniqueID = ClearCommandUniqueID;
-    b->KeyName              = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
+    b->KeyName              = Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
     HasKeys[shift]          = true;
     RecomputeScreenPos      = true;
     return true;
 }
-void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
+void CommandBarController::Paint(Graphics::Renderer& renderer)
 {
     renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
     if (RecomputeScreenPos)
@@ -80,7 +80,7 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
     if (ShiftStatus.length() > 0)
         renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->CommandBar.ShiftKeysColor);
 
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
         return;
     if (HasKeys[shift] == false)
@@ -112,7 +112,7 @@ void CommandBarController::ComputeScreenPos()
 {
     int startPoz;
     // validez shift state
-    ShiftStatus = AppCUI::Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
+    ShiftStatus = Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
     startPoz    = (int) ShiftStatus.length();
     if (startPoz > 0)
         startPoz++;
@@ -151,7 +151,7 @@ void CommandBarController::ComputeScreenPos()
     this->PressedField = nullptr;
     RecomputeScreenPos = false;
 }
-bool CommandBarController::SetShiftKey(AppCUI::Input::Key keyCode)
+bool CommandBarController::SetShiftKey(Input::Key keyCode)
 {
     if (keyCode != CurrentShiftKey)
     {
@@ -165,7 +165,7 @@ CommandBarField* CommandBarController::MousePositionToField(int x, int y)
 {
     if (RecomputeScreenPos)
         ComputeScreenPos();
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, nullptr, "");
     if (HasKeys[shift] == false)
         return nullptr;
@@ -235,11 +235,11 @@ bool CommandBarController::OnMouseUp(int& command)
     command = -1;
     return false;
 }
-int CommandBarController::GetCommandForKey(AppCUI::Input::Key keyCode)
+int CommandBarController::GetCommandForKey(Input::Key keyCode)
 {
     unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = (((unsigned int) keyCode) >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) AppCUI::Input::Key::Count, -1, "Invalid key code !");
+    unsigned int shift = (((unsigned int) keyCode) >> Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (unsigned int) Input::Key::Count, -1, "Invalid key code !");
     CHECK((shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
     CommandBarField* b = &Fields[shift][index];
     // if ClearCommandUniqueID is not thee same as the current one, then its an old item and we discard it
@@ -247,3 +247,4 @@ int CommandBarController::GetCommandForKey(AppCUI::Input::Key keyCode)
         return -1;
     return b->Command;
 }
+} // namespace AppCUI::Internal

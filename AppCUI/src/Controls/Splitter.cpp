@@ -1,15 +1,13 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
 #define GATTR_VERTICAL    1024
 #define SPLITTER_BAR_SIZE 1
 
 #define SPLITTER_DRAG_STATUS_NONE 0
 #define SPLITTER_DRAG_STATUS_MOVE 1
 
+namespace AppCUI
+{
 constexpr int MIN_SPLITTER_SIZE = 4;
 
 constexpr int NO_TOOLTIP_TEXT             = -1;
@@ -19,11 +17,11 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr std::string_view splitterToolTipTexts[] = { "Drag to resize panels",
-                                                      "Click to maximize right panel",
-                                                      "Click to maximize bottom panel",
-                                                      "Click to maximize left panel",
-                                                      "Click to maximize top panel" };
+constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
+                                                 "Click to maximize right panel",
+                                                 "Click to maximize bottom panel",
+                                                 "Click to maximize left panel",
+                                                 "Click to maximize top panel" };
 
 SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Members, int x, int y, bool pressed)
 {
@@ -73,18 +71,18 @@ void Splitter_ResizeComponents(Splitter* control)
         o = Members->Controls[tr];
         if (o != nullptr)
         {
-            o->SetVisible(tr<2);
+            o->SetVisible(tr < 2);
             if (tr == 0)
             {
                 if ((Members->Flags & GATTR_VERTICAL) != 0)
-                {                    
+                {
                     o->Resize(Members->Layout.Width - sz, Members->Layout.Height);
                     o->MoveTo((Members->Layout.Width - sz) - o->GetWidth(), 0);
                 }
                 else
-                {                    
+                {
                     o->Resize(Members->Layout.Width, Members->Layout.Height - sz);
-                    o->MoveTo(0, (Members->Layout.Height - sz)-o->GetHeight());
+                    o->MoveTo(0, (Members->Layout.Height - sz) - o->GetHeight());
                 }
                 continue;
             }
@@ -109,7 +107,7 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-Splitter::Splitter(std::string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
+Splitter::Splitter(string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members         = reinterpret_cast<SplitterControlContext*>(this->Context);
     Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
@@ -203,7 +201,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         }
     }
 }
-bool Splitter::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
+bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if ((Members->Flags & GATTR_VERTICAL) != 0)
@@ -250,7 +248,7 @@ void Splitter::OnAfterResize(int, int)
 }
 void Splitter::OnFocus()
 {
-    //Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
+    // Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
 }
 bool Splitter::OnBeforeAddControl(Reference<Control> c)
 {
@@ -258,12 +256,12 @@ bool Splitter::OnBeforeAddControl(Reference<Control> c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, AppCUI::Input::MouseButton)
+void Splitter::OnMousePressed(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, true);
 }
-void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, false);
@@ -274,7 +272,7 @@ void Splitter::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
 
     Members->mouseStatus = SplitterMouseStatus::None;
 }
-bool Splitter::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->mouseStatus == SplitterMouseStatus::Drag)
@@ -341,9 +339,9 @@ unsigned int Splitter::GetFirstPanelSize()
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
     int value = 0;
     if ((Members->Flags & GATTR_VERTICAL) != 0)
-        value =  Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value = Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     else
-        value =  Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        value = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     if (value < 0)
         value = 0;
     return (unsigned int) value;
@@ -355,3 +353,4 @@ unsigned int Splitter::GetSecondPanelSize()
         return 0;
     return (unsigned int) Members->SecondPanelSize;
 }
+} // namespace AppCUI

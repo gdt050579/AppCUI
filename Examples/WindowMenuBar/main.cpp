@@ -16,14 +16,14 @@ class WindowMenuBarExample : public Window
         files->AddCommandItem("&Open", 102, Key::Ctrl | Key::O);
         files->AddSeparator();
         files->AddCommandItem("E&xit", 103, Key::Ctrl | Key::Q);
-        
+
         auto edit = this->AddMenu("&Edit");
         edit->AddCommandItem("&Copy", 200, Key::Ctrl | Key::Insert);
         edit->AddCommandItem("&paste", 201, Key::Shift | Key::Insert);
         edit->AddCommandItem("&Cut", 202, Key::Shift | Key::Delete);
         edit->AddCommandItem("Special copy", 203, Key::Ctrl | Key::Alt | Key::Shift | Key::Insert);
         edit->AddSeparator();
-        
+
         auto x = edit->AddSubMenu("Copy on location");
         edit->GetSubMenu(x)->AddCommandItem("&1", 100, Key::Ctrl | Key::N1);
         edit->GetSubMenu(x)->AddCommandItem("&2", 100, Key::Ctrl | Key::N2);
@@ -34,7 +34,7 @@ class WindowMenuBarExample : public Window
         edit->GetSubMenu(x)->AddCommandItem("&7", 100, Key::Ctrl | Key::N7);
         edit->GetSubMenu(x)->AddCommandItem("&8", 100, Key::Ctrl | Key::N8);
         edit->GetSubMenu(x)->AddCommandItem("&9", 100, Key::Ctrl | Key::N9);
-        
+
         auto help = this->AddMenu("&Help");
         help->AddCommandItem("&About", 300);
         help->AddCommandItem("Search &online", 301);

@@ -9,11 +9,12 @@ class MyWin : public Window
     Reference<Label> l;
     Reference<Splitter> v;
     Reference<Splitter> h;
+
   public:
     MyWin() : Window("Splitter example", "d:c,w:60,h:10", WindowFlags::Sizeable)
-    {        
+    {
         h = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", false);
-        v  = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", true);
+        v = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", true);
         h->SetSecondPanelSize(2);
         v->SetSecondPanelSize(30);
         auto pleft   = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");

@@ -1,8 +1,6 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Utils;
-
 #define ARRAY32_FLAG_STACK_BUFFER 0x80000000
 #define VALIDATE_ALLOCATED_SPACE(requiredItems, returnValue)                                                           \
     if ((requiredItems) > (Allocated & 0x7FFFFFFF))                                                                    \
@@ -10,12 +8,14 @@ using namespace AppCUI::Utils;
         CHECK(Grow(requiredItems), returnValue, "Fail to allocate space for %d items", (requiredItems));               \
     }
 
+namespace AppCUI::Utils
+{
 template <typename T>
 void __HeapSortContext(
-      T* Data, int (*cmpFunc)(T elem1, T elem2, void* Context), int nrElements, bool ascendent, void* Context)
+      T* Data, int32 (*cmpFunc)(T elem1, T elem2, void* Context), int32 nrElements, bool ascendent, void* Context)
 {
     T tempElement;
-    unsigned int n = nrElements, parent = nrElements / 2, index, child;
+    uint32 n = nrElements, parent = nrElements / 2, index, child;
 
     if ((nrElements <= 0) || (Data == nullptr))
         return; // nothing to sort
@@ -95,16 +95,16 @@ void __HeapSortContext(
     }
 }
 
-bool Array32::Grow(unsigned int newSize)
+bool Array32::Grow(uint32 newSize)
 {
     newSize = ((newSize | 0x7F) + 1) & 0x7FFFFFFF;
     if (newSize <= (Allocated & 0x7FFFFFFF))
         return true;
-    unsigned int* temp = new unsigned int[newSize];
+    uint32* temp = new uint32[newSize];
     CHECK(temp, false, "Failed to allocate: %d elements", newSize);
     if (Data)
     {
-        memcpy(temp, Data, ((size_t) Count) << 2); /* multiply by 4 --> size of int/uint32*/
+        memcpy(temp, Data, ((size_t) Count) << 2); /* multiply by 4 --> size of int32/uint32*/
         if ((Allocated & ARRAY32_FLAG_STACK_BUFFER) == 0)
             delete Data;
     }
@@ -132,13 +132,13 @@ void Array32::Destroy()
     this->Allocated = 0;
 }
 
-bool Array32::Create(unsigned int allocatedCount)
+bool Array32::Create(uint32 allocatedCount)
 {
     VALIDATE_ALLOCATED_SPACE(allocatedCount, false);
     this->Count = 0;
     return true;
 }
-bool Array32::Create(unsigned int* vector, unsigned int vectorSize, unsigned int elementsCount)
+bool Array32::Create(uint32* vector, uint32 vectorSize, uint32 elementsCount)
 {
     Destroy();
     CHECK(vector, false, "Expecting a valid (non-null) vector");
@@ -148,55 +148,56 @@ bool Array32::Create(unsigned int* vector, unsigned int vectorSize, unsigned int
     this->Data      = vector;
     return true;
 }
-bool Array32::Create(int* vector, unsigned int vectorSize, unsigned int elementsCount)
+bool Array32::Create(int32* vector, uint32 vectorSize, uint32 elementsCount)
 {
-    return Create((unsigned int*) vector, vectorSize, elementsCount);
+    return Create((uint32*) vector, vectorSize, elementsCount);
 }
-bool Array32::Reserve(unsigned int newSize)
+bool Array32::Reserve(uint32 newSize)
 {
     VALIDATE_ALLOCATED_SPACE(newSize, false);
     return true;
 }
-bool Array32::Resize(unsigned int newSize)
+bool Array32::Resize(uint32 newSize)
 {
     VALIDATE_ALLOCATED_SPACE(newSize, false);
     this->Count = newSize;
     return true;
 }
-bool Array32::Push(unsigned int value)
+bool Array32::Push(uint32 value)
 {
     VALIDATE_ALLOCATED_SPACE(Count + 1, false);
     Data[Count++] = value;
     return true;
 }
-bool Array32::Push(int value)
+bool Array32::Push(int32 value)
 {
     VALIDATE_ALLOCATED_SPACE(Count + 1, false);
-    *(int*) (Data + Count) = value;
+    *(int32*) (Data + Count) = value;
     Count++;
     return true;
 }
-bool Array32::Get(unsigned int index, unsigned int& value)
+bool Array32::Get(uint32 index, uint32& value)
 {
     CHECK(index < Count, false, "Invalid index - should be between [0 and %d)", Count);
     value = Data[index];
     return true;
 }
-bool Array32::Get(unsigned int index, int& value)
+bool Array32::Get(uint32 index, int32& value)
 {
     CHECK(index < Count, false, "Invalid index - should be between [0 and %d)", Count);
-    value = *(int*) (Data + Count);
+    value = *(int32*) (Data + Count);
     return true;
 }
-bool Array32::Sort(int (*compare)(int elem1, int elem2, void* Context), bool ascendent, void* Context)
+bool Array32::Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
-    __HeapSortContext<int>((int*) Data, compare, this->Count, ascendent, Context);
+    __HeapSortContext<int32>((int32*) Data, compare, this->Count, ascendent, Context);
     return true;
 }
-bool Array32::Sort(int (*compare)(unsigned int elem1, unsigned int elem2, void* Context), bool ascendent, void* Context)
+bool Array32::Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
-    __HeapSortContext<unsigned int>(Data, compare, this->Count, ascendent, Context);
+    __HeapSortContext<uint32>(Data, compare, this->Count, ascendent, Context);
     return true;
 }
+} // namespace AppCUI::Utils

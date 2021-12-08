@@ -1,8 +1,8 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Graphics;
-
+namespace AppCUI::Graphics
+{
 Canvas::Canvas()
 {
 }
@@ -54,10 +54,10 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     for (unsigned int tr = 0; tr < height; tr++, p += width)
         ofs_tmp[tr] = p;
 
-    unsigned short chr = ' ';
+    uint16 chr = ' ';
 
     if ((fillCharacter >= 0) && (fillCharacter <= 0xFFFF))
-        chr = (unsigned short) (fillCharacter & 0xFFFF);
+        chr = (uint16) (fillCharacter & 0xFFFF);
     // copy from Characters to tmp
     unsigned int min_w = std::min<>(this->Width, width);
     unsigned int min_h = std::min<>(this->Height, height);
@@ -117,7 +117,7 @@ void Canvas::Reset()
     this->ClipHasBeenCopied                                                                 = false;
     this->HideCursor();
 }
-void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
+void Canvas::SetAbsoluteClip(const Graphics::Clip& clip)
 {
     if (clip.Visible)
     {
@@ -138,7 +138,7 @@ void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
     }
     this->ClipHasBeenCopied = false;
 }
-void AppCUI::Graphics::Canvas::ExtendAbsoluteClipInAllDirections(int size)
+void Graphics::Canvas::ExtendAbsoluteClipInAllDirections(int size)
 {
     if (Clip.Visible)
     {
@@ -186,3 +186,4 @@ bool Canvas::ClearEntireSurface(int character, const ColorPair color)
 {
     return _ClearEntireSurface(character, color);
 }
+} // namespace AppCUI::Graphics
