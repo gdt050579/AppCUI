@@ -236,14 +236,14 @@ namespace Graphics
     };
     struct Size
     {
-        unsigned int Width, Height;
+        uint32 Width, Height;
         inline Size() : Width(0), Height(0)
         {
         }
-        inline Size(unsigned int width, unsigned int height) : Width(width), Height(height)
+        inline Size(uint32 width, uint32 height) : Width(width), Height(height)
         {
         }
-        inline void Set(unsigned int width, unsigned int height)
+        inline void Set(uint32 width, uint32 height)
         {
             Width  = width;
             Height = height;
@@ -280,7 +280,7 @@ namespace Graphics
                 char16 Code;
                 ColorPair Color;
             };
-            unsigned int PackedValue;
+            uint32 PackedValue;
         };
         inline constexpr bool operator==(char value) const
         {
@@ -636,7 +636,7 @@ namespace Utils
             return data;
         }
         template <typename T>
-        inline Reference<const T> GetObject(unsigned int offset = 0) const
+        inline Reference<const T> GetObject(uint32 offset = 0) const
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
@@ -728,7 +728,7 @@ namespace Utils
             return data;
         }
         template <typename T>
-        inline Reference<T> GetObject(unsigned int offset = 0)
+        inline Reference<T> GetObject(uint32 offset = 0)
         {
             if (sizeof(T) + offset > length)
                 return nullptr;
