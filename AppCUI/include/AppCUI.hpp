@@ -2340,16 +2340,8 @@ namespace Graphics
       public:
         Canvas();
         ~Canvas();
-        bool Create(
-              unsigned int width,
-              unsigned int height,
-              int fillCharacter     = ' ',
-              const ColorPair color = DefaultColorPair);
-        bool Resize(
-              unsigned int width,
-              unsigned int height,
-              int fillCharacter     = ' ',
-              const ColorPair color = DefaultColorPair);
+        bool Create(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
+        bool Resize(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
 
         // Clipping & Translate
         void SetAbsoluteClip(const Graphics::Clip& clip);
@@ -2363,11 +2355,11 @@ namespace Graphics
         bool ClearEntireSurface(int character, const ColorPair color);
 
         // inlines
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
             return this->Width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
             return this->Height;
         }
@@ -2375,11 +2367,11 @@ namespace Graphics
         {
             return this->Cursor.Visible;
         }
-        inline unsigned int GetCursorX() const
+        inline uint32 GetCursorX() const
         {
             return this->Cursor.X;
         }
-        inline unsigned int GetCursorY() const
+        inline uint32 GetCursorY() const
         {
             return this->Cursor.Y;
         }
