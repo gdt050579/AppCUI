@@ -460,7 +460,7 @@ namespace Dialogs
 
 namespace Input
 {
-    enum class Key : unsigned int
+    enum class Key : uint32
     {
         None = 0,
         F1   = 1,
@@ -533,7 +533,7 @@ namespace Input
         Ctrl  = 0x2000,
         Shift = 0x4000
     };
-    enum class MouseButton : unsigned int
+    enum class MouseButton : uint32
     {
         None          = 0,
         Left          = 0x01,
@@ -984,7 +984,7 @@ namespace Utils
         UnicodeStringBuilder& operator=(UnicodeStringBuilder&& obj) noexcept;
     };
 
-    enum class NumberParseFlags : unsigned int
+    enum class NumberParseFlags : uint32
     {
         None       = 0,
         BaseAuto   = 0,
@@ -1288,7 +1288,7 @@ namespace Utils
         }
     };
 
-    enum class StringEncoding : unsigned int
+    enum class StringEncoding : uint32
     {
         Ascii = 0,
         UTF8,
@@ -1746,7 +1746,7 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
-    enum class SpecialFolder : unsigned int
+    enum class SpecialFolder : uint32
     {
         AppPath = 0,
         Desktop,
@@ -1790,7 +1790,7 @@ namespace Graphics
         Left,
         Center
     };
-    enum class SpecialChars : unsigned int
+    enum class SpecialChars : uint32
     {
         BoxTopLeftCornerDoubleLine = 0,
         BoxTopRightCornerDoubleLine,
@@ -1852,7 +1852,7 @@ namespace Graphics
         Count
     };
 
-    enum class TextAlignament : unsigned int
+    enum class TextAlignament : uint32
     {
         Left   = 0x00,
         Center = 0x01,
@@ -1866,7 +1866,7 @@ namespace Graphics
         bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
 
-    enum class WriteTextFlags : unsigned int
+    enum class WriteTextFlags : uint32
     {
         None            = 0,
         SingleLine      = 0x0000001,
@@ -2107,14 +2107,14 @@ namespace Graphics
         }
     };
 
-    enum class ImageRenderingMethod : unsigned int
+    enum class ImageRenderingMethod : uint32
     {
         PixelTo16ColorsSmallBlock,
         PixelTo64ColorsLargeBlock,
         GrayScale,
         AsciiArt
     };
-    enum class ImageScaleMethod : unsigned int
+    enum class ImageScaleMethod : uint32
     {
         NoScale = 1,
         Scale50 = 2,
@@ -2416,7 +2416,7 @@ namespace Controls
         class EXPORT Tree;
         class EXPORT Grid;
     }; // namespace Factory
-    enum class Event : unsigned int
+    enum class Event : uint32
     {
         WindowClose,
         WindowAccept,
@@ -2820,7 +2820,7 @@ namespace Controls
         virtual ~Control();
     };
 
-    enum class WindowFlags : unsigned int
+    enum class WindowFlags : uint32
     {
         None          = 0,
         Sizeable      = 0x000100,
@@ -2914,7 +2914,7 @@ namespace Controls
         friend Control;
     };
 
-    enum class ButtonFlags : unsigned int
+    enum class ButtonFlags : uint32
     {
         None = 0,
         Flat = 0x000100,
@@ -3036,7 +3036,7 @@ namespace Controls
         friend Factory::Panel;
         friend Control;
     };
-    enum class TextFieldFlags : unsigned int
+    enum class TextFieldFlags : uint32
     {
         None               = 0,
         ProcessEnter       = 0x000100,
@@ -3079,7 +3079,7 @@ namespace Controls
         friend Factory::TextField;
         friend Control;
     };
-    enum class TextAreaFlags : unsigned int
+    enum class TextAreaFlags : uint32
     {
         None               = 0x000000,
         Border             = 0x000100,
@@ -3114,7 +3114,7 @@ namespace Controls
         friend Control;
     };
 
-    enum class TabFlags : unsigned int
+    enum class TabFlags : uint32
     {
         TopTabs               = 0x000000, // default mode
         BottomTabs            = 0x000100,
@@ -3169,7 +3169,7 @@ namespace Controls
         UserControl(const ConstString& caption, string_view layout);
         UserControl(string_view layout);
     };
-    enum class ViewerFlags : unsigned int
+    enum class ViewerFlags : uint32
     {
         None   = 0,
         Border = 0x000100,
@@ -3212,7 +3212,7 @@ namespace Controls
         friend Factory::ImageViewer;
         friend Control;
     };
-    enum class ListViewFlags : unsigned int
+    enum class ListViewFlags : uint32
     {
         None                          = 0,
         HideColumns                   = 0x000100,
@@ -3529,7 +3529,7 @@ namespace Controls
     {
     };
 
-    enum class TreeFlags : unsigned int
+    enum class TreeFlags : uint32
     {
         None                            = 0x000000,
         HideColumns                     = 0x000100, // not implemented
@@ -3637,7 +3637,7 @@ namespace Controls
         friend Control;
     };
 
-    enum class GridFlags : unsigned int
+    enum class GridFlags : uint32
     {
         None                  = 0x000000,
         HideHorizontalLines   = 0x000100,
@@ -4126,7 +4126,7 @@ namespace Dialogs
 
 namespace Log
 {
-    enum class Severity : unsigned int
+    enum class Severity : uint32
     {
         Fatal         = 4,
         InternalError = 3,
@@ -4159,7 +4159,7 @@ namespace Log
 } // namespace Log
 namespace Application
 {
-    enum class InitializationFlags : unsigned int
+    enum class InitializationFlags : uint32
     {
         None = 0,
 
@@ -4174,7 +4174,7 @@ namespace Application
         SingleWindowApp     = 0x0100,
     };
 
-    enum class CharacterSize : unsigned int
+    enum class CharacterSize : uint32
     {
         Default = 0,
         Tiny,
@@ -4183,7 +4183,7 @@ namespace Application
         Large,
         Huge
     };
-    enum class FrontendType : unsigned int
+    enum class FrontendType : uint32
     {
         Default        = 0,
         SDL            = 1,
@@ -4497,20 +4497,20 @@ namespace Application
 } // namespace AppCUI
 
 // inline operations for enum classes
-ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Input::Key, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 
 #undef ADD_FLAG_OPERATORS
