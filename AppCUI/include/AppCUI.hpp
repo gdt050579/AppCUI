@@ -2151,8 +2151,8 @@ namespace Graphics
     class EXPORT Image
     {
         Pixel* pixels;
-        unsigned int width;
-        unsigned int height;
+        uint32 width;
+        uint32 height;
 
       public:
         Image();
@@ -2168,37 +2168,37 @@ namespace Graphics
         }
         ~Image();
         bool Load(const std::filesystem::path& imageFilePath);
-        bool Create(unsigned int width, unsigned int height);
-        bool Create(unsigned int width, unsigned int height, string_view image);
-        bool Create(const uint8* imageBuffer, unsigned int size);
+        bool Create(uint32 width, uint32 height);
+        bool Create(uint32 width, uint32 height, string_view image);
+        bool Create(const uint8* imageBuffer, uint32 size);
         inline bool Create(Utils::BufferView buf)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
-                return Create(buf.GetData(), (unsigned int) buf.GetLength());
+                return Create(buf.GetData(), (uint32) buf.GetLength());
             else
                 return false;
         }
-        bool CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon);
+        bool CreateFromDIB(const uint8* imageBuffer, uint32 size, bool isIcon);
         inline bool CreateFromDIB(Utils::BufferView buf, bool isIcon)
         {
             if (buf.GetLength() <= 0xFFFFFFFF)
-                return CreateFromDIB(buf.GetData(), (unsigned int) buf.GetLength(), isIcon);
+                return CreateFromDIB(buf.GetData(), (uint32) buf.GetLength(), isIcon);
             else
                 return false;
         }
-        bool SetPixel(unsigned int x, unsigned int y, const Color color);
-        bool SetPixel(unsigned int x, unsigned int y, Pixel colorRGB);
+        bool SetPixel(uint32 x, uint32 y, const Color color);
+        bool SetPixel(uint32 x, uint32 y, Pixel colorRGB);
 
-        Pixel GetPixel(unsigned int x, unsigned int y, Pixel invalidIndexValue = {}) const;
-        bool GetPixel(unsigned int x, unsigned int y, Pixel& color) const;
-        Pixel ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
+        Pixel GetPixel(uint32 x, uint32 y, Pixel invalidIndexValue = {}) const;
+        bool GetPixel(uint32 x, uint32 y, Pixel& color) const;
+        Pixel ComputeSquareAverageColor(uint32 x, uint32 y, uint32 sz) const;
         bool Clear(Pixel color);
         bool Clear(const Color color);
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
             return width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
             return height;
         }

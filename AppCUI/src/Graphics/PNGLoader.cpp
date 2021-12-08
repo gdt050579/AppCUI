@@ -3,11 +3,11 @@
 
 namespace AppCUI::Graphics
 {
-bool LoadPNGToImage(Image& img, const uint8* imageBuffer, unsigned int size)
+bool LoadPNGToImage(Image& img, const uint8* imageBuffer, uint32 size)
 {
-    unsigned int resultedWidth  = 0;
-    unsigned int resultedHeight = 0;
-    uint8* temp         = nullptr;
+    uint32 resultedWidth  = 0;
+    uint32 resultedHeight = 0;
+    uint8* temp           = nullptr;
 
     if (lodepng_decode_memory(
               &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
