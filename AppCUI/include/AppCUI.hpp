@@ -541,7 +541,7 @@ namespace Input
         Right         = 0x04,
         DoubleClicked = 0x08,
     };
-    enum class MouseWheel : unsigned int
+    enum class MouseWheel : uint32
     {
         None = 0,
         Up,
@@ -554,33 +554,33 @@ namespace Utils
 {
     class EXPORT Array32
     {
-        unsigned int* Data;
-        unsigned int Count, Allocated;
+        uint32* Data;
+        uint32 Count, Allocated;
 
-        bool Grow(unsigned int newSize);
+        bool Grow(uint32 newSize);
 
       public:
         Array32();
         ~Array32();
         void Destroy();
 
-        bool Create(unsigned int allocatedCount = 64);
-        bool Create(unsigned int* vector, unsigned int vectorSize, unsigned int elementsCount = 0);
-        bool Create(int* vector, unsigned int vectorSize, unsigned int elementsCount = 0);
+        bool Create(uint32 allocatedCount = 64);
+        bool Create(uint32* vector, uint32 vectorSize, uint32 elementsCount = 0);
+        bool Create(int32* vector, uint32 vectorSize, uint32 elementsCount = 0);
 
-        inline unsigned int* GetUInt32Array() const
+        inline uint32* GetUInt32Array() const
         {
             return Data;
         }
-        inline int* GetInt32Array() const
+        inline int32* GetInt32Array() const
         {
-            return (int*) Data;
+            return (int32*) Data;
         }
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return Count;
         }
-        inline unsigned int GetAllocatedSize() const
+        inline uint32 GetAllocatedSize() const
         {
             return Allocated & 0x7FFFFFFF;
         }
@@ -589,18 +589,15 @@ namespace Utils
         {
             Count = 0;
         }
-        bool Reserve(unsigned int newSize);
-        bool Resize(unsigned int newSize);
-        bool Push(unsigned int value);
-        bool Push(int value);
-        bool Get(unsigned int index, unsigned int& value);
-        bool Get(unsigned int index, int& value);
+        bool Reserve(uint32 newSize);
+        bool Resize(uint32 newSize);
+        bool Push(uint32 value);
+        bool Push(int32 value);
+        bool Get(uint32 index, uint32& value);
+        bool Get(uint32 index, int32& value);
 
-        bool Sort(int (*compare)(int elem1, int elem2, void* Context), bool ascendent, void* Context = nullptr);
-        bool Sort(
-              int (*compare)(unsigned int elem1, unsigned int elem2, void* Context),
-              bool ascendent,
-              void* Context = nullptr);
+        bool Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context = nullptr);
+        bool Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context = nullptr);
     };
 
     class BufferView
