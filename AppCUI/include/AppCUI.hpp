@@ -1462,7 +1462,7 @@ namespace Utils
     class EXPORT IniValueArray
     {
         const char* text;
-        unsigned int len;
+        uint32 len;
 
       public:
         IniValueArray() : text(nullptr), len(0)
@@ -1491,7 +1491,7 @@ namespace Utils
         optional<double> AsDouble() const;
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
-        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
+        uint32 ToUInt32(uint32 defaultValue = 0) const;
         int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
@@ -1530,7 +1530,7 @@ namespace Utils
         optional<double> AsDouble() const;
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
-        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
+        uint32 ToUInt32(uint32 defaultValue = 0) const;
         int64 ToInt64(int64 defaultValue = -1) const;
         int ToInt32(int defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
@@ -1542,7 +1542,7 @@ namespace Utils
         double ToDouble(double defaultValue = 0.0) const;
 
         bool IsArray() const;
-        unsigned int GetArrayCount() const;
+        uint32 GetArrayCount() const;
         IniValueArray operator[](int index) const;
 
         string_view GetName() const;
@@ -1553,7 +1553,7 @@ namespace Utils
         }
 
         void operator=(bool value);
-        void operator=(unsigned int value);
+        void operator=(uint32 value);
         void operator=(uint64 value);
         void operator=(int value);
         void operator=(int64 value);
@@ -1597,7 +1597,7 @@ namespace Utils
         bool HasValue(string_view keyName);
 
         void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, unsigned int value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, uint32 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits);
@@ -1641,7 +1641,7 @@ namespace Utils
         }
         IniValue GetValue(string_view valuePath);
         vector<IniSection> GetSections() const;
-        unsigned int GetSectionsCount();
+        uint32 GetSectionsCount();
 
         bool DeleteSection(string_view name);
         bool DeleteValue(string_view valuePath);
