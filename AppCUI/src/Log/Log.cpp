@@ -29,7 +29,7 @@ const char* _severity_type_names_[5] = {
 
 bool _LogMessage_to_String_(const Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
 {
-    EXIT_IF_ERROR(str.Set(_severity_type_names_[(unsigned int) msg.Type]));
+    EXIT_IF_ERROR(str.Set(_severity_type_names_[(uint32) msg.Type]));
     EXIT_IF_ERROR(str.Add(msg.Content));
     if (msg.Type != Severity::Information)
     {

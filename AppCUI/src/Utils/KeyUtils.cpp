@@ -36,21 +36,21 @@ static constexpr string_view _Key_Name_Padded[] = {
 
 string_view Utils::KeyUtils::GetKeyName(Input::Key keyCode)
 {
-    unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
+    uint32 keyIndex = ((uint32) keyCode) & 0xFF;
     if ((keyIndex >= (sizeof(_Key_Name) / sizeof(string_view))))
         return string_view("", 0);
     return _Key_Name[keyIndex];
 }
 string_view Utils::KeyUtils::GetKeyNamePadded(Input::Key keyCode)
 {
-    unsigned int keyIndex = ((unsigned int) keyCode) & 0xFF;
+    uint32 keyIndex = ((uint32) keyCode) & 0xFF;
     if ((keyIndex >= (sizeof(_Key_Name_Padded) / sizeof(string_view))))
         return string_view("", 0);
     return _Key_Name_Padded[keyIndex];
 }
 string_view Utils::KeyUtils::GetKeyModifierName(Input::Key keyCode)
 {
-    unsigned int keyIndex = (((unsigned int) keyCode) >> KEY_SHIFT_BITS) & 0x7;
+    uint32 keyIndex = (((uint32) keyCode) >> KEY_SHIFT_BITS) & 0x7;
     if (keyIndex > 7)
         return string_view("", 0);
     return _Key_Modifiers[keyIndex];
@@ -75,8 +75,8 @@ bool Utils::KeyUtils::ToString(Input::Key keyCode, Utils::String& text)
 }
 Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
 {
-    unsigned int code     = 0;
-    unsigned int modifier = 0;
+    uint32 code     = 0;
+    uint32 modifier = 0;
     if (stringRepresentation.data() == nullptr)
         return Input::Key::None;
     if (stringRepresentation.length() == 0)
@@ -115,7 +115,7 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
         break;
     }
     auto* p = &_Key_Name[1];
-    for (unsigned int tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
+    for (uint32 tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
     {
         if (Utils::String::Equals(key, p->data()))
         {
@@ -132,19 +132,19 @@ Key KeyUtils::CreateHotKey(char16 hotKey, Key modifier)
     Key result = Key::None;
     if ((hotKey >= 'a') && (hotKey <= 'z'))
     {
-        result = static_cast<Key>(((unsigned int) Key::A) + (hotKey - 'a'));
+        result = static_cast<Key>(((uint32) Key::A) + (hotKey - 'a'));
     }
     else if ((hotKey >= 'A') && (hotKey <= 'Z'))
     {
-        result = static_cast<Key>(((unsigned int) Key::A) + (hotKey - 'A'));
+        result = static_cast<Key>(((uint32) Key::A) + (hotKey - 'A'));
     }
     else if ((hotKey >= '0') && (hotKey <= '9'))
     {
-        result = static_cast<Key>(((unsigned int) Key::N0) + (hotKey - '0'));
+        result = static_cast<Key>(((uint32) Key::N0) + (hotKey - '0'));
     }
     if (result == Key::None)
         return Key::None;
-    result |= static_cast<Key>(((unsigned int) modifier) & ((unsigned int) (Key::Ctrl | Key::Alt | Key::Shift)));
+    result |= static_cast<Key>(((uint32) modifier) & ((uint32) (Key::Ctrl | Key::Alt | Key::Shift)));
     return result;
 }
 } // namespace AppCUI
