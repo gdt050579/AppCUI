@@ -886,8 +886,8 @@ namespace Utils
     class EXPORT UnicodeStringBuilder
     {
         char16* chars;
-        unsigned int length;
-        unsigned int allocated;
+        uint32 length;
+        uint32 allocated;
 
         void Create(char16* localBuffer, size_t localBufferSize);
 
@@ -920,12 +920,12 @@ namespace Utils
         {
             length = 0;
         }
-        inline void Truncate(unsigned int newSize)
+        inline void Truncate(uint32 newSize)
         {
             if (newSize < length)
                 length = newSize;
         }
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return length;
         }
