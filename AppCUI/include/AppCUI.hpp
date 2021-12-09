@@ -997,27 +997,27 @@ namespace Utils
     namespace Number
     {
         EXPORT optional<uint64> ToUInt64(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<unsigned int> ToUInt32(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<uint32> ToUInt32(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
         EXPORT optional<uint16> ToUInt16(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
         EXPORT optional<uint8> ToUInt8(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
         EXPORT optional<int64> ToInt64(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<int> ToInt32(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<int32> ToInt32(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
         EXPORT optional<int16> ToInt16(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT optional<char> ToInt8(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<int8> ToInt8(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
         EXPORT optional<float> ToFloat(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
         EXPORT optional<double> ToDouble(
-              string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
     }; // namespace Number
 

@@ -37,9 +37,9 @@ struct _parse_number_result_
 {
     uint64 Value;
     long double SecondValue;
-    unsigned int Flags;
-    unsigned int Base;
-    unsigned int* Size;
+    uint32 Flags;
+    uint32 Base;
+    uint32* Size;
     NumberParseFlags ParseFlags;
 };
 
@@ -144,13 +144,13 @@ bool _parse_number_string_buffer_(const uint8* start, const uint8* end, _parse_n
     SKIP_SPACES;
     if (res.Size)
     {
-        *res.Size = (unsigned int) (start - original_start);
+        *res.Size = (uint32) (start - original_start);
         return true;
     }
     return (start == end);
 }
 
-inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberParseFlags flags, unsigned int* size)
+inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberParseFlags flags, uint32* size)
 {
     const uint8* start = reinterpret_cast<const uint8*>(text.data());
     CHECK(start, false, "Expecting a non-null string to convert to number !");
@@ -163,7 +163,7 @@ inline bool ParseNumber(_parse_number_result_& res, string_view text, NumberPars
     return true;
 }
 
-optional<uint64> ToUInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint64> ToUInt64(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -171,16 +171,16 @@ optional<uint64> ToUInt64(string_view text, NumberParseFlags flags, unsigned int
           "Invalid format for an uint64 value");
     return res.Value;
 }
-optional<unsigned int> ToUInt32(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint32> ToUInt32(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
           std::nullopt,
-          "Invalid format for an unsigned int value");
-    CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an unsigned int variable");
-    return (unsigned int) (res.Value);
+          "Invalid format for an uint32 value");
+    CHECK(res.Value <= 0xFFFFFFFFULL, std::nullopt, "Value can not be stored in an uint32 variable");
+    return (uint32) (res.Value);
 }
-optional<uint16> ToUInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint16> ToUInt16(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -189,7 +189,7 @@ optional<uint16> ToUInt16(string_view text, NumberParseFlags flags, unsigned int
     CHECK(res.Value <= 0xFFFFULL, std::nullopt, "Value can not be stored in an uint16 variable");
     return (uint16) (res.Value);
 }
-optional<uint8> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<uint8> ToUInt8(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_NEGATIVE | NUMBER_FLAG_SECOND)) == 0),
@@ -198,22 +198,22 @@ optional<uint8> ToUInt8(string_view text, NumberParseFlags flags, unsigned int* 
     CHECK(res.Value <= 0xFFULL, std::nullopt, "Value can not be stored in an uint8 variable");
     return (uint8) (res.Value);
 }
-optional<char> ToInt8(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int8> ToInt8(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a char value");
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
         CHECK(res.Value <= ((1ULL << 7)), std::nullopt, "Value can not be stored in a char variable");
-        return (char) (-((int64) (res.Value)));
+        return (int8) (-((int64) (res.Value)));
     }
     else
     {
         CHECK(res.Value <= ((1ULL << 7) - 1), std::nullopt, "Value can not be stored in a char variable");
-        return (char) (res.Value);
+        return (int8) (res.Value);
     }
 }
-optional<int16> ToInt16(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int16> ToInt16(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a int16 value");
@@ -228,22 +228,22 @@ optional<int16> ToInt16(string_view text, NumberParseFlags flags, unsigned int* 
         return (int16) (res.Value);
     }
 }
-optional<int> ToInt32(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int32> ToInt32(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
-    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an int value");
+    CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for an int32 value");
     if (res.Flags & NUMBER_FLAG_NEGATIVE)
     {
-        CHECK(res.Value <= ((1ULL << 31)), std::nullopt, "Value can not be stored in an int variable");
-        return (int) (-((int64) (res.Value)));
+        CHECK(res.Value <= ((1ULL << 31)), std::nullopt, "Value can not be stored in an int32 variable");
+        return (int32) (-((int64) (res.Value)));
     }
     else
     {
-        CHECK(res.Value <= ((1ULL << 31) - 1), std::nullopt, "Value can not be stored in an int variable");
-        return (int) (res.Value);
+        CHECK(res.Value <= ((1ULL << 31) - 1), std::nullopt, "Value can not be stored in an int32 variable");
+        return (int32) (res.Value);
     }
 }
-optional<int64> ToInt64(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<int64> ToInt64(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     CHECK(((res.Flags & (NUMBER_FLAG_SECOND)) == 0), std::nullopt, "Invalid format for a int64 value");
@@ -260,7 +260,7 @@ optional<int64> ToInt64(string_view text, NumberParseFlags flags, unsigned int* 
         return (int64) (res.Value);
     }
 }
-optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<float> ToFloat(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     float f = (float) res.Value;
@@ -270,7 +270,7 @@ optional<float> ToFloat(string_view text, NumberParseFlags flags, unsigned int* 
         f = -f;
     return f;
 }
-optional<double> ToDouble(string_view text, NumberParseFlags flags, unsigned int* size)
+optional<double> ToDouble(string_view text, NumberParseFlags flags, uint32* size)
 {
     PARSE_NUMBER;
     double f = (double) res.Value;
