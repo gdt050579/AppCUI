@@ -4184,7 +4184,7 @@ namespace Application
 
     struct InitializationData
     {
-        unsigned int Width, Height;
+        uint32 Width, Height;
         FrontendType Frontend;
         CharacterSize CharSize;
         InitializationFlags Flags;
