@@ -1086,7 +1086,7 @@ namespace Utils
         {
             return ToHexString(value);
         }
-        inline string_view ToHex(unsigned int value)
+        inline string_view ToHex(uint32 value)
         {
             return ToHexString((uint64) value);
         }
@@ -1104,7 +1104,7 @@ namespace Utils
         }
         inline string_view ToHex(int value)
         {
-            return ToHexString((uint64) (*(unsigned int*) &value));
+            return ToHexString((uint64) (*(uint32*) &value));
         }
         inline string_view ToHex(int16 value)
         {
@@ -1120,7 +1120,7 @@ namespace Utils
         {
             return ToDecStringUnsigned(value);
         }
-        inline string_view ToDec(unsigned int value)
+        inline string_view ToDec(uint32 value)
         {
             return ToDecStringUnsigned((uint64) value);
         }
@@ -1156,7 +1156,7 @@ namespace Utils
         {
             return ToOctString(value);
         }
-        inline string_view ToOct(unsigned int value)
+        inline string_view ToOct(uint32 value)
         {
             return ToOctString((uint64) value);
         }
@@ -1174,7 +1174,7 @@ namespace Utils
         }
         inline string_view ToOct(int value)
         {
-            return ToOctString((uint64) (*(unsigned int*) &value));
+            return ToOctString((uint64) (*(uint32*) &value));
         }
         inline string_view ToOct(int16 value)
         {
@@ -1190,7 +1190,7 @@ namespace Utils
         {
             return ToBinString(value);
         }
-        inline string_view ToBin(unsigned int value)
+        inline string_view ToBin(uint32 value)
         {
             return ToBinString((uint64) value);
         }
@@ -1208,7 +1208,7 @@ namespace Utils
         }
         inline string_view ToBin(int value)
         {
-            return ToBinString((uint64) (*(unsigned int*) &value));
+            return ToBinString((uint64) (*(uint32*) &value));
         }
         inline string_view ToBin(int16 value)
         {
@@ -1224,7 +1224,7 @@ namespace Utils
         {
             return ToBaseUnsigned(value, base);
         }
-        inline string_view ToBase(unsigned int value, int base)
+        inline string_view ToBase(uint32 value, int base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
@@ -1258,7 +1258,7 @@ namespace Utils
         {
             return ToStringUnsigned(value, fmt);
         }
-        inline string_view ToString(unsigned int value, NumericFormat fmt)
+        inline string_view ToString(uint32 value, NumericFormat fmt)
         {
             return ToStringUnsigned((uint64) value, fmt);
         }
