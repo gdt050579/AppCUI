@@ -1299,7 +1299,7 @@ namespace Utils
         Count
     };
 
-    static_assert(std::variant_size_v<ConstString> == static_cast<unsigned int>(StringEncoding::Count));
+    static_assert(std::variant_size_v<ConstString> == static_cast<uint32>(StringEncoding::Count));
 
     struct ConstStringObject
     {
@@ -1930,13 +1930,13 @@ namespace Graphics
         {
             return Y;
         }
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
-            return (unsigned int) Width;
+            return (uint32) Width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
-            return (unsigned int) Height;
+            return (uint32) Height;
         }
         inline int GetLeft() const
         {
