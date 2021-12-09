@@ -1981,13 +1981,13 @@ namespace Graphics
     class EXPORT CharacterBuffer
     {
         Character* Buffer;
-        unsigned int Count;
-        unsigned int Allocated;
+        uint32 Count;
+        uint32 Allocated;
 
         bool Grow(size_t newSize);
 
       public:
-        static constexpr unsigned int INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
+        static constexpr uint32 INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
 
         void Swap(CharacterBuffer&) noexcept;
         CharacterBuffer();
@@ -2008,11 +2008,11 @@ namespace Graphics
         void Destroy();
         void Clear();
 
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return Count;
         }
-        inline unsigned int GetAllocatedChars() const
+        inline uint32 GetAllocatedChars() const
         {
             return Allocated;
         }
@@ -2029,39 +2029,39 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
-        bool Resize(unsigned int size, char16 character = ' ', const ColorPair color = NoColorPair);
-        bool Fill(char16 character, unsigned int size, const ColorPair color = NoColorPair);
+        bool Resize(uint32 size, char16 character = ' ', const ColorPair color = NoColorPair);
+        bool Fill(char16 character, uint32 size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
         bool Add(const ConstString& text, const ColorPair color = NoColorPair);
         bool Set(const ConstString& text, const ColorPair color = NoColorPair);
         bool SetWithHotKey(
               const ConstString& text,
-              unsigned int& hotKeyCharacterPosition,
+              uint32& hotKeyCharacterPosition,
               Input::Key& hotKey,
               Input::Key hotKeyModifier = Input::Key::None,
               const ColorPair color     = NoColorPair);
 
-        bool Delete(unsigned int start, unsigned int end);
-        bool DeleteChar(unsigned int position);
-        bool Insert(const ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
-        bool InsertChar(uint16 characterCode, unsigned int position, const ColorPair color = NoColorPair);
-        bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
+        bool Delete(uint32 start, uint32 end);
+        bool DeleteChar(uint32 position);
+        bool Insert(const ConstString& text, uint32 position, const ColorPair color = NoColorPair);
+        bool InsertChar(uint16 characterCode, uint32 position, const ColorPair color = NoColorPair);
+        bool SetColor(uint32 start, uint32 end, const ColorPair color);
         void SetColor(const ColorPair color);
-        bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
+        bool CopyString(Utils::String& text, uint32 start, uint32 end);
         bool CopyString(Utils::String& text);
-        bool ConvertToUpper(unsigned int start, unsigned int end);
-        bool ConvertToLower(unsigned int start, unsigned int end);
+        bool ConvertToUpper(uint32 start, uint32 end);
+        bool ConvertToLower(uint32 start, uint32 end);
 
-        int Find(const ConstString& text, bool ignoreCase = true) const;
+        int32 Find(const ConstString& text, bool ignoreCase = true) const;
         inline bool Contains(const ConstString& text, bool ignoreCase = true) const
         {
             return Find(text, ignoreCase) != -1;
         }
-        int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
-        optional<unsigned int> FindNext(
-              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
-        optional<unsigned int> FindPrevious(
-              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
+        int32 CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+        optional<uint32> FindNext(
+              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
+        optional<uint32> FindPrevious(
+              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;

@@ -57,7 +57,7 @@ size_t CopyStringToCharBuffer(Character* dest, const T* source, size_t sourceCha
 }
 template <typename T>
 size_t CopyStringToCharBufferWidthHotKey(
-      Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, unsigned int& hotKeyPos)
+      Character* dest, const T* source, size_t sourceCharactersCount, ColorPair col, uint32& hotKeyPos)
 {
     // it is iassume that dest, source and sourceCharactersCount are valid values
     // all new-line formats will be converted into a single separator
@@ -92,7 +92,7 @@ size_t CopyStringToCharBufferWidthHotKey(
                 ((source[1] >= '0') && (source[1] <= '9')))
             {
                 // found a hotkey
-                hotKeyPos = (unsigned int) (source - start);
+                hotKeyPos = (uint32) (source - start);
                 source++; // skip `&` character
                 dest->Code = (char16) (*source);
                 dest++;
@@ -109,7 +109,7 @@ size_t CopyStringToCharBufferWidthHotKey(
     return dest - ch_start;
 }
 template <typename T>
-int FindInCharacterBuffer(const T& sv, const CharacterView& charView, bool ignoreCase)
+int32 FindInCharacterBuffer(const T& sv, const CharacterView& charView, bool ignoreCase)
 {
     auto p                  = sv.data();
     auto p_end              = p + sv.length();
@@ -135,7 +135,7 @@ int FindInCharacterBuffer(const T& sv, const CharacterView& charView, bool ignor
                 s++;
             }
             if (s >= p_end)
-                return (int) (ch - charView.data());
+                return (int32) (ch - charView.data());
             ch++;
         }
     }
@@ -151,7 +151,7 @@ int FindInCharacterBuffer(const T& sv, const CharacterView& charView, bool ignor
                 s++;
             }
             if (s >= p_end)
-                return (int) (ch - charView.data());
+                return (int32) (ch - charView.data());
             ch++;
         }
     }
@@ -178,7 +178,6 @@ CharacterBuffer::CharacterBuffer()
 
 CharacterBuffer::~CharacterBuffer(void)
 {
-    // LOG_INFO("DTOR for %p [Buffer=%p,Count=%d,Allocated=%d]", this, Buffer, (int) Count, (int) Allocated);
     Destroy();
 }
 
@@ -191,8 +190,6 @@ void CharacterBuffer::Swap(CharacterBuffer& obj) noexcept
 }
 void CharacterBuffer::Destroy()
 {
-    // LOG_INFO("Destroy Character Buffer from (%p) with [Buffer = %p, Count = %d, Allocated = %d]",this, Buffer,
-    // (int)Count, (int)Allocated);
     if (Buffer)
         delete[] Buffer;
     Buffer = nullptr;
@@ -222,10 +219,10 @@ bool CharacterBuffer::Grow(size_t newSize)
         delete[] Buffer;
     }
     Buffer    = temp;
-    Allocated = (unsigned int) alingSize;
+    Allocated = (uint32) alingSize;
     return true;
 }
-bool CharacterBuffer::Resize(unsigned int size, char16 character, const ColorPair color)
+bool CharacterBuffer::Resize(uint32 size, char16 character, const ColorPair color)
 {
     if (size == this->Count)
         return true; // nothing to do
@@ -249,7 +246,7 @@ bool CharacterBuffer::Resize(unsigned int size, char16 character, const ColorPai
     this->Count = size;
     return true;
 }
-bool CharacterBuffer::Fill(char16 character, unsigned int size, const ColorPair color)
+bool CharacterBuffer::Fill(char16 character, uint32 size, const ColorPair color)
 {
     Character c;
 
@@ -272,7 +269,7 @@ bool CharacterBuffer::Fill(char16 character, unsigned int size, const ColorPair 
 bool CharacterBuffer::Set(const CharacterBuffer& obj)
 {
     this->Count = 0; // we overwrite the buffer anyway - don't need to recopy it if the allocated space is too small
-    CHECK(Grow(obj.Count), false, "Fail to allocate %d bytes ", (int) obj.Count);
+    CHECK(Grow(obj.Count), false, "Fail to allocate %u bytes ", obj.Count);
     if (obj.Count > 0)
     {
         memcpy(this->Buffer, obj.Buffer, sizeof(Character) * obj.Count);
@@ -318,7 +315,7 @@ bool CharacterBuffer::Add(const ConstString& text, const ColorPair color)
     }
     CHECK(sz <= textObj.Length, false, "Internal error --> possible buffer overwrite !");
     // sz can be fitted in 32 bits
-    this->Count += (unsigned int) sz;
+    this->Count += (uint32) sz;
     return true;
 }
 bool CharacterBuffer::Set(const ConstString& text, const ColorPair color)
@@ -328,7 +325,7 @@ bool CharacterBuffer::Set(const ConstString& text, const ColorPair color)
 }
 bool CharacterBuffer::SetWithHotKey(
       const ConstString& text,
-      unsigned int& hotKeyCharacterPosition,
+      uint32& hotKeyCharacterPosition,
       Input::Key& hotKey,
       Input::Key hotKeyModifier,
       const ColorPair color)
@@ -374,7 +371,7 @@ bool CharacterBuffer::SetWithHotKey(
         hotKey                  = Input::Key::None;
         RETURNERROR(false, "Internal error --> possible buffer overwrite !");
     }
-    this->Count = (unsigned int) sz;
+    this->Count = (uint32) sz;
     // sanity check
     if ((hotKeyCharacterPosition != CharacterBuffer::INVALID_HOTKEY_OFFSET) && (hotKeyCharacterPosition >= this->Count))
     {
@@ -396,7 +393,7 @@ void CharacterBuffer::Clear()
 {
     this->Count = 0;
 }
-bool CharacterBuffer::Delete(unsigned int start, unsigned int end)
+bool CharacterBuffer::Delete(uint32 start, uint32 end)
 {
     CHECK(end <= this->Count, false, "Invalid delete offset: %d (should be between 0 and %d)", end, this->Count);
     CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
@@ -411,7 +408,7 @@ bool CharacterBuffer::Delete(unsigned int start, unsigned int end)
     }
     return true;
 }
-bool CharacterBuffer::DeleteChar(unsigned int position)
+bool CharacterBuffer::DeleteChar(uint32 position)
 {
     CHECK(position < this->Count,
           false,
@@ -426,7 +423,7 @@ bool CharacterBuffer::DeleteChar(unsigned int position)
     this->Count--;
     return true;
 }
-bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, const ColorPair color)
+bool CharacterBuffer::Insert(const ConstString& text, uint32 position, const ColorPair color)
 {
     ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
@@ -486,11 +483,11 @@ bool CharacterBuffer::Insert(const ConstString& text, unsigned int position, con
               this->Buffer + position + textObj.Length,
               (this->Count - position) * sizeof(Character));
     }
-    this->Count += (unsigned int) writtenChars;
+    this->Count += (uint32) writtenChars;
     return true;
 }
 
-bool CharacterBuffer::InsertChar(uint16 characterCode, unsigned int position, const ColorPair color)
+bool CharacterBuffer::InsertChar(uint16 characterCode, uint32 position, const ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(((size_t) this->Count) + 1, false);
     CHECK(position <= this->Count,
@@ -508,13 +505,13 @@ bool CharacterBuffer::InsertChar(uint16 characterCode, unsigned int position, co
     this->Count++;
     return true;
 }
-bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, const ColorPair color)
+bool CharacterBuffer::SetColor(uint32 start, uint32 end, const ColorPair color)
 {
     if (end > this->Count)
         end = this->Count;
     CHECK(start <= end, false, "Expecting a valid parameter for start (%d) --> should be smaller than %d", start, end);
     Character* ch   = this->Buffer + start;
-    unsigned int sz = end - start;
+    uint32 sz = end - start;
     while (sz)
     {
         ch->Color = color;
@@ -523,13 +520,13 @@ bool CharacterBuffer::SetColor(unsigned int start, unsigned int end, const Color
     }
     return true;
 }
-bool CharacterBuffer::ConvertToUpper(unsigned int start, unsigned int end)
+bool CharacterBuffer::ConvertToUpper(uint32 start, uint32 end)
 {
     if (end > this->Count)
         end = this->Count;
     CHECK(start <= end, false, "Expecting a valid parameter for start (%d) --> should be smaller than %d", start, end);
     Character* ch   = this->Buffer + start;
-    unsigned int sz = end - start;
+    uint32 sz = end - start;
     while (sz)
     {
         // GDT: upper/lower case needs to be redesigned
@@ -540,13 +537,13 @@ bool CharacterBuffer::ConvertToUpper(unsigned int start, unsigned int end)
     }
     return true;
 }
-bool CharacterBuffer::ConvertToLower(unsigned int start, unsigned int end)
+bool CharacterBuffer::ConvertToLower(uint32 start, uint32 end)
 {
     if (end > this->Count)
         end = this->Count;
     CHECK(start <= end, false, "Expecting a valid parameter for start (%d) --> should be smaller than %d", start, end);
     Character* ch   = this->Buffer + start;
-    unsigned int sz = end - start;
+    uint32 sz = end - start;
     while (sz)
     {
         // GDT: upper/lower case needs to be redesigned
@@ -568,7 +565,7 @@ void CharacterBuffer::SetColor(const ColorPair color)
         ch++;
     }
 }
-bool CharacterBuffer::CopyString(Utils::String& text, unsigned int start, unsigned int end)
+bool CharacterBuffer::CopyString(Utils::String& text, uint32 start, uint32 end)
 {
     CHECK(start < end, false, "Start position (%d) should be smaller than the end position (%d)", start, end);
     CHECK(end <= Count,
@@ -592,7 +589,7 @@ bool CharacterBuffer::CopyString(Utils::String& text)
 {
     return CopyString(text, 0, this->Count);
 }
-int CharacterBuffer::Find(const ConstString& text, bool ignoreCase) const
+int32 CharacterBuffer::Find(const ConstString& text, bool ignoreCase) const
 {
     ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
@@ -616,7 +613,7 @@ int CharacterBuffer::Find(const ConstString& text, bool ignoreCase) const
         RETURNERROR(-1, "Unknwon string encoding type: %d", textObj.Encoding);
     }
 }
-int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const
+int32 CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) const
 {
     Character* s     = this->Buffer;
     Character* s_end = s + this->Count;
@@ -669,8 +666,8 @@ int CharacterBuffer::CompareWith(const CharacterBuffer& obj, bool ignoreCase) co
     return 0;
 }
 
-optional<unsigned int> CharacterBuffer::FindNext(
-      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+optional<uint32> CharacterBuffer::FindNext(
+      uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const
 {
     CHECK(this->Buffer, std::nullopt, "Object not initialized ");
     CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
@@ -684,8 +681,8 @@ optional<unsigned int> CharacterBuffer::FindNext(
     }
     return startOffset;
 }
-optional<unsigned int> CharacterBuffer::FindPrevious(
-      unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const
+optional<uint32> CharacterBuffer::FindPrevious(
+      uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const
 {
     CHECK(this->Buffer, std::nullopt, "Object not initialized ");
     CHECK(shouldSkip, std::nullopt, "shouldSkip parameter must be valid (non-null)");
