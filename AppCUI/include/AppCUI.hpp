@@ -1468,14 +1468,14 @@ namespace Utils
         IniValueArray() : text(nullptr), len(0)
         {
         }
-        IniValueArray(string_view obj) : text(obj.data()), len((unsigned int) obj.size())
+        IniValueArray(string_view obj) : text(obj.data()), len((uint32) obj.size())
         {
         }
 
         optional<uint64> AsUInt64() const;
         optional<int64> AsInt64() const;
-        optional<unsigned int> AsUInt32() const;
-        optional<int> AsInt32() const;
+        optional<uint32> AsUInt32() const;
+        optional<int32> AsInt32() const;
         optional<bool> AsBool() const;
         optional<Input::Key> AsKey() const;
         inline optional<const char*> AsString() const
@@ -1493,7 +1493,7 @@ namespace Utils
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         uint32 ToUInt32(uint32 defaultValue = 0) const;
         int64 ToInt64(int64 defaultValue = -1) const;
-        int ToInt32(int defaultValue = -1) const;
+        int32 ToInt32(int32 defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
@@ -1519,8 +1519,8 @@ namespace Utils
 
         optional<uint64> AsUInt64() const;
         optional<int64> AsInt64() const;
-        optional<unsigned int> AsUInt32() const;
-        optional<int> AsInt32() const;
+        optional<uint32> AsUInt32() const;
+        optional<int32> AsInt32() const;
         optional<bool> AsBool() const;
         optional<Input::Key> AsKey() const;
         optional<const char*> AsString() const;
@@ -1532,7 +1532,7 @@ namespace Utils
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         uint32 ToUInt32(uint32 defaultValue = 0) const;
         int64 ToInt64(int64 defaultValue = -1) const;
-        int ToInt32(int defaultValue = -1) const;
+        int32 ToInt32(int32 defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
         Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
@@ -1543,7 +1543,7 @@ namespace Utils
 
         bool IsArray() const;
         uint32 GetArrayCount() const;
-        IniValueArray operator[](int index) const;
+        IniValueArray operator[](int32 index) const;
 
         string_view GetName() const;
 
@@ -1555,7 +1555,7 @@ namespace Utils
         void operator=(bool value);
         void operator=(uint32 value);
         void operator=(uint64 value);
-        void operator=(int value);
+        void operator=(int32 value);
         void operator=(int64 value);
         void operator=(float value);
         void operator=(double value);
@@ -1566,9 +1566,9 @@ namespace Utils
         void operator=(const initializer_list<const char*>& values);
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
-        void operator=(const initializer_list<unsigned int>& values);
+        void operator=(const initializer_list<uint32>& values);
         void operator=(const initializer_list<uint64>& values);
-        void operator=(const initializer_list<int>& values);
+        void operator=(const initializer_list<int32>& values);
         void operator=(const initializer_list<int64>& values);
         void operator=(const initializer_list<float>& values);
         void operator=(const initializer_list<double>& values);
@@ -1599,7 +1599,7 @@ namespace Utils
         void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, uint32 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, int value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int32 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, double value, bool dontUpdateIfValueExits);
@@ -1610,9 +1610,9 @@ namespace Utils
         void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int32>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits);
-        void UpdateValue(string_view name, const initializer_list<unsigned int>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<uint32>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits);

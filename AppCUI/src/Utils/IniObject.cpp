@@ -69,72 +69,70 @@ const uint8 Ini_LoweCaseTable[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-uint8 Ini_Char_Type[256] = {
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_NEW_LINE,    CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,       CHAR_TYPE_STRING,   CHAR_TYPE_COMMENT,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_STRING,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_COMMA,  CHAR_TYPE_OTHER,       CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_OTHER,    CHAR_TYPE_COMMENT,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_EQ,          CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_SECTION_START,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_SECTION_END, CHAR_TYPE_OTHER,    CHAR_TYPE_WORD,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER
-};
+uint8 Ini_Char_Type[256] = { CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_NEW_LINE,    CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,       CHAR_TYPE_STRING,   CHAR_TYPE_COMMENT,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_STRING,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_COMMA,  CHAR_TYPE_OTHER,       CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_OTHER,    CHAR_TYPE_COMMENT,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_EQ,          CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_SECTION_START,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_SECTION_END, CHAR_TYPE_OTHER,    CHAR_TYPE_WORD,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER };
 
 constexpr uint32 INI_VALUE_ON    = 0x6E6FU;
 constexpr uint32 INI_VALUE_OFF   = 0x66666FU;
@@ -625,7 +623,7 @@ bool Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 bool Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 {
     uint64 hash = __compute_hash__(nameStart, nameEnd);
-    auto& sect              = Sections[hash];
+    auto& sect  = Sections[hash];
     if (sect.get() == nullptr)
     {
         sect.reset(new Section());
@@ -653,8 +651,7 @@ bool Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 bool Ini::Parser::AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd)
 {
     CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
-    value.KeyValues.push_back(
-          std::string(string_view((const char*) valueStart, (uint32) (valueEnd - valueStart))));
+    value.KeyValues.push_back(std::string(string_view((const char*) valueStart, (uint32) (valueEnd - valueStart))));
     return true;
 }
 //============================================================================= INI Section ===
@@ -745,9 +742,9 @@ void IniSection::UpdateValue(string_view name, uint64 value, bool dontUpdateIfVa
 {
     UpdateValueForSection<uint64>(this->Data, name, value, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, int value, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, int32 value, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<int>(this->Data, name, value, dontUpdateIfValueExits);
+    UpdateValueForSection<int32>(this->Data, name, value, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits)
 {
@@ -789,24 +786,21 @@ void IniSection::UpdateValue(string_view name, const initializer_list<bool>& val
 {
     UpdateValueForSection<const initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(string_view name, const initializer_list<int>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<int32>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<int>&>(this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<int32>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<int64>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<uint32>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<uint32>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<uint32>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
-void IniSection::UpdateValue(
-      string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits)
+void IniSection::UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits)
 {
-    UpdateValueForSection<const initializer_list<uint64>&>(
-          this->Data, name, values, dontUpdateIfValueExits);
+    UpdateValueForSection<const initializer_list<uint64>&>(this->Data, name, values, dontUpdateIfValueExits);
 }
 void IniSection::UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
 {
@@ -866,8 +860,8 @@ optional<Graphics::Size> IniValue_ToSize(const char* txt, uint32 len)
     const char* end   = start + len;
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
     CHECK(len >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
-    uint32 sz = 0;
-    auto p_width    = Number::ToUInt16(
+    uint32 sz    = 0;
+    auto p_width = Number::ToUInt16(
           string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
     CHECK(p_width.has_value(),
           std::nullopt,
@@ -910,7 +904,7 @@ optional<uint32> IniValue::AsUInt32() const
     VALIDATE_VALUE(std::nullopt);
     return Number::ToUInt32(static_cast<string_view>(value->KeyValue));
 }
-optional<int> IniValue::AsInt32() const
+optional<int32> IniValue::AsInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
     return Number::ToInt32(static_cast<string_view>(value->KeyValue));
@@ -978,7 +972,7 @@ int64 IniValue::ToInt64(int64 defaultValue) const
     else
         return defaultValue;
 }
-int IniValue::ToInt32(int defaultValue) const
+int32 IniValue::ToInt32(int32 defaultValue) const
 {
     auto result = this->AsInt32();
     if (result.has_value())
@@ -1056,7 +1050,7 @@ uint32 IniValue::GetArrayCount() const
     VALIDATE_VALUE(0);
     return (uint32) value->KeyValues.size();
 }
-IniValueArray IniValue::operator[](int index) const
+IniValueArray IniValue::operator[](int32 index) const
 {
     VALIDATE_VALUE(IniValueArray());
     if ((index < 0) || (index >= value->KeyValues.size()))
@@ -1082,7 +1076,7 @@ void IniValue::operator=(uint64 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
-void IniValue::operator=(int value)
+void IniValue::operator=(int32 value)
 {
     WRITE_INI_NUMERIC_VALUE;
 }
@@ -1183,9 +1177,9 @@ void IniValue::operator=(const initializer_list<uint64>& values)
 {
     IniValueSetVector<uint64>(this->Data, values);
 }
-void IniValue::operator=(const initializer_list<int>& values)
+void IniValue::operator=(const initializer_list<int32>& values)
 {
-    IniValueSetVector<int>(this->Data, values);
+    IniValueSetVector<int32>(this->Data, values);
 }
 void IniValue::operator=(const initializer_list<int64>& values)
 {
@@ -1212,7 +1206,7 @@ optional<uint32> IniValueArray::AsUInt32() const
 {
     return Number::ToUInt32(string_view(text, len));
 }
-optional<int> IniValueArray::AsInt32() const
+optional<int32> IniValueArray::AsInt32() const
 {
     return Number::ToInt32(string_view(text, len));
 }
@@ -1264,7 +1258,7 @@ int64 IniValueArray::ToInt64(int64 defaultValue) const
     else
         return defaultValue;
 }
-int IniValueArray::ToInt32(int defaultValue) const
+int32 IniValueArray::ToInt32(int32 defaultValue) const
 {
     auto result = this->AsInt32();
     if (result.has_value())
