@@ -8,7 +8,13 @@ namespace AppCUI::Log
 {
 using namespace Utils;
 
-#define CRITICAL_ERROR_STACK_BUFFER_SIZE 0x10000
+constexpr uint32 CRITICAL_ERROR_STACK_BUFFER_SIZE = 0x10000;
+void (*fnMessageLogCallbak)(const Message& msg)   = nullptr;
+OS::File* logFile                                 = nullptr;
+const char* _severity_type_names_[5]              = {
+    "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
+};
+
 #define EXIT_IF_ERROR(condition)                                                                                       \
     if (!(condition))                                                                                                  \
         return false;
@@ -19,13 +25,6 @@ using namespace Utils;
         msg.Type = Severity::InternalError;                                                                            \
         break;                                                                                                         \
     }
-
-void (*fnMessageLogCallbak)(const Message& msg) = nullptr;
-OS::File* logFile                               = nullptr;
-
-const char* _severity_type_names_[5] = {
-    "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
-};
 
 bool _LogMessage_to_String_(const Message& msg, String& str, bool multiLine, bool addNewLineTerminator)
 {
@@ -62,7 +61,7 @@ void Report(
       const char* fileName,
       const char* function,
       const char* condition,
-      int line,
+      uint32 line,
       const char* format,
       ...)
 {

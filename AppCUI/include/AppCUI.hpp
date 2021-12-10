@@ -4132,14 +4132,14 @@ namespace Log
         const char* FileName;
         const char* Function;
         const char* Condition;
-        int LineNumber;
+        uint32 LineNumber;
     };
     void EXPORT Report(
           Severity type,
           const char* fileName,
           const char* function,
           const char* condition,
-          int line,
+          uint32 line,
           const char* format,
           ...);
     void EXPORT SetLogCallback(void (*callback)(const Message&));
@@ -4221,7 +4221,7 @@ namespace Application
     {
         struct
         {
-            int DesktopFillCharacterCode;
+            char16 DesktopFillCharacterCode;
             Graphics::ColorPair Color;
         } Desktop;
         struct
