@@ -531,7 +531,7 @@ class NumericSelectorControlContext : public ControlContext
     int64 maxValue;
     int64 value;
 
-    const int buttonPadding = 4;
+    const int32 buttonPadding = 4;
     LocalString<256> stringValue;
     bool intoInsertionMode       = false;
     bool wasMinusPressed         = false;
@@ -540,6 +540,8 @@ class NumericSelectorControlContext : public ControlContext
     int64 sliderPosition         = 0;
     bool isMouseLeftClickPressed = false;
 
+    NumericSelector* instance = nullptr;
+
     enum class IsMouseOn
     {
         None,
@@ -547,6 +549,16 @@ class NumericSelectorControlContext : public ControlContext
         TextField,
         PlusButton
     } isMouseOn{ IsMouseOn::None };
+
+    bool IsValidValue(int64 value) const;
+    bool IsValueInsertedWrong() const;
+    bool GetRenderColor(Graphics::ColorPair& color) const;
+    bool FormatTextField();
+    bool IsOnPlusButton(int32 x, int32 y) const;
+    bool IsOnMinusButton(int32 x, int32 y) const;
+    bool IsOnTextField(int32 x, int32 y) const;
+    bool MinValueReached() const;
+    bool MaxValueReached() const;
 };
 
 struct TreeColumnData

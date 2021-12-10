@@ -3472,20 +3472,9 @@ namespace Controls
 
       public:
         int64 GetValue() const;
-        void SetValue(const int64 value);
-        void SetMinValue(const int64 minValue);
-        void SetMaxValue(const int64 maxValue);
-
-      private:
-        bool IsValidValue(const int64 value) const;
-        bool IsValueInsertedWrong() const;
-        bool GetRenderColor(Graphics::ColorPair& color) const;
-        bool FormatTextField();
-        bool IsOnPlusButton(const int x, const int y) const;
-        bool IsOnMinusButton(const int x, const int y) const;
-        bool IsOnTextField(const int x, const int y) const;
-        bool MinValueReached() const;
-        bool MaxValueReached() const;
+        void SetValue(int64 value);
+        void SetMinValue(int64 minValue);
+        void SetMaxValue(int64 maxValue);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
