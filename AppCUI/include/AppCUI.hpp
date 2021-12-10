@@ -1341,9 +1341,10 @@ namespace Utils
         }
     };
 
-    template <int size>
+    template <uint32 size>
     class LocalString : public String
     {
+        static_assert(size > 0);
         char tempBuffer[size];
 
       public:
