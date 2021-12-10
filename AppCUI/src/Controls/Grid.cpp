@@ -12,7 +12,7 @@ constexpr auto MenuCommandMergeCells = 0x01U;
 constexpr auto minCellWidth  = 0x03U;
 constexpr auto minCellHeight = 0x03U;
 
-Grid::Grid(std::string_view layout, uint32_t columnsNo, uint32_t rowsNo, GridFlags flags)
+Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
     auto context              = reinterpret_cast<GridControlContext*>(Context);
@@ -313,7 +313,7 @@ bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
     return false;
 }
 
-uint32_t Grid::GetCellsCount() const
+uint32 Grid::GetCellsCount() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return context->columnsNo * context->rowsNo;
@@ -326,7 +326,7 @@ Size Grid::GetGridDimensions() const
 }
 
 bool Grid::UpdateCell(
-      uint32_t index, CellType cellType, const std::variant<bool, ConstString>& content, TextAlignament textAlignment)
+      uint32 index, CellType cellType, const std::variant<bool, ConstString>& content, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
@@ -350,8 +350,8 @@ bool Grid::UpdateCell(
 }
 
 bool Grid::UpdateCell(
-      uint32_t x,
-      uint32_t y,
+      uint32 x,
+      uint32 y,
       CellType cellType,
       const std::variant<bool, ConstString>& content,
       AppCUI::Graphics::TextAlignament textAlignment)
@@ -476,7 +476,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
         }
     }
 
-    const auto drawLines = [&](uint32_t cellIndex, GridCellStatus cellType)
+    const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
         ColorPair vertical   = Cfg->Grid.Lines.Vertical.Normal;
         ColorPair horizontal = Cfg->Grid.Lines.Horizontal.Normal;
@@ -531,35 +531,35 @@ void GridControlContext::DrawLines(Renderer& renderer)
     }
 }
 
-uint32_t GridControlContext::ComputeCellNumber(int32_t x, int32_t y)
+uint32 GridControlContext::ComputeCellNumber(int32 x, int32 y)
 {
-    const auto endX = static_cast<uint32_t>(Layout.Width - offsetX);
-    const auto endY = static_cast<uint32_t>(Layout.Height - offsetY);
+    const auto endX = static_cast<uint32>(Layout.Width - offsetX);
+    const auto endY = static_cast<uint32>(Layout.Height - offsetY);
 
-    if (static_cast<uint32_t>(x) <= offsetX || static_cast<uint32_t>(x) >= endX)
+    if (static_cast<uint32>(x) <= offsetX || static_cast<uint32>(x) >= endX)
     {
         return InvalidCellIndex;
     }
 
-    if (static_cast<uint32_t>(y) <= offsetY || static_cast<uint32_t>(y) >= endY)
+    if (static_cast<uint32>(y) <= offsetY || static_cast<uint32>(y) >= endY)
     {
         return InvalidCellIndex;
     }
 
-    const auto columnIndex = (static_cast<uint32_t>(x) - offsetX) / cWidth;
-    const auto rowIndex    = (static_cast<uint32_t>(y) - offsetY) / cHeight;
+    const auto columnIndex = (static_cast<uint32>(x) - offsetX) / cWidth;
+    const auto rowIndex    = (static_cast<uint32>(y) - offsetY) / cHeight;
     const auto cellIndex   = columnsNo * rowIndex + columnIndex;
 
     return cellIndex;
 }
 
 SpecialChars GridControlContext::ComputeBoxType(
-      uint32_t colIndex,
-      uint32_t rowIndex,
-      uint32_t startColumnsIndex,
-      uint32_t startRowsIndex,
-      uint32_t endColumnsIndex,
-      uint32_t endRowsIndex)
+      uint32 colIndex,
+      uint32 rowIndex,
+      uint32 startColumnsIndex,
+      uint32 startRowsIndex,
+      uint32 endColumnsIndex,
+      uint32 endRowsIndex)
 {
     if (colIndex == startColumnsIndex)
     {
@@ -642,8 +642,7 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
     }
 }
 
-void GridControlContext::DrawCellBackground(
-      Graphics::Renderer& renderer, GridCellStatus cellType, uint32_t i, uint32_t j)
+void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j)
 {
     const auto xLeft  = offsetX + i * cWidth;
     const auto xRight = offsetX + (i + 1) * cWidth;
@@ -671,7 +670,7 @@ void GridControlContext::DrawCellBackground(
     renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
 }
 
-void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32_t cellIndex)
+void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex)
 {
     const auto columnIndex = cellIndex % columnsNo;
     const auto rowIndex    = cellIndex / columnsNo;
@@ -679,7 +678,7 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
     DrawCellBackground(renderer, cellType, columnIndex, rowIndex);
 }
 
-bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32_t cellIndex)
+bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex)
 {
     const auto cellColumn = cellIndex % columnsNo;
     const auto cellRow    = cellIndex / columnsNo;
@@ -801,12 +800,12 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
     // define cell dimensions
     if (dontRecomputeDimensions == false || cWidth == 0 || cHeight == 0)
     {
-        cWidth  = static_cast<uint32_t>(Layout.Width / columnsNo);
-        cHeight = static_cast<uint32_t>(Layout.Height / rowsNo);
+        cWidth  = static_cast<uint32>(Layout.Width / columnsNo);
+        cHeight = static_cast<uint32>(Layout.Height / rowsNo);
     }
 
     // center matrix
-    offsetX = static_cast<uint32_t>((Layout.Width - cWidth * columnsNo) / 2);
+    offsetX = static_cast<uint32>((Layout.Width - cWidth * columnsNo) / 2);
 
     auto deltaHeight = (Layout.Height - cHeight * rowsNo);
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
@@ -820,7 +819,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
             deltaHeight = 0;
         }
     }
-    offsetY = static_cast<uint32_t>(deltaHeight / 2);
+    offsetY = static_cast<uint32>(deltaHeight / 2);
 
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
     {
@@ -831,7 +830,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
     struct
     {
         const GridControlContext* gcc;
-        bool operator()(uint32_t a, uint32_t b)
+        bool operator()(uint32 a, uint32 b)
         {
             const auto aci = a % gcc->columnsNo;
             const auto ari = a / gcc->columnsNo;
@@ -859,7 +858,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
           std::unique(selectedCellsIndexes.begin(), selectedCellsIndexes.end()), selectedCellsIndexes.end());
 }
 
-void GridControlContext::UpdateDimensions(int32_t offsetX, int32_t offsetY)
+void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
 {
     cWidth += offsetX;
     cHeight += offsetY;
@@ -1198,8 +1197,8 @@ bool GridControlContext::PasteContentToSelectedCells()
 
     const std::u16string input{ lusb };
 
-    size_t last = 0;
-    size_t next = 0;
+    uint64 last = 0;
+    uint64 next = 0;
     vector<std::u16string> lines;
     lines.reserve(50);
     while ((next = input.find(u"\n", last)) != std::string::npos)
@@ -1217,8 +1216,8 @@ bool GridControlContext::PasteContentToSelectedCells()
     tokens.reserve(50);
     for (const auto& line : lines)
     {
-        size_t last = 0;
-        size_t next = 0;
+        uint64 last = 0;
+        uint64 next = 0;
         while ((next = line.find(separator, last)) != std::string::npos)
         {
             tokens.emplace_back(line.substr(last, next - last));

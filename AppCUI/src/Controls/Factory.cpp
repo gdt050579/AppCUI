@@ -183,17 +183,17 @@ POINTER<Controls::TabPage> Factory::TabPage::Create(const ConstString& caption)
 
 //======[TAB]========================================================================================
 REFERENCE<Tab> Factory::Tab::Create(
-      Controls::Control* parent, string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
+      Controls::Control* parent, string_view layout, Controls::TabFlags flags, uint32 tabPageSize)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
 REFERENCE<Tab> Factory::Tab::Create(
-      Controls::Control& parent, string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
+      Controls::Control& parent, string_view layout, Controls::TabFlags flags, uint32 tabPageSize)
 {
     return parent.AddControl<Controls::Tab>(Factory::Tab::Create(layout, flags, tabPageSize));
 }
-POINTER<Tab> Factory::Tab::Create(string_view layout, Controls::TabFlags flags, unsigned int tabPageSize)
+POINTER<Tab> Factory::Tab::Create(string_view layout, Controls::TabFlags flags, uint32 tabPageSize)
 {
     return POINTER<Controls::Tab>(new Controls::Tab(layout, flags, tabPageSize));
 }
@@ -202,8 +202,8 @@ POINTER<Tab> Factory::Tab::Create(string_view layout, Controls::TabFlags flags, 
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       Controls::Control* parent,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
@@ -213,15 +213,15 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
 REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       Controls::Control& parent,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       Controls::ViewerFlags flags)
 {
     return parent.AddControl<Controls::CanvasViewer>(
           Factory::CanvasViewer::Create(layout, canvasWidth, canvasHeight, flags));
 }
 POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
-      string_view layout, unsigned int canvasWidth, unsigned int canvasHeight, Controls::ViewerFlags flags)
+      string_view layout, uint32 canvasWidth, uint32 canvasHeight, Controls::ViewerFlags flags)
 {
     return POINTER<Controls::CanvasViewer>(new Controls::CanvasViewer("", layout, canvasWidth, canvasHeight, flags));
 }
@@ -229,8 +229,8 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       Controls::Control* parent,
       const ConstString& caption,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
@@ -241,8 +241,8 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
       Controls::Control& parent,
       const ConstString& caption,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       Controls::ViewerFlags flags)
 {
     return parent.AddControl<Controls::CanvasViewer>(
@@ -251,8 +251,8 @@ REFERENCE<CanvasViewer> Factory::CanvasViewer::Create(
 POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
       const ConstString& caption,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       Controls::ViewerFlags flags)
 {
     return POINTER<Controls::CanvasViewer>(
@@ -369,27 +369,27 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 }
 
 //======[TREE]=======================================================================================
-POINTER<Controls::Tree> Factory::Tree::Create(string_view layout, TreeFlags flags, const unsigned int noOfColumns)
+POINTER<Controls::Tree> Factory::Tree::Create(string_view layout, TreeFlags flags, const uint32 noOfColumns)
 {
     return POINTER<Controls::Tree>(new Controls::Tree(layout, flags, noOfColumns));
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      Controls::Control* parent, string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+      Controls::Control* parent, string_view layout, const TreeFlags flags, const uint32 noOfColumns)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 REFERENCE<Tree> Factory::Tree::Create(
-      Controls::Control& parent, string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+      Controls::Control& parent, string_view layout, const TreeFlags flags, const uint32 noOfColumns)
 {
     return parent.AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
 }
 
 //======[GRID]=======================================================================================
 Pointer<Controls::Grid> Factory::Grid::Create(
-      string_view layout, unsigned int columnsNo, unsigned int rowsNo, Controls::GridFlags flags)
+      string_view layout, uint32 columnsNo, uint32 rowsNo, Controls::GridFlags flags)
 {
     return POINTER<Controls::Grid>(new Controls::Grid(layout, columnsNo, rowsNo, flags));
 }
@@ -397,8 +397,8 @@ Pointer<Controls::Grid> Factory::Grid::Create(
 Reference<Controls::Grid> Factory::Grid::Create(
       Controls::Control* parent,
       string_view layout,
-      unsigned int columnsNo,
-      unsigned int rowsNo,
+      uint32 columnsNo,
+      uint32 rowsNo,
       Controls::GridFlags flags)
 {
     VALIDATE_PARENT;
@@ -408,8 +408,8 @@ Reference<Controls::Grid> Factory::Grid::Create(
 Reference<Controls::Grid> Factory::Grid::Create(
       Controls::Control& parent,
       string_view layout,
-      unsigned int columnsNo,
-      unsigned int rowsNo,
+      uint32 columnsNo,
+      uint32 rowsNo,
       Controls::GridFlags flags)
 {
     return parent.AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));

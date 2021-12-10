@@ -10,12 +10,12 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Utils;
 
-constexpr unsigned int CELL_WITH_X = 1;
-constexpr unsigned int CELL_WITH_O = 2;
+constexpr uint32 CELL_WITH_X = 1;
+constexpr uint32 CELL_WITH_O = 2;
 
-constexpr unsigned int X_HAS_WON_EVENT = 123;
-constexpr unsigned int O_HAS_WON_EVENT = 321;
-constexpr unsigned int DRAW_GAME       = 444;
+constexpr uint32 X_HAS_WON_EVENT = 123;
+constexpr uint32 O_HAS_WON_EVENT = 321;
+constexpr uint32 DRAW_GAME       = 444;
 
 class TicTacToeTable : public UserControl
 {

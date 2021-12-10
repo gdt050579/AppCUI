@@ -4,7 +4,7 @@
 namespace AppCUI
 {
 constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
-constexpr unsigned int MAX_TAG_CHARS = 8U;
+constexpr uint32 MAX_TAG_CHARS = 8U;
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -102,7 +102,7 @@ bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
     CREATE_CONTROL_CONTEXT(ctrl, Members, false);
     if (((Members->Flags & (GATTR_VISIBLE | GATTR_ENABLE)) != (GATTR_VISIBLE | GATTR_ENABLE)))
         return false;
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         if (ProcessHotKey(Members->Controls[tr], KeyCode))
             return true;
@@ -204,7 +204,7 @@ void UpdateWindowButtonPos(WindowBarItem* b, WindowControlBarLayoutData& layout,
 }
 void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
 {
-    for (unsigned int tr = 0; tr < wcc->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < wcc->ControlBar.Count; tr++)
         wcc->ControlBar.Items[tr].RemoveFlag(WindowBarItemFlags::Visible);
 
     WindowControlBarLayoutData top, bottom;
@@ -220,7 +220,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
     bottom.RighGroup = nullptr;
 
     auto* btn = wcc->ControlBar.Items;
-    for (unsigned int tr = 0; tr < wcc->ControlBar.Count; tr++, btn++)
+    for (uint32 tr = 0; tr < wcc->ControlBar.Count; tr++, btn++)
     {
         if (btn->IsHidden())
             continue;
@@ -364,7 +364,7 @@ WindowBarItem* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
 {
     WindowControlContext* Members = (WindowControlContext*) Context;
     CHECK(Members, nullptr, "");
-    unsigned int id = (unsigned int) itemHandle;
+    uint32 id = (uint32) itemHandle;
     CHECK(id < Members->ControlBar.Count, nullptr, "Invalid item index (%d/%d)", id, Members->ControlBar.Count);
     auto* b = Members->ControlBar.Items + id;
     CHECK((b->Type == WindowBarItemType::Button) || (b->Type == WindowBarItemType::CheckBox) ||
@@ -386,7 +386,7 @@ bool Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const Const
     return true;
 }
 bool Controls::WindowControlsBar::SetItemTextWithHotKey(
-      ItemHandle itemHandle, const ConstString& caption, unsigned int hotKeyTextOffset)
+      ItemHandle itemHandle, const ConstString& caption, uint32 hotKeyTextOffset)
 {
     CHECK(SetItemText(itemHandle, caption), false, "");
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
@@ -547,7 +547,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
                                     // title, OneSpaceRightPadding, close
                                     // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
     ASSERT(SetMargins(1, 1, 1, 1), "Failed to set margins !");
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) Flags;
 
     Members->Maximized                       = false;
     Members->dragStatus                      = WINDOW_DRAG_STATUS_NONE;
@@ -645,7 +645,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
 
     auto* btn = Members->ControlBar.Items;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++, btn++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++, btn++)
     {
         if ((!btn->IsVisible()) || (btn->IsHidden()))
             continue;
@@ -826,7 +826,7 @@ void Window::OnMousePressed(int x, int y, Input::MouseButton button)
 
     // win buttons
     Members->ControlBar.Current = NO_CONTROLBAR_ITEM;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Contains(x, y))
         {
@@ -847,7 +847,7 @@ void Window::OnMousePressed(int x, int y, Input::MouseButton button)
         Members->dragOffsetY = y;
     }
 }
-bool Window::ProcessControlBarItem(unsigned int index)
+bool Window::ProcessControlBarItem(uint32 index)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     CHECK(index < Members->ControlBar.Count, false, "");
@@ -934,7 +934,7 @@ bool Window::OnMouseOver(int x, int y)
     }
 
     // check buttons
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Contains(x, y))
         {
@@ -1052,7 +1052,7 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             return true;
     }
     // check cntrols hot keys
-    if ((((unsigned int) KeyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
+    if ((((uint32) KeyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
     {
         if (ProcessHotKey(this, KeyCode))
             return true;
@@ -1062,7 +1062,7 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         {
             if (b->HotKey == KeyCode)
             {
-                if (ProcessControlBarItem((unsigned int) (b - Members->ControlBar.Items)))
+                if (ProcessControlBarItem((uint32) (b - Members->ControlBar.Items)))
                     return true;
             }
             b++;
@@ -1076,7 +1076,7 @@ void Window::OnHotKeyChanged()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find hotkey win button
     WindowBarItem* btnHotKey = nullptr;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::HotKeY)
         {
             btnHotKey = &Members->ControlBar.Items[tr];
@@ -1105,7 +1105,7 @@ void Window::SetTag(const ConstString& name, const ConstString& toolTipText)
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find tag win button
     WindowBarItem* b = nullptr;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {
             b = &Members->ControlBar.Items[tr];
@@ -1130,7 +1130,7 @@ const Graphics::CharacterBuffer& Window::GetTag()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
     // find tag win button
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {

@@ -45,7 +45,7 @@ bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
     return true;
 }
 
-bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool File::ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     bytesRead = 0;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
@@ -57,7 +57,7 @@ bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytes
     return true;
 }
 
-bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool File::WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     bytesWritten = 0;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");

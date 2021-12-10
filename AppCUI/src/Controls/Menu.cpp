@@ -12,7 +12,7 @@ using namespace Input;
     CHECK(menuItem < CTX->ItemsCount,                                                                                  \
           retValue,                                                                                                    \
           "Invalid index: %u (should be a value between [0..%u)",                                                      \
-          (unsigned int) menuItem,                                                                                     \
+          (uint32) menuItem,                                                                                     \
           CTX->ItemsCount);
 #define NO_MENUITEM_SELECTED 0xFFFFFFFF
 
@@ -83,7 +83,7 @@ ItemHandle MenuContext::AddItem(unique_ptr<MenuItem> itm)
           InvalidItemHandle,
           "A maximum of 256 items can be added to a Menu");
 
-    auto res                = ItemHandle{ (unsigned int) this->ItemsCount };
+    auto res                = ItemHandle{ (uint32) this->ItemsCount };
     Items[this->ItemsCount] = std::move(itm);
     this->ItemsCount++;
     return res;
@@ -152,9 +152,9 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
     }
 
     // draw items
-    for (unsigned int tr = 1; tr <= this->VisibleItemsCount; tr++)
+    for (uint32 tr = 1; tr <= this->VisibleItemsCount; tr++)
     {
-        unsigned int actualIndex = this->FirstVisibleItem + tr - 1;
+        uint32 actualIndex = this->FirstVisibleItem + tr - 1;
         if (actualIndex >= ItemsCount)
             break;
         MenuItem* item = this->Items[actualIndex].get();
@@ -209,13 +209,13 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         {
             auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
-            renderer.WriteSingleLineText(this->Width - (unsigned int) k_n.size(), tr, k_n, itemCol->ShortCut);
+            renderer.WriteSingleLineText(this->Width - (uint32) k_n.size(), tr, k_n, itemCol->ShortCut);
             renderer.WriteSingleLineText(
-                  this->Width - (unsigned int) (k_n.size() + m_n.size()), tr, m_n, itemCol->ShortCut);
+                  this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, itemCol->ShortCut);
         }
     }
 }
-bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
+bool MenuContext::SetChecked(uint32 menuIndex, bool status)
 {
     CHECK(menuIndex < ItemsCount,
           false,
@@ -229,7 +229,7 @@ bool MenuContext::SetChecked(unsigned int menuIndex, bool status)
     if (i->Type == MenuItemType::Radio)
     {
         // radio menu item -> uncheck all items that are radioboxes
-        unsigned int index = menuIndex;
+        uint32 index = menuIndex;
         while (((index < this->ItemsCount)) && (this->Items[index]->Type == MenuItemType::Radio))
         {
             this->Items[index]->Checked = false;
@@ -347,11 +347,11 @@ bool MenuContext::OnMouseWheel(int, int, Input::MouseWheel direction)
     }
     return false;
 }
-void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& count)
+void MenuContext::CreateAvailableItemsList(uint32* indexes, uint32& count)
 {
     // assume indexes is valid and has a size of MAX_NUMBER_OF_MENU_ITEMS
     count = 0;
-    for (unsigned int tr = 0; tr < ItemsCount; tr++)
+    for (uint32 tr = 0; tr < ItemsCount; tr++)
     {
         if (!Items[tr]->Enabled)
             continue;
@@ -362,7 +362,7 @@ void MenuContext::CreateAvailableItemsList(unsigned int* indexes, unsigned int& 
         }
     }
 }
-void MenuContext::RunItemAction(unsigned int itemIndex)
+void MenuContext::RunItemAction(uint32 itemIndex)
 {
     if (itemIndex >= this->ItemsCount)
         return;
@@ -413,8 +413,8 @@ void MenuContext::UpdateFirstVisibleItem()
 }
 void MenuContext::MoveCurrentItemTo(Input::Key keyCode)
 {
-    unsigned int idx[MAX_NUMBER_OF_MENU_ITEMS];
-    unsigned int idxCount;
+    uint32 idx[MAX_NUMBER_OF_MENU_ITEMS];
+    uint32 idxCount;
     CreateAvailableItemsList(idx, idxCount);
     if (idxCount == 0)
     {
@@ -430,11 +430,11 @@ void MenuContext::MoveCurrentItemTo(Input::Key keyCode)
     else
     {
         // make sure that this->CurrentItem is part of the list
-        unsigned int currentIdx = 0xFFFFFFFF;
-        unsigned int bestDiff   = 0xFFFFFFFF;
-        for (unsigned int tr = 0; tr < idxCount; tr++)
+        uint32 currentIdx = 0xFFFFFFFF;
+        uint32 bestDiff   = 0xFFFFFFFF;
+        for (uint32 tr = 0; tr < idxCount; tr++)
         {
-            unsigned int diff;
+            uint32 diff;
             if (idx[tr] < this->CurrentItem)
                 diff = this->CurrentItem - idx[tr];
             else
@@ -526,7 +526,7 @@ bool MenuContext::OnKeyEvent(Input::Key keyCode)
         return false;
     }
     // check short keys
-    for (unsigned int tr = 0; tr < ItemsCount; tr++)
+    for (uint32 tr = 0; tr < ItemsCount; tr++)
     {
         if ((Items[tr]->HotKey != Key::None) && (Items[tr]->HotKey == keyCode) && (Items[tr]->Enabled))
         {
@@ -541,7 +541,7 @@ bool MenuContext::OnKeyEvent(Input::Key keyCode)
 }
 bool MenuContext::ProcessShortCut(Input::Key keyCode)
 {
-    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
         if (!Items[tr]->Enabled)
             continue;
@@ -590,26 +590,26 @@ void MenuContext::Show(
         }
     }
     // compute best width
-    unsigned int maxWidthLeft   = 0;
-    unsigned int maxHotKeyWidth = 0;
-    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    uint32 maxWidthLeft   = 0;
+    uint32 maxHotKeyWidth = 0;
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
         auto i               = this->Items[tr].get();
-        unsigned int w_left  = i->Name.Len() + 4;
-        unsigned int w_right = 0;
+        uint32 w_left  = i->Name.Len() + 4;
+        uint32 w_right = 0;
         if ((i->Type == MenuItemType::Radio) || (i->Type == MenuItemType::Check))
             w_left += 2;
         if (i->ShortcutKey != Key::None)
         {
-            w_right += (unsigned int) KeyUtils::GetKeyName(i->ShortcutKey).size();
-            w_right += (unsigned int) KeyUtils::GetKeyModifierName(i->ShortcutKey).size();
+            w_right += (uint32) KeyUtils::GetKeyName(i->ShortcutKey).size();
+            w_right += (uint32) KeyUtils::GetKeyModifierName(i->ShortcutKey).size();
             if (w_right > 0)
                 w_right += 2;
         }
         maxWidthLeft   = std::max<>(maxWidthLeft, w_left);
         maxHotKeyWidth = std::max<>(maxHotKeyWidth, w_right);
     }
-    unsigned int BestWidth = maxWidthLeft + maxHotKeyWidth;
+    uint32 BestWidth = maxWidthLeft + maxHotKeyWidth;
     BestWidth = BestWidth | 1; // make sure it's not an odd number (this will help better position Arrow Up and Down)
     // Check agains app size
     Size appSize;
@@ -641,8 +641,8 @@ void MenuContext::Show(
         maxWidthForCurrentScreen = std::min<>(maxWidthForCurrentScreen, (maxSize.Width | 1));
     if (maxSize.Height >= 5)
         maxHeightForCurrentScreen = std::min<>(maxHeightForCurrentScreen, maxSize.Height);
-    unsigned int menuWidth  = std::min<>(BestWidth + 2, maxWidthForCurrentScreen);
-    unsigned int menuHeight = std::min<>(this->ItemsCount + 2, maxHeightForCurrentScreen);
+    uint32 menuWidth  = std::min<>(BestWidth + 2, maxWidthForCurrentScreen);
+    uint32 menuHeight = std::min<>(this->ItemsCount + 2, maxHeightForCurrentScreen);
 
     // Set direction
     bool toLeft, toBottom;
@@ -740,19 +740,19 @@ ItemHandle Menu::AddSubMenu(const ConstString& text)
 bool Menu::SetEnable(ItemHandle menuItem, bool status)
 {
     CHECK_VALID_ITEM(false);
-    CTX->Items[(unsigned int) menuItem]->Enabled = status;
+    CTX->Items[(uint32) menuItem]->Enabled = status;
     return true;
 }
 bool Menu::SetChecked(ItemHandle menuItem, bool status)
 {
     CHECK_VALID_ITEM(false);
-    return CTX->SetChecked((unsigned int) menuItem, status);
+    return CTX->SetChecked((uint32) menuItem, status);
 }
 
 Reference<Menu> Menu::GetSubMenu(ItemHandle menuItem)
 {
     CHECK_VALID_ITEM(nullptr);
-    return Reference<Menu>(CTX->Items[(unsigned int) menuItem]->SubMenu);
+    return Reference<Menu>(CTX->Items[(uint32) menuItem]->SubMenu);
 }
 
 void Menu::Show(int x, int y, const Graphics::Size& maxSize)

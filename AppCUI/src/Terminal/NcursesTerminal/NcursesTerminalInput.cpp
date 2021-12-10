@@ -36,10 +36,10 @@ bool NcursesTerminal::initInput()
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
-        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
+        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i);
 
         // If we press F1 + shift => it generates F13
-        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
+        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i) | Key::Shift;
     }
 
     keyTranslationMatrix[KEY_ENTER]     = Key::Enter;
@@ -105,17 +105,17 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvent& evt, const int c)
 
     if (islower(c))
     {
-        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
         return;
     }
     else if (isupper(c))
     {
-        evt.keyCode |= Key::Ctrl | Key::Shift | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+        evt.keyCode |= Key::Ctrl | Key::Shift | static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
         return;
     }
     else if (isdigit(c))
     {
-        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
         return;
     }
 
@@ -142,15 +142,15 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
         evt.unicodeCharacter = c;
         if (islower(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
         }
         else if (isupper(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
         }
         else if (isdigit(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
         }
         else if (c == ' ')
         {

@@ -9,7 +9,7 @@ using namespace AppCUI::Graphics;
 constexpr int MENU_CMD_SET_HELLO_WORLD = 1234;
 constexpr int MENU_CMD_CLEAR_TEXT      = 1235;
 
-void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* chars, unsigned int charsCount)
+void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* chars, uint32 charsCount)
 {
     Graphics::Character* end = chars + charsCount;
     while (chars < end)

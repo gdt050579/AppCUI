@@ -5,8 +5,8 @@ namespace AppCUI
 using namespace Utils;
 using namespace Graphics;
 
-constexpr unsigned int LOCAL_BUFFER_FLAG   = 0x80000000;
-constexpr unsigned int MAX_ALLOCATION_SIZE = 0x00FFFFFF;
+constexpr uint32 LOCAL_BUFFER_FLAG   = 0x80000000;
+constexpr uint32 MAX_ALLOCATION_SIZE = 0x00FFFFFF;
 
 template <typename T>
 void CopyText(char16* dest, const T* source, size_t len)
@@ -36,8 +36,8 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
         CHECK(p + 2 < end, false, "Invalid unicode sequence (missing two extra characters after 1110xxxx)");
         CHECK((p[1] >> 6) == 2, false, "Invalid unicode sequence (1110xxxx should be followed by 10xxxxxx)");
         CHECK((p[2] >> 6) == 2, false, "Invalid unicode sequence (10xxxxxx should be followed by 10xxxxxx)");
-        result.Value = (((uint16) ((*p) & 0x0F)) << 12) | (((uint16) ((*(p + 1)) & 63)) << 6) |
-                       ((uint16) ((*(p + 2)) & 63));
+        result.Value =
+              (((uint16) ((*p) & 0x0F)) << 12) | (((uint16) ((*(p + 1)) & 63)) << 6) | ((uint16) ((*(p + 2)) & 63));
         result.Length = 3;
         return true;
     }
@@ -68,7 +68,7 @@ void UnicodeStringBuilder::Create(char16* localBuffer, size_t localBufferSize)
     {
         this->chars     = localBuffer;
         this->length    = 0;
-        this->allocated = (unsigned int) (localBufferSize & 0x7FFFFFFF) | LOCAL_BUFFER_FLAG;
+        this->allocated = (uint32) (localBufferSize & 0x7FFFFFFF) | LOCAL_BUFFER_FLAG;
     }
 }
 void UnicodeStringBuilder::Destroy()
@@ -108,7 +108,7 @@ bool UnicodeStringBuilder::Resize(size_t newSize)
             delete[] this->chars;
     }
     this->chars     = newBuf;
-    this->allocated = (unsigned int) alingSize;
+    this->allocated = (uint32) alingSize;
     return true;
 }
 UnicodeStringBuilder::UnicodeStringBuilder()
@@ -201,20 +201,20 @@ bool UnicodeStringBuilder::Add(const ConstString& text)
 {
     ConstStringObject obj(text);
     CHECK(Resize(obj.Length + this->length), false, "Fail to resize buffer !");
-    // at this point we know that obj.Length is storable on an unsigned int value
+    // at this point we know that obj.Length is storable on an uint32 value
     switch (obj.Encoding)
     {
     case StringEncoding::Ascii:
         CopyText<uint8>(this->chars + this->length, (const uint8*) obj.Data, obj.Length);
-        this->length += (unsigned int) obj.Length;
+        this->length += (uint32) obj.Length;
         return true;
     case StringEncoding::CharacterBuffer:
         CopyText<Character>(this->chars + this->length, (const Character*) obj.Data, obj.Length);
-        this->length += (unsigned int) obj.Length;
+        this->length += (uint32) obj.Length;
         return true;
     case StringEncoding::Unicode16:
         memcpy(this->chars + this->length, obj.Data, sizeof(char16) * obj.Length);
-        this->length += (unsigned int) obj.Length;
+        this->length += (uint32) obj.Length;
         return true;
     case StringEncoding::UTF8:
         const char8_t* start = (const char8_t*) obj.Data;
@@ -237,7 +237,7 @@ bool UnicodeStringBuilder::Add(const ConstString& text)
             }
             p++;
         }
-        this->length += (unsigned int) (p - this->chars);
+        this->length += (uint32) (p - this->chars);
         return true;
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
@@ -251,14 +251,14 @@ bool UnicodeStringBuilder::Set(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len()), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars, charBuffer.GetBuffer(), charBuffer.Len());
-    this->length = (unsigned int) charBuffer.Len();
+    this->length = (uint32) charBuffer.Len();
     return true;
 }
 bool UnicodeStringBuilder::Add(const Graphics::CharacterBuffer& charBuffer)
 {
     CHECK(Resize(charBuffer.Len() + this->length), false, "Fail to resize buffer !");
     CopyText<Character>(this->chars + this->length, charBuffer.GetBuffer(), charBuffer.Len());
-    this->length += (unsigned int) charBuffer.Len();
+    this->length += (uint32) charBuffer.Len();
     return true;
 }
 bool UnicodeStringBuilder::AddChar(char16 ch)

@@ -107,7 +107,7 @@ int main()
     AppCUI::Graphics::Size sz = ini.GetValue("Values/ScreenSize").ToSize();
     LOG_INFO("Size is %dx%d", sz.Width, sz.Height);
 
-    unsigned int value = Utils::Number::ToUInt32("12345678").value();
+    uint32 value = Utils::Number::ToUInt32("12345678").value();
     LOG_INFO("Number is %u", value);
     int x = Utils::Number::ToInt32("-1").value();
     LOG_INFO("Number is %d", x);
@@ -127,7 +127,7 @@ int main()
 
     auto av = ini.GetSection("Arrays").GetValue("primeNumbers");
     LOG_INFO("Prime nubers: %d", av.GetArrayCount());
-    for (unsigned int tr = 0; tr < av.GetArrayCount(); tr++)
+    for (uint32 tr = 0; tr < av.GetArrayCount(); tr++)
     {
         LOG_INFO(" - %d", av[tr].ToUInt32());
     }

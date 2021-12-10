@@ -16,7 +16,7 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
         term = std::make_unique<WindowsTerminal>();
         break;
     default:
-        RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int) initData.Frontend);
+        RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (uint32) initData.Frontend);
     }
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
     CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");

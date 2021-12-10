@@ -4,10 +4,10 @@
 namespace AppCUI
 {
 using namespace Utils;
-constexpr unsigned int NUMERIC_FORMAT_HEAP_SIZE = 1024;
-static const char* BaseLettersUpperCase         = "0123456789ABCDEF";
-static const char* BaseLettersLowerCase         = "0123456789abcdef";
-static const uint8 NumberMaxSizeForBase[]       = {
+constexpr uint32 NUMERIC_FORMAT_HEAP_SIZE = 1024;
+static const char* BaseLettersUpperCase   = "0123456789ABCDEF";
+static const char* BaseLettersLowerCase   = "0123456789abcdef";
+static const uint8 NumberMaxSizeForBase[] = {
     0 /*0*/,  0 /*1*/,   66 /*2*/,  43 /*3*/,  34 /*4*/,  30 /*5*/,  27 /*6*/,  25 /*7*/, 24 /*8*/,
     23 /*9*/, 22 /*10*/, 21 /*11*/, 20 /*12*/, 20 /*13*/, 19 /*14*/, 19 /*15*/, 18 /*16*/
 };
@@ -192,8 +192,8 @@ string_view NumericFormatter::ToStringUnsigned(uint64 value, NumericFormat fmt)
     else
         base_letter = BaseLettersUpperCase;
     // build the string
-    unsigned int count  = 0;
-    unsigned int g_size = fmt.GroupSize;
+    uint32 count  = 0;
+    uint32 g_size = fmt.GroupSize;
     if (fmt.GroupSize == 0)
     {
         do

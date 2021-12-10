@@ -34,7 +34,7 @@ void Password::Paint(Graphics::Renderer& renderer)
     if (this->IsChecked())
     {
         renderer.WriteSingleLineText(
-              1, 0, Members->Text.SubString(Members->Text.Len() - (unsigned int) sz, Members->Text.Len()), col->Text);
+              1, 0, Members->Text.SubString(Members->Text.Len() - (uint32) sz, Members->Text.Len()), col->Text);
         renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleFilled, col->VisibleSign);
     }
     else

@@ -16,7 +16,7 @@ class TabNoFocusExample : public Window
     Reference<Tab> tb;
 
   public:
-    TabNoFocusExample(TabFlags flags, unsigned int tabSize, int tabsCount)
+    TabNoFocusExample(TabFlags flags, uint32 tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         tb       = Factory::Tab::Create(this, "l:2,t:4,r:2,b:2", flags);
@@ -61,7 +61,7 @@ class TabExampleWin2 : public Window
     Reference<Tab> tb_h, tb_v;
 
   public:
-    TabExampleWin2(TabFlags flags, unsigned int tabSize, int tabsCount)
+    TabExampleWin2(TabFlags flags, uint32 tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto spv = Factory::Splitter::Create(this, "d:c", true);
@@ -107,7 +107,7 @@ class TabExampleWin2 : public Window
 class TabExampleWin : public Window
 {
   public:
-    TabExampleWin(TabFlags flags, unsigned int tabSize, int tabsCount)
+    TabExampleWin(TabFlags flags, uint32 tabSize, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton)
     {
         Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
@@ -220,7 +220,7 @@ class MyWin : public Window
         if (cbTabBar->IsChecked())
             flags = flags | TabFlags::TabsBar;
 
-        auto v_tabSize   = static_cast<unsigned int>(selector->GetValue());
+        auto v_tabSize   = static_cast<uint32>(selector->GetValue());
         auto v_tabsCount = static_cast<int>(tabsCount->GetValue());
 
         TabExampleWin tw(flags, v_tabSize, v_tabsCount);

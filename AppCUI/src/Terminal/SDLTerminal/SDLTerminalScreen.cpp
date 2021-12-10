@@ -215,7 +215,7 @@ int codePageConversions(const int ch)
 }
 
 SDL_Texture* SDLTerminal::renderCharacter(
-      const unsigned int charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
+      const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
 {
     if (characterCache.find(charPacked) != characterCache.end())
     {

@@ -32,7 +32,7 @@ struct ProgressStatusData
     char progressString[5];
     char timeString[MAX_PROGRESS_TIME_TEXT];
     int timeStringSize;
-    unsigned int Progress;
+    uint32 Progress;
 };
 
 static ProgressStatusData PSData = {};
@@ -114,12 +114,12 @@ void ProgressStatus_ComputeTime(uint64 time)
         PSData.timeStringSize = 0;
         return;
     }
-    unsigned int days  = (unsigned int) (time / (24 * 60 * 60));
-    time               = time % (24 * 60 * 60);
-    unsigned int hours = (unsigned int) (time / (60 * 60));
-    time               = time % (60 * 60);
-    unsigned int min   = (unsigned int) (time / 60);
-    unsigned int sec   = (unsigned int) (time % 60);
+    uint32 days  = (uint32) (time / (24 * 60 * 60));
+    time         = time % (24 * 60 * 60);
+    uint32 hours = (uint32) (time / (60 * 60));
+    time         = time % (60 * 60);
+    uint32 min   = (uint32) (time / 60);
+    uint32 sec   = (uint32) (time % 60);
     if (days >= 10)
     {
         Utils::String::Set(PSData.timeString, "More than 10 days", MAX_PROGRESS_TIME_TEXT);
@@ -182,12 +182,12 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
           true,
           "Progress status was not initialized ! Have you called ProgressStatus::Init(...) before calling "
           "ProgressStatus::Update(...) ?");
-    unsigned int newProgress;
+    uint32 newProgress;
     bool showStatus = false;
     if (PSData.MaxValue > 0)
     {
         if (value < PSData.MaxValue)
-            newProgress = (unsigned int) ((value * (uint64) 100) / PSData.MaxValue);
+            newProgress = (uint32) ((value * (uint64) 100) / PSData.MaxValue);
         else
             newProgress = 100;
         if (newProgress != PSData.Progress)
@@ -235,8 +235,7 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
                     ProgressStatus_ComputeTime(0);
                 else
                     ProgressStatus_ComputeTime(
-                          (((uint64) (100 - PSData.Progress)) * PSData.Ellapsed) /
-                          ((uint64) PSData.Progress));
+                          (((uint64) (100 - PSData.Progress)) * PSData.Ellapsed) / ((uint64) PSData.Progress));
             }
             else
                 ProgressStatus_ComputeTime(PSData.Ellapsed);

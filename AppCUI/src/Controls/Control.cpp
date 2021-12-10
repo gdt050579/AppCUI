@@ -66,7 +66,7 @@ constexpr uint8 _layout_translate_map_[116] = {
     LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
 };
 
-inline uint8 HashToLayoutKey(unsigned int hash)
+inline uint8 HashToLayoutKey(uint32 hash)
 {
     if (hash >= 116)
         return LAYOUT_KEY_NONE;
@@ -332,7 +332,7 @@ constexpr uint8 _align_translate_map_[258] = { 0xFF,
                                                0xFF,
                                                (uint8) Alignament::BottomRight };
 
-inline bool HashToAlignament(unsigned int hash, Alignament& align)
+inline bool HashToAlignament(uint32 hash, Alignament& align)
 {
     if (hash >= 258)
         return false;
@@ -365,9 +365,9 @@ inline bool HashToAlignament(unsigned int hash, Alignament& align)
 struct LayoutKeyValueData
 {
     const char* HashName;
-    unsigned int Hash;
+    uint32 Hash;
     int n1, n2;
-    unsigned int StringValueHash;
+    uint32 StringValueHash;
     bool IsNegative;
     char ValueType;
 };
@@ -493,14 +493,14 @@ inline const uint8* SkipSpaces(const uint8* start, const uint8* end)
         start++;
     return start;
 }
-inline const uint8* ComputeValueHash(const uint8* s, const uint8* e, unsigned int& hashValue)
+inline const uint8* ComputeValueHash(const uint8* s, const uint8* e, uint32& hashValue)
 {
     hashValue          = 0;
-    unsigned int index = 0;
+    uint32 index = 0;
     while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
-        // hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((uint8) (~0x20))))));
-        // hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((uint8) (~0x20))))));
+        // hashValue = ((hashValue) << 2) ^ ((uint32) (('Z' + 1) - (((*start) & ((uint8) (~0x20))))));
+        // hashValue += (uint32) ((uint32) (('Z' + 1) - (((*s) & ((uint8) (~0x20))))));
         hashValue += ((*s) & ((uint8) (~0x20))) - ((uint8) 'A') + 1;
         hashValue += index;
         s++;
@@ -944,7 +944,7 @@ bool ControlContext::UpdateLayoutFormat(string_view format)
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
 }
-void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
+void ControlContext::SetControlSize(uint32 width, uint32 heigh)
 {
     this->Layout.Width  = (int) width;
     this->Layout.Height = (int) heigh;
@@ -1180,9 +1180,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxVerticalValue)
             {
-                const auto sz = static_cast<unsigned int>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
+                const auto sz = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
                 const auto poz =
-                      static_cast<unsigned int>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                      static_cast<uint32>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
                 renderer.WriteSpecialCharacter(
                       x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1198,9 +1198,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxHorizontalValue)
             {
-                const auto sz = static_cast<unsigned int>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
+                const auto sz = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
                 const auto poz =
-                      static_cast<unsigned int>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                      static_cast<uint32>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
                 renderer.WriteSpecialCharacter(
                       ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1274,7 +1274,7 @@ Reference<Control> Controls::Control::AddChildControl(unique_ptr<Control> ctrl)
             // grow
             Control** tmp = new Control*[CTRLC->ControlsCount + 8];
             CHECK(tmp != nullptr, nullptr, "");
-            for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
+            for (uint32 tr = 0; tr < CTRLC->ControlsCount; tr++)
                 tmp[tr] = CTRLC->Controls[tr];
             delete CTRLC->Controls;
             CTRLC->Controls = tmp;
@@ -1298,7 +1298,7 @@ Reference<Control> Controls::Control::AddChildControl(unique_ptr<Control> ctrl)
 }
 bool Controls::Control::RemoveControl(Control* control)
 {
-    unsigned int index;
+    uint32 index;
     if (GetChildIndex(control, index) == false)
         return false;
     return RemoveControlByID(index);
@@ -1310,8 +1310,8 @@ bool Controls::Control::RemoveControlByRef(Reference<Control> control)
     Control** end = lst + (CTRLC->ControlsCount);
     if (lst == nullptr)
         return false;
-    unsigned int index   = 0xFFFFFFFF;
-    unsigned int c_index = 0;
+    uint32 index   = 0xFFFFFFFF;
+    uint32 c_index = 0;
     while (lst < end)
     {
         if (control == (*lst))
@@ -1329,7 +1329,7 @@ bool Controls::Control::RemoveControlByRef(Reference<Control> control)
         control.Reset();
     return result;
 }
-bool Controls::Control::RemoveControlByID(unsigned int index)
+bool Controls::Control::RemoveControlByID(uint32 index)
 {
     CHECK(index < CTRLC->ControlsCount,
           false,
@@ -1339,7 +1339,7 @@ bool Controls::Control::RemoveControlByID(unsigned int index)
     Control** lst = CTRLC->Controls;
     CHECK(lst != nullptr, false, "Expecting a non-nullptr list of control !");
     this->OnControlRemoved(lst[index]);
-    unsigned int count = CTRLC->ControlsCount;
+    uint32 count = CTRLC->ControlsCount;
     index++;
     while (index < count)
     {
@@ -1437,7 +1437,7 @@ Control** Controls::Control::GetChildrenList()
 {
     return CTRLC->Controls;
 }
-Reference<Control> Controls::Control::GetChild(unsigned int index)
+Reference<Control> Controls::Control::GetChild(uint32 index)
 {
     CHECK(index < CTRLC->ControlsCount,
           nullptr,
@@ -1446,18 +1446,18 @@ Reference<Control> Controls::Control::GetChild(unsigned int index)
           CTRLC->ControlsCount - 1);
     return CTRLC->Controls[index];
 }
-unsigned int Controls::Control::GetChildernCount()
+uint32 Controls::Control::GetChildernCount()
 {
     return CTRLC->ControlsCount;
 }
 
-bool Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
+bool Controls::Control::GetChildIndex(Reference<Control> control, uint32& index)
 {
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
     if (lst == nullptr)
         return false;
-    unsigned int c_index = 0;
+    uint32 c_index = 0;
     while (lst < end)
     {
         if ((*lst) == control)
@@ -1515,7 +1515,7 @@ bool Controls::Control::Resize(int newWidth, int newHeight)
 }
 void Controls::Control::RecomputeLayout()
 {
-    for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < CTRLC->ControlsCount; tr++)
     {
         ((ControlContext*) (CTRLC->Controls[tr]->Context))->RecomputeLayout(this);
         CTRLC->Controls[tr]->RecomputeLayout();
@@ -1566,7 +1566,7 @@ bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
         OnAfterSetText();
     return true;
 }
-bool Controls::Control::SetTextWithHotKey(const ConstString& caption, unsigned int hotKeyTextOffset)
+bool Controls::Control::SetTextWithHotKey(const ConstString& caption, uint32 hotKeyTextOffset)
 {
     CHECK(SetText(caption), false, "");
     ConstStringObject txt(caption);
@@ -1655,7 +1655,7 @@ void Controls::Control::ClearHotKey()
     CTRLC->HotKey       = Key::None;
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-unsigned int Controls::Control::GetHotKeyTextOffset()
+uint32 Controls::Control::GetHotKeyTextOffset()
 {
     return CTRLC->HotKeyOffset;
 }
@@ -1670,7 +1670,7 @@ bool Controls::Control::SetFocus()
 {
     Control* obj = this;
     Control* p;
-    unsigned int tr, count;
+    uint32 tr, count;
 
     /*if (CTRLC->Focused)
         return true;*/

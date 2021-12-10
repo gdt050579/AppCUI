@@ -95,7 +95,7 @@ void TextField_MoveTo(TextField* control, int newPoz, bool selected)
     if (selected)
         TextField_MoveSelTo(control, Members->Cursor.Pos);
 }
-bool __is_op__(unsigned int, Character ch)
+bool __is_op__(uint32, Character ch)
 {
     if ((ch.Code < 33) || (ch.Code >= 127))
         return false;
@@ -107,7 +107,7 @@ bool __is_op__(unsigned int, Character ch)
         return false;
     return true;
 }
-bool __is_not_op__(unsigned int, Character ch)
+bool __is_not_op__(uint32, Character ch)
 {
     if ((ch == '\n') || (ch == '\r') || (ch == ' ') || (ch == '\t'))
         return false;
@@ -119,12 +119,12 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     if (Members->Cursor.Pos >= (int) Members->Text.Len())
         return;
     auto currentChar           = Members->Text.GetBuffer()[Members->Cursor.Pos];
-    optional<unsigned int> res = std::nullopt;
+    optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = Members->Text.FindNext(
-              Members->Cursor.Pos, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+              Members->Cursor.Pos, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
     }
     else if (__is_op__(0, currentChar))
     {
@@ -139,7 +139,7 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     {
         if (res.has_value())
             res = Members->Text.FindNext(
-                  res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+                  res.value(), [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
     }
     if (res.has_value())
         TextField_MoveTo(control, res.value(), selected);
@@ -151,12 +151,12 @@ void TextField_MoveToPreviousWord(TextField* control, bool selected)
         return;
     auto startPoz              = Members->Cursor.Pos - 1;
     auto currentChar           = Members->Text.GetBuffer()[startPoz];
-    optional<unsigned int> res = std::nullopt;
+    optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = Members->Text.FindPrevious(
-              startPoz, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+              startPoz, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
         if (res.has_value())
             startPoz = res.value();
     }
@@ -205,7 +205,7 @@ void TextField_AddChar(TextField* control, char16 ch)
     if (Members->Cursor.Pos > (int) Members->Text.Len())
         Members->Text.InsertChar(ch, Members->Text.Len());
     else
-        Members->Text.InsertChar(ch, (unsigned int) (Members->Cursor.Pos));
+        Members->Text.InsertChar(ch, (uint32) (Members->Cursor.Pos));
     TextField_MoveTo(control, Members->Cursor.Pos + 1, false);
     TextField_SendTextChangedEvent(control);
     Members->Modified = true;
@@ -316,14 +316,14 @@ void TextField_ToUpper(TextField* control)
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Selection.Start < 0)
         return;
-    Members->Text.ConvertToUpper((unsigned int) Members->Selection.Start, (unsigned int) (Members->Selection.End + 1));
+    Members->Text.ConvertToUpper((uint32) Members->Selection.Start, (uint32) (Members->Selection.End + 1));
 }
 void TextField_ToLower(TextField* control)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Selection.Start < 0)
         return;
-    Members->Text.ConvertToLower((unsigned int) Members->Selection.Start, (unsigned int) (Members->Selection.End + 1));
+    Members->Text.ConvertToLower((uint32) Members->Selection.Start, (uint32) (Members->Selection.End + 1));
 }
 //============================================================================
 TextField::~TextField()
@@ -336,7 +336,7 @@ TextField::TextField(const ConstString& caption, string_view layout, TextFieldFl
     auto Members                            = reinterpret_cast<TextFieldControlContext*>(this->Context);
     Members->Layout.MinWidth                = 3;
     Members->Layout.MinHeight               = 1;
-    Members->Flags                          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Flags                          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     Members->Modified                       = true;
     Members->FullSelectionDueToOnFocusEvent = false;
 
@@ -375,13 +375,13 @@ bool TextField::HasSelection() const
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
     return Members->Selection.Start >= 0;
 }
-bool TextField::GetSelection(unsigned int& start, unsigned int& size) const
+bool TextField::GetSelection(uint32& start, uint32& size) const
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, false);
     if ((Members->Selection.Start < 0) || (Members->Selection.End <= Members->Selection.Start))
         return false;
-    start = (unsigned int) Members->Selection.Start;
-    size  = (unsigned int) (Members->Selection.End - Members->Selection.Start);
+    start = (uint32) Members->Selection.Start;
+    size  = (uint32) (Members->Selection.End - Members->Selection.Start);
     return true;
 }
 bool TextField::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)

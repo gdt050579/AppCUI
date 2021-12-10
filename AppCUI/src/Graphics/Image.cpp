@@ -4,8 +4,8 @@
 
 namespace AppCUI::Graphics
 {
-constexpr unsigned int IMAGE_PNG_MAGIC = 0x474E5089;
-constexpr uint16 IMAGE_BMP_MAGIC     = 0x4D42;
+constexpr uint32 IMAGE_PNG_MAGIC = 0x474E5089;
+constexpr uint16 IMAGE_BMP_MAGIC = 0x4D42;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -42,7 +42,7 @@ static const Pixel Image_ConsoleColors[16] = {
     pixel = &this->pixels[y * this->width + x];
 
 #define VALIDATE_CONSOLE_INDEX                                                                                         \
-    CHECK(((unsigned int) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
+    CHECK(((uint32) color) < 16, false, "Invalid console color index (should be between 0 and 15)");
 
 uint8 Image_CharToIndex[256] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -108,7 +108,7 @@ Image& Image::operator=(const Image& img)
     return *this;
 }
 
-bool Image::Create(unsigned int imageWidth, unsigned int imageHeight)
+bool Image::Create(uint32 imageWidth, uint32 imageHeight)
 {
     CHECK(imageWidth > 0, false, "Invalid 'imageWidth' parameter (should be bigger than 0)");
     CHECK(imageHeight > 0, false, "Invalid 'imageHeight' parameter (should be bigger than 0)");
@@ -131,7 +131,7 @@ bool Image::Create(unsigned int imageWidth, unsigned int imageHeight)
     this->height = imageHeight;
     return true;
 }
-bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, string_view image)
+bool Image::Create(uint32 imageWidth, uint32 imageHeight, string_view image)
 {
     CHECK(Create(imageWidth, imageHeight), false, "");
     auto s = image.data();
@@ -147,18 +147,18 @@ bool Image::Create(unsigned int imageWidth, unsigned int imageHeight, string_vie
     }
     return true;
 }
-bool Image::SetPixel(unsigned int x, unsigned int y, Pixel color)
+bool Image::SetPixel(uint32 x, uint32 y, Pixel color)
 {
     CHECK_INDEX(false);
     *pixel = color;
     return true;
 }
 
-bool Image::SetPixel(unsigned int x, unsigned int y, const Color color)
+bool Image::SetPixel(uint32 x, uint32 y, const Color color)
 {
     CHECK_INDEX(false);
-    if (((unsigned int) color) < 16)
-        *pixel = Image_ConsoleColors[(unsigned int) color];
+    if (((uint32) color) < 16)
+        *pixel = Image_ConsoleColors[(uint32) color];
     return true;
 }
 
@@ -177,35 +177,35 @@ bool Image::Clear(Pixel color)
 bool Image::Clear(const Color color)
 {
     VALIDATE_CONSOLE_INDEX;
-    return Clear(Image_ConsoleColors[(unsigned int) color]);
+    return Clear(Image_ConsoleColors[(uint32) color]);
 }
-Pixel Image::GetPixel(unsigned int x, unsigned int y, Pixel invalidIndexValue) const
+Pixel Image::GetPixel(uint32 x, uint32 y, Pixel invalidIndexValue) const
 {
     CHECK_INDEX(invalidIndexValue);
     return *pixel;
 }
-bool Image::GetPixel(unsigned int x, unsigned int y, Pixel& color) const
+bool Image::GetPixel(uint32 x, uint32 y, Pixel& color) const
 {
     CHECK_INDEX(false);
     color = (*pixel);
     return true;
 }
-Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const
+Pixel Image::ComputeSquareAverageColor(uint32 x, uint32 y, uint32 sz) const
 {
     if ((x >= this->width) || (y >= this->height) || (sz == 0))
         return Pixel(0U); // nothing to compute
-    unsigned int e_x = x + sz;
-    unsigned int e_y = y + sz;
+    uint32 e_x = x + sz;
+    uint32 e_y = y + sz;
     if (e_x >= this->width)
         e_x = this->width;
     if (e_y >= this->height)
         e_y = this->height;
-    auto xSize         = e_x - x;
-    auto ySize         = e_y - y;
-    auto sPtr          = this->pixels + (size_t) this->width * (size_t) y + (size_t) x;
-    unsigned int sum_r = 0;
-    unsigned int sum_g = 0;
-    unsigned int sum_b = 0;
+    auto xSize   = e_x - x;
+    auto ySize   = e_y - y;
+    auto sPtr    = this->pixels + (size_t) this->width * (size_t) y + (size_t) x;
+    uint32 sum_r = 0;
+    uint32 sum_g = 0;
+    uint32 sum_b = 0;
     if ((xSize == 0) || (ySize == 0))
         return Pixel(0U); // nothing to compute (sanity check)
 
@@ -223,29 +223,29 @@ Pixel Image::ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned 
         sPtr += this->width; // move to next line
         y++;
     }
-    const unsigned int totalPixesl = xSize * ySize;
-    const auto result_r            = sum_r / totalPixesl;
-    const auto result_g            = sum_g / totalPixesl;
-    const auto result_b            = sum_b / totalPixesl;
+    const uint32 totalPixesl = xSize * ySize;
+    const auto result_r      = sum_r / totalPixesl;
+    const auto result_g      = sum_g / totalPixesl;
+    const auto result_b      = sum_b / totalPixesl;
     return Pixel(result_r, result_g, result_b);
 }
 bool Image::Load(const std::filesystem::path& path)
 {
     auto buf = OS::File::ReadContent(path);
-    return Create((const uint8*) buf.GetData(), (unsigned int) buf.GetLength());
+    return Create((const uint8*) buf.GetData(), (uint32) buf.GetLength());
 }
-bool Image::CreateFromDIB(const uint8* imageBuffer, unsigned int size, bool isIcon)
+bool Image::CreateFromDIB(const uint8* imageBuffer, uint32 size, bool isIcon)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
     return LoadDIBToImage(*this, imageBuffer, size, isIcon);
 }
-bool Image::Create(const uint8* imageBuffer, unsigned int size)
+bool Image::Create(const uint8* imageBuffer, uint32 size)
 {
     CHECK(size > 4, false, "Invalid size (expecting at least 4 bytes)");
     CHECK(imageBuffer, false, "Expecting a valid (non-null) buffer !");
-    unsigned int magic32 = *(const unsigned int*) imageBuffer;
-    uint16 magic16     = *(const uint16*) imageBuffer;
+    uint32 magic32 = *(const uint32*) imageBuffer;
+    uint16 magic16 = *(const uint16*) imageBuffer;
 
     if (magic32 == IMAGE_PNG_MAGIC)
     {

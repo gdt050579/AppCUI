@@ -24,21 +24,21 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
 CanvasViewer::CanvasViewer(
       const ConstString& caption,
       string_view layout,
-      unsigned int canvasWidth,
-      unsigned int canvasHeight,
+      uint32 canvasWidth,
+      uint32 canvasHeight,
       ViewerFlags flags)
     : Control(new CanvasControlContext(), caption, layout, true)
 {
     auto Members = reinterpret_cast<CanvasControlContext*>(this->Context);
 
     Members->Flags =
-          GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((unsigned int) flags);
+          GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((uint32) flags);
     Members->CanvasScrollX             = 0;
     Members->CanvasScrollY             = 0;
     Members->mouseDragX                = 0;
     Members->mouseDragY                = 0;
     Members->dragModeEnabled           = false;
-    Members->ScrollBars.OutsideControl = ((((unsigned int) flags) & ((unsigned int) ViewerFlags::Border)) == 0);
+    Members->ScrollBars.OutsideControl = ((((uint32) flags) & ((uint32) ViewerFlags::Border)) == 0);
     ASSERT(Members->canvas.Create(canvasWidth, canvasHeight), "Fail to create a canvas of size object !");
 }
 
@@ -58,7 +58,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
     else if (Members->MouseIsOver)
         col = &Members->Cfg->View.Hover;
 
-    if (Members->Flags & ((unsigned int) ViewerFlags::Border))
+    if (Members->Flags & ((uint32) ViewerFlags::Border))
     {
         renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
         if (Members->Layout.Width > 6)
@@ -90,14 +90,14 @@ void CanvasViewer::OnUpdateScrollBars()
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
 
     // horizontal
-    if (Members->canvas.GetHeight() > (unsigned int) Members->Layout.Height)
-        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (unsigned int) Members->Layout.Height);
+    if (Members->canvas.GetHeight() > (uint32) Members->Layout.Height)
+        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (uint32) Members->Layout.Height);
     else
         UpdateVScrollBar(-Members->CanvasScrollY, 0);
 
     // vertical
-    if (Members->canvas.GetWidth() > (unsigned int) Members->Layout.Width)
-        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (unsigned int) Members->Layout.Width);
+    if (Members->canvas.GetWidth() > (uint32) Members->Layout.Width)
+        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (uint32) Members->Layout.Width);
     else
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
 }

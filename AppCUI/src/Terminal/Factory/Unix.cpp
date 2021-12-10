@@ -26,7 +26,7 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
         RETURNERROR(
               nullptr,
               "Unsuported terminal type for UNIX OS (%d): Please install SDL2",
-              (unsigned int) initData.Frontend);
+              (uint32) initData.Frontend);
 #endif
         break;
     case FrontendType::Terminal:
@@ -36,11 +36,11 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
         RETURNERROR(
               nullptr,
               "Unsuported terminal type for UNIX OS (%d): Please install ncurses",
-              (unsigned int) initData.Frontend);
+              (uint32) initData.Frontend);
 #endif
         break;
     default:
-        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (unsigned int) initData.Frontend);
+        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) initData.Frontend);
     }
 
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");

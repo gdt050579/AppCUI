@@ -17,7 +17,7 @@ using namespace std::literals;
 #    include <sys/stat.h>
 #endif
 
-constexpr unsigned int ALL_FILES_INDEX = 0xFFFFFFFFU;
+constexpr uint32 ALL_FILES_INDEX = 0xFFFFFFFFU;
 
 // Currently not all compilers support clock_cast (including gcc)
 // AppleClang supports std::chrono::file_clock::to_time_t, but gcc or VS doesn't
@@ -64,16 +64,16 @@ void ConvertSizeToString(uint64 size, char result[32])
     }
 }
 
-unsigned int __compute_hash__(const char16* start, const char16* end)
+uint32 __compute_hash__(const char16* start, const char16* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned int hash       = 0x811c9dc5;
+    uint32 hash       = 0x811c9dc5;
     const char16* p_start = (const char16*) start;
     const char16* p_end   = (const char16*) end;
 
     while (p_start < p_end)
     {
-        unsigned int val = *p_start;
+        uint32 val = *p_start;
         if ((val >= 'A') && (val <= 'Z'))
             val |= 32;
         hash = hash ^ val;
@@ -129,8 +129,8 @@ class FileDialogWindow : public Window
     // TODO: Future back and forward option
     // Controls::Button btnBack, btnForward;
     vector<FSLocationData> locations;
-    vector<std::set<unsigned int>> extensions;
-    const std::set<unsigned int>* extFilter;
+    vector<std::set<uint32>> extensions;
+    const std::set<uint32>* extFilter;
     std::filesystem::path resultedPath;
     std::filesystem::path currentPath;
 
@@ -206,7 +206,7 @@ FileDialogWindow::FileDialogWindow(
     files->AddColumn("&Size", TextAlignament::Right, 16);
     files->AddColumn("&Modified", TextAlignament::Center, 20);
     files->SetItemCompareFunction(
-          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void*) -> int
+          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, uint32 columnIndex, void*) -> int
           {
               const auto& v1 = control->GetItemData(item1, 0);
               const auto& v2 = control->GetItemData(item2, 0);
@@ -289,7 +289,7 @@ bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter
               false,
               "Name should have at least one extension in the list, separated by coma");
 
-        std::set<unsigned int> requiredExtensions;
+        std::set<uint32> requiredExtensions;
         for (const auto& extension : filterExtensions)
         {
             requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
@@ -305,7 +305,7 @@ void FileDialogWindow::FileListItemClicked()
     int index = files->GetCurrentItem();
     if (index < 0)
         return;
-    unsigned int value = (int) files->GetItemData(index, 0);
+    uint32 value = (int) files->GetItemData(index, 0);
     if (value == 0)
     {
         try
@@ -425,7 +425,7 @@ void FileDialogWindow::SpecialFoldersUpdatePath()
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
 {
-    unsigned int idx = (unsigned int) comboType->GetCurrentItemUserData(0);
+    uint32 idx = (uint32) comboType->GetCurrentItemUserData(0);
     if (idx == ALL_FILES_INDEX)
         this->extFilter = nullptr; // no filter
     else

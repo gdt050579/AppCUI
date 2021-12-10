@@ -22,31 +22,31 @@
 namespace AppCUI
 {
 using namespace OS;
-constexpr unsigned int INVALID_SELECTION = 0xFFFFFFFFU;
+constexpr uint32 INVALID_SELECTION = 0xFFFFFFFFU;
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
-    unsigned int extraY = 0;
-    unsigned int extraX = 1; // one character has to be left of the cursor (at the end of the line)
+    uint32 extraY = 0;
+    uint32 extraX = 1; // one character has to be left of the cursor (at the end of the line)
 
-    if (Flags & (unsigned int) TextAreaFlags::ShowLineNumbers)
+    if (Flags & (uint32) TextAreaFlags::ShowLineNumbers)
         extraX += LINE_NUMBERS_WIDTH;
-    if (Flags & (unsigned int) TextAreaFlags::Border)
+    if (Flags & (uint32) TextAreaFlags::Border)
     {
         extraX += 2;
         extraY += 2;
     }
     if ((int) extraX < Layout.Width)
-        this->View.VisibleRowsCount = ((unsigned int) Layout.Width) - extraX;
+        this->View.VisibleRowsCount = ((uint32) Layout.Width) - extraX;
     else
         this->View.VisibleRowsCount = 0;
     if ((int) extraY < Layout.Height)
-        this->View.VisibleLinesCount = ((unsigned int) Layout.Height) - extraY;
+        this->View.VisibleLinesCount = ((uint32) Layout.Height) - extraY;
     else
         this->View.VisibleLinesCount = 0;
 }
 void TextAreaControlContext::UpdateViewXOffset()
 {
-    unsigned int startLine;
+    uint32 startLine;
     // some sanity checks
     if (Lines.Get(View.CurrentLine, startLine) == false)
         return; // internal error
@@ -80,7 +80,7 @@ void TextAreaControlContext::ClearSel()
     Selection.End    = INVALID_SELECTION;
     Selection.Origin = INVALID_SELECTION;
 }
-void TextAreaControlContext::MoveSelectionTo(unsigned int poz)
+void TextAreaControlContext::MoveSelectionTo(uint32 poz)
 {
     if ((Selection.Origin == INVALID_SELECTION) || (poz == Selection.Origin))
     {
@@ -113,8 +113,8 @@ void TextAreaControlContext::DeleteSelected()
 
 void TextAreaControlContext::UpdateView()
 {
-    unsigned int start, end;
-    unsigned int idxStart, idxEnd, idxMiddle;
+    uint32 start, end;
+    uint32 idxStart, idxEnd, idxMiddle;
     bool currentLineComputedCorectly = false;
     if (GetLineRange(View.CurrentLine, start, end))
     {
@@ -122,8 +122,8 @@ void TextAreaControlContext::UpdateView()
     }
     if (!currentLineComputedCorectly)
     {
-        unsigned int* pLines = Lines.GetUInt32Array();
-        unsigned int cnt     = Lines.Len();
+        uint32* pLines = Lines.GetUInt32Array();
+        uint32 cnt     = Lines.Len();
 
         // binary search
         idxStart = 0;
@@ -186,7 +186,7 @@ void TextAreaControlContext::UpdateView()
 }
 void TextAreaControlContext::UpdateLines()
 {
-    unsigned int txSize, lineNumber;
+    uint32 txSize, lineNumber;
     Character* c     = Text.GetBuffer();
     Character* s     = c;
     Character* c_End = c + Text.Len();
@@ -203,14 +203,14 @@ void TextAreaControlContext::UpdateLines()
         if (c < c_End) // a new line was found
         {
             c++;
-            txSize = (unsigned int) (c - s);
+            txSize = (uint32) (c - s);
             if (View.CurrentPosition >= txSize)
                 View.CurrentLine = lineNumber;
             Lines.Push(txSize);
             lineNumber++;
         }
     } while (c < c_End);
-    if (this->Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting)
+    if (this->Flags & (uint32) TextAreaFlags::SyntaxHighlighting)
     {
         if (this->handlers != nullptr)
         {
@@ -223,17 +223,17 @@ void TextAreaControlContext::UpdateLines()
     }
     UpdateView();
 }
-unsigned int TextAreaControlContext::GetLineStart(unsigned int lineIndex)
+uint32 TextAreaControlContext::GetLineStart(uint32 lineIndex)
 {
-    unsigned int value;
+    uint32 value;
     if (Lines.Get(lineIndex, value) == false)
         return 0;
     return value;
 }
-bool TextAreaControlContext::GetLineRange(unsigned int lineIndex, unsigned int& start, unsigned int& end)
+bool TextAreaControlContext::GetLineRange(uint32 lineIndex, uint32& start, uint32& end)
 {
-    unsigned int linesCount = Lines.Len();
-    unsigned int* p         = Lines.GetUInt32Array();
+    uint32 linesCount = Lines.Len();
+    uint32* p         = Lines.GetUInt32Array();
     CHECK(lineIndex < linesCount, false, "Invalid line index: %d (should be less than %d)", lineIndex, linesCount);
     p += lineIndex;
     start = *p;
@@ -261,9 +261,9 @@ void TextAreaControlContext::DrawToolTip()
 {
 }
 void TextAreaControlContext::DrawLine(
-      Graphics::Renderer& renderer, unsigned int lineIndex, int ofsX, int pozY, const ColorPair textColor)
+      Graphics::Renderer& renderer, uint32 lineIndex, int ofsX, int pozY, const ColorPair textColor)
 {
-    unsigned int poz, lineStart, lineEnd, tr;
+    uint32 poz, lineStart, lineEnd, tr;
     int pozX, cursorPoz;
     bool useHighlighing;
     Character* ch;
@@ -286,7 +286,7 @@ void TextAreaControlContext::DrawLine(
     ch_end         = Text.GetBuffer() + Text.Len();
     ch             = Text.GetBuffer() + poz;
     pozX           = ofsX;
-    useHighlighing = (Flags & (unsigned int) TextAreaFlags::SyntaxHighlighting) != 0;
+    useHighlighing = (Flags & (uint32) TextAreaFlags::SyntaxHighlighting) != 0;
     cursorPoz      = -1;
     col            = textColor;
     if (pozX < 4)
@@ -368,17 +368,17 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', col->Text);
     int lm, tm, rm, bm;
     lm = tm = rm = bm = 0;
-    if (Flags & (unsigned int) TextAreaFlags::Border)
+    if (Flags & (uint32) TextAreaFlags::Border)
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
         lm = tm = rm = bm = 1;
         renderer.SetClipMargins(1, 1, 1, 1);
     }
-    if (Flags & (unsigned int) TextAreaFlags::ShowLineNumbers)
+    if (Flags & (uint32) TextAreaFlags::ShowLineNumbers)
     {
-        unsigned int lnCount = Lines.Len();
-        unsigned int tr      = 0;
-        unsigned int lnIndex = View.TopLine;
+        uint32 lnCount = Lines.Len();
+        uint32 tr      = 0;
+        uint32 lnIndex = View.TopLine;
         while ((lnIndex < lnCount) && (tr < View.VisibleLinesCount))
         {
             if (lnIndex == View.CurrentLine)
@@ -396,7 +396,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
         renderer.DrawVerticalLine(lm - 1, 0, View.VisibleRowsCount, col->Border);
     }
     renderer.SetClipMargins(lm, tm, rm, bm);
-    for (unsigned int tr = 0; tr < View.VisibleLinesCount; tr++)
+    for (uint32 tr = 0; tr < View.VisibleLinesCount; tr++)
     {
         DrawLine(renderer, tr + View.TopLine, lm, tr + tm, col->Text);
     }
@@ -443,10 +443,10 @@ void TextAreaControlContext::MoveRight(bool selected)
 void TextAreaControlContext::MoveTo(int, bool)
 {
 }
-void TextAreaControlContext::MoveUpDown(unsigned int times, bool moveUp, bool selected)
+void TextAreaControlContext::MoveUpDown(uint32 times, bool moveUp, bool selected)
 {
-    unsigned int rowNumber;
-    unsigned int start, end;
+    uint32 rowNumber;
+    uint32 start, end;
 
     CLEAR_SELECTION;
     if (GetLineRange(View.CurrentLine, start, end))
@@ -496,7 +496,7 @@ void TextAreaControlContext::MoveHome(bool selected)
 void TextAreaControlContext::MoveEnd(bool selected)
 {
     CLEAR_SELECTION;
-    unsigned int start, end;
+    uint32 start, end;
     if (Text.Len() == 0)
     {
         View.CurrentPosition  = 0;
@@ -515,7 +515,7 @@ void TextAreaControlContext::MoveEnd(bool selected)
     }
     UPDATE_SELECTION;
 }
-bool __is_sign__(unsigned int, Character ch)
+bool __is_sign__(uint32, Character ch)
 {
     switch (ch.Code)
     {
@@ -556,7 +556,7 @@ bool __is_sign__(unsigned int, Character ch)
         return false;
     }
 }
-bool __is_not_sign(unsigned int, Character ch)
+bool __is_not_sign(uint32, Character ch)
 {
     if ((ch == '\n') || (ch == '\r') || (ch == ' ') || (ch == '\t'))
         return false;
@@ -567,19 +567,19 @@ void TextAreaControlContext::MoveToPreviousWord(bool selected)
     CLEAR_SELECTION;
     if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
         return;
-    unsigned int start, end;
+    uint32 start, end;
     if (!GetLineRange(View.CurrentLine, start, end))
         return;
     if (View.CurrentPosition <= start)
         return;
     auto startPoz              = View.CurrentPosition - 1;
     auto currentChar           = this->Text.GetBuffer()[startPoz];
-    optional<unsigned int> res = std::nullopt;
+    optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = this->Text.FindPrevious(
-              View.CurrentPosition - 1, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+              View.CurrentPosition - 1, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
         if (res.has_value())
             startPoz = res.value();
     }
@@ -611,11 +611,11 @@ void TextAreaControlContext::MoveToNextWord(bool selected)
     if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
         return;
     auto currentChar           = this->Text.GetBuffer()[View.CurrentPosition];
-    optional<unsigned int> res = std::nullopt;
+    optional<uint32> res = std::nullopt;
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
         res = this->Text.FindNext(
-              View.CurrentPosition, [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+              View.CurrentPosition, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
     }
     else if (__is_sign__(0, currentChar))
     {
@@ -627,7 +627,7 @@ void TextAreaControlContext::MoveToNextWord(bool selected)
     }
     // skip spaces if exists
     if (res.has_value())
-        res = this->Text.FindNext(res.value(), [](unsigned int, Character ch) { return (ch == ' ') || (ch == '\t'); });
+        res = this->Text.FindNext(res.value(), [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
     // set new pos
     if (res.has_value())
     {
@@ -656,7 +656,7 @@ void TextAreaControlContext::MoveToEndOfTheFile(bool selected)
 
 void TextAreaControlContext::AddChar(char16 ch)
 {
-    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
+    if ((Flags & (uint32) TextAreaFlags::Readonly) != 0)
         return;
     DeleteSelected();
     if (Text.InsertChar(ch, View.CurrentPosition))
@@ -668,7 +668,7 @@ void TextAreaControlContext::AddChar(char16 ch)
 }
 void TextAreaControlContext::KeyBack()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
+    if ((Flags & (uint32) TextAreaFlags::Readonly) != 0)
         return;
     if (Selection.Start != INVALID_SELECTION)
     {
@@ -686,7 +686,7 @@ void TextAreaControlContext::KeyBack()
 }
 void TextAreaControlContext::KeyDelete()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
+    if ((Flags & (uint32) TextAreaFlags::Readonly) != 0)
         return;
     if (Selection.Start != INVALID_SELECTION)
     {
@@ -703,7 +703,7 @@ bool TextAreaControlContext::HasSelection()
 {
     return Selection.Start != INVALID_SELECTION;
 }
-void TextAreaControlContext::SetSelection(unsigned int start, unsigned int end)
+void TextAreaControlContext::SetSelection(uint32 start, uint32 end)
 {
     if ((start < end) && (end <= Text.Len()))
     {
@@ -735,7 +735,7 @@ void TextAreaControlContext::CopyToClipboard()
 }
 void TextAreaControlContext::PasteFromClipboard()
 {
-    if ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0)
+    if ((Flags & (uint32) TextAreaFlags::Readonly) != 0)
         return;
     LocalUnicodeStringBuilder<2048> temp;
     if (Clipboard::GetText(temp) == false)
@@ -886,14 +886,14 @@ void TextAreaControlContext::SetToolTip(char*)
 }
 bool TextAreaControlContext::IsReadOnly()
 {
-    return ((Flags & (unsigned int) TextAreaFlags::Readonly) != 0);
+    return ((Flags & (uint32) TextAreaFlags::Readonly) != 0);
 }
 void TextAreaControlContext::SetReadOnly(bool value)
 {
     if (value)
-        this->Flags |= (unsigned int) TextAreaFlags::Readonly;
+        this->Flags |= (uint32) TextAreaFlags::Readonly;
     else
-        this->Flags -= ((this->Flags) & (unsigned int) TextAreaFlags::Readonly);
+        this->Flags -= ((this->Flags) & (uint32) TextAreaFlags::Readonly);
 }
 void TextAreaControlContext::SendMsg(Event eventType)
 {
@@ -912,15 +912,15 @@ TextArea::TextArea(const ConstString& caption, string_view layout, TextAreaFlags
 
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
-    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     // initializam
     ASSERT(Members->Text.Set(caption), "Fail to set text to internal CharactersBuffers object !");
     ASSERT(Members->Lines.Create(128), "Fail to create indexes for line numbers");
     // scroll bars
-    if ((unsigned int) flags & (unsigned int) TextAreaFlags::ScrollBars)
+    if ((uint32) flags & (uint32) TextAreaFlags::ScrollBars)
     {
         Members->Flags |= GATTR_VSCROLL;
-        Members->ScrollBars.OutsideControl = (((unsigned int) flags & (unsigned int) TextAreaFlags::Border) == 0);
+        Members->ScrollBars.OutsideControl = (((uint32) flags & (uint32) TextAreaFlags::Border) == 0);
     }
     Members->tabChar              = ' ';
     Members->View.CurrentPosition = 0;

@@ -3,7 +3,7 @@
 
 namespace AppCUI::Internal
 {
-constexpr unsigned int NO_ITEM_SELECTED = 0xFFFFFFFFU;
+constexpr uint32 NO_ITEM_SELECTED = 0xFFFFFFFFU;
 
 MenuBarItem::MenuBarItem()
 {
@@ -24,11 +24,11 @@ MenuBar::MenuBar(Controls::Control* parent, int x, int y)
 }
 Menu* MenuBar::GetMenu(ItemHandle itemHandle)
 {
-    CHECK((unsigned int) itemHandle < this->ItemsCount,
+    CHECK((uint32) itemHandle < this->ItemsCount,
           nullptr,
           "Invalid item handle (%08X)",
-          (unsigned int) itemHandle);
-    return &Items[(unsigned int) itemHandle]->Mnu;
+          (uint32) itemHandle);
+    return &Items[(uint32) itemHandle]->Mnu;
 }
 ItemHandle MenuBar::AddMenu(const ConstString& name)
 {
@@ -50,20 +50,20 @@ ItemHandle MenuBar::AddMenu(const ConstString& name)
 void MenuBar::RecomputePositions()
 {
     int x = 0;
-    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
         Items[tr]->X = x;
         x += (int) (2 + Items[tr]->Name.Len());
     }
 }
-void MenuBar::SetWidth(unsigned int value)
+void MenuBar::SetWidth(uint32 value)
 {
     Width = value;
     RecomputePositions();
 }
 bool MenuBar::OnMouseMove(int x, int y, bool& repaint)
 {
-    unsigned int idx = MousePositionToItem(x, y);
+    uint32 idx = MousePositionToItem(x, y);
     if (idx != this->HoveredItem)
     {
         this->HoveredItem = idx;
@@ -80,20 +80,20 @@ bool MenuBar::OnMouseMove(int x, int y, bool& repaint)
     }
     return false;
 }
-unsigned int MenuBar::MousePositionToItem(int x, int y)
+uint32 MenuBar::MousePositionToItem(int x, int y)
 {
     x -= this->X;
     y -= this->Y;
     if (y != 0)
         return NO_ITEM_SELECTED;
-    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
         if ((x >= Items[tr]->X) && (x < (Items[tr]->X + (int) Items[tr]->Name.Len() + 2)))
             return tr;
     }
     return NO_ITEM_SELECTED;
 }
-void MenuBar::Open(unsigned int menuIndex)
+void MenuBar::Open(uint32 menuIndex)
 {
     this->OpenedItem = menuIndex;
     if (menuIndex < ItemsCount)
@@ -105,7 +105,7 @@ void MenuBar::Open(unsigned int menuIndex)
 }
 bool MenuBar::OnMousePressed(int x, int y, Input::MouseButton /*button*/)
 {
-    unsigned int idx = MousePositionToItem(x, y);
+    uint32 idx = MousePositionToItem(x, y);
     if (idx != this->OpenedItem)
     {
         Open(idx);
@@ -147,7 +147,7 @@ bool MenuBar::OnKeyEvent(Input::Key keyCode)
     else
     {
         // if not open - check for hot keys
-        for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+        for (uint32 tr = 0; tr < this->ItemsCount; tr++)
         {
             if (this->Items[tr]->HotKey == keyCode)
             {
@@ -168,7 +168,7 @@ void MenuBar::Paint(Graphics::Renderer& renderer)
           TextAlignament::Left);
     params.Y = this->Y;
 
-    for (unsigned int tr = 0; tr < this->ItemsCount; tr++)
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
         params.X              = this->X + Items[tr]->X + 1;
         params.HotKeyPosition = Items[tr]->HotKeyOffset;

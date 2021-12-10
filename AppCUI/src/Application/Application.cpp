@@ -128,18 +128,17 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
                 auto h_key = (*winList)->GetHotKey();
                 if ((h_key & Key::Alt) != Key::None)
                 {
-                    h_key = h_key & ~((unsigned int) Key::Alt);
+                    h_key = h_key & ~((uint32) Key::Alt);
                     // Alt+0 will not be considered
-                    if ((((unsigned int) h_key) > ((unsigned int) Key::N0)) &&
-                        (((unsigned int) h_key) <= ((unsigned int) Key::N9)))
+                    if ((((uint32) h_key) > ((uint32) Key::N0)) && (((uint32) h_key) <= ((uint32) Key::N9)))
                     {
-                        v[((unsigned int) h_key) - ((unsigned int) Key::N0)] = true;
+                        v[((uint32) h_key) - ((uint32) Key::N0)] = true;
                     }
                 }
             }
         }
         // find first visible ID
-        for (unsigned int tr = 1; tr < 10; tr++)
+        for (uint32 tr = 1; tr < 10; tr++)
             if (!v[tr])
             {
                 wnd->SetHotKey('0' + tr);
@@ -336,7 +335,7 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     if (idx >= cnt)
     {
         // no selected control ==> draw all of them
-        for (unsigned int tr = 0; tr < cnt; tr++)
+        for (uint32 tr = 0; tr < cnt; tr++)
         {
             PaintControl(Members->Controls[tr], renderer, false);
         }
@@ -344,7 +343,7 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     else
     {
         // one control is selected (paint controls that are not focused)
-        for (unsigned int tr = 1; tr < cnt; tr++)
+        for (uint32 tr = 1; tr < cnt; tr++)
         {
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
         }
@@ -396,7 +395,7 @@ void ComputeControlLayout(Graphics::Clip& parentClip, Control* ctrl)
           Members->Layout.Width - (Members->Margins.Right + Members->Margins.Left),
           Members->Layout.Height - (Members->Margins.Bottom + Members->Margins.Top));
     // calculez pentru fiecare copil
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         ComputeControlLayout(client, Members->Controls[tr]);
 }
 void DestroyControl(Controls::Control* ctrl)
@@ -406,7 +405,7 @@ void DestroyControl(Controls::Control* ctrl)
     auto Members = reinterpret_cast<ControlContext*>(ctrl->Context);
     if (Members)
     {
-        for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         {
             DestroyControl(Members->Controls[tr]);
         }
@@ -448,10 +447,10 @@ Controls::Control* RecursiveCoordinatesToControl(Controls::Control* ctrl, int x,
     // controlul e ok - verific acuma pentru copii
     if (Members->ControlsCount > 0)
     {
-        unsigned int idx = Members->CurrentControlIndex;
+        uint32 idx = Members->CurrentControlIndex;
         if (idx >= Members->ControlsCount)
             idx = 0;
-        for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         {
             Control* res = RecursiveCoordinatesToControl(Members->Controls[idx], x, y);
             if (res != nullptr)
@@ -628,7 +627,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     }
 
     LOG_INFO("Starting AppCUI ...");
-    LOG_INFO("Flags           = %08X", (unsigned int) initData.Flags);
+    LOG_INFO("Flags           = %08X", (uint32) initData.Flags);
     LOG_INFO("Requested Size  = %d x %d", initData.Width, initData.Height);
 
     // create the frontend
@@ -686,8 +685,8 @@ void ApplicationImpl::Paint()
     if (ModalControlsCount > 0)
     {
         PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, false);
-        unsigned int tmp = ModalControlsCount - 1;
-        for (unsigned int tr = 0; tr < tmp; tr++)
+        uint32 tmp = ModalControlsCount - 1;
+        for (uint32 tr = 0; tr < tmp; tr++)
             PaintControl(ModalControlsStack[tr], this->terminal->ScreenCanvas, false);
         this->terminal->ScreenCanvas.DarkenScreen();
         PaintControl(ModalControlsStack[ModalControlsCount - 1], this->terminal->ScreenCanvas, true);
@@ -724,7 +723,7 @@ void ApplicationImpl::ComputePositions()
     Graphics::Clip full;
     full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
     ComputeControlLayout(full, this->AppDesktop);
-    for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
+    for (uint32 tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
 void ApplicationImpl::ProcessKeyPress(Input::Key KeyCode, char16 unicodeCharacter)
@@ -1143,7 +1142,7 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
         {
             if (ProcessUpdateFrameEvent(this->AppDesktop))
                 this->RepaintStatus |= REPAINT_STATUS_DRAW;
-            for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
+            for (uint32 tr = 0; tr < ModalControlsCount; tr++)
                 if (ProcessUpdateFrameEvent(this->ModalControlsStack[tr]))
                     this->RepaintStatus |= REPAINT_STATUS_DRAW;
         }

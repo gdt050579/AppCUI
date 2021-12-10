@@ -31,7 +31,7 @@ namespace AppCUI
 {
 namespace Internal
 {
-    enum class SystemEventType : unsigned int
+    enum class SystemEventType : uint32
     {
         None = 0,
         MouseDown,
@@ -48,7 +48,7 @@ namespace Internal
     {
         SystemEventType eventType;
         int mouseX, mouseY;
-        unsigned int newWidth, newHeight;
+        uint32 newWidth, newHeight;
         Input::MouseButton mouseButton;
         Input::MouseWheel mouseWheel;
         Input::Key keyCode;
@@ -62,7 +62,7 @@ namespace Internal
         Input::Key KeyCode;
         string_view KeyName;
         Graphics::CharacterBuffer Name;
-        unsigned int ClearCommandUniqueID;
+        uint32 ClearCommandUniqueID;
     };
     struct CommandBarFieldIndex
     {
@@ -70,8 +70,8 @@ namespace Internal
     };
     class CommandBarController
     {
-        CommandBarField Fields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) Input::Key::Count];
-        CommandBarFieldIndex VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(unsigned int) Input::Key::Count];
+        CommandBarField Fields[MAX_COMMANDBAR_SHIFTSTATES][(uint32) Input::Key::Count];
+        CommandBarFieldIndex VisibleFields[MAX_COMMANDBAR_SHIFTSTATES][(uint32) Input::Key::Count];
         int IndexesCount[MAX_COMMANDBAR_SHIFTSTATES];
         bool HasKeys[MAX_COMMANDBAR_SHIFTSTATES];
 
@@ -87,7 +87,7 @@ namespace Internal
         int LastCommand;
         CommandBarField* PressedField;
         CommandBarField* HoveredField;
-        unsigned int ClearCommandUniqueID;
+        uint32 ClearCommandUniqueID;
         bool RecomputeScreenPos;
 
         void ComputeScreenPos();
@@ -95,10 +95,10 @@ namespace Internal
         CommandBarField* MousePositionToField(int x, int y);
 
       public:
-        CommandBarController(unsigned int desktopWidth, unsigned int desktopHeight, Application::Config* cfg);
+        CommandBarController(uint32 desktopWidth, uint32 desktopHeight, Application::Config* cfg);
         void Paint(Graphics::Renderer& renderer);
         void Clear();
-        void SetDesktopSize(unsigned int width, unsigned int height);
+        void SetDesktopSize(uint32 width, uint32 height);
         bool Set(Input::Key keyCode, const ConstString& caption, int Command);
         bool SetShiftKey(Input::Key keyCode);
         bool OnMouseMove(int x, int y, bool& repaint);
@@ -112,24 +112,24 @@ namespace Internal
         Controls::Menu Mnu;
         Graphics::CharacterBuffer Name;
         Input::Key HotKey;
-        unsigned int HotKeyOffset;
+        uint32 HotKeyOffset;
         int X;
         MenuBarItem();
     };
     class MenuBar
     {
-        static const constexpr unsigned int MAX_ITEMS = 32;
+        static const constexpr uint32 MAX_ITEMS = 32;
         unique_ptr<MenuBarItem> Items[MAX_ITEMS];
         Application::Config* Cfg;
         Controls::Control* Parent;
-        unsigned int ItemsCount;
-        unsigned int OpenedItem;
-        unsigned int HoveredItem;
-        unsigned int Width;
+        uint32 ItemsCount;
+        uint32 OpenedItem;
+        uint32 HoveredItem;
+        uint32 Width;
         int X, Y;
 
-        unsigned int MousePositionToItem(int x, int y);
-        void Open(unsigned int menuIndex);
+        uint32 MousePositionToItem(int x, int y);
+        void Open(uint32 menuIndex);
 
       public:
         MenuBar(Controls::Control* parent = nullptr, int x = 0, int y = 0);
@@ -137,7 +137,7 @@ namespace Internal
         Controls::ItemHandle AddMenu(const ConstString& name);
         Controls::Menu* GetMenu(Controls::ItemHandle itemHandle);
         void RecomputePositions();
-        void SetWidth(unsigned int value);
+        void SetWidth(uint32 value);
         void Paint(Graphics::Renderer& renderer);
         bool OnMouseMove(int x, int y, bool& repaint);
         bool OnMousePressed(int x, int y, Input::MouseButton button);
@@ -198,7 +198,7 @@ namespace Internal
         AbstractTerminal();
 
       public:
-        unsigned int LastCursorX, LastCursorY;
+        uint32 LastCursorX, LastCursorY;
         Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
         bool Inited, LastCursorVisibility;
 
@@ -235,13 +235,13 @@ namespace Internal
         Controls::Control* MouseOverControl;
         Controls::Control* ExpandedControl;
         Controls::Menu* VisibleMenu;
-        unsigned int ModalControlsCount;
+        uint32 ModalControlsCount;
         int LoopStatus;
-        unsigned int RepaintStatus;
+        uint32 RepaintStatus;
         int MouseLockedObject;
 
         Application::InitializationFlags InitFlags;
-        unsigned int LastWindowID;
+        uint32 LastWindowID;
         int LastMouseX, LastMouseY;
         bool Inited;
         bool cmdBarUpdate;
@@ -296,7 +296,7 @@ namespace Utils
     struct UnicodeChar
     {
         uint16 Value;
-        unsigned int Length;
+        uint32 Length;
     };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
 } // namespace Utils
