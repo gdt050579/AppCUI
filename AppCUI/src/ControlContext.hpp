@@ -291,11 +291,7 @@ class TextAreaControlContext : public ControlContext
     void DrawLineNumber(
           Graphics::Renderer& renderer, int lineIndex, int pozY, const Graphics::ColorPair lineNumberColor);
     void DrawLine(
-          Graphics::Renderer& renderer,
-          uint32 lineIndex,
-          int ofsX,
-          int pozY,
-          const Graphics::ColorPair textColor);
+          Graphics::Renderer& renderer, uint32 lineIndex, int ofsX, int pozY, const Graphics::ColorPair textColor);
     void DrawToolTip();
 
     void MoveLeft(bool selected);
@@ -512,10 +508,7 @@ struct ComboBoxItem
     bool Separator;
     ComboBoxItem();
     ComboBoxItem(
-          const ConstString& caption,
-          variant<GenericRef, uint64> userData,
-          uint32 index,
-          bool separator = false);
+          const ConstString& caption, variant<GenericRef, uint64> userData, uint32 index, bool separator = false);
     ~ComboBoxItem();
     ComboBoxItem(const ComboBoxItem&);
     ComboBoxItem(ComboBoxItem&&) noexcept;
@@ -538,14 +531,16 @@ class NumericSelectorControlContext : public ControlContext
     int64 maxValue;
     int64 value;
 
-    const int buttonPadding = 4;
+    const int32 buttonPadding = 4;
     LocalString<256> stringValue;
     bool intoInsertionMode       = false;
     bool wasMinusPressed         = false;
-    int64 insertionModevalue = 0;
+    int64 insertionModevalue     = 0;
     bool wrongValueInserted      = false;
-    int64 sliderPosition     = 0;
+    int64 sliderPosition         = 0;
     bool isMouseLeftClickPressed = false;
+
+    NumericSelector* instance = nullptr;
 
     enum class IsMouseOn
     {
@@ -554,6 +549,16 @@ class NumericSelectorControlContext : public ControlContext
         TextField,
         PlusButton
     } isMouseOn{ IsMouseOn::None };
+
+    bool IsValidValue(int64 value) const;
+    bool IsValueInsertedWrong() const;
+    bool GetRenderColor(Graphics::ColorPair& color) const;
+    bool FormatTextField();
+    bool IsOnPlusButton(int32 x, int32 y) const;
+    bool IsOnMinusButton(int32 x, int32 y) const;
+    bool IsOnTextField(int32 x, int32 y) const;
+    bool MinValueReached() const;
+    bool MaxValueReached() const;
 };
 
 struct TreeColumnData
@@ -577,7 +582,7 @@ struct TreeItem
     bool isExpandable = false;
     vector<ItemHandle> children;
     Utils::UnicodeStringBuilder metadata;
-    uint32 depth                = 1;
+    uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
 };
@@ -593,13 +598,13 @@ class TreeControlContext : public ControlContext
     uint32 maxItemsToDraw  = 0;
     uint32 offsetTopToDraw = 0;
     uint32 offsetBotToDraw = 0;
-    bool notProcessed            = true;
+    bool notProcessed      = true;
     vector<ItemHandle> roots;
     vector<TreeColumnData> columns;
     uint32 treeFlags              = 0;
     uint32 separatorIndexSelected = 0xFFFFFFFF;
-    ItemHandle firstFoundInSearch       = InvalidItemHandle;
-    bool hidSearchBarOnResize           = false;
+    ItemHandle firstFoundInSearch = InvalidItemHandle;
+    bool hidSearchBarOnResize     = false;
 
     enum class IsMouseOn
     {
@@ -651,26 +656,50 @@ class GridControlContext : public ControlContext
   public:
     uint32 columnsNo        = 0;
     uint32 rowsNo           = 0;
-    GridFlags flags               = GridFlags::None;
+    GridFlags flags         = GridFlags::None;
     uint32 hoveredCellIndex = 0xFFFFFFFF;
     uint32 anchorCellIndex  = 0xFFFFFFFF;
-    vector<uint32> selectedCellsIndexes;
+    std::vector<uint32> selectedCellsIndexes;
 
-    uint32 cWidth           = 0U;
-    uint32 cHeight          = 0U;
-    uint32 offsetX          = 0U;
-    uint32 offsetY          = 0U;
-    const uint32 headerSize = 1U;
+    uint32 cWidth  = 0U;
+    uint32 cHeight = 0U;
+    uint32 offsetX = 0U;
+    uint32 offsetY = 0U;
 
     Menu rightClickMenu;
 
     std::map<uint32, GridCellData> cells;
-    std::u16string separator = u",";
-    vector<GridHeaderCellData> headers;
+    std::u16string separator{ u"," };
+    std::vector<GridHeaderCellData> headers;
+
+    uint32 viewportOffsetX = 0;
+    uint32 viewportOffsetY = 0;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex);
+
+  public:
+    void DrawBoxes(Graphics::Renderer& renderer);
+    void DrawLines(Graphics::Renderer& renderer);
+    uint32 ComputeCellNumber(int32 x, int32 y);
+    Graphics::SpecialChars ComputeBoxType(
+          uint32 colIndex,
+          uint32 rowIndex,
+          uint32 startColumnsIndex,
+          uint32 startRowsIndex,
+          uint32 endColumnsIndex,
+          uint32 endRowsIndex);
+    void DrawCellsBackground(Graphics::Renderer& renderer);
+    bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
+    bool DrawHeader(Graphics::Renderer& renderer);
+    void UpdateGridParameters(bool dontRecomputeDimensions = false);
+    void UpdateDimensions(int32 offsetX, int32 offsetY);
+    bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
+    bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
+    bool ToggleBooleanCell();
+    bool CopySelectedCellsContent() const;
+    bool PasteContentToSelectedCells();
 };
 
 enum class MenuItemType : uint32

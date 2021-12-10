@@ -3472,20 +3472,9 @@ namespace Controls
 
       public:
         int64 GetValue() const;
-        void SetValue(const int64 value);
-        void SetMinValue(const int64 minValue);
-        void SetMaxValue(const int64 maxValue);
-
-      private:
-        bool IsValidValue(const int64 value) const;
-        bool IsValueInsertedWrong() const;
-        bool GetRenderColor(Graphics::ColorPair& color) const;
-        bool FormatTextField();
-        bool IsOnPlusButton(const int x, const int y) const;
-        bool IsOnMinusButton(const int x, const int y) const;
-        bool IsOnTextField(const int x, const int y) const;
-        bool MinValueReached() const;
-        bool MaxValueReached() const;
+        void SetValue(int64 value);
+        void SetMinValue(int64 minValue);
+        void SetMaxValue(int64 maxValue);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3637,7 +3626,8 @@ namespace Controls
         HideHoveredCell       = 0x000800,
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
-        HideHeader            = 0x004000
+        HideHeader            = 0x004000,
+        DisableZoom           = 0x008000
     };
 
     class EXPORT Grid : public Control
@@ -3681,27 +3671,6 @@ namespace Controls
         bool UpdateHeaderValues(
               const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
-
-      private:
-        void DrawBoxes(Graphics::Renderer& renderer);
-        void DrawLines(Graphics::Renderer& renderer);
-        uint32 ComputeCellNumber(int x, int y);
-        Graphics::SpecialChars ComputeBoxType(
-              uint32 colIndex,
-              uint32 rowIndex,
-              uint32 startColumnsIndex,
-              uint32 startRowsIndex,
-              uint32 endColumnsIndex,
-              uint32 endRowsIndex);
-        void DrawCellsBackground(Graphics::Renderer& renderer);
-        bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
-        bool DrawHeader(Graphics::Renderer& renderer);
-        void UpdateGridParameters();
-        bool MoveSelectedCellByKeys(Input::Key keyCode);
-        bool SelectCellsByKeys(Input::Key keyCode);
-        bool ToggleBooleanCell();
-        bool CopySelectedCellsContent() const;
-        bool PasteContentToSelectedCells();
 
       private:
         friend Factory::Grid;

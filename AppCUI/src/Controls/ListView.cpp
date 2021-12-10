@@ -241,8 +241,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         // if activ and filtered
         if (this->Filter.SearchText.Len() > 0)
         {
-            params.Flags = static_cast<WriteTextFlags>(
-                  (uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
+            params.Flags =
+                  static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
         }
     }
     // prepare params
@@ -1283,7 +1283,7 @@ int ListViewControlContext::SearchItem(uint32 startPoz)
         return -1;
 
     uint32 originalStartPoz = startPoz;
-    int found                     = -1;
+    int found               = -1;
     do
     {
         if (FilterItem(Items.List[startPoz], true))
@@ -1301,7 +1301,7 @@ int ListViewControlContext::SearchItem(uint32 startPoz)
 bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll)
 {
     uint32 columnID = 0;
-    int index             = -1;
+    int index       = -1;
 
     for (uint32 gr = 0; gr < Columns.Count; gr++)
     {
@@ -1397,8 +1397,7 @@ ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListVi
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
-    Members->Flags =
-          GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (uint32) flags;
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (uint32) flags;
     Members->ScrollBars.LeftMargin = 25;
     // allocate items
     ASSERT(Members->Items.Indexes.Create(32), "Fail to allocate Listview indexes");
@@ -1734,8 +1733,8 @@ ItemHandle ListView::GetCurrentItem()
 bool ListView::SetCurrentItem(ItemHandle item)
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
-    uint32* indexes        = lvcc->Items.Indexes.GetUInt32Array();
-    uint32 count           = lvcc->Items.Indexes.Len();
+    uint32* indexes              = lvcc->Items.Indexes.GetUInt32Array();
+    uint32 count                 = lvcc->Items.Indexes.Len();
     if (count <= 0)
         return false;
     // caut indexul
