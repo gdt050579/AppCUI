@@ -5,7 +5,7 @@ namespace AppCUI::Internal
 using namespace Input;
 
 CommandBarController::CommandBarController(
-      unsigned int desktopWidth, unsigned int desktopHeight, Application::Config* cfg)
+      uint32 desktopWidth, uint32 desktopHeight, Application::Config* cfg)
 {
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
@@ -13,7 +13,7 @@ CommandBarController::CommandBarController(
     for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
     {
         CommandBarField* b = &Fields[tr][0];
-        CommandBarField* e = b + (unsigned int) Key::Count;
+        CommandBarField* e = b + (uint32) Key::Count;
         while (b < e)
         {
             b->ClearCommandUniqueID = ClearCommandUniqueID;
@@ -27,7 +27,7 @@ CommandBarController::CommandBarController(
     ShiftStatus     = string_view("", 0);
     Clear();
 }
-void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
+void CommandBarController::SetDesktopSize(uint32 desktopWidth, uint32 desktopHeight)
 {
     this->BarLayout.Width    = desktopWidth;
     this->BarLayout.Y        = desktopHeight - 1;
@@ -54,9 +54,9 @@ bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, i
 {
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
     CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
-    unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = ((unsigned int) keyCode) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) Input::Key::Count, false, "Invalid key code !");
+    uint32 index = (((uint32) keyCode) & 0xFF);
+    uint32 shift = ((uint32) keyCode) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (uint32) Input::Key::Count, false, "Invalid key code !");
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, false, "Invalid shift combination !");
 
     CommandBarField* b = &Fields[shift][index];
@@ -80,7 +80,7 @@ void CommandBarController::Paint(Graphics::Renderer& renderer)
     if (ShiftStatus.length() > 0)
         renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->CommandBar.ShiftKeysColor);
 
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
+    uint32 shift = ((uint32) CurrentShiftKey) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
         return;
     if (HasKeys[shift] == false)
@@ -124,7 +124,7 @@ void CommandBarController::ComputeScreenPos()
         if ((*hasKeys) == false)
             continue;
         CommandBarField* bf           = &Fields[tr][0];
-        CommandBarField* ef           = bf + (unsigned int) Key::Count;
+        CommandBarField* ef           = bf + (uint32) Key::Count;
         CommandBarFieldIndex* current = &VisibleFields[tr][0];
         int* ic                       = &IndexesCount[tr];
         *ic                           = 0;
@@ -165,7 +165,7 @@ CommandBarField* CommandBarController::MousePositionToField(int x, int y)
 {
     if (RecomputeScreenPos)
         ComputeScreenPos();
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) Utils::KeyUtils::KEY_SHIFT_BITS);
+    uint32 shift = ((uint32) CurrentShiftKey) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, nullptr, "");
     if (HasKeys[shift] == false)
         return nullptr;
@@ -237,9 +237,9 @@ bool CommandBarController::OnMouseUp(int& command)
 }
 int CommandBarController::GetCommandForKey(Input::Key keyCode)
 {
-    unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = (((unsigned int) keyCode) >> Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) Input::Key::Count, -1, "Invalid key code !");
+    uint32 index = (((uint32) keyCode) & 0xFF);
+    uint32 shift = (((uint32) keyCode) >> Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (uint32) Input::Key::Count, -1, "Invalid key code !");
     CHECK((shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
     CommandBarField* b = &Fields[shift][index];
     // if ClearCommandUniqueID is not thee same as the current one, then its an old item and we discard it

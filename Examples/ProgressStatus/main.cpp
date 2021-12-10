@@ -36,8 +36,8 @@ class MyWin : public AppCUI::Controls::Window
     {
         // very slow check to pass some time (instead of checking module % 2 we will convert to binary and check if the
         // last bit is 0)
-        unsigned int bits[64];
-        for (unsigned int tr = 0; tr < 64; tr++)
+        uint32 bits[64];
+        for (uint32 tr = 0; tr < 64; tr++)
         {
             bits[tr] = value & 1;
             value    = value >> 1;
@@ -57,7 +57,7 @@ class MyWin : public AppCUI::Controls::Window
         {
             if (IsOdd(value))
             {
-                tmp.Format("Found so far %d odd numbers", (unsigned int) count);
+                tmp.Format("Found so far %d odd numbers", (uint32) count);
                 count++;
             }
             value++;
@@ -81,7 +81,7 @@ class MyWin : public AppCUI::Controls::Window
             if (IsPrime(value))
             {
                 tmp.Format(
-                      "Found %d prime numbers (now testing value: %d)", (unsigned int) count, (unsigned int) value);
+                      "Found %d prime numbers (now testing value: %d)", (uint32) count, (uint32) value);
                 count++;
             }
             value++;

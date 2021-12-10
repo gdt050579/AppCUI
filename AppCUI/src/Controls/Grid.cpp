@@ -9,7 +9,7 @@ constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
 constexpr auto MenuCommandMergeCells = 0x01U;
 
-Grid::Grid(string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags)
+Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
     auto context              = reinterpret_cast<GridControlContext*>(Context);
@@ -372,7 +372,7 @@ void Grid::DrawLines(Renderer& renderer)
         }
     }
 
-    const auto drawLines = [&](unsigned int cellIndex, GridCellStatus cellType)
+    const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
         ColorPair vertical   = context->Cfg->Grid.Lines.Vertical.Normal;
         ColorPair horizontal = context->Cfg->Grid.Lines.Horizontal.Normal;
@@ -428,37 +428,37 @@ void Grid::DrawLines(Renderer& renderer)
     }
 }
 
-unsigned int Grid::ComputeCellNumber(int x, int y)
+uint32 Grid::ComputeCellNumber(int x, int y)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
-    const auto endX = static_cast<unsigned int>(context->Layout.Width - context->offsetX);
-    const auto endY = static_cast<unsigned int>(context->Layout.Height - context->offsetY);
+    const auto endX = static_cast<uint32>(context->Layout.Width - context->offsetX);
+    const auto endY = static_cast<uint32>(context->Layout.Height - context->offsetY);
 
-    if (static_cast<unsigned int>(x) <= context->offsetX || static_cast<unsigned int>(x) >= endX)
+    if (static_cast<uint32>(x) <= context->offsetX || static_cast<uint32>(x) >= endX)
     {
         return InvalidCellIndex;
     }
 
-    if (static_cast<unsigned int>(y) <= context->offsetY || static_cast<unsigned int>(y) >= endY)
+    if (static_cast<uint32>(y) <= context->offsetY || static_cast<uint32>(y) >= endY)
     {
         return InvalidCellIndex;
     }
 
-    const auto columnIndex = (static_cast<unsigned int>(x) - context->offsetX) / context->cWidth;
-    const auto rowIndex    = (static_cast<unsigned int>(y) - context->offsetY) / context->cHeight;
+    const auto columnIndex = (static_cast<uint32>(x) - context->offsetX) / context->cWidth;
+    const auto rowIndex    = (static_cast<uint32>(y) - context->offsetY) / context->cHeight;
     const auto cellIndex   = context->columnsNo * rowIndex + columnIndex;
 
     return cellIndex;
 }
 
 SpecialChars Grid::ComputeBoxType(
-      unsigned int colIndex,
-      unsigned int rowIndex,
-      unsigned int startColumnsIndex,
-      unsigned int startRowsIndex,
-      unsigned int endColumnsIndex,
-      unsigned int endRowsIndex)
+      uint32 colIndex,
+      uint32 rowIndex,
+      uint32 startColumnsIndex,
+      uint32 startRowsIndex,
+      uint32 endColumnsIndex,
+      uint32 endRowsIndex)
 {
     if (colIndex == startColumnsIndex)
     {
@@ -533,7 +533,7 @@ void Grid::DrawCellsBackground(Graphics::Renderer& renderer)
 }
 
 void GridControlContext::DrawCellBackground(
-      Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int i, unsigned int j)
+      Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j)
 {
     const auto xLeft  = this->offsetX + i * this->cWidth;
     const auto xRight = this->offsetX + (i + 1) * this->cWidth;
@@ -562,7 +562,7 @@ void GridControlContext::DrawCellBackground(
 }
 
 void GridControlContext::DrawCellBackground(
-      Graphics::Renderer& renderer, GridCellStatus cellType, unsigned int cellIndex)
+      Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex)
 {
     const auto columnIndex = cellIndex % this->columnsNo;
     const auto rowIndex    = cellIndex / this->columnsNo;
@@ -570,7 +570,7 @@ void GridControlContext::DrawCellBackground(
     DrawCellBackground(renderer, cellType, columnIndex, rowIndex);
 }
 
-bool Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex)
+bool Controls::Grid::DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -679,11 +679,11 @@ void Controls::Grid::UpdateGridParameters()
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
     // define cell dimensions
-    context->cWidth  = static_cast<unsigned int>(context->Layout.Width / context->columnsNo);
-    context->cHeight = static_cast<unsigned int>(context->Layout.Height / context->rowsNo);
+    context->cWidth  = static_cast<uint32>(context->Layout.Width / context->columnsNo);
+    context->cHeight = static_cast<uint32>(context->Layout.Height / context->rowsNo);
 
     // center matrix
-    context->offsetX = static_cast<unsigned int>((context->Layout.Width - context->cWidth * context->columnsNo) / 2);
+    context->offsetX = static_cast<uint32>((context->Layout.Width - context->cWidth * context->columnsNo) / 2);
 
     auto deltaHeight = (context->Layout.Height - context->cHeight * context->rowsNo);
     if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
@@ -697,7 +697,7 @@ void Controls::Grid::UpdateGridParameters()
             deltaHeight = 0;
         }
     }
-    context->offsetY = static_cast<unsigned int>(deltaHeight / 2);
+    context->offsetY = static_cast<uint32>(deltaHeight / 2);
 
     if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
     {
@@ -708,7 +708,7 @@ void Controls::Grid::UpdateGridParameters()
     struct
     {
         const GridControlContext* gcc;
-        bool operator()(unsigned int a, unsigned int b)
+        bool operator()(uint32 a, uint32 b)
         {
             const auto aci = a % gcc->columnsNo;
             const auto ari = a / gcc->columnsNo;
@@ -1156,7 +1156,7 @@ bool Controls::Grid::PasteContentToSelectedCells()
     return false;
 }
 
-unsigned int Controls::Grid::GetCellsCount() const
+uint32 Controls::Grid::GetCellsCount() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return context->columnsNo * context->rowsNo;
@@ -1169,7 +1169,7 @@ Graphics::Size Controls::Grid::GetGridDimensions() const
 }
 
 bool Controls::Grid::UpdateCell(
-      unsigned int index, CellType cellType, const variant<bool, ConstString>& content, TextAlignament textAlignment)
+      uint32 index, CellType cellType, const variant<bool, ConstString>& content, TextAlignament textAlignment)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
@@ -1193,8 +1193,8 @@ bool Controls::Grid::UpdateCell(
 }
 
 bool Controls::Grid::UpdateCell(
-      unsigned int x,
-      unsigned int y,
+      uint32 x,
+      uint32 y,
       CellType cellType,
       const variant<bool, ConstString>& content,
       Graphics::TextAlignament textAlignment)

@@ -62,9 +62,9 @@ int main()
 {
     if (!Application::Init(InitializationFlags::CommandBar))
         return 1;
-    unsigned int winCount = 10;
+    uint32 winCount = 10;
     char winName[]        = "Win xx";
-    for (unsigned int tr = 1; tr <= winCount; tr++)
+    for (uint32 tr = 1; tr <= winCount; tr++)
     {
         winName[4]  = '0' + tr / 10;
         winName[5]  = '0' + tr % 10;

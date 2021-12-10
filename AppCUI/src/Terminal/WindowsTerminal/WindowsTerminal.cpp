@@ -16,9 +16,9 @@ WindowsTerminal::~WindowsTerminal()
 {
     ConsoleBufferCount = 0;
 }
-bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleBuffer(uint32 width, uint32 height)
 {
-    const unsigned int newCount = ((width * height) | 0xFF) + 1;
+    const uint32 newCount = ((width * height) | 0xFF) + 1;
     if (newCount <= ConsoleBufferCount)
         return true; // no need to resize
     this->ConsoleBuffer.reset(new CHAR_INFO[newCount]);
@@ -32,7 +32,7 @@ bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int heigh
     return true;
 }
 bool WindowsTerminal::CopyOriginalScreenBuffer(
-      unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY)
+      uint32 width, uint32 height, uint32 mouseX, uint32 mouseY)
 {
     CHECK(this->OriginalScreenCanvas.Create(width, height),
           false,
@@ -52,9 +52,9 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
               ReadConsoleOutput(this->hstdOut, temp, { (SHORT) width, (SHORT) height }, { 0, 0 }, &BufRect),
               "Unable to make a copy of the initial screen buffer !");
         CHAR_INFO* p = temp;
-        for (unsigned int y = 0; y < (unsigned int) height; y++)
+        for (uint32 y = 0; y < (uint32) height; y++)
         {
-            for (unsigned int x = 0; x < (unsigned int) width; x++, p++)
+            for (uint32 x = 0; x < (uint32) width; x++, p++)
             {
                 this->OriginalScreenCanvas.WriteCharacter(
                       x,
@@ -79,7 +79,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
     delete[] temp;
     return false;
 }
-bool WindowsTerminal::ResizeConsoleScreenBufferSize(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleScreenBufferSize(uint32 width, uint32 height)
 {
     COORD coord = { 0, 0 };
     coord.X     = (SHORT) width;
@@ -95,7 +95,7 @@ bool WindowsTerminal::ResizeConsoleScreenBufferSize(unsigned int width, unsigned
 
     return true;
 }
-bool WindowsTerminal::ResizeConsoleWindowSize(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleWindowSize(uint32 width, uint32 height)
 {
     SMALL_RECT rect;
 
@@ -338,7 +338,7 @@ bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData
         cfi.dwFontSize.Y = 36;
         break;
     default:
-        RETURNERROR(false, "Invalid/unknwon value for character size: %d", (unsigned int) initData.CharSize);
+        RETURNERROR(false, "Invalid/unknwon value for character size: %d", (uint32) initData.CharSize);
     }
     CHECK(SetCurrentConsoleFontEx(this->hstdOut, FALSE, &cfi),
           false,
@@ -349,14 +349,14 @@ bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData
 void WindowsTerminal::BuildKeyTranslationMatrix()
 {
     // Build the key translation matrix [could be improved with a static vector]
-    for (unsigned int tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
+    for (uint32 tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
         this->KeyTranslationMatrix[tr] = Input::Key::None;
-    for (unsigned int tr = 0; tr < 12; tr++)
-        this->KeyTranslationMatrix[VK_F1 + tr] = static_cast<Input::Key>(((unsigned int) Input::Key::F1) + tr);
-    for (unsigned int tr = 'A'; tr <= 'Z'; tr++)
-        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((unsigned int) Input::Key::A) + (tr - 'A'));
-    for (unsigned int tr = '0'; tr <= '9'; tr++)
-        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((unsigned int) Input::Key::N0) + (tr - '0'));
+    for (uint32 tr = 0; tr < 12; tr++)
+        this->KeyTranslationMatrix[VK_F1 + tr] = static_cast<Input::Key>(((uint32) Input::Key::F1) + tr);
+    for (uint32 tr = 'A'; tr <= 'Z'; tr++)
+        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((uint32) Input::Key::A) + (tr - 'A'));
+    for (uint32 tr = '0'; tr <= '9'; tr++)
+        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((uint32) Input::Key::N0) + (tr - '0'));
 
     this->KeyTranslationMatrix[VK_RETURN] = Input::Key::Enter;
     this->KeyTranslationMatrix[VK_ESCAPE] = Input::Key::Escape;
@@ -455,8 +455,8 @@ void WindowsTerminal::OnUninit()
 }
 void WindowsTerminal::OnFlushToScreen()
 {
-    unsigned int w = this->ScreenCanvas.GetWidth();
-    unsigned int h = this->ScreenCanvas.GetHeight();
+    uint32 w = this->ScreenCanvas.GetWidth();
+    uint32 h = this->ScreenCanvas.GetHeight();
     COORD winSize  = { (SHORT) w, (SHORT) h };
     SMALL_RECT sr  = { 0, 0, winSize.X, winSize.Y };
     // copy the entire buffer
@@ -575,7 +575,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             eventShiftState |= Input::Key::Ctrl;
 
         // if ALT or CTRL are pressed, clear the ascii code
-        if ((((unsigned int) eventShiftState) & ((unsigned int) (Input::Key::Alt | Input::Key::Ctrl))) != 0)
+        if ((((uint32) eventShiftState) & ((uint32) (Input::Key::Alt | Input::Key::Ctrl))) != 0)
             evnt.unicodeCharacter = 0;
 
         if (evnt.keyCode == Input::Key::None)

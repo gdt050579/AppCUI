@@ -14,7 +14,7 @@ using namespace AppCUI::Graphics;
 
 class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Handlers::OnTreeItemToggleInterface
 {
-    enum class ControlIds : unsigned int
+    enum class ControlIds : uint32
     {
         ButtonShowOpen = 1
     };
@@ -29,7 +29,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
     TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", AppCUI::Controls::WindowFlags::Sizeable)
     {
         open = AppCUI::Controls::Factory::Button::Create(
-              this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
+              this, "&Open", "x:1%, y:6%, w:10%", static_cast<uint32>(ControlIds::ButtonShowOpen));
         vertical      = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
         horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
         currentFolder = AppCUI::Controls::Factory::TextField::Create(

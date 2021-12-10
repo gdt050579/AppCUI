@@ -56,7 +56,7 @@ bool Desktop::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
         return true;
     }
     // check controls hot keys
-    if ((((unsigned int) keyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
+    if ((((uint32) keyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
     {
         auto* b = Members->Controls;
         auto* e = b + Members->ControlsCount;

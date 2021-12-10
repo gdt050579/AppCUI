@@ -2458,7 +2458,7 @@ namespace Controls
         using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
         using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
-        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, unsigned int len);
+        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
 
         struct OnButtonPressedInterface
         {
@@ -2554,12 +2554,12 @@ namespace Controls
 
         struct OnTextColorInterface
         {
-            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, unsigned int len) = 0;
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, uint32 len) = 0;
         };
         struct OnTextColorCallback : public OnTextColorInterface
         {
             OnTextColorHandler callback;
-            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, unsigned int len) override
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, uint32 len) override
             {
                 callback(ctrl, chars, len);
             };
@@ -2655,7 +2655,7 @@ namespace Controls
         };
 
         using ListViewItemComparer = int (*)(
-              Controls::ListView* control, ItemHandle item1, ItemHandle item2, unsigned int columnIndex, void* Context);
+              Controls::ListView* control, ItemHandle item1, ItemHandle item2, uint32 columnIndex, void* Context);
 
         struct Tree : public Control
         {
@@ -2670,7 +2670,7 @@ namespace Controls
         void* Context;
 
       private:
-        bool RemoveControlByID(unsigned int index);
+        bool RemoveControlByID(uint32 index);
         bool RemoveControlByRef(Reference<Control> control);
 
       protected:
@@ -2730,7 +2730,7 @@ namespace Controls
         // hot key
         bool SetHotKey(char16 hotKey);
         Input::Key GetHotKey();
-        unsigned int GetHotKeyTextOffset();
+        uint32 GetHotKeyTextOffset();
         void ClearHotKey();
 
         // status
@@ -2746,9 +2746,9 @@ namespace Controls
         // childern and parent
         Reference<Control> GetParent();
         Control** GetChildrenList();
-        Reference<Control> GetChild(unsigned int index);
-        unsigned int GetChildernCount();
-        bool GetChildIndex(Reference<Control> control, unsigned int& index);
+        Reference<Control> GetChild(uint32 index);
+        uint32 GetChildernCount();
+        bool GetChildIndex(Reference<Control> control, uint32& index);
 
         // Events
         void RaiseEvent(Event eventType);
@@ -2763,7 +2763,7 @@ namespace Controls
         // Text
         bool SetText(const ConstString& caption, bool updateHotKey = false);
         bool SetText(const Graphics::CharacterBuffer& caption);
-        bool SetTextWithHotKey(const ConstString& caption, unsigned int hotKeyTextOffset);
+        bool SetTextWithHotKey(const ConstString& caption, uint32 hotKeyTextOffset);
         const Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
@@ -2847,7 +2847,7 @@ namespace Controls
               const ConstString& name, int ID, bool checked, const ConstString& toolTip = string_view());
         ItemHandle AddTextItem(const ConstString& caption, const ConstString& toolTip = "");
         bool SetItemText(ItemHandle itemHandle, const ConstString& caption);
-        bool SetItemTextWithHotKey(ItemHandle itemHandle, const ConstString& caption, unsigned int hotKeyOffset);
+        bool SetItemTextWithHotKey(ItemHandle itemHandle, const ConstString& caption, uint32 hotKeyOffset);
         bool SetItemToolTip(ItemHandle itemHandle, const ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
@@ -2858,7 +2858,7 @@ namespace Controls
     };
     class EXPORT Window : public Control
     {
-        bool ProcessControlBarItem(unsigned int index);
+        bool ProcessControlBarItem(uint32 index);
 
       protected:
         Window(const ConstString& caption, string_view layout, WindowFlags windowsFlags);
@@ -2991,8 +2991,8 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
-        unsigned int GetFirstPanelSize();
-        unsigned int GetSecondPanelSize();
+        uint32 GetFirstPanelSize();
+        uint32 GetSecondPanelSize();
 
         virtual ~Splitter();
 
@@ -3059,7 +3059,7 @@ namespace Controls
         void SelectAll();
         void ClearSelection();
         bool HasSelection() const;
-        bool GetSelection(unsigned int& start, unsigned int& size) const;
+        bool GetSelection(uint32& start, uint32& size) const;
 
         // clipboard
         void CopyToClipboard(bool deleteSelectionAfterCopy);
@@ -3129,18 +3129,18 @@ namespace Controls
     class EXPORT Tab : public Control
     {
       protected:
-        Tab(string_view layout, TabFlags flags, unsigned int tabPageSize);
+        Tab(string_view layout, TabFlags flags, uint32 tabPageSize);
 
       public:
-        bool SetCurrentTabPageByIndex(unsigned int index);
+        bool SetCurrentTabPageByIndex(uint32 index);
         bool SetCurrentTabPageByRef(Reference<Control> page);
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)
         {
             return SetCurrentTabPageByRef(page.template DownCast<Control>());
         }
-        bool SetTabPageTitleSize(unsigned int newSize);
-        bool SetTabPageName(unsigned int index, const ConstString& name);
+        bool SetTabPageTitleSize(uint32 newSize);
+        bool SetTabPageName(uint32 index, const ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -3171,8 +3171,8 @@ namespace Controls
         CanvasViewer(
               const ConstString& caption,
               string_view layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
+              uint32 canvasWidth,
+              uint32 canvasHeight,
               ViewerFlags flags);
 
       public:
@@ -3238,7 +3238,7 @@ namespace Controls
         ListView(string_view layout, ListViewFlags flags);
 
       public:
-        bool Reserve(unsigned int itemsCount);
+        bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -3251,15 +3251,15 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, unsigned int Size = 10);
-        bool SetColumnText(unsigned int columnIndex, const ConstString& text);
-        bool SetColumnAlignament(unsigned int columnIndex, Graphics::TextAlignament Align);
-        bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
-        bool SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
-        bool SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn);
-        bool DeleteColumn(unsigned int columnIndex);
+        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, uint32 Size = 10);
+        bool SetColumnText(uint32 columnIndex, const ConstString& text);
+        bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
+        bool SetColumnWidth(uint32 columnIndex, uint32 width);
+        bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
+        bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
+        bool DeleteColumn(uint32 columnIndex);
         void DeleteAllColumns();
-        unsigned int GetColumnsCount();
+        uint32 GetColumnsCount();
 
         // items add
         ItemHandle AddItem(const ConstString& text);
@@ -3312,8 +3312,8 @@ namespace Controls
               const ConstString& subItem8);
 
         // items properties
-        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
+        bool SetItemText(ItemHandle item, uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetItemText(ItemHandle item, uint32 subItemIndex);
         bool SetItemCheck(ItemHandle item, bool check);
         bool SetItemSelect(ItemHandle item, bool select);
         bool SetItemColor(ItemHandle item, Graphics::ColorPair color);
@@ -3334,19 +3334,19 @@ namespace Controls
         {
             return this->GetItemDataAsPointer(item).ToReference<T>();
         }
-        bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
-        unsigned int GetItemXOffset(ItemHandle item);
-        bool SetItemHeight(ItemHandle item, unsigned int Height);
-        unsigned int GetItemHeight(ItemHandle item);
+        bool SetItemXOffset(ItemHandle item, uint32 XOffset);
+        uint32 GetItemXOffset(ItemHandle item);
+        bool SetItemHeight(ItemHandle item, uint32 Height);
+        uint32 GetItemHeight(ItemHandle item);
         void DeleteAllItems();
-        unsigned int GetItemsCount();
+        uint32 GetItemsCount();
         ItemHandle GetCurrentItem();
         bool SetCurrentItem(ItemHandle item);
         void SelectAllItems();
         void UnSelectAllItems();
         void CheckAllItems();
         void UncheckAllItems();
-        unsigned int GetCheckedItemsCount();
+        uint32 GetCheckedItemsCount();
 
         // misc
         void SetClipboardSeparator(char ch);
@@ -3354,9 +3354,9 @@ namespace Controls
         // sort
         void SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void* Context = nullptr);
         bool Sort();
-        bool Sort(unsigned int columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, bool ascendent);
         bool Sort(
-              unsigned int columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
+              uint32 columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
 
         virtual ~ListView();
 
@@ -3367,15 +3367,15 @@ namespace Controls
     class EXPORT ComboBox : public Control
     {
       private:
-        GenericRef GetItemDataAsPointer(unsigned int index) const;
-        bool SetItemDataAsPointer(unsigned int index, GenericRef obj);
+        GenericRef GetItemDataAsPointer(uint32 index) const;
+        bool SetItemDataAsPointer(uint32 index, GenericRef obj);
         bool AddItem(const ConstString& caption, GenericRef userData);
 
       protected:
         ComboBox(string_view layout, const ConstString& text, char itemsSeparator);
 
       public:
-        static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
+        static const uint32 NO_ITEM_SELECTED = 0xFFFFFFFF;
 
         inline uint64 GetCurrentItemUserData(uint64 errorValue) const
         {
@@ -3387,26 +3387,26 @@ namespace Controls
             return GetItemDataAsPointer(GetCurrentItemIndex()).ToReference<T>();
         }
 
-        unsigned int GetItemsCount() const;
-        unsigned int GetCurrentItemIndex() const;
+        uint32 GetItemsCount() const;
+        uint32 GetCurrentItemIndex() const;
         const Graphics::CharacterBuffer& GetCurrentItemText();
 
-        uint64 GetItemUserData(unsigned int index, uint64 errorValue) const;
+        uint64 GetItemUserData(uint32 index, uint64 errorValue) const;
         template <typename T>
-        inline Reference<T> GetItemUserData(unsigned int index) const
+        inline Reference<T> GetItemUserData(uint32 index) const
         {
             return GetItemDataAsPointer(index).ToReference<T>();
         }
 
-        const Graphics::CharacterBuffer& GetItemText(unsigned int index);
+        const Graphics::CharacterBuffer& GetItemText(uint32 index);
 
-        bool SetItemUserData(unsigned int index, uint64 userData);
+        bool SetItemUserData(uint32 index, uint64 userData);
         template <typename T>
-        inline bool SetItemUserData(unsigned int index, Reference<T> userData)
+        inline bool SetItemUserData(uint32 index, Reference<T> userData)
         {
             return SetItemDataAsPointer(index, userData.ToGenericRef());
         }
-        bool SetCurentItemIndex(unsigned int index);
+        bool SetCurentItemIndex(uint32 index);
         void SetNoIndexSelected();
 
         template <typename T>
@@ -3548,7 +3548,7 @@ namespace Controls
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        Tree(string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
+        Tree(string_view layout, const TreeFlags flags = TreeFlags::None, const uint32 noOfColumns = 1);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3587,15 +3587,15 @@ namespace Controls
             return GetItemDataAsPointer(item).ToReference<T>();
         }
         uint64 GetItemData(const size_t index, uint64 errorValue);
-        ItemHandle GetItemHandleByIndex(const unsigned int index) const;
+        ItemHandle GetItemHandleByIndex(const uint32 index) const;
 
-        unsigned int GetItemsCount() const;
+        uint32 GetItemsCount() const;
         bool AddColumnData(
-              const unsigned int index,
+              const uint32 index,
               const ConstString title,
               const Graphics::TextAlignament headerAlignment,
               const Graphics::TextAlignament contentAlignment,
-              const unsigned int width = 0xFFFFFFFF);
+              const uint32 width = 0xFFFFFFFF);
         const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
         bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
 
@@ -3617,7 +3617,7 @@ namespace Controls
         bool IsMouseOnSearchField(int x, int y) const;
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
         bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
+        bool AddToColumnWidth(const uint32 columnIndex, const int value);
         bool SetColorForItems(const Graphics::ColorPair& color);
         bool SearchItems();
         bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
@@ -3650,7 +3650,7 @@ namespace Controls
         };
 
       protected:
-        Grid(string_view layout, unsigned int columnsNo, unsigned int rowsNo, GridFlags flags);
+        Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3663,16 +3663,16 @@ namespace Controls
         void OnLoseFocus() override;
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
-        unsigned int GetCellsCount() const;
+        uint32 GetCellsCount() const;
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
-              unsigned int index,
+              uint32 index,
               CellType cellType,
               const variant<bool, ConstString>& content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
         bool UpdateCell(
-              unsigned int x,
-              unsigned int y,
+              uint32 x,
+              uint32 y,
               CellType cellType,
               const variant<bool, ConstString>& content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
@@ -3685,16 +3685,16 @@ namespace Controls
       private:
         void DrawBoxes(Graphics::Renderer& renderer);
         void DrawLines(Graphics::Renderer& renderer);
-        unsigned int ComputeCellNumber(int x, int y);
+        uint32 ComputeCellNumber(int x, int y);
         Graphics::SpecialChars ComputeBoxType(
-              unsigned int colIndex,
-              unsigned int rowIndex,
-              unsigned int startColumnsIndex,
-              unsigned int startRowsIndex,
-              unsigned int endColumnsIndex,
-              unsigned int endRowsIndex);
+              uint32 colIndex,
+              uint32 rowIndex,
+              uint32 startColumnsIndex,
+              uint32 startRowsIndex,
+              uint32 endColumnsIndex,
+              uint32 endRowsIndex);
         void DrawCellsBackground(Graphics::Renderer& renderer);
-        bool DrawCellContent(Graphics::Renderer& renderer, unsigned int cellIndex);
+        bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
         bool DrawHeader(Graphics::Renderer& renderer);
         void UpdateGridParameters();
         bool MoveSelectedCellByKeys(Input::Key keyCode);
@@ -3868,16 +3868,16 @@ namespace Controls
                   Controls::Control* parent,
                   string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize = 16);
+                  uint32 tabPageSize = 16);
             static Reference<Controls::Tab> Create(
                   Controls::Control& parent,
                   string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize = 16);
+                  uint32 tabPageSize = 16);
             static Pointer<Controls::Tab> Create(
                   string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize = 16);
+                  uint32 tabPageSize = 16);
         };
         class EXPORT CanvasViewer
         {
@@ -3887,39 +3887,39 @@ namespace Controls
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
             static Pointer<Controls::CanvasViewer> Create(
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control* parent,
                   const ConstString& caption,
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Reference<Controls::CanvasViewer> Create(
                   Controls::Control& parent,
                   const ConstString& caption,
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
             static Pointer<Controls::CanvasViewer> Create(
                   const ConstString& caption,
                   string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
         };
         class EXPORT ImageViewer
@@ -4033,17 +4033,17 @@ namespace Controls
             static Pointer<Controls::Tree> Create(
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const unsigned int noOfColumns  = 1);
+                  const uint32 noOfColumns  = 1);
             static Reference<Controls::Tree> Create(
                   Control* parent,
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const unsigned int noOfColumns  = 1);
+                  const uint32 noOfColumns  = 1);
             static Reference<Controls::Tree> Create(
                   Control& parent,
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const unsigned int noOfColumns  = 1);
+                  const uint32 noOfColumns  = 1);
         };
 
         class EXPORT Grid
@@ -4052,18 +4052,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::Grid> Create(
-                  string_view layout, unsigned int columnsNo, unsigned int rowsNo, Controls::GridFlags flags);
+                  string_view layout, uint32 columnsNo, uint32 rowsNo, Controls::GridFlags flags);
             static Reference<Controls::Grid> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  unsigned int columnsNo,
-                  unsigned int rowsNo,
+                  uint32 columnsNo,
+                  uint32 rowsNo,
                   Controls::GridFlags flags);
             static Reference<Controls::Grid> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  unsigned int columnsNo,
-                  unsigned int rowsNo,
+                  uint32 columnsNo,
+                  uint32 rowsNo,
                   Controls::GridFlags flags);
         };
     } // namespace Factory

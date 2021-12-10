@@ -59,7 +59,7 @@ MyUserControl::MyUserControl() : UserControl("x:50%,y:50%,w:2,h:1")
     ctxMenu.GetSubMenu(smHandle)->AddRadioItem("Blue", MENU_CMD_BLUE);
     ctxMenu.GetSubMenu(smHandle)->AddSeparator();
     auto smOther = ctxMenu.GetSubMenu(smHandle)->AddSubMenu("&Other");
-    for (unsigned int tr = 0; tr < sizeof(colors) / sizeof(colors[0]); tr++)
+    for (uint32 tr = 0; tr < sizeof(colors) / sizeof(colors[0]); tr++)
     {
         ctxMenu.GetSubMenu(smHandle)->GetSubMenu(smOther)->AddRadioItem(colors[tr], 2000 + tr, tr == 0);
     }

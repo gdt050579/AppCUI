@@ -3088,7 +3088,7 @@ class MyListViewExample : public Window
         lv->AddColumn("&Repr", TextAlignament::Center, 6);
         // add items
         lv->Reserve(100); // to populate the list faster
-        for (unsigned int tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
+        for (uint32 tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
         {
             lv->AddItem(
                   us_states[tr].Name,
@@ -3277,7 +3277,7 @@ class SelectionDemo : public Window
         // columns
         lv->AddColumn("&Word", TextAlignament::Left, 60);
         // items
-        for (unsigned int tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
+        for (uint32 tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
         {
             lv->AddItem(english_words[tr]);
         }

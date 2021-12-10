@@ -20,7 +20,7 @@ struct MyUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
 
-        for (unsigned int tr = 2; tr < 24; tr += 2)
+        for (uint32 tr = 2; tr < 24; tr += 2)
         {
             renderer.FillHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
             renderer.FillHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });

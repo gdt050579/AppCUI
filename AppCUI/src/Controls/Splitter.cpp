@@ -66,7 +66,7 @@ void Splitter_ResizeComponents(Splitter* control)
 
     int sz = Members->SecondPanelSize + SPLITTER_BAR_SIZE;
 
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         o = Members->Controls[tr];
         if (o != nullptr)
@@ -156,7 +156,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
     ColorPair c1  = Members->Cfg->Splitter.Buttons.Normal;
     ColorPair c2  = Members->Cfg->Splitter.Buttons.Normal;
     ColorPair col = Members->Cfg->Splitter.NormalColor;
-    unsigned int poz;
+    uint32 poz;
 
     switch (Members->mouseStatus)
     {
@@ -334,7 +334,7 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 {
     Splitter_ResizeComponents(this);
 }
-unsigned int Splitter::GetFirstPanelSize()
+uint32 Splitter::GetFirstPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
     int value = 0;
@@ -344,13 +344,13 @@ unsigned int Splitter::GetFirstPanelSize()
         value = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     if (value < 0)
         value = 0;
-    return (unsigned int) value;
+    return (uint32) value;
 }
-unsigned int Splitter::GetSecondPanelSize()
+uint32 Splitter::GetSecondPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
     if (Members->SecondPanelSize < 0)
         return 0;
-    return (unsigned int) Members->SecondPanelSize;
+    return (uint32) Members->SecondPanelSize;
 }
 } // namespace AppCUI

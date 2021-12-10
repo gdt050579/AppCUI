@@ -16,7 +16,7 @@ constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
 const static Utils::UnicodeStringBuilder cb{};
 
-Tree::Tree(string_view layout, const TreeFlags flags, const unsigned int noOfColumns)
+Tree::Tree(string_view layout, const TreeFlags flags, const uint32 noOfColumns)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
@@ -24,7 +24,7 @@ Tree::Tree(string_view layout, const TreeFlags flags, const unsigned int noOfCol
     cc->Layout.MaxHeight = 200000;
     cc->Layout.MinWidth  = 20;
 
-    cc->treeFlags = static_cast<unsigned int>(flags);
+    cc->treeFlags = static_cast<uint32>(flags);
 
     cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
@@ -48,19 +48,19 @@ Tree::Tree(string_view layout, const TreeFlags flags, const unsigned int noOfCol
         }
         else
         {
-            cc->treeFlags |= static_cast<unsigned int>(TreeFlags::HideSearchBar);
+            cc->treeFlags |= static_cast<uint32>(TreeFlags::HideSearchBar);
         }
     }
 
     AdjustItemsBoundsOnResize();
 
     const auto columnsCount = std::max<>(noOfColumns, 1U);
-    const auto width        = std::max<>((static_cast<unsigned int>(cc->Layout.Width) / columnsCount), MinColumnWidth);
+    const auto width        = std::max<>((static_cast<uint32>(cc->Layout.Width) / columnsCount), MinColumnWidth);
     for (auto i = 0U; i < columnsCount; i++)
     {
-        TreeColumnData cd{ static_cast<unsigned int>(cc->columns.size() * width + BorderOffset),
+        TreeColumnData cd{ static_cast<uint32>(cc->columns.size() * width + BorderOffset),
                            width,
-                           static_cast<unsigned int>(cc->Layout.Height - 2),
+                           static_cast<uint32>(cc->Layout.Height - 2),
                            {},
                            TextAlignament::Center,
                            TextAlignament::Left };
@@ -87,7 +87,7 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) cons
     {
         auto& item = cc->items[cc->itemsToDrew[i]];
 
-        unsigned int j = 0; // column index
+        uint32 j = 0; // column index
         for (const auto& col : cc->columns)
         {
             wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
@@ -177,7 +177,7 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
         renderer.FillHorizontalLine(firstColumn.x, 1, rightX, ' ', cc->Cfg->Tree.Column.Header);
     }
 
-    unsigned int i = 0;
+    uint32 i = 0;
     for (const auto& col : cc->columns)
     {
         wtp.Align = col.headerAlignment;
@@ -262,15 +262,15 @@ bool Tree::MoveUp()
     if (cc->itemsToDrew.size() > 0)
     {
         const auto it       = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-        const auto index    = static_cast<unsigned int>(it - cc->itemsToDrew.begin());
-        const auto newIndex = std::min<unsigned int>(index - 1, static_cast<unsigned int>(cc->itemsToDrew.size() - 1U));
+        const auto index    = static_cast<uint32>(it - cc->itemsToDrew.begin());
+        const auto newIndex = std::min<uint32>(index - 1, static_cast<uint32>(cc->itemsToDrew.size() - 1U));
         cc->currentSelectedItemHandle = cc->itemsToDrew[newIndex];
 
         if (newIndex == cc->itemsToDrew.size() - 1)
         {
             if (cc->itemsToDrew.size() > cc->maxItemsToDraw)
             {
-                cc->offsetBotToDraw = static_cast<unsigned int>(cc->itemsToDrew.size());
+                cc->offsetBotToDraw = static_cast<uint32>(cc->itemsToDrew.size());
             }
 
             if (cc->offsetBotToDraw >= cc->maxItemsToDraw)
@@ -298,9 +298,9 @@ bool Tree::MoveDown()
     if (cc->itemsToDrew.size() > 0)
     {
         const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-        const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin());
+        const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin());
         const auto newIndex =
-              std::min<unsigned int>(index + 1, (index + 1 > cc->itemsToDrew.size() - 1 ? 0 : index + 1));
+              std::min<uint32>(index + 1, (index + 1 > cc->itemsToDrew.size() - 1 ? 0 : index + 1));
         cc->currentSelectedItemHandle = cc->itemsToDrew[newIndex];
 
         if (newIndex == 0)
@@ -608,7 +608,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         if (static_cast<size_t>(cc->offsetTopToDraw) > cc->maxItemsToDraw)
         {
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-            const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin()) - cc->maxItemsToDraw;
+            const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - cc->maxItemsToDraw;
             cc->currentSelectedItemHandle = cc->itemsToDrew[index];
 
             cc->offsetTopToDraw -= cc->maxItemsToDraw;
@@ -619,7 +619,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto difference = cc->offsetTopToDraw;
 
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-            const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin()) - difference;
+            const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - difference;
             cc->currentSelectedItemHandle = cc->itemsToDrew[index];
 
             cc->offsetTopToDraw -= difference;
@@ -640,7 +640,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         if (static_cast<size_t>(cc->offsetBotToDraw) + cc->maxItemsToDraw < cc->itemsToDrew.size())
         {
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-            const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin()) + cc->maxItemsToDraw;
+            const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + cc->maxItemsToDraw;
             cc->currentSelectedItemHandle = cc->itemsToDrew[index];
 
             cc->offsetTopToDraw += cc->maxItemsToDraw;
@@ -651,11 +651,11 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto difference = cc->itemsToDrew.size() - cc->offsetBotToDraw;
 
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-            const auto index = static_cast<unsigned int>(it - cc->itemsToDrew.begin()) + difference;
+            const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + difference;
             cc->currentSelectedItemHandle = cc->itemsToDrew[index];
 
-            cc->offsetTopToDraw += static_cast<unsigned int>(difference);
-            cc->offsetBotToDraw += static_cast<unsigned int>(difference);
+            cc->offsetTopToDraw += static_cast<uint32>(difference);
+            cc->offsetBotToDraw += static_cast<uint32>(difference);
         }
         else
         {
@@ -679,7 +679,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         {
             break;
         }
-        cc->offsetTopToDraw           = static_cast<unsigned int>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
+        cc->offsetTopToDraw           = static_cast<uint32>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
         cc->offsetBotToDraw           = cc->offsetTopToDraw + cc->maxItemsToDraw;
         cc->currentSelectedItemHandle = cc->itemsToDrew[cc->itemsToDrew.size() - 1];
         return true;
@@ -715,7 +715,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             }
             else
             {
-                cc->separatorIndexSelected = static_cast<unsigned int>(cc->columns.size());
+                cc->separatorIndexSelected = static_cast<uint32>(cc->columns.size());
             }
         }
         return true;
@@ -726,7 +726,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         else
         {
-            if (cc->separatorIndexSelected < static_cast<unsigned int>(cc->columns.size()))
+            if (cc->separatorIndexSelected < static_cast<uint32>(cc->columns.size()))
             {
                 cc->separatorIndexSelected++;
             }
@@ -769,7 +769,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         if (cc->separatorIndexSelected != InvalidIndex && cc->separatorIndexSelected != 0 &&
             cc->separatorIndexSelected != cc->columns.size())
         {
-            auto previousIndex = static_cast<unsigned int>(cc->separatorIndexSelected - 1);
+            auto previousIndex = static_cast<uint32>(cc->separatorIndexSelected - 1);
             if (AddToColumnWidth(previousIndex, keyCode == Key::Left ? -1 : 1))
             {
                 return true;
@@ -952,7 +952,7 @@ void Tree::OnMousePressed(int x, int y, Input::MouseButton button)
             break;
         case TreeControlContext::IsMouseOn::ToggleSymbol:
         {
-            const unsigned int index = y - 2;
+            const uint32 index = y - 2;
             const auto itemHandle    = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it            = cc->items.find(itemHandle);
             ToggleItem(it->second.handle);
@@ -969,7 +969,7 @@ void Tree::OnMousePressed(int x, int y, Input::MouseButton button)
         break;
         case TreeControlContext::IsMouseOn::Item:
         {
-            const unsigned int index = y - 2;
+            const uint32 index = y - 2;
             if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
             {
                 break;
@@ -1235,7 +1235,7 @@ uint64 Tree::GetItemData(const size_t index, uint64 errorValue)
     return errorValue;
 }
 
-ItemHandle Tree::GetItemHandleByIndex(const unsigned int index) const
+ItemHandle Tree::GetItemHandleByIndex(const uint32 index) const
 {
     CHECK(Context != nullptr, InvalidItemHandle, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1273,19 +1273,19 @@ bool Tree::SetItemData(ItemHandle item, uint64 value)
     it->second.data = value;
     return true;
 }
-unsigned int Tree::GetItemsCount() const
+uint32 Tree::GetItemsCount() const
 {
     CHECK(Context != nullptr, 0, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    return static_cast<unsigned int>(cc->items.size());
+    return static_cast<uint32>(cc->items.size());
 }
 
 bool Tree::AddColumnData(
-      const unsigned int index,
+      const uint32 index,
       const ConstString title,
       const TextAlignament headerAlignment,
       const TextAlignament contentAlignment,
-      const unsigned int width)
+      const uint32 width)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1303,7 +1303,7 @@ bool Tree::AddColumnData(
         column.customWidth = true;
 
         // shifts columns
-        unsigned int currentX = column.x + column.width;
+        uint32 currentX = column.x + column.width;
         for (auto i = index + 1; i < cc->columns.size(); i++)
         {
             auto& col       = cc->columns[i];
@@ -1388,7 +1388,7 @@ bool Tree::IsMouseOnToggleSymbol(int x, int y) const
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    const unsigned int index = y - 2;
+    const uint32 index = y - 2;
     if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
     {
         return false;
@@ -1416,7 +1416,7 @@ bool Tree::IsMouseOnItem(int x, int y) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
-    const unsigned int index = y - 2;
+    const uint32 index = y - 2;
     if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
     {
         return false;
@@ -1473,16 +1473,16 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
 
     CHECK(AdjustItemsBoundsOnResize(), false, "");
 
-    const unsigned int width = (static_cast<unsigned int>(cc->Layout.Width)) /
-                               static_cast<unsigned int>(std::max<>(cc->columns.size(), size_t(1U)));
+    const uint32 width = (static_cast<uint32>(cc->Layout.Width)) /
+                               static_cast<uint32>(std::max<>(cc->columns.size(), size_t(1U)));
 
-    unsigned int xPreviousColumn       = 0;
-    unsigned int widthOfPreviousColumn = 0;
+    uint32 xPreviousColumn       = 0;
+    uint32 widthOfPreviousColumn = 0;
     for (auto i = 0U; i < cc->columns.size(); i++)
     {
         auto& col  = cc->columns[i];
-        col.height = static_cast<unsigned int>(cc->Layout.Height - 2);
-        col.x      = static_cast<unsigned int>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
+        col.height = static_cast<uint32>(cc->Layout.Height - 2);
+        col.x      = static_cast<uint32>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
         if (col.customWidth == false)
         {
             col.width = std::max<>(width, MinColumnWidth);
@@ -1518,7 +1518,7 @@ bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
     {
         if (cc->hidSearchBarOnResize)
         {
-            cc->treeFlags ^= static_cast<unsigned int>(TreeFlags::HideSearchBar);
+            cc->treeFlags ^= static_cast<uint32>(TreeFlags::HideSearchBar);
             cc->hidSearchBarOnResize = false;
         }
 
@@ -1546,13 +1546,13 @@ bool Tree::AdjustItemsBoundsOnResize()
     return true;
 }
 
-bool Tree::AddToColumnWidth(const unsigned int columnIndex, const int value)
+bool Tree::AddToColumnWidth(const uint32 columnIndex, const int value)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     auto& column          = cc->columns[columnIndex];
-    unsigned int currentX = column.x + column.width;
+    uint32 currentX = column.x + column.width;
     if (currentX == column.x)
     {
         return true;

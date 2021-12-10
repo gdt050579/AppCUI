@@ -165,7 +165,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
     params.Width = this->TabTitleSize - 2;
     params.X     = 1;
 
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < this->ControlsCount; tr++)
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -205,7 +205,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
     params.Width = this->Layout.Width - 2;
     params.X     = 1;
     int ypoz;
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < this->ControlsCount; tr++)
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -256,14 +256,14 @@ bool PreviousTab(Tab* t)
     return t->SetCurrentTabPageByIndex(
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
-bool Tab_SetCurrentTabPageByIndex(Tab* t, unsigned int index, bool forceFocus)
+bool Tab_SetCurrentTabPageByIndex(Tab* t, uint32 index, bool forceFocus)
 {
     CREATE_TYPE_CONTEXT(TabControlContext, t, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
     bool res = true;
 
     // hide the rest of the tabs
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         if (tr != index)
             Members->Controls[tr]->SetVisible(false);
@@ -297,27 +297,27 @@ bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
-Tab::Tab(string_view layout, TabFlags flags, unsigned int tabPageSize)
+Tab::Tab(string_view layout, TabFlags flags, uint32 tabPageSize)
     : Control(new TabControlContext(), "", layout, false)
 {
     tabPageSize = std::min<>(1000U, tabPageSize);
     tabPageSize = std::max<>(10U, tabPageSize);
 
     auto Members          = reinterpret_cast<TabControlContext*>(this->Context);
-    Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     Members->TabTitleSize = tabPageSize;
     // margin set
     Members->HoveredTabIndex = -1;
     Members->UpdateMargins();
 }
 
-bool Tab::SetCurrentTabPageByIndex(unsigned int index)
+bool Tab::SetCurrentTabPageByIndex(uint32 index)
 {
     return Tab_SetCurrentTabPageByIndex(this, index, false);
 }
 bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
 {
-    unsigned int index = 0xFFFFFFFF;
+    uint32 index = 0xFFFFFFFF;
     CHECK(Control::GetChildIndex(page, index), false, "Fail to find page index in current tab!");
     return SetCurrentTabPageByIndex(index);
 }
@@ -328,7 +328,7 @@ Reference<Control> Tab::GetCurrentTab()
         return nullptr;
     return Members->Controls[Members->CurrentControlIndex];
 }
-bool Tab::SetTabPageName(unsigned int index, const ConstString& name)
+bool Tab::SetTabPageName(uint32 index, const ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab index: %d", index);
@@ -342,7 +342,7 @@ void Tab::OnAfterResize(int, int)
     Members->UpdateMargins();
     int nw = Members->Layout.Width - (Members->Margins.Left + Members->Margins.Right);
     int nh = Members->Layout.Height - (Members->Margins.Top + Members->Margins.Bottom);
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         Control* copil = Members->Controls[tr];
         copil->SetEnabled(true);
@@ -383,7 +383,7 @@ void Tab::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)
-        SetCurrentTabPageByIndex((unsigned int) Members->HoveredTabIndex);
+        SetCurrentTabPageByIndex((uint32) Members->HoveredTabIndex);
 }
 bool Tab::OnKeyEvent(Input::Key keyCode, char16)
 {
@@ -396,7 +396,7 @@ bool Tab::OnKeyEvent(Input::Key keyCode, char16)
     }
     // verific si hot-key-urile
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         if (keyCode == Members->Controls[tr]->GetHotKey())
         {
             Tab_SetCurrentTabPageByIndex(this, tr, true);
@@ -427,7 +427,7 @@ void Tab::Paint(Graphics::Renderer& renderer)
         break;
     }
 }
-bool Tab::SetTabPageTitleSize(unsigned int newSize)
+bool Tab::SetTabPageTitleSize(uint32 newSize)
 {
     CHECK(newSize >= 5, false, "Tab page title size should be bigger than 5");
     CHECK(newSize < 256, false, "Tab page title size should be smaller than 256");

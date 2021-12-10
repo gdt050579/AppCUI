@@ -29,7 +29,7 @@ namespace Internal
         size_t charHeight;
         bool autoRedraw;
 
-        std::unordered_map<unsigned int, SDL_Texture*> characterCache;
+        std::unordered_map<uint32, SDL_Texture*> characterCache;
 
       public:
         virtual bool OnInit(const Application::InitializationData& initData) override;
@@ -54,7 +54,7 @@ namespace Internal
         void handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl);
 
         SDL_Texture* renderCharacter(
-              const unsigned int charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
+              const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
     };
 } // namespace Internal
 } // namespace AppCUI

@@ -62,7 +62,7 @@ void RadioBox::OnHotKey()
     if ((parent) && (id > 0))
     {
         CREATE_CONTROL_CONTEXT(parent, pMembers, );
-        for (unsigned int tr = 0; tr < pMembers->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < pMembers->ControlsCount; tr++)
         {
             if ((pMembers->Controls[tr]) && (pMembers->Controls[tr]->GetGroup() == id))
                 pMembers->Controls[tr]->SetChecked(false);

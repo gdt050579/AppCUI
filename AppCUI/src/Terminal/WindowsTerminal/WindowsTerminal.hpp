@@ -14,21 +14,21 @@ namespace Internal
         DWORD stdMode;
         DWORD startTime;
         unique_ptr<CHAR_INFO> ConsoleBuffer;
-        unsigned int ConsoleBufferCount;
+        uint32 ConsoleBufferCount;
         struct
         {
-            unsigned int x, y;
+            uint32 x, y;
         } lastMousePosition;
         Input::Key KeyTranslationMatrix[KEYTRANSLATION_MATRIX_SIZE];
         Input::Key shiftState;
         bool fpsMode;
 
-        bool ResizeConsoleBuffer(unsigned int width, unsigned int height);
+        bool ResizeConsoleBuffer(uint32 width, uint32 height);
         bool CopyOriginalScreenBuffer(
-              unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY);
+              uint32 width, uint32 height, uint32 mouseX, uint32 mouseY);
         void BuildKeyTranslationMatrix();
-        bool ResizeConsoleScreenBufferSize(unsigned int width, unsigned int height);
-        bool ResizeConsoleWindowSize(unsigned int width, unsigned int height);
+        bool ResizeConsoleScreenBufferSize(uint32 width, uint32 height);
+        bool ResizeConsoleWindowSize(uint32 width, uint32 height);
         Graphics::Size FullScreenTerminal();
         Graphics::Size MaximizeTerminal();
         Graphics::Size ResizeTerminal(
