@@ -1668,8 +1668,8 @@ namespace OS
         virtual ~IFile();
 
         // virtual methods
-        virtual bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        virtual bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
+        virtual bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead);
+        virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         virtual uint64 GetSize();
         virtual uint64 GetCurrentPos();
         virtual bool SetSize(uint64 newSize);
@@ -1677,14 +1677,14 @@ namespace OS
         virtual void Close();
 
         // other methods
-        bool Read(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        bool Read(void* buffer, unsigned int bufferSize);
-        bool Write(const void* buffer, unsigned int bufferSize);
-        bool Read(uint64 offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(uint64 offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
+        bool Read(void* buffer, uint32 bufferSize, uint32& bytesRead);
+        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+        bool Read(void* buffer, uint32 bufferSize);
+        bool Write(const void* buffer, uint32 bufferSize);
+        bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
+        bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(string_view text);
-        bool Write(uint64 offset, string_view text, unsigned int& bytesWritten);
+        bool Write(uint64 offset, string_view text, uint32& bytesWritten);
     };
 
     class EXPORT File : public IFile
@@ -1693,7 +1693,7 @@ namespace OS
         {
             void* Handle;
             uint64 u64Value;
-            unsigned int u32Value;
+            uint32 u32Value;
             int fid;
         } FileID;
 
@@ -1720,8 +1720,8 @@ namespace OS
          */
         bool Create(const std::filesystem::path& path, bool overwriteExisting = true);
 
-        bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) override;
-        bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten) override;
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
         uint64 GetSize() override;
         uint64 GetCurrentPos() override;
         bool SetSize(uint64 newSize) override;
