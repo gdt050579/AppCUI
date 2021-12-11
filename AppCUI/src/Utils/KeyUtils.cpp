@@ -55,7 +55,7 @@ string_view Utils::KeyUtils::GetKeyModifierName(Input::Key keyCode)
         return string_view("", 0);
     return _Key_Modifiers[keyIndex];
 }
-bool Utils::KeyUtils::ToString(Input::Key keyCode, char* text, int maxTextSize)
+bool Utils::KeyUtils::ToString(Input::Key keyCode, char* text, uint32 maxTextSize)
 {
     CHECK(text != nullptr, false, "");
     Utils::String s;

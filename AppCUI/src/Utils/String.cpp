@@ -272,7 +272,7 @@ bool String::Contains(const char* sir, const char* textToFind, bool ignoreCase)
     }
     return false;
 }
-int String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
+int32 String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
 {
     VALIDATE_STRINGS_TO_COMPARE;
     if (ignoreCase)
@@ -571,21 +571,21 @@ bool String::Delete(uint32 start, uint32 end)
     }
     return true;
 }
-int String::GetChar(int index) const
+char String::GetChar(int32 index) const
 {
     if (Text == nullptr)
         return 0;
-    if ((index >= 0) && (index < (int) Size))
+    if ((index >= 0) && (index < (int32) Size))
         return Text[(uint32) index];
     uint32 idx = (uint32) (-index);
     if (idx < Size)
         return Text[Size - idx];
     return 0;
 }
-bool String::SetChar(int index, char value)
+bool String::SetChar(int32 index, char value)
 {
     CHECK(Text, false, "Text buffer was not allocated !");
-    if ((index >= 0) && (index < (int) Size))
+    if ((index >= 0) && (index < (int32) Size))
     {
         Text[index] = value;
         return true;
@@ -602,7 +602,7 @@ bool String::SetChar(int index, char value)
 bool String::SetFormat(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, false, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
@@ -627,7 +627,7 @@ bool String::SetFormat(const char* format, ...)
 bool String::AddFormat(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, false, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
@@ -652,7 +652,7 @@ bool String::AddFormat(const char* format, ...)
 string_view String::Format(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, nullptr, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
@@ -731,12 +731,12 @@ bool String::Equals(const String& text, bool ignoreCase) const
         return false;
     return String::Equals(this->Text, text.Text, ignoreCase);
 }
-int String::CompareWith(const char* text, bool ignoreCase) const
+int32 String::CompareWith(const char* text, bool ignoreCase) const
 {
     return String::Compare(this->Text, text, ignoreCase);
 }
 
-char& String::operator[](int poz)
+char& String::operator[](int32 poz)
 {
     if ((Text == nullptr) || (Size == 0))
     {
@@ -744,8 +744,8 @@ char& String::operator[](int poz)
         return tempCharForReferenceReturn;
     }
     if (poz < 0)
-        poz += (int) this->Size;
-    if (((poz + 1) > (int) Size) || (poz < 0))
+        poz += (int32) this->Size;
+    if (((poz + 1) > (int32) Size) || (poz < 0))
     {
         tempCharForReferenceReturn = 0;
         return tempCharForReferenceReturn;

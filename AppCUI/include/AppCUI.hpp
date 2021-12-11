@@ -448,7 +448,7 @@ namespace Application
 }; // namespace Application
 namespace Dialogs
 {
-    enum class Result : int
+    enum class Result : int32
     {
         None   = 0,
         Ok     = 1,
@@ -776,7 +776,7 @@ namespace Utils
               uint32 sirTextSize = 0xFFFFFFFF,
               uint32 textSize    = 0xFFFFFFFF);
         static bool Contains(const char* sir, const char* textToFind, bool ignoreCase = false);
-        static int Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
+        static int32 Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
         // Create string object
         bool Create(uint32 initialAllocatedBuffer = 64);
         bool Create(const char* text);
@@ -795,8 +795,8 @@ namespace Utils
             return Allocated & 0x7FFFFFFF;
         }
 
-        int GetChar(int index) const;
-        bool SetChar(int index, char value);
+        char GetChar(int32 index) const;
+        bool SetChar(int32 index, char value);
 
         bool Add(const char* text, uint32 size = 0xFFFFFFFF);
         bool Add(const String& text);
@@ -832,7 +832,7 @@ namespace Utils
         bool Equals(const String& ss, bool ignoreCase = false) const;
         bool Contains(const char* text, bool ignoreCase = false) const;
         bool Contains(const String& ss, bool ignoreCase = false) const;
-        int CompareWith(const char* text, bool ignoreCase = false) const;
+        int32 CompareWith(const char* text, bool ignoreCase = false) const;
 
         void ConvertToInternalNewLineFormat();
 
@@ -881,7 +881,7 @@ namespace Utils
         {
             return string_view{ this->Text, this->Size };
         }
-        char& operator[](int poz);
+        char& operator[](int32 poz);
     };
     class EXPORT UnicodeStringBuilder
     {
@@ -1453,7 +1453,7 @@ namespace Utils
         static string_view GetKeyName(Input::Key keyCode);
         static string_view GetKeyModifierName(Input::Key keyCode);
         static string_view GetKeyNamePadded(Input::Key keyCode);
-        static bool ToString(Input::Key keyCode, char* text, int maxTextSize);
+        static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
 
