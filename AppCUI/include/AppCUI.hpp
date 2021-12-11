@@ -439,6 +439,17 @@ namespace Utils
             return GenericRef(this->ptr);
         }
     };
+
+    struct Property
+    {
+        string_view category, name, help;
+    };
+    struct EXPORT PropertiesInterface
+    {
+        virtual bool GetProperty(string_view category, string_view name) = 0;
+        virtual bool SetProperty(string_view category, string_view name) = 0;
+        virtual vector<Property> GetPropertiesList()                     = 0;
+    };
 } // namespace Utils
 using Utils::ConstString;
 namespace Application
