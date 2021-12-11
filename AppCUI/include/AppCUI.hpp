@@ -251,14 +251,14 @@ namespace Graphics
     };
     struct Point
     {
-        int X, Y;
+        int32 X, Y;
         inline Point() : X(0), Y(0)
         {
         }
-        inline Point(int x, int y) : X(x), Y(y)
+        inline Point(int32 x, int32 y) : X(x), Y(y)
         {
         }
-        inline void Set(int x, int y)
+        inline void Set(int32 x, int32 y)
         {
             X = x;
             Y = y;
