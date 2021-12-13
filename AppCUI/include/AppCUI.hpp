@@ -2418,6 +2418,7 @@ namespace Controls
         class EXPORT Desktop;
         class EXPORT Tree;
         class EXPORT Grid;
+        class EXPORT PropertyList;
     }; // namespace Factory
     enum class Event : uint32
     {
@@ -3686,6 +3687,30 @@ namespace Controls
 
       private:
         friend Factory::Grid;
+        friend Control;
+    };
+
+    class EXPORT PropertyList : public Control
+    {
+      protected:
+        PropertyList(string_view layout, Reference<PropertiesInterface> object);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnUpdateScrollBars() override;
+
+        
+
+        virtual ~PropertyList();
+
+        friend Factory::PropertyList;
         friend Control;
     };
 
