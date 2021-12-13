@@ -814,6 +814,12 @@ struct MenuContext
           const Graphics::Size& maxSize);
 };
 
+struct PropertyListContext: public ControlContext
+{
+    Reference<PropertiesInterface> object;
+};
+
+
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \

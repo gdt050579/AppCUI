@@ -2,9 +2,11 @@
 
 namespace AppCUI
 {
-PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> object)
-    : Control(new ControlContext(), "", layout, false)
+PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> obj)
+    : Control(new PropertyListContext(), "", layout, false)
 {
+    auto* Members   = (PropertyListContext*) this->Context;
+    Members->object = obj;
 }
 PropertyList::~PropertyList()
 {
@@ -43,4 +45,4 @@ void PropertyList::OnUpdateScrollBars()
 {
 }
 
-} // namespace AppCUI::Controls
+} // namespace AppCUI
