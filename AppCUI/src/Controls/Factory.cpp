@@ -414,6 +414,24 @@ Reference<Controls::Grid> Factory::Grid::Create(
 {
     return parent.AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
+
+//======[PROPERTYLIST]===============================================================================
+Pointer<Controls::PropertyList> Factory::PropertyList::Create(string_view layout, Reference<PropertiesInterface> object)
+{
+    return POINTER<Controls::PropertyList>(new Controls::PropertyList(layout, object));
+}
+Reference<Controls::PropertyList> Factory::PropertyList::Create(
+      Controls::Control* parent, string_view layout, Reference<PropertiesInterface> object)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object));
+}
+Reference<Controls::PropertyList> Factory::PropertyList::Create(
+      Controls::Control& parent, string_view layout, Reference<PropertiesInterface> object)
+{
+    return parent.AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object));
+}
+
 } // namespace AppCUI
 #undef VALIDATE_PARENT
 #undef POINTER
