@@ -1,7 +1,5 @@
 #include "RunningState.hpp"
 
-#include <random>
-
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
     page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
@@ -34,6 +32,12 @@ RunningState::~RunningState()
 
 void RunningState::Init()
 {
+    for (auto i = 0U; i < 3; i++)
+    {
+        const auto piece = static_cast<PieceType>(uniform_dist(e1));
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>() }));
+    }
+
     data->tab->SetCurrentTabPage(page);
 }
 
@@ -55,17 +59,9 @@ bool RunningState::Update()
 
     if (delta % pieceGeneration == 0)
     {
-        // TODO: shouldn't init each time
-        std::random_device r;
-        std::default_random_engine e1(r());
-        std::uniform_int_distribution<int> uniform_dist(0, static_cast<int>(PieceType::End) - 1);
         const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_front((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>() }));
-
-        if (pieces.size() > 3)
-        {
-            pieces.pop_back();
-        }
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>() }));
+        pieces.pop_front();
     }
 
     return true;
