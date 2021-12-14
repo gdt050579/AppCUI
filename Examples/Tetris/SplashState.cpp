@@ -6,7 +6,7 @@
 SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
     page   = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    viewer = AppCUI::Controls::Factory::ImageViewer::Create(page, "d:c,w:86,h:9", AppCUI::Controls::ViewerFlags::None);
+    viewer = AppCUI::Controls::Factory::ImageViewer::Create(page, "d:c,w:86,h:9", AppCUI::Controls::ViewerFlags::HideScrollBar);
 
     img.Create(
           35,
