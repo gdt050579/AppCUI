@@ -24,6 +24,7 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->rowsNo    = rowsNo;
     context->flags     = flags;
 
+    context->CenterMatrix();
     context->UpdateGridParameters();
 
     context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
@@ -62,31 +63,31 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
-bool Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
+bool Grid::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
     switch (keyCode)
     {
-    case AppCUI::Input::Key::Space:
+    case Input::Key::Space:
         if (context->ToggleBooleanCell())
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Left:
-    case AppCUI::Input::Key::Right:
-    case AppCUI::Input::Key::Up:
-    case AppCUI::Input::Key::Down:
+    case Input::Key::Left:
+    case Input::Key::Right:
+    case Input::Key::Up:
+    case Input::Key::Down:
         if (context->MoveSelectedCellByKeys(keyCode))
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
-    case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+    case Input::Key::Shift | Input::Key::Left:
+    case Input::Key::Shift | Input::Key::Right:
+    case Input::Key::Shift | Input::Key::Up:
+    case Input::Key::Shift | Input::Key::Down:
         if (context->SelectCellsByKeys(keyCode))
         {
             return true;
@@ -98,47 +99,90 @@ bool Grid::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar)
             context->selectedCellsIndexes.clear();
             return true;
         }
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::C:
+    case Input::Key::Ctrl | Input::Key::C:
         if (context->CopySelectedCellsContent())
         {
             return true;
         }
         break;
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::V:
+    case Input::Key::Ctrl | Input::Key::V:
         if (context->PasteContentToSelectedCells())
         {
             return true;
         }
         break;
 
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Up:
+    case Input::Key::Ctrl | Input::Key::Alt | Input::Key::Up:
         if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
         {
+            context->startedMoving = true;
             context->UpdateDimensions(0, 1);
             return true;
         }
         break;
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Down:
+    case Input::Key::Ctrl | Input::Key::Alt | Input::Key::Down:
         if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
         {
+            context->startedMoving = true;
             context->UpdateDimensions(0, -1);
             return true;
         }
         break;
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Left:
+    case Input::Key::Ctrl | Input::Key::Alt | Input::Key::Left:
         if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
         {
-            context->UpdateDimensions(1, 0);
-            return true;
-        }
-        break;
-    case AppCUI::Input::Key::Ctrl | AppCUI::Input::Key::Alt | AppCUI::Input::Key::Right:
-        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
-        {
+            context->startedMoving = true;
             context->UpdateDimensions(-1, 0);
             return true;
         }
         break;
+    case Input::Key::Ctrl | Input::Key::Alt | Input::Key::Right:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            context->startedMoving = true;
+            context->UpdateDimensions(1, 0);
+            return true;
+        }
+        break;
+
+    case Input::Key::Ctrl | Input::Key::Up:
+        if ((context->flags & GridFlags::DisableMove) == GridFlags::None)
+        {
+            context->UpdatePositions(0, -1);
+            context->startedMoving = true;
+            return true;
+        }
+        break;
+    case Input::Key::Ctrl | Input::Key::Down:
+        if ((context->flags & GridFlags::DisableMove) == GridFlags::None)
+        {
+            context->UpdatePositions(0, 1);
+            context->startedMoving = true;
+            return true;
+        }
+        break;
+    case Input::Key::Ctrl | Input::Key::Left:
+        if ((context->flags & GridFlags::DisableMove) == GridFlags::None)
+        {
+            context->UpdatePositions(-1, 0);
+            context->startedMoving = true;
+            return true;
+        }
+        break;
+    case Input::Key::Ctrl | Input::Key::Right:
+        if ((context->flags & GridFlags::DisableMove) == GridFlags::None)
+        {
+            context->UpdatePositions(1, 0);
+            context->startedMoving = true;
+            return true;
+        }
+        break;
+
+    case Input::Key::Ctrl | Input::Key::Space:
+        context->startedMoving = false;
+        context->UpdateGridParameters();
+        return true;
+
     default:
         break;
     }
@@ -354,7 +398,7 @@ bool Grid::UpdateCell(
       uint32 y,
       CellType cellType,
       const std::variant<bool, ConstString>& content,
-      AppCUI::Graphics::TextAlignament textAlignment)
+      Graphics::TextAlignament textAlignment)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);
     const auto cellIndex = context->columnsNo * y + x;
@@ -536,12 +580,12 @@ uint32 GridControlContext::ComputeCellNumber(int32 x, int32 y)
     const auto endX = static_cast<uint32>(Layout.Width - offsetX);
     const auto endY = static_cast<uint32>(Layout.Height - offsetY);
 
-    if (static_cast<uint32>(x) <= offsetX || static_cast<uint32>(x) >= endX)
+    if (x <= offsetX || static_cast<uint32>(x) >= endX)
     {
         return InvalidCellIndex;
     }
 
-    if (static_cast<uint32>(y) <= offsetY || static_cast<uint32>(y) >= endY)
+    if (y <= offsetY || static_cast<uint32>(y) >= endY)
     {
         return InvalidCellIndex;
     }
@@ -804,26 +848,9 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
         cHeight = static_cast<uint32>(Layout.Height / rowsNo);
     }
 
-    // center matrix
-    offsetX = static_cast<uint32>((Layout.Width - cWidth * columnsNo) / 2);
-
-    auto deltaHeight = (Layout.Height - cHeight * rowsNo);
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
+    if (((flags & GridFlags::DisableMove) != GridFlags::DisableMove) && startedMoving == false)
     {
-        if (deltaHeight > cHeight)
-        {
-            deltaHeight -= cHeight;
-        }
-        else
-        {
-            deltaHeight = 0;
-        }
-    }
-    offsetY = static_cast<uint32>(deltaHeight / 2);
-
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        offsetY += cHeight;
+        CenterMatrix();
     }
 
     // sort selected cells for better drawing
@@ -869,7 +896,41 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
     UpdateGridParameters(true);
 }
 
-bool GridControlContext::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
+void GridControlContext::CenterMatrix()
+{
+    // center matrix
+    offsetX = static_cast<uint32>((Layout.Width - cWidth * columnsNo) / 2);
+
+    auto deltaHeight = (Layout.Height - cHeight * rowsNo);
+    if ((flags & GridFlags::HideHeader) == GridFlags::None)
+    {
+        if (deltaHeight > cHeight)
+        {
+            deltaHeight -= cHeight;
+        }
+        else
+        {
+            deltaHeight = 0;
+        }
+    }
+
+    offsetY = static_cast<uint32>(deltaHeight / 2);
+
+    if ((flags & GridFlags::HideHeader) == GridFlags::None)
+    {
+        offsetY += cHeight;
+    }
+}
+
+void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
+{
+    this->offsetX += offsetX;
+    this->offsetY += offsetY;
+
+    UpdateGridParameters(true);
+}
+
+bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
 {
     if (selectedCellsIndexes.size() == 0)
     {
@@ -914,7 +975,7 @@ bool GridControlContext::MoveSelectedCellByKeys(AppCUI::Input::Key keyCode)
     return false;
 }
 
-bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
+bool GridControlContext::SelectCellsByKeys(Input::Key keyCode)
 {
     if (selectedCellsIndexes.size() == 0)
     {
@@ -953,19 +1014,19 @@ bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     {
         switch (keyCode)
         {
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+        case Input::Key::Shift | Input::Key::Left:
             if (xLeft > 0)
                 xLeft -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+        case Input::Key::Shift | Input::Key::Right:
             if (xRight < columnsNo - 1)
                 xRight += 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+        case Input::Key::Shift | Input::Key::Up:
             if (yBot > 0)
                 yBot -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        case Input::Key::Shift | Input::Key::Down:
             if (yBot < rowsNo - 1)
                 yBot += 1;
             break;
@@ -977,19 +1038,19 @@ bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     {
         switch (keyCode)
         {
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+        case Input::Key::Shift | Input::Key::Left:
             if (xRight > 0)
                 xRight -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+        case Input::Key::Shift | Input::Key::Right:
             if (xRight < columnsNo - 1)
                 xRight += 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+        case Input::Key::Shift | Input::Key::Up:
             if (yBot > 0)
                 yBot -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        case Input::Key::Shift | Input::Key::Down:
             if (yBot < rowsNo - 1)
                 yBot += 1;
             break;
@@ -1001,19 +1062,19 @@ bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     {
         switch (keyCode)
         {
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+        case Input::Key::Shift | Input::Key::Left:
             if (xLeft > 0)
                 xLeft -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+        case Input::Key::Shift | Input::Key::Right:
             if (xLeft < columnsNo - 1)
                 xLeft += 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+        case Input::Key::Shift | Input::Key::Up:
             if (yBot > 0)
                 yBot -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        case Input::Key::Shift | Input::Key::Down:
             if (yBot < rowsNo - 1)
                 yBot += 1;
             break;
@@ -1025,19 +1086,19 @@ bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     {
         switch (keyCode)
         {
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+        case Input::Key::Shift | Input::Key::Left:
             if (xRight > 0)
                 xRight -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+        case Input::Key::Shift | Input::Key::Right:
             if (xRight < columnsNo - 1)
                 xRight += 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+        case Input::Key::Shift | Input::Key::Up:
             if (yTop > 0)
                 yTop -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        case Input::Key::Shift | Input::Key::Down:
             if (yTop < rowsNo - 1)
                 yTop += 1;
             break;
@@ -1049,19 +1110,19 @@ bool GridControlContext::SelectCellsByKeys(AppCUI::Input::Key keyCode)
     {
         switch (keyCode)
         {
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Left:
+        case Input::Key::Shift | Input::Key::Left:
             if (xLeft > 0)
                 xLeft -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Right:
+        case Input::Key::Shift | Input::Key::Right:
             if (xLeft < columnsNo - 1)
                 xLeft += 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Up:
+        case Input::Key::Shift | Input::Key::Up:
             if (yTop > 0)
                 yTop -= 1;
             break;
-        case AppCUI::Input::Key::Shift | AppCUI::Input::Key::Down:
+        case Input::Key::Shift | Input::Key::Down:
             if (yTop < rowsNo - 1)
                 yTop += 1;
             break;

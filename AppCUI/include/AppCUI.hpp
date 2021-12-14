@@ -2058,10 +2058,8 @@ namespace Graphics
             return Find(text, ignoreCase) != -1;
         }
         int32 CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
-        optional<uint32> FindNext(
-              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
-        optional<uint32> FindPrevious(
-              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
+        optional<uint32> FindNext(uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
+        optional<uint32> FindPrevious(uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;
@@ -2458,7 +2456,7 @@ namespace Controls
         using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
         using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
-        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
+        using OnTextColorHandler      = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
 
         struct OnButtonPressedInterface
         {
@@ -3355,8 +3353,7 @@ namespace Controls
         void SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void* Context = nullptr);
         bool Sort();
         bool Sort(uint32 columnIndex, bool ascendent);
-        bool Sort(
-              uint32 columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
+        bool Sort(uint32 columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
 
         virtual ~ListView();
 
@@ -3627,7 +3624,8 @@ namespace Controls
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
         HideHeader            = 0x004000,
-        DisableZoom           = 0x008000
+        DisableZoom           = 0x008000,
+        DisableMove           = 0x010000
     };
 
     class EXPORT Grid : public Control
@@ -3837,16 +3835,14 @@ namespace Controls
                   Controls::Control* parent,
                   string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  uint32 tabPageSize = 16);
+                  uint32 tabPageSize       = 16);
             static Reference<Controls::Tab> Create(
                   Controls::Control& parent,
                   string_view layout,
                   Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  uint32 tabPageSize = 16);
+                  uint32 tabPageSize       = 16);
             static Pointer<Controls::Tab> Create(
-                  string_view layout,
-                  Controls::TabFlags flags = Controls::TabFlags::TopTabs,
-                  uint32 tabPageSize = 16);
+                  string_view layout, Controls::TabFlags flags = Controls::TabFlags::TopTabs, uint32 tabPageSize = 16);
         };
         class EXPORT CanvasViewer
         {
@@ -4002,17 +3998,17 @@ namespace Controls
             static Pointer<Controls::Tree> Create(
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns  = 1);
+                  const uint32 noOfColumns        = 1);
             static Reference<Controls::Tree> Create(
                   Control* parent,
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns  = 1);
+                  const uint32 noOfColumns        = 1);
             static Reference<Controls::Tree> Create(
                   Control& parent,
                   string_view layout,
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns  = 1);
+                  const uint32 noOfColumns        = 1);
         };
 
         class EXPORT Grid
