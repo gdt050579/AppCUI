@@ -47,22 +47,18 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
     class Piece
     {
       private:
-        static const unsigned int matrixSize = 4;
-        unsigned int width                   = 1;
-        unsigned int height                  = 1;
-        unsigned int scale                   = 1;
+        static const unsigned int cells = 4;
+        unsigned int width              = 1;
+        unsigned int height             = 1;
         AppCUI::Graphics::ColorPair color{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::Transparent };
-        char matrix[matrixSize][matrixSize]{ 0 };
+        char matrix[cells][cells]{ 0 };
         AppCUI::Utils::Reference<AppCUI::Controls::Control> control = nullptr;
+        const PieceType type;
 
       public:
-        Piece(const PieceType type,
-              unsigned int scale,
-              const AppCUI::Utils::Reference<AppCUI::Controls::Control> control)
+        Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control)
+            : control(control), type(type)
         {
-            this->control = control;
-            this->scale   = scale;
-
             switch (type)
             {
             case RunningState::PieceType::I:
@@ -79,8 +75,8 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
                 break;
             case RunningState::PieceType::T:
                 matrix[0][0] = 1;
-                matrix[0][1] = 1;
-                matrix[0][2] = 1;
+                matrix[1][0] = 1;
+                matrix[2][0] = 1;
                 matrix[1][1] = 1;
                 break;
             case RunningState::PieceType::S:
@@ -112,26 +108,71 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
             }
         }
 
-        bool Draw(AppCUI::Graphics::Renderer& renderer)
+        bool Draw(AppCUI::Graphics::Renderer& renderer, int scale, bool center, int w, int h)
         {
-            int x = 1;
-            int y = 1;
-
-            for (auto i = 0U; i < matrixSize; i++)
+            if (center)
             {
-                for (auto j = 0U; j < matrixSize; j++)
+                if (w < 2 || h < 2)
                 {
-                    if (matrix[i][j] == 0)
-                    {
-                        continue;
-                    }
-
-                    renderer.DrawRectSize(x, y, width * scale * 2, height * scale, color, false);
-                    x += width * scale * 2;
+                    return false;
                 }
 
-                x = 1;
-                y += height * scale;
+                const auto size = GetSize(type, scale);
+                const int x     = std::max<>(1, static_cast<int>((w - size.Width) / 2));
+                const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - size.Height)) / 2));
+
+                return Draw(renderer, scale, x, y);
+            }
+            return Draw(renderer, scale, 1, 1);
+        }
+
+        AppCUI::Graphics::Size GetSize(PieceType type, int scale) const
+        {
+            const auto w = width * scale * 2;
+            const auto h = height * scale;
+
+            switch (type)
+            {
+            case RunningState::PieceType::I:
+                return { w, h * 4 };
+            case RunningState::PieceType::O:
+                return { w * 2, h * 2 };
+            case RunningState::PieceType::T:
+                return { w * 2, h * 3 };
+            case RunningState::PieceType::S:
+                return { w * 3, h * 2 };
+            case RunningState::PieceType::L:
+                return { w * 3, h * 2 };
+            case RunningState::PieceType::Z:
+                return { w * 3, h * 2 };
+            case RunningState::PieceType::J:
+                return { w * 3, h * 2 };
+            default:
+                break;
+            }
+
+            return { 0, 0 };
+        }
+
+        bool Draw(AppCUI::Graphics::Renderer& renderer, int scale, const int x, const int y)
+        {
+            int xx = x;
+            int yy = y;
+
+            for (auto i = 0U; i < cells; i++)
+            {
+                for (auto j = 0U; j < cells; j++)
+                {
+                    if (matrix[i][j] == 1)
+                    {
+                        renderer.DrawRectSize(xx, yy, width * scale * 2, height * scale, color, false);
+                    }
+
+                    xx += width * scale * 2;
+                }
+
+                xx = x;
+                yy += height * scale;
             }
 
             return true;
@@ -157,9 +198,10 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
     class PaintControlImplementation : public AppCUI::Controls::Handlers::PaintControlInterface
     {
         RunningState& rs;
+        const unsigned int id;
 
       public:
-        PaintControlImplementation(RunningState& rs) : rs(rs)
+        PaintControlImplementation(RunningState& rs, unsigned int id) : rs(rs), id(id)
         {
         }
 
@@ -168,12 +210,12 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
         {
             control->Paint(renderer);
 
-            for (auto& piece : rs.pieces)
-            {
-                piece.Draw(renderer);
-            }
+            auto& piece = rs.pieces[id];
+            piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
         }
     };
 
-    PaintControlImplementation pci{ *this };
+    PaintControlImplementation pci01{ *this, 0 };
+    PaintControlImplementation pci02{ *this, 1 };
+    PaintControlImplementation pci03{ *this, 2 };
 };

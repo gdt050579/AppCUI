@@ -18,7 +18,9 @@ RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data)
     scoreLabel->SetText("");
 
     page->Handlers()->OnKeyEvent          = this;
-    nextPiece01->Handlers()->PaintControl = &pci;
+    nextPiece01->Handlers()->PaintControl = &pci01;
+    nextPiece02->Handlers()->PaintControl = &pci02;
+    nextPiece03->Handlers()->PaintControl = &pci03;
 }
 
 RunningState::~RunningState()
@@ -50,7 +52,9 @@ void RunningState::Draw(AppCUI::Graphics::Renderer& renderer)
 {
     if (pieces.empty())
     {
-        pieces.emplace_back(Piece{ PieceType::I, 3, nextPiece.DownCast<AppCUI::Controls::Control>() });
+        pieces.emplace_back((Piece{ PieceType::I, nextPiece.DownCast<AppCUI::Controls::Control>() }));
+        pieces.emplace_back((Piece{ PieceType::O, nextPiece.DownCast<AppCUI::Controls::Control>() }));
+        pieces.emplace_back((Piece{ PieceType::J, nextPiece.DownCast<AppCUI::Controls::Control>() }));
     }
 
     renderer.HideCursor();
