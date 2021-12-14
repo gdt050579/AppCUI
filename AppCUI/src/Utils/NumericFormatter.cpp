@@ -109,7 +109,7 @@ string_view NumericFormatter::ToDecStringSigned(int64 value)
     }
     return string_view{ s, (size_t) (e - s) };
 }
-string_view NumericFormatter::ToBaseUnsigned(uint64 value, int base)
+string_view NumericFormatter::ToBaseUnsigned(uint64 value, uint8 base)
 {
     CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)
@@ -126,7 +126,7 @@ string_view NumericFormatter::ToBaseUnsigned(uint64 value, int base)
         return ToGenericBase(value, base);
     }
 }
-string_view NumericFormatter::ToBaseSigned(int64 value, int base)
+string_view NumericFormatter::ToBaseSigned(int64 value, uint8 base)
 {
     CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)

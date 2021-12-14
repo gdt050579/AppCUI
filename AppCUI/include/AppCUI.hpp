@@ -251,14 +251,14 @@ namespace Graphics
     };
     struct Point
     {
-        int X, Y;
+        int32 X, Y;
         inline Point() : X(0), Y(0)
         {
         }
-        inline Point(int x, int y) : X(x), Y(y)
+        inline Point(int32 x, int32 y) : X(x), Y(y)
         {
         }
-        inline void Set(int x, int y)
+        inline void Set(int32 x, int32 y)
         {
             X = x;
             Y = y;
@@ -448,7 +448,7 @@ namespace Application
 }; // namespace Application
 namespace Dialogs
 {
-    enum class Result : int
+    enum class Result : int32
     {
         None   = 0,
         Ok     = 1,
@@ -776,7 +776,7 @@ namespace Utils
               uint32 sirTextSize = 0xFFFFFFFF,
               uint32 textSize    = 0xFFFFFFFF);
         static bool Contains(const char* sir, const char* textToFind, bool ignoreCase = false);
-        static int Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
+        static int32 Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
         // Create string object
         bool Create(uint32 initialAllocatedBuffer = 64);
         bool Create(const char* text);
@@ -795,8 +795,8 @@ namespace Utils
             return Allocated & 0x7FFFFFFF;
         }
 
-        int GetChar(int index) const;
-        bool SetChar(int index, char value);
+        char GetChar(int32 index) const;
+        bool SetChar(int32 index, char value);
 
         bool Add(const char* text, uint32 size = 0xFFFFFFFF);
         bool Add(const String& text);
@@ -832,7 +832,7 @@ namespace Utils
         bool Equals(const String& ss, bool ignoreCase = false) const;
         bool Contains(const char* text, bool ignoreCase = false) const;
         bool Contains(const String& ss, bool ignoreCase = false) const;
-        int CompareWith(const char* text, bool ignoreCase = false) const;
+        int32 CompareWith(const char* text, bool ignoreCase = false) const;
 
         void ConvertToInternalNewLineFormat();
 
@@ -881,7 +881,7 @@ namespace Utils
         {
             return string_view{ this->Text, this->Size };
         }
-        char& operator[](int poz);
+        char& operator[](int32 poz);
     };
     class EXPORT UnicodeStringBuilder
     {
@@ -1065,8 +1065,8 @@ namespace Utils
         string_view ToBinString(uint64 value);
         string_view ToDecStringUnsigned(uint64 value);
         string_view ToDecStringSigned(int64 value);
-        string_view ToBaseUnsigned(uint64 value, int base);
-        string_view ToBaseSigned(int64 value, int base);
+        string_view ToBaseUnsigned(uint64 value, uint8 base);
+        string_view ToBaseSigned(int64 value, uint8 base);
         string_view ToGenericBase(uint64 value, uint64 base);
         string_view ToStringUnsigned(uint64 value, NumericFormat fmt);
         string_view ToStringSigned(int64 value, NumericFormat fmt);
@@ -1102,7 +1102,7 @@ namespace Utils
         {
             return ToHexString(*(uint64*) &value);
         }
-        inline string_view ToHex(int value)
+        inline string_view ToHex(int32 value)
         {
             return ToHexString((uint64) (*(uint32*) &value));
         }
@@ -1110,7 +1110,7 @@ namespace Utils
         {
             return ToHexString((uint64) (*(uint16*) &value));
         }
-        inline string_view ToHex(char value)
+        inline string_view ToHex(int8 value)
         {
             return ToHexString((uint64) (*(uint8*) &value));
         }
@@ -1136,7 +1136,7 @@ namespace Utils
         {
             return ToDecStringSigned(value);
         }
-        inline string_view ToDec(int value)
+        inline string_view ToDec(int32 value)
         {
             return ToDecStringSigned((int64) value);
         }
@@ -1144,7 +1144,7 @@ namespace Utils
         {
             return ToDecStringSigned((int64) value);
         }
-        inline string_view ToDec(char value)
+        inline string_view ToDec(int8 value)
         {
             return ToDecStringSigned((int64) value);
         }
@@ -1172,7 +1172,7 @@ namespace Utils
         {
             return ToOctString(*(uint64*) &value);
         }
-        inline string_view ToOct(int value)
+        inline string_view ToOct(int32 value)
         {
             return ToOctString((uint64) (*(uint32*) &value));
         }
@@ -1180,7 +1180,7 @@ namespace Utils
         {
             return ToOctString((uint64) (*(uint16*) &value));
         }
-        inline string_view ToOct(char value)
+        inline string_view ToOct(int8 value)
         {
             return ToOctString((uint64) (*(uint8*) &value));
         }
@@ -1206,7 +1206,7 @@ namespace Utils
         {
             return ToBinString(*(uint64*) &value);
         }
-        inline string_view ToBin(int value)
+        inline string_view ToBin(int32 value)
         {
             return ToBinString((uint64) (*(uint32*) &value));
         }
@@ -1214,41 +1214,41 @@ namespace Utils
         {
             return ToBinString((uint64) (*(uint16*) &value));
         }
-        inline string_view ToBin(char value)
+        inline string_view ToBin(int8 value)
         {
             return ToBinString((uint64) (*(uint8*) &value));
         }
 
         // ToBase
-        inline string_view ToBase(uint64 value, int base)
+        inline string_view ToBase(uint64 value, uint8 base)
         {
             return ToBaseUnsigned(value, base);
         }
-        inline string_view ToBase(uint32 value, int base)
+        inline string_view ToBase(uint32 value, uint8 base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(uint16 value, int base)
+        inline string_view ToBase(uint16 value, uint8 base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(uint8 value, int base)
+        inline string_view ToBase(uint8 value, uint8 base)
         {
             return ToBaseUnsigned((uint64) value, base);
         }
-        inline string_view ToBase(int64 value, int base)
+        inline string_view ToBase(int64 value, uint8 base)
         {
             return ToBaseSigned(value, base);
         }
-        inline string_view ToBase(int value, int base)
+        inline string_view ToBase(int32 value, uint8 base)
         {
             return ToBaseSigned((int64) value, base);
         }
-        inline string_view ToBase(int16 value, int base)
+        inline string_view ToBase(int16 value, uint8 base)
         {
             return ToBaseSigned((int64) value, base);
         }
-        inline string_view ToBase(char value, int base)
+        inline string_view ToBase(int8 value, uint8 base)
         {
             return ToBaseSigned((int64) value, base);
         }
@@ -1274,7 +1274,7 @@ namespace Utils
         {
             return ToStringSigned(value, fmt);
         }
-        inline string_view ToString(int value, NumericFormat fmt)
+        inline string_view ToString(int32 value, NumericFormat fmt)
         {
             return ToStringSigned((int64) value, fmt);
         }
@@ -1282,7 +1282,7 @@ namespace Utils
         {
             return ToStringSigned((int64) value, fmt);
         }
-        inline string_view ToString(char value, NumericFormat fmt)
+        inline string_view ToString(int8 value, NumericFormat fmt)
         {
             return ToStringSigned((int64) value, fmt);
         }
@@ -1341,9 +1341,10 @@ namespace Utils
         }
     };
 
-    template <int size>
+    template <uint32 size>
     class LocalString : public String
     {
+        static_assert(size > 0);
         char tempBuffer[size];
 
       public:
@@ -1452,7 +1453,7 @@ namespace Utils
         static string_view GetKeyName(Input::Key keyCode);
         static string_view GetKeyModifierName(Input::Key keyCode);
         static string_view GetKeyNamePadded(Input::Key keyCode);
-        static bool ToString(Input::Key keyCode, char* text, int maxTextSize);
+        static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
 
