@@ -3628,7 +3628,8 @@ namespace Controls
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
         HideHeader            = 0x004000,
-        DisableZoom           = 0x008000
+        DisableZoom           = 0x008000,
+        DisableMove           = 0x010000
     };
 
     class EXPORT Grid : public Control
