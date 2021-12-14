@@ -663,8 +663,8 @@ class GridControlContext : public ControlContext
 
     uint32 cWidth  = 0U;
     uint32 cHeight = 0U;
-    uint32 offsetX = 0U;
-    uint32 offsetY = 0U;
+    int32 offsetX  = 0U;
+    int32 offsetY  = 0U;
 
     Menu rightClickMenu;
 
@@ -672,8 +672,7 @@ class GridControlContext : public ControlContext
     std::u16string separator{ u"," };
     std::vector<GridHeaderCellData> headers;
 
-    uint32 viewportOffsetX = 0;
-    uint32 viewportOffsetY = 0;
+    bool startedMoving = false;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
@@ -695,6 +694,8 @@ class GridControlContext : public ControlContext
     bool DrawHeader(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
+    void CenterMatrix();
+    void UpdatePositions(int32 offsetX, int32 offsetY);
     bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
     bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
     bool ToggleBooleanCell();
