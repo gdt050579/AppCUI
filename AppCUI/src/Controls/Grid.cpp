@@ -577,8 +577,8 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
 uint32 GridControlContext::ComputeCellNumber(int32 x, int32 y)
 {
-    const auto endX = static_cast<uint32>(Layout.Width - offsetX);
-    const auto endY = static_cast<uint32>(Layout.Height - offsetY);
+    const auto endX = static_cast<uint32>(offsetX + cWidth * columnsNo);
+    const auto endY = static_cast<uint32>(offsetY + cHeight * rowsNo);
 
     if (x <= offsetX || static_cast<uint32>(x) >= endX)
     {
