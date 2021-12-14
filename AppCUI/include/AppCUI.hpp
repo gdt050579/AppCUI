@@ -605,7 +605,7 @@ namespace Utils
         bool Push(uint32 value);
         bool Push(int32 value);
         bool Insert(uint32 index, uint32 value);
-        bool Insert(uint32 index, int value);
+        bool Insert(uint32 index, int32 value);
         bool Get(uint32 index, uint32& value);
         bool Get(uint32 index, int32& value);
 

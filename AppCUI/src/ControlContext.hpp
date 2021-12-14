@@ -817,6 +817,11 @@ struct MenuContext
 struct PropertyListContext: public ControlContext
 {
     Reference<PropertiesInterface> object;
+    vector<Property> properties;
+    Array32 items;
+
+    bool IsItemFiltered(const Property& prop);
+    void Refilter();
 };
 
 
