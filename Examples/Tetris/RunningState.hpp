@@ -41,7 +41,9 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
         S = 3,
         L = 4,
         Z = 5,
-        J = 6
+        J = 6,
+
+        End
     };
 
     class Piece
@@ -119,7 +121,7 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
 
                 const auto size = GetSize(type, scale);
                 const int x     = std::max<>(1, static_cast<int>((w - size.Width) / 2));
-                const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - size.Height)) / 2));
+                const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - 2 - size.Height)) / 2));
 
                 return Draw(renderer, scale, x, y);
             }
@@ -183,17 +185,21 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
     const std::shared_ptr<GameData>& data;
 
     unsigned int score = 0;
-    std::vector<Piece> pieces{};
+    std::deque<Piece> pieces{};
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page      = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> leftPanel   = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece   = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece01 = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece02 = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece03 = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> rightPanel  = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> stats       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> scoreLabel  = nullptr;
+    clock_t initialTime;
+    const int pieceGeneration = 3; // seconds
+
+    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page          = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> leftPanel       = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece       = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece01     = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece02     = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece03     = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> rightPanel      = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Panel> stats           = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Label> scoreLabel      = nullptr;
+    AppCUI::Utils::Reference<AppCUI::Controls::Label> timePassedLabel = nullptr;
 
     class PaintControlImplementation : public AppCUI::Controls::Handlers::PaintControlInterface
     {
@@ -210,8 +216,11 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
         {
             control->Paint(renderer);
 
-            auto& piece = rs.pieces[id];
-            piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
+            if (rs.pieces.size() > id)
+            {
+                auto& piece = rs.pieces[id];
+                piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
+            }
         }
     };
 
