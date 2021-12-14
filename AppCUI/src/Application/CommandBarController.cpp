@@ -1,23 +1,33 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Input;
 
 CommandBarController::CommandBarController(
-      unsigned int desktopWidth, unsigned int desktopHeight, AppCUI::Application::Config* cfg)
+      uint32 desktopWidth, uint32 desktopHeight, Application::Config* cfg)
 {
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
-    CurrentVersion = 0xFFFFFFFF;
-    Clear();
-    CurrentShiftKey = AppCUI::Input::Key::None;
+    ClearCommandUniqueID = 0;
+    for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
+    {
+        CommandBarField* b = &Fields[tr][0];
+        CommandBarField* e = b + (uint32) Key::Count;
+        while (b < e)
+        {
+            b->ClearCommandUniqueID = ClearCommandUniqueID;
+            b++;
+        }
+    }
+    CurrentShiftKey = Input::Key::None;
     PressedField    = nullptr;
     HoveredField    = nullptr;
     LastCommand     = 0;
-    ShiftStatus     = std::string_view("", 0);
+    ShiftStatus     = string_view("", 0);
+    Clear();
 }
-void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned int desktopHeight)
+void CommandBarController::SetDesktopSize(uint32 desktopWidth, uint32 desktopHeight)
 {
     this->BarLayout.Width    = desktopWidth;
     this->BarLayout.Y        = desktopHeight - 1;
@@ -25,52 +35,43 @@ void CommandBarController::SetDesktopSize(unsigned int desktopWidth, unsigned in
 }
 void CommandBarController::Clear()
 {
-    CurrentVersion++;
-    if (CurrentVersion == 0)
-    {
-        // curat toate campurile
-        for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
-        {
-            CommandBarField* b = &Fields[tr][0];
-            CommandBarField* e = b + (unsigned int) Key::Count;
-            while (b < e)
-            {
-                b->Version = 0;
-                b++;
-            }
-        }
-        // Versiunea nu poate fi niciodata 0 (ala e doar punct de reset - este tot timpul minim 1
-        CurrentVersion = 1;
-    }
+    // always obtain a new unique ID (whenever a clear command is called)
+    // this allows us NOT to reset all of the previous command (thus being more fast)
+    // as CommandBarController::Clear() is called every time Focus changes -> this technique is important for
+    // performance
+    ClearCommandUniqueID++;
+
+    // Clear shift keys for fast process
     for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
     {
         HasKeys[tr]      = false;
         IndexesCount[tr] = 0;
     }
+    HoveredField       = nullptr;
     RecomputeScreenPos = true;
 }
-bool CommandBarController::Set(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int Command)
+bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, int Command)
 {
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
     CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
-    unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = ((unsigned int) keyCode) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) AppCUI::Input::Key::Count, false, "Invalid key code !");
+    uint32 index = (((uint32) keyCode) & 0xFF);
+    uint32 shift = ((uint32) keyCode) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (uint32) Input::Key::Count, false, "Invalid key code !");
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, false, "Invalid shift combination !");
 
     CommandBarField* b = &Fields[shift][index];
     CHECK(b->Name.Set(caption), false, "Fail to copy caption");
     CHECK(b->Name.Add(" "), false, "Fail to add extra step !");
 
-    b->Command         = Command;
-    b->KeyCode         = keyCode;
-    b->Version         = CurrentVersion;
-    b->KeyName         = AppCUI::Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
-    HasKeys[shift]     = true;
-    RecomputeScreenPos = true;
+    b->Command              = Command;
+    b->KeyCode              = keyCode;
+    b->ClearCommandUniqueID = ClearCommandUniqueID;
+    b->KeyName              = Utils::KeyUtils::GetKeyNamePadded(b->KeyCode);
+    HasKeys[shift]          = true;
+    RecomputeScreenPos      = true;
     return true;
 }
-void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
+void CommandBarController::Paint(Graphics::Renderer& renderer)
 {
     renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
     if (RecomputeScreenPos)
@@ -79,7 +80,7 @@ void CommandBarController::Paint(AppCUI::Graphics::Renderer& renderer)
     if (ShiftStatus.length() > 0)
         renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->CommandBar.ShiftKeysColor);
 
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+    uint32 shift = ((uint32) CurrentShiftKey) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
         return;
     if (HasKeys[shift] == false)
@@ -111,7 +112,7 @@ void CommandBarController::ComputeScreenPos()
 {
     int startPoz;
     // validez shift state
-    ShiftStatus = AppCUI::Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
+    ShiftStatus = Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
     startPoz    = (int) ShiftStatus.length();
     if (startPoz > 0)
         startPoz++;
@@ -123,14 +124,15 @@ void CommandBarController::ComputeScreenPos()
         if ((*hasKeys) == false)
             continue;
         CommandBarField* bf           = &Fields[tr][0];
-        CommandBarField* ef           = bf + (unsigned int) Key::Count;
+        CommandBarField* ef           = bf + (uint32) Key::Count;
         CommandBarFieldIndex* current = &VisibleFields[tr][0];
         int* ic                       = &IndexesCount[tr];
         *ic                           = 0;
         int start                     = startPoz;
         while (bf < ef)
         {
-            if (bf->Version == CurrentVersion)
+            // we consider valid only items that were added with a specific ClearCommandUniqueID ID
+            if (bf->ClearCommandUniqueID == this->ClearCommandUniqueID)
             {
                 current->Field = bf;
                 current++;
@@ -149,7 +151,7 @@ void CommandBarController::ComputeScreenPos()
     this->PressedField = nullptr;
     RecomputeScreenPos = false;
 }
-bool CommandBarController::SetShiftKey(AppCUI::Input::Key keyCode)
+bool CommandBarController::SetShiftKey(Input::Key keyCode)
 {
     if (keyCode != CurrentShiftKey)
     {
@@ -163,7 +165,7 @@ CommandBarField* CommandBarController::MousePositionToField(int x, int y)
 {
     if (RecomputeScreenPos)
         ComputeScreenPos();
-    unsigned int shift = ((unsigned int) CurrentShiftKey) >> ((unsigned int) AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
+    uint32 shift = ((uint32) CurrentShiftKey) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     CHECK(shift < MAX_COMMANDBAR_SHIFTSTATES, nullptr, "");
     if (HasKeys[shift] == false)
         return nullptr;
@@ -233,15 +235,16 @@ bool CommandBarController::OnMouseUp(int& command)
     command = -1;
     return false;
 }
-int CommandBarController::GetCommandForKey(AppCUI::Input::Key keyCode)
+int CommandBarController::GetCommandForKey(Input::Key keyCode)
 {
-    unsigned int index = (((unsigned int) keyCode) & 0xFF);
-    unsigned int shift = (((unsigned int) keyCode) >> AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS);
-    CHECK(index < (unsigned int) AppCUI::Input::Key::Count, -1, "Invalid key code !");
+    uint32 index = (((uint32) keyCode) & 0xFF);
+    uint32 shift = (((uint32) keyCode) >> Utils::KeyUtils::KEY_SHIFT_BITS);
+    CHECK(index < (uint32) Input::Key::Count, -1, "Invalid key code !");
     CHECK((shift < MAX_COMMANDBAR_SHIFTSTATES), -1, "Invalid shift combination !");
     CommandBarField* b = &Fields[shift][index];
-    // verific daca e setat
-    if (b->Version != CurrentVersion)
+    // if ClearCommandUniqueID is not thee same as the current one, then its an old item and we discard it
+    if (b->ClearCommandUniqueID != ClearCommandUniqueID)
         return -1;
     return b->Command;
 }
+} // namespace AppCUI::Internal

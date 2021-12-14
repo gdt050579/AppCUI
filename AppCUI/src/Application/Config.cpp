@@ -1,8 +1,9 @@
 #include "AppCUI.hpp"
+namespace AppCUI::Application
+{
+using namespace Graphics;
 
-using namespace AppCUI::Graphics;
-
-void AppCUI::Application::Config::SetDarkTheme()
+void Config::SetDarkTheme()
 {
     this->Desktop.Color                    = ColorPair{ Color::Gray, Color::Black };
     this->Desktop.DesktopFillCharacterCode = 186;
@@ -132,9 +133,9 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Splitter.NormalColor     = ColorPair{ Color::Silver, Color::Transparent };
     this->Splitter.ClickColor      = ColorPair{ Color::White, Color::Magenta };
     this->Splitter.HoverColor      = ColorPair{ Color::Yellow, Color::Transparent };
-    this->Splitter.Buttons.Normal  = ColorPair{ Color::White, Color::Transparent };
-    this->Splitter.Buttons.Hover   = ColorPair{ Color::Aqua, Color::Transparent };
-    this->Splitter.Buttons.Clicked = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
+    this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
+    this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
     this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Panel.Text        = ColorPair{ Color::White, Color::Transparent };
@@ -215,11 +216,15 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->ListView.ColumnSort.HotKey        = ColorPair{ Color::Black, Color::Pink };
     this->ListView.ColumnSort.Separator     = ColorPair{ Color::Gray, Color::Pink };
 
-    this->ListView.Item.Regular          = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Item.Highligheted     = ColorPair{ Color::White, Color::Transparent };
-    this->ListView.Item.Inactive         = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Item.Error            = ColorPair{ Color::Red, Color::Transparent };
-    this->ListView.Item.Warning          = ColorPair{ Color::Olive, Color::Transparent };
+    this->ListView.Item.Regular      = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Item.Highligheted = ColorPair{ Color::White, Color::Transparent };
+    this->ListView.Item.Inactive     = ColorPair{ Color::Gray, Color::Transparent };
+    this->ListView.Item.Error        = ColorPair{ Color::Red, Color::Transparent };
+    this->ListView.Item.Warning      = ColorPair{ Color::Olive, Color::Transparent };
+    this->ListView.Item.Emphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
+    this->ListView.Item.Emphasized2  = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.Item.Category     = ColorPair{ Color::Yellow, Color::Transparent };
+
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
     this->ListView.InactiveColor         = ColorPair{ Color::Gray, Color::Transparent };
@@ -332,4 +337,21 @@ void AppCUI::Application::Config::SetDarkTheme()
     this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
     this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
+
+    this->Grid.Lines.Horizontal.Normal   = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Horizontal.Selected = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Horizontal.Hovered  = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Lines.Vertical.Normal     = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Vertical.Selected   = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Vertical.Hovered    = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Lines.Box.Normal          = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Box.Selected        = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Box.Hovered         = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->Grid.Background.Grid           = ColorPair{ Color::Transparent, Color::DarkBlue };
+    this->Grid.Background.Cell.Normal    = this->Grid.Background.Grid;
+    this->Grid.Background.Cell.Selected  = ColorPair{ Color::Transparent, Color::Black };
+    this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::DarkRed };
+    this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 }
+} // namespace AppCUI::Application

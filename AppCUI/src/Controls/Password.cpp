@@ -1,18 +1,16 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
-Password::Password(const AppCUI::Utils::ConstString& caption, std::string_view layout)
+namespace AppCUI::Controls
+{
+Password::Password(const ConstString& caption, string_view layout)
     : Control(new ControlContext(), caption, layout, false)
 {
-    auto Members = reinterpret_cast<ControlContext*>(this->Context);
+    auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth  = 4;
-    Members->Layout.MinHeight = 1; 
+    Members->Layout.MinHeight = 1;
     Members->Layout.MaxHeight = 1;
     Members->Layout.Height    = 1;
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 }
 
 void Password::Paint(Graphics::Renderer& renderer)
@@ -22,7 +20,7 @@ void Password::Paint(Graphics::Renderer& renderer)
     auto col = &Members->Cfg->Password.Normal;
 
     if (!this->IsEnabled())
-        col = &Members->Cfg->Password.Inactive;    
+        col = &Members->Cfg->Password.Inactive;
     else if (Members->Focused)
         col = &Members->Cfg->Password.Focus;
     else if (Members->MouseIsOver)
@@ -31,17 +29,17 @@ void Password::Paint(Graphics::Renderer& renderer)
     int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
         sz = Members->Layout.Width - 3;
-   
+
     renderer.FillHorizontalLineSize(0, 0, Members->Layout.Width, ' ', col->Text);
     if (this->IsChecked())
     {
         renderer.WriteSingleLineText(
-              1, 0, Members->Text.SubString(Members->Text.Len() - (unsigned int) sz, Members->Text.Len()), col->Text);
+              1, 0, Members->Text.SubString(Members->Text.Len() - (uint32) sz, Members->Text.Len()), col->Text);
         renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleFilled, col->VisibleSign);
     }
     else
     {
-        if (sz>0)
+        if (sz > 0)
             renderer.FillHorizontalLine(1, 0, sz, '*', col->Text);
         renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleEmpty, col->VisibleSign);
     }
@@ -49,7 +47,7 @@ void Password::Paint(Graphics::Renderer& renderer)
         renderer.SetCursor(1 + sz, 0);
 }
 
-bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
+bool Password::OnKeyEvent(Key KeyCode, char16 characterCode)
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
     if (characterCode > 0)
@@ -73,14 +71,14 @@ bool Password::OnKeyEvent(Key KeyCode, char16_t characterCode)
     if ((KeyCode == (Key::Ctrl | Key::V)) || (KeyCode == (Key::Shift | Key::Insert)))
     {
         LocalUnicodeStringBuilder<2048> temp;
-        if (AppCUI::OS::Clipboard::GetText(temp))
+        if (OS::Clipboard::GetText(temp))
             Members->Text.Add(temp);
         return true;
     }
-    
+
     return false;
 }
-bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Password::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     if (IsChecked() == false)
         return false;
@@ -91,11 +89,11 @@ bool Password::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
     }
     return false;
 }
-void Password::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void Password::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     SetChecked(false);
 }
-void Password::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Password::OnMousePressed(int, int, Input::MouseButton)
 {
     SetChecked(true);
 }
@@ -111,3 +109,4 @@ bool Password::OnMouseLeave()
     this->HideToolTip();
     return true;
 }
+} // namespace AppCUI::Controls

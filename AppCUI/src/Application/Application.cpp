@@ -1,26 +1,26 @@
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 #include "Internal.hpp"
-#include "Terminal/TerminalFactory.hpp"
+#include "../Terminal/TerminalFactory.hpp"
 #include <math.h>
 
-using namespace AppCUI;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Controls;
+namespace AppCUI
+{
+using namespace Internal;
 
-AppCUI::Internal::Application* app = nullptr;
+ApplicationImpl* app = nullptr;
 
-bool AppCUI::Application::Init(Application::InitializationFlags flags)
+bool Application::Init(Application::InitializationFlags flags)
 {
     Application::InitializationData initData;
     initData.Flags = flags;
-    return AppCUI::Application::Init(initData);
+    return Application::Init(initData);
 }
 
-bool AppCUI::Application::Init(InitializationData& initData)
+bool Application::Init(InitializationData& initData)
 {
     CHECK(app == nullptr, false, "Application has already been initialized !");
-    app = new AppCUI::Internal::Application();
+    app = new ApplicationImpl();
     CHECK(app, false, "Fail to allocate space for application object !");
     if (app->Init(initData))
         return true;
@@ -28,11 +28,13 @@ bool AppCUI::Application::Init(InitializationData& initData)
     app = nullptr;
     RETURNERROR(false, "Fail to initialized application !");
 }
-bool AppCUI::Application::Run()
+bool Application::Run()
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
     app->ExecuteEventLoop();
+    LOG_INFO("Uninit text field default menu ");
+    Controls::UninitTextFieldDefaultMenu();
     LOG_INFO("Starting to un-init AppCUI ...");
     app->Uninit();
     Log::Unit();
@@ -41,7 +43,7 @@ bool AppCUI::Application::Run()
     app = nullptr;
     return true;
 }
-bool AppCUI::Application::RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleApp> singleApp)
+bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
@@ -70,30 +72,30 @@ bool AppCUI::Application::RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleA
     app = nullptr;
     return true;
 }
-bool AppCUI::Application::GetApplicationSize(AppCUI::Graphics::Size& size)
+bool Application::GetApplicationSize(Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
     size.Width  = app->terminal->ScreenCanvas.GetWidth();
     size.Height = app->terminal->ScreenCanvas.GetHeight();
     return true;
 }
-bool AppCUI::Application::GetDesktopSize(AppCUI::Graphics::Size& size)
+bool Application::GetDesktopSize(Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
     app->AppDesktop->GetClientSize(size);
     return true;
 }
-void AppCUI::Application::ArrangeWindows(ArangeWindowsMethod method)
+void Application::ArrangeWindows(ArangeWindowsMethod method)
 {
     if (app)
         app->ArrangeWindows(method);
 }
-void AppCUI::Application::Close()
+void Application::Close()
 {
     if (app)
         app->Terminate();
 }
-ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandle referal)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
@@ -126,18 +128,17 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
                 auto h_key = (*winList)->GetHotKey();
                 if ((h_key & Key::Alt) != Key::None)
                 {
-                    h_key = h_key & ~((unsigned int) Key::Alt);
+                    h_key = h_key & ~((uint32) Key::Alt);
                     // Alt+0 will not be considered
-                    if ((((unsigned int) h_key) > ((unsigned int) Key::N0)) &&
-                        (((unsigned int) h_key) <= ((unsigned int) Key::N9)))
+                    if ((((uint32) h_key) > ((uint32) Key::N0)) && (((uint32) h_key) <= ((uint32) Key::N9)))
                     {
-                        v[((unsigned int) h_key) - ((unsigned int) Key::N0)] = true;
+                        v[((uint32) h_key) - ((uint32) Key::N0)] = true;
                     }
                 }
             }
         }
         // find first visible ID
-        for (unsigned int tr = 1; tr < 10; tr++)
+        for (uint32 tr = 1; tr < 10; tr++)
             if (!v[tr])
             {
                 wnd->SetHotKey('0' + tr);
@@ -145,65 +146,119 @@ ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, ItemHandl
             }
     }
     auto ptrWin = wnd.get();
-    CHECK(app->AppDesktop->AddControl<AppCUI::Controls::Window>(std::move(wnd)).IsValid(),
+    CHECK(app->AppDesktop->AddControl<Controls::Window>(std::move(wnd)).IsValid(),
           InvalidItemHandle,
           "Fail to add window to desktop !");
     ptrWin->SetFocus();
     return resultHandle;
 }
-ItemHandle AppCUI::Application::AddWindow(std::unique_ptr<Window> wnd, Window* referalWindow)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
 {
     if (!referalWindow)
-        return AppCUI::Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
     const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
     if (!winMembers)
-        return AppCUI::Application::AddWindow(std::move(wnd), InvalidItemHandle);
-    return AppCUI::Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
 }
-AppCUI::Controls::Menu* AppCUI::Application::AddMenu(const AppCUI::Utils::ConstString& name)
+Controls::Menu* Application::AddMenu(const ConstString& name)
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
     CHECK(app->menu, nullptr, "Application was not initialized with HAS_MENU option set up !");
-    ItemHandle itm                 = app->menu->AddMenu(name);
-    AppCUI::Controls::Menu* result = app->menu->GetMenu(itm);
+    ItemHandle itm         = app->menu->AddMenu(name);
+    Controls::Menu* result = app->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
     return result;
 }
 
-AppCUI::Application::Config* AppCUI::Application::GetAppConfig()
+Application::Config* Application::GetAppConfig()
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     return &app->config;
 }
-AppCUI::Utils::IniObject* AppCUI::Application::GetAppSettings()
+Utils::IniObject* Application::GetAppSettings()
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     return &app->settings;
 }
-void AppCUI::Application::RecomputeControlsLayout()
+bool Application::SaveAppSettings()
+{
+    CHECK(app, false, "Application has not been initialized !");
+    auto appPath = Application::GetAppSettingsFile();
+    CHECK(!appPath.empty(), false, "OS::GetCurrentApplicationPath failed !");
+    CHECK(app->settings.Save(appPath), false, "Fail to save ini setting to file: %s", appPath.string().c_str());
+    return true;
+}
+std::filesystem::path Application::GetAppSettingsFile()
+{
+    auto appPath = OS::GetCurrentApplicationPath();
+    CHECK(!appPath.empty(), appPath, "OS::GetCurrentApplicationPath failed !");
+    appPath.replace_extension(".ini");
+    return appPath;
+}
+void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExistingSettings)
+{
+    auto sect = ini["AppCUI"];
+    if (clearExistingSettings)
+        sect.Clear();
+    sect.UpdateValue("Frontend", "default", true);
+    sect.UpdateValue("Size", "default", true);
+    sect.UpdateValue("CharacterSize", "default", true);
+    sect.UpdateValue("Fixed", "default", true);
+}
+bool Application::UpdateAppCUISettings(bool clearExistingSettings)
+{
+    CHECK(app, false, "Application has not been initialized !");
+    UpdateAppCUISettings(app->settings, clearExistingSettings);
+    return true;
+}
+void Application::RecomputeControlsLayout()
 {
     app->ComputePositions();
 }
-void AppCUI::Application::Repaint()
+void Application::Repaint()
 {
     app->Paint();
 }
-void AppCUI::Application::RaiseEvent(
-      AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
-      AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
-      AppCUI::Controls::Event eventType,
+void Application::RaiseEvent(
+      Utils::Reference<Controls::Control> control,
+      Utils::Reference<Controls::Control> sourceControl,
+      Controls::Event eventType,
       int controlID)
 {
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
 
-AppCUI::Internal::Application* AppCUI::Application::GetApplication()
+ApplicationImpl* Application::GetApplication()
 {
     return app;
 }
+Controls::Control* GetFocusedControl(Controls::Control* ctrl);
+void UpdateCommandBar()
+{
+    if (!app->cmdBar)
+        return;
+    app->cmdBar->Clear();
+    Controls::Control* obj;
+    if (app->ModalControlsCount == 0)
+        obj = GetFocusedControl(app->AppDesktop);
+    else
+        obj = GetFocusedControl(app->ModalControlsStack[app->ModalControlsCount - 1]);
+    while (obj != nullptr)
+    {
+        // on handler
+        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
+            break;
 
-void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& renderer, bool focused)
+        obj = ((ControlContext*) (obj->Context))->Parent;
+    }
+    // restore hover if case
+    bool repaint;
+    app->cmdBar->OnMouseMove(app->LastMouseX, app->LastMouseY, repaint);
+    app->cmdBarUpdate = false;
+}
+void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool focused)
 {
     CHECKRET(ctrl != nullptr, "");
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
@@ -223,6 +278,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
                 Members->handlers->OnFocus.obj->OnFocus(ctrl);
             else
                 ctrl->OnFocus();
+            app->cmdBarUpdate = true;
         }
         else
         {
@@ -234,7 +290,6 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
             if (ctrl == app->ExpandedControl)
                 app->PackControl(false);
         }
-        
     }
     // put the other clip
     if (ctrl == app->ExpandedControl)
@@ -283,7 +338,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     if (idx >= cnt)
     {
         // no selected control ==> draw all of them
-        for (unsigned int tr = 0; tr < cnt; tr++)
+        for (uint32 tr = 0; tr < cnt; tr++)
         {
             PaintControl(Members->Controls[tr], renderer, false);
         }
@@ -291,7 +346,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
     else
     {
         // one control is selected (paint controls that are not focused)
-        for (unsigned int tr = 1; tr < cnt; tr++)
+        for (uint32 tr = 1; tr < cnt; tr++)
         {
             PaintControl(Members->Controls[(tr + idx) % cnt], renderer, false);
         }
@@ -300,7 +355,7 @@ void PaintControl(AppCUI::Controls::Control* ctrl, AppCUI::Graphics::Renderer& r
         PaintControl(Members->Controls[idx], renderer, focused);
     }
 }
-void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& renderer, bool activ)
+void PaintMenu(Controls::Menu* menu, Graphics::Renderer& renderer, bool activ)
 {
     if (!menu)
         return;
@@ -316,7 +371,7 @@ void PaintMenu(AppCUI::Controls::Menu* menu, AppCUI::Graphics::Renderer& rendere
           menuContext->ScreenClip.ScreenPosition.X, menuContext->ScreenClip.ScreenPosition.Y);
     menuContext->Paint(renderer, activ);
 }
-void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
+void ComputeControlLayout(Graphics::Clip& parentClip, Control* ctrl)
 {
     if (ctrl == nullptr)
         return;
@@ -335,7 +390,7 @@ void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
         }
     }
     // calculez clip-ul client
-    AppCUI::Graphics::Clip client;
+    Graphics::Clip client;
     client.Set(
           parentClip,
           Members->Layout.X + Members->Margins.Left,
@@ -343,17 +398,17 @@ void ComputeControlLayout(AppCUI::Graphics::Clip& parentClip, Control* ctrl)
           Members->Layout.Width - (Members->Margins.Right + Members->Margins.Left),
           Members->Layout.Height - (Members->Margins.Bottom + Members->Margins.Top));
     // calculez pentru fiecare copil
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         ComputeControlLayout(client, Members->Controls[tr]);
 }
-void DestroyControl(AppCUI::Controls::Control* ctrl)
+void DestroyControl(Controls::Control* ctrl)
 {
     if (!ctrl)
         return;
     auto Members = reinterpret_cast<ControlContext*>(ctrl->Context);
     if (Members)
     {
-        for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         {
             DestroyControl(Members->Controls[tr]);
         }
@@ -361,7 +416,7 @@ void DestroyControl(AppCUI::Controls::Control* ctrl)
     }
     delete ctrl;
 }
-bool ProcessUpdateFrameEvent(AppCUI::Controls::Control* ctrl)
+bool ProcessUpdateFrameEvent(Controls::Control* ctrl)
 {
     CREATE_CONTROL_CONTEXT(ctrl, Members, false);
     if ((Members->Flags & (GATTR_VISIBLE | GATTR_ENABLE)) != (GATTR_VISIBLE | GATTR_ENABLE))
@@ -379,7 +434,7 @@ bool ProcessUpdateFrameEvent(AppCUI::Controls::Control* ctrl)
     }
     return res;
 }
-AppCUI::Controls::Control* RecursiveCoordinatesToControl(AppCUI::Controls::Control* ctrl, int x, int y)
+Controls::Control* RecursiveCoordinatesToControl(Controls::Control* ctrl, int x, int y)
 {
     if (ctrl == nullptr)
         return nullptr;
@@ -395,10 +450,10 @@ AppCUI::Controls::Control* RecursiveCoordinatesToControl(AppCUI::Controls::Contr
     // controlul e ok - verific acuma pentru copii
     if (Members->ControlsCount > 0)
     {
-        unsigned int idx = Members->CurrentControlIndex;
+        uint32 idx = Members->CurrentControlIndex;
         if (idx >= Members->ControlsCount)
             idx = 0;
-        for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         {
             Control* res = RecursiveCoordinatesToControl(Members->Controls[idx], x, y);
             if (res != nullptr)
@@ -412,7 +467,7 @@ AppCUI::Controls::Control* RecursiveCoordinatesToControl(AppCUI::Controls::Contr
     return ctrl;
 }
 
-AppCUI::Controls::Control* CoordinatesToControl(AppCUI::Controls::Control* ctrl, int x, int y)
+Controls::Control* CoordinatesToControl(Controls::Control* ctrl, int x, int y)
 {
     if (app->ExpandedControl)
     {
@@ -425,7 +480,7 @@ AppCUI::Controls::Control* CoordinatesToControl(AppCUI::Controls::Control* ctrl,
     return RecursiveCoordinatesToControl(ctrl, x, y);
 }
 
-AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl)
+Controls::Control* GetFocusedControl(Controls::Control* ctrl)
 {
     if (ctrl == nullptr)
         return nullptr;
@@ -445,26 +500,12 @@ AppCUI::Controls::Control* GetFocusedControl(AppCUI::Controls::Control* ctrl)
     // altfel nici un copil nu e ok - cer eu
     return ctrl;
 }
-void UpdateCommandBar(AppCUI::Controls::Control* obj)
-{
-    if (!app->cmdBar)
-        return;
-    app->cmdBar->Clear();
-    while (obj != nullptr)
-    {
-        // on handler
-        if (obj->OnUpdateCommandBar(app->CommandBarWrapper) == true)
-            break;
 
-        obj = ((ControlContext*) (obj->Context))->Parent;
-    }
-    app->RepaintStatus |= REPAINT_STATUS_DRAW;
-}
-
-AppCUI::Internal::Application::Application()
+ApplicationImpl::ApplicationImpl()
 {
     this->terminal           = nullptr;
     this->Inited             = false;
+    this->cmdBarUpdate       = true;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
     this->ExpandedControl    = nullptr;
@@ -474,13 +515,15 @@ AppCUI::Internal::Application::Application()
     this->LoopStatus         = LOOP_STATUS_NORMAL;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
-    this->InitFlags          = AppCUI::Application::InitializationFlags::None;
+    this->InitFlags          = Application::InitializationFlags::None;
+    this->LastMouseX         = -1;
+    this->LastMouseY         = -1;
 }
-AppCUI::Internal::Application::~Application()
+ApplicationImpl::~ApplicationImpl()
 {
     this->Destroy();
 }
-void AppCUI::Internal::Application::Destroy()
+void ApplicationImpl::Destroy()
 {
     this->Inited             = false;
     this->MouseLockedControl = nullptr;
@@ -491,9 +534,9 @@ void AppCUI::Internal::Application::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
 }
-void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::InitializationData& initData)
+void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData)
 {
-    auto appPath = AppCUI::OS::GetCurrentApplicationPath();
+    auto appPath = OS::GetCurrentApplicationPath();
     if (appPath.empty())
     {
         LOG_WARNING("OS::GetCurrentApplicationPath failed (without current application path, path to settings file can "
@@ -526,30 +569,30 @@ void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::Initia
     if (frontend)
     {
         if (String::Equals(frontend, "default", true))
-            initData.Frontend = AppCUI::Application::FrontendType::Default;
+            initData.Frontend = Application::FrontendType::Default;
         else if (String::Equals(frontend, "SDL", true))
-            initData.Frontend = AppCUI::Application::FrontendType::SDL;
+            initData.Frontend = Application::FrontendType::SDL;
         else if (String::Equals(frontend, "terminal", true))
-            initData.Frontend = AppCUI::Application::FrontendType::Terminal;
+            initData.Frontend = Application::FrontendType::Terminal;
         else if (String::Equals(frontend, "windows", true))
-            initData.Frontend = AppCUI::Application::FrontendType::WindowsConsole;
+            initData.Frontend = Application::FrontendType::WindowsConsole;
     }
 
     // character size
     if (charSize)
     {
         if (String::Equals(charSize, "default", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Default;
+            initData.CharSize = Application::CharacterSize::Default;
         else if (String::Equals(charSize, "tiny", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Tiny;
+            initData.CharSize = Application::CharacterSize::Tiny;
         else if (String::Equals(charSize, "small", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Small;
+            initData.CharSize = Application::CharacterSize::Small;
         else if (String::Equals(charSize, "normal", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Normal;
+            initData.CharSize = Application::CharacterSize::Normal;
         else if (String::Equals(charSize, "large", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Large;
+            initData.CharSize = Application::CharacterSize::Large;
         else if (String::Equals(charSize, "huge", true))
-            initData.CharSize = AppCUI::Application::CharacterSize::Huge;
+            initData.CharSize = Application::CharacterSize::Huge;
     }
 
     // terminal size
@@ -557,9 +600,9 @@ void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::Initia
     if (s_terminalSize)
     {
         if (String::Equals(s_terminalSize, "fullscreen", true))
-            initData.Flags |= AppCUI::Application::InitializationFlags::Fullscreen;
+            initData.Flags |= Application::InitializationFlags::Fullscreen;
         else if (String::Equals(s_terminalSize, "maximized", true))
-            initData.Flags |= AppCUI::Application::InitializationFlags::Maximized;
+            initData.Flags |= Application::InitializationFlags::Maximized;
         else
         {
             auto termSize = terminalSize.AsSize();
@@ -573,22 +616,21 @@ void AppCUI::Internal::Application::LoadSettingsFile(AppCUI::Application::Initia
 
     // fixed size
     if (fixedWindows)
-        initData.Flags |= AppCUI::Application::InitializationFlags::FixedSize;
+        initData.Flags |= Application::InitializationFlags::FixedSize;
 
     // all good
 }
-bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData& initData)
+bool ApplicationImpl::Init(Application::InitializationData& initData)
 {
     CHECK(!this->Inited, false, "Application has already been initialized !");
 
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::LoadSettingsFile) !=
-        AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {
         LoadSettingsFile(initData);
     }
 
     LOG_INFO("Starting AppCUI ...");
-    LOG_INFO("Flags           = %08X", (unsigned int) initData.Flags);
+    LOG_INFO("Flags           = %08X", (uint32) initData.Flags);
     LOG_INFO("Requested Size  = %d x %d", initData.Width, initData.Height);
 
     // create the frontend
@@ -597,18 +639,16 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
           "Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 
     // configur other objects and settings
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::CommandBar) !=
-        AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
     {
-        this->cmdBar = std::make_unique<AppCUI::Internal::CommandBarController>(
+        this->cmdBar = std::make_unique<Internal::CommandBarController>(
               this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
         this->CommandBarWrapper.Init(this->cmdBar.get());
     }
     // configure menu
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
-        AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & Application::InitializationFlags::Menu) != Application::InitializationFlags::None)
     {
-        this->menu = std::make_unique<AppCUI::Internal::MenuBar>();
+        this->menu = std::make_unique<Internal::MenuBar>();
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
     }
 
@@ -617,16 +657,14 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     if (initData.CustomDesktopConstructor)
         this->AppDesktop = initData.CustomDesktopConstructor();
     else
-        this->AppDesktop = AppCUI::Controls::Factory::Desktop::Create().release();
+        this->AppDesktop = Controls::Factory::Desktop::Create().release();
 
     CHECK(this->AppDesktop->Resize(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
           false,
           "");
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::Menu) !=
-        AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & Application::InitializationFlags::Menu) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
-    if ((initData.Flags & AppCUI::Application::InitializationFlags::CommandBar) !=
-        AppCUI::Application::InitializationFlags::None)
+    if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
     LoopStatus         = LOOP_STATUS_NORMAL;
@@ -642,7 +680,7 @@ bool AppCUI::Internal::Application::Init(AppCUI::Application::InitializationData
     LOG_INFO("AppCUI initialized succesifully");
     return true;
 }
-void AppCUI::Internal::Application::Paint()
+void ApplicationImpl::Paint()
 {
     this->terminal->ScreenCanvas.Reset();
     // controalele
@@ -650,8 +688,8 @@ void AppCUI::Internal::Application::Paint()
     if (ModalControlsCount > 0)
     {
         PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, false);
-        unsigned int tmp = ModalControlsCount - 1;
-        for (unsigned int tr = 0; tr < tmp; tr++)
+        uint32 tmp = ModalControlsCount - 1;
+        for (uint32 tr = 0; tr < tmp; tr++)
             PaintControl(ModalControlsStack[tr], this->terminal->ScreenCanvas, false);
         this->terminal->ScreenCanvas.DarkenScreen();
         PaintControl(ModalControlsStack[ModalControlsCount - 1], this->terminal->ScreenCanvas, true);
@@ -683,15 +721,15 @@ void AppCUI::Internal::Application::Paint()
         this->ToolTip.Paint(this->terminal->ScreenCanvas);
     }
 }
-void AppCUI::Internal::Application::ComputePositions()
+void ApplicationImpl::ComputePositions()
 {
-    AppCUI::Graphics::Clip full;
+    Graphics::Clip full;
     full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
     ComputeControlLayout(full, this->AppDesktop);
-    for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
+    for (uint32 tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
 }
-void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, char16_t unicodeCharacter)
+void ApplicationImpl::ProcessKeyPress(Input::Key KeyCode, char16 unicodeCharacter)
 {
     Reference<Control> ctrl = nullptr;
 
@@ -755,7 +793,7 @@ void AppCUI::Internal::Application::ProcessKeyPress(AppCUI::Input::Key KeyCode, 
         }
     }
 }
-void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu* mnu, int x, int y)
+void ApplicationImpl::ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y)
 {
     auto* mcx                 = reinterpret_cast<MenuContext*>(mnu->Context);
     MousePressedResult result = MousePressedResult::None;
@@ -790,7 +828,7 @@ void AppCUI::Internal::Application::ProcessMenuMouseClick(AppCUI::Controls::Menu
         break;
     }
 }
-bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
+bool ApplicationImpl::ProcessMenuAndCmdBarMouseMove(int x, int y)
 {
     bool processed = false;
     bool repaint   = false;
@@ -828,7 +866,7 @@ bool AppCUI::Internal::Application::ProcessMenuAndCmdBarMouseMove(int x, int y)
 
     return processed;
 }
-void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::MouseButton button)
+void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
 {
     // Hide ToolTip
     this->ToolTip.Hide();
@@ -877,7 +915,7 @@ void AppCUI::Internal::Application::OnMouseDown(int x, int y, AppCUI::Input::Mou
     // else no object locked
     MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
 }
-void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::MouseButton button)
+void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
 {
     int commandID;
     switch (MouseLockedObject)
@@ -901,9 +939,11 @@ void AppCUI::Internal::Application::OnMouseUp(int x, int y, AppCUI::Input::Mouse
     MouseLockedControl = nullptr;
     MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
 }
-void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::MouseButton button)
+void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
 {
-    AppCUI::Controls::Control* ctrl;
+    Controls::Control* ctrl;
+    LastMouseX = x;
+    LastMouseY = y;
     switch (MouseLockedObject)
     {
     case MOUSE_LOCKED_OBJECT_ACCELERATOR:
@@ -962,7 +1002,7 @@ void AppCUI::Internal::Application::OnMouseMove(int x, int y, AppCUI::Input::Mou
         break;
     }
 }
-void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction)
+void ApplicationImpl::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
     if (this->VisibleMenu)
     {
@@ -973,7 +1013,7 @@ void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::Mo
     }
     if (MouseLockedObject != MOUSE_LOCKED_OBJECT_NONE)
         return;
-    AppCUI::Controls::Control* ctrl;
+    Controls::Control* ctrl;
     if (ModalControlsCount == 0)
         ctrl = CoordinatesToControl(this->AppDesktop, x, y);
     else
@@ -985,7 +1025,7 @@ void AppCUI::Internal::Application::OnMouseWheel(int x, int y, AppCUI::Input::Mo
             RepaintStatus |= REPAINT_STATUS_DRAW;
     }
 }
-void AppCUI::Internal::Application::PackControl(bool redraw)
+void ApplicationImpl::PackControl(bool redraw)
 {
     if (!this->ExpandedControl)
         return;
@@ -996,7 +1036,7 @@ void AppCUI::Internal::Application::PackControl(bool redraw)
     if (redraw)
         this->RepaintStatus = REPAINT_STATUS_ALL;
 }
-bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctrl)
+bool ApplicationImpl::ExpandControl(Controls::Control* ctrl)
 {
     CHECK(ctrl, false, "Expecting a valid (non-null) control !");
     if (this->ExpandedControl != nullptr)
@@ -1011,7 +1051,7 @@ bool AppCUI::Internal::Application::ExpandControl(AppCUI::Controls::Control* ctr
     this->RepaintStatus = REPAINT_STATUS_DRAW;
     return true;
 }
-void AppCUI::Internal::Application::CloseContextualMenu()
+void ApplicationImpl::CloseContextualMenu()
 {
     if (this->VisibleMenu)
     {
@@ -1023,7 +1063,7 @@ void AppCUI::Internal::Application::CloseContextualMenu()
     this->VisibleMenu = nullptr;
     this->RepaintStatus |= REPAINT_STATUS_DRAW;
 }
-void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* mnu)
+void ApplicationImpl::ShowContextualMenu(Controls::Menu* mnu)
 {
     if (this->VisibleMenu != mnu)
     {
@@ -1031,14 +1071,14 @@ void AppCUI::Internal::Application::ShowContextualMenu(AppCUI::Controls::Menu* m
         this->RepaintStatus |= REPAINT_STATUS_ALL;
     }
 }
-void AppCUI::Internal::Application::ProcessShiftState(AppCUI::Input::Key ShiftState)
+void ApplicationImpl::ProcessShiftState(Input::Key ShiftState)
 {
     if ((this->cmdBar) && (this->cmdBar->SetShiftKey(ShiftState)))
         RepaintStatus |= REPAINT_STATUS_DRAW;
 }
-bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
+bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
 {
-    AppCUI::Internal::SystemEvent evnt;
+    Internal::SystemEvent evnt;
     RepaintStatus            = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
@@ -1056,11 +1096,8 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         ModalControlsStack[ModalControlsCount] = ctrl;
         ModalControlsCount++;
     }
-    // update la acceleratori
-    if (ModalControlsCount == 0)
-        UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-    else
-        UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+    // update command bar
+    UpdateCommandBar();
 
     while (LoopStatus == LOOP_STATUS_NORMAL)
     {
@@ -1079,6 +1116,11 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
             }
             toDelete.clear();
         }
+        if (this->cmdBarUpdate)
+        {
+            UpdateCommandBar();
+            RepaintStatus |= REPAINT_STATUS_DRAW;
+        }
         if (RepaintStatus != REPAINT_STATUS_NONE)
         {
             if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
@@ -1090,8 +1132,10 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
                 // pentru cazul in care OnFocus sau OnLoseFocus schimba repaint status
                 if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
                     ComputePositions();
+                if (this->cmdBarUpdate)
+                    UpdateCommandBar();
                 if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
-                    Paint();
+                    this->Paint();
                 this->terminal->Update();
             }
             RepaintStatus = REPAINT_STATUS_NONE;
@@ -1101,7 +1145,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
         {
             if (ProcessUpdateFrameEvent(this->AppDesktop))
                 this->RepaintStatus |= REPAINT_STATUS_DRAW;
-            for (unsigned int tr = 0; tr < ModalControlsCount; tr++)
+            for (uint32 tr = 0; tr < ModalControlsCount; tr++)
                 if (ProcessUpdateFrameEvent(this->ModalControlsStack[tr]))
                     this->RepaintStatus |= REPAINT_STATUS_DRAW;
         }
@@ -1154,10 +1198,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     {
         if (ModalControlsCount > 0)
             ModalControlsCount--;
-        if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-        else
-            UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+        UpdateCommandBar();
         if (this->MouseOverControl)
         {
             ((ControlContext*) (MouseOverControl->Context))->MouseIsOver = false;
@@ -1177,7 +1218,7 @@ bool AppCUI::Internal::Application::ExecuteEventLoop(Control* ctrl)
     PackControl(true);
     return true;
 }
-void AppCUI::Internal::Application::SendCommand(int command)
+void ApplicationImpl::SendCommand(int command)
 {
     Control* ctrl = nullptr;
 
@@ -1188,19 +1229,14 @@ void AppCUI::Internal::Application::SendCommand(int command)
 
     if (ctrl != nullptr)
     {
-        RaiseEvent(ctrl, nullptr, AppCUI::Controls::Event::Command, command);
-        // refac si command bar-ul
-        // update la acceleratori
-        if (ModalControlsCount == 0)
-            UpdateCommandBar(GetFocusedControl(this->AppDesktop));
-        else
-            UpdateCommandBar(GetFocusedControl(ModalControlsStack[ModalControlsCount - 1]));
+        RaiseEvent(ctrl, nullptr, Controls::Event::Command, command);
+        this->cmdBarUpdate = true;
     }
 }
-void AppCUI::Internal::Application::RaiseEvent(
-      Reference<AppCUI::Controls::Control> control,
-      Reference<AppCUI::Controls::Control> sourceControl,
-      AppCUI::Controls::Event eventType,
+void ApplicationImpl::RaiseEvent(
+      Reference<Controls::Control> control,
+      Reference<Controls::Control> sourceControl,
+      Controls::Event eventType,
       int controlID)
 {
     while (control != nullptr)
@@ -1236,13 +1272,11 @@ void AppCUI::Internal::Application::RaiseEvent(
         control = control->GetParent();
     }
 }
-bool AppCUI::Internal::Application::SetToolTip(
-      AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text)
+bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text)
 {
     return SetToolTip(control, text, -1, -1);
 }
-bool AppCUI::Internal::Application::SetToolTip(
-      AppCUI::Controls::Control* control, const AppCUI::Utils::ConstString& text, int x, int y)
+bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text, int x, int y)
 {
     if (!control)
         control = this->AppDesktop;
@@ -1252,7 +1286,7 @@ bool AppCUI::Internal::Application::SetToolTip(
     if (!Members->ScreenClip.Visible)
         return false;
     // all good
-    AppCUI::Graphics::Rect r;
+    Graphics::Rect r;
     // compute point or rect
     if ((x >= 0) && (y >= 0)) // point coordonates
     {
@@ -1292,18 +1326,18 @@ bool AppCUI::Internal::Application::SetToolTip(
     return this->ToolTip.Show(
           text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
 }
-void AppCUI::Internal::Application::Terminate()
+void ApplicationImpl::Terminate()
 {
     LoopStatus = LOOP_STATUS_STOP_APP;
 }
-bool AppCUI::Internal::Application::Uninit()
+bool ApplicationImpl::Uninit()
 {
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
     this->terminal->Uninit();
     this->Inited = false;
     return true;
 }
-void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWindowsMethod method)
+void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
 {
     auto winList      = this->AppDesktop->GetChildrenList();
     auto winListCount = this->AppDesktop->GetChildrenCount();
@@ -1319,7 +1353,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     int gridWinWidth  = 0;
     int gridWinHeight = 0;
 
-    AppCUI::Graphics::Size sz;
+    Graphics::Size sz;
     this->AppDesktop->GetClientSize(sz);
 
     if (winListCount == 0)
@@ -1332,7 +1366,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
     // do the actual arrangement
     switch (method)
     {
-    case AppCUI::Application::ArangeWindowsMethod::MaximizedAll:
+    case Application::ArangeWindowsMethod::MaximizedAll:
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
@@ -1341,7 +1375,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             winListCount--;
         }
         break;
-    case AppCUI::Application::ArangeWindowsMethod::Cascade:
+    case Application::ArangeWindowsMethod::Cascade:
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
@@ -1354,7 +1388,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             winListCount--;
         }
         break;
-    case AppCUI::Application::ArangeWindowsMethod::Vertical:
+    case Application::ArangeWindowsMethod::Vertical:
         tempSz = sz.Width / winListCount;
         while (winListCount > 0)
         {
@@ -1367,7 +1401,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             winList++;
         }
         break;
-    case AppCUI::Application::ArangeWindowsMethod::Horizontal:
+    case Application::ArangeWindowsMethod::Horizontal:
         tempSz = sz.Height / winListCount;
         while (winListCount > 0)
         {
@@ -1380,7 +1414,7 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
             winList++;
         }
         break;
-    case AppCUI::Application::ArangeWindowsMethod::Grid:
+    case Application::ArangeWindowsMethod::Grid:
         tempSz = (int) sqrt(winListCount);
         tempSz = std::max<>(tempSz, 1);
         gridX  = tempSz;
@@ -1424,3 +1458,4 @@ void AppCUI::Internal::Application::ArrangeWindows(AppCUI::Application::ArangeWi
 
     this->RepaintStatus = REPAINT_STATUS_ALL;
 }
+} // namespace AppCUI

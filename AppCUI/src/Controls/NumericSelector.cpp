@@ -1,34 +1,31 @@
 #include "AppCUI.hpp"
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
-
-namespace AppCUI::Controls
+namespace AppCUI
 {
-NumericSelector::NumericSelector(
-      const long long minValue, const long long maxValue, long long value, std::string_view layout)
+NumericSelector::NumericSelector(int64 minValue, int64 maxValue, int64 value, string_view layout)
     : Control(new NumericSelectorControlContext(), "", layout, true)
 {
-    auto Members              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
-    Members->Layout.MinHeight = 1;
-    Members->Layout.MaxHeight = 1;
-    Members->Layout.MinWidth  = 10;
-    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    Members->minValue         = minValue;
-    Members->maxValue         = maxValue;
+    auto cc              = reinterpret_cast<NumericSelectorControlContext*>(this->Context);
+    cc->Layout.MinHeight = 1;
+    cc->Layout.MaxHeight = 1;
+    cc->Layout.MinWidth  = 10;
+    cc->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    cc->minValue         = minValue;
+    cc->maxValue         = maxValue;
+    cc->instance         = this;
 
-    this->SetValue(value);
+    SetValue(value);
 }
 
-long long NumericSelector::GetValue() const
+int64 NumericSelector::GetValue() const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
     return cc->value;
 }
 
-void NumericSelector::SetValue(const long long value)
+void NumericSelector::SetValue(int64 value)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -49,7 +46,7 @@ void NumericSelector::SetValue(const long long value)
     RaiseEvent(Event::NumericSelectorValueChanged);
 }
 
-void NumericSelector::SetMinValue(const long long minValue)
+void NumericSelector::SetMinValue(int64 minValue)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -59,7 +56,7 @@ void NumericSelector::SetMinValue(const long long minValue)
     SetValue(std::min<>(std::max<>(cc->value, minValue), cc->maxValue));
 }
 
-void NumericSelector::SetMaxValue(const long long maxValue)
+void NumericSelector::SetMaxValue(int64 maxValue)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -75,7 +72,7 @@ void NumericSelector::Paint(Renderer& renderer)
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
 
     ColorPair color{};
-    CHECKRET(GetRenderColor(color), "");
+    CHECKRET(cc->GetRenderColor(color), "");
 
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
@@ -86,9 +83,9 @@ void NumericSelector::Paint(Renderer& renderer)
     params.Width = cc->Layout.Width - (cc->buttonPadding * 2) - 2;
     params.Color = color;
 
-    CHECKRET(FormatTextField(), "");
+    CHECKRET(cc->FormatTextField(), "");
 
-    if (MinValueReached() && cc->intoInsertionMode == false)
+    if (cc->MinValueReached() && cc->intoInsertionMode == false)
     {
         renderer.WriteSingleLineText(0, 0, " - ", cc->Cfg->NumericSelector.Text.Inactive);
     }
@@ -103,10 +100,10 @@ void NumericSelector::Paint(Renderer& renderer)
     if (cc->isMouseLeftClickPressed)
     {
         renderer.WriteCharacter(
-              static_cast<int>(cc->sliderPosition + cc->buttonPadding), 0, -1, cc->Cfg->NumericSelector.Text.Hover);
+              static_cast<int32>(cc->sliderPosition + cc->buttonPadding), 0, -1, cc->Cfg->NumericSelector.Text.Hover);
     }
 
-    if (MaxValueReached() && cc->intoInsertionMode == false)
+    if (cc->MaxValueReached() && cc->intoInsertionMode == false)
     {
         renderer.WriteSingleLineText(
               cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", cc->Cfg->NumericSelector.Text.Inactive);
@@ -119,20 +116,20 @@ void NumericSelector::Paint(Renderer& renderer)
     switch (cc->isMouseOn)
     {
     case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        if (MinValueReached() == false)
+        if (cc->MinValueReached() == false)
         {
             renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Text.Hover);
         }
         break;
     case NumericSelectorControlContext::IsMouseOn::PlusButton:
-        if (MaxValueReached() == false)
+        if (cc->MaxValueReached() == false)
         {
             renderer.FillHorizontalLine(
                   GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Text.Hover);
         }
         break;
     case NumericSelectorControlContext::IsMouseOn::TextField:
-        if (static_cast<int>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
+        if (static_cast<int32>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
         {
             ShowToolTip(cc->stringValue.GetText());
         }
@@ -147,7 +144,7 @@ void NumericSelector::Paint(Renderer& renderer)
     }
 }
 
-bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
+bool NumericSelector::OnKeyEvent(Key keyCode, char16 unicodeChar)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -190,7 +187,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         if (cc->intoInsertionMode)
         {
             cc->intoInsertionMode = false;
-            if (IsValueInsertedWrong() == false)
+            if (cc->IsValueInsertedWrong() == false)
             {
                 SetValue(cc->insertionModevalue);
             }
@@ -232,7 +229,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
 
         cc->intoInsertionMode = true;
-        int toAdd             = static_cast<int>(keyCode) - static_cast<int>(Key::N0);
+        auto toAdd            = static_cast<int32>(keyCode) - static_cast<int32>(Key::N0);
         if (cc->insertionModevalue < 0)
         {
             toAdd *= -1;
@@ -248,12 +245,12 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         return true;
 
     case Key::Ctrl | Key::C:
-        AppCUI::OS::Clipboard::SetText(cc->stringValue.GetText());
+        OS::Clipboard::SetText(cc->stringValue.GetText());
         return true;
     case Key::Ctrl | Key::V:
     {
         LocalUnicodeStringBuilder<256> b{};
-        AppCUI::OS::Clipboard::GetText(b);
+        OS::Clipboard::GetText(b);
         const std::string output(b);
 
         if (output.empty())
@@ -262,7 +259,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
         }
         else
         {
-            const std::optional<long long> value = Number::ToUInt64(output);
+            const optional<int64> value = Number::ToUInt64(output);
             if (value.has_value())
             {
                 cc->insertionModevalue = value.value();
@@ -278,15 +275,13 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16_t unicodeChar)
 
     case Key::PageUp:
     {
-        const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+        const auto percentFive = static_cast<int64>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value + percentFive);
     }
         return true;
     case Key::PageDown:
     {
-        const auto percentFive =
-              static_cast<long long>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
+        const auto percentFive = static_cast<int64>(std::max<>(std::abs((cc->maxValue - cc->minValue) / 20LL), 1LL));
         SetValue(cc->value - percentFive);
     }
         return true;
@@ -329,7 +324,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
     {
     case MouseButton::Left:
     case MouseButton::Left | MouseButton::DoubleClicked:
-        if (IsOnMinusButton(x, y) == false && IsOnPlusButton(x, y) == false)
+        if (cc->IsOnMinusButton(x, y) == false && cc->IsOnPlusButton(x, y) == false)
         {
             cc->isMouseLeftClickPressed = true;
             break;
@@ -340,7 +335,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
         }
 
         // height is always 1 constrained - y doesn't matter
-        if (IsOnMinusButton(x, y))
+        if (cc->IsOnMinusButton(x, y))
         {
             if (cc->intoInsertionMode)
             {
@@ -351,7 +346,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
                 SetValue(cc->value - 1);
             }
         }
-        else if (IsOnPlusButton(x, y))
+        else if (cc->IsOnPlusButton(x, y))
         {
             if (cc->intoInsertionMode)
             {
@@ -362,22 +357,22 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
                 SetValue(cc->value + 1);
             }
         }
-        else if (IsOnTextField(x, y))
+        else if (cc->IsOnTextField(x, y))
         {
-            const long long& max = cc->maxValue;
-            const long long& min = cc->minValue;
+            const int64& max = cc->maxValue;
+            const int64& min = cc->minValue;
 
-            const long long valueIntervalLength = max - min;
+            const int64 valueIntervalLength = max - min;
 
-            const long long& lowerBound = cc->buttonPadding;
-            const long long upperBound  = static_cast<long long>(this->GetWidth()) - cc->buttonPadding - 1LL;
+            const int64& lowerBound = cc->buttonPadding;
+            const int64 upperBound  = static_cast<int64>(this->GetWidth()) - cc->buttonPadding - 1LL;
 
-            const long long boundIntervalLength = upperBound - lowerBound;
+            const int64 boundIntervalLength = upperBound - lowerBound;
 
             cc->sliderPosition = x - lowerBound;
             const double ratio = static_cast<double>(cc->sliderPosition) / boundIntervalLength;
 
-            SetValue(min + static_cast<long long>(valueIntervalLength * ratio));
+            SetValue(min + static_cast<int64>(valueIntervalLength * ratio));
         }
         break;
     default:
@@ -439,7 +434,7 @@ bool NumericSelector::OnMouseLeave()
     return true;
 }
 
-bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button)
+bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -450,22 +445,22 @@ bool NumericSelector::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton butto
 
         // height is always 1 constrained - y doesn't matter
 
-        if (IsOnTextField(x, y) && cc->isMouseLeftClickPressed)
+        if (cc->IsOnTextField(x, y) && cc->isMouseLeftClickPressed)
         {
-            const long long& max = cc->maxValue;
-            const long long& min = cc->minValue;
+            const int64& max = cc->maxValue;
+            const int64& min = cc->minValue;
 
-            const long long valueIntervalLength = max - min;
+            const int64 valueIntervalLength = max - min;
 
-            const long long& lowerBound = cc->buttonPadding;
-            const long long upperBound  = static_cast<long long>(this->GetWidth()) - cc->buttonPadding - 1LL;
+            const int64& lowerBound = cc->buttonPadding;
+            const int64 upperBound  = static_cast<int64>(this->GetWidth()) - cc->buttonPadding - 1LL;
 
-            const long long boundIntervalLength = upperBound - lowerBound;
+            const int64 boundIntervalLength = upperBound - lowerBound;
 
             cc->sliderPosition = x - lowerBound;
             const double ratio = static_cast<double>(cc->sliderPosition) / boundIntervalLength;
 
-            SetValue(min + static_cast<long long>(valueIntervalLength * ratio));
+            SetValue(min + static_cast<int64>(valueIntervalLength * ratio));
 
             return true;
         }
@@ -485,15 +480,15 @@ bool NumericSelector::OnMouseOver(int x, int y)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    if (IsOnTextField(x, y))
+    if (cc->IsOnTextField(x, y))
     {
         cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::TextField;
     }
-    else if (IsOnMinusButton(x, y))
+    else if (cc->IsOnMinusButton(x, y))
     {
         cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::MinusButton;
     }
-    else if (IsOnPlusButton(x, y))
+    else if (cc->IsOnPlusButton(x, y))
     {
         cc->isMouseOn = NumericSelectorControlContext::IsMouseOn::PlusButton;
     }
@@ -504,35 +499,29 @@ bool NumericSelector::OnMouseOver(int x, int y)
     return true;
 }
 
-bool NumericSelector::IsValidValue(const long long) const
+bool NumericSelectorControlContext::IsValidValue(int64) const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return cc->minValue <= cc->insertionModevalue && cc->insertionModevalue <= cc->maxValue;
+    return minValue <= insertionModevalue && insertionModevalue <= maxValue;
 }
 
-bool NumericSelector::IsValueInsertedWrong() const
+bool NumericSelectorControlContext::IsValueInsertedWrong() const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return IsValidValue(cc->insertionModevalue) == false;
+    return IsValidValue(insertionModevalue) == false;
 }
 
-bool NumericSelector::GetRenderColor(Graphics::ColorPair& color) const
+bool NumericSelectorControlContext::GetRenderColor(Graphics::ColorPair& color) const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc     = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    const auto& nsCfg = cc->Cfg->NumericSelector;
+    const auto& nsCfg = Cfg->NumericSelector;
 
-    if (IsEnabled() == false)
+    if (instance->IsEnabled() == false)
     {
         color = nsCfg.Text.Inactive;
     }
-    else if (cc->intoInsertionMode && IsValueInsertedWrong())
+    else if (intoInsertionMode && IsValueInsertedWrong())
     {
         color = nsCfg.Text.WrongValue;
     }
-    else if (cc->Focused)
+    else if (Focused)
     {
         color = nsCfg.Text.Focused;
     }
@@ -544,59 +533,45 @@ bool NumericSelector::GetRenderColor(Graphics::ColorPair& color) const
     return true;
 }
 
-bool NumericSelector::FormatTextField()
+bool NumericSelectorControlContext::FormatTextField()
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-
-    if (cc->intoInsertionMode)
+    if (intoInsertionMode)
     {
-        if (cc->insertionModevalue != 0LL || cc->wasMinusPressed == false)
+        if (insertionModevalue != 0LL || wasMinusPressed == false)
         {
-            cc->stringValue.Format("%lld", cc->insertionModevalue);
+            stringValue.Format("%lld", insertionModevalue);
         }
     }
     else
     {
-        cc->stringValue.Format("%lld", cc->value);
+        stringValue.Format("%lld", value);
     }
 
     return true;
 }
 
-bool NumericSelector::IsOnMinusButton(const int x, const int) const
+bool NumericSelectorControlContext::IsOnMinusButton(int32 x, int32) const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return (x < cc->buttonPadding);
+    return x < buttonPadding;
 }
 
-bool NumericSelector::IsOnPlusButton(const int x, const int) const
+bool NumericSelectorControlContext::IsOnPlusButton(int32 x, int32) const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return (x > GetWidth() - cc->buttonPadding - 1);
+    return (x > instance->GetWidth() - buttonPadding - 1);
 }
 
-bool NumericSelector::IsOnTextField(const int x, const int) const
+bool NumericSelectorControlContext::IsOnTextField(int32 x, int32) const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return (x >= cc->buttonPadding && x < this->GetWidth() - cc->buttonPadding);
+    return (x >= buttonPadding && x < instance->GetWidth() - buttonPadding);
 }
 
-bool NumericSelector::MinValueReached() const
+bool NumericSelectorControlContext::MinValueReached() const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return cc->value == cc->minValue;
+    return value == minValue;
 }
 
-bool NumericSelector::MaxValueReached() const
+bool NumericSelectorControlContext::MaxValueReached() const
 {
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
-    return cc->value == cc->maxValue;
+    return value == maxValue;
 }
-
-} // namespace AppCUI::Controls
+} // namespace AppCUI

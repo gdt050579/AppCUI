@@ -12,7 +12,7 @@ using namespace AppCUI::Dialogs;
 #define BUTTON_ID_SHOW_WARNING      5
 
 class MyWin : public Window
-{   
+{
   public:
     MyWin() : Window("Message box example", "d:c,w:40,h:13", WindowFlags::None)
     {

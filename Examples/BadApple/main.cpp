@@ -11,10 +11,10 @@ using namespace AppCUI::Graphics;
 
 using namespace std::string_literals;
 
-constexpr unsigned int VIDEO_WIDTH    = 100;
-constexpr unsigned int VIDEO_HEIGHT   = 30;
-constexpr unsigned int BUTTON_ID_PLAY = 1;
-constexpr unsigned int BUTTON_ID_STOP = 2;
+constexpr uint32 VIDEO_WIDTH    = 100;
+constexpr uint32 VIDEO_HEIGHT   = 30;
+constexpr uint32 BUTTON_ID_PLAY = 1;
+constexpr uint32 BUTTON_ID_STOP = 2;
 
 class VideoScreen : public AppCUI::Controls::UserControl
 {
@@ -28,7 +28,7 @@ class VideoScreen : public AppCUI::Controls::UserControl
         if (currentFrame < frames.size())
         {
             renderer.Clear(' ', { Color::Transparent, Color::Transparent });
-            unsigned int y = 0;
+            uint32 y = 0;
             for (const auto& line : frames[currentFrame])
             {
                 renderer.WriteSingleLineText(0, y, line, { Color::White, Color::Transparent });
@@ -48,7 +48,7 @@ class VideoScreen : public AppCUI::Controls::UserControl
             currentFrame++;
             return true;
         }
-            
+
         return false;
     }
 
@@ -95,12 +95,12 @@ class BadApple : public AppCUI::Controls::Window
 
     void ReadAllFrames()
     {
-        unsigned int bytesRead            = 0;
+        uint32 bytesRead            = 0;
         char videoBuffer[VIDEO_WIDTH + 1] = { 0 };
         do
         {
             std::vector<std::string> frame;
-            for (unsigned int i = 0; i < VIDEO_HEIGHT; i++)
+            for (uint32 i = 0; i < VIDEO_HEIGHT; i++)
             {
                 txtFile.ReadBuffer(videoBuffer, VIDEO_WIDTH, bytesRead);
                 videoBuffer[VIDEO_WIDTH] = 0;

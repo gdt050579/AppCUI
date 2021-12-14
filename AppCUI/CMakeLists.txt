@@ -1,12 +1,25 @@
 include_directories(include)
-if (MSVC)
-    include_directories(include/Windows)
-elseif (UNIX)
-    include_directories(include/Unix)
-endif()
+include_directories(src)
 
 # Add libAppCUI
 add_library(AppCUI SHARED)
+
+#versioning
+file(READ "include/AppCUI.hpp" appcui_content)
+string(REGEX MATCH "#define APPCUI_VERSION \"([0-9]+.[0-9]+.[0-9]+)\"" _ ${appcui_content})
+set(APPCUI_VERSION ${CMAKE_MATCH_1})
+message("AppCUI version: ${APPCUI_VERSION}")
+
+set_target_properties(AppCUI PROPERTIES PREFIX "lib")
+set_target_properties(AppCUI PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
+
+if (MSVC)
+    set(WINRC_FOLDER "windows.rc")
+    message("Copy to ${WINRC_FOLDER}")
+    configure_file("resources/windows.rc.in" ${WINRC_FOLDER} @ONLY)  
+    target_sources(AppCUI PRIVATE ${WINRC_FOLDER})
+endif()
+
 
 # Add SDL
 include(FindSDL2)
@@ -56,7 +69,13 @@ target_link_libraries(AppCUI PRIVATE ${CURSES_LIBRARIES} ${SDL2_LIBRARY_RELEASE}
 endif()
 
 add_subdirectory(src)
+target_include_directories(AppCUI PRIVATE src/3rdPartyLibs/lodepng)
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
+
+# lodepng defines
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_ENCODER)
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_DISK)
+target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_ANCILLARY_CHUNKS)
 
 # Preserve source file paths in debug mode for shared lib
 if (DEBUG_BUILD)

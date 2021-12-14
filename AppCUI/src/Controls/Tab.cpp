@@ -1,85 +1,79 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
+#define TAB_DISPLAY_MODE_TOP    0
+#define TAB_DISPLAY_MODE_BOTTOM 1
+#define TAB_DISPLAY_MODE_LEFT   2
+#define TAB_DISPLAY_MODE_LIST   3
+#define TAB_DISPLAY_MODE_NOTABS 4
 
-enum class TabDisplay
+#define TAB_DISPLAY_MODE(flags) (((flags) >> 8) & 0xF)
+
+namespace AppCUI
 {
-    Top    = 0,
-    Bottom = 1,
-    Left   = 2,
-    List   = 3,
-    NoTabs = 4,
-};
-
-#define TAB_DISPLAY_MODE(flags) static_cast<TabDisplay>((((flags) >> 8) & 0xF))
-
 void TabControlContext::UpdateMargins()
 {
-    switch (TAB_DISPLAY_MODE(Flags))
+    switch (TAB_DISPLAY_MODE(this->Flags))
     {
-    case TabDisplay::Top:
-        Margins.Left = Margins.Right = Margins.Bottom = 0;
-        Margins.Top                                   = 1;
+    case TAB_DISPLAY_MODE_TOP:
+        this->Margins.Left = this->Margins.Right = this->Margins.Bottom = 0;
+        this->Margins.Top                                               = 1;
         break;
-    case TabDisplay::Bottom:
-        Margins.Left = Margins.Right = Margins.Top = 0;
-        Margins.Bottom                             = 1;
+    case TAB_DISPLAY_MODE_BOTTOM:
+        this->Margins.Left = this->Margins.Right = this->Margins.Top = 0;
+        this->Margins.Bottom                                         = 1;
         break;
-    case TabDisplay::Left:
-        Margins.Bottom = Margins.Right = Margins.Top = 0;
-        Margins.Left                                 = TabTitleSize;
+    case TAB_DISPLAY_MODE_LEFT:
+        this->Margins.Bottom = this->Margins.Right = this->Margins.Top = 0;
+        this->Margins.Left                                             = this->TabTitleSize;
         break;
-    case TabDisplay::List:
-        Margins.Left = Margins.Right = 0;
-        if (CurrentControlIndex < ControlsCount)
+    case TAB_DISPLAY_MODE_LIST:
+        this->Margins.Left = this->Margins.Right = 0;
+        if (this->CurrentControlIndex < this->ControlsCount)
         {
-            Margins.Top    = CurrentControlIndex + 1;
-            Margins.Bottom = ControlsCount - (CurrentControlIndex + 1);
+            this->Margins.Top    = this->CurrentControlIndex + 1;
+            this->Margins.Bottom = this->ControlsCount - (this->CurrentControlIndex + 1);
         }
         else
         {
-            Margins.Top    = ControlsCount;
-            Margins.Bottom = 0;
+            this->Margins.Top    = this->ControlsCount;
+            this->Margins.Bottom = 0;
         }
         break;
-    case TabDisplay::NoTabs:
-        Margins.Left = Margins.Right = Margins.Bottom = Margins.Top = 0;
+    case TAB_DISPLAY_MODE_NOTABS:
+        this->Margins.Left = this->Margins.Right = this->Margins.Bottom = this->Margins.Top = 0;
         break;
     default:
-        LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(Flags));
+        LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
         break;
     }
 }
-
 int TabControlContext::MousePositionToPanel(int x, int y)
 {
     int idx;
     switch (TAB_DISPLAY_MODE(this->Flags))
     {
-    case TabDisplay::Top:
+    case TAB_DISPLAY_MODE_TOP:
         if (y > 0)
             return -1;
         idx = (x - 1) / (this->TabTitleSize + 1);
         if (idx >= (int) this->ControlsCount)
             return -1;
         return idx;
-    case TabDisplay::Bottom:
+    case TAB_DISPLAY_MODE_BOTTOM:
         if (y < this->Layout.Height - 1)
             return -1;
         idx = (x - 1) / (this->TabTitleSize + 1);
         if (idx >= (int) this->ControlsCount)
             return -1;
         return idx;
-    case TabDisplay::Left:
+    case TAB_DISPLAY_MODE_LEFT:
         if ((x < 0) || (x > (int) this->TabTitleSize) || (y < 1))
             return -1;
         idx = y - 1;
         if (idx >= (int) this->ControlsCount)
             return -1;
         return idx;
-    case TabDisplay::List:
+    case TAB_DISPLAY_MODE_LIST:
         if (this->CurrentControlIndex >= this->ControlsCount)
             return -1;
         // assume top allignament
@@ -90,13 +84,12 @@ int TabControlContext::MousePositionToPanel(int x, int y)
         if ((idx > (int) this->CurrentControlIndex) && (idx >= 0))
             return idx;
         return -1;
-    case TabDisplay::NoTabs:
+    case TAB_DISPLAY_MODE_NOTABS:
         return -1; // no tabs to click on
     }
     LOG_ERROR("Unknwon TAB display mode: %d", TAB_DISPLAY_MODE(this->Flags));
     return -1;
 }
-
 void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, bool onTop)
 {
     WriteTextParams params(
@@ -153,7 +146,6 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
         renderer.WriteText(cc->Text, params);
     }
 }
-
 void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
@@ -173,7 +165,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
     params.Width = this->TabTitleSize - 2;
     params.X     = 1;
 
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < this->ControlsCount; tr++)
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -202,7 +194,6 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
         renderer.WriteText(cc->Text, params);
     }
 }
-
 void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
@@ -214,7 +205,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
     params.Width = this->Layout.Width - 2;
     params.X     = 1;
     int ypoz;
-    for (unsigned int tr = 0; tr < this->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < this->ControlsCount; tr++)
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -247,20 +238,17 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
         renderer.WriteText(cc->Text, params);
     }
 }
-
 void TabControlContext::PaintNoTabsPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.Clear(' ', this->Cfg->Tab.PageColor);
 }
-
 bool NextTab(Tab* t)
 {
     CREATE_CONTROL_CONTEXT(t, Members, false);
     CHECK(Members->ControlsCount > 0, false, "No tab pages available !");
     return t->SetCurrentTabPageByIndex(((Members->CurrentControlIndex + 1) % Members->ControlsCount));
 }
-
 bool PreviousTab(Tab* t)
 {
     CREATE_CONTROL_CONTEXT(t, Members, false);
@@ -268,11 +256,38 @@ bool PreviousTab(Tab* t)
     return t->SetCurrentTabPageByIndex(
           ((Members->CurrentControlIndex + (Members->ControlsCount - 1)) % Members->ControlsCount));
 }
+bool Tab_SetCurrentTabPageByIndex(Tab* t, uint32 index, bool forceFocus)
+{
+    CREATE_TYPE_CONTEXT(TabControlContext, t, Members, false);
+    CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
+    bool res = true;
 
+    // hide the rest of the tabs
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
+    {
+        if (tr != index)
+            Members->Controls[tr]->SetVisible(false);
+    }
+    // current tab
+    //((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
+    Members->Controls[index]->SetVisible(true);
+    Members->Controls[index]->SetEnabled(true);
+    if ((Members->Focused) || (forceFocus))
+        res = Members->Controls[index]->SetFocus();
+    else
+        Members->CurrentControlIndex = index;
+
+    if (Members->Flags && TabFlags::ListView)
+    {
+        Members->UpdateMargins();
+        Application::RecomputeControlsLayout();
+    }
+    t->RaiseEvent(Event::TabChanged);
+    return res;
+}
 //===================================================================================================================
 
-TabPage::TabPage(const AppCUI::Utils::ConstString& caption)
-    : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
+TabPage::TabPage(const ConstString& caption) : Control(new ControlContext(), caption, "x:0,y:0,w:100%,h:100%", true)
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
@@ -282,56 +297,27 @@ bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
-
-Tab::Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize)
+Tab::Tab(string_view layout, TabFlags flags, uint32 tabPageSize)
     : Control(new TabControlContext(), "", layout, false)
 {
     tabPageSize = std::min<>(1000U, tabPageSize);
     tabPageSize = std::max<>(10U, tabPageSize);
 
     auto Members          = reinterpret_cast<TabControlContext*>(this->Context);
-    Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) flags;
+    Members->Flags        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     Members->TabTitleSize = tabPageSize;
     // margin set
     Members->HoveredTabIndex = -1;
     Members->UpdateMargins();
 }
 
-bool Tab::SetCurrentTabPageByIndex(unsigned int index)
+bool Tab::SetCurrentTabPageByIndex(uint32 index)
 {
-    CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
-    CHECK((index < Members->ControlsCount), false, "Invalid tab page index: %d", index);
-    bool res   = false;
-    bool found = false;
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
-    {
-        if (tr == index)
-        {
-            // ca sa fortez calcularea focusului
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
-            Members->Controls[tr]->SetVisible(true);
-            Members->Controls[tr]->SetEnabled(true);
-            res   = Members->Controls[tr]->SetFocus();
-            found = true;
-        }
-        else
-        {
-            ((ControlContext*) Members->Controls[tr]->Context)->Focused = false;
-            Members->Controls[tr]->SetVisible(false);
-        }
-    }
-    if (Members->Flags && TabFlags::ListView)
-    {
-        Members->UpdateMargins();
-        AppCUI::Application::RecomputeControlsLayout();
-    }
-    if (found)
-        this->RaiseEvent(Event::TabChanged);
-    return res;
+    return Tab_SetCurrentTabPageByIndex(this, index, false);
 }
 bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
 {
-    unsigned int index = 0xFFFFFFFF;
+    uint32 index = 0xFFFFFFFF;
     CHECK(Control::GetChildIndex(page, index), false, "Fail to find page index in current tab!");
     return SetCurrentTabPageByIndex(index);
 }
@@ -342,15 +328,13 @@ Reference<Control> Tab::GetCurrentTab()
         return nullptr;
     return Members->Controls[Members->CurrentControlIndex];
 }
-
-bool Tab::SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name)
+bool Tab::SetTabPageName(uint32 index, const ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
     CHECK((index < Members->ControlsCount), false, "Invalid tab index: %d", index);
     CHECK(Members->Controls[index]->SetText(name, true), false, "");
     return true;
 }
-
 void Tab::OnAfterResize(int, int)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
@@ -358,7 +342,7 @@ void Tab::OnAfterResize(int, int)
     Members->UpdateMargins();
     int nw = Members->Layout.Width - (Members->Margins.Left + Members->Margins.Right);
     int nh = Members->Layout.Height - (Members->Margins.Top + Members->Margins.Bottom);
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         Control* copil = Members->Controls[tr];
         copil->SetEnabled(true);
@@ -367,15 +351,13 @@ void Tab::OnAfterResize(int, int)
         copil->Resize(nw, nh);
     }
 }
-
 void Tab::OnFocus()
 {
     OnAfterResize(0, 0);
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     Members->UpdateMargins();
-    AppCUI::Application::RecomputeControlsLayout();
+    Application::RecomputeControlsLayout();
 }
-
 bool Tab::OnMouseLeave()
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
@@ -386,7 +368,6 @@ bool Tab::OnMouseLeave()
     }
     return true;
 }
-
 bool Tab::OnMouseOver(int x, int y)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
@@ -398,15 +379,13 @@ bool Tab::OnMouseOver(int x, int y)
     }
     return false;
 }
-
-void Tab::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void Tab::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)
-        SetCurrentTabPageByIndex((unsigned int) Members->HoveredTabIndex);
+        SetCurrentTabPageByIndex((uint32) Members->HoveredTabIndex);
 }
-
-bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
+bool Tab::OnKeyEvent(Input::Key keyCode, char16)
 {
     switch (keyCode)
     {
@@ -417,40 +396,38 @@ bool Tab::OnKeyEvent(AppCUI::Input::Key keyCode, char16_t)
     }
     // verific si hot-key-urile
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, false);
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
         if (keyCode == Members->Controls[tr]->GetHotKey())
         {
-            SetCurrentTabPageByIndex(tr);
+            Tab_SetCurrentTabPageByIndex(this, tr, true);
             return true;
         }
     return false;
 }
-
 void Tab::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
 
     switch (TAB_DISPLAY_MODE(Members->Flags))
     {
-    case TabDisplay::Top:
+    case TAB_DISPLAY_MODE_TOP:
         Members->PaintTopBottomPanelTab(renderer, true);
         break;
-    case TabDisplay::Bottom:
+    case TAB_DISPLAY_MODE_BOTTOM:
         Members->PaintTopBottomPanelTab(renderer, false);
         break;
-    case TabDisplay::Left:
+    case TAB_DISPLAY_MODE_LEFT:
         Members->PaintLeftPanelTab(renderer);
         break;
-    case TabDisplay::List:
+    case TAB_DISPLAY_MODE_LIST:
         Members->PaintListPanelTab(renderer);
         break;
-    case TabDisplay::NoTabs:
+    case TAB_DISPLAY_MODE_NOTABS:
         Members->PaintNoTabsPanelTab(renderer);
         break;
     }
 }
-
-bool Tab::SetTabPageTitleSize(unsigned int newSize)
+bool Tab::SetTabPageTitleSize(uint32 newSize)
 {
     CHECK(newSize >= 5, false, "Tab page title size should be bigger than 5");
     CHECK(newSize < 256, false, "Tab page title size should be smaller than 256");
@@ -479,3 +456,4 @@ void Tab::OnAfterAddControl(Reference<Control> ctrl)
         Members->CurrentControlIndex = 0;
     }
 }
+} // namespace AppCUI

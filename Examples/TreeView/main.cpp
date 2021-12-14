@@ -9,37 +9,39 @@
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
-using namespace AppCUI::Controls;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Graphics;
 
-class TreeExample : public AppCUI::Controls::Window
+class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Handlers::OnTreeItemToggleInterface
 {
-    enum class ControlIds : unsigned int
+    enum class ControlIds : uint32
     {
         ButtonShowOpen = 1
     };
 
-    Reference<Button> open;
-    Reference<TextField> currentFolder;
-    Reference<Splitter> vertical;
-    Reference<Splitter> horizontal;
-    Reference<Tree> tree;
+    AppCUI::Controls::Reference<AppCUI::Controls::Button> open;
+    AppCUI::Controls::Reference<AppCUI::Controls::TextField> currentFolder;
+    AppCUI::Controls::Reference<AppCUI::Controls::Splitter> vertical;
+    AppCUI::Controls::Reference<AppCUI::Controls::Splitter> horizontal;
+    AppCUI::Controls::Reference<AppCUI::Controls::Tree> tree;
 
   public:
-    TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", WindowFlags::Sizeable)
+    TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", AppCUI::Controls::WindowFlags::Sizeable)
     {
-        open = Factory::Button::Create(
-              this, "&Open", "x:1%, y:6%, w:10%", static_cast<unsigned int>(ControlIds::ButtonShowOpen));
-        vertical   = Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
-        horizontal = Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
-        currentFolder =
-              Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
-        tree = Factory::Tree::Create(
+        open = AppCUI::Controls::Factory::Button::Create(
+              this, "&Open", "x:1%, y:6%, w:10%", static_cast<uint32>(ControlIds::ButtonShowOpen));
+        vertical      = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
+        horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
+        currentFolder = AppCUI::Controls::Factory::TextField::Create(
+              this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+        tree = AppCUI::Controls::Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (TreeFlags::DynamicallyPopulateNodeChildren | TreeFlags::FilterSearch),
+              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren |
+               AppCUI::Controls::TreeFlags::FilterSearch),
               3);
+
+        tree->Handlers()->OnTreeItemToggle = this;
 
         // TODO: maybe add % for column sizes as well
         tree->AddColumnData(
@@ -47,14 +49,13 @@ class TreeExample : public AppCUI::Controls::Window
         tree->AddColumnData(
               1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
         tree->AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
-        tree->SetToggleItemHandle(PopulateTree);
 
         tree->ClearItems();
         const auto path = std::filesystem::current_path().u16string();
         CharacterBuffer filename;
         filename.Set(std::filesystem::current_path().filename().u16string());
         const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
-        unsigned long long pathSize  = 0;
+        uint64 pathSize  = 0;
         CharacterBuffer pathSizeText;
         try
         {
@@ -68,22 +69,24 @@ class TreeExample : public AppCUI::Controls::Window
 
         const auto cpath = std::filesystem::current_path().u16string();
         const auto root  = tree->AddItem(
-              InvalidItemHandle,
+              AppCUI::Controls::InvalidItemHandle,
               { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
               cpath,
-              nullptr,
               false,
               std::filesystem::is_directory(path));
     }
 
-    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
+    bool OnEvent(
+          AppCUI::Controls::Reference<AppCUI::Controls::Control>,
+          AppCUI::Controls::Event eventType,
+          int controlID) override
     {
         switch (eventType)
         {
-        case Event::WindowClose:
+        case AppCUI::Controls::Event::WindowClose:
             Application::Close();
             return true;
-        case Event::ButtonClicked:
+        case AppCUI::Controls::Event::ButtonClicked:
             switch (static_cast<ControlIds>(controlID))
             {
             case ControlIds::ButtonShowOpen:
@@ -99,7 +102,7 @@ class TreeExample : public AppCUI::Controls::Window
                     filename.Set(path.filename().u16string());
                     const auto pathLastWriteTime = GetLastFileWriteText(path);
 
-                    unsigned long long pathSize = 0;
+                    uint64 pathSize = 0;
                     CharacterBuffer pathSizeText;
                     try
                     {
@@ -113,16 +116,18 @@ class TreeExample : public AppCUI::Controls::Window
 
                     const auto localPath = path.u16string();
                     const auto root      = tree->AddItem(
-                          InvalidItemHandle,
+                          AppCUI::Controls::InvalidItemHandle,
                           { filename, *const_cast<CharacterBuffer*>(&pathLastWriteTime), pathSizeText },
                           localPath,
-                          nullptr,
                           false,
                           std::filesystem::is_directory(path));
 
-                    CharacterBuffer cb;
-                    cb.Add(res->u16string());
-                    PopulateTree(tree, root, &cb);
+                    auto& metadata = tree->GetItemMetadata(root);
+                    AppCUI::Utils::UnicodeStringBuilder usb;
+                    usb.Add(AppCUI::Utils::ConstString{ metadata });
+                    usb.Add(res->u16string());
+                    tree->SetItemMetadata(root, usb);
+                    OnTreeItemToggle(tree, root);
                 }
 
                 return true;
@@ -133,11 +138,12 @@ class TreeExample : public AppCUI::Controls::Window
         return false;
     }
 
-    static bool PopulateTree(Tree& tree, const ItemHandle handle, const void* context)
+    bool OnTreeItemToggle(
+          AppCUI::Controls::Reference<Controls::Tree> ctrl, AppCUI::Controls::ItemHandle handle) override
     {
-        const auto cb = reinterpret_cast<CharacterBuffer*>(const_cast<void*>(context));
+        const auto& usb = ctrl->GetItemMetadata(handle);
         std::u16string u16Path;
-        CHECK(cb->ToString(u16Path), false, "");
+        usb.ToString(u16Path);
         const auto fsPath = std::filesystem::path(u16Path);
         try
         {
@@ -147,16 +153,16 @@ class TreeExample : public AppCUI::Controls::Window
                 CharacterBuffer filename;
                 filename.Set(p.path().filename().u16string());
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
-                unsigned long long pathSize  = p.file_size();
+                uint64 pathSize  = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
-                tree.AddItem(
+
+                ctrl->AddItem(
                       handle,
                       { filename,
                         *const_cast<CharacterBuffer*>(&pathLastWriteTime),
                         *const_cast<CharacterBuffer*>(&pathSizeText) },
                       cpath,
-                      nullptr,
                       false,
                       p.is_directory());
             }
@@ -202,7 +208,7 @@ class TreeExample : public AppCUI::Controls::Window
 #endif
     }
 
-    static const CharacterBuffer GetTextFromNumber(const unsigned long long value)
+    static const CharacterBuffer GetTextFromNumber(const uint64 value)
     {
         constexpr auto SIZE = 20;
         char cValue[SIZE]   = { 0 };

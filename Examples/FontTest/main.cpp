@@ -10,7 +10,7 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 namespace fs = std::filesystem;
 
-int _special_characters_consolas_unicode_[(unsigned int) AppCUI::Graphics::SpecialChars::Count] = {
+int _special_characters_consolas_unicode_[(uint32) AppCUI::Graphics::SpecialChars::Count] = {
     0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
     0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
     0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
@@ -29,8 +29,8 @@ struct FontUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         constexpr ColorPair textColor = ColorPair{ Color::White, Color::Transparent };
-        const std::uint64_t height    = GetHeight();
-        const std::uint64_t width     = GetWidth();
+        const auto height    = GetHeight();
+        const auto width     = GetWidth();
 
         for (int i = 0; i < 256; i++)
         {
@@ -40,7 +40,7 @@ struct FontUserControl : public UserControl
         }
 
         const int nextLine = 256 / width + 2;
-        for (auto i = 0U; i < static_cast<unsigned int>(AppCUI::Graphics::SpecialChars::Count); i++)
+        for (auto i = 0U; i < static_cast<uint32>(AppCUI::Graphics::SpecialChars::Count); i++)
         {
             const auto y = static_cast<int>(i / width);
             const auto x = static_cast<int>(i % width);

@@ -12,9 +12,10 @@ using namespace AppCUI::Utils;
 #define BTN_SHOW_COLOR_PALETTE 1002
 #define BTN_SHOW_COLOR_SCALES  1003
 #define BTN_SHOW_STRING_IMAGE  1004
+#define BTN_SHOW_LOAD_IMAGE    1005
 
 // image taken from https://en.wikipedia.org/wiki/Treasure_Island_Dizzy#/media/File:Treasure_Island_Dizzy.png
-unsigned int dizzy_pixels[] = {
+uint32 dizzy_pixels[] = {
     0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000,
     0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0xF8F8F8, 0xF8F8F8, 0xF8F8F8, 0xF8F8F8,
     0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000,
@@ -4487,7 +4488,7 @@ unsigned int dizzy_pixels[] = {
 };
 
 // a picture of me
-unsigned int gdt_pixels[150 * 150] = {
+uint32 gdt_pixels[150 * 150] = {
     0x736F6F, 0x726E6E, 0x726E6E, 0x726E6E, 0x726E6E, 0x73706E, 0x73706D, 0x736F6D, 0x736F6D, 0x726F6C, 0x726E6C,
     0x73706D, 0x73706D, 0x726F6C, 0x71706C, 0x706F6C, 0x706F6B, 0x716F6A, 0x716F6A, 0x716F6A, 0x716F6A, 0x716F6A,
     0x716F6A, 0x706D6B, 0x706D6B, 0x706D6A, 0x6F6C6A, 0x6F6C6A, 0x6F6C69, 0x6F6C68, 0x6F6C69, 0x6F6D6B, 0x6F6C6A,
@@ -6552,17 +6553,18 @@ class MainWin : public Window
     Reference<ComboBox> cbScale;
 
   public:
-    MainWin() : Window("Image example", "d:c,w:50,h:17", WindowFlags::None)
+    MainWin() : Window("Image example", "d:c,w:50,h:19", WindowFlags::None)
     {
         Factory::Button::Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         Factory::Button::Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
         Factory::Button::Create(this, "Color palette", "x:1,y:5,w:46", BTN_SHOW_COLOR_PALETTE);
         Factory::Button::Create(this, "Color scales", "x:1,y:7,w:46", BTN_SHOW_COLOR_SCALES);
         Factory::Button::Create(this, "String example", "x:1,y:9,w:46", BTN_SHOW_STRING_IMAGE);
+        Factory::Button::Create(this, "Load image", "x:1,y:11,w:46", BTN_SHOW_LOAD_IMAGE);
 
         Factory::Label::Create(this, "Method", "l:1,b:3,w:6");
         cbMethod = Factory::ComboBox::Create(
-              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,Ascii art");
+              this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,GrayScale,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
         Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
@@ -6579,6 +6581,8 @@ class MainWin : public Window
         case 1:
             return ImageRenderingMethod::PixelTo64ColorsLargeBlock;
         case 2:
+            return ImageRenderingMethod::GrayScale;
+        case 3:
             return ImageRenderingMethod::AsciiArt;
         default:
             return ImageRenderingMethod::PixelTo16ColorsSmallBlock;
@@ -6636,15 +6640,20 @@ class MainWin : public Window
             {
                 AppCUI::Graphics::Image img;
                 img.Create(27, 27); // 27 = square of (9 x 9 x 9) ==> 9 = variantion on one channel (from 0 to 255)
-                unsigned int x = 0;
-                unsigned int y = 0;
-                for (unsigned int r = 0; r <= 256; r += 32)
+                uint32 x = 0;
+                uint32 y = 0;
+                for (uint32 r = 0; r <= 256; r += 32)
                 {
-                    for (unsigned int g = 0; g <= 256; g += 32)
+                    for (uint32 g = 0; g <= 256; g += 32)
                     {
-                        for (unsigned int b = 0; b <= 256; b += 32)
+                        for (uint32 b = 0; b <= 256; b += 32)
                         {
-                            img.SetPixel(x, y, std::min<>(r, 255U), std::min<>(g, 255U), std::min<>(b, 255U), 255);
+                            img.SetPixel(
+                                  x,
+                                  y,
+                                  { (uint8) std::min<>(r, 255U),
+                                    (uint8) std::min<>(g, 255U),
+                                    (uint8) std::min<>(b, 255U) });
                             x++;
                             if (x == img.GetWidth())
                             {
@@ -6662,12 +6671,14 @@ class MainWin : public Window
             {
                 AppCUI::Graphics::Image img;
                 img.Create(16, 7);
-                for (unsigned int bit = 1; bit <= 7; bit++)
+                for (uint32 bit = 1; bit <= 7; bit++)
                 {
-                    for (unsigned int x = 0; x < 16; x++)
+                    for (uint32 x = 0; x < 16; x++)
                     {
                         img.SetPixel(
-                              x, bit - 1, x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1));
+                              x,
+                              bit - 1,
+                              Pixel(x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1)));
                     }
                 }
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
@@ -6690,6 +6701,24 @@ class MainWin : public Window
                       "bBbBbBbB");
                 ImageWinViewer iwv(img, GetMethod(), GetScale());
                 iwv.Show();
+                return true;
+            }
+            if (controlID == BTN_SHOW_LOAD_IMAGE)
+            {
+                AppCUI::Graphics::Image img;
+                auto path = AppCUI::Dialogs::FileDialog::ShowOpenFileWindow("", "Image Files:png,bmp", ".");
+                if (path.has_value())
+                {
+                    if (img.Load(path.value()) == false)
+                    {
+                        AppCUI::Dialogs::MessageBox::ShowError("Error", "Fail to open PNG file !");
+                    }
+                    else
+                    {
+                        ImageWinViewer iwv(img, GetMethod(), GetScale());
+                        iwv.Show();
+                    }
+                }
                 return true;
             }
         }

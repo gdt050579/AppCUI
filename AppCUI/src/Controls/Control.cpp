@@ -3,11 +3,8 @@
 #include <cstring>
 #include <string.h>
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Input;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Utils;
-
+namespace AppCUI
+{
 #define CTRLC ((ControlContext*) Context)
 
 #define CHAR_TYPE_EOS       0
@@ -24,29 +21,29 @@ using namespace AppCUI::Utils;
 // THIS CODE WAS AUTOMATICALLY GENERATED !
 //=========================================
 
-constexpr unsigned char LAYOUT_KEY_NONE     = 0;
-constexpr unsigned short LAYOUT_KEY_X       = 1;
-constexpr unsigned short LAYOUT_FLAG_X      = 0x0001;
-constexpr unsigned short LAYOUT_KEY_Y       = 2;
-constexpr unsigned short LAYOUT_FLAG_Y      = 0x0002;
-constexpr unsigned short LAYOUT_KEY_LEFT    = 3;
-constexpr unsigned short LAYOUT_FLAG_LEFT   = 0x0004;
-constexpr unsigned short LAYOUT_KEY_RIGHT   = 4;
-constexpr unsigned short LAYOUT_FLAG_RIGHT  = 0x0008;
-constexpr unsigned short LAYOUT_KEY_TOP     = 5;
-constexpr unsigned short LAYOUT_FLAG_TOP    = 0x0010;
-constexpr unsigned short LAYOUT_KEY_BOTTOM  = 6;
-constexpr unsigned short LAYOUT_FLAG_BOTTOM = 0x0020;
-constexpr unsigned short LAYOUT_KEY_WIDTH   = 7;
-constexpr unsigned short LAYOUT_FLAG_WIDTH  = 0x0040;
-constexpr unsigned short LAYOUT_KEY_HEIGHT  = 8;
-constexpr unsigned short LAYOUT_FLAG_HEIGHT = 0x0080;
-constexpr unsigned short LAYOUT_KEY_ALIGN   = 9;
-constexpr unsigned short LAYOUT_FLAG_ALIGN  = 0x0100;
-constexpr unsigned short LAYOUT_KEY_DOCK    = 10;
-constexpr unsigned short LAYOUT_FLAG_DOCK   = 0x0200;
+constexpr uint8 LAYOUT_KEY_NONE     = 0;
+constexpr uint16 LAYOUT_KEY_X       = 1;
+constexpr uint16 LAYOUT_FLAG_X      = 0x0001;
+constexpr uint16 LAYOUT_KEY_Y       = 2;
+constexpr uint16 LAYOUT_FLAG_Y      = 0x0002;
+constexpr uint16 LAYOUT_KEY_LEFT    = 3;
+constexpr uint16 LAYOUT_FLAG_LEFT   = 0x0004;
+constexpr uint16 LAYOUT_KEY_RIGHT   = 4;
+constexpr uint16 LAYOUT_FLAG_RIGHT  = 0x0008;
+constexpr uint16 LAYOUT_KEY_TOP     = 5;
+constexpr uint16 LAYOUT_FLAG_TOP    = 0x0010;
+constexpr uint16 LAYOUT_KEY_BOTTOM  = 6;
+constexpr uint16 LAYOUT_FLAG_BOTTOM = 0x0020;
+constexpr uint16 LAYOUT_KEY_WIDTH   = 7;
+constexpr uint16 LAYOUT_FLAG_WIDTH  = 0x0040;
+constexpr uint16 LAYOUT_KEY_HEIGHT  = 8;
+constexpr uint16 LAYOUT_FLAG_HEIGHT = 0x0080;
+constexpr uint16 LAYOUT_KEY_ALIGN   = 9;
+constexpr uint16 LAYOUT_FLAG_ALIGN  = 0x0100;
+constexpr uint16 LAYOUT_KEY_DOCK    = 10;
+constexpr uint16 LAYOUT_FLAG_DOCK   = 0x0200;
 
-constexpr unsigned char _layout_translate_map_[116] = {
+constexpr uint8 _layout_translate_map_[116] = {
     LAYOUT_KEY_NONE,  LAYOUT_KEY_ALIGN, LAYOUT_KEY_BOTTOM, LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,  LAYOUT_KEY_NONE,
     LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
     LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
@@ -69,273 +66,273 @@ constexpr unsigned char _layout_translate_map_[116] = {
     LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
 };
 
-inline unsigned char HashToLayoutKey(unsigned int hash)
+inline uint8 HashToLayoutKey(uint32 hash)
 {
     if (hash >= 116)
         return LAYOUT_KEY_NONE;
     return _layout_translate_map_[hash];
 };
 
-constexpr unsigned char _align_translate_map_[258] = { 0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Bottom,
-                                                       (unsigned char) Alignament::Center,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Left,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::BottomLeft,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Right,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Top,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::BottomRight,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::TopLeft,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::TopRight,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Left,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Top,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Right,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Center,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::Bottom,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::TopLeft,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::TopRight,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::BottomLeft,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       0xFF,
-                                                       (unsigned char) Alignament::BottomRight };
+constexpr uint8 _align_translate_map_[258] = { 0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Bottom,
+                                               (uint8) Alignament::Center,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Left,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::BottomLeft,
+                                               0xFF,
+                                               (uint8) Alignament::Right,
+                                               0xFF,
+                                               (uint8) Alignament::Top,
+                                               0xFF,
+                                               (uint8) Alignament::BottomRight,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::TopLeft,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::TopRight,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Left,
+                                               0xFF,
+                                               (uint8) Alignament::Top,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Right,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Center,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::Bottom,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::TopLeft,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::TopRight,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::BottomLeft,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               0xFF,
+                                               (uint8) Alignament::BottomRight };
 
-inline bool HashToAlignament(unsigned int hash, Alignament& align)
+inline bool HashToAlignament(uint32 hash, Alignament& align)
 {
     if (hash >= 258)
         return false;
@@ -368,14 +365,14 @@ inline bool HashToAlignament(unsigned int hash, Alignament& align)
 struct LayoutKeyValueData
 {
     const char* HashName;
-    unsigned int Hash;
+    uint32 Hash;
     int n1, n2;
-    unsigned int StringValueHash;
+    uint32 StringValueHash;
     bool IsNegative;
     char ValueType;
 };
 
-unsigned char __char_types__[256] = {
+uint8 __char_types__[256] = {
     CHAR_TYPE_EOS,    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_SPACE,  CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,
     CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
@@ -424,7 +421,7 @@ unsigned char __char_types__[256] = {
 // <xxx> (Arrow left, 3 character, Arrow right)
 #define MINIM_SCORLL_BAR_LENGTH 5
 
-bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, AppCUI::Application::Config*)
+bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Application::Config*)
 {
     int value = 0;
     LayoutValueType valueType;
@@ -450,7 +447,7 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
     }
     if (l.IsNegative)
         value = -value;
-    unsigned char layoutKey = HashToLayoutKey(l.Hash);
+    uint8 layoutKey = HashToLayoutKey(l.Hash);
     switch (layoutKey)
     {
     case LAYOUT_KEY_X:
@@ -490,32 +487,32 @@ bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Ap
     }
     return true;
 }
-inline const unsigned char* SkipSpaces(const unsigned char* start, const unsigned char* end)
+inline const uint8* SkipSpaces(const uint8* start, const uint8* end)
 {
     while ((start < end) && (__char_types__[*start] == CHAR_TYPE_SPACE))
         start++;
     return start;
 }
-inline const unsigned char* ComputeValueHash(const unsigned char* s, const unsigned char* e, unsigned int& hashValue)
+inline const uint8* ComputeValueHash(const uint8* s, const uint8* e, uint32& hashValue)
 {
     hashValue          = 0;
-    unsigned int index = 0;
+    uint32 index = 0;
     while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
-        // hashValue = ((hashValue) << 2) ^ ((unsigned int) (('Z' + 1) - (((*start) & ((unsigned char) (~0x20))))));
-        // hashValue += (unsigned int) ((unsigned int) (('Z' + 1) - (((*s) & ((unsigned char) (~0x20))))));
-        hashValue += ((*s) & ((unsigned char) (~0x20))) - ((unsigned char) 'A') + 1;
+        // hashValue = ((hashValue) << 2) ^ ((uint32) (('Z' + 1) - (((*start) & ((uint8) (~0x20))))));
+        // hashValue += (uint32) ((uint32) (('Z' + 1) - (((*s) & ((uint8) (~0x20))))));
+        hashValue += ((*s) & ((uint8) (~0x20))) - ((uint8) 'A') + 1;
         hashValue += index;
         s++;
         index += 2;
     }
     return s;
 }
-bool AnalyzeLayout(std::string_view layout, LayoutInformation& inf, AppCUI::Application::Config* Cfg)
+bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Config* Cfg)
 {
     // format: key:value,[key:value],....
-    const unsigned char* p     = (const unsigned char*) layout.data();
-    const unsigned char* p_end = p + layout.size();
+    const uint8* p     = (const uint8*) layout.data();
+    const uint8* p_end = p + layout.size();
     CHECK(p, false, "Expecting a valid (non-null) layout string !");
 
     LayoutKeyValueData lkv;
@@ -621,7 +618,7 @@ ControlContext::ControlContext()
     this->ControlID                                = 0;
     this->Focused                                  = false;
     this->MouseIsOver                              = false;
-    this->Cfg                                      = AppCUI::Application::GetAppConfig();
+    this->Cfg                                      = Application::GetAppConfig();
     this->HotKeyOffset                             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     this->ScrollBars.LeftMargin                    = 2;
     this->ScrollBars.TopMargin                     = 2;
@@ -904,7 +901,7 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
 
     return true;
 }
-bool ControlContext::UpdateLayoutFormat(std::string_view format)
+bool ControlContext::UpdateLayoutFormat(string_view format)
 {
     LayoutInformation inf;
     CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
@@ -947,7 +944,7 @@ bool ControlContext::UpdateLayoutFormat(std::string_view format)
 
     RETURNERROR(false, "Invalid keys combination: %08X", inf.flags);
 }
-void ControlContext::SetControlSize(unsigned int width, unsigned int heigh)
+void ControlContext::SetControlSize(uint32 width, uint32 heigh)
 {
     this->Layout.Width  = (int) width;
     this->Layout.Height = (int) heigh;
@@ -1092,7 +1089,7 @@ bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetric
 bool ControlContext::RecomputeLayout(Control* controlParent)
 {
     LayoutMetricData md;
-    AppCUI::Graphics::Size sz;
+    Graphics::Size sz;
 
     if (controlParent == nullptr)
         controlParent = this->Parent;
@@ -1102,7 +1099,7 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
     }
     else
     {
-        CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
+        CHECK(Application::GetDesktopSize(sz), false, "Fail to get desktop size !");
     }
     // translate values - X & Y Axes
     md.X            = this->Layout.Format.X.ToInt(sz.Width);
@@ -1183,9 +1180,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxVerticalValue)
             {
-                const auto sz = static_cast<unsigned int>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
+                const auto sz = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
                 const auto poz =
-                      static_cast<unsigned int>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                      static_cast<uint32>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
                 renderer.WriteSpecialCharacter(
                       x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1201,9 +1198,9 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxHorizontalValue)
             {
-                const auto sz = static_cast<unsigned int>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
+                const auto sz = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
                 const auto poz =
-                      static_cast<unsigned int>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                      static_cast<uint32>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
                 renderer.WriteSpecialCharacter(
                       ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1211,22 +1208,21 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     }
 }
 //=======================================================================================================================================================
-AppCUI::Controls::Control::~Control()
+Controls::Control::~Control()
 {
     DELETE_CONTROL_CONTEXT(ControlContext);
 }
-AppCUI::Controls::Control::Control(
-      void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey)
+Controls::Control::Control(void* context, const ConstString& caption, string_view layout, bool computeHotKey)
 {
     ASSERT(context, "Expecting a valid context in Control::Control() ctor");
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     ASSERT(cfg != nullptr, "Unable to get config object !");
     this->Context = context;
     auto ctx      = reinterpret_cast<ControlContext*>(this->Context);
     ctx->Inited   = false;
     ASSERT(ctx->UpdateLayoutFormat(layout), "Invalid format !");
 
-    AppCUI::Utils::ConstStringObject captionObj(caption);
+    ConstStringObject captionObj(caption);
     if (computeHotKey)
     {
         ctx->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
@@ -1259,7 +1255,7 @@ AppCUI::Controls::Control::Control(
     ctx->Inited = true;
 }
 
-Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Control> ctrl)
+Reference<Control> Controls::Control::AddChildControl(unique_ptr<Control> ctrl)
 {
     CHECK(ctrl, nullptr, "Invalid control (nullptr)");
     CHECK(ctrl->IsInitialized(), nullptr, "Control was not initialized before adding it to a parent control !");
@@ -1278,7 +1274,7 @@ Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Co
             // grow
             Control** tmp = new Control*[CTRLC->ControlsCount + 8];
             CHECK(tmp != nullptr, nullptr, "");
-            for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
+            for (uint32 tr = 0; tr < CTRLC->ControlsCount; tr++)
                 tmp[tr] = CTRLC->Controls[tr];
             delete CTRLC->Controls;
             CTRLC->Controls = tmp;
@@ -1295,27 +1291,27 @@ Reference<Control> AppCUI::Controls::Control::AddChildControl(std::unique_ptr<Co
     (reinterpret_cast<ControlContext*>(p_ctrl->Context))->RecomputeLayout(this);
     RecomputeLayout();
     // Force a recompute layout on the entire app
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     if (app)
         app->RepaintStatus = REPAINT_STATUS_ALL;
     return p_ctrl;
 }
-bool AppCUI::Controls::Control::RemoveControl(Control* control)
+bool Controls::Control::RemoveControl(Control* control)
 {
-    unsigned int index;
+    uint32 index;
     if (GetChildIndex(control, index) == false)
         return false;
     return RemoveControlByID(index);
 }
-bool AppCUI::Controls::Control::RemoveControlByRef(Reference<Control> control)
+bool Controls::Control::RemoveControlByRef(Reference<Control> control)
 {
     CHECK(control.IsValid(), false, "Emptry control reference !");
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
     if (lst == nullptr)
         return false;
-    unsigned int index   = 0xFFFFFFFF;
-    unsigned int c_index = 0;
+    uint32 index   = 0xFFFFFFFF;
+    uint32 c_index = 0;
     while (lst < end)
     {
         if (control == (*lst))
@@ -1333,7 +1329,7 @@ bool AppCUI::Controls::Control::RemoveControlByRef(Reference<Control> control)
         control.Reset();
     return result;
 }
-bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
+bool Controls::Control::RemoveControlByID(uint32 index)
 {
     CHECK(index < CTRLC->ControlsCount,
           false,
@@ -1343,7 +1339,7 @@ bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
     Control** lst = CTRLC->Controls;
     CHECK(lst != nullptr, false, "Expecting a non-nullptr list of control !");
     this->OnControlRemoved(lst[index]);
-    unsigned int count = CTRLC->ControlsCount;
+    uint32 count = CTRLC->ControlsCount;
     index++;
     while (index < count)
     {
@@ -1354,28 +1350,28 @@ bool AppCUI::Controls::Control::RemoveControlByID(unsigned int index)
     CTRLC->CurrentControlIndex = 0;
     return true;
 }
-int AppCUI::Controls::Control::GetX() const
+int Controls::Control::GetX() const
 {
     return CTRLC->Layout.X;
 }
-int AppCUI::Controls::Control::GetY() const
+int Controls::Control::GetY() const
 {
     return CTRLC->Layout.Y;
 }
-int AppCUI::Controls::Control::GetWidth() const
+int Controls::Control::GetWidth() const
 {
     return CTRLC->Layout.Width;
 }
-int AppCUI::Controls::Control::GetHeight() const
+int Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetSize(AppCUI::Graphics::Size& size)
+void Controls::Control::GetSize(Graphics::Size& size)
 {
     size.Width  = CTRLC->Layout.Width;
     size.Height = CTRLC->Layout.Height;
 }
-void AppCUI::Controls::Control::GetClientSize(AppCUI::Graphics::Size& size)
+void Controls::Control::GetClientSize(Graphics::Size& size)
 {
     int w = CTRLC->Layout.Width - (CTRLC->Margins.Left + CTRLC->Margins.Right);
     int h = CTRLC->Layout.Height - (CTRLC->Margins.Top + CTRLC->Margins.Bottom);
@@ -1386,25 +1382,25 @@ void AppCUI::Controls::Control::GetClientSize(AppCUI::Graphics::Size& size)
     size.Width  = w;
     size.Height = h;
 }
-bool AppCUI::Controls::Control::IsMouseInControl(int x, int y)
+bool Controls::Control::IsMouseInControl(int x, int y)
 {
     return (x >= 0) && (y >= 0) && (x < (CTRLC->Layout.Width)) && (y < (CTRLC->Layout.Height));
 }
-void AppCUI::Controls::Control::SetChecked(const bool value)
+void Controls::Control::SetChecked(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_CHECKED;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_CHECKED);
 }
-void AppCUI::Controls::Control::SetEnabled(const bool value)
+void Controls::Control::SetEnabled(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_ENABLE;
     else
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_ENABLE);
 }
-void AppCUI::Controls::Control::SetVisible(const bool value)
+void Controls::Control::SetVisible(const bool value)
 {
     if (value)
         CTRLC->Flags |= GATTR_VISIBLE;
@@ -1412,36 +1408,36 @@ void AppCUI::Controls::Control::SetVisible(const bool value)
         CTRLC->Flags -= ((CTRLC->Flags) & GATTR_VISIBLE);
 }
 
-bool AppCUI::Controls::Control::IsChecked() const
+bool Controls::Control::IsChecked() const
 {
     return (((CTRLC->Flags) & GATTR_CHECKED) != 0);
 }
-bool AppCUI::Controls::Control::IsEnabled() const
+bool Controls::Control::IsEnabled() const
 {
     return (((CTRLC->Flags) & GATTR_ENABLE) != 0);
 }
-bool AppCUI::Controls::Control::IsVisible() const
+bool Controls::Control::IsVisible() const
 {
     return (((CTRLC->Flags) & GATTR_VISIBLE) != 0);
 }
-bool AppCUI::Controls::Control::HasFocus() const
+bool Controls::Control::HasFocus() const
 {
     return CTRLC->Focused;
 }
-bool AppCUI::Controls::Control::IsMouseOver() const
+bool Controls::Control::IsMouseOver() const
 {
     return CTRLC->MouseIsOver;
 }
 
-Reference<Control> AppCUI::Controls::Control::GetParent()
+Reference<Control> Controls::Control::GetParent()
 {
     return CTRLC->Parent;
 }
-Control** AppCUI::Controls::Control::GetChildrenList()
+Control** Controls::Control::GetChildrenList()
 {
     return CTRLC->Controls;
 }
-Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
+Reference<Control> Controls::Control::GetChild(uint32 index)
 {
     CHECK(index < CTRLC->ControlsCount,
           nullptr,
@@ -1450,18 +1446,18 @@ Reference<Control> AppCUI::Controls::Control::GetChild(unsigned int index)
           CTRLC->ControlsCount - 1);
     return CTRLC->Controls[index];
 }
-unsigned int AppCUI::Controls::Control::GetChildrenCount()
+uint32 Controls::Control::GetChildrenCount()
 {
     return CTRLC->ControlsCount;
 }
 
-bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsigned int& index)
+bool Controls::Control::GetChildIndex(Reference<Control> control, uint32& index)
 {
     Control** lst = CTRLC->Controls;
     Control** end = lst + (CTRLC->ControlsCount);
     if (lst == nullptr)
         return false;
-    unsigned int c_index = 0;
+    uint32 c_index = 0;
     while (lst < end)
     {
         if ((*lst) == control)
@@ -1475,21 +1471,21 @@ bool AppCUI::Controls::Control::GetChildIndex(Reference<Control> control, unsign
     return false;
 }
 
-void AppCUI::Controls::Control::MoveTo(int newX, int newY)
+void Controls::Control::MoveTo(int newX, int newY)
 {
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     if (!cfg)
         return;
     if ((newX == CTRLC->Layout.X) && (newY == CTRLC->Layout.Y))
         return;
     CTRLC->Layout.X = newX;
     CTRLC->Layout.Y = newY;
-    AppCUI::Application::RecomputeControlsLayout();
-    AppCUI::Application::Repaint();
+    Application::RecomputeControlsLayout();
+    Application::Repaint();
 }
-bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
+bool Controls::Control::Resize(int newWidth, int newHeight)
 {
-    AppCUI::Application::Config* cfg = AppCUI::Application::GetAppConfig();
+    Application::Config* cfg = Application::GetAppConfig();
     CHECK(cfg != nullptr, false, "Unable to get config object !");
 
     if (newWidth < CTRLC->Layout.MinWidth)
@@ -1517,18 +1513,18 @@ bool AppCUI::Controls::Control::Resize(int newWidth, int newHeight)
     RecomputeLayout();
     return true;
 }
-void AppCUI::Controls::Control::RecomputeLayout()
+void Controls::Control::RecomputeLayout()
 {
-    for (unsigned int tr = 0; tr < CTRLC->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < CTRLC->ControlsCount; tr++)
     {
         ((ControlContext*) (CTRLC->Controls[tr]->Context))->RecomputeLayout(this);
         CTRLC->Controls[tr]->RecomputeLayout();
     }
     OnAfterResize(CTRLC->Layout.Width, CTRLC->Layout.Height);
 
-    AppCUI::Application::RecomputeControlsLayout();
+    Application::RecomputeControlsLayout();
 }
-bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey)
+bool Controls::Control::SetText(const ConstString& caption, bool updateHotKey)
 {
     if (OnBeforeSetText(caption) == false)
         return false;
@@ -1542,60 +1538,103 @@ bool AppCUI::Controls::Control::SetText(const AppCUI::Utils::ConstString& captio
         if (CTRLC->Text.Set(caption, NoColorPair) == false)
             return false;
     }
-    OnAfterSetText(caption);
+    if (CTRLC->handlers)
+    {
+        if (CTRLC->handlers->OnAfterSetText.obj)
+            CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+        else
+            OnAfterSetText();
+    }
+    else
+        OnAfterSetText();
     return true;
 }
-bool AppCUI::Controls::Control::SetText(const AppCUI::Graphics::CharacterBuffer& text)
+bool Controls::Control::SetText(const Graphics::CharacterBuffer& text)
 {
-    // GDT: need to rethink this callback
-    // if (OnBeforeSetText(text.data()) == false)
-    //    return false;
+    if (OnBeforeSetText((CharacterView) text) == false)
+        return false;
     if (CTRLC->Text.Set(text) == false)
         return false;
-    // GDT: need to rethink this callback
-    // OnAfterSetText(text.data());
+    if (CTRLC->handlers)
+    {
+        if (CTRLC->handlers->OnAfterSetText.obj)
+            CTRLC->handlers->OnAfterSetText.obj->OnAfterSetText(this);
+        else
+            OnAfterSetText();
+    }
+    else
+        OnAfterSetText();
     return true;
 }
-const AppCUI::Graphics::CharacterBuffer& AppCUI::Controls::Control::GetText()
+bool Controls::Control::SetTextWithHotKey(const ConstString& caption, uint32 hotKeyTextOffset)
+{
+    CHECK(SetText(caption), false, "");
+    ConstStringObject txt(caption);
+    bool result = false;
+    if (hotKeyTextOffset < txt.Length)
+    {
+        switch (txt.Encoding)
+        {
+        case StringEncoding::Ascii:
+            result = this->SetHotKey(((char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::Unicode16:
+            result = this->SetHotKey(((char16*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::CharacterBuffer:
+            result = this->SetHotKey(((Character*) txt.Data)[hotKeyTextOffset].Code);
+            break;
+        case StringEncoding::UTF8:
+            result = this->SetHotKey(((uint8*) txt.Data)[hotKeyTextOffset]);
+            break;
+        }
+        if (result)
+        {
+            CTRLC->HotKeyOffset = hotKeyTextOffset;
+        }
+    }
+    return true;
+}
+const Graphics::CharacterBuffer& Controls::Control::GetText()
 {
     return CTRLC->Text;
 }
-void AppCUI::Controls::Control::UpdateHScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateHScrollBar(uint64 value, uint64 maxValue)
 {
     if (value > maxValue)
         value = maxValue;
     CTRLC->ScrollBars.HorizontalValue    = value;
     CTRLC->ScrollBars.MaxHorizontalValue = maxValue;
 }
-void AppCUI::Controls::Control::UpdateVScrollBar(unsigned long long value, unsigned long long maxValue)
+void Controls::Control::UpdateVScrollBar(uint64 value, uint64 maxValue)
 {
     if (value > maxValue)
         value = maxValue;
     CTRLC->ScrollBars.VerticalValue    = value;
     CTRLC->ScrollBars.MaxVerticalValue = maxValue;
 }
-int AppCUI::Controls::Control::GetGroup()
+int Controls::Control::GetGroup()
 {
     return CTRLC->GroupID;
 }
-void AppCUI::Controls::Control::SetGroup(int newGroupID)
+void Controls::Control::SetGroup(int newGroupID)
 {
     if (newGroupID >= 0)
         CTRLC->GroupID = newGroupID;
 }
-void AppCUI::Controls::Control::ClearGroup()
+void Controls::Control::ClearGroup()
 {
     CTRLC->GroupID = 0;
 }
 
-bool AppCUI::Controls::Control::SetHotKey(char16_t hotKey)
+bool Controls::Control::SetHotKey(char16 hotKey)
 {
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    CTRLC->HotKey       = AppCUI::Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
+    CTRLC->HotKey       = Utils::KeyUtils::CreateHotKey(hotKey, Key::Alt);
     this->OnHotKeyChanged();
     return CTRLC->HotKey != Key::None;
 }
-bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bottom)
+bool Controls::Control::SetMargins(int left, int top, int right, int bottom)
 {
     CHECK(left >= 0, false, "left margin must be positive values !");
     CHECK(top >= 0, false, "top margin must be positive values !");
@@ -1607,33 +1646,31 @@ bool AppCUI::Controls::Control::SetMargins(int left, int top, int right, int bot
     CTRLC->Margins.Bottom = bottom;
     return true;
 }
-AppCUI::Input::Key AppCUI::Controls::Control::GetHotKey()
+Input::Key Controls::Control::GetHotKey()
 {
     return CTRLC->HotKey;
 }
-void AppCUI::Controls::Control::ClearHotKey()
+void Controls::Control::ClearHotKey()
 {
     CTRLC->HotKey       = Key::None;
     CTRLC->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 }
-void AppCUI::Controls::Control::SetControlID(int newID)
+uint32 Controls::Control::GetHotKeyTextOffset()
+{
+    return CTRLC->HotKeyOffset;
+}
+void Controls::Control::SetControlID(int newID)
 {
     if (newID > 0)
         CTRLC->ControlID = newID;
     else
         CTRLC->ControlID = 0;
 }
-
-int AppCUI::Controls::Control::GetControlID() const
-{
-    return CTRLC->ControlID;
-}
-
-bool AppCUI::Controls::Control::SetFocus()
+bool Controls::Control::SetFocus()
 {
     Control* obj = this;
     Control* p;
-    unsigned int tr, count;
+    uint32 tr, count;
 
     /*if (CTRLC->Focused)
         return true;*/
@@ -1667,148 +1704,148 @@ bool AppCUI::Controls::Control::SetFocus()
         obj = p;
         p   = ((ControlContext*) (p->Context))->Parent;
     }
-    AppCUI::Application::Repaint();
+    Application::Repaint();
     // acceleratorii
     // UpdateCommandBar(this);
     return true;
 }
-bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& caption)
+bool Controls::Control::ShowToolTip(const ConstString& caption)
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption);
 }
-bool AppCUI::Controls::Control::ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y)
+bool Controls::Control::ShowToolTip(const ConstString& caption, int x, int y)
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     CHECK(app, false, "Application was not initialized !");
     return app->SetToolTip(this, caption, x, y);
 }
-void AppCUI::Controls::Control::HideToolTip()
+void Controls::Control::HideToolTip()
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     if (app)
         app->ToolTip.Hide();
 }
-void AppCUI::Controls::Control::RaiseEvent(Event eventType)
+void Controls::Control::RaiseEvent(Event eventType)
 {
-    AppCUI::Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
+    Application::RaiseEvent(this, this, eventType, CTRLC->ControlID);
 }
-void AppCUI::Controls::Control::RaiseEvent(Event eventType, int ID)
+void Controls::Control::RaiseEvent(Event eventType, int ID)
 {
-    AppCUI::Application::RaiseEvent(this, this, eventType, ID);
+    Application::RaiseEvent(this, this, eventType, ID);
 }
-void AppCUI::Controls::Control::Paint(Graphics::Renderer& renderer)
+void Controls::Control::Paint(Graphics::Renderer& renderer)
 {
 }
-bool AppCUI::Controls::Control::IsInitialized()
+bool Controls::Control::IsInitialized()
 {
     CHECK(this->Context, false, "Control context was not initialized !");
     return CTRLC->Inited;
 }
 // Evenimente
-bool AppCUI::Controls::Control::OnKeyEvent(AppCUI::Input::Key, char16_t)
+bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
 }
-void AppCUI::Controls::Control::OnFocus()
+void Controls::Control::OnFocus()
 {
 }
-void AppCUI::Controls::Control::OnLoseFocus()
+void Controls::Control::OnLoseFocus()
 {
 }
-void AppCUI::Controls::Control::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void Controls::Control::OnMouseReleased(int, int, Input::MouseButton)
 {
 }
-void AppCUI::Controls::Control::OnMousePressed(int, int, AppCUI::Input::MouseButton)
+void Controls::Control::OnMousePressed(int, int, Input::MouseButton)
 {
 }
-bool AppCUI::Controls::Control::OnMouseDrag(int, int, AppCUI::Input::MouseButton)
-{
-    return false;
-}
-bool AppCUI::Controls::Control::OnMouseOver(int, int)
+bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseEnter()
+bool Controls::Control::OnMouseOver(int, int)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseLeave()
+bool Controls::Control::OnMouseEnter()
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnMouseWheel(int, int, AppCUI::Input::MouseWheel)
+bool Controls::Control::OnMouseLeave()
 {
     return false;
 }
-void AppCUI::Controls::Control::OnHotKey()
-{
-}
-void AppCUI::Controls::Control::OnHotKeyChanged()
-{
-}
-bool AppCUI::Controls::Control::OnEvent(Reference<Control>, Event, int)
+bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnUpdateCommandBar(AppCUI::Application::CommandBar&)
+void Controls::Control::OnHotKey()
+{
+}
+void Controls::Control::OnHotKeyChanged()
+{
+}
+bool Controls::Control::OnEvent(Reference<Control>, Event, int)
 {
     return false;
 }
-bool AppCUI::Controls::Control::OnBeforeResize(int, int)
+bool Controls::Control::OnUpdateCommandBar(Application::CommandBar&)
+{
+    return false;
+}
+bool Controls::Control::OnBeforeResize(int, int)
 {
     return true;
 }
-bool AppCUI::Controls::Control::OnFrameUpdate()
+bool Controls::Control::OnFrameUpdate()
 {
     return false;
 }
-void AppCUI::Controls::Control::OnAfterResize(int, int)
+void Controls::Control::OnAfterResize(int, int)
 {
 }
-bool AppCUI::Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
+bool Controls::Control::OnBeforeAddControl(Reference<Control> ctrl)
 {
     return (ctrl != nullptr);
 }
-void AppCUI::Controls::Control::OnControlRemoved(Reference<Control>)
+void Controls::Control::OnControlRemoved(Reference<Control>)
 {
 }
-void AppCUI::Controls::Control::OnExpandView(AppCUI::Graphics::Clip&)
+void Controls::Control::OnExpandView(Graphics::Clip&)
 {
 }
-void AppCUI::Controls::Control::OnPackView()
+void Controls::Control::OnPackView()
 {
 }
-void AppCUI::Controls::Control::OnAfterAddControl(Reference<Control>)
+void Controls::Control::OnAfterAddControl(Reference<Control>)
 {
     // daca e primul - setez si tab-ul
     if (CTRLC->ControlsCount == 1)
         CTRLC->CurrentControlIndex = 0;
 }
-bool AppCUI::Controls::Control::OnBeforeSetText(const AppCUI::Utils::ConstString&)
+bool Controls::Control::OnBeforeSetText(const ConstString&)
 {
     return true;
 }
-void AppCUI::Controls::Control::OnAfterSetText(const AppCUI::Utils::ConstString&)
+void Controls::Control::OnAfterSetText()
 {
 }
-void AppCUI::Controls::Control::OnUpdateScrollBars()
+void Controls::Control::OnUpdateScrollBars()
 {
 }
 
-
-Handlers::Control* AppCUI::Controls::Control::Handlers()
+Handlers::Control* Controls::Control::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::Control);
 }
 
-void AppCUI::Controls::Control::ExpandView()
+void Controls::Control::ExpandView()
 {
-    AppCUI::Application::GetApplication()->ExpandControl(this);
+    Application::GetApplication()->ExpandControl(this);
 }
-void AppCUI::Controls::Control::PackView()
+void Controls::Control::PackView()
 {
-    AppCUI::Application::GetApplication()->PackControl(true);
+    Application::GetApplication()->PackControl(true);
 }
+} // namespace AppCUI

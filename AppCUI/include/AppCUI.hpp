@@ -1,5 +1,8 @@
 #pragma once
 
+// Version MUST be in the following format <Major>.<Minor>.<Patch>
+#define APPCUI_VERSION "1.0.0"
+
 #include <filesystem>
 #include <map>
 #include <memory>
@@ -183,9 +186,35 @@ inline void Unused(...)
 
 namespace AppCUI
 {
+// basic types
+using uint64 = uint64_t;
+using uint32 = uint32_t;
+using uint16 = uint16_t;
+using uint8  = uint8_t;
+using int64  = int64_t;
+using int32  = int32_t;
+using int16  = int16_t;
+using int8   = int8_t;
+using char8  = char8_t;
+using char16 = char16_t;
+
+namespace StdIncludes
+{
+    using std::initializer_list;
+    using std::optional;
+    using std::string_view;
+    using std::u16string_view;
+    using std::u8string_view;
+    using std::unique_ptr;
+    using std::variant;
+    using std::vector;
+} // namespace StdIncludes
+
+using namespace StdIncludes;
+
 namespace Graphics
 {
-    enum class Color : unsigned char
+    enum class Color : uint8
     {
         Black       = 0x00,
         DarkBlue    = 0x01,
@@ -207,14 +236,14 @@ namespace Graphics
     };
     struct Size
     {
-        unsigned int Width, Height;
+        uint32 Width, Height;
         inline Size() : Width(0), Height(0)
         {
         }
-        inline Size(unsigned int width, unsigned int height) : Width(width), Height(height)
+        inline Size(uint32 width, uint32 height) : Width(width), Height(height)
         {
         }
-        inline void Set(unsigned int width, unsigned int height)
+        inline void Set(uint32 width, uint32 height)
         {
             Width  = width;
             Height = height;
@@ -222,14 +251,14 @@ namespace Graphics
     };
     struct Point
     {
-        int X, Y;
+        int32 X, Y;
         inline Point() : X(0), Y(0)
         {
         }
-        inline Point(int x, int y) : X(x), Y(y)
+        inline Point(int32 x, int32 y) : X(x), Y(y)
         {
         }
-        inline void Set(int x, int y)
+        inline void Set(int32 x, int32 y)
         {
             X = x;
             Y = y;
@@ -248,10 +277,10 @@ namespace Graphics
         {
             struct
             {
-                char16_t Code;
+                char16 Code;
                 ColorPair Color;
             };
-            unsigned int PackedValue;
+            uint32 PackedValue;
         };
         inline constexpr bool operator==(char value) const
         {
@@ -261,11 +290,11 @@ namespace Graphics
         {
             return Code != value;
         }
-        inline constexpr bool operator==(char16_t value) const
+        inline constexpr bool operator==(char16 value) const
         {
             return Code == value;
         }
-        inline constexpr bool operator!=(char16_t value) const
+        inline constexpr bool operator!=(char16 value) const
         {
             return Code != value;
         }
@@ -273,7 +302,7 @@ namespace Graphics
         {
             return Code > value;
         }
-        inline constexpr bool operator>(char16_t value) const
+        inline constexpr bool operator>(char16 value) const
         {
             return Code > value;
         }
@@ -281,7 +310,7 @@ namespace Graphics
         {
             return Code < value;
         }
-        inline constexpr bool operator<(char16_t value) const
+        inline constexpr bool operator<(char16 value) const
         {
             return Code < value;
         }
@@ -289,7 +318,7 @@ namespace Graphics
         {
             return Code >= value;
         }
-        inline constexpr bool operator>=(char16_t value) const
+        inline constexpr bool operator>=(char16 value) const
         {
             return Code >= value;
         }
@@ -297,11 +326,11 @@ namespace Graphics
         {
             return Code <= value;
         }
-        inline constexpr bool operator<=(char16_t value) const
+        inline constexpr bool operator<=(char16 value) const
         {
             return Code <= value;
         }
-        inline constexpr operator char16_t() const
+        inline constexpr operator char16() const
         {
             return Code;
         }
@@ -310,18 +339,35 @@ namespace Graphics
 }; // namespace Graphics
 namespace Utils
 {
-    using CharacterView = std::basic_string_view<AppCUI::Graphics::Character>;
-    using ConstString   = std::variant<std::string_view, std::u8string_view, std::u16string_view, CharacterView>;
+    using CharacterView = std::basic_string_view<Graphics::Character>;
+    using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
     template <typename T>
-    class Pointer : public std::unique_ptr<T>
+    class Pointer : public unique_ptr<T>
     {
       public:
-        Pointer(T* obj) : std::unique_ptr<T>(obj)
+        Pointer(T* obj) : unique_ptr<T>(obj)
         {
         }
         operator T*()
         {
             return this->get();
+        }
+    };
+    template <typename T>
+    class Reference;
+
+    class GenericRef
+    {
+        void* ptr;
+
+      public:
+        GenericRef(void* p) : ptr(p)
+        {
+        }
+        template <typename T>
+        Reference<T> ToReference()
+        {
+            return Reference<T>((T*) ptr);
         }
     };
     template <typename T>
@@ -388,8 +434,13 @@ namespace Utils
         {
             return (size_t) (this->ptr);
         }
+        inline GenericRef ToGenericRef() const
+        {
+            return GenericRef(this->ptr);
+        }
     };
 } // namespace Utils
+using Utils::ConstString;
 namespace Application
 {
     struct Config;
@@ -397,7 +448,7 @@ namespace Application
 }; // namespace Application
 namespace Dialogs
 {
-    enum class Result : int
+    enum class Result : int32
     {
         None   = 0,
         Ok     = 1,
@@ -409,7 +460,7 @@ namespace Dialogs
 
 namespace Input
 {
-    enum class Key : unsigned int
+    enum class Key : uint32
     {
         None = 0,
         F1   = 1,
@@ -482,7 +533,7 @@ namespace Input
         Ctrl  = 0x2000,
         Shift = 0x4000
     };
-    enum class MouseButton : unsigned int
+    enum class MouseButton : uint32
     {
         None          = 0,
         Left          = 0x01,
@@ -490,7 +541,7 @@ namespace Input
         Right         = 0x04,
         DoubleClicked = 0x08,
     };
-    enum class MouseWheel : unsigned int
+    enum class MouseWheel : uint32
     {
         None = 0,
         Up,
@@ -503,33 +554,33 @@ namespace Utils
 {
     class EXPORT Array32
     {
-        unsigned int* Data;
-        unsigned int Count, Allocated;
+        uint32* Data;
+        uint32 Count, Allocated;
 
-        bool Grow(unsigned int newSize);
+        bool Grow(uint32 newSize);
 
       public:
         Array32();
         ~Array32();
         void Destroy();
 
-        bool Create(unsigned int allocatedCount = 64);
-        bool Create(unsigned int* vector, unsigned int vectorSize, unsigned int elementsCount = 0);
-        bool Create(int* vector, unsigned int vectorSize, unsigned int elementsCount = 0);
+        bool Create(uint32 allocatedCount = 64);
+        bool Create(uint32* vector, uint32 vectorSize, uint32 elementsCount = 0);
+        bool Create(int32* vector, uint32 vectorSize, uint32 elementsCount = 0);
 
-        inline unsigned int* GetUInt32Array() const
+        inline uint32* GetUInt32Array() const
         {
             return Data;
         }
-        inline int* GetInt32Array() const
+        inline int32* GetInt32Array() const
         {
-            return (int*) Data;
+            return (int32*) Data;
         }
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return Count;
         }
-        inline unsigned int GetAllocatedSize() const
+        inline uint32 GetAllocatedSize() const
         {
             return Allocated & 0x7FFFFFFF;
         }
@@ -538,26 +589,162 @@ namespace Utils
         {
             Count = 0;
         }
-        bool Reserve(unsigned int newSize);
-        bool Resize(unsigned int newSize);
-        bool Push(unsigned int value);
-        bool Push(int value);
-        bool Get(unsigned int index, unsigned int& value);
-        bool Get(unsigned int index, int& value);
+        bool Reserve(uint32 newSize);
+        bool Resize(uint32 newSize);
+        bool Push(uint32 value);
+        bool Push(int32 value);
+        bool Get(uint32 index, uint32& value);
+        bool Get(uint32 index, int32& value);
 
-        bool Sort(int (*compare)(int elem1, int elem2, void* Context), bool ascendent, void* Context = nullptr);
-        bool Sort(
-              int (*compare)(unsigned int elem1, unsigned int elem2, void* Context),
-              bool ascendent,
-              void* Context = nullptr);
+        bool Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context = nullptr);
+        bool Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context = nullptr);
     };
+
+    class BufferView
+    {
+        const uint8* data;
+        const size_t length;
+
+      public:
+        BufferView() : data(nullptr), length(0)
+        {
+        }
+        BufferView(const void* ptr, size_t len) : data((const uint8*) ptr), length(len)
+        {
+        }
+        BufferView(string_view txt) : data((const uint8*) txt.data()), length(txt.size())
+        {
+        }
+        inline uint8 operator[](size_t index) const
+        {
+            return data[index];
+        }
+        inline bool IsValid() const
+        {
+            return length > 0;
+        }
+        inline bool Empty() const
+        {
+            return length == 0;
+        }
+        inline size_t GetLength() const
+        {
+            return length;
+        }
+        inline const uint8* GetData() const
+        {
+            return data;
+        }
+        template <typename T>
+        inline Reference<const T> GetObject(uint32 offset = 0) const
+        {
+            if (sizeof(T) + offset > length)
+                return nullptr;
+            return reinterpret_cast<const T*>(data + offset);
+        }
+
+        inline operator string_view() const
+        {
+            return string_view((const char*) data, length);
+        }
+        // iterators
+        inline const uint8* begin() const
+        {
+            return data;
+        }
+        inline const uint8* end() const
+        {
+            return data + length;
+        }
+    };
+
+    class EXPORT Buffer
+    {
+        uint8* data;
+        size_t length;
+
+      public:
+        ~Buffer();
+        Buffer() : data(nullptr), length(0)
+        {
+        }
+        Buffer(size_t size);
+        Buffer(const Buffer& buf);
+
+        Buffer(void*& ptr, size_t size)
+        {
+            data   = (uint8*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(char*& ptr, size_t size)
+        {
+            data   = (uint8*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(uint8*& ptr, size_t size)
+        {
+            data   = (uint8*) ptr;
+            length = size;
+            ptr    = nullptr;
+        }
+        Buffer(Buffer&& buf) noexcept
+        {
+            data       = buf.data;
+            length     = buf.length;
+            buf.data   = nullptr;
+            buf.length = 0;
+        }
+
+        inline Buffer& operator=(Buffer&& b) noexcept
+        {
+            std::swap(data, b.data);
+            std::swap(length, b.length);
+            return *this;
+        }
+        inline uint8& operator[](size_t index) const
+        {
+            return data[index];
+        }
+        inline operator BufferView() const
+        {
+            return BufferView((const void*) data, length);
+        }
+        inline operator string_view() const
+        {
+            return string_view((const char*) data, length);
+        }
+        inline bool IsValid() const
+        {
+            return length > 0;
+        }
+        inline size_t GetLength() const
+        {
+            return length;
+        }
+        inline uint8* GetData() const
+        {
+            return data;
+        }
+        template <typename T>
+        inline Reference<T> GetObject(uint32 offset = 0)
+        {
+            if (sizeof(T) + offset > length)
+                return nullptr;
+            return reinterpret_cast<T*>(data + offset);
+        }
+        void Resize(size_t newSize);
+        Buffer& operator=(const Buffer& b);
+    };
+
     class EXPORT String
     {
         char* Text;
-        unsigned int Size;
-        unsigned int Allocated;
+        uint32 Size;
+        uint32 Allocated;
 
-        bool Grow(unsigned int newSize);
+        bool Grow(uint32 newSize);
 
       public:
         String(void);
@@ -565,74 +752,74 @@ namespace Utils
         ~String(void);
 
         // Static functions
-        static unsigned int Len(const char* string);
+        static uint32 Len(const char* string);
         static bool Add(
               char* destination,
               const char* source,
-              unsigned int maxDestinationSize,
-              unsigned int destinationSize          = 0xFFFFFFFF,
-              unsigned int sourceSize               = 0xFFFFFFFF,
-              unsigned int* resultedDestinationSize = nullptr);
+              uint32 maxDestinationSize,
+              uint32 destinationSize          = 0xFFFFFFFF,
+              uint32 sourceSize               = 0xFFFFFFFF,
+              uint32* resultedDestinationSize = nullptr);
         static bool Set(
               char* destination,
               const char* source,
-              unsigned int maxDestinationSize,
-              unsigned int sourceSize               = 0xFFFFFFFF,
-              unsigned int* resultedDestinationSize = nullptr);
+              uint32 maxDestinationSize,
+              uint32 sourceSize               = 0xFFFFFFFF,
+              uint32* resultedDestinationSize = nullptr);
         static bool Equals(const char* sir1, const char* sir2, bool ignoreCase = false);
         static bool StartsWith(const char* sir, const char* text, bool ignoreCase = false);
-        static bool StartsWith(std::string_view sir1, std::string_view sir2, bool ignoreCase = false);
+        static bool StartsWith(string_view sir1, string_view sir2, bool ignoreCase = false);
         static bool EndsWith(
               const char* sir,
               const char* text,
-              bool ignoreCase          = false,
-              unsigned int sirTextSize = 0xFFFFFFFF,
-              unsigned int textSize    = 0xFFFFFFFF);
+              bool ignoreCase    = false,
+              uint32 sirTextSize = 0xFFFFFFFF,
+              uint32 textSize    = 0xFFFFFFFF);
         static bool Contains(const char* sir, const char* textToFind, bool ignoreCase = false);
-        static int Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
+        static int32 Compare(const char* sir1, const char* sir2, bool ignoreCase = false);
         // Create string object
-        bool Create(unsigned int initialAllocatedBuffer = 64);
+        bool Create(uint32 initialAllocatedBuffer = 64);
         bool Create(const char* text);
-        bool Create(char* buffer, unsigned int bufferSize, bool emptyString = false);
+        bool Create(char* buffer, uint32 bufferSize, bool emptyString = false);
 
         const char* GetText() const
         {
             return Text;
         }
-        unsigned int Len() const
+        uint32 Len() const
         {
             return Size;
         }
-        unsigned int GetAllocatedSize() const
+        uint32 GetAllocatedSize() const
         {
             return Allocated & 0x7FFFFFFF;
         }
 
-        int GetChar(int index) const;
-        bool SetChar(int index, char value);
+        char GetChar(int32 index) const;
+        bool SetChar(int32 index, char value);
 
-        bool Add(const char* text, unsigned int size = 0xFFFFFFFF);
+        bool Add(const char* text, uint32 size = 0xFFFFFFFF);
         bool Add(const String& text);
         bool Add(const String* text);
         bool AddChar(char ch);
-        bool AddChars(char ch, unsigned int count);
+        bool AddChars(char ch, uint32 count);
 
-        bool InsertChar(char character, unsigned int position);
-        bool DeleteChar(unsigned int position);
-        bool Delete(unsigned int start, unsigned int end);
+        bool InsertChar(char character, uint32 position);
+        bool DeleteChar(uint32 position);
+        bool Delete(uint32 start, uint32 end);
 
-        bool Set(const char* text, unsigned int size = 0xFFFFFFFF);
+        bool Set(const char* text, uint32 size = 0xFFFFFFFF);
         bool Set(const String& text);
         bool Set(const String* text);
-        bool SetChars(char ch, unsigned int count);
+        bool SetChars(char ch, uint32 count);
 
         bool SetFormat(const char* format, ...);
         bool AddFormat(const char* format, ...);
-        std::string_view Format(const char* format, ...);
+        string_view Format(const char* format, ...);
 
-        bool Realloc(unsigned int newSize);
+        bool Realloc(uint32 newSize);
         void Destroy();
-        bool Truncate(unsigned int newSize);
+        bool Truncate(uint32 newSize);
         void Clear();
 
         bool StartsWith(const char* text, bool ignoreCase = false) const;
@@ -645,7 +832,7 @@ namespace Utils
         bool Equals(const String& ss, bool ignoreCase = false) const;
         bool Contains(const char* text, bool ignoreCase = false) const;
         bool Contains(const String& ss, bool ignoreCase = false) const;
-        int CompareWith(const char* text, bool ignoreCase = false) const;
+        int32 CompareWith(const char* text, bool ignoreCase = false) const;
 
         void ConvertToInternalNewLineFormat();
 
@@ -686,41 +873,43 @@ namespace Utils
         {
             return !this->Equals(s);
         }
-        inline operator std::string_view() const
+        inline operator string_view() const
         {
-            return std::string_view{ this->Text, this->Size };
+            return string_view{ this->Text, this->Size };
         }
-        inline std::string_view ToStringView() const
+        inline string_view ToStringView() const
         {
-            return std::string_view{ this->Text, this->Size };
+            return string_view{ this->Text, this->Size };
         }
-        char& operator[](int poz);
+        char& operator[](int32 poz);
     };
     class EXPORT UnicodeStringBuilder
     {
-        char16_t* chars;
-        unsigned int length;
-        unsigned int allocated;
+        char16* chars;
+        uint32 length;
+        uint32 allocated;
 
-        void Create(char16_t* localBuffer, size_t localBufferSize);
+        void Create(char16* localBuffer, size_t localBufferSize);
 
       public:
         UnicodeStringBuilder();
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize);
-        UnicodeStringBuilder(const AppCUI::Utils::ConstString& text);
-        UnicodeStringBuilder(char16_t* localBuffer, size_t localBufferSize, const AppCUI::Utils::ConstString& text);
-        UnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer);
-        UnicodeStringBuilder(
-              char16_t* localBuffer, size_t localBufferSize, const AppCUI::Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize);
+        UnicodeStringBuilder(const ConstString& text);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const ConstString& text);
+        UnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer);
+        UnicodeStringBuilder(char16* localBuffer, size_t localBufferSize, const Graphics::CharacterBuffer& charBuffer);
+
+        UnicodeStringBuilder(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept;
 
         ~UnicodeStringBuilder();
         void Destroy();
 
-        bool Set(const AppCUI::Utils::ConstString& text);
-        bool Set(const AppCUI::Graphics::CharacterBuffer& charBuffer);
-        bool Add(const AppCUI::Utils::ConstString& text);
-        bool Add(const AppCUI::Graphics::CharacterBuffer& charBuffer);
-        bool AddChar(char16_t ch);
+        bool Set(const ConstString& text);
+        bool Set(const Graphics::CharacterBuffer& charBuffer);
+        bool Add(const ConstString& text);
+        bool Add(const Graphics::CharacterBuffer& charBuffer);
+        bool AddChar(char16 ch);
         bool Resize(size_t size);
 
         void ToString(std::string& output) const;
@@ -731,22 +920,22 @@ namespace Utils
         {
             length = 0;
         }
-        inline void Truncate(unsigned int newSize)
+        inline void Truncate(uint32 newSize)
         {
             if (newSize < length)
                 length = newSize;
         }
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return length;
         }
-        inline const char16_t* GetString() const
+        inline const char16* GetString() const
         {
             return chars;
         }
-        inline std::u16string_view ToStringView() const
+        inline u16string_view ToStringView() const
         {
-            return std::u16string_view{ chars, (size_t) length };
+            return u16string_view{ chars, (size_t) length };
         }
         inline operator std::string() const
         {
@@ -766,33 +955,36 @@ namespace Utils
             ToPath(temp);
             return temp;
         }
-        inline operator std::u16string_view() const
+        inline operator u16string_view() const
         {
-            return std::u16string_view{ chars, (size_t) length };
+            return u16string_view{ chars, (size_t) length };
         }
-        inline UnicodeStringBuilder& operator+=(const AppCUI::Utils::ConstString& text)
+        inline UnicodeStringBuilder& operator+=(const ConstString& text)
         {
             Add(text);
             return *this;
         }
-        inline UnicodeStringBuilder& operator+=(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+        inline UnicodeStringBuilder& operator+=(const Graphics::CharacterBuffer& charBuffer)
         {
             Add(charBuffer);
             return *this;
         }
-        inline UnicodeStringBuilder& operator=(const AppCUI::Utils::ConstString& text)
+        inline UnicodeStringBuilder& operator=(const ConstString& text)
         {
             Set(text);
             return *this;
         }
-        inline UnicodeStringBuilder& operator=(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+        inline UnicodeStringBuilder& operator=(const Graphics::CharacterBuffer& charBuffer)
         {
             Set(charBuffer);
             return *this;
         }
+
+        UnicodeStringBuilder& operator=(const UnicodeStringBuilder& obj);
+        UnicodeStringBuilder& operator=(UnicodeStringBuilder&& obj) noexcept;
     };
 
-    enum class NumberParseFlags : unsigned int
+    enum class NumberParseFlags : uint32
     {
         None       = 0,
         BaseAuto   = 0,
@@ -804,32 +996,299 @@ namespace Utils
     };
     namespace Number
     {
-        EXPORT std::optional<unsigned long long> ToUInt64(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned int> ToUInt32(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned short> ToUInt16(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<unsigned char> ToUInt8(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<uint64> ToUInt64(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<uint32> ToUInt32(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<uint16> ToUInt16(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<uint8> ToUInt8(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
-        EXPORT std::optional<long long> ToInt64(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<int> ToInt32(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<short> ToInt16(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<char> ToInt8(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<int64> ToInt64(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<int32> ToInt32(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<int16> ToInt16(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<int8> ToInt8(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
-        EXPORT std::optional<float> ToFloat(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
-        EXPORT std::optional<double> ToDouble(
-              std::string_view text, NumberParseFlags flags = NumberParseFlags::None, unsigned int* size = nullptr);
+        EXPORT optional<float> ToFloat(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
+        EXPORT optional<double> ToDouble(
+              string_view text, NumberParseFlags flags = NumberParseFlags::None, uint32* size = nullptr);
 
     }; // namespace Number
 
-    enum class StringEncoding : unsigned int
+    enum class NumericFormatFlags : uint16
+    {
+        None      = 0,
+        LowerCase = 0x0001,
+        PlusSign  = 0x0002,
+        MinusSign = 0x0004,
+        HexPrefix = 0x0008,
+        HexSuffix = 0x0010,
+        BinPrefix = 0x0020,
+        OctPrefix = 0x0040,
+    };
+    struct NumericFormat
+    {
+        NumericFormatFlags Flags;
+        uint8 Base;
+        uint8 GroupSize;
+        char GroupSeparator;
+        uint8 DigitsCount;
+        NumericFormat(NumericFormatFlags flags)
+            : Flags(flags), Base(10), GroupSize(0), GroupSeparator(0), DigitsCount(0)
+        {
+        }
+        NumericFormat(NumericFormatFlags flags, uint8 base)
+            : Flags(flags), Base(base), GroupSize(0), GroupSeparator(0), DigitsCount(0)
+        {
+        }
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator)
+            : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(0)
+        {
+        }
+        NumericFormat(NumericFormatFlags flags, uint8 base, uint8 groupSize, char groupSeparator, uint8 digitsCount)
+            : Flags(flags), Base(base), GroupSize(groupSize), GroupSeparator(groupSeparator), DigitsCount(digitsCount)
+        {
+        }
+    };
+    class EXPORT NumericFormatter
+    {
+        char temp[72]; // a minimum of 65 chars must be allocated to support 64 bits for binary translation
+        char* heapBuffer;
+        string_view ToHexString(uint64 value);
+        string_view ToOctString(uint64 value);
+        string_view ToBinString(uint64 value);
+        string_view ToDecStringUnsigned(uint64 value);
+        string_view ToDecStringSigned(int64 value);
+        string_view ToBaseUnsigned(uint64 value, uint8 base);
+        string_view ToBaseSigned(int64 value, uint8 base);
+        string_view ToGenericBase(uint64 value, uint64 base);
+        string_view ToStringUnsigned(uint64 value, NumericFormat fmt);
+        string_view ToStringSigned(int64 value, NumericFormat fmt);
+
+      public:
+        NumericFormatter() : heapBuffer(nullptr)
+        {
+        }
+        ~NumericFormatter()
+        {
+            if (heapBuffer)
+                delete[] heapBuffer;
+            heapBuffer = nullptr;
+        }
+        // ToHex
+        inline string_view ToHex(uint64 value)
+        {
+            return ToHexString(value);
+        }
+        inline string_view ToHex(uint32 value)
+        {
+            return ToHexString((uint64) value);
+        }
+        inline string_view ToHex(uint16 value)
+        {
+            return ToHexString((uint64) value);
+        }
+        inline string_view ToHex(uint8 value)
+        {
+            return ToHexString((uint64) value);
+        }
+        inline string_view ToHex(int64 value)
+        {
+            return ToHexString(*(uint64*) &value);
+        }
+        inline string_view ToHex(int32 value)
+        {
+            return ToHexString((uint64) (*(uint32*) &value));
+        }
+        inline string_view ToHex(int16 value)
+        {
+            return ToHexString((uint64) (*(uint16*) &value));
+        }
+        inline string_view ToHex(int8 value)
+        {
+            return ToHexString((uint64) (*(uint8*) &value));
+        }
+
+        // ToDec
+        inline string_view ToDec(uint64 value)
+        {
+            return ToDecStringUnsigned(value);
+        }
+        inline string_view ToDec(uint32 value)
+        {
+            return ToDecStringUnsigned((uint64) value);
+        }
+        inline string_view ToDec(uint16 value)
+        {
+            return ToDecStringUnsigned((uint64) value);
+        }
+        inline string_view ToDec(uint8 value)
+        {
+            return ToDecStringUnsigned((uint64) value);
+        }
+        inline string_view ToDec(int64 value)
+        {
+            return ToDecStringSigned(value);
+        }
+        inline string_view ToDec(int32 value)
+        {
+            return ToDecStringSigned((int64) value);
+        }
+        inline string_view ToDec(int16 value)
+        {
+            return ToDecStringSigned((int64) value);
+        }
+        inline string_view ToDec(int8 value)
+        {
+            return ToDecStringSigned((int64) value);
+        }
+        string_view ToDec(float value);
+        string_view ToDec(double value);
+
+        // ToOct
+        inline string_view ToOct(uint64 value)
+        {
+            return ToOctString(value);
+        }
+        inline string_view ToOct(uint32 value)
+        {
+            return ToOctString((uint64) value);
+        }
+        inline string_view ToOct(uint16 value)
+        {
+            return ToOctString((uint64) value);
+        }
+        inline string_view ToOct(uint8 value)
+        {
+            return ToOctString((uint64) value);
+        }
+        inline string_view ToOct(int64 value)
+        {
+            return ToOctString(*(uint64*) &value);
+        }
+        inline string_view ToOct(int32 value)
+        {
+            return ToOctString((uint64) (*(uint32*) &value));
+        }
+        inline string_view ToOct(int16 value)
+        {
+            return ToOctString((uint64) (*(uint16*) &value));
+        }
+        inline string_view ToOct(int8 value)
+        {
+            return ToOctString((uint64) (*(uint8*) &value));
+        }
+
+        // ToBin
+        inline string_view ToBin(uint64 value)
+        {
+            return ToBinString(value);
+        }
+        inline string_view ToBin(uint32 value)
+        {
+            return ToBinString((uint64) value);
+        }
+        inline string_view ToBin(uint16 value)
+        {
+            return ToBinString((uint64) value);
+        }
+        inline string_view ToBin(uint8 value)
+        {
+            return ToBinString((uint64) value);
+        }
+        inline string_view ToBin(int64 value)
+        {
+            return ToBinString(*(uint64*) &value);
+        }
+        inline string_view ToBin(int32 value)
+        {
+            return ToBinString((uint64) (*(uint32*) &value));
+        }
+        inline string_view ToBin(int16 value)
+        {
+            return ToBinString((uint64) (*(uint16*) &value));
+        }
+        inline string_view ToBin(int8 value)
+        {
+            return ToBinString((uint64) (*(uint8*) &value));
+        }
+
+        // ToBase
+        inline string_view ToBase(uint64 value, uint8 base)
+        {
+            return ToBaseUnsigned(value, base);
+        }
+        inline string_view ToBase(uint32 value, uint8 base)
+        {
+            return ToBaseUnsigned((uint64) value, base);
+        }
+        inline string_view ToBase(uint16 value, uint8 base)
+        {
+            return ToBaseUnsigned((uint64) value, base);
+        }
+        inline string_view ToBase(uint8 value, uint8 base)
+        {
+            return ToBaseUnsigned((uint64) value, base);
+        }
+        inline string_view ToBase(int64 value, uint8 base)
+        {
+            return ToBaseSigned(value, base);
+        }
+        inline string_view ToBase(int32 value, uint8 base)
+        {
+            return ToBaseSigned((int64) value, base);
+        }
+        inline string_view ToBase(int16 value, uint8 base)
+        {
+            return ToBaseSigned((int64) value, base);
+        }
+        inline string_view ToBase(int8 value, uint8 base)
+        {
+            return ToBaseSigned((int64) value, base);
+        }
+
+        // ToString
+        inline string_view ToString(uint64 value, NumericFormat fmt)
+        {
+            return ToStringUnsigned(value, fmt);
+        }
+        inline string_view ToString(uint32 value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((uint64) value, fmt);
+        }
+        inline string_view ToString(uint16 value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((uint64) value, fmt);
+        }
+        inline string_view ToString(uint8 value, NumericFormat fmt)
+        {
+            return ToStringUnsigned((uint64) value, fmt);
+        }
+        inline string_view ToString(int64 value, NumericFormat fmt)
+        {
+            return ToStringSigned(value, fmt);
+        }
+        inline string_view ToString(int32 value, NumericFormat fmt)
+        {
+            return ToStringSigned((int64) value, fmt);
+        }
+        inline string_view ToString(int16 value, NumericFormat fmt)
+        {
+            return ToStringSigned((int64) value, fmt);
+        }
+        inline string_view ToString(int8 value, NumericFormat fmt)
+        {
+            return ToStringSigned((int64) value, fmt);
+        }
+    };
+
+    enum class StringEncoding : uint32
     {
         Ascii = 0,
         UTF8,
@@ -840,7 +1299,7 @@ namespace Utils
         Count
     };
 
-    static_assert(std::variant_size_v<ConstString> == static_cast<unsigned int>(StringEncoding::Count));
+    static_assert(std::variant_size_v<ConstString> == static_cast<uint32>(StringEncoding::Count));
 
     struct ConstStringObject
     {
@@ -865,13 +1324,13 @@ namespace Utils
             switch (obj.index())
             {
             case 0:
-                BuildFromAlternative<std::string_view>(obj, StringEncoding::Ascii);
+                BuildFromAlternative<string_view>(obj, StringEncoding::Ascii);
                 break;
             case 1:
-                BuildFromAlternative<std::u8string_view>(obj, StringEncoding::UTF8);
+                BuildFromAlternative<u8string_view>(obj, StringEncoding::UTF8);
                 break;
             case 2:
-                BuildFromAlternative<std::u16string_view>(obj, StringEncoding::Unicode16);
+                BuildFromAlternative<u16string_view>(obj, StringEncoding::Unicode16);
                 break;
             case 3:
                 BuildFromAlternative<CharacterView>(obj, StringEncoding::CharacterBuffer);
@@ -882,9 +1341,10 @@ namespace Utils
         }
     };
 
-    template <int size>
+    template <uint32 size>
     class LocalString : public String
     {
+        static_assert(size > 0);
         char tempBuffer[size];
 
       public:
@@ -896,47 +1356,47 @@ namespace Utils
     template <size_t size>
     class LocalUnicodeStringBuilder : public UnicodeStringBuilder
     {
-        char16_t tempBuffer[size];
+        char16 tempBuffer[size];
 
       public:
         LocalUnicodeStringBuilder() : UnicodeStringBuilder(tempBuffer, size)
         {
         }
-        LocalUnicodeStringBuilder(const AppCUI::Graphics::CharacterBuffer& charBuffer)
+        LocalUnicodeStringBuilder(const Graphics::CharacterBuffer& charBuffer)
             : UnicodeStringBuilder(tempBuffer, size, charBuffer)
         {
         }
-        LocalUnicodeStringBuilder(const AppCUI::Utils::ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text)
+        LocalUnicodeStringBuilder(const ConstString& text) : UnicodeStringBuilder(tempBuffer, size, text)
         {
         }
     };
-    template <unsigned short Size>
+    template <uint16 Size>
     class FixSizeString
     {
         static_assert(Size > 0);
         char data[Size + 1];
-        unsigned short size;
+        uint16 size;
 
       public:
         FixSizeString() : size(0)
         {
             data[0] = 0;
         }
-        FixSizeString(std::string_view txt)
+        FixSizeString(string_view txt)
         {
             Set(txt);
         }
-        constexpr inline operator std::string_view() const
+        constexpr inline operator string_view() const
         {
-            return std::string_view{ data, size };
+            return string_view{ data, size };
         }
         constexpr inline operator bool() const
         {
             return this->size != 0;
         }
-        void Set(std::string_view txt)
+        void Set(string_view txt)
         {
-            size = (unsigned short) std::min((size_t) Size, txt.length());
+            size = (uint16) std::min((size_t) Size, txt.length());
             memcpy(data, txt.data(), size);
             data[size] = 0;
         }
@@ -947,14 +1407,14 @@ namespace Utils
                 const char* e = text;
                 while (*e)
                     e++;
-                Set(std::string_view{ text, static_cast<size_t>(e - text) });
+                Set(string_view{ text, static_cast<size_t>(e - text) });
             }
             else
             {
                 Clear();
             }
         }
-        constexpr inline unsigned short Len() const
+        constexpr inline uint16 Len() const
         {
             return size;
         }
@@ -962,11 +1422,11 @@ namespace Utils
         {
             return data;
         }
-        constexpr inline unsigned short MaxSize() const
+        constexpr inline uint16 MaxSize() const
         {
             return Size;
         }
-        inline FixSizeString& operator=(std::string_view txt)
+        inline FixSizeString& operator=(string_view txt)
         {
             Set(txt);
             return *this;
@@ -985,61 +1445,61 @@ namespace Utils
     class EXPORT KeyUtils
     {
       public:
-        constexpr static const unsigned int KEY_SHIFT_MASK = 0x7000;
-        constexpr static const unsigned int KEY_SHIFT_BITS = 12;
-        constexpr static const unsigned int KEY_CODE_MASK  = 0xFF;
+        constexpr static const uint32 KEY_SHIFT_MASK = 0x7000;
+        constexpr static const uint32 KEY_SHIFT_BITS = 12;
+        constexpr static const uint32 KEY_CODE_MASK  = 0xFF;
 
         // Returns the name of the Key without modifiers
-        static std::string_view GetKeyName(AppCUI::Input::Key keyCode);
-        static std::string_view GetKeyModifierName(AppCUI::Input::Key keyCode);
-        static std::string_view GetKeyNamePadded(AppCUI::Input::Key keyCode);
-        static bool ToString(AppCUI::Input::Key keyCode, char* text, int maxTextSize);
-        static bool ToString(AppCUI::Input::Key keyCode, AppCUI::Utils::String& text);
-        static AppCUI::Input::Key FromString(std::string_view stringRepresentation);
+        static string_view GetKeyName(Input::Key keyCode);
+        static string_view GetKeyModifierName(Input::Key keyCode);
+        static string_view GetKeyNamePadded(Input::Key keyCode);
+        static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
+        static bool ToString(Input::Key keyCode, Utils::String& text);
+        static Input::Key FromString(string_view stringRepresentation);
 
-        static AppCUI::Input::Key CreateHotKey(char16_t hotKey, AppCUI::Input::Key modifier = AppCUI::Input::Key::None);
+        static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
 
     class EXPORT IniValueArray
     {
         const char* text;
-        unsigned int len;
+        uint32 len;
 
       public:
         IniValueArray() : text(nullptr), len(0)
         {
         }
-        IniValueArray(std::string_view obj) : text(obj.data()), len((unsigned int) obj.size())
+        IniValueArray(string_view obj) : text(obj.data()), len((uint32) obj.size())
         {
         }
 
-        std::optional<unsigned long long> AsUInt64() const;
-        std::optional<long long> AsInt64() const;
-        std::optional<unsigned int> AsUInt32() const;
-        std::optional<int> AsInt32() const;
-        std::optional<bool> AsBool() const;
-        std::optional<AppCUI::Input::Key> AsKey() const;
-        inline std::optional<const char*> AsString() const
+        optional<uint64> AsUInt64() const;
+        optional<int64> AsInt64() const;
+        optional<uint32> AsUInt32() const;
+        optional<int32> AsInt32() const;
+        optional<bool> AsBool() const;
+        optional<Input::Key> AsKey() const;
+        inline optional<const char*> AsString() const
         {
             return text;
         }
-        inline std::optional<std::string_view> AsStringView() const
+        inline optional<string_view> AsStringView() const
         {
-            return std::string_view(text, len);
+            return string_view(text, len);
         };
-        std::optional<Graphics::Size> AsSize() const;
-        std::optional<float> AsFloat() const;
-        std::optional<double> AsDouble() const;
+        optional<Graphics::Size> AsSize() const;
+        optional<float> AsFloat() const;
+        optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
-        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
-        int ToInt32(int defaultValue = -1) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
+        uint32 ToUInt32(uint32 defaultValue = 0) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
+        int32 ToInt32(int32 defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
-        AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None) const;
+        Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
-        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
-        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size()) const;
+        string_view ToStringView(string_view defaultValue = string_view{}) const;
+        Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
 
@@ -1058,40 +1518,61 @@ namespace Utils
         }
         IniValue(void* data) : Data(data){};
 
-        std::optional<unsigned long long> AsUInt64() const;
-        std::optional<long long> AsInt64() const;
-        std::optional<unsigned int> AsUInt32() const;
-        std::optional<int> AsInt32() const;
-        std::optional<bool> AsBool() const;
-        std::optional<AppCUI::Input::Key> AsKey() const;
-        std::optional<const char*> AsString() const;
-        std::optional<std::string_view> AsStringView() const;
-        std::optional<Graphics::Size> AsSize() const;
-        std::optional<float> AsFloat() const;
-        std::optional<double> AsDouble() const;
+        optional<uint64> AsUInt64() const;
+        optional<int64> AsInt64() const;
+        optional<uint32> AsUInt32() const;
+        optional<int32> AsInt32() const;
+        optional<bool> AsBool() const;
+        optional<Input::Key> AsKey() const;
+        optional<const char*> AsString() const;
+        optional<string_view> AsStringView() const;
+        optional<Graphics::Size> AsSize() const;
+        optional<float> AsFloat() const;
+        optional<double> AsDouble() const;
 
-        unsigned long long ToUInt64(unsigned long long defaultValue = 0) const;
-        unsigned int ToUInt32(unsigned int defaultValue = 0) const;
-        long long ToInt64(long long defaultValue = -1) const;
-        int ToInt32(int defaultValue = -1) const;
+        uint64 ToUInt64(uint64 defaultValue = 0) const;
+        uint32 ToUInt32(uint32 defaultValue = 0) const;
+        int64 ToInt64(int64 defaultValue = -1) const;
+        int32 ToInt32(int32 defaultValue = -1) const;
         bool ToBool(bool defaultValue = false) const;
-        AppCUI::Input::Key ToKey(AppCUI::Input::Key defaultValue = AppCUI::Input::Key::None) const;
+        Input::Key ToKey(Input::Key defaultValue = Input::Key::None) const;
         const char* ToString(const char* defaultValue = nullptr) const;
-        std::string_view ToStringView(std::string_view defaultValue = std::string_view{}) const;
-        AppCUI::Graphics::Size ToSize(AppCUI::Graphics::Size defaultValue = AppCUI::Graphics::Size()) const;
+        string_view ToStringView(string_view defaultValue = string_view{}) const;
+        Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
 
         bool IsArray() const;
-        unsigned int GetArrayCount() const;
-        IniValueArray operator[](int index) const;
+        uint32 GetArrayCount() const;
+        IniValueArray operator[](int32 index) const;
 
-        std::string_view GetName() const;
+        string_view GetName() const;
 
         inline bool HasValue() const
         {
             return Data != nullptr;
         }
+
+        void operator=(bool value);
+        void operator=(uint32 value);
+        void operator=(uint64 value);
+        void operator=(int32 value);
+        void operator=(int64 value);
+        void operator=(float value);
+        void operator=(double value);
+        void operator=(const char* value);
+        void operator=(string_view value);
+        void operator=(Graphics::Size value);
+        void operator=(Input::Key value);
+        void operator=(const initializer_list<const char*>& values);
+        void operator=(const initializer_list<std::string>& values);
+        void operator=(const initializer_list<bool>& values);
+        void operator=(const initializer_list<uint32>& values);
+        void operator=(const initializer_list<uint64>& values);
+        void operator=(const initializer_list<int32>& values);
+        void operator=(const initializer_list<int64>& values);
+        void operator=(const initializer_list<float>& values);
+        void operator=(const initializer_list<double>& values);
     };
     class EXPORT IniSection
     {
@@ -1107,9 +1588,35 @@ namespace Utils
         {
             return Data != nullptr;
         }
-        std::string_view GetName() const;
-        IniValue GetValue(std::string_view keyName);
-        std::vector<IniValue> GetValues() const;
+        string_view GetName() const;
+        IniValue GetValue(string_view keyName);
+        vector<IniValue> GetValues() const;
+        IniValue operator[](string_view keyName);
+
+        void Clear();
+        bool DeleteValue(string_view keyName);
+        bool HasValue(string_view keyName);
+
+        void UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, uint32 value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int32 value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, float value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, double value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const char* value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int32>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<uint32>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits);
     };
     class EXPORT IniObject
     {
@@ -1120,15 +1627,27 @@ namespace Utils
         IniObject();
         ~IniObject();
 
-        bool CreateFromString(std::string_view text);
+        bool CreateFromString(string_view text);
         bool CreateFromFile(const std::filesystem::path& fileName);
+        bool Save(const std::filesystem::path& fileName);
         bool Create();
+        void Clear();
 
-        bool HasSection(std::string_view name) const;
-        IniSection GetSection(std::string_view name);
-        IniValue GetValue(std::string_view valuePath);
-        std::vector<IniSection> GetSections() const;
-        unsigned int GetSectionsCount();
+        bool HasSection(string_view name) const;
+        IniSection GetSection(string_view name);
+        IniSection CreateSection(string_view name, bool emptyContent);
+        inline IniSection operator[](string_view name)
+        {
+            return CreateSection(name, false);
+        }
+        IniValue GetValue(string_view valuePath);
+        vector<IniSection> GetSections() const;
+        uint32 GetSectionsCount();
+
+        bool DeleteSection(string_view name);
+        bool DeleteValue(string_view valuePath);
+
+        string_view ToString();
     };
 
 }; // namespace Utils
@@ -1139,9 +1658,10 @@ namespace OS
         Clipboard() = delete;
 
       public:
-        static bool SetText(const AppCUI::Utils::ConstString& text);
-        static bool GetText(AppCUI::Utils::UnicodeStringBuilder& text);
+        static bool SetText(const ConstString& text);
+        static bool GetText(Utils::UnicodeStringBuilder& text);
         static bool Clear();
+        static bool HasText();
     };
     class EXPORT IFile
     {
@@ -1149,24 +1669,23 @@ namespace OS
         virtual ~IFile();
 
         // virtual methods
-        virtual bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        virtual bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        virtual unsigned long long GetSize();
-        virtual unsigned long long GetCurrentPos();
-        virtual bool SetSize(unsigned long long newSize);
-        virtual bool SetCurrentPos(unsigned long long newPosition);
+        virtual bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead);
+        virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+        virtual uint64 GetSize();
+        virtual uint64 GetCurrentPos();
+        virtual bool SetSize(uint64 newSize);
+        virtual bool SetCurrentPos(uint64 newPosition);
         virtual void Close();
 
         // other methods
-        bool Read(void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        bool Read(void* buffer, unsigned int bufferSize);
-        bool Write(const void* buffer, unsigned int bufferSize);
-        bool Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead);
-        bool Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten);
-        bool Write(std::string_view text);
-        bool Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten);
-        std::unique_ptr<char[]> ReadContentToBuffer(unsigned int& bufferSize);
+        bool Read(void* buffer, uint32 bufferSize, uint32& bytesRead);
+        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+        bool Read(void* buffer, uint32 bufferSize);
+        bool Write(const void* buffer, uint32 bufferSize);
+        bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
+        bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+        bool Write(string_view text);
+        bool Write(uint64 offset, string_view text, uint32& bytesWritten);
     };
 
     class EXPORT File : public IFile
@@ -1174,8 +1693,8 @@ namespace OS
         union
         {
             void* Handle;
-            unsigned long long u64Value;
-            unsigned int u32Value;
+            uint64 u64Value;
+            uint32 u32Value;
             int fid;
         } FileID;
 
@@ -1202,13 +1721,16 @@ namespace OS
          */
         bool Create(const std::filesystem::path& path, bool overwriteExisting = true);
 
-        bool ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead) override;
-        bool WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten) override;
-        unsigned long long GetSize() override;
-        unsigned long long GetCurrentPos() override;
-        bool SetSize(unsigned long long newSize) override;
-        bool SetCurrentPos(unsigned long long newPosition) override;
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
         void Close() override;
+
+        static Utils::Buffer ReadContent(const std::filesystem::path& path);
+        static bool WriteContent(const std::filesystem::path& path, Utils::BufferView buf);
     };
 
     class EXPORT Library
@@ -1225,7 +1747,7 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
-    enum class SpecialFolder : unsigned int
+    enum class SpecialFolder : uint32
     {
         AppPath = 0,
         Desktop,
@@ -1248,7 +1770,7 @@ namespace OS
     };
 
     using SpecialFolderMap = std::map<SpecialFolder, FSLocationData>;
-    using RootsVector      = std::vector<FSLocationData>;
+    using RootsVector      = vector<FSLocationData>;
 
     // Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
@@ -1257,7 +1779,7 @@ namespace OS
 } // namespace OS
 namespace Graphics
 {
-    enum class Alignament : unsigned char
+    enum class Alignament : uint8
     {
         TopLeft = 0,
         Top,
@@ -1269,7 +1791,7 @@ namespace Graphics
         Left,
         Center
     };
-    enum class SpecialChars : unsigned int
+    enum class SpecialChars : uint32
     {
         BoxTopLeftCornerDoubleLine = 0,
         BoxTopRightCornerDoubleLine,
@@ -1320,11 +1842,18 @@ namespace Graphics
         MenuSign,
         FourPoints,
 
+        // extended ascii codes (195 / 251C, 194 / 252C, 180 / 2524, 193 / 2534) / Graphics Extended Code Page 1252
+        // https://en.wikipedia.org/wiki/Windows-1252
+        BoxMidleLeft,
+        BoxMidleTop,
+        BoxMidleRight,
+        BoxMidleBottom,
+
         // always last
         Count
     };
 
-    enum class TextAlignament : unsigned int
+    enum class TextAlignament : uint32
     {
         Left   = 0x00,
         Center = 0x01,
@@ -1333,12 +1862,12 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const AppCUI::Utils::ConstString& Title, unsigned long long maxValue = 0);
-        bool EXPORT Update(unsigned long long value, const AppCUI::Utils::ConstString& content);
-        bool EXPORT Update(unsigned long long value);
+        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0);
+        bool EXPORT Update(uint64 value, const ConstString& content);
+        bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
 
-    enum class WriteTextFlags : unsigned int
+    enum class WriteTextFlags : uint32
     {
         None            = 0,
         SingleLine      = 0x0000001,
@@ -1357,9 +1886,9 @@ namespace Graphics
         ColorPair Color;
         ColorPair HotKeyColor;
         TextAlignament Align;
-        unsigned int HotKeyPosition;
+        uint32 HotKeyPosition;
         int X, Y;
-        unsigned int Width;
+        uint32 Width;
 
         WriteTextParams() : Flags(WriteTextFlags::None), Align(TextAlignament::Left)
         {
@@ -1402,13 +1931,13 @@ namespace Graphics
         {
             return Y;
         }
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
-            return (unsigned int) Width;
+            return (uint32) Width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
-            return (unsigned int) Height;
+            return (uint32) Height;
         }
         inline int GetLeft() const
         {
@@ -1453,13 +1982,13 @@ namespace Graphics
     class EXPORT CharacterBuffer
     {
         Character* Buffer;
-        unsigned int Count;
-        unsigned int Allocated;
+        uint32 Count;
+        uint32 Allocated;
 
         bool Grow(size_t newSize);
 
       public:
-        static constexpr unsigned int INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
+        static constexpr uint32 INVALID_HOTKEY_OFFSET = 0xFFFFFFFF;
 
         void Swap(CharacterBuffer&) noexcept;
         CharacterBuffer();
@@ -1480,11 +2009,11 @@ namespace Graphics
         void Destroy();
         void Clear();
 
-        inline unsigned int Len() const
+        inline uint32 Len() const
         {
             return Count;
         }
-        inline unsigned int GetAllocatedChars() const
+        inline uint32 GetAllocatedChars() const
         {
             return Allocated;
         }
@@ -1501,37 +2030,39 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
-        bool Resize(unsigned int size, char16_t character = ' ', const ColorPair color = NoColorPair);
-        bool Fill(char16_t character, unsigned int size, const ColorPair color = NoColorPair);
+        bool Resize(uint32 size, char16 character = ' ', const ColorPair color = NoColorPair);
+        bool Fill(char16 character, uint32 size, const ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
-        bool Add(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
-        bool Set(const AppCUI::Utils::ConstString& text, const ColorPair color = NoColorPair);
+        bool Add(const ConstString& text, const ColorPair color = NoColorPair);
+        bool Set(const ConstString& text, const ColorPair color = NoColorPair);
         bool SetWithHotKey(
-              const AppCUI::Utils::ConstString& text,
-              unsigned int& hotKeyCharacterPosition,
-              AppCUI::Input::Key& hotKey,
-              AppCUI::Input::Key hotKeyModifier = AppCUI::Input::Key::None,
-              const ColorPair color             = NoColorPair);
+              const ConstString& text,
+              uint32& hotKeyCharacterPosition,
+              Input::Key& hotKey,
+              Input::Key hotKeyModifier = Input::Key::None,
+              const ColorPair color     = NoColorPair);
 
-        bool Delete(unsigned int start, unsigned int end);
-        bool DeleteChar(unsigned int position);
-        bool Insert(const AppCUI::Utils::ConstString& text, unsigned int position, const ColorPair color = NoColorPair);
-        bool InsertChar(unsigned short characterCode, unsigned int position, const ColorPair color = NoColorPair);
-        bool SetColor(unsigned int start, unsigned int end, const ColorPair color);
+        bool Delete(uint32 start, uint32 end);
+        bool DeleteChar(uint32 position);
+        bool Insert(const ConstString& text, uint32 position, const ColorPair color = NoColorPair);
+        bool InsertChar(uint16 characterCode, uint32 position, const ColorPair color = NoColorPair);
+        bool SetColor(uint32 start, uint32 end, const ColorPair color);
         void SetColor(const ColorPair color);
-        bool CopyString(Utils::String& text, unsigned int start, unsigned int end);
+        bool CopyString(Utils::String& text, uint32 start, uint32 end);
         bool CopyString(Utils::String& text);
+        bool ConvertToUpper(uint32 start, uint32 end);
+        bool ConvertToLower(uint32 start, uint32 end);
 
-        int Find(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const;
-        inline bool Contains(const AppCUI::Utils::ConstString& text, bool ignoreCase = true) const
+        int32 Find(const ConstString& text, bool ignoreCase = true) const;
+        inline bool Contains(const ConstString& text, bool ignoreCase = true) const
         {
             return Find(text, ignoreCase) != -1;
         }
-        int CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
-        std::optional<unsigned int> FindNext(
-              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
-        std::optional<unsigned int> FindPrevious(
-              unsigned int startOffset, bool (*shouldSkip)(unsigned int offset, Character ch)) const;
+        int32 CompareWith(const CharacterBuffer& obj, bool ignoreCase = true) const;
+        optional<uint32> FindNext(
+              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
+        optional<uint32> FindPrevious(
+              uint32 startOffset, bool (*shouldSkip)(uint32 offset, Character ch)) const;
 
         bool ToString(std::string& output) const;
         bool ToString(std::u16string& output) const;
@@ -1565,25 +2096,26 @@ namespace Graphics
             ToPath(temp);
             return temp;
         }
-        inline operator AppCUI::Utils::CharacterView() const
+        inline operator Utils::CharacterView() const
         {
-            return AppCUI::Utils::CharacterView(Buffer, Count);
+            return Utils::CharacterView(Buffer, Count);
         }
-        inline AppCUI::Utils::CharacterView SubString(size_t start, size_t end) const
+        inline Utils::CharacterView SubString(size_t start, size_t end) const
         {
             if ((end > start) && (Buffer) && (end <= Count))
-                return AppCUI::Utils::CharacterView{ Buffer + start, end - start };
-            return AppCUI::Utils::CharacterView{ nullptr, 0 };
+                return Utils::CharacterView{ Buffer + start, end - start };
+            return Utils::CharacterView{ nullptr, 0 };
         }
     };
 
-    enum class ImageRenderingMethod : unsigned int
+    enum class ImageRenderingMethod : uint32
     {
         PixelTo16ColorsSmallBlock,
         PixelTo64ColorsLargeBlock,
+        GrayScale,
         AsciiArt
     };
-    enum class ImageScaleMethod : unsigned int
+    enum class ImageScaleMethod : uint32
     {
         NoScale = 1,
         Scale50 = 2,
@@ -1593,42 +2125,95 @@ namespace Graphics
         Scale10 = 10,
         Scale5  = 20
     };
+    struct EXPORT Pixel
+    {
+        union
+        {
+            uint32 ColorValue;
+            struct
+            {
+                uint8 Blue, Green, Red, Alpha;
+            };
+        };
+        Pixel() : ColorValue(0)
+        {
+        }
+        Pixel(uint8 red, uint8 green, uint8 blue) : Blue(blue), Green(green), Red(red), Alpha(255)
+        {
+        }
+        explicit Pixel(uint32 value) : ColorValue(value)
+        {
+        }
+        inline uint32 ToGrayScale() const
+        {
+            return (((((uint32) Red) + ((uint32) Blue) + ((uint32) Green))) * 100U) / (255U * 3);
+        }
+    };
     class EXPORT Image
     {
-        unsigned int* Pixels;
-        unsigned int Width;
-        unsigned int Height;
+        Pixel* pixels;
+        uint32 width;
+        uint32 height;
 
       public:
         Image();
+        Image(const Image& img);
+        Image(Image&& img) noexcept
+        {
+            this->width  = img.width;
+            this->height = img.height;
+            this->pixels = img.pixels;
+            img.pixels   = nullptr;
+            img.width    = 0;
+            img.height   = 0;
+        }
         ~Image();
-        bool Create(unsigned int width, unsigned int height);
-        bool Create(unsigned int width, unsigned int height, std::string_view image);
-        bool SetPixel(unsigned int x, unsigned int y, const Color color);
-        bool SetPixel(unsigned int x, unsigned int y, unsigned int colorRGB);
-        bool SetPixel(
-              unsigned int x,
-              unsigned int y,
-              unsigned char Red,
-              unsigned char Green,
-              unsigned char Blue,
-              unsigned char Alpha = 255);
-        unsigned int GetPixel(unsigned int x, unsigned int y, unsigned int invalidIndexValue = 0) const;
-        bool GetPixel(unsigned int x, unsigned int y, unsigned int& color) const;
-        unsigned int ComputeSquareAverageColor(unsigned int x, unsigned int y, unsigned int sz) const;
-        bool Clear(unsigned int color);
+        bool Load(const std::filesystem::path& imageFilePath);
+        bool Create(uint32 width, uint32 height);
+        bool Create(uint32 width, uint32 height, string_view image);
+        bool Create(const uint8* imageBuffer, uint32 size);
+        inline bool Create(Utils::BufferView buf)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return Create(buf.GetData(), (uint32) buf.GetLength());
+            else
+                return false;
+        }
+        bool CreateFromDIB(const uint8* imageBuffer, uint32 size, bool isIcon);
+        inline bool CreateFromDIB(Utils::BufferView buf, bool isIcon)
+        {
+            if (buf.GetLength() <= 0xFFFFFFFF)
+                return CreateFromDIB(buf.GetData(), (uint32) buf.GetLength(), isIcon);
+            else
+                return false;
+        }
+        bool SetPixel(uint32 x, uint32 y, const Color color);
+        bool SetPixel(uint32 x, uint32 y, Pixel colorRGB);
+
+        Pixel GetPixel(uint32 x, uint32 y, Pixel invalidIndexValue = {}) const;
+        bool GetPixel(uint32 x, uint32 y, Pixel& color) const;
+        Pixel ComputeSquareAverageColor(uint32 x, uint32 y, uint32 sz) const;
+        bool Clear(Pixel color);
         bool Clear(const Color color);
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
-            return Width;
+            return width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
-            return Height;
+            return height;
         }
-        inline unsigned int* GetPixelsBuffer() const
+        inline Pixel* GetPixelsBuffer() const
         {
-            return Pixels;
+            return pixels;
+        }
+        Image& operator=(const Image& img);
+        Image& operator=(Image&& img) noexcept
+        {
+            std::swap(this->pixels, img.pixels);
+            std::swap(this->width, img.width);
+            std::swap(this->height, img.height);
+            return *this;
         }
     };
 
@@ -1638,7 +2223,7 @@ namespace Graphics
       protected:
         Character* Characters;
         Character** OffsetRows;
-        unsigned int Width, Height;
+        uint32 Width, Height;
         int TranslateX, TranslateY;
         struct
         {
@@ -1648,7 +2233,7 @@ namespace Graphics
         bool ClipHasBeenCopied;
         struct
         {
-            unsigned int X, Y;
+            uint32 X, Y;
             bool Visible;
         } Cursor;
 
@@ -1663,22 +2248,21 @@ namespace Graphics
       public:
         // Horizontal lines
         bool FillHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
-        bool FillHorizontalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillHorizontalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
         bool FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
         bool DrawHorizontalLine(int left, int y, int right, const ColorPair color, bool singleLine = true);
 
         // Vertical lines
         bool FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
-        bool FillVerticalLineSize(int x, int y, unsigned int size, int charCode, const ColorPair color);
+        bool FillVerticalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
         bool FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
         bool DrawVerticalLine(int x, int top, int bottom, const ColorPair color, bool singleLine = true);
 
         // Rectangle
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
-        bool FillRectSize(int x, int y, unsigned int width, unsigned int height, int charCode, const ColorPair color);
+        bool FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, const ColorPair color);
         bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(
-              int x, int y, unsigned int width, unsigned int height, const ColorPair color, bool doubleLine);
+        bool DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, bool doubleLine);
 
         // Characters
         bool GetCharacter(int x, int y, Character& c);
@@ -1686,54 +2270,42 @@ namespace Graphics
         bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
 
         // Texts
-        bool WriteText(const AppCUI::Utils::ConstString& text, const WriteTextParams& params);
+        bool WriteText(const ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
         bool WriteSingleLineCharacterBuffer(
-              int x, int y, AppCUI::Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
-        bool WriteSingleLineText(int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color);
+              int x, int y, Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
+        bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
+        bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
-              int x, int y, const AppCUI::Utils::ConstString& text, ColorPair color, TextAlignament align);
-        bool WriteSingleLineText(
-              int x,
-              int y,
-              const AppCUI::Utils::ConstString& text,
-              ColorPair color,
-              ColorPair hotKeyColor,
-              unsigned int hotKeyOffset);
+              int x, int y, const ConstString& text, ColorPair color, ColorPair hotKeyColor, uint32 hotKeyOffset);
         bool WriteSingleLineText(
               int x,
               int y,
-              const AppCUI::Utils::ConstString& text,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
-              unsigned int hotKeyOffset,
+              uint32 hotKeyOffset,
               TextAlignament align);
+        bool WriteSingleLineText(int x, int y, uint32 width, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(
-              int x, int y, unsigned int width, const AppCUI::Utils::ConstString& text, ColorPair color);
-        bool WriteSingleLineText(
-              int x,
-              int y,
-              unsigned int width,
-              const AppCUI::Utils::ConstString& text,
-              ColorPair color,
-              TextAlignament align);
+              int x, int y, uint32 width, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
               int x,
               int y,
-              unsigned int width,
-              const AppCUI::Utils::ConstString& text,
+              uint32 width,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
-              unsigned int hotKeyOffset);
+              uint32 hotKeyOffset);
         bool WriteSingleLineText(
               int x,
               int y,
-              unsigned int width,
-              const AppCUI::Utils::ConstString& text,
+              uint32 width,
+              const ConstString& text,
               ColorPair color,
               ColorPair hotKeyColor,
-              unsigned int hotKeyOffset,
+              uint32 hotKeyOffset,
               TextAlignament align);
 
         // Canvas & Images
@@ -1769,19 +2341,11 @@ namespace Graphics
       public:
         Canvas();
         ~Canvas();
-        bool Create(
-              unsigned int width,
-              unsigned int height,
-              int fillCharacter     = ' ',
-              const ColorPair color = DefaultColorPair);
-        bool Resize(
-              unsigned int width,
-              unsigned int height,
-              int fillCharacter     = ' ',
-              const ColorPair color = DefaultColorPair);
+        bool Create(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
+        bool Resize(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
 
         // Clipping & Translate
-        void SetAbsoluteClip(const AppCUI::Graphics::Clip& clip);
+        void SetAbsoluteClip(const Graphics::Clip& clip);
         void ExtendAbsoluteClipInAllDirections(int size);
         void ExtendAbsoluteClipToRightBottomCorner();
         void ClearClip();
@@ -1792,11 +2356,11 @@ namespace Graphics
         bool ClearEntireSurface(int character, const ColorPair color);
 
         // inlines
-        inline unsigned int GetWidth() const
+        inline uint32 GetWidth() const
         {
             return this->Width;
         }
-        inline unsigned int GetHeight() const
+        inline uint32 GetHeight() const
         {
             return this->Height;
         }
@@ -1804,11 +2368,11 @@ namespace Graphics
         {
             return this->Cursor.Visible;
         }
-        inline unsigned int GetCursorX() const
+        inline uint32 GetCursorX() const
         {
             return this->Cursor.X;
         }
-        inline unsigned int GetCursorY() const
+        inline uint32 GetCursorY() const
         {
             return this->Cursor.Y;
         }
@@ -1842,8 +2406,9 @@ namespace Controls
         class EXPORT Window;
         class EXPORT Desktop;
         class EXPORT Tree;
+        class EXPORT Grid;
     }; // namespace Factory
-    enum class Event : unsigned int
+    enum class Event : uint32
     {
         WindowClose,
         WindowAccept,
@@ -1862,9 +2427,10 @@ namespace Controls
         TerminateApplication,
         Command,
         NumericSelectorValueChanged,
+        SplitterPositionChanged,
         Custom,
     };
-    typedef unsigned int ItemHandle;
+    using ItemHandle                       = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
     class EXPORT Button;
@@ -1873,22 +2439,27 @@ namespace Controls
     class EXPORT Tree;
     class EXPORT Menu;
     class EXPORT Window;
+    class EXPORT Grid;
 
-    using namespace AppCUI::Utils;
+    using namespace Utils;
 
     namespace Handlers
     {
-        using namespace AppCUI::Graphics;
+        using namespace Graphics;
         using namespace AppCUI;
-        using namespace AppCUI::Input;
+        using namespace Input;
 
-        typedef void (*OnButtonPressedHandler)(Reference<Controls::Button> r);
-        typedef void (*PaintControlHandler)(Reference<Controls::Control> control, Renderer& renderer);
-        typedef bool (*OnEventHandler)(Reference<Controls::Control> control, Controls::Event eventType, int controlID);
-        typedef bool (*OnKeyEventHandler)(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar);
-        typedef void (*OnCheckHandler)(Reference<Controls::Control> control, bool value);
-        typedef void (*OnFocusHandler)(Reference<Controls::Control> control);
-        typedef void (*OnLoseFocusHandler)(Reference<Controls::Control> control);
+        using OnButtonPressedHandler = void (*)(Reference<Controls::Button> r);
+        using PaintControlHandler    = void (*)(Reference<Controls::Control> control, Renderer& renderer);
+        using OnEventHandler     = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
+        using OnKeyEventHandler  = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
+        using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
+        using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
+        using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
+        using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
+        using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
+        using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
+        using OnTextColorHandler = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
 
         struct OnButtonPressedInterface
         {
@@ -1932,12 +2503,12 @@ namespace Controls
 
         struct OnKeyEventInterface
         {
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) = 0;
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) = 0;
         };
         struct OnKeyEventCallback : public OnKeyEventInterface
         {
             OnKeyEventHandler callback;
-            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16_t unicodeChar) override
+            virtual bool OnKeyEvent(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar) override
             {
                 return callback(control, keyCode, unicodeChar);
             };
@@ -1982,6 +2553,59 @@ namespace Controls
             };
         };
 
+        struct OnTextColorInterface
+        {
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, uint32 len) = 0;
+        };
+        struct OnTextColorCallback : public OnTextColorInterface
+        {
+            OnTextColorHandler callback;
+            virtual void OnTextColor(Reference<Controls::Control> ctrl, Character* chars, uint32 len) override
+            {
+                callback(ctrl, chars, len);
+            };
+        };
+
+        struct OnTextRightClickInterface
+        {
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) = 0;
+        };
+        struct OnTextRightClickCallback : public OnTextRightClickInterface
+        {
+            OnTextRightClickHandler callback;
+            virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) override
+            {
+                callback(ctrl, x, y);
+            };
+        };
+
+        struct OnTreeItemToggleInterface
+        {
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
+        };
+        struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
+        {
+            OnTreeItemToggleHandler callback;
+
+            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
+            {
+                return callback(ctrl, handle);
+            };
+        };
+
+        struct OnAfterSetTextInterface
+        {
+            virtual void OnAfterSetText(Reference<Controls::Control> control) = 0;
+        };
+        struct OnAfterSetTextCallback : public OnAfterSetTextInterface
+        {
+            OnAfterSetTextHandler callback;
+            virtual void OnAfterSetText(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -2012,6 +2636,7 @@ namespace Controls
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
             Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
+            Wrapper<OnAfterSetTextInterface, OnAfterSetTextCallback, OnAfterSetTextHandler> OnAfterSetText;
             virtual ~Control()
             {
             }
@@ -2024,18 +2649,19 @@ namespace Controls
         {
             Wrapper<OnCheckInterface, OnCheckCallback, OnCheckHandler> OnCheck;
         };
+        struct TextControl : public Control
+        {
+            Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
+            Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
+        };
 
-        typedef void (*SyntaxHighlightHandler)(
-              AppCUI::Controls::Control* control,
-              AppCUI::Graphics::Character* characters,
-              unsigned int charactersCount,
-              void* Context);
-        typedef int (*ListViewItemComparer)(
-              AppCUI::Controls::ListView* control,
-              ItemHandle item1,
-              ItemHandle item2,
-              unsigned int columnIndex,
-              void* Context);
+        using ListViewItemComparer = int (*)(
+              Controls::ListView* control, ItemHandle item1, ItemHandle item2, uint32 columnIndex, void* Context);
+
+        struct Tree : public Control
+        {
+            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+        };
 
     } // namespace Handlers
 
@@ -2045,38 +2671,38 @@ namespace Controls
         void* Context;
 
       private:
-        bool RemoveControlByID(unsigned int index);
+        bool RemoveControlByID(uint32 index);
         bool RemoveControlByRef(Reference<Control> control);
 
       protected:
         bool IsMouseInControl(int x, int y);
         bool SetMargins(int left, int top, int right, int bottom);
-        bool ShowToolTip(const AppCUI::Utils::ConstString& caption);
-        bool ShowToolTip(const AppCUI::Utils::ConstString& caption, int x, int y);
+        bool ShowToolTip(const ConstString& caption);
+        bool ShowToolTip(const ConstString& caption, int x, int y);
         void HideToolTip();
 
-        Reference<Control> AddChildControl(std::unique_ptr<Control> control);
+        Reference<Control> AddChildControl(unique_ptr<Control> control);
 
         // protected constructor
-        Control(void* context, const AppCUI::Utils::ConstString& caption, std::string_view layout, bool computeHotKey);
+        Control(void* context, const ConstString& caption, string_view layout, bool computeHotKey);
 
       public:
         template <typename T>
-        Reference<T> AddControl(std::unique_ptr<T> control)
+        Reference<T> AddControl(unique_ptr<T> control)
         {
             return this->AddChildControl(std::move(control)).template DownCast<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
         {
-            return this->AddControl<T>(std::unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
+            return this->AddControl<T>(unique_ptr<T>(new T(std::forward<Arguments>(args)...)));
         }
         bool RemoveControl(Control* control);
 
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
-            if (RemoveControlByRef(control.template To<AppCUI::Controls::Control>()))
+            if (RemoveControlByRef(control.template To<Controls::Control>()))
             {
                 control.Reset();
                 return true;
@@ -2091,8 +2717,8 @@ namespace Controls
         int GetY() const;
         int GetWidth() const;
         int GetHeight() const;
-        void GetSize(AppCUI::Graphics::Size& size);
-        void GetClientSize(AppCUI::Graphics::Size& size);
+        void GetSize(Graphics::Size& size);
+        void GetClientSize(Graphics::Size& size);
         void MoveTo(int newX, int newY);
         bool Resize(int newWidth, int newHeight);
         void RecomputeLayout();
@@ -2103,8 +2729,9 @@ namespace Controls
         void ClearGroup();
 
         // hot key
-        bool SetHotKey(char16_t hotKey);
+        bool SetHotKey(char16 hotKey);
         Input::Key GetHotKey();
+        uint32 GetHotKeyTextOffset();
         void ClearHotKey();
 
         // status
@@ -2120,9 +2747,9 @@ namespace Controls
         // childern and parent
         Reference<Control> GetParent();
         Control** GetChildrenList();
-        Reference<Control> GetChild(unsigned int index);
-        unsigned int GetChildrenCount();
-        bool GetChildIndex(Reference<Control> control, unsigned int& index);
+        Reference<Control> GetChild(uint32 index);
+        uint32 GetChildrenCount();
+        bool GetChildIndex(Reference<Control> control, uint32& index);
 
         // Events
         void RaiseEvent(Event eventType);
@@ -2131,18 +2758,18 @@ namespace Controls
         // focus & expact/pack view
         bool SetFocus();
         void SetControlID(int newID);
-        int GetControlID() const;
         void ExpandView();
         void PackView();
 
         // Text
-        bool SetText(const AppCUI::Utils::ConstString& caption, bool updateHotKey = false);
-        bool SetText(const AppCUI::Graphics::CharacterBuffer& caption);
-        const AppCUI::Graphics::CharacterBuffer& GetText();
+        bool SetText(const ConstString& caption, bool updateHotKey = false);
+        bool SetText(const Graphics::CharacterBuffer& caption);
+        bool SetTextWithHotKey(const ConstString& caption, uint32 hotKeyTextOffset);
+        const Graphics::CharacterBuffer& GetText();
 
         // Scroll bars
-        void UpdateHScrollBar(unsigned long long value, unsigned long long maxValue);
-        void UpdateVScrollBar(unsigned long long value, unsigned long long maxValue);
+        void UpdateHScrollBar(uint64 value, uint64 maxValue);
+        void UpdateVScrollBar(uint64 value, uint64 maxValue);
 
         // handlers
         virtual Handlers::Control* Handlers();
@@ -2150,25 +2777,25 @@ namespace Controls
         // paint
         virtual void Paint(Graphics::Renderer& renderer);
 
-        // Evenimente
-        virtual bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar);
+        // virtual methods
+        virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
         virtual void OnFocus();
         virtual void OnLoseFocus();
         virtual bool OnFrameUpdate();
 
-        virtual void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button);
-        virtual void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button);
-        virtual bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button);
+        virtual void OnMousePressed(int x, int y, Input::MouseButton button);
+        virtual void OnMouseReleased(int x, int y, Input::MouseButton button);
+        virtual bool OnMouseDrag(int x, int y, Input::MouseButton button);
 
         virtual bool OnMouseEnter();
         virtual bool OnMouseOver(int x, int y);
         virtual bool OnMouseLeave();
-        virtual bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction);
+        virtual bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
 
         virtual bool OnEvent(Reference<Control> sender, Event eventType, int controlID);
-        virtual bool OnUpdateCommandBar(AppCUI::Application::CommandBar& commandBar);
+        virtual bool OnUpdateCommandBar(Application::CommandBar& commandBar);
         virtual void OnUpdateScrollBars();
 
         virtual bool OnBeforeResize(int newWidth, int newHeight);
@@ -2176,16 +2803,16 @@ namespace Controls
         virtual bool OnBeforeAddControl(Reference<Control> ctrl);
         virtual void OnAfterAddControl(Reference<Control> ctrl);
         virtual void OnControlRemoved(Reference<Control> ctrl);
-        virtual bool OnBeforeSetText(const AppCUI::Utils::ConstString& text);
-        virtual void OnAfterSetText(const AppCUI::Utils::ConstString& text);
+        virtual bool OnBeforeSetText(const ConstString& text);
+        virtual void OnAfterSetText();
 
-        virtual void OnExpandView(AppCUI::Graphics::Clip& expandedClip);
+        virtual void OnExpandView(Graphics::Clip& expandedClip);
         virtual void OnPackView();
 
         virtual ~Control();
     };
 
-    enum class WindowFlags : unsigned int
+    enum class WindowFlags : uint32
     {
         None          = 0,
         Sizeable      = 0x000100,
@@ -2197,7 +2824,7 @@ namespace Controls
         Maximized     = 0x008000,
         Menu          = 0x010000,
     };
-    enum class WindowControlsBarLayout : unsigned char
+    enum class WindowControlsBarLayout : uint8
     {
         None               = 0,
         TopBarFromLeft     = 1,
@@ -2214,22 +2841,15 @@ namespace Controls
         }
 
       public:
-        ItemHandle AddCommandItem(
-              const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip = "");
+        ItemHandle AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip = "");
         ItemHandle AddSingleChoiceItem(
-              const AppCUI::Utils::ConstString& name,
-              int ID,
-              bool checked,
-              const AppCUI::Utils::ConstString& toolTip = std::string_view());
+              const ConstString& name, int ID, bool checked, const ConstString& toolTip = string_view());
         ItemHandle AddCheckItem(
-              const AppCUI::Utils::ConstString& name,
-              int ID,
-              bool checked,
-              const AppCUI::Utils::ConstString& toolTip = std::string_view());
-        ItemHandle AddTextItem(
-              const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip = "");
-        bool SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption);
-        bool SetItemToolTip(ItemHandle itemHandle, const AppCUI::Utils::ConstString& toolTipText);
+              const ConstString& name, int ID, bool checked, const ConstString& toolTip = string_view());
+        ItemHandle AddTextItem(const ConstString& caption, const ConstString& toolTip = "");
+        bool SetItemText(ItemHandle itemHandle, const ConstString& caption);
+        bool SetItemTextWithHotKey(ItemHandle itemHandle, const ConstString& caption, uint32 hotKeyOffset);
+        bool SetItemToolTip(ItemHandle itemHandle, const ConstString& toolTipText);
         bool IsItemChecked(ItemHandle itemHandle);
         bool SetItemCheck(ItemHandle itemHandle, bool value);
         bool IsItemVisible(ItemHandle itemHandle);
@@ -2239,16 +2859,16 @@ namespace Controls
     };
     class EXPORT Window : public Control
     {
-        bool ProcessControlBarItem(unsigned int index);
+        bool ProcessControlBarItem(uint32 index);
 
       protected:
-        Window(const AppCUI::Utils::ConstString& caption, std::string_view layout, WindowFlags windowsFlags);
+        Window(const ConstString& caption, string_view layout, WindowFlags windowsFlags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
@@ -2257,18 +2877,18 @@ namespace Controls
         int Show();
         int GetDialogResult();
         bool MaximizeRestore();
-        void SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText);
-        const AppCUI::Graphics::CharacterBuffer& GetTag();
+        void SetTag(const ConstString& name, const ConstString& toolTipText);
+        const Graphics::CharacterBuffer& GetTag();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
 
-        Reference<Menu> AddMenu(const AppCUI::Utils::ConstString& name);
+        Reference<Menu> AddMenu(const ConstString& name);
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
 
         virtual ~Window();
@@ -2278,7 +2898,7 @@ namespace Controls
     };
     class EXPORT Label : public Control
     {
-        Label(const AppCUI::Utils::ConstString& caption, std::string_view layout);
+        Label(const ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2286,7 +2906,7 @@ namespace Controls
         friend Control;
     };
 
-    enum class ButtonFlags : unsigned int
+    enum class ButtonFlags : uint32
     {
         None = 0,
         Flat = 0x000100,
@@ -2294,14 +2914,14 @@ namespace Controls
     class EXPORT Button : public Control
     {
       protected:
-        Button(const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID, ButtonFlags flags);
+        Button(const ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
 
       public:
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2315,12 +2935,12 @@ namespace Controls
     class EXPORT CheckBox : public Control
     {
       protected:
-        CheckBox(const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID);
+        CheckBox(const ConstString& caption, string_view layout, int controlID);
 
       public:
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2334,12 +2954,12 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID);
+        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID);
 
       public:
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
@@ -2353,11 +2973,11 @@ namespace Controls
     class EXPORT Splitter : public Control
     {
       protected:
-        Splitter(std::string_view layout, bool vertical);
+        Splitter(string_view layout, bool vertical);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool SetSecondPanelSize(int newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
@@ -2365,13 +2985,16 @@ namespace Controls
         void OnFocus() override;
         bool OnBeforeAddControl(Reference<Control> ctrl) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        int GetSplitterPosition();
+
+        uint32 GetFirstPanelSize();
+        uint32 GetSecondPanelSize();
+
         virtual ~Splitter();
 
         friend Factory::Splitter;
@@ -2380,14 +3003,14 @@ namespace Controls
     class EXPORT Password : public Control
     {
       protected:
-        Password(const AppCUI::Utils::ConstString& caption, std::string_view layout);
+        Password(const ConstString& caption, string_view layout);
 
       public:
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
@@ -2397,7 +3020,7 @@ namespace Controls
     class EXPORT Panel : public Control
     {
       protected:
-        Panel(const AppCUI::Utils::ConstString& caption, std::string_view layout);
+        Panel(const ConstString& caption, string_view layout);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -2405,7 +3028,7 @@ namespace Controls
         friend Factory::Panel;
         friend Control;
     };
-    enum class TextFieldFlags : unsigned int
+    enum class TextFieldFlags : uint32
     {
         None               = 0,
         ProcessEnter       = 0x000100,
@@ -2415,31 +3038,40 @@ namespace Controls
     class EXPORT TextField : public Control
     {
       protected:
-        TextField(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              TextFieldFlags flags,
-              Handlers::SyntaxHighlightHandler handler,
-              void* context);
+        TextField(const ConstString& caption, string_view layout, TextFieldFlags flags);
 
       public:
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+        bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
 
+        // handlers covariant
+        Handlers::TextControl* Handlers() override;
+
+        // selection
         void SelectAll();
         void ClearSelection();
+        bool HasSelection() const;
+        bool GetSelection(uint32& start, uint32& size) const;
+
+        // clipboard
+        void CopyToClipboard(bool deleteSelectionAfterCopy);
+        void PasteFromClipboard();
 
         virtual ~TextField();
 
         friend Factory::TextField;
         friend Control;
     };
-    enum class TextAreaFlags : unsigned int
+    enum class TextAreaFlags : uint32
     {
         None               = 0x000000,
         Border             = 0x000100,
@@ -2453,30 +3085,28 @@ namespace Controls
     class EXPORT TextArea : public Control
     {
       protected:
-        TextArea(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              TextAreaFlags flags,
-              Handlers::SyntaxHighlightHandler handler,
-              void* handlerContext);
+        TextArea(const ConstString& caption, string_view layout, TextAreaFlags flags);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
         void OnAfterResize(int newWidth, int newHeight) override;
-        void OnAfterSetText(const AppCUI::Utils::ConstString& text) override;
+        void OnAfterSetText() override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
         void SetTabCharacter(char tabCharacter);
         virtual ~TextArea();
 
+        // handlers covariant
+        Handlers::TextControl* Handlers() override;
+
         friend Factory::TextArea;
         friend Control;
     };
 
-    enum class TabFlags : unsigned int
+    enum class TabFlags : uint32
     {
         TopTabs               = 0x000000, // default mode
         BottomTabs            = 0x000100,
@@ -2489,7 +3119,7 @@ namespace Controls
     class EXPORT TabPage : public Control
     {
       protected:
-        TabPage(const AppCUI::Utils::ConstString& caption);
+        TabPage(const ConstString& caption);
 
       public:
         bool OnBeforeResize(int newWidth, int newHeight);
@@ -2500,24 +3130,24 @@ namespace Controls
     class EXPORT Tab : public Control
     {
       protected:
-        Tab(std::string_view layout, TabFlags flags, unsigned int tabPageSize);
+        Tab(string_view layout, TabFlags flags, uint32 tabPageSize);
 
       public:
-        bool SetCurrentTabPageByIndex(unsigned int index);
+        bool SetCurrentTabPageByIndex(uint32 index);
         bool SetCurrentTabPageByRef(Reference<Control> page);
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)
         {
             return SetCurrentTabPageByRef(page.template DownCast<Control>());
         }
-        bool SetTabPageTitleSize(unsigned int newSize);
-        bool SetTabPageName(unsigned int index, const AppCUI::Utils::ConstString& name);
+        bool SetTabPageTitleSize(uint32 newSize);
+        bool SetTabPageName(uint32 index, const ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
         void Paint(Graphics::Renderer& renderer) override;
         Reference<Control> GetCurrentTab();
@@ -2528,10 +3158,10 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const AppCUI::Utils::ConstString& caption, std::string_view layout);
-        UserControl(std::string_view layout);
+        UserControl(const ConstString& caption, string_view layout);
+        UserControl(string_view layout);
     };
-    enum class ViewerFlags : unsigned int
+    enum class ViewerFlags : uint32
     {
         None    = 0,
         HScroll = 0x000010,
@@ -2542,22 +3172,22 @@ namespace Controls
     {
       protected:
         CanvasViewer(
-              const AppCUI::Utils::ConstString& caption,
-              std::string_view layout,
-              unsigned int canvasWidth,
-              unsigned int canvasHeight,
+              const ConstString& caption,
+              string_view layout,
+              uint32 canvasWidth,
+              uint32 canvasHeight,
               ViewerFlags flags);
 
       public:
         ~CanvasViewer();
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
         Reference<Graphics::Canvas> GetCanvas();
 
@@ -2567,18 +3197,16 @@ namespace Controls
     class EXPORT ImageViewer : public CanvasViewer
     {
       protected:
-        ImageViewer(const AppCUI::Utils::ConstString& caption, std::string_view layout, ViewerFlags flags);
+        ImageViewer(const ConstString& caption, string_view layout, ViewerFlags flags);
 
       public:
         bool SetImage(
-              const AppCUI::Graphics::Image& img,
-              AppCUI::Graphics::ImageRenderingMethod method,
-              AppCUI::Graphics::ImageScaleMethod scale);
+              const Graphics::Image& img, Graphics::ImageRenderingMethod method, Graphics::ImageScaleMethod scale);
 
         friend Factory::ImageViewer;
         friend Control;
     };
-    enum class ListViewFlags : unsigned int
+    enum class ListViewFlags : uint32
     {
         None                          = 0,
         HideColumns                   = 0x000100,
@@ -2591,136 +3219,137 @@ namespace Controls
         SearchMode                    = 0x008000,
         HideSearchBar                 = 0x010000
     };
-    enum class ListViewItemType : unsigned short
+    enum class ListViewItemType : uint16
     {
         Normal             = 0,
         Highlighted        = 1,
         GrayedOut          = 2,
         ErrorInformation   = 3,
         WarningInformation = 4,
+        Emphasized_1       = 5,
+        Emphasized_2       = 6,
+        Category           = 7
     };
-    union ItemData
-    {
-        void* Pointer;
-        unsigned int UInt32Value;
-        unsigned long long UInt64Value;
-        ItemData() : Pointer(nullptr)
-        {
-        }
-        ItemData(unsigned long long value) : UInt64Value(value)
-        {
-        }
-        ItemData(void* p) : Pointer(p)
-        {
-        }
-    };
+
     class EXPORT ListView : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(ItemHandle item) const;
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+
       protected:
-        ListView(std::string_view layout, ListViewFlags flags);
+        ListView(string_view layout, ListViewFlags flags);
 
       public:
-        bool Reserve(unsigned int itemsCount);
+        bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnFocus() override;
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(
-              const AppCUI::Utils::ConstString& text, AppCUI::Graphics::TextAlignament Align, unsigned int Size = 10);
-        bool SetColumnText(unsigned int columnIndex, const AppCUI::Utils::ConstString& text);
-        bool SetColumnAlignament(unsigned int columnIndex, AppCUI::Graphics::TextAlignament Align);
-        bool SetColumnWidth(unsigned int columnIndex, unsigned int width);
-        bool SetColumnClipboardCopyState(unsigned int columnIndex, bool allowCopy);
-        bool SetColumnFilterMode(unsigned int columnIndex, bool allowFilterForThisColumn);
-        bool DeleteColumn(unsigned int columnIndex);
+        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, uint32 Size = 10);
+        bool SetColumnText(uint32 columnIndex, const ConstString& text);
+        bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
+        bool SetColumnWidth(uint32 columnIndex, uint32 width);
+        bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
+        bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
+        bool DeleteColumn(uint32 columnIndex);
         void DeleteAllColumns();
-        unsigned int GetColumnsCount();
+        uint32 GetColumnsCount();
 
         // items add
-        ItemHandle AddItem(const AppCUI::Utils::ConstString& text);
-        ItemHandle AddItem(const AppCUI::Utils::ConstString& text, const AppCUI::Utils::ConstString& subItem1);
+        ItemHandle AddItem(const ConstString& text);
+        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
+        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3,
-              const AppCUI::Utils::ConstString& subItem4);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3,
-              const AppCUI::Utils::ConstString& subItem4,
-              const AppCUI::Utils::ConstString& subItem5);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3,
-              const AppCUI::Utils::ConstString& subItem4,
-              const AppCUI::Utils::ConstString& subItem5,
-              const AppCUI::Utils::ConstString& subItem6);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6,
+              const ConstString& subItem7);
         ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3,
-              const AppCUI::Utils::ConstString& subItem4,
-              const AppCUI::Utils::ConstString& subItem5,
-              const AppCUI::Utils::ConstString& subItem6,
-              const AppCUI::Utils::ConstString& subItem7);
-        ItemHandle AddItem(
-              const AppCUI::Utils::ConstString& text,
-              const AppCUI::Utils::ConstString& subItem1,
-              const AppCUI::Utils::ConstString& subItem2,
-              const AppCUI::Utils::ConstString& subItem3,
-              const AppCUI::Utils::ConstString& subItem4,
-              const AppCUI::Utils::ConstString& subItem5,
-              const AppCUI::Utils::ConstString& subItem6,
-              const AppCUI::Utils::ConstString& subItem7,
-              const AppCUI::Utils::ConstString& subItem8);
+              const ConstString& text,
+              const ConstString& subItem1,
+              const ConstString& subItem2,
+              const ConstString& subItem3,
+              const ConstString& subItem4,
+              const ConstString& subItem5,
+              const ConstString& subItem6,
+              const ConstString& subItem7,
+              const ConstString& subItem8);
 
         // items properties
-        bool SetItemText(ItemHandle item, unsigned int subItemIndex, const AppCUI::Utils::ConstString& text);
-        const AppCUI::Graphics::CharacterBuffer& GetItemText(ItemHandle item, unsigned int subItemIndex);
+        bool SetItemText(ItemHandle item, uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetItemText(ItemHandle item, uint32 subItemIndex);
         bool SetItemCheck(ItemHandle item, bool check);
         bool SetItemSelect(ItemHandle item, bool select);
-        bool SetItemColor(ItemHandle item, AppCUI::Graphics::ColorPair color);
+        bool SetItemColor(ItemHandle item, Graphics::ColorPair color);
         bool SetItemType(ItemHandle item, ListViewItemType type);
         bool IsItemChecked(ItemHandle item);
         bool IsItemSelected(ItemHandle item);
-        bool SetItemData(ItemHandle item, ItemData Data);
-        ItemData* GetItemData(ItemHandle item);
-        bool SetItemXOffset(ItemHandle item, unsigned int XOffset);
-        unsigned int GetItemXOffset(ItemHandle item);
-        bool SetItemHeight(ItemHandle item, unsigned int Height);
-        unsigned int GetItemHeight(ItemHandle item);
+
+        bool SetItemData(ItemHandle item, uint64 value);
+        uint64 GetItemData(ItemHandle item, uint64 errorValue);
+
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetItemData(ItemHandle item) const
+        {
+            return this->GetItemDataAsPointer(item).ToReference<T>();
+        }
+        bool SetItemXOffset(ItemHandle item, uint32 XOffset);
+        uint32 GetItemXOffset(ItemHandle item);
+        bool SetItemHeight(ItemHandle item, uint32 Height);
+        uint32 GetItemHeight(ItemHandle item);
         void DeleteAllItems();
-        unsigned int GetItemsCount();
+        uint32 GetItemsCount();
         ItemHandle GetCurrentItem();
         bool SetCurrentItem(ItemHandle item);
         void SelectAllItems();
         void UnSelectAllItems();
         void CheckAllItems();
         void UncheckAllItems();
-        unsigned int GetCheckedItemsCount();
+        uint32 GetCheckedItemsCount();
 
         // misc
         void SetClipboardSeparator(char ch);
@@ -2728,9 +3357,9 @@ namespace Controls
         // sort
         void SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void* Context = nullptr);
         bool Sort();
-        bool Sort(unsigned int columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, bool ascendent);
         bool Sort(
-              unsigned int columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
+              uint32 columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
 
         virtual ~ListView();
 
@@ -2740,34 +3369,72 @@ namespace Controls
 
     class EXPORT ComboBox : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(uint32 index) const;
+        bool SetItemDataAsPointer(uint32 index, GenericRef obj);
+        bool AddItem(const ConstString& caption, GenericRef userData);
+
       protected:
-        ComboBox(std::string_view layout, const AppCUI::Utils::ConstString& text, char itemsSeparator);
+        ComboBox(string_view layout, const ConstString& text, char itemsSeparator);
 
       public:
-        static const unsigned int NO_ITEM_SELECTED = 0xFFFFFFFF;
+        static const uint32 NO_ITEM_SELECTED = 0xFFFFFFFF;
 
-        ItemData GetCurrentItemUserData();
-        unsigned int GetItemsCount();
-        unsigned int GetCurrentItemIndex();
-        const AppCUI::Graphics::CharacterBuffer& GetCurrentItemText();
-        ItemData GetItemUserData(unsigned int index);
-        const AppCUI::Graphics::CharacterBuffer& GetItemText(unsigned int index);
-        bool SetItemUserData(unsigned int index, ItemData userData);
-        bool SetCurentItemIndex(unsigned int index);
+        inline uint64 GetCurrentItemUserData(uint64 errorValue) const
+        {
+            return GetItemUserData(GetCurrentItemIndex(), errorValue);
+        }
+        template <typename T>
+        inline Reference<T> GetCurrentItemUserData() const
+        {
+            return GetItemDataAsPointer(GetCurrentItemIndex()).ToReference<T>();
+        }
+
+        uint32 GetItemsCount() const;
+        uint32 GetCurrentItemIndex() const;
+        const Graphics::CharacterBuffer& GetCurrentItemText();
+
+        uint64 GetItemUserData(uint32 index, uint64 errorValue) const;
+        template <typename T>
+        inline Reference<T> GetItemUserData(uint32 index) const
+        {
+            return GetItemDataAsPointer(index).ToReference<T>();
+        }
+
+        const Graphics::CharacterBuffer& GetItemText(uint32 index);
+
+        bool SetItemUserData(uint32 index, uint64 userData);
+        template <typename T>
+        inline bool SetItemUserData(uint32 index, Reference<T> userData)
+        {
+            return SetItemDataAsPointer(index, userData.ToGenericRef());
+        }
+        bool SetCurentItemIndex(uint32 index);
         void SetNoIndexSelected();
-        bool AddItem(const AppCUI::Utils::ConstString& caption, ItemData usedData = { nullptr });
-        bool AddSeparator(const AppCUI::Utils::ConstString& caption = "");
+
+        template <typename T>
+        inline bool AddItem(const ConstString& caption, Reference<T> obj)
+        {
+            return AddItem(caption, obj.ToGenericRef());
+        }
+        bool AddItem(const ConstString& caption, uint64 usedData);
+        inline bool AddItem(const ConstString& caption)
+        {
+            return AddItem(caption, GenericRef(nullptr));
+        }
+
+        bool AddSeparator(const ConstString& caption = "");
         void DeleteAllItems();
 
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         void Paint(Graphics::Renderer& renderer) override;
-        void OnExpandView(AppCUI::Graphics::Clip& expandedClip) override;
+        void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
         virtual ~ComboBox();
 
@@ -2784,67 +3451,43 @@ namespace Controls
         Menu(const Menu& obj) = delete;
         ~Menu();
 
-        ItemHandle AddCommandItem(
-              const AppCUI::Utils::ConstString& text,
-              int CommandID,
-              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+        ItemHandle AddCommandItem(const ConstString& text, int CommandID, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddCheckItem(
-              const AppCUI::Utils::ConstString& text,
-              int CommandID,
-              bool checked                   = false,
-              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+              const ConstString& text, int CommandID, bool checked = false, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddRadioItem(
-              const AppCUI::Utils::ConstString& text,
-              int CommandID,
-              bool checked                   = false,
-              AppCUI::Input::Key shortcutKey = AppCUI::Input::Key::None);
+              const ConstString& text, int CommandID, bool checked = false, Input::Key shortcutKey = Input::Key::None);
         ItemHandle AddSeparator();
-        ItemHandle AddSubMenu(const AppCUI::Utils::ConstString& text);
+        ItemHandle AddSubMenu(const ConstString& text);
 
         Reference<Menu> GetSubMenu(ItemHandle menuItem);
 
         bool SetEnable(ItemHandle menuItem, bool status);
         bool SetChecked(ItemHandle menuItem, bool status);
 
-        void Show(int x, int y, const AppCUI::Graphics::Size& maxSize = { 0, 0 });
-        void Show(
-              Reference<Control> parent,
-              int relativeX,
-              int relativeY,
-              const AppCUI::Graphics::Size& maxSize = { 0, 0 });
+        void Show(int x, int y, const Graphics::Size& maxSize = { 0, 0 });
+        void Show(Reference<Control> parent, int relativeX, int relativeY, const Graphics::Size& maxSize = { 0, 0 });
     };
 
     class EXPORT NumericSelector : public Control
     {
       protected:
-        NumericSelector(const long long minValue, const long long maxValue, long long value, std::string_view layout);
+        NumericSelector(const int64 minValue, const int64 maxValue, int64 value, string_view layout);
 
       public:
-        long long GetValue() const;
-        void SetValue(const long long value);
-        void SetMinValue(const long long minValue);
-        void SetMaxValue(const long long maxValue);
-
-      private:
-        bool IsValidValue(const long long value) const;
-        bool IsValueInsertedWrong() const;
-        bool GetRenderColor(Graphics::ColorPair& color) const;
-        bool FormatTextField();
-        bool IsOnPlusButton(const int x, const int y) const;
-        bool IsOnMinusButton(const int x, const int y) const;
-        bool IsOnTextField(const int x, const int y) const;
-        bool MinValueReached() const;
-        bool MaxValueReached() const;
+        int64 GetValue() const;
+        void SetValue(int64 value);
+        void SetMinValue(int64 minValue);
+        void SetMaxValue(int64 maxValue);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, AppCUI::Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        bool OnMouseDrag(int x, int y, AppCUI::Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
 
@@ -2858,8 +3501,8 @@ namespace Controls
         Desktop();
 
       public:
-        void Paint(AppCUI::Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
 
         friend Factory::Desktop;
         friend Control;
@@ -2869,7 +3512,7 @@ namespace Controls
     {
     };
 
-    enum class TreeFlags : unsigned int
+    enum class TreeFlags : uint32
     {
         None                            = 0x000000,
         HideColumns                     = 0x000100, // not implemented
@@ -2890,424 +3533,63 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
-    namespace Factory
-    {
-        class EXPORT Label
-        {
-            Label() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Label> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Reference<AppCUI::Controls::Label> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Pointer<AppCUI::Controls::Label> Create(
-                  const AppCUI::Utils::ConstString& caption, std::string_view layout);
-        };
-        class EXPORT Button
-        {
-            Button() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Button> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID     = 0,
-                  ButtonFlags flags = ButtonFlags::None);
-            static Reference<AppCUI::Controls::Button> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID     = 0,
-                  ButtonFlags flags = ButtonFlags::None);
-            static Pointer<AppCUI::Controls::Button> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID                       = 0,
-                  AppCUI::Controls::ButtonFlags flags = AppCUI::Controls::ButtonFlags::None);
-        };
-        class EXPORT Password
-        {
-            Password() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Password> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Reference<AppCUI::Controls::Password> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Pointer<AppCUI::Controls::Password> Create(
-                  const AppCUI::Utils::ConstString& caption, std::string_view layout);
-        };
-        class EXPORT CheckBox
-        {
-            CheckBox() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::CheckBox> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID = 0);
-            static Reference<AppCUI::Controls::CheckBox> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int controlID = 0);
-            static Pointer<AppCUI::Controls::CheckBox> Create(
-                  const AppCUI::Utils::ConstString& caption, std::string_view layout, int controlID = 0);
-        };
-        class EXPORT RadioBox
-        {
-            RadioBox() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::RadioBox> Create(
-                  const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID = 0);
-            static Reference<AppCUI::Controls::RadioBox> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int groupID,
-                  int controlID = 0);
-            static Reference<AppCUI::Controls::RadioBox> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  int groupID,
-                  int controlID = 0);
-        };
-        class EXPORT Splitter
-        {
-            Splitter() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Splitter> Create(
-                  AppCUI::Controls::Control* parent, std::string_view layout, bool vertical);
-            static Reference<AppCUI::Controls::Splitter> Create(
-                  AppCUI::Controls::Control& parent, std::string_view layout, bool vertical);
-            static Pointer<AppCUI::Controls::Splitter> Create(std::string_view layout, bool vertical);
-        };
-        class EXPORT Panel
-        {
-            Panel() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Panel> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Reference<AppCUI::Controls::Panel> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout);
-            static Pointer<AppCUI::Controls::Panel> Create(
-                  const AppCUI::Utils::ConstString& caption, std::string_view layout);
-            static Reference<AppCUI::Controls::Panel> Create(
-                  AppCUI::Controls::Control* parent, std::string_view layout);
-            static Reference<AppCUI::Controls::Panel> Create(
-                  AppCUI::Controls::Control& parent, std::string_view layout);
-            static Pointer<AppCUI::Controls::Panel> Create(std::string_view layout);
-        };
-        class EXPORT TextField
-        {
-            TextField() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::TextField> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-            static Reference<AppCUI::Controls::TextField> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-            static Pointer<AppCUI::Controls::TextField> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextFieldFlags flags   = AppCUI::Controls::TextFieldFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-        };
-        class EXPORT TextArea
-        {
-            TextArea() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::TextArea> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-            static Reference<AppCUI::Controls::TextArea> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-            static Pointer<AppCUI::Controls::TextArea> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::TextAreaFlags flags    = AppCUI::Controls::TextAreaFlags::None,
-                  Handlers::SyntaxHighlightHandler handler = nullptr,
-                  void* handlerContext                     = nullptr);
-        };
-        class EXPORT TabPage
-        {
-            TabPage() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::TabPage> Create(
-                  AppCUI::Controls::Control* parent, const AppCUI::Utils::ConstString& caption);
-            static Reference<AppCUI::Controls::TabPage> Create(
-                  AppCUI::Controls::Control& parent, const AppCUI::Utils::ConstString& caption);
-            static Pointer<AppCUI::Controls::TabPage> Create(const AppCUI::Utils::ConstString& caption);
-        };
-        class EXPORT Tab
-        {
-            Tab() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::Tab> Create(
-                  AppCUI::Controls::Control* parent,
-                  std::string_view layout,
-                  AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize         = 16);
-            static Reference<AppCUI::Controls::Tab> Create(
-                  AppCUI::Controls::Control& parent,
-                  std::string_view layout,
-                  AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize         = 16);
-            static Pointer<AppCUI::Controls::Tab> Create(
-                  std::string_view layout,
-                  AppCUI::Controls::TabFlags flags = AppCUI::Controls::TabFlags::TopTabs,
-                  unsigned int tabPageSize         = 16);
-        };
-        class EXPORT CanvasViewer
-        {
-            CanvasViewer() = delete;
-
-          public:
-            static Reference<AppCUI::Controls::CanvasViewer> Create(
-                  AppCUI::Controls::Control* parent,
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Reference<AppCUI::Controls::CanvasViewer> Create(
-                  AppCUI::Controls::Control& parent,
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Pointer<AppCUI::Controls::CanvasViewer> Create(
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-            static Reference<AppCUI::Controls::CanvasViewer> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-            static Reference<AppCUI::Controls::CanvasViewer> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-            static Pointer<AppCUI::Controls::CanvasViewer> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  unsigned int canvasWidth,
-                  unsigned int canvasHeight,
-                  AppCUI::Controls::ViewerFlags flags = ViewerFlags::None);
-        };
-        class EXPORT ImageViewer
-        {
-            ImageViewer() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::ImageViewer> Create(
-                  std::string_view layout, AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Reference<AppCUI::Controls::ImageViewer> Create(
-                  AppCUI::Controls::Control* parent,
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Reference<AppCUI::Controls::ImageViewer> Create(
-                  AppCUI::Controls::Control& parent,
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Pointer<AppCUI::Controls::ImageViewer> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Reference<AppCUI::Controls::ImageViewer> Create(
-                  AppCUI::Controls::Control* parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-            static Reference<AppCUI::Controls::ImageViewer> Create(
-                  AppCUI::Controls::Control& parent,
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::ViewerFlags flags = AppCUI::Controls::ViewerFlags::None);
-        };
-        class EXPORT ListView
-        {
-            ListView() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::ListView> Create(
-                  std::string_view layout,
-                  AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
-            static Reference<AppCUI::Controls::ListView> Create(
-                  AppCUI::Controls::Control* parent,
-                  std::string_view layout,
-                  AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
-            static Reference<AppCUI::Controls::ListView> Create(
-                  AppCUI::Controls::Control& parent,
-                  std::string_view layout,
-                  AppCUI::Controls::ListViewFlags flags = AppCUI::Controls::ListViewFlags::None);
-        };
-        class EXPORT ComboBox
-        {
-            ComboBox() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::ComboBox> Create(
-                  std::string_view layout,
-                  const AppCUI::Utils::ConstString& text = std::string_view(),
-                  char itemsSeparator                    = ',');
-
-            static Reference<AppCUI::Controls::ComboBox> Create(
-                  AppCUI::Controls::Control* parent,
-                  std::string_view layout,
-                  const AppCUI::Utils::ConstString& text = std::string_view(),
-                  char itemsSeparator                    = ',');
-            static Reference<AppCUI::Controls::ComboBox> Create(
-                  AppCUI::Controls::Control& parent,
-                  std::string_view layout,
-                  const AppCUI::Utils::ConstString& text = std::string_view(),
-                  char itemsSeparator                    = ',');
-        };
-        class EXPORT NumericSelector
-        {
-            NumericSelector() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::NumericSelector> Create(
-                  const long long minValue, const long long maxValue, long long value, std::string_view layout);
-            static Reference<AppCUI::Controls::NumericSelector> Create(
-                  AppCUI::Controls::Control* parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
-                  std::string_view layout);
-            static Reference<AppCUI::Controls::NumericSelector> Create(
-                  AppCUI::Controls::Control& parent,
-                  const long long minValue,
-                  const long long maxValue,
-                  long long value,
-                  std::string_view layout);
-        };
-        class EXPORT Window
-        {
-            Window() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::Window> Create(
-                  const AppCUI::Utils::ConstString& caption,
-                  std::string_view layout,
-                  AppCUI::Controls::WindowFlags windowFlags = AppCUI::Controls::WindowFlags::None);
-        };
-        class EXPORT Desktop
-        {
-            Desktop() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::Desktop> Create();
-        };
-
-        class EXPORT Tree
-        {
-            Tree() = delete;
-
-          public:
-            static Pointer<AppCUI::Controls::Tree> Create(
-                  std::string_view layout,
-                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
-                  const unsigned int noOfColumns          = 1);
-            static Reference<AppCUI::Controls::Tree> Create(
-                  Control* parent,
-                  std::string_view layout,
-                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
-                  const unsigned int noOfColumns          = 1);
-            static Reference<AppCUI::Controls::Tree> Create(
-                  Control& parent,
-                  std::string_view layout,
-                  const AppCUI::Controls::TreeFlags flags = AppCUI::Controls::TreeFlags::None,
-                  const unsigned int noOfColumns          = 1);
-        };
-    } // namespace Factory
-
     class EXPORT Tree : public Control
     {
+      private:
+        GenericRef GetItemDataAsPointer(const ItemHandle item) const;
+        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+
       protected:
-        Tree(std::string_view layout, const TreeFlags flags = TreeFlags::None, const unsigned int noOfColumns = 1);
+        Tree(string_view layout, const TreeFlags flags = TreeFlags::None, const uint32 noOfColumns = 1);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        bool OnKeyEvent(AppCUI::Input::Key keyCode, char16_t UnicodeChar) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, AppCUI::Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
-        bool OnMouseWheel(int x, int y, AppCUI::Input::MouseWheel direction) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
+        // handlers covariant
+        Handlers::Tree* Handlers() override;
+
         ItemHandle AddItem(
               const ItemHandle parent,
-              const std::vector<Graphics::CharacterBuffer>& values,
+              const vector<Graphics::CharacterBuffer>& values,
               const ConstString metadata,
-              void* data        = nullptr,
               bool process      = false,
               bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
         const ConstString GetItemText(const ItemHandle handle);
-        ItemData* GetItemData(const ItemHandle handle);
-        ItemData* GetItemData(const size_t index);
-        unsigned int GetItemsCount() const;
-        void SetToggleItemHandle(
-              const std::function<bool(Tree& tree, const ItemHandle handle, const void* context)> callback);
+
+        bool SetItemData(ItemHandle item, uint64 value);
+        template <typename T>
+        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
+        }
+
+        template <typename T>
+        Reference<T> GetItemData(const ItemHandle item)
+        {
+            return GetItemDataAsPointer(item).ToReference<T>();
+        }
+        uint64 GetItemData(const size_t index, uint64 errorValue);
+        ItemHandle GetItemHandleByIndex(const uint32 index) const;
+
+        uint32 GetItemsCount() const;
         bool AddColumnData(
-              const unsigned int index,
+              const uint32 index,
               const ConstString title,
-              const AppCUI::Graphics::TextAlignament headerAlignment,
-              const AppCUI::Graphics::TextAlignament contentAlignment,
-              const unsigned int width = 0xFFFFFFFF);
+              const Graphics::TextAlignament headerAlignment,
+              const Graphics::TextAlignament contentAlignment,
+              const uint32 width = 0xFFFFFFFF);
+        const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
+        bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
 
       private:
         bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
@@ -3327,8 +3609,8 @@ namespace Controls
         bool IsMouseOnSearchField(int x, int y) const;
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
         bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const unsigned int columnIndex, const int value);
-        bool SetColorForItems(const AppCUI::Graphics::ColorPair& color);
+        bool AddToColumnWidth(const uint32 columnIndex, const int value);
+        bool SetColorForItems(const Graphics::ColorPair& color);
         bool SearchItems();
         bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
         bool MarkAllItemsAsNotFound();
@@ -3337,6 +3619,426 @@ namespace Controls
         friend Factory::Tree;
         friend Control;
     };
+
+    enum class GridFlags : uint32
+    {
+        None                  = 0x000000,
+        HideHorizontalLines   = 0x000100,
+        HideVerticalLines     = 0x000200,
+        HideBoxes             = 0x000400,
+        HideHoveredCell       = 0x000800,
+        HideSelectedCell      = 0x001000,
+        TransparentBackground = 0x002000,
+        HideHeader            = 0x004000,
+        DisableZoom           = 0x008000
+    };
+
+    class EXPORT Grid : public Control
+    {
+      public:
+        enum class CellType
+        {
+            Boolean = 0,
+            String  = 1
+        };
+
+      protected:
+        Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnLoseFocus() override;
+        bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
+
+        uint32 GetCellsCount() const;
+        Graphics::Size GetGridDimensions() const;
+        bool UpdateCell(
+              uint32 index,
+              CellType cellType,
+              const variant<bool, ConstString>& content,
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+        bool UpdateCell(
+              uint32 x,
+              uint32 y,
+              CellType cellType,
+              const variant<bool, ConstString>& content,
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+        const ConstString GetSeparator() const;
+        void SetSeparator(ConstString separator);
+        bool UpdateHeaderValues(
+              const vector<ConstString>& headerValues,
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+
+      private:
+        friend Factory::Grid;
+        friend Control;
+    };
+
+    namespace Factory
+    {
+        class EXPORT Label
+        {
+            Label() = delete;
+
+          public:
+            static Reference<Controls::Label> Create(
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
+            static Reference<Controls::Label> Create(
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Label> Create(const ConstString& caption, string_view layout);
+        };
+        class EXPORT Button
+        {
+            Button() = delete;
+
+          public:
+            static Reference<Controls::Button> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  int controlID     = 0,
+                  ButtonFlags flags = ButtonFlags::None);
+            static Reference<Controls::Button> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  int controlID     = 0,
+                  ButtonFlags flags = ButtonFlags::None);
+            static Pointer<Controls::Button> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  int controlID               = 0,
+                  Controls::ButtonFlags flags = Controls::ButtonFlags::None);
+        };
+        class EXPORT Password
+        {
+            Password() = delete;
+
+          public:
+            static Reference<Controls::Password> Create(
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
+            static Reference<Controls::Password> Create(
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Password> Create(const ConstString& caption, string_view layout);
+        };
+        class EXPORT CheckBox
+        {
+            CheckBox() = delete;
+
+          public:
+            static Reference<Controls::CheckBox> Create(
+                  Controls::Control* parent, const ConstString& caption, string_view layout, int controlID = 0);
+            static Reference<Controls::CheckBox> Create(
+                  Controls::Control& parent, const ConstString& caption, string_view layout, int controlID = 0);
+            static Pointer<Controls::CheckBox> Create(
+                  const ConstString& caption, string_view layout, int controlID = 0);
+        };
+        class EXPORT RadioBox
+        {
+            RadioBox() = delete;
+
+          public:
+            static Pointer<Controls::RadioBox> Create(
+                  const ConstString& caption, string_view layout, int groupID, int controlID = 0);
+            static Reference<Controls::RadioBox> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  int groupID,
+                  int controlID = 0);
+            static Reference<Controls::RadioBox> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  int groupID,
+                  int controlID = 0);
+        };
+        class EXPORT Splitter
+        {
+            Splitter() = delete;
+
+          public:
+            static Reference<Controls::Splitter> Create(Controls::Control* parent, string_view layout, bool vertical);
+            static Reference<Controls::Splitter> Create(Controls::Control& parent, string_view layout, bool vertical);
+            static Pointer<Controls::Splitter> Create(string_view layout, bool vertical);
+        };
+        class EXPORT Panel
+        {
+            Panel() = delete;
+
+          public:
+            static Reference<Controls::Panel> Create(
+                  Controls::Control* parent, const ConstString& caption, string_view layout);
+            static Reference<Controls::Panel> Create(
+                  Controls::Control& parent, const ConstString& caption, string_view layout);
+            static Pointer<Controls::Panel> Create(const ConstString& caption, string_view layout);
+            static Reference<Controls::Panel> Create(Controls::Control* parent, string_view layout);
+            static Reference<Controls::Panel> Create(Controls::Control& parent, string_view layout);
+            static Pointer<Controls::Panel> Create(string_view layout);
+        };
+        class EXPORT TextField
+        {
+            TextField() = delete;
+
+          public:
+            static Reference<Controls::TextField> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
+            static Reference<Controls::TextField> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
+            static Pointer<Controls::TextField> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextFieldFlags flags = Controls::TextFieldFlags::None);
+        };
+        class EXPORT TextArea
+        {
+            TextArea() = delete;
+
+          public:
+            static Reference<Controls::TextArea> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
+            static Reference<Controls::TextArea> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
+            static Pointer<Controls::TextArea> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::TextAreaFlags flags = Controls::TextAreaFlags::None);
+        };
+        class EXPORT TabPage
+        {
+            TabPage() = delete;
+
+          public:
+            static Reference<Controls::TabPage> Create(Controls::Control* parent, const ConstString& caption);
+            static Reference<Controls::TabPage> Create(Controls::Control& parent, const ConstString& caption);
+            static Pointer<Controls::TabPage> Create(const ConstString& caption);
+        };
+        class EXPORT Tab
+        {
+            Tab() = delete;
+
+          public:
+            static Reference<Controls::Tab> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Controls::TabFlags flags = Controls::TabFlags::TopTabs,
+                  uint32 tabPageSize = 16);
+            static Reference<Controls::Tab> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Controls::TabFlags flags = Controls::TabFlags::TopTabs,
+                  uint32 tabPageSize = 16);
+            static Pointer<Controls::Tab> Create(
+                  string_view layout,
+                  Controls::TabFlags flags = Controls::TabFlags::TopTabs,
+                  uint32 tabPageSize = 16);
+        };
+        class EXPORT CanvasViewer
+        {
+            CanvasViewer() = delete;
+
+          public:
+            static Reference<Controls::CanvasViewer> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Reference<Controls::CanvasViewer> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Pointer<Controls::CanvasViewer> Create(
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = ViewerFlags::None);
+            static Reference<Controls::CanvasViewer> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = ViewerFlags::None);
+            static Reference<Controls::CanvasViewer> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = ViewerFlags::None);
+            static Pointer<Controls::CanvasViewer> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  uint32 canvasWidth,
+                  uint32 canvasHeight,
+                  Controls::ViewerFlags flags = ViewerFlags::None);
+        };
+        class EXPORT ImageViewer
+        {
+            ImageViewer() = delete;
+
+          public:
+            static Pointer<Controls::ImageViewer> Create(
+                  string_view layout, Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Reference<Controls::ImageViewer> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Reference<Controls::ImageViewer> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Pointer<Controls::ImageViewer> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Reference<Controls::ImageViewer> Create(
+                  Controls::Control* parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+            static Reference<Controls::ImageViewer> Create(
+                  Controls::Control& parent,
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::ViewerFlags flags = Controls::ViewerFlags::None);
+        };
+        class EXPORT ListView
+        {
+            ListView() = delete;
+
+          public:
+            static Pointer<Controls::ListView> Create(
+                  string_view layout, Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+            static Reference<Controls::ListView> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+            static Reference<Controls::ListView> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+        };
+        class EXPORT ComboBox
+        {
+            ComboBox() = delete;
+
+          public:
+            static Pointer<Controls::ComboBox> Create(
+                  string_view layout, const ConstString& text = string_view(), char itemsSeparator = ',');
+
+            static Reference<Controls::ComboBox> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  const ConstString& text = string_view(),
+                  char itemsSeparator     = ',');
+            static Reference<Controls::ComboBox> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  const ConstString& text = string_view(),
+                  char itemsSeparator     = ',');
+        };
+        class EXPORT NumericSelector
+        {
+            NumericSelector() = delete;
+
+          public:
+            static Pointer<Controls::NumericSelector> Create(
+                  const int64 minValue, const int64 maxValue, int64 value, string_view layout);
+            static Reference<Controls::NumericSelector> Create(
+                  Controls::Control* parent,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
+                  string_view layout);
+            static Reference<Controls::NumericSelector> Create(
+                  Controls::Control& parent,
+                  const int64 minValue,
+                  const int64 maxValue,
+                  int64 value,
+                  string_view layout);
+        };
+        class EXPORT Window
+        {
+            Window() = delete;
+
+          public:
+            static Pointer<Controls::Window> Create(
+                  const ConstString& caption,
+                  string_view layout,
+                  Controls::WindowFlags windowFlags = Controls::WindowFlags::None);
+        };
+        class EXPORT Desktop
+        {
+            Desktop() = delete;
+
+          public:
+            static Pointer<Controls::Desktop> Create();
+        };
+
+        class EXPORT Tree
+        {
+            Tree() = delete;
+
+          public:
+            static Pointer<Controls::Tree> Create(
+                  string_view layout,
+                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
+                  const uint32 noOfColumns  = 1);
+            static Reference<Controls::Tree> Create(
+                  Control* parent,
+                  string_view layout,
+                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
+                  const uint32 noOfColumns  = 1);
+            static Reference<Controls::Tree> Create(
+                  Control& parent,
+                  string_view layout,
+                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
+                  const uint32 noOfColumns  = 1);
+        };
+
+        class EXPORT Grid
+        {
+            Grid() = delete;
+
+          public:
+            static Pointer<Controls::Grid> Create(
+                  string_view layout, uint32 columnsNo, uint32 rowsNo, Controls::GridFlags flags);
+            static Reference<Controls::Grid> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  uint32 columnsNo,
+                  uint32 rowsNo,
+                  Controls::GridFlags flags);
+            static Reference<Controls::Grid> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  uint32 columnsNo,
+                  uint32 rowsNo,
+                  Controls::GridFlags flags);
+        };
+    } // namespace Factory
 
 }; // namespace Controls
 
@@ -3347,13 +4049,11 @@ namespace Dialogs
         MessageBox() = delete;
 
       public:
-        static void ShowError(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static void ShowNotification(
-              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static void ShowWarning(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static Result ShowOkCancel(const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
-        static Result ShowYesNoCancel(
-              const AppCUI::Utils::ConstString& title, const AppCUI::Utils::ConstString& message);
+        static void ShowError(const ConstString& title, const ConstString& message);
+        static void ShowNotification(const ConstString& title, const ConstString& message);
+        static void ShowWarning(const ConstString& title, const ConstString& message);
+        static Result ShowOkCancel(const ConstString& title, const ConstString& message);
+        static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
     };
 
     class EXPORT FileDialog
@@ -3373,14 +4073,10 @@ namespace Dialogs
         // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
 
       public:
-        static std::optional<std::filesystem::path> ShowSaveFileWindow(
-              const AppCUI::Utils::ConstString& fileName,
-              const AppCUI::Utils::ConstString& extensionsFilter,
-              const std::filesystem::path& path);
-        static std::optional<std::filesystem::path> ShowOpenFileWindow(
-              const AppCUI::Utils::ConstString& fileName,
-              const AppCUI::Utils::ConstString& extensionsFilter,
-              const std::filesystem::path& path);
+        static optional<std::filesystem::path> ShowSaveFileWindow(
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
+        static optional<std::filesystem::path> ShowOpenFileWindow(
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
     };
     class EXPORT WindowManager
     {
@@ -3393,7 +4089,7 @@ namespace Dialogs
 
 namespace Log
 {
-    enum class Severity : unsigned int
+    enum class Severity : uint32
     {
         Fatal         = 4,
         InternalError = 3,
@@ -3408,14 +4104,14 @@ namespace Log
         const char* FileName;
         const char* Function;
         const char* Condition;
-        int LineNumber;
+        uint32 LineNumber;
     };
     void EXPORT Report(
           Severity type,
           const char* fileName,
           const char* function,
           const char* condition,
-          int line,
+          uint32 line,
           const char* format,
           ...);
     void EXPORT SetLogCallback(void (*callback)(const Message&));
@@ -3426,7 +4122,7 @@ namespace Log
 } // namespace Log
 namespace Application
 {
-    enum class InitializationFlags : unsigned int
+    enum class InitializationFlags : uint32
     {
         None = 0,
 
@@ -3441,7 +4137,7 @@ namespace Application
         SingleWindowApp     = 0x0100,
     };
 
-    enum class CharacterSize : unsigned int
+    enum class CharacterSize : uint32
     {
         Default = 0,
         Tiny,
@@ -3450,7 +4146,7 @@ namespace Application
         Large,
         Huge
     };
-    enum class FrontendType : unsigned int
+    enum class FrontendType : uint32
     {
         Default        = 0,
         SDL            = 1,
@@ -3460,12 +4156,12 @@ namespace Application
 
     struct InitializationData
     {
-        unsigned int Width, Height;
+        uint32 Width, Height;
         FrontendType Frontend;
         CharacterSize CharSize;
         InitializationFlags Flags;
-        std::string_view FontName;
-        AppCUI::Controls::Desktop* (*CustomDesktopConstructor)();
+        string_view FontName;
+        Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
@@ -3490,14 +4186,14 @@ namespace Application
       public:
         CommandBar();
         void Init(void* controller);
-        bool SetCommand(AppCUI::Input::Key keyCode, const AppCUI::Utils::ConstString& caption, int CommandID);
+        bool SetCommand(Input::Key keyCode, const ConstString& caption, int CommandID);
     };
 
     struct Config
     {
         struct
         {
-            int DesktopFillCharacterCode;
+            char16 DesktopFillCharacterCode;
             Graphics::ColorPair Color;
         } Desktop;
         struct
@@ -3609,7 +4305,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning;
+                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
             } Item;
             struct
             {
@@ -3695,11 +4391,46 @@ namespace Application
                 } Symbol;
             };
         } Tree;
+        struct
+        {
+            struct
+            {
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Horizontal;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Vertical;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Box;
+            } Lines;
+            struct
+            {
+                Graphics::ColorPair Grid;
+                struct
+                {
+                    Graphics::ColorPair Normal, Selected, Hovered;
+                } Cell;
+            } Background;
+            struct
+            {
+                Graphics::ColorPair Normal;
+            } Text;
+            Graphics::ColorPair Header;
+        } Grid;
         void SetDarkTheme();
     };
 
     EXPORT Config* GetAppConfig();
-    EXPORT AppCUI::Utils::IniObject* GetAppSettings();
+    EXPORT Utils::IniObject* GetAppSettings();
+    EXPORT bool SaveAppSettings();
+    EXPORT void UpdateAppCUISettings(Utils::IniObject& ini, bool clearExistingSettings = false);
+    EXPORT bool UpdateAppCUISettings(bool clearExistingSettings = false);
+    EXPORT std::filesystem::path GetAppSettingsFile();
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
@@ -3708,40 +4439,41 @@ namespace Application
     EXPORT bool Init(InitializationData& initData);
 
     EXPORT bool Run();
-    EXPORT bool RunSingleApp(std::unique_ptr<AppCUI::Controls::SingleApp> singleApp);
-    EXPORT AppCUI::Controls::ItemHandle AddWindow(
-          std::unique_ptr<AppCUI::Controls::Window> wnd,
-          AppCUI::Controls::ItemHandle referal = AppCUI::Controls::InvalidItemHandle);
-    EXPORT AppCUI::Controls::ItemHandle AddWindow(
-          std::unique_ptr<AppCUI::Controls::Window> wnd, AppCUI::Controls::Window* referalWindow);
-    EXPORT AppCUI::Controls::Menu* AddMenu(const AppCUI::Utils::ConstString& name);
-    EXPORT bool GetApplicationSize(AppCUI::Graphics::Size& size);
-    EXPORT bool GetDesktopSize(AppCUI::Graphics::Size& size);
+    EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
+    EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+    EXPORT Controls::Menu* AddMenu(const ConstString& name);
+    EXPORT bool GetApplicationSize(Graphics::Size& size);
+    EXPORT bool GetDesktopSize(Graphics::Size& size);
     EXPORT void Repaint();
     EXPORT void RecomputeControlsLayout();
     EXPORT void ArrangeWindows(ArangeWindowsMethod method);
     EXPORT void RaiseEvent(
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> control,
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> sourceControl,
-          AppCUI::Controls::Event eventType,
+          Utils::Reference<Controls::Control> control,
+          Utils::Reference<Controls::Control> sourceControl,
+          Controls::Event eventType,
           int controlID);
     EXPORT void Close();
 }; // namespace Application
+
 } // namespace AppCUI
 
 // inline operations for enum classes
-ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Input::Key, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, unsigned int);
-ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, unsigned int)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, unsigned int)
+ADD_FLAG_OPERATORS(AppCUI::Application::InitializationFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Input::Key, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 
 #undef ADD_FLAG_OPERATORS

@@ -1,15 +1,15 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-using namespace AppCUI::Graphics;
-
+namespace AppCUI::Graphics
+{
 Canvas::Canvas()
 {
 }
 Canvas::~Canvas()
 {
 }
-bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, const ColorPair color)
+bool Canvas::Create(uint32 width, uint32 height, int fillCharacter, const ColorPair color)
 {
     CHECK(width > 0, false, "Width must be greater than 0.");
     CHECK(height > 0, false, "Height must be greater than 0.");
@@ -25,7 +25,7 @@ bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, 
     Character** ofs_tmp = new Character*[height];
     CHECK(ofs_tmp, false, "Fail to allocate offset row vector of %d elements", height);
     Character* p = tmp;
-    for (unsigned int tr = 0; tr < height; tr++, p += width)
+    for (uint32 tr = 0; tr < height; tr++, p += width)
         ofs_tmp[tr] = p;
     _Destroy();
     this->Characters = tmp;
@@ -38,7 +38,7 @@ bool Canvas::Create(unsigned int width, unsigned int height, int fillCharacter, 
 
     return true;
 }
-bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, const ColorPair color)
+bool Canvas::Resize(uint32 width, uint32 height, int fillCharacter, const ColorPair color)
 {
     if (this->Characters == nullptr)
         return Create(width, height, fillCharacter, color);
@@ -51,21 +51,21 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     Character** ofs_tmp = new Character*[height];
     CHECK(ofs_tmp, false, "Fail to allocate offset row vector of %d elements", height);
     Character* p = tmp;
-    for (unsigned int tr = 0; tr < height; tr++, p += width)
+    for (uint32 tr = 0; tr < height; tr++, p += width)
         ofs_tmp[tr] = p;
 
-    unsigned short chr = ' ';
+    uint16 chr = ' ';
 
     if ((fillCharacter >= 0) && (fillCharacter <= 0xFFFF))
-        chr = (unsigned short) (fillCharacter & 0xFFFF);
+        chr = (uint16) (fillCharacter & 0xFFFF);
     // copy from Characters to tmp
-    unsigned int min_w = std::min<>(this->Width, width);
-    unsigned int min_h = std::min<>(this->Height, height);
-    for (unsigned int y = 0; y < min_h; y++)
+    uint32 min_w = std::min<>(this->Width, width);
+    uint32 min_h = std::min<>(this->Height, height);
+    for (uint32 y = 0; y < min_h; y++)
     {
         Character* p_temp    = tmp + (y * width);
         Character* p_current = this->Characters + (y * this->Width);
-        for (unsigned int x = 0; x < min_w; x++, p_temp++, p_current++)
+        for (uint32 x = 0; x < min_w; x++, p_temp++, p_current++)
         {
             *(p_temp) = *(p_current);
         }
@@ -73,10 +73,10 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     // fill the rest
     if (min_w < width)
     {
-        for (unsigned int y = 0; y < height; y++)
+        for (uint32 y = 0; y < height; y++)
         {
             Character* p_temp = tmp + (y * width);
-            for (unsigned int x = min_w; x < width; x++, p_temp++)
+            for (uint32 x = min_w; x < width; x++, p_temp++)
             {
                 p_temp->Code  = chr;
                 p_temp->Color = color;
@@ -85,10 +85,10 @@ bool Canvas::Resize(unsigned int width, unsigned int height, int fillCharacter, 
     }
     if (min_h < height)
     {
-        for (unsigned int y = min_h; y < height; y++)
+        for (uint32 y = min_h; y < height; y++)
         {
             Character* p_temp = tmp + (y * width);
-            for (unsigned int x = 0; x < min_w; x++, p_temp++)
+            for (uint32 x = 0; x < min_w; x++, p_temp++)
             {
                 p_temp->Code  = chr;
                 p_temp->Color = color;
@@ -117,7 +117,7 @@ void Canvas::Reset()
     this->ClipHasBeenCopied                                                                 = false;
     this->HideCursor();
 }
-void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
+void Canvas::SetAbsoluteClip(const Graphics::Clip& clip)
 {
     if (clip.Visible)
     {
@@ -138,7 +138,7 @@ void Canvas::SetAbsoluteClip(const AppCUI::Graphics::Clip& clip)
     }
     this->ClipHasBeenCopied = false;
 }
-void AppCUI::Graphics::Canvas::ExtendAbsoluteClipInAllDirections(int size)
+void Graphics::Canvas::ExtendAbsoluteClipInAllDirections(int size)
 {
     if (Clip.Visible)
     {
@@ -186,3 +186,4 @@ bool Canvas::ClearEntireSurface(int character, const ColorPair color)
 {
     return _ClearEntireSurface(character, color);
 }
+} // namespace AppCUI::Graphics

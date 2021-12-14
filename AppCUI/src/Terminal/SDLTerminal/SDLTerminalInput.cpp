@@ -1,7 +1,9 @@
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#include "SDLTerminal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Internal;
+using namespace Input;
 
 static Key getShiftState(const SDL_Keymod keyModifiers)
 {
@@ -21,24 +23,24 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool SDLTerminal::initInput(const AppCUI::Application::InitializationData&)
+bool SDLTerminal::initInput(const Application::InitializationData&)
 {
     oldShiftState = Key::None;
 
     for (size_t i = 0; i < 26; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key>(((unsigned int) Key::A) + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key>(((uint32) Key::A) + i);
     }
 
     for (size_t i = 0; i < 10; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key>(((unsigned int) Key::N0) + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key>(((uint32) Key::N0) + i);
     }
 
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_F1 + i)] = static_cast<Key>(((unsigned int) Key::F1) + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_F1 + i)] = static_cast<Key>(((uint32) Key::F1) + i);
     }
 
     KeyTranslation[SDL_SCANCODE_RETURN]    = Key::Enter;
@@ -155,7 +157,7 @@ void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
     oldShiftState = currentShiftState;
 }
 
-void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void SDLTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
     using namespace std::chrono_literals;
 
@@ -222,19 +224,19 @@ void SDLTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         evnt.eventType = SystemEventType::MouseWheel;
         if (e.wheel.y < 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+            evnt.mouseWheel = Input::MouseWheel::Up;
         }
         else if (e.wheel.y > 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+            evnt.mouseWheel = Input::MouseWheel::Down;
         }
         else if (e.wheel.x > 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Right;
+            evnt.mouseWheel = Input::MouseWheel::Right;
         }
         else if (e.wheel.x < 0)
         {
-            evnt.mouseWheel = AppCUI::Input::MouseWheel::Left;
+            evnt.mouseWheel = Input::MouseWheel::Left;
         }
         break;
     default:
@@ -249,4 +251,5 @@ bool SDLTerminal::IsEventAvailable()
 
 void SDLTerminal::uninitInput()
 {
+}
 }

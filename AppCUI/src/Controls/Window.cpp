@@ -1,12 +1,10 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
-constexpr unsigned char NO_CONTROLBAR_ITEM = 0xFF;
-constexpr unsigned int MAX_TAG_CHARS       = 8U;
+namespace AppCUI
+{
+constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
+constexpr uint32 MAX_TAG_CHARS = 8U;
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -97,14 +95,14 @@ Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne
         return parent;
     return nullptr;
 }
-bool ProcessHotKey(Control* ctrl, AppCUI::Input::Key KeyCode)
+bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
 {
     if (ctrl == nullptr)
         return false;
     CREATE_CONTROL_CONTEXT(ctrl, Members, false);
     if (((Members->Flags & (GATTR_VISIBLE | GATTR_ENABLE)) != (GATTR_VISIBLE | GATTR_ENABLE)))
         return false;
-    for (unsigned int tr = 0; tr < Members->ControlsCount; tr++)
+    for (uint32 tr = 0; tr < Members->ControlsCount; tr++)
     {
         if (ProcessHotKey(Members->Controls[tr], KeyCode))
             return true;
@@ -206,7 +204,7 @@ void UpdateWindowButtonPos(WindowBarItem* b, WindowControlBarLayoutData& layout,
 }
 void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
 {
-    for (unsigned int tr = 0; tr < wcc->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < wcc->ControlBar.Count; tr++)
         wcc->ControlBar.Items[tr].RemoveFlag(WindowBarItemFlags::Visible);
 
     WindowControlBarLayoutData top, bottom;
@@ -222,7 +220,7 @@ void UpdateWindowsButtonsPoz(WindowControlContext* wcc)
     bottom.RighGroup = nullptr;
 
     auto* btn = wcc->ControlBar.Items;
-    for (unsigned int tr = 0; tr < wcc->ControlBar.Count; tr++, btn++)
+    for (uint32 tr = 0; tr < wcc->ControlBar.Count; tr++, btn++)
     {
         if (btn->IsHidden())
             continue;
@@ -291,8 +289,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     current->SetFlag(WindowBarItemFlags::Checked);
 }
 //=========================================================================================================================================================
-ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
-      const AppCUI::Utils::ConstString& name, int ID, const AppCUI::Utils::ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -307,8 +304,8 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCommandItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->ControlBar.Count - 1;
 }
-ItemHandle AppCUI::Controls::WindowControlsBar::AddSingleChoiceItem(
-      const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddSingleChoiceItem(
+      const ConstString& name, int ID, bool checked, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -328,8 +325,8 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddSingleChoiceItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->ControlBar.Count - 1;
 }
-ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
-      const AppCUI::Utils::ConstString& name, int ID, bool checked, const AppCUI::Utils::ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddCheckItem(
+      const ConstString& name, int ID, bool checked, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -348,8 +345,7 @@ ItemHandle AppCUI::Controls::WindowControlsBar::AddCheckItem(
     UpdateWindowsButtonsPoz(Members);
     return Members->ControlBar.Count - 1;
 }
-ItemHandle AppCUI::Controls::WindowControlsBar::AddTextItem(
-      const AppCUI::Utils::ConstString& caption, const AppCUI::Utils::ConstString& toolTip)
+ItemHandle Controls::WindowControlsBar::AddTextItem(const ConstString& caption, const ConstString& toolTip)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, InvalidItemHandle);
     CHECK(Members->ControlBar.Count < MAX_WINDOWBAR_ITEMS,
@@ -368,7 +364,7 @@ WindowBarItem* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
 {
     WindowControlContext* Members = (WindowControlContext*) Context;
     CHECK(Members, nullptr, "");
-    unsigned int id = (unsigned int) itemHandle;
+    uint32 id = (uint32) itemHandle;
     CHECK(id < Members->ControlBar.Count, nullptr, "Invalid item index (%d/%d)", id, Members->ControlBar.Count);
     auto* b = Members->ControlBar.Items + id;
     CHECK((b->Type == WindowBarItemType::Button) || (b->Type == WindowBarItemType::CheckBox) ||
@@ -377,7 +373,7 @@ WindowBarItem* GetWindowControlsBarItem(void* Context, ItemHandle itemHandle)
           "");
     return b;
 }
-bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
+bool Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, const ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -389,21 +385,57 @@ bool AppCUI::Controls::WindowControlsBar::SetItemText(ItemHandle itemHandle, con
     UpdateWindowsButtonsPoz((WindowControlContext*) Context);
     return true;
 }
-bool AppCUI::Controls::WindowControlsBar::SetItemToolTip(
-      ItemHandle itemHandle, const AppCUI::Utils::ConstString& caption)
+bool Controls::WindowControlsBar::SetItemTextWithHotKey(
+      ItemHandle itemHandle, const ConstString& caption, uint32 hotKeyTextOffset)
+{
+    CHECK(SetItemText(itemHandle, caption), false, "");
+    auto b = GetWindowControlsBarItem(this->Context, itemHandle);
+    CHECK(b, false, "");
+    b->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    b->HotKey       = Key::None;
+
+    ConstStringObject txt(caption);
+    char16 ch = 0;
+    if (hotKeyTextOffset < txt.Length)
+    {
+        switch (txt.Encoding)
+        {
+        case StringEncoding::Ascii:
+            ch = (((char*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::Unicode16:
+            ch = (((char16*) txt.Data)[hotKeyTextOffset]);
+            break;
+        case StringEncoding::CharacterBuffer:
+            ch = (((Character*) txt.Data)[hotKeyTextOffset].Code);
+            break;
+        case StringEncoding::UTF8:
+            ch = (((uint8*) txt.Data)[hotKeyTextOffset]);
+            break;
+        }
+        if (ch != 0)
+        {
+            b->HotKey = Utils::KeyUtils::CreateHotKey(ch, Key::Alt);
+            if (b->HotKey != Key::None)
+                b->HotKeyOffset = hotKeyTextOffset;
+        }
+    }
+    return true;
+}
+bool Controls::WindowControlsBar::SetItemToolTip(ItemHandle itemHandle, const ConstString& caption)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
     CHECK(b->ToolTipText.Set(caption), false, "");
     return true;
 }
-bool AppCUI::Controls::WindowControlsBar::IsItemChecked(ItemHandle itemHandle)
+bool Controls::WindowControlsBar::IsItemChecked(ItemHandle itemHandle)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
     return b->IsChecked();
 }
-bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bool value)
+bool Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bool value)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -424,19 +456,19 @@ bool AppCUI::Controls::WindowControlsBar::SetItemCheck(ItemHandle itemHandle, bo
     }
     RETURNERROR(false, "This method can only be applied on Check and Radio items");
 }
-bool AppCUI::Controls::WindowControlsBar::IsItemVisible(ItemHandle itemHandle)
+bool Controls::WindowControlsBar::IsItemVisible(ItemHandle itemHandle)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
     return !b->IsHidden();
 }
-bool AppCUI::Controls::WindowControlsBar::IsItemShown(ItemHandle itemHandle)
+bool Controls::WindowControlsBar::IsItemShown(ItemHandle itemHandle)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
     return b->IsVisible() && (!b->IsHidden());
 }
-bool AppCUI::Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool value)
+bool Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, bool value)
 {
     auto b = GetWindowControlsBarItem(this->Context, itemHandle);
     CHECK(b, false, "");
@@ -454,8 +486,7 @@ bool AppCUI::Controls::WindowControlsBar::SetItemVisible(ItemHandle itemHandle, 
     RETURNERROR(false, "This method can only be applied on Check and Radio items");
 }
 //=========================================================================================================================================================
-bool WindowBarItem::Init(
-      WindowBarItemType type, WindowControlsBarLayout layout, unsigned char size, std::string_view toolTipText)
+bool WindowBarItem::Init(WindowBarItemType type, WindowControlsBarLayout layout, uint8 size, string_view toolTipText)
 {
     this->Type         = type;
     this->Layout       = layout;
@@ -473,10 +504,7 @@ bool WindowBarItem::Init(
     return true;
 }
 bool WindowBarItem::Init(
-      WindowBarItemType type,
-      WindowControlsBarLayout layout,
-      const AppCUI::Utils::ConstString& name,
-      const AppCUI::Utils::ConstString& toolTip)
+      WindowBarItemType type, WindowControlsBarLayout layout, const ConstString& name, const ConstString& toolTip)
 {
     this->Type         = type;
     this->Layout       = layout;
@@ -488,14 +516,14 @@ bool WindowBarItem::Init(
     this->HotKey       = Key::None;
     this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     // name
-    AppCUI::Utils::ConstStringObject objName(name);
+    ConstStringObject objName(name);
     CHECK(objName.Length > 0, false, "Expecting a valid item name (non-empty)");
     CHECK(this->Text.SetWithHotKey(name, this->HotKeyOffset, this->HotKey, Key::Alt), false, "Fail to create name !");
     this->Size = this->Text.Len();
     if (type == WindowBarItemType::CheckBox)
         this->Size += 2; // for the checkmark
     // tool tip
-    AppCUI::Utils::ConstStringObject objToolTip(toolTip);
+    ConstStringObject objToolTip(toolTip);
     if (objToolTip.Length > 0)
     {
         CHECK(this->ToolTipText.Set(toolTip), false, "");
@@ -508,7 +536,7 @@ Window::~Window()
 {
     DELETE_CONTROL_CONTEXT(WindowControlContext);
 }
-Window::Window(const AppCUI::Utils::ConstString& caption, std::string_view layout, WindowFlags Flags)
+Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags)
     : Control(new WindowControlContext(), caption, layout, false)
 {
     auto Members              = reinterpret_cast<WindowControlContext*>(this->Context);
@@ -519,7 +547,7 @@ Window::Window(const AppCUI::Utils::ConstString& caption, std::string_view layou
                                     // title, OneSpaceRightPadding, close
                                     // button(char),right_corner(1 char) = 10+szTitle (szTitle = min 2 chars)
     ASSERT(SetMargins(1, 1, 1, 1), "Failed to set margins !");
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (unsigned int) Flags;
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) Flags;
 
     Members->Maximized                       = false;
     Members->dragStatus                      = WINDOW_DRAG_STATUS_NONE;
@@ -573,11 +601,11 @@ Window::Window(const AppCUI::Utils::ConstString& caption, std::string_view layou
 
     if ((Flags & WindowFlags::Maximized) == WindowFlags::Maximized)
     {
-        ASSERT(MaximizeRestore(),  "Fail to maximize window !");
+        ASSERT(MaximizeRestore(), "Fail to maximize window !");
     }
     if ((Flags & WindowFlags::Menu) == WindowFlags::Menu)
     {
-        Members->menu = std::make_unique<AppCUI::Internal::MenuBar>(this, 1, 1);
+        Members->menu = std::make_unique<Internal::MenuBar>(this, 1, 1);
         Members->Margins.Top += 1;
         Members->menu->SetWidth(Members->Layout.Width - 2);
     }
@@ -617,7 +645,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
 
     auto* btn = Members->ControlBar.Items;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++, btn++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++, btn++)
     {
         if ((!btn->IsVisible()) || (btn->IsHidden()))
             continue;
@@ -722,11 +750,11 @@ void Window::Paint(Graphics::Renderer& renderer)
         // separators
         if (drawSeparators)
         {
-            if ((unsigned char) btn->Flags & (unsigned char) WindowBarItemFlags::LeftGroupMarker)
+            if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::LeftGroupMarker)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
             else if (fromLeft)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
-            if ((unsigned char) btn->Flags & (unsigned char) WindowBarItemFlags::RightGroupMarker)
+            if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::RightGroupMarker)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
             else if (!fromLeft)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
@@ -760,7 +788,7 @@ bool Window::MaximizeRestore()
         Members->oldW    = GetWidth();
         Members->oldH    = GetHeight();
         Size sz;
-        CHECK(AppCUI::Application::GetDesktopSize(sz), false, "Fail to get desktop size");
+        CHECK(Application::GetDesktopSize(sz), false, "Fail to get desktop size");
         this->MoveTo(0, 0);
         if (this->Resize(sz.Width, sz.Height))
             Members->Maximized = true;
@@ -772,7 +800,7 @@ bool Window::MaximizeRestore()
         Members->Maximized = false;
     }
     UpdateWindowsButtonsPoz(Members);
-    AppCUI::Application::RecomputeControlsLayout();
+    Application::RecomputeControlsLayout();
     return true;
 }
 bool Window::CenterScreen()
@@ -784,7 +812,7 @@ bool Window::CenterScreen()
     UpdateWindowsButtonsPoz(Members);
     return true;
 }
-void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
+void Window::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus                      = WINDOW_DRAG_STATUS_NONE;
@@ -798,7 +826,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
 
     // win buttons
     Members->ControlBar.Current = NO_CONTROLBAR_ITEM;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Contains(x, y))
         {
@@ -819,7 +847,7 @@ void Window::OnMousePressed(int x, int y, AppCUI::Input::MouseButton button)
         Members->dragOffsetY = y;
     }
 }
-bool Window::ProcessControlBarItem(unsigned int index)
+bool Window::ProcessControlBarItem(uint32 index)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     CHECK(index < Members->ControlBar.Count, false, "");
@@ -852,7 +880,7 @@ bool Window::ProcessControlBarItem(unsigned int index)
     }
     return false;
 }
-void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
+void Window::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->ControlBar.IsCurrentItemPressed = false;
@@ -874,7 +902,7 @@ void Window::OnMouseReleased(int, int, AppCUI::Input::MouseButton)
     //		return;
     //}
 }
-bool Window::OnMouseDrag(int x, int y, AppCUI::Input::MouseButton)
+bool Window::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
@@ -906,7 +934,7 @@ bool Window::OnMouseOver(int x, int y)
     }
 
     // check buttons
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Contains(x, y))
         {
@@ -960,7 +988,7 @@ void Window::OnAfterResize(int, int)
 }
 void Window::RemoveMe()
 {
-    auto app = AppCUI::Application::GetApplication();
+    auto app = Application::GetApplication();
     if (!app)
         return;
     // check if I am part of the modal stack
@@ -977,13 +1005,13 @@ bool Window::OnEvent(Reference<Control>, Event eventType, int)
     if ((eventType == Event::WindowClose) || (eventType == Event::WindowAccept))
     {
         // check if current win is a modal dialog
-        auto app = AppCUI::Application::GetApplication();
+        auto app = Application::GetApplication();
         if ((app->ModalControlsCount > 0) && (app->ModalControlsStack[app->ModalControlsCount - 1] == this))
         {
             if (eventType == Event::WindowClose)
-                return Exit(AppCUI::Dialogs::Result::Cancel);
+                return Exit(Dialogs::Result::Cancel);
             else
-                return Exit(AppCUI::Dialogs::Result::Ok);
+                return Exit(Dialogs::Result::Ok);
         }
         else
         {
@@ -993,7 +1021,7 @@ bool Window::OnEvent(Reference<Control>, Event eventType, int)
     }
     return false;
 }
-bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
+bool Window::OnKeyEvent(Input::Key KeyCode, char16)
 {
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
@@ -1024,7 +1052,7 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
             return true;
     }
     // check cntrols hot keys
-    if ((((unsigned int) KeyCode) & (unsigned int) (Key::Shift | Key::Alt | Key::Ctrl)) == ((unsigned int) Key::Alt))
+    if ((((uint32) KeyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
     {
         if (ProcessHotKey(this, KeyCode))
             return true;
@@ -1034,7 +1062,7 @@ bool Window::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
         {
             if (b->HotKey == KeyCode)
             {
-                if (ProcessControlBarItem((unsigned int) (b - Members->ControlBar.Items)))
+                if (ProcessControlBarItem((uint32) (b - Members->ControlBar.Items)))
                     return true;
             }
             b++;
@@ -1048,7 +1076,7 @@ void Window::OnHotKeyChanged()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find hotkey win button
     WindowBarItem* btnHotKey = nullptr;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::HotKeY)
         {
             btnHotKey = &Members->ControlBar.Items[tr];
@@ -1072,12 +1100,12 @@ void Window::OnHotKeyChanged()
     }
     UpdateWindowsButtonsPoz(Members);
 }
-void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils::ConstString& toolTipText)
+void Window::SetTag(const ConstString& name, const ConstString& toolTipText)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     // find tag win button
     WindowBarItem* b = nullptr;
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {
             b = &Members->ControlBar.Items[tr];
@@ -1098,11 +1126,11 @@ void Window::SetTag(const AppCUI::Utils::ConstString& name, const AppCUI::Utils:
     b->RemoveFlag(WindowBarItemFlags::Hidden);
     UpdateWindowsButtonsPoz(Members);
 }
-const AppCUI::Graphics::CharacterBuffer& Window::GetTag()
+const Graphics::CharacterBuffer& Window::GetTag()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
     // find tag win button
-    for (unsigned int tr = 0; tr < Members->ControlBar.Count; tr++)
+    for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++)
     {
         if (Members->ControlBar.Items[tr].Type == WindowBarItemType::Tag)
         {
@@ -1117,8 +1145,8 @@ bool Window::Exit(int dialogResult)
 {
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    Members->DialogResult                             = dialogResult;
-    AppCUI::Application::GetApplication()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
+    Members->DialogResult                     = dialogResult;
+    Application::GetApplication()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
     return true;
 }
 bool Window::Exit(Dialogs::Result dialogResult)
@@ -1131,8 +1159,8 @@ int Window::Show()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
     CHECK(Members->RecomputeLayout(nullptr), -1, "Fail to recompute layout !");
     this->RecomputeLayout();
-    CHECK(AppCUI::Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
-    
+    CHECK(Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
+
     return Members->DialogResult;
 }
 int Window::GetDialogResult()
@@ -1146,12 +1174,12 @@ bool Window::IsWindowInResizeMode()
     return (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE);
 }
 
-Reference<Menu> Window::AddMenu(const AppCUI::Utils::ConstString& name)
+Reference<Menu> Window::AddMenu(const ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);
     CHECK(Members->menu, nullptr, "Application was not initialized with Menu option set up !");
-    ItemHandle itm                 = Members->menu->AddMenu(name);
-    AppCUI::Controls::Menu* result = Members->menu->GetMenu(itm);
+    ItemHandle itm         = Members->menu->AddMenu(name);
+    Controls::Menu* result = Members->menu->GetMenu(itm);
     CHECK(result, nullptr, "Fail to create menu !");
     return Reference<Menu>(result);
 }
@@ -1162,3 +1190,4 @@ WindowControlsBar Window::GetControlBar(WindowControlsBarLayout layout)
     else
         return WindowControlsBar(nullptr, WindowControlsBarLayout::None);
 }
+} // namespace AppCUI

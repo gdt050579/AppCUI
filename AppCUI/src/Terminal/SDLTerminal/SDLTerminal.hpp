@@ -16,9 +16,9 @@ namespace Internal
     class SDLTerminal : public AbstractTerminal
     {
       private:
-        std::map<SDL_Scancode, AppCUI::Input::Key> KeyTranslation;
-        std::map<SDL_Scancode, AppCUI::Input::Key> AsciiTranslation;
-        AppCUI::Input::Key oldShiftState;
+        std::map<SDL_Scancode, Input::Key> KeyTranslation;
+        std::map<SDL_Scancode, Input::Key> AsciiTranslation;
+        Input::Key oldShiftState;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastFramesUpdate;
 
         SDL_Window* window;
@@ -29,22 +29,22 @@ namespace Internal
         size_t charHeight;
         bool autoRedraw;
 
-        std::unordered_map<unsigned int, SDL_Texture*> characterCache;
+        std::unordered_map<uint32, SDL_Texture*> characterCache;
 
       public:
-        virtual bool OnInit(const AppCUI::Application::InitializationData& initData) override;
+        virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void OnUninit() override;
         virtual void OnFlushToScreen() override;
         virtual bool OnUpdateCursor() override;
-        virtual void GetSystemEvent(AppCUI::Internal::SystemEvent& evnt) override;
+        virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual void RestoreOriginalConsoleSettings() override;
 
       private:
-        bool initScreen(const AppCUI::Application::InitializationData& initData);
-        bool initInput(const AppCUI::Application::InitializationData& initData);
+        bool initScreen(const Application::InitializationData& initData);
+        bool initInput(const Application::InitializationData& initData);
 
-        bool initFont(const AppCUI::Application::InitializationData& initData);
+        bool initFont(const Application::InitializationData& initData);
 
         void uninitScreen();
         void uninitInput();
@@ -54,7 +54,7 @@ namespace Internal
         void handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl);
 
         SDL_Texture* renderCharacter(
-              const unsigned int charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
+              const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
     };
 } // namespace Internal
 } // namespace AppCUI

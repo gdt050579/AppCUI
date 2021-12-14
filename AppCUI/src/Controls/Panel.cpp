@@ -1,13 +1,9 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
-
-constexpr int PANEL_ATTR_BORDER = 1024;
-
-Panel::Panel(const AppCUI::Utils::ConstString& caption, std::string_view layout)
-    : Control(new ControlContext(), caption, layout, false)
+#define PANEL_ATTR_BORDER 1024
+namespace AppCUI::Controls
+{
+Panel::Panel(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, false)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
     if (Members->Text.Len() == 0)
@@ -43,3 +39,4 @@ void Panel::Paint(Graphics::Renderer& renderer)
         }
     }
 }
+} // namespace AppCUI::Controls

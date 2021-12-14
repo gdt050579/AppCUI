@@ -1,11 +1,13 @@
-#include "AppCUI.hpp"
+#include <AppCUI.hpp>
 #include "Internal.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 
-const unsigned char string_lowercase_table[256] = {
+using namespace AppCUI;
+
+const uint8 string_lowercase_table[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -47,8 +49,8 @@ const unsigned char string_lowercase_table[256] = {
 #define VALIDATE_STRINGS_TO_COMPARE                                                                                    \
     CHECK(sir1, false, "Expecting a valid (non-null) first parameter !");                                              \
     CHECK(sir2, false, "Expecting a valid (non-null) first parameter !");                                              \
-    const unsigned char* p1 = (const unsigned char*) sir1;                                                             \
-    const unsigned char* p2 = (const unsigned char*) sir2;
+    const uint8* p1 = (const uint8*) sir1;                                                                             \
+    const uint8* p2 = (const uint8*) sir2;
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
     if ((requiredSpace) > (Allocated & 0x7FFFFFFF))                                                                    \
@@ -60,8 +62,10 @@ const unsigned char string_lowercase_table[256] = {
 
 char tempCharForReferenceReturn;
 
+namespace AppCUI::Utils
+{
 // Statical functions
-unsigned int AppCUI::Utils::String::Len(const char* string)
+uint32 String::Len(const char* string)
 {
     if (string == nullptr)
         return 0;
@@ -70,15 +74,15 @@ unsigned int AppCUI::Utils::String::Len(const char* string)
     {
         string++;
     }
-    return (unsigned int) (string - p);
+    return (uint32) (string - p);
 }
-bool AppCUI::Utils::String::Add(
+bool String::Add(
       char* destination,
       const char* source,
-      unsigned int maxDestinationSize,
-      unsigned int destinationSize,
-      unsigned int sourceSize,
-      unsigned int* resultedDestinationSize)
+      uint32 maxDestinationSize,
+      uint32 destinationSize,
+      uint32 sourceSize,
+      uint32* resultedDestinationSize)
 {
     PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
     COMPUTE_TEXT_SIZE(destination, destinationSize);
@@ -97,12 +101,12 @@ bool AppCUI::Utils::String::Add(
         *resultedDestinationSize = sourceSize + destinationSize;
     return true;
 }
-bool AppCUI::Utils::String::Set(
+bool String::Set(
       char* destination,
       const char* source,
-      unsigned int maxDestinationSize,
-      unsigned int sourceSize,
-      unsigned int* resultedDestinationSize)
+      uint32 maxDestinationSize,
+      uint32 sourceSize,
+      uint32* resultedDestinationSize)
 {
     PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
 
@@ -115,7 +119,7 @@ bool AppCUI::Utils::String::Set(
         *resultedDestinationSize = sourceSize;
     return true;
 }
-bool AppCUI::Utils::String::Equals(const char* sir1, const char* sir2, bool ignoreCase)
+bool String::Equals(const char* sir1, const char* sir2, bool ignoreCase)
 {
     VALIDATE_STRINGS_TO_COMPARE;
     if (ignoreCase)
@@ -137,7 +141,7 @@ bool AppCUI::Utils::String::Equals(const char* sir1, const char* sir2, bool igno
         return ((*p2) == 0) && ((*p1) == 0);
     }
 }
-bool AppCUI::Utils::String::StartsWith(const char* sir1, const char* sir2, bool ignoreCase)
+bool String::StartsWith(const char* sir1, const char* sir2, bool ignoreCase)
 {
     VALIDATE_STRINGS_TO_COMPARE;
 
@@ -160,10 +164,10 @@ bool AppCUI::Utils::String::StartsWith(const char* sir1, const char* sir2, bool 
         return (*p2) == 0;
     }
 }
-bool AppCUI::Utils::String::StartsWith(std::string_view sir1,std::string_view sir2, bool ignoreCase)
+bool String::StartsWith(string_view sir1, string_view sir2, bool ignoreCase)
 {
-    auto p1   = (const unsigned char*) sir1.data();
-    auto p2   = (const unsigned char*) sir2.data();
+    auto p1   = (const uint8*) sir1.data();
+    auto p2   = (const uint8*) sir2.data();
     auto p1_e = p1 + sir1.length();
     auto p2_e = p2 + sir2.length();
     CHECK(p1, false, "");
@@ -192,8 +196,7 @@ bool AppCUI::Utils::String::StartsWith(std::string_view sir1,std::string_view si
         return true;
     }
 }
-bool AppCUI::Utils::String::EndsWith(
-      const char* sir1, const char* sir2, bool ignoreCase, unsigned int sir1Size, unsigned int sir2Size)
+bool String::EndsWith(const char* sir1, const char* sir2, bool ignoreCase, uint32 sir1Size, uint32 sir2Size)
 {
     VALIDATE_STRINGS_TO_COMPARE
     COMPUTE_TEXT_SIZE(sir1, sir1Size);
@@ -221,18 +224,18 @@ bool AppCUI::Utils::String::EndsWith(
         return ((*p2) == 0) && ((*p1) == 0);
     }
 }
-bool AppCUI::Utils::String::Contains(const char* sir, const char* textToFind, bool ignoreCase)
+bool String::Contains(const char* sir, const char* textToFind, bool ignoreCase)
 {
     CHECK((sir != nullptr) && (textToFind != nullptr),
           false,
           "Invalid parameters (both 'sir' and 'textToFind' must not be null)");
     if ((*textToFind) == 0)
         return true; // empty string exists in every strings
-    const unsigned char* p_sir  = (const unsigned char*) sir;
-    const unsigned char* p_find = (const unsigned char*) textToFind;
-    const unsigned char* ps;
-    const unsigned char* pf;
-    unsigned char char_to_find = *(p_find);
+    const uint8* p_sir  = (const uint8*) sir;
+    const uint8* p_find = (const uint8*) textToFind;
+    const uint8* ps;
+    const uint8* pf;
+    uint8 char_to_find = *(p_find);
 
     if (ignoreCase)
     {
@@ -269,7 +272,7 @@ bool AppCUI::Utils::String::Contains(const char* sir, const char* textToFind, bo
     }
     return false;
 }
-int AppCUI::Utils::String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
+int32 String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
 {
     VALIDATE_STRINGS_TO_COMPARE;
     if (ignoreCase)
@@ -302,13 +305,13 @@ int AppCUI::Utils::String::Compare(const char* sir1, const char* sir2, bool igno
 
 //--------------------------------------------------- CONSTRUCTORI OBIECT
 //----------------------------------------------------------------
-AppCUI::Utils::String::String(void)
+String::String(void)
 {
     Text = nullptr;
     Size = Allocated = 0;
 }
 
-AppCUI::Utils::String::String(const AppCUI::Utils::String& s)
+String::String(const String& s)
 {
     Text = nullptr;
     Size = Allocated = 0;
@@ -321,11 +324,11 @@ AppCUI::Utils::String::String(const AppCUI::Utils::String& s)
         }
     }
 }
-AppCUI::Utils::String::~String(void)
+String::~String(void)
 {
     Destroy();
 }
-void AppCUI::Utils::String::Destroy()
+void String::Destroy()
 {
     if ((Text != nullptr) && ((Allocated & STRING_FLAG_STACK_BUFFER) == 0))
     {
@@ -335,7 +338,7 @@ void AppCUI::Utils::String::Destroy()
     Size = Allocated = 0;
 }
 
-bool AppCUI::Utils::String::Create(unsigned int initialAllocatedBufferSize)
+bool String::Create(uint32 initialAllocatedBufferSize)
 {
     CHECK(initialAllocatedBufferSize == 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
     initialAllocatedBufferSize = ((initialAllocatedBufferSize | 15) + 1) & 0x7FFFFFFF;
@@ -354,17 +357,17 @@ bool AppCUI::Utils::String::Create(unsigned int initialAllocatedBufferSize)
     Allocated = initialAllocatedBufferSize;
     return true;
 }
-bool AppCUI::Utils::String::Create(const char* text)
+bool String::Create(const char* text)
 {
     CHECK(text, false, "Expecting a non-null string !");
-    unsigned int len = String::Len(text);
+    uint32 len = String::Len(text);
     CHECK(Create(len + 1), false, "Fail to create string buffer with len: %d", len);
     MEMCOPY(this->Text, text, len + 1);
     Size            = len + 1;
     this->Text[len] = 0;
     return true;
 }
-bool AppCUI::Utils::String::Create(char* buffer, unsigned int bufferSize, bool emptyString)
+bool String::Create(char* buffer, uint32 bufferSize, bool emptyString)
 {
     CHECK(buffer, false, "Expecting a valid (non-null) buffer");
     CHECK(bufferSize >= 1, false, "bufferSize must be bigger than 1");
@@ -391,7 +394,7 @@ bool AppCUI::Utils::String::Create(char* buffer, unsigned int bufferSize, bool e
     return true;
 }
 
-void AppCUI::Utils::String::Clear()
+void String::Clear()
 {
     if (Text)
     {
@@ -400,13 +403,13 @@ void AppCUI::Utils::String::Clear()
     }
 }
 
-bool AppCUI::Utils::String::Realloc(unsigned int newSize)
+bool String::Realloc(uint32 newSize)
 {
     if (newSize <= (Allocated & 0x7FFFFFFF))
         return true;
     return Grow(newSize);
 }
-bool AppCUI::Utils::String::Grow(unsigned int newSize)
+bool String::Grow(uint32 newSize)
 {
     newSize = ((newSize | 15) + 1) & 0x7FFFFFFF;
     if (newSize <= (Allocated & 0x7FFFFFFF))
@@ -426,7 +429,7 @@ bool AppCUI::Utils::String::Grow(unsigned int newSize)
 
 // ============================================================================================[ADD
 // FUNCTIONS]=====================
-bool AppCUI::Utils::String::Add(const char* text, unsigned int txSize)
+bool String::Add(const char* text, uint32 txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
@@ -436,16 +439,16 @@ bool AppCUI::Utils::String::Add(const char* text, unsigned int txSize)
     this->Text[this->Size] = 0;
     return true;
 }
-bool AppCUI::Utils::String::Add(const String& text)
+bool String::Add(const String& text)
 {
     return this->Add(text.Text, text.Size);
 }
-bool AppCUI::Utils::String::Add(const String* text)
+bool String::Add(const String* text)
 {
     CHECK(text, false, "Expecting a non-null first parameter !");
     return this->Add(text->Text, text->Size);
 }
-bool AppCUI::Utils::String::AddChar(char ch)
+bool String::AddChar(char ch)
 {
     CHECK(ch, false, "NULL character can not be added !");
     char temp[2];
@@ -453,7 +456,7 @@ bool AppCUI::Utils::String::AddChar(char ch)
     temp[1] = 0;
     return this->Add(temp, 1);
 }
-bool AppCUI::Utils::String::AddChars(char ch, unsigned int count)
+bool String::AddChars(char ch, uint32 count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
@@ -472,7 +475,7 @@ bool AppCUI::Utils::String::AddChars(char ch, unsigned int count)
 
 // ============================================================================================[SET
 // FUNCTIONS]=====================
-bool AppCUI::Utils::String::Set(const char* text, unsigned int txSize)
+bool String::Set(const char* text, uint32 txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
@@ -482,16 +485,16 @@ bool AppCUI::Utils::String::Set(const char* text, unsigned int txSize)
     this->Text[this->Size] = 0;
     return true;
 }
-bool AppCUI::Utils::String::Set(const AppCUI::Utils::String& text)
+bool String::Set(const String& text)
 {
     return this->Set(text.Text, text.Size);
 }
-bool AppCUI::Utils::String::Set(const AppCUI::Utils::String* text)
+bool String::Set(const String* text)
 {
     CHECK(text, false, "Expecting a non-null first parameter !");
     return this->Set(text->Text, text->Size);
 }
-bool AppCUI::Utils::String::SetChars(char ch, unsigned int count)
+bool String::SetChars(char ch, uint32 count)
 {
     CHECK(ch, false, "NULL character can not be added !");
     CHECK(count, false, "'count' should be bigger than 0");
@@ -508,7 +511,7 @@ bool AppCUI::Utils::String::SetChars(char ch, unsigned int count)
     return true;
 }
 
-bool AppCUI::Utils::String::InsertChar(char character, unsigned int position)
+bool String::InsertChar(char character, uint32 position)
 {
     CHECK(character, false, "NULL character can not be added !");
     VALIDATE_ALLOCATED_SPACE(this->Size + 2, false);
@@ -531,7 +534,7 @@ bool AppCUI::Utils::String::InsertChar(char character, unsigned int position)
     }
     return true;
 }
-bool AppCUI::Utils::String::DeleteChar(unsigned int position)
+bool String::DeleteChar(uint32 position)
 {
     CHECK(position < this->Size,
           false,
@@ -551,7 +554,7 @@ bool AppCUI::Utils::String::DeleteChar(unsigned int position)
     }
     return true;
 }
-bool AppCUI::Utils::String::Delete(unsigned int start, unsigned int end)
+bool String::Delete(uint32 start, uint32 end)
 {
     CHECK(end <= this->Size, false, "Invalid delete offset: %d (should be between 0 and %d)", end, this->Size);
     CHECK(start < end, false, "Start parameter (%d) should be smaller than End parameter (%d)", start, end);
@@ -568,26 +571,26 @@ bool AppCUI::Utils::String::Delete(unsigned int start, unsigned int end)
     }
     return true;
 }
-int AppCUI::Utils::String::GetChar(int index) const
+char String::GetChar(int32 index) const
 {
     if (Text == nullptr)
         return 0;
-    if ((index >= 0) && (index < (int) Size))
-        return Text[(unsigned int) index];
-    unsigned int idx = (unsigned int) (-index);
+    if ((index >= 0) && (index < (int32) Size))
+        return Text[(uint32) index];
+    uint32 idx = (uint32) (-index);
     if (idx < Size)
         return Text[Size - idx];
     return 0;
 }
-bool AppCUI::Utils::String::SetChar(int index, char value)
+bool String::SetChar(int32 index, char value)
 {
     CHECK(Text, false, "Text buffer was not allocated !");
-    if ((index >= 0) && (index < (int) Size))
+    if ((index >= 0) && (index < (int32) Size))
     {
         Text[index] = value;
         return true;
     }
-    unsigned int idx = (unsigned int) (-index);
+    uint32 idx = (uint32) (-index);
     if (idx < Size)
     {
         Text[Size + idx] = value;
@@ -596,17 +599,17 @@ bool AppCUI::Utils::String::SetChar(int index, char value)
     RETURNERROR(false, "Invalid text index: %d for a text with length %d", index, this->Size);
 }
 
-bool AppCUI::Utils::String::SetFormat(const char* format, ...)
+bool String::SetFormat(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, false, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2, false);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, false);
 
     va_start(args, format);
     len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -616,22 +619,22 @@ bool AppCUI::Utils::String::SetFormat(const char* format, ...)
         Clear();
         RETURNERROR(false, "Fail on vsnprintf !");
     }
-    this->Size       = (unsigned int) len2;
+    this->Size       = (uint32) len2;
     Text[this->Size] = 0;
 
     return true;
 }
-bool AppCUI::Utils::String::AddFormat(const char* format, ...)
+bool String::AddFormat(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, false, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
     CHECK(len >= 0, false, "Invalid format (unable to format your string) !");
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2 + this->Size, false);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2 + this->Size, false);
 
     va_start(args, format);
     len2 = vsnprintf(Text + this->Size, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -641,15 +644,15 @@ bool AppCUI::Utils::String::AddFormat(const char* format, ...)
         Clear();
         RETURNERROR(false, "Fail on vsnprintf !");
     }
-    this->Size += (unsigned int) len2;
+    this->Size += (uint32) len2;
     Text[this->Size] = 0;
 
     return true;
 }
-std::string_view AppCUI::Utils::String::Format(const char* format, ...)
+string_view String::Format(const char* format, ...)
 {
     va_list args;
-    int len, len2;
+    int32 len, len2;
 
     CHECK(format, nullptr, "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
@@ -657,7 +660,7 @@ std::string_view AppCUI::Utils::String::Format(const char* format, ...)
     va_end(args);
     CHECK(len >= 0, nullptr, "Invalid format (unable to format your string) !");
 
-    VALIDATE_ALLOCATED_SPACE(((unsigned int) len) + 2, nullptr);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, nullptr);
 
     va_start(args, format);
     len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -667,13 +670,13 @@ std::string_view AppCUI::Utils::String::Format(const char* format, ...)
         Clear();
         RETURNERROR(nullptr, "Fail on vsnprintf !");
     }
-    this->Size       = ((unsigned int) len2);
+    this->Size       = ((uint32) len2);
     Text[this->Size] = 0;
 
-    return std::string_view{ Text, Size };
+    return string_view{ Text, Size };
 }
 
-bool AppCUI::Utils::String::Truncate(unsigned int newText)
+bool String::Truncate(uint32 newText)
 {
     if (newText <= Size)
     {
@@ -684,56 +687,56 @@ bool AppCUI::Utils::String::Truncate(unsigned int newText)
     return false;
 }
 
-bool AppCUI::Utils::String::StartsWith(const char* text, bool ignoreCase) const
+bool String::StartsWith(const char* text, bool ignoreCase) const
 {
     return String::StartsWith(Text, text, ignoreCase);
 }
-bool AppCUI::Utils::String::StartsWith(const AppCUI::Utils::String* text, bool ignoreCase) const
+bool String::StartsWith(const String* text, bool ignoreCase) const
 {
     CHECK(text != nullptr, false, "Expecting a non null parameter");
     return String::StartsWith(Text, text->Text, ignoreCase);
 }
-bool AppCUI::Utils::String::StartsWith(const AppCUI::Utils::String& text, bool ignoreCase) const
+bool String::StartsWith(const String& text, bool ignoreCase) const
 {
     return String::StartsWith(Text, text.Text, ignoreCase);
 }
-bool AppCUI::Utils::String::Contains(const char* text, bool ignoreCase) const
+bool String::Contains(const char* text, bool ignoreCase) const
 {
     return String::Contains(this->Text, text, ignoreCase);
 }
-bool AppCUI::Utils::String::Contains(const String& ss, bool ignoreCase) const
+bool String::Contains(const String& ss, bool ignoreCase) const
 {
     return String::Contains(this->Text, ss.Text, ignoreCase);
 }
-bool AppCUI::Utils::String::EndsWith(const char* ss, bool ignoreCase) const
+bool String::EndsWith(const char* ss, bool ignoreCase) const
 {
     return String::EndsWith(Text, ss, ignoreCase, Size);
 }
-bool AppCUI::Utils::String::EndsWith(const AppCUI::Utils::String* text, bool ignoreCase) const
+bool String::EndsWith(const String* text, bool ignoreCase) const
 {
     CHECK(text != nullptr, false, "Expecting a non null parameter");
     return String::EndsWith(Text, text->Text, ignoreCase, Size, text->Size);
 }
-bool AppCUI::Utils::String::EndsWith(const AppCUI::Utils::String& text, bool ignoreCase) const
+bool String::EndsWith(const String& text, bool ignoreCase) const
 {
     return String::EndsWith(Text, text.Text, ignoreCase, Size, text.Size);
 }
-bool AppCUI::Utils::String::Equals(const char* text, bool ignoreCase) const
+bool String::Equals(const char* text, bool ignoreCase) const
 {
     return String::Equals(this->Text, text, ignoreCase);
 }
-bool AppCUI::Utils::String::Equals(const String& text, bool ignoreCase) const
+bool String::Equals(const String& text, bool ignoreCase) const
 {
     if (this->Size != text.Size)
         return false;
     return String::Equals(this->Text, text.Text, ignoreCase);
 }
-int AppCUI::Utils::String::CompareWith(const char* text, bool ignoreCase) const
+int32 String::CompareWith(const char* text, bool ignoreCase) const
 {
     return String::Compare(this->Text, text, ignoreCase);
 }
 
-char& AppCUI::Utils::String::operator[](int poz)
+char& String::operator[](int32 poz)
 {
     if ((Text == nullptr) || (Size == 0))
     {
@@ -741,15 +744,15 @@ char& AppCUI::Utils::String::operator[](int poz)
         return tempCharForReferenceReturn;
     }
     if (poz < 0)
-        poz += (int) this->Size;
-    if (((poz + 1) > (int) Size) || (poz < 0))
+        poz += (int32) this->Size;
+    if (((poz + 1) > (int32) Size) || (poz < 0))
     {
         tempCharForReferenceReturn = 0;
         return tempCharForReferenceReturn;
     }
     return Text[poz];
 }
-void AppCUI::Utils::String::ConvertToInternalNewLineFormat()
+void String::ConvertToInternalNewLineFormat()
 {
     if ((this->Text == nullptr) || (this->Size == 0))
         return; // nothing to convert
@@ -780,6 +783,7 @@ void AppCUI::Utils::String::ConvertToInternalNewLineFormat()
         o++;
         s++;
     }
-    this->Size -= (unsigned int) (s - o);
+    this->Size -= (uint32) (s - o);
     this->Text[this->Size] = 0;
 }
+} // namespace AppCUI::Utils

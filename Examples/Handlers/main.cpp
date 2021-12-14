@@ -11,10 +11,10 @@ int main()
 {
     if (!Application::Init())
         return 1;
-    auto wnd                         = Factory::Window::Create("Test", "d:c,w:40,h:10");
-    
+    auto wnd = Factory::Window::Create("Test", "d:c,w:40,h:10");
+
     // a handler to handle key event for wnd
-    wnd->Handlers()->OnKeyEvent = [](Reference<Control> c, Key keyCode, char16_t unicodeChar)
+    wnd->Handlers()->OnKeyEvent = [](Reference<Control> c, Key keyCode, char16 unicodeChar)
     {
         if (keyCode == Key::Backspace)
         {
@@ -24,13 +24,12 @@ int main()
         return false;
     };
 
-    auto btn                         = Factory::Button::Create(wnd, "Push Me", "x:1,y:1,w:10", 123);
+    auto btn = Factory::Button::Create(wnd, "Push Me", "x:1,y:1,w:10", 123);
     // a handler to handle button click
-    btn->Handlers()->OnButtonPressed = [](Reference<Button> r) { 
-        Dialogs::MessageBox::ShowNotification("Button", "This button was pressed !"); 
-    };
+    btn->Handlers()->OnButtonPressed = [](Reference<Button> r)
+    { Dialogs::MessageBox::ShowNotification("Button", "This button was pressed !"); };
 
-    auto p                      = Factory::Panel::Create(wnd,"x:12,y:1,w:5,h:2");
+    auto p = Factory::Panel::Create(wnd, "x:12,y:1,w:5,h:2");
     // a handler to handle paint event
     p->Handlers()->PaintControl = [](Reference<Control> c, Renderer& r) {
         r.Clear('X', ColorPair{ Color::Red, Color::Black });
@@ -52,7 +51,8 @@ int main()
 
     auto cb = Factory::CheckBox::Create(wnd, "I am not checked !", "x:1,y:7,w:30", 1234);
     // a handler to handle check state events
-    cb->Handlers()->OnCheck = [](Reference<Control> c, bool value) {
+    cb->Handlers()->OnCheck = [](Reference<Control> c, bool value)
+    {
         if (value)
             c->SetText("I am checked !");
         else

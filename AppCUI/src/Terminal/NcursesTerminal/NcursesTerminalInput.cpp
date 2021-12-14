@@ -1,10 +1,11 @@
-#include "Terminal/NcursesTerminal/NcursesTerminal.hpp"
+#include "NcursesTerminal.hpp"
 #include "ncurses.h"
 #include <poll.h>
 #include <string>
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
+namespace AppCUI::Internal
+{
+using namespace Input;
 
 constexpr int KEY_DELETE      = 0x7F;
 constexpr int INSERT_MODE_KEY = 'i';    // Enter insert mode
@@ -13,7 +14,7 @@ constexpr int KEY_TAB         = '\t';
 
 void debugChar(int y, int c, const char* prefix)
 {
-    std::string_view myName = keyname(c);
+    string_view myName = keyname(c);
     move(y, 0);
     clrtoeol();
     addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
@@ -35,10 +36,10 @@ bool NcursesTerminal::initInput()
     for (size_t i = 0; i < 12; i++)
     {
         // F(x) + shift => F(12) + x
-        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i);
+        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i);
 
         // If we press F1 + shift => it generates F13
-        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<unsigned int>(Key::F1) + i) | Key::Shift;
+        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i) | Key::Shift;
     }
 
     keyTranslationMatrix[KEY_ENTER]     = Key::Enter;
@@ -104,17 +105,17 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvent& evt, const int c)
 
     if (islower(c))
     {
-        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
         return;
     }
     else if (isupper(c))
     {
-        evt.keyCode |= Key::Ctrl | Key::Shift | static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+        evt.keyCode |= Key::Ctrl | Key::Shift | static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
         return;
     }
     else if (isdigit(c))
     {
-        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+        evt.keyCode |= Key::Ctrl | static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
         return;
     }
 
@@ -141,15 +142,15 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
         evt.unicodeCharacter = c;
         if (islower(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'a'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
         }
         else if (isupper(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::A) + (c - 'A'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
         }
         else if (isdigit(c))
         {
-            evt.keyCode |= static_cast<Key>(static_cast<unsigned int>(Key::N0) + (c - '0'));
+            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
         }
         else if (c == ' ')
         {
@@ -175,10 +176,10 @@ void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
     }
 }
 
-void NcursesTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
-    evnt.eventType = SystemEventType::None;
-    evnt.keyCode   = Key::None;
+    evnt.eventType        = SystemEventType::None;
+    evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;
@@ -217,4 +218,5 @@ bool NcursesTerminal::IsEventAvailable()
 
 void NcursesTerminal::uninitInput()
 {
+}
 }

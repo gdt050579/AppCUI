@@ -146,7 +146,7 @@ bool PauseState::OnKeyEvent(
             auto child = control->GetChild(i);
             if (child->HasFocus())
             {
-                this->DoActionForControl(child->GetControlID());
+                // this->DoActionForControl(child->GetControlID());
                 return true;
             }
         }

@@ -1,8 +1,9 @@
 #include "Internal.hpp"
 #include <chrono>
 
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Internal;
+namespace AppCUI::Graphics
+{
+using namespace Internal;
 using namespace std::chrono;
 
 #define MAX_PROGRESS_STATUS_TITLE           36
@@ -22,19 +23,19 @@ struct ProgressStatusData
     CharacterBuffer Title;
     CharacterBuffer Text;
 
-    unsigned long long MaxValue;
+    uint64 MaxValue;
     bool Showed;
     time_point<steady_clock> StartTime;
-    unsigned long long Ellapsed, LastEllapsed;
+    uint64 Ellapsed, LastEllapsed;
     Clip WindowClip;
-    Application* App;
+    ApplicationImpl* App;
     char progressString[5];
     char timeString[MAX_PROGRESS_TIME_TEXT];
     int timeStringSize;
-    unsigned int Progress;
+    uint32 Progress;
 };
 
-static ProgressStatusData PSData = { };
+static ProgressStatusData PSData = {};
 bool progress_inited             = false;
 
 void ProgressStatus_Paint_Panel()
@@ -55,9 +56,9 @@ void ProgressStatus_Paint_Panel()
           PSData.App->config.ProgressStatus.Border,
           false);
     WriteTextParams params(
-                WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
                 WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,
-                TextAlignament::Center);
+          TextAlignament::Center);
     params.X     = 5;
     params.Y     = 0;
     params.Color = PSData.App->config.ProgressStatus.Title;
@@ -83,7 +84,7 @@ void ProgressStatus_Paint_Status()
         canvas->WriteSingleLineText(
               PROGRESS_STATUS_PANEL_WIDTH - 6,
               2,
-              std::string_view(PSData.progressString,4),
+              string_view(PSData.progressString, 4),
               PSData.App->config.ProgressStatus.Percentage);
         canvas->FillHorizontalLine(
               2,
@@ -100,12 +101,12 @@ void ProgressStatus_Paint_Status()
     canvas->WriteSingleLineText(
           (PROGRESS_STATUS_PANEL_WIDTH - 2) - PSData.timeStringSize,
           4,
-          std::string_view(PSData.timeString,PSData.timeStringSize),
+          string_view(PSData.timeString, PSData.timeStringSize),
           PSData.App->config.ProgressStatus.Time);
 
     PSData.App->terminal->Update();
 }
-void ProgressStatus_ComputeTime(unsigned long long time)
+void ProgressStatus_ComputeTime(uint64 time)
 {
     if (time == 0)
     {
@@ -113,15 +114,15 @@ void ProgressStatus_ComputeTime(unsigned long long time)
         PSData.timeStringSize = 0;
         return;
     }
-    unsigned int days  = (unsigned int) (time / (24 * 60 * 60));
-    time               = time % (24 * 60 * 60);
-    unsigned int hours = (unsigned int) (time / (60 * 60));
-    time               = time % (60 * 60);
-    unsigned int min   = (unsigned int) (time / 60);
-    unsigned int sec   = (unsigned int) (time % 60);
+    uint32 days  = (uint32) (time / (24 * 60 * 60));
+    time         = time % (24 * 60 * 60);
+    uint32 hours = (uint32) (time / (60 * 60));
+    time         = time % (60 * 60);
+    uint32 min   = (uint32) (time / 60);
+    uint32 sec   = (uint32) (time % 60);
     if (days >= 10)
     {
-        AppCUI::Utils::String::Set(PSData.timeString, "More than 10 days", MAX_PROGRESS_TIME_TEXT);
+        Utils::String::Set(PSData.timeString, "More than 10 days", MAX_PROGRESS_TIME_TEXT);
         PSData.timeStringSize = 17;
         return;
     }
@@ -144,7 +145,7 @@ void ProgressStatus_ComputeTime(unsigned long long time)
     PSData.timeString[index]   = 0;
     PSData.timeStringSize      = index;
 }
-void ProgressStatus::Init(const AppCUI::Utils::ConstString& Title, unsigned long long maxValue)
+void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
@@ -156,7 +157,7 @@ void ProgressStatus::Init(const AppCUI::Utils::ConstString& Title, unsigned long
           (appSize.Height - PROGRESS_STATUS_PANEL_HEIGHT) / 2,
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT);
-    PSData.App               = AppCUI::Application::GetApplication();
+    PSData.App               = Application::GetApplication();
     PSData.progressString[0] = ' ';
     PSData.progressString[1] = ' ';
     PSData.progressString[2] = '0';
@@ -166,7 +167,7 @@ void ProgressStatus::Init(const AppCUI::Utils::ConstString& Title, unsigned long
     PSData.Ellapsed          = 0;
     PSData.LastEllapsed      = 0;
     PSData.timeString[0]     = 0;
-    if (PSData.Title.Set(Title)==false)
+    if (PSData.Title.Set(Title) == false)
     {
         LOG_WARNING("Fail to set title for progress status object !");
         PSData.Title.Clear();
@@ -175,18 +176,18 @@ void ProgressStatus::Init(const AppCUI::Utils::ConstString& Title, unsigned long
     PSData.StartTime          = std::chrono::steady_clock::now();
     progress_inited           = true;
 }
-bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::ConstString* content)
+bool __ProgressStatus_Update(uint64 value, const ConstString* content)
 {
     CHECK(progress_inited,
           true,
           "Progress status was not initialized ! Have you called ProgressStatus::Init(...) before calling "
           "ProgressStatus::Update(...) ?");
-    unsigned int newProgress;
+    uint32 newProgress;
     bool showStatus = false;
     if (PSData.MaxValue > 0)
     {
         if (value < PSData.MaxValue)
-            newProgress = (unsigned int) ((value * (unsigned long long) 100) / PSData.MaxValue);
+            newProgress = (uint32) ((value * (uint64) 100) / PSData.MaxValue);
         else
             newProgress = 100;
         if (newProgress != PSData.Progress)
@@ -234,8 +235,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
                     ProgressStatus_ComputeTime(0);
                 else
                     ProgressStatus_ComputeTime(
-                          (((unsigned long long) (100 - PSData.Progress)) * PSData.Ellapsed) /
-                          ((unsigned long long) PSData.Progress));
+                          (((uint64) (100 - PSData.Progress)) * PSData.Ellapsed) / ((uint64) PSData.Progress));
             }
             else
                 ProgressStatus_ComputeTime(PSData.Ellapsed);
@@ -258,7 +258,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
 
     if (PSData.App->terminal->IsEventAvailable())
     {
-        AppCUI::Internal::SystemEvent evnt;
+        Internal::SystemEvent evnt;
         bool requestQuit = false;
         // read up to 100 events
         for (int tr = 0; tr < 100; tr++)
@@ -266,8 +266,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
             if (PSData.App->terminal->IsEventAvailable() == false)
                 break;
             PSData.App->terminal->GetSystemEvent(evnt);
-            if ((evnt.eventType == AppCUI::Internal::SystemEventType::KeyPressed) &&
-                (evnt.keyCode == AppCUI::Input::Key::Escape))
+            if ((evnt.eventType == Internal::SystemEventType::KeyPressed) && (evnt.keyCode == Input::Key::Escape))
             {
                 requestQuit = true;
                 break;
@@ -275,8 +274,7 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
         }
         if (requestQuit)
         {
-            if (AppCUI::Dialogs::MessageBox::ShowOkCancel("Terminate", "Terminate current task ?") ==
-                AppCUI::Dialogs::Result::Ok)
+            if (Dialogs::MessageBox::ShowOkCancel("Terminate", "Terminate current task ?") == Dialogs::Result::Ok)
             {
                 progress_inited = false; // loop has ended
                 return true;
@@ -288,11 +286,12 @@ bool __ProgressStatus_Update(unsigned long long value, const AppCUI::Utils::Cons
     return false;
 }
 
-bool ProgressStatus::Update(unsigned long long value, const AppCUI::Utils::ConstString& content)
+bool ProgressStatus::Update(uint64 value, const ConstString& content)
 {
     return __ProgressStatus_Update(value, &content);
 }
-bool ProgressStatus::Update(unsigned long long value)
+bool ProgressStatus::Update(uint64 value)
 {
     return __ProgressStatus_Update(value, nullptr);
 }
+} // namespace AppCUI::Graphics

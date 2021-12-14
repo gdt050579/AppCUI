@@ -11,7 +11,7 @@ using namespace AppCUI::Graphics;
 class MyWin : public AppCUI::Controls::Window
 {
   public:
-    MyWin() : Window("Progress status", "d:c,w:70,h:9",WindowFlags::None)
+    MyWin() : Window("Progress status", "d:c,w:70,h:9", WindowFlags::None)
     {
         Factory::Button::Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
         Factory::Label::Create(
@@ -25,19 +25,19 @@ class MyWin : public AppCUI::Controls::Window
               "Compute the 10000 prime number using a slow method\n(check if there are no divisors)",
               "x:1,y:4,w:50,h:2");
     }
-    bool IsPrime(unsigned long long value)
+    bool IsPrime(uint64 value)
     {
-        for (unsigned long long tr = 2; tr < value / 2; tr++)
+        for (uint64 tr = 2; tr < value / 2; tr++)
             if ((value % tr) == 0)
                 return false;
         return true;
     }
-    bool IsOdd(unsigned long long value)
+    bool IsOdd(uint64 value)
     {
         // very slow check to pass some time (instead of checking module % 2 we will convert to binary and check if the
         // last bit is 0)
-        unsigned int bits[64];
-        for (unsigned int tr = 0; tr < 64; tr++)
+        uint32 bits[64];
+        for (uint32 tr = 0; tr < 64; tr++)
         {
             bits[tr] = value & 1;
             value    = value >> 1;
@@ -47,8 +47,8 @@ class MyWin : public AppCUI::Controls::Window
     void Compute_odd()
     {
         Utils::LocalString<128> tmp;
-        unsigned long long value = 1;
-        unsigned long long count = 0;
+        uint64 value = 1;
+        uint64 count = 0;
 
         // in this case we know the maximum value (100.000) so we can use it to initialize the progress status
         ProgressStatus::Init("Compute", 100000);
@@ -57,7 +57,7 @@ class MyWin : public AppCUI::Controls::Window
         {
             if (IsOdd(value))
             {
-                tmp.Format("Found so far %d odd numbers", (unsigned int) count);
+                tmp.Format("Found so far %d odd numbers", (uint32) count);
                 count++;
             }
             value++;
@@ -70,8 +70,8 @@ class MyWin : public AppCUI::Controls::Window
     void Compute_prime()
     {
         Utils::LocalString<128> tmp;
-        unsigned long long value = 1;
-        unsigned long long count = 0;
+        uint64 value = 1;
+        uint64 count = 0;
 
         // in this case we don't know what is the range (so we will not provide one)
         ProgressStatus::Init("Compute");
@@ -81,7 +81,7 @@ class MyWin : public AppCUI::Controls::Window
             if (IsPrime(value))
             {
                 tmp.Format(
-                      "Found %d prime numbers (now testing value: %d)", (unsigned int) count, (unsigned int) value);
+                      "Found %d prime numbers (now testing value: %d)", (uint32) count, (uint32) value);
                 count++;
             }
             value++;

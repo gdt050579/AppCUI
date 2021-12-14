@@ -1,9 +1,10 @@
-#include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
+#include "WindowsTerminal.hpp"
 #include <string.h>
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
-using namespace AppCUI::Graphics;
+namespace AppCUI::Internal
+{
+using namespace Application;
+using namespace Graphics;
 
 WindowsTerminal::WindowsTerminal()
 {
@@ -15,9 +16,9 @@ WindowsTerminal::~WindowsTerminal()
 {
     ConsoleBufferCount = 0;
 }
-bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleBuffer(uint32 width, uint32 height)
 {
-    const unsigned int newCount = ((width * height) | 0xFF) + 1;
+    const uint32 newCount = ((width * height) | 0xFF) + 1;
     if (newCount <= ConsoleBufferCount)
         return true; // no need to resize
     this->ConsoleBuffer.reset(new CHAR_INFO[newCount]);
@@ -31,7 +32,7 @@ bool WindowsTerminal::ResizeConsoleBuffer(unsigned int width, unsigned int heigh
     return true;
 }
 bool WindowsTerminal::CopyOriginalScreenBuffer(
-      unsigned int width, unsigned int height, unsigned int mouseX, unsigned int mouseY)
+      uint32 width, uint32 height, uint32 mouseX, uint32 mouseY)
 {
     CHECK(this->OriginalScreenCanvas.Create(width, height),
           false,
@@ -51,16 +52,16 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
               ReadConsoleOutput(this->hstdOut, temp, { (SHORT) width, (SHORT) height }, { 0, 0 }, &BufRect),
               "Unable to make a copy of the initial screen buffer !");
         CHAR_INFO* p = temp;
-        for (unsigned int y = 0; y < (unsigned int) height; y++)
+        for (uint32 y = 0; y < (uint32) height; y++)
         {
-            for (unsigned int x = 0; x < (unsigned int) width; x++, p++)
+            for (uint32 x = 0; x < (uint32) width; x++, p++)
             {
                 this->OriginalScreenCanvas.WriteCharacter(
                       x,
                       y,
                       p->Char.UnicodeChar,
-                      AppCUI::Graphics::ColorPair{ static_cast<AppCUI::Graphics::Color>(p->Attributes & 0x0F),
-                                                   static_cast<AppCUI::Graphics::Color>((p->Attributes & 0xF0) >> 4) });
+                      Graphics::ColorPair{ static_cast<Graphics::Color>(p->Attributes & 0x0F),
+                                           static_cast<Graphics::Color>((p->Attributes & 0xF0) >> 4) });
             }
         }
         delete[] temp;
@@ -78,7 +79,7 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(
     delete[] temp;
     return false;
 }
-bool WindowsTerminal::ResizeConsoleScreenBufferSize(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleScreenBufferSize(uint32 width, uint32 height)
 {
     COORD coord = { 0, 0 };
     coord.X     = (SHORT) width;
@@ -94,7 +95,7 @@ bool WindowsTerminal::ResizeConsoleScreenBufferSize(unsigned int width, unsigned
 
     return true;
 }
-bool WindowsTerminal::ResizeConsoleWindowSize(unsigned int width, unsigned int height)
+bool WindowsTerminal::ResizeConsoleWindowSize(uint32 width, uint32 height)
 {
     SMALL_RECT rect;
 
@@ -147,6 +148,59 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
         return currentSize;
 
     CONSOLE_SCREEN_BUFFER_INFOEX csbi;
+    CONSOLE_FONT_INFOEX fnt;
+
+    // check if size is not smaller than the maximum allowed
+    fnt.cbSize = sizeof(fnt);
+    CHECK(GetCurrentConsoleFontEx(this->hstdOut, FALSE, &fnt), Size(), "Fail to get Font information !");
+    CHECK(fnt.dwFontSize.X > 0, Size(), "GetCurrentConsoleFontEx(...) returned an invalid font character width !");
+    CHECK(fnt.dwFontSize.Y > 0, Size(), "GetCurrentConsoleFontEx(...) returned an invalid font character height !");
+    int minWidth  = GetSystemMetrics(SM_CXMIN) / fnt.dwFontSize.X;
+    int minHeight = GetSystemMetrics(SM_CYMIN) / fnt.dwFontSize.Y;
+    LOG_INFO("Minim size for a console: %dx%d", minWidth, minHeight);
+    CHECK((int) initData.Width >= minWidth,
+          Size(),
+          "Minimal width for a console is %d (requested is %u)",
+          minWidth,
+          initData.Width);
+    CHECK((int) initData.Height >= minHeight,
+          Size(),
+          "Minimal height for a console is %d (requested is %u)",
+          minHeight,
+          initData.Height);
+
+    // first resize the window to a smaller value
+    CHECK(ResizeConsoleWindowSize(1, 1), Size(), "");
+    CHECK(ResizeConsoleScreenBufferSize(initData.Width, initData.Height), Size(), "");
+    CHECK(ResizeConsoleWindowSize(initData.Width, initData.Height), Size(), "");
+
+    csbi.cbSize = sizeof(csbi);
+    CHECK(GetConsoleScreenBufferInfoEx(this->hstdOut, &csbi),
+          Size(),
+          "Unable to get console screen buffer info (LastError = 0x%08X)",
+          GetLastError());
+    CHECK(csbi.dwSize.X == initData.Width,
+          Size(),
+          "Console screen buffer width has not changed (curently is %u, expected value is %u)",
+          csbi.dwSize.X,
+          initData.Width);
+    CHECK((csbi.srWindow.Right + 1 - csbi.srWindow.Left) == initData.Width,
+          Size(),
+          "Console window width has not changed (curently is %u, expected value is %u)",
+          (csbi.srWindow.Right + 1 - csbi.srWindow.Left),
+          initData.Width);
+    CHECK(csbi.dwSize.Y == initData.Height,
+          Size(),
+          "Console screen buffer width has not changed (curently is %u, expected value is %u)",
+          csbi.dwSize.Y,
+          initData.Height);
+    CHECK((csbi.srWindow.Bottom + 1 - csbi.srWindow.Top) == initData.Height,
+          Size(),
+          "Console window width has not changed (curently is %u, expected value is %u)",
+          (csbi.srWindow.Bottom + 1 - csbi.srWindow.Top),
+          initData.Height);
+
+    return Size(initData.Width, initData.Height);
 
     // for SetConsoleScreenBufferSize:
     /*
@@ -160,6 +214,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
      * https://docs.microsoft.com/en-us/windows/console/setconsolewindowinfo
      */
 
+    /*
     // if new width is larged then the old width, first resize screen buffer, than window size
     // if new width is smaller then the old width, first resize window size, than screen buffer
     // The height will be kept as it is during this resize
@@ -219,6 +274,7 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           initData.Height);
 
     return Size(initData.Width, initData.Height);
+    //*/
 }
 
 Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, const Size& currentSize)
@@ -245,17 +301,17 @@ Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, con
 
     return resultedSize;
 }
-bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::InitializationData& initData)
+bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData& initData)
 {
     if (initData.CharSize == CharacterSize::Default)
         return true; // leave the settings as they are
     CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize                = sizeof(CONSOLE_FONT_INFOEX);
-    cfi.FontWeight            = FW_NORMAL;
-    cfi.dwFontSize.X          = 0;
-    cfi.nFont                 = 0;
-    cfi.FontFamily            = FF_DONTCARE;
-    std::string_view fontName = initData.FontName;
+    cfi.cbSize           = sizeof(CONSOLE_FONT_INFOEX);
+    cfi.FontWeight       = FW_NORMAL;
+    cfi.dwFontSize.X     = 0;
+    cfi.nFont            = 0;
+    cfi.FontFamily       = FF_DONTCARE;
+    string_view fontName = initData.FontName;
     if (fontName.size() == 0)
         fontName = "Consolas"; // default font name
     CHECK(fontName.size() < 32, false, "Invalid font name (should be less than 32 characters) !");
@@ -282,7 +338,7 @@ bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::Initializa
         cfi.dwFontSize.Y = 36;
         break;
     default:
-        RETURNERROR(false, "Invalid/unknwon value for character size: %d", (unsigned int) initData.CharSize);
+        RETURNERROR(false, "Invalid/unknwon value for character size: %d", (uint32) initData.CharSize);
     }
     CHECK(SetCurrentConsoleFontEx(this->hstdOut, FALSE, &cfi),
           false,
@@ -293,37 +349,34 @@ bool WindowsTerminal::ComputeCharacterSize(const AppCUI::Application::Initializa
 void WindowsTerminal::BuildKeyTranslationMatrix()
 {
     // Build the key translation matrix [could be improved with a static vector]
-    for (unsigned int tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
-        this->KeyTranslationMatrix[tr] = AppCUI::Input::Key::None;
-    for (unsigned int tr = 0; tr < 12; tr++)
-        this->KeyTranslationMatrix[VK_F1 + tr] =
-              static_cast<AppCUI::Input::Key>(((unsigned int) AppCUI::Input::Key::F1) + tr);
-    for (unsigned int tr = 'A'; tr <= 'Z'; tr++)
-        this->KeyTranslationMatrix[tr] =
-              static_cast<AppCUI::Input::Key>(((unsigned int) AppCUI::Input::Key::A) + (tr - 'A'));
-    for (unsigned int tr = '0'; tr <= '9'; tr++)
-        this->KeyTranslationMatrix[tr] =
-              static_cast<AppCUI::Input::Key>(((unsigned int) AppCUI::Input::Key::N0) + (tr - '0'));
+    for (uint32 tr = 0; tr < KEYTRANSLATION_MATRIX_SIZE; tr++)
+        this->KeyTranslationMatrix[tr] = Input::Key::None;
+    for (uint32 tr = 0; tr < 12; tr++)
+        this->KeyTranslationMatrix[VK_F1 + tr] = static_cast<Input::Key>(((uint32) Input::Key::F1) + tr);
+    for (uint32 tr = 'A'; tr <= 'Z'; tr++)
+        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((uint32) Input::Key::A) + (tr - 'A'));
+    for (uint32 tr = '0'; tr <= '9'; tr++)
+        this->KeyTranslationMatrix[tr] = static_cast<Input::Key>(((uint32) Input::Key::N0) + (tr - '0'));
 
-    this->KeyTranslationMatrix[VK_RETURN] = AppCUI::Input::Key::Enter;
-    this->KeyTranslationMatrix[VK_ESCAPE] = AppCUI::Input::Key::Escape;
-    this->KeyTranslationMatrix[VK_INSERT] = AppCUI::Input::Key::Insert;
-    this->KeyTranslationMatrix[VK_BACK]   = AppCUI::Input::Key::Backspace;
-    this->KeyTranslationMatrix[VK_TAB]    = AppCUI::Input::Key::Tab;
-    this->KeyTranslationMatrix[VK_DELETE] = AppCUI::Input::Key::Delete;
-    this->KeyTranslationMatrix[VK_LEFT]   = AppCUI::Input::Key::Left;
-    this->KeyTranslationMatrix[VK_UP]     = AppCUI::Input::Key::Up;
-    this->KeyTranslationMatrix[VK_RIGHT]  = AppCUI::Input::Key::Right;
-    this->KeyTranslationMatrix[VK_DOWN]   = AppCUI::Input::Key::Down;
-    this->KeyTranslationMatrix[VK_PRIOR]  = AppCUI::Input::Key::PageUp;
-    this->KeyTranslationMatrix[VK_NEXT]   = AppCUI::Input::Key::PageDown;
-    this->KeyTranslationMatrix[VK_HOME]   = AppCUI::Input::Key::Home;
-    this->KeyTranslationMatrix[VK_END]    = AppCUI::Input::Key::End;
-    this->KeyTranslationMatrix[VK_SPACE]  = AppCUI::Input::Key::Space;
+    this->KeyTranslationMatrix[VK_RETURN] = Input::Key::Enter;
+    this->KeyTranslationMatrix[VK_ESCAPE] = Input::Key::Escape;
+    this->KeyTranslationMatrix[VK_INSERT] = Input::Key::Insert;
+    this->KeyTranslationMatrix[VK_BACK]   = Input::Key::Backspace;
+    this->KeyTranslationMatrix[VK_TAB]    = Input::Key::Tab;
+    this->KeyTranslationMatrix[VK_DELETE] = Input::Key::Delete;
+    this->KeyTranslationMatrix[VK_LEFT]   = Input::Key::Left;
+    this->KeyTranslationMatrix[VK_UP]     = Input::Key::Up;
+    this->KeyTranslationMatrix[VK_RIGHT]  = Input::Key::Right;
+    this->KeyTranslationMatrix[VK_DOWN]   = Input::Key::Down;
+    this->KeyTranslationMatrix[VK_PRIOR]  = Input::Key::PageUp;
+    this->KeyTranslationMatrix[VK_NEXT]   = Input::Key::PageDown;
+    this->KeyTranslationMatrix[VK_HOME]   = Input::Key::Home;
+    this->KeyTranslationMatrix[VK_END]    = Input::Key::End;
+    this->KeyTranslationMatrix[VK_SPACE]  = Input::Key::Space;
 
-    this->shiftState = AppCUI::Input::Key::None;
+    this->shiftState = Input::Key::None;
 }
-bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& initData)
+bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
 {
     CONSOLE_SCREEN_BUFFER_INFOEX csbi;
 
@@ -356,7 +409,13 @@ bool WindowsTerminal::OnInit(const AppCUI::Application::InitializationData& init
     csbi.ColorTable[14] = 0x00FFFF;
     csbi.ColorTable[15] = 0xFFFFFF;
 
-    SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
+    // recompute window size
+    csbi.srWindow.Left   = 0;
+    csbi.srWindow.Top    = 0;
+    csbi.srWindow.Right  = csbi.dwSize.X;
+    csbi.srWindow.Bottom = csbi.dwSize.Y;
+
+    auto res = SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
 
     // copy original screen buffer information
     CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
@@ -396,19 +455,19 @@ void WindowsTerminal::OnUninit()
 }
 void WindowsTerminal::OnFlushToScreen()
 {
-    unsigned int w = this->ScreenCanvas.GetWidth();
-    unsigned int h = this->ScreenCanvas.GetHeight();
+    uint32 w = this->ScreenCanvas.GetWidth();
+    uint32 h = this->ScreenCanvas.GetHeight();
     COORD winSize  = { (SHORT) w, (SHORT) h };
     SMALL_RECT sr  = { 0, 0, winSize.X, winSize.Y };
     // copy the entire buffer
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
-    AppCUI::Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
-    AppCUI::Graphics::Character* e = c + ((size_t) w * (size_t) h);
-    CHAR_INFO* d                   = this->ConsoleBuffer.get();
+    Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
+    Graphics::Character* e = c + ((size_t) w * (size_t) h);
+    CHAR_INFO* d           = this->ConsoleBuffer.get();
     while (c < e)
     {
         d->Char.UnicodeChar = c->Code;
-        d->Attributes       = ((unsigned char) c->Color.Foreground) | (((unsigned char) (c->Color.Background)) << 4);
+        d->Attributes       = ((uint8) c->Color.Foreground) | (((uint8) (c->Color.Background)) << 4);
         d++;
         c++;
     }
@@ -430,11 +489,11 @@ bool WindowsTerminal::OnUpdateCursor()
     }
     return true;
 }
-void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
+void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
     DWORD nrread;
     INPUT_RECORD ir;
-    AppCUI::Input::Key eventShiftState;
+    Input::Key eventShiftState;
 
     evnt.eventType    = SystemEventType::None;
     evnt.updateFrames = false;
@@ -505,22 +564,21 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         if (ir.Event.KeyEvent.wVirtualKeyCode < KEYTRANSLATION_MATRIX_SIZE)
             evnt.keyCode = KeyTranslationMatrix[ir.Event.KeyEvent.wVirtualKeyCode];
         else
-            evnt.keyCode = AppCUI::Input::Key::None;
+            evnt.keyCode = Input::Key::None;
 
-        eventShiftState = AppCUI::Input::Key::None;
+        eventShiftState = Input::Key::None;
         if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0)
-            eventShiftState |= AppCUI::Input::Key::Alt;
+            eventShiftState |= Input::Key::Alt;
         if ((ir.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) != 0)
-            eventShiftState |= AppCUI::Input::Key::Shift;
+            eventShiftState |= Input::Key::Shift;
         if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0)
-            eventShiftState |= AppCUI::Input::Key::Ctrl;
+            eventShiftState |= Input::Key::Ctrl;
 
         // if ALT or CTRL are pressed, clear the ascii code
-        if ((((unsigned int) eventShiftState) &
-             ((unsigned int) (AppCUI::Input::Key::Alt | AppCUI::Input::Key::Ctrl))) != 0)
+        if ((((uint32) eventShiftState) & ((uint32) (Input::Key::Alt | Input::Key::Ctrl))) != 0)
             evnt.unicodeCharacter = 0;
 
-        if (evnt.keyCode == AppCUI::Input::Key::None)
+        if (evnt.keyCode == Input::Key::None)
         {
             if (eventShiftState != this->shiftState)
                 evnt.eventType = SystemEventType::ShiftStateChanged;
@@ -553,13 +611,13 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
 
         evnt.mouseX      = ir.Event.MouseEvent.dwMousePosition.X;
         evnt.mouseY      = ir.Event.MouseEvent.dwMousePosition.Y;
-        evnt.mouseButton = AppCUI::Input::MouseButton::None;
+        evnt.mouseButton = Input::MouseButton::None;
         if (ir.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
-            evnt.mouseButton |= AppCUI::Input::MouseButton::Left;
+            evnt.mouseButton |= Input::MouseButton::Left;
         else if (ir.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
-            evnt.mouseButton |= AppCUI::Input::MouseButton::Right;
+            evnt.mouseButton |= Input::MouseButton::Right;
         else if (ir.Event.MouseEvent.dwButtonState > 0)
-            evnt.mouseButton |= AppCUI::Input::MouseButton::Center;
+            evnt.mouseButton |= Input::MouseButton::Center;
 
         switch (ir.Event.MouseEvent.dwEventFlags)
         {
@@ -571,7 +629,7 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
             return;
         case DOUBLE_CLICK:
             evnt.eventType = SystemEventType::MouseDown;
-            evnt.mouseButton |= AppCUI::Input::MouseButton::DoubleClicked;
+            evnt.mouseButton |= Input::MouseButton::DoubleClicked;
             break;
         case MOUSE_MOVED:
             evnt.eventType = SystemEventType::MouseMove;
@@ -579,9 +637,9 @@ void WindowsTerminal::GetSystemEvent(AppCUI::Internal::SystemEvent& evnt)
         case MOUSE_WHEELED:
             evnt.eventType = SystemEventType::MouseWheel;
             if (ir.Event.MouseEvent.dwButtonState >= 0x80000000)
-                evnt.mouseWheel = AppCUI::Input::MouseWheel::Down;
+                evnt.mouseWheel = Input::MouseWheel::Down;
             else
-                evnt.mouseWheel = AppCUI::Input::MouseWheel::Up;
+                evnt.mouseWheel = Input::MouseWheel::Up;
             return;
         }
         break;
@@ -612,3 +670,4 @@ bool WindowsTerminal::IsEventAvailable()
         return false;
     return (eventsRead > 0);
 }
+} // namespace AppCUI::Internal

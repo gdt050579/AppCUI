@@ -1,13 +1,14 @@
 #include <string.h>
-#include "Terminal/TerminalFactory.hpp"
-#include "Terminal/WindowsTerminal/WindowsTerminal.hpp"
+#include "../TerminalFactory.hpp"
+#include "../WindowsTerminal/WindowsTerminal.hpp"
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Application;
-
-std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const InitializationData& initData)
+namespace AppCUI::Internal
 {
-    std::unique_ptr<AbstractTerminal> term = nullptr;
+using namespace Application;
+
+unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
+{
+    unique_ptr<AbstractTerminal> term = nullptr;
     switch (initData.Frontend)
     {
     case FrontendType::Default:
@@ -15,10 +16,11 @@ std::unique_ptr<AbstractTerminal> AppCUI::Internal::GetTerminal(const Initializa
         term = std::make_unique<WindowsTerminal>();
         break;
     default:
-        RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (unsigned int) initData.Frontend);
+        RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (uint32) initData.Frontend);
     }
     CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
     CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");
 
     return term;
 }
+} // namespace AppCUI::Internal

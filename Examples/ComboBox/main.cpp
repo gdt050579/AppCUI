@@ -18,7 +18,7 @@ class MyWin : public Window
         Factory::ComboBox::Create(this, "x:22,y:3,w:30", u8"Déjà vu,Schön,Groß,Fähig,Любовь,Кошка,Улыбаться");
         Factory::Label::Create(this, "Select a vehicle", "x:2,y:5,w:18");
         auto cb = Factory::ComboBox::Create(this, "x:22,y:5,w:30");
-        col = Factory::TextField::Create(this, "", "x:2,y:7,w:50");
+        col     = Factory::TextField::Create(this, "", "x:2,y:7,w:50");
 
         cb->AddSeparator("Cars");
         cb->AddItem("Mercedes");
@@ -28,7 +28,6 @@ class MyWin : public Window
         cb->AddSeparator("Motorcycles");
         cb->AddItem("BMW");
         cb->AddItem("Ducatti");
-        
     }
     bool OnEvent(Reference<Control> sender, Event eventType, int) override
     {

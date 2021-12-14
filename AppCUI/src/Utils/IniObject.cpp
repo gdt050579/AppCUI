@@ -1,18 +1,29 @@
-#include "AppCUI.hpp"
+#include <AppCUI.hpp>
 #include "Internal.hpp"
 #include <unordered_map>
 
 using namespace AppCUI;
-using namespace AppCUI::Utils;
-using namespace AppCUI::Input;
+using namespace Utils;
+using namespace Input;
 
-using BuffPtr = const unsigned char*;
+using BuffPtr = const uint8*;
 
-#define WRAPPER ((AppCUI::Ini::Parser*) Data)
+#define WRAPPER ((Ini::Parser*) Data)
 
 #define VALIDATE_VALUE(returnValue)                                                                                    \
     CHECK(Data, returnValue, "Invalid value object (null)");                                                           \
-    AppCUI::Ini::Value* value = (AppCUI::Ini::Value*) this->Data;
+    Ini::Value* value = (Ini::Value*) this->Data;
+
+#define PREPARE_VALUE                                                                                                  \
+    if (!Data)                                                                                                         \
+        return;                                                                                                        \
+    Ini::Value* iniValue = (Ini::Value*) this->Data;
+
+#define WRITE_INI_NUMERIC_VALUE                                                                                        \
+    PREPARE_VALUE;                                                                                                     \
+    NumericFormatter n;                                                                                                \
+    iniValue->KeyValue = n.ToDec(value);                                                                               \
+    iniValue->KeyValues.clear();
 
 #define VALIDATE_INITED(returnValue)                                                                                   \
     CHECK(Data, returnValue, "Parser object has not been created. Have you called one of the Crete... methods first ?");
@@ -44,7 +55,7 @@ using BuffPtr = const unsigned char*;
         RETURNERROR(returnValue, errorMessage);                                                                        \
     }
 
-const unsigned char Ini_LoweCaseTable[256] = {
+const uint8 Ini_LoweCaseTable[256] = {
     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
     44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
@@ -58,85 +69,83 @@ const unsigned char Ini_LoweCaseTable[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-unsigned char Ini_Char_Type[256] = {
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_NEW_LINE,    CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,       CHAR_TYPE_STRING,   CHAR_TYPE_COMMENT,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_STRING,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_COMMA,  CHAR_TYPE_OTHER,       CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_OTHER,    CHAR_TYPE_COMMENT,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_EQ,          CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_SECTION_START,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_SECTION_END, CHAR_TYPE_OTHER,    CHAR_TYPE_WORD,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER
-};
+uint8 Ini_Char_Type[256] = { CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,       CHAR_TYPE_NEW_LINE, CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_NEW_LINE,    CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,       CHAR_TYPE_STRING,   CHAR_TYPE_COMMENT,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_STRING,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_COMMA,  CHAR_TYPE_OTHER,       CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_NUMBER,   CHAR_TYPE_NUMBER,
+                             CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,      CHAR_TYPE_OTHER,    CHAR_TYPE_COMMENT,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_EQ,          CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_SECTION_START,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_SECTION_END, CHAR_TYPE_OTHER,    CHAR_TYPE_WORD,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_WORD,
+                             CHAR_TYPE_WORD,   CHAR_TYPE_WORD,        CHAR_TYPE_WORD,     CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER,
+                             CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,       CHAR_TYPE_OTHER,    CHAR_TYPE_OTHER };
 
-constexpr unsigned int INI_VALUE_ON    = 0x6E6FU;
-constexpr unsigned int INI_VALUE_OFF   = 0x66666FU;
-constexpr unsigned int INI_VALUE_YES   = 0x736579U;
-constexpr unsigned int INI_VALUE_NO    = 0x6F6EU;
-constexpr unsigned int INI_VALUE_TRUE  = 0x65757274U;
-constexpr unsigned int INI_VALUE_FALSE = 0x736C6166;
+constexpr uint32 INI_VALUE_ON    = 0x6E6FU;
+constexpr uint32 INI_VALUE_OFF   = 0x66666FU;
+constexpr uint32 INI_VALUE_YES   = 0x736579U;
+constexpr uint32 INI_VALUE_NO    = 0x6F6EU;
+constexpr uint32 INI_VALUE_TRUE  = 0x65757274U;
+constexpr uint32 INI_VALUE_FALSE = 0x736C6166;
 
 namespace AppCUI
 {
 namespace Ini
 {
-    enum class ParseState : unsigned int
+    enum class ParseState : uint32
     {
         ExpectingKeyOrSection,
         ExpectingEQ,
@@ -147,12 +156,26 @@ namespace Ini
     {
         std::string KeyName;
         std::string KeyValue;
-        std::vector<std::string> KeyValues;
+        vector<std::string> KeyValues;
+        Value()
+        {
+        }
+        Value(string_view keyName)
+        {
+            KeyName = keyName;
+        }
     };
     struct Section
     {
-        AppCUI::Utils::String Name;
-        std::unordered_map<unsigned long long, Value> Keys;
+        Utils::String Name;
+        std::unordered_map<uint64, Value> Keys;
+        Section()
+        {
+        }
+        Section(string_view name)
+        {
+            Name.Set(name.data(), (uint32) name.length());
+        }
     };
     struct Parser
     {
@@ -160,13 +183,14 @@ namespace Ini
         BuffPtr end;
         BuffPtr current;
         ParseState state;
+        std::string toStringBuffer;
 
-        std::unordered_map<unsigned long long, std::unique_ptr<AppCUI::Ini::Section>> Sections;
+        std::unordered_map<uint64, unique_ptr<Ini::Section>> Sections;
         Section DefaultSection; // KeyValue entries that do not have a section name (writtem directly in the root)
         Section* CurrentSection;
-        unsigned long long CurrentKeyHash;
+        uint64 CurrentKeyHash;
         BuffPtr CurrentKeyNamePtr;
-        unsigned int CurrentKeyNameLen;
+        uint32 CurrentKeyNameLen;
 
         inline void SkipSpaces();
         inline void SkipArrayDelimiters();
@@ -182,7 +206,7 @@ namespace Ini
         }
         bool AddSection(BuffPtr nameStart, BuffPtr nameEnd);
         bool AddValue(BuffPtr valueStart, BuffPtr valueEnd);
-        bool AddArrayValue(AppCUI::Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd);
+        bool AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd);
         bool ParseState_ExpectingKeyOrSection();
         bool ParseState_ExpectingEQ();
         bool ParseState_ExpectingValue();
@@ -194,10 +218,10 @@ namespace Ini
 }; // namespace Ini
 } // namespace AppCUI
 
-unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
+uint64 __compute_hash__(BuffPtr p_start, BuffPtr p_end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    unsigned long long hash = 0xcbf29ce484222325ULL;
+    uint64 hash = 0xcbf29ce484222325ULL;
     while (p_start < p_end)
     {
         hash = hash ^ (Ini_LoweCaseTable[*p_start]);
@@ -206,17 +230,97 @@ unsigned long long __compute_hash__(BuffPtr p_start, BuffPtr p_end)
     }
     return hash;
 }
-unsigned long long __compute_hash__(std::string_view text)
+uint64 __compute_hash__(string_view text)
 {
     return __compute_hash__((BuffPtr) text.data(), ((BuffPtr) text.data()) + text.length());
 }
+void AddSectionValueToString(std::string& res, std::string value)
+{
+    // quick_check
+    auto spaces        = 0;
+    auto quotes        = 0;
+    auto double_quotes = 0;
+    auto new_lines     = 0;
+    // for empty strings --> add as ""
+    if (value.length() == 0)
+    {
+        res += "\"\"";
+        return;
+    }
+    for (auto ch : value)
+    {
+        if ((ch == ' ') || (ch == '\t'))
+            spaces++;
+        if (ch == '"')
+            double_quotes++;
+        if (ch == '\'')
+            quotes++;
+        if ((ch == '\n') || (ch == '\r'))
+            new_lines++;
+    }
+    string_view string_separator = "";
+    if (new_lines > 0)
+        string_separator = "\"\"\"";
+    else
+    {
+        if ((quotes > 0) && (double_quotes == 0))
+            string_separator = "\"";
+        else if ((quotes == 0) && (double_quotes > 0))
+            string_separator = "'";
+        else if ((quotes > 0) && (double_quotes > 0))
+            string_separator = "\"\"\"";
+        else
+        {
+            // no quotes or double_quotes or new_lines
+            if (spaces > 0)
+                string_separator = "\"";
+        }
+    }
+    res += string_separator;
+    res += value;
+    res += string_separator;
+}
+void AddSectionToString(std::string& res, Ini::Section& sect)
+{
+    res += "\n";
+    if (sect.Name.Len() > 0)
+    {
+        res += "[";
+        res += sect.Name;
+        res += "]";
+        res += "\n";
+    }
+    // add values
+    for (auto& entry : sect.Keys)
+    {
+        res += entry.second.KeyName;
+        res += " = ";
+        if (entry.second.KeyValues.size() > 0)
+        {
+            auto sz = entry.second.KeyValues.size();
+            res += "[";
+            for (size_t index = 0; index < sz; index++)
+            {
+                if (index > 0)
+                    res += " , ";
+                AddSectionValueToString(res, entry.second.KeyValues[index]);
+            }
+            res += "]";
+        }
+        else
+        {
+            AddSectionValueToString(res, entry.second.KeyValue);
+        }
+        res += "\n";
+    }
+}
 
-void AppCUI::Ini::Parser::SkipSpaces()
+void Ini::Parser::SkipSpaces()
 {
     while ((current < end) && (Ini_Char_Type[*current] == CHAR_TYPE_SPACE))
         current++;
 }
-void AppCUI::Ini::Parser::SkipArrayDelimiters()
+void Ini::Parser::SkipArrayDelimiters()
 {
     while ((current < end) &&
            ((Ini_Char_Type[*current] == CHAR_TYPE_SPACE) || (Ini_Char_Type[*current] == CHAR_TYPE_NEW_LINE)))
@@ -231,22 +335,22 @@ void AppCUI::Ini::Parser::SkipArrayDelimiters()
             current++;
     }
 }
-void AppCUI::Ini::Parser::SkipNewLine()
+void Ini::Parser::SkipNewLine()
 {
     while ((current < end) && (Ini_Char_Type[*current] == CHAR_TYPE_NEW_LINE))
         current++;
 }
-void AppCUI::Ini::Parser::SkipWord()
+void Ini::Parser::SkipWord()
 {
     while ((current < end) && (Ini_Char_Type[*current] & CHAR_TYPE_WORD_OR_NUMBER))
         current++;
 }
-void AppCUI::Ini::Parser::SkipCurrentLine()
+void Ini::Parser::SkipCurrentLine()
 {
     while ((current < end) && (Ini_Char_Type[*current] != CHAR_TYPE_NEW_LINE))
         current++;
 }
-void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
+void Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
 {
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a comment or a new line
@@ -262,14 +366,20 @@ void AppCUI::Ini::Parser::SkipSingleLineWord(BuffPtr& wordEnds)
             wordEnds--;
         wordEnds++;
     }
+    else
+    {
+        wordEnds = end;
+    }
 }
-void AppCUI::Ini::Parser::SkipArrayWord()
+void Ini::Parser::SkipArrayWord()
 {
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a space, a terminator or a new line
-    
+
     BuffPtr p_start = current;
-    while (current < end) { auto type = Ini_Char_Type[*current];
+    while (current < end)
+    {
+        auto type = Ini_Char_Type[*current];
         if ((type == CHAR_TYPE_SPACE) || (type == CHAR_TYPE_NEW_LINE) || (type == CHAR_TYPE_SECTION_END))
             break;
         if ((*current) == ',')
@@ -277,10 +387,10 @@ void AppCUI::Ini::Parser::SkipArrayWord()
         current++;
     }
 }
-bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
+bool Ini::Parser::SkipString(bool& multiLineFormat)
 {
     // asume that current character is either ' or "
-    unsigned char currentChar = *current;
+    uint8 currentChar = *current;
     if ((current + 2) < end)
         multiLineFormat = ((current[1] == currentChar) && (current[2] == currentChar));
     else
@@ -312,7 +422,7 @@ bool AppCUI::Ini::Parser::SkipString(bool& multiLineFormat)
         return true;
     }
 }
-bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
+bool Ini::Parser::ParseState_ExpectingKeyOrSection()
 {
     BuffPtr nameStart, nameEnd;
 
@@ -355,7 +465,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
             // all good - store the key to be added after
             CurrentKeyHash    = __compute_hash__(nameStart, nameEnd);
             CurrentKeyNamePtr = nameStart;
-            CurrentKeyNameLen = (unsigned int) (nameEnd - nameStart);
+            CurrentKeyNameLen = (uint32) (nameEnd - nameStart);
             state             = ParseState::ExpectingEQ;
             return true;
         default:
@@ -365,7 +475,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingKeyOrSection()
     }
     return true;
 }
-bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
+bool Ini::Parser::ParseState_ExpectingEQ()
 {
     SkipSpaces();
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting '=' after a key !");
@@ -379,7 +489,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingEQ()
         state = ParseState::ExpectingValue;
     return true;
 }
-bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
+bool Ini::Parser::ParseState_ExpectingValue()
 {
     bool multiLineString;
     BuffPtr valueStart, valueEnd;
@@ -416,7 +526,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingValue()
     }
     return true;
 }
-bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
+bool Ini::Parser::ParseState_ExpectingArray()
 {
     bool multiLineString;
     BuffPtr valueStart;
@@ -426,7 +536,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
     PARSER_CHECK(current < end, false, "Premature end of INI file: expecting a value after '[' character !");
     // all good --> create the value
     auto& value       = CurrentSection->Keys[this->CurrentKeyHash];
-    value.KeyName     = std::string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
+    value.KeyName     = string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
     CurrentKeyNamePtr = nullptr;
     CurrentKeyNameLen = 0;
     // value is created and is empy
@@ -467,7 +577,7 @@ bool AppCUI::Ini::Parser::ParseState_ExpectingArray()
     }
     return true;
 }
-void AppCUI::Ini::Parser::Clear()
+void Ini::Parser::Clear()
 {
     this->Sections.clear();
     this->DefaultSection.Keys.clear();
@@ -476,7 +586,7 @@ void AppCUI::Ini::Parser::Clear()
     this->CurrentKeyNamePtr = nullptr;
     this->CurrentKeyNameLen = 0;
 }
-bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
+bool Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
 {
     Clear();
     // sanity check
@@ -486,34 +596,34 @@ bool AppCUI::Ini::Parser::Parse(BuffPtr bufferStart, BuffPtr bufferEnd)
     start   = bufferStart;
     end     = bufferEnd;
     current = start;
-    state   = AppCUI::Ini::ParseState::ExpectingKeyOrSection;
+    state   = Ini::ParseState::ExpectingKeyOrSection;
     while (current < end)
     {
         switch (state)
         {
-        case AppCUI::Ini::ParseState::ExpectingKeyOrSection:
+        case Ini::ParseState::ExpectingKeyOrSection:
             CHECK(ParseState_ExpectingKeyOrSection(), false, "");
             break;
-        case AppCUI::Ini::ParseState::ExpectingEQ:
+        case Ini::ParseState::ExpectingEQ:
             CHECK(ParseState_ExpectingEQ(), false, "");
             break;
-        case AppCUI::Ini::ParseState::ExpectingValue:
+        case Ini::ParseState::ExpectingValue:
             CHECK(ParseState_ExpectingValue(), false, "");
             break;
-        case AppCUI::Ini::ParseState::ExpectingArray:
+        case Ini::ParseState::ExpectingArray:
             CHECK(ParseState_ExpectingArray(), false, "");
             break;
         default:
-            RETURNERROR(false, "Internal error -> state (%d) was not implemented", (unsigned int) state);
+            RETURNERROR(false, "Internal error -> state (%d) was not implemented", (uint32) state);
             break;
         }
     }
     return true;
 }
-bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
+bool Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
 {
-    unsigned long long hash = __compute_hash__(nameStart, nameEnd);
-    auto& sect              = Sections[hash];
+    uint64 hash = __compute_hash__(nameStart, nameEnd);
+    auto& sect  = Sections[hash];
     if (sect.get() == nullptr)
     {
         sect.reset(new Section());
@@ -522,51 +632,68 @@ bool AppCUI::Ini::Parser::AddSection(BuffPtr nameStart, BuffPtr nameEnd)
     CHECK(CurrentSection, false, "Fail to allocate a section");
     if (CurrentSection->Name.Len() == 0)
     {
-        CHECK(CurrentSection->Name.Set((const char*) nameStart, (unsigned int) (nameEnd - nameStart)),
+        CHECK(CurrentSection->Name.Set((const char*) nameStart, (uint32) (nameEnd - nameStart)),
               false,
               "Fail to allocate section name");
     }
     return true;
 }
-bool AppCUI::Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
+bool Ini::Parser::AddValue(BuffPtr valueStart, BuffPtr valueEnd)
 {
     CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
     auto& value       = CurrentSection->Keys[this->CurrentKeyHash];
-    value.KeyValue    = std::string_view((const char*) valueStart, (unsigned int) (valueEnd - valueStart));
-    value.KeyName     = std::string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
+    value.KeyValue    = string_view((const char*) valueStart, (uint32) (valueEnd - valueStart));
+    value.KeyName     = string_view((const char*) CurrentKeyNamePtr, CurrentKeyNameLen);
     CurrentKeyNamePtr = nullptr;
     CurrentKeyNameLen = 0;
     return true;
 }
-bool AppCUI::Ini::Parser::AddArrayValue(AppCUI::Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd)
+bool Ini::Parser::AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr valueEnd)
 {
     CHECK(valueStart <= valueEnd, false, "Invalid buffer pointers !");
-    value.KeyValues.push_back(
-          std::string(std::string_view((const char*) valueStart, (unsigned int) (valueEnd - valueStart))));
+    value.KeyValues.push_back(std::string(string_view((const char*) valueStart, (uint32) (valueEnd - valueStart))));
     return true;
 }
 //============================================================================= INI Section ===
-std::string_view IniSection::GetName() const
+string_view IniSection::GetName() const
 {
     CHECK(this->Data, "", "");
-    return std::string_view{ ((AppCUI::Ini::Section*) Data)->Name.GetText(),
-                             ((AppCUI::Ini::Section*) Data)->Name.Len() };
+    return string_view{ ((Ini::Section*) Data)->Name.GetText(), ((Ini::Section*) Data)->Name.Len() };
 }
-IniValue IniSection::GetValue(std::string_view keyName)
+IniValue IniSection::GetValue(string_view keyName)
 {
     CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
-    AppCUI::Ini::Section* entry = ((AppCUI::Ini::Section*) Data);
-    auto value                  = entry->Keys.find(__compute_hash__(keyName));
+    Ini::Section* entry = ((Ini::Section*) Data);
+    auto value          = entry->Keys.find(__compute_hash__(keyName));
     CHECK(value != entry->Keys.cend(), IniValue(), "Unable to find key !");
     // all good -> value exists
     return IniValue(&value->second);
 }
-std::vector<IniValue> IniSection::GetValues() const
+bool IniSection::HasValue(string_view keyName)
 {
-    CHECK(Data, std::vector<IniValue>(), "Section was not initialized");
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    Ini::Section* entry = ((Ini::Section*) Data);
+    auto value          = entry->Keys.find(__compute_hash__(keyName));
+    return value != entry->Keys.cend();
+}
+IniValue IniSection::operator[](string_view keyName)
+{
+    CHECK(Data, IniValue(), "Section key does not exists (unable to get key-value datat!)");
+    Ini::Section* entry = ((Ini::Section*) Data);
+    auto hash           = __compute_hash__(keyName);
+    auto value          = entry->Keys.find(hash);
+    // if element already exists --> return it
+    if (value != entry->Keys.cend())
+        return IniValue(&value->second);
+    auto res = entry->Keys.emplace(hash, Ini::Value(keyName));
+    return IniValue(&res.first->second);
+}
+vector<IniValue> IniSection::GetValues() const
+{
+    CHECK(Data, vector<IniValue>(), "Section was not initialized");
 
-    std::vector<IniValue> res;
-    auto sect = ((AppCUI::Ini::Section*) Data);
+    vector<IniValue> res;
+    auto sect = ((Ini::Section*) Data);
 
     res.reserve(sect->Keys.size());
     for (auto& v : sect->Keys)
@@ -576,11 +703,118 @@ std::vector<IniValue> IniSection::GetValues() const
 
     return res;
 }
+void IniSection::Clear()
+{
+    if (this->Data)
+        ((Ini::Section*) Data)->Keys.clear();
+}
+bool IniSection::DeleteValue(string_view keyName)
+{
+    CHECK(Data, false, "Section key does not exists (unable to get key-value datat!)");
+    ((Ini::Section*) Data)->Keys.erase(__compute_hash__(keyName));
+    return true;
+}
+template <typename T>
+void UpdateValueForSection(void* sectionData, string_view name, T value, bool dontUpdateIfValueExits)
+{
+    if (!sectionData)
+        return;
+    Ini::Section* entry = ((Ini::Section*) sectionData);
+
+    if (dontUpdateIfValueExits)
+    {
+        auto hash = __compute_hash__(name);
+        if (entry->Keys.contains(hash))
+            return;
+    }
+    IniSection sect(sectionData);
+    sect[name] = value;
+}
+void IniSection::UpdateValue(string_view name, bool value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<bool>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, uint32 value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<uint32>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, uint64 value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<uint64>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, int32 value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<int32>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, int64 value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<int64>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, float value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<float>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, double value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<double>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const char* value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const char*>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<string_view>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<Graphics::Size>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<const char*>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<bool>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<int32>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<int32>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<int64>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<int64>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<uint32>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<uint32>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<uint64>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<uint64>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<float>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<float>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, const initializer_list<double>& values, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<const initializer_list<double>&>(this->Data, name, values, dontUpdateIfValueExits);
+}
 //============================================================================= INI Value ===
 
-std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
+optional<bool> IniValue_ToBool(const char* txt, uint32 len)
 {
-    auto v = 0U;    
+    auto v = 0U;
     switch (len)
     {
     case 1:
@@ -590,7 +824,7 @@ std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
             return false;
         break;
     case 2:
-        v = (*((const unsigned short*) txt)) | 0x2020;
+        v = (*((const uint16*) txt)) | 0x2020;
         if (v == INI_VALUE_ON)
             return true;
         if (v == INI_VALUE_NO)
@@ -598,43 +832,41 @@ std::optional<bool> IniValue_ToBool(const char* txt, unsigned int len)
         break;
     case 3:
         // in fact there are 4 bytes (3 for the text followed by 0)
-        v = (*((const unsigned int*) txt)) | 0x202020;
+        v = (*((const uint32*) txt)) | 0x202020;
         if (v == INI_VALUE_YES)
             return true;
         if (v == INI_VALUE_OFF)
             return false;
         break;
     case 4:
-        v = (*((const unsigned int*) txt)) | 0x20202020;
+        v = (*((const uint32*) txt)) | 0x20202020;
         if (v == INI_VALUE_TRUE)
             return true;
         break;
     case 5:
-        v = (*((const unsigned int*) txt)) | 0x20202020;
+        v = (*((const uint32*) txt)) | 0x20202020;
         if ((v == INI_VALUE_FALSE) && ((txt[4] | 0x20) == 'e'))
             return false;
         break;
     default:
         break;
     }
-    RETURNERROR(std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
+    RETURNERROR(
+          std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned int len)
+optional<Graphics::Size> IniValue_ToSize(const char* txt, uint32 len)
 {
     const char* start = txt;
     const char* end   = start + len;
     CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(len >= 3,
-          std::nullopt,
-          "Value (%s) is too small (expecting at least 3 chars <width>x<height>",
-          start);
-    unsigned int sz = 0;
-    auto p_width    = Number::ToUInt16(
-          std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
+    CHECK(len >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
+    uint32 sz    = 0;
+    auto p_width = Number::ToUInt16(
+          string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
     CHECK(p_width.has_value(),
           std::nullopt,
           "Expecting a valid format for size - eithed 'width x height' or 'width , height'");
-    unsigned int width = p_width.value();
+    uint32 width = p_width.value();
     start += sz;
     CHECK(start < end,
           std::nullopt,
@@ -646,78 +878,77 @@ std::optional<AppCUI::Graphics::Size> IniValue_ToSize(const char* txt, unsigned 
     CHECK(start < end,
           std::nullopt,
           "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
-    auto p_height = Number::ToUInt16(
-          std::string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
+    auto p_height =
+          Number::ToUInt16(string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
     CHECK(p_height.has_value(),
           std::nullopt,
           "Expecting a valid format for size - eithed 'width x height' or 'width , height' -> height value is invalid");
-    unsigned int height = p_height.value();
+    uint32 height = p_height.value();
     CHECK(width > 0, std::nullopt, "Width must be bigger than 0");
     CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
-    return AppCUI::Graphics::Size(width, height);
+    return Graphics::Size(width, height);
 }
 
-
-std::optional<unsigned long long> IniValue::AsUInt64() const
+optional<uint64> IniValue::AsUInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt64(static_cast<std::string_view>(value->KeyValue));
+    return Number::ToUInt64(static_cast<string_view>(value->KeyValue));
 }
-std::optional<long long> IniValue::AsInt64() const
+optional<int64> IniValue::AsInt64() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt64(static_cast<std::string_view>(value->KeyValue));
+    return Number::ToInt64(static_cast<string_view>(value->KeyValue));
 }
-std::optional<unsigned int> IniValue::AsUInt32() const
+optional<uint32> IniValue::AsUInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToUInt32(static_cast<std::string_view>(value->KeyValue));
+    return Number::ToUInt32(static_cast<string_view>(value->KeyValue));
 }
-std::optional<int> IniValue::AsInt32() const
+optional<int32> IniValue::AsInt32() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToInt32(static_cast<std::string_view>(value->KeyValue));
+    return Number::ToInt32(static_cast<string_view>(value->KeyValue));
 }
-std::optional<bool> IniValue::AsBool() const
+optional<bool> IniValue::AsBool() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return IniValue_ToBool(value->KeyValue.c_str(), (unsigned int) value->KeyValue.length());
+    return IniValue_ToBool(value->KeyValue.c_str(), (uint32) value->KeyValue.length());
 }
-std::optional<AppCUI::Input::Key> IniValue::AsKey() const
+optional<Input::Key> IniValue::AsKey() const
 {
     VALIDATE_VALUE(std::nullopt);
-    Key k = KeyUtils::FromString((static_cast<std::string_view>(value->KeyValue)));
+    Key k = KeyUtils::FromString((static_cast<string_view>(value->KeyValue)));
     if (k == Key::None)
         return std::nullopt;
     return k;
 }
-std::optional<const char*> IniValue::AsString() const
+optional<const char*> IniValue::AsString() const
 {
     VALIDATE_VALUE(std::nullopt);
     return value->KeyValue.c_str();
 }
-std::optional<std::string_view> IniValue::AsStringView() const
+optional<string_view> IniValue::AsStringView() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return static_cast<std::string_view>(value->KeyValue);
+    return static_cast<string_view>(value->KeyValue);
 }
-std::optional<Graphics::Size> IniValue::AsSize() const
+optional<Graphics::Size> IniValue::AsSize() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return IniValue_ToSize(value->KeyValue.c_str(), (unsigned int) value->KeyValue.size());
+    return IniValue_ToSize(value->KeyValue.c_str(), (uint32) value->KeyValue.size());
 }
-std::optional<float> IniValue::AsFloat() const
+optional<float> IniValue::AsFloat() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToFloat((static_cast<std::string_view>(value->KeyValue)));
+    return Number::ToFloat((static_cast<string_view>(value->KeyValue)));
 }
-std::optional<double> IniValue::AsDouble() const
+optional<double> IniValue::AsDouble() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return Number::ToDouble((static_cast<std::string_view>(value->KeyValue)));
+    return Number::ToDouble((static_cast<string_view>(value->KeyValue)));
 }
 
-unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValue::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -725,7 +956,7 @@ unsigned long long IniValue::ToUInt64(unsigned long long defaultValue) const
     else
         return defaultValue;
 }
-unsigned int IniValue::ToUInt32(unsigned int defaultValue) const
+uint32 IniValue::ToUInt32(uint32 defaultValue) const
 {
     auto result = this->AsUInt32();
     if (result.has_value())
@@ -733,7 +964,7 @@ unsigned int IniValue::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValue::ToInt64(long long defaultValue) const
+int64 IniValue::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -741,7 +972,7 @@ long long IniValue::ToInt64(long long defaultValue) const
     else
         return defaultValue;
 }
-int IniValue::ToInt32(int defaultValue) const
+int32 IniValue::ToInt32(int32 defaultValue) const
 {
     auto result = this->AsInt32();
     if (result.has_value())
@@ -757,7 +988,7 @@ bool IniValue::ToBool(bool defaultValue) const
     else
         return defaultValue;
 }
-AppCUI::Input::Key IniValue::ToKey(AppCUI::Input::Key defaultValue) const
+Input::Key IniValue::ToKey(Input::Key defaultValue) const
 {
     auto result = this->AsKey();
     if (result.has_value())
@@ -770,7 +1001,7 @@ const char* IniValue::ToString(const char* defaultValue) const
     VALIDATE_VALUE(defaultValue);
     return value->KeyValue.c_str();
 }
-std::string_view IniValue::ToStringView(std::string_view defaultValue) const
+string_view IniValue::ToStringView(string_view defaultValue) const
 {
     auto result = this->AsStringView();
     if (result.has_value())
@@ -778,7 +1009,7 @@ std::string_view IniValue::ToStringView(std::string_view defaultValue) const
     else
         return defaultValue;
 }
-AppCUI::Graphics::Size IniValue::ToSize(AppCUI::Graphics::Size defaultValue) const
+Graphics::Size IniValue::ToSize(Graphics::Size defaultValue) const
 {
     auto result = this->AsSize();
     if (result.has_value())
@@ -803,10 +1034,10 @@ double IniValue::ToDouble(double defaultValue) const
         return defaultValue;
 }
 
-std::string_view IniValue::GetName() const
+string_view IniValue::GetName() const
 {
-    VALIDATE_VALUE(std::string_view());
-    return (static_cast<std::string_view>(value->KeyName));
+    VALIDATE_VALUE(string_view());
+    return (static_cast<string_view>(value->KeyName));
 }
 
 bool IniValue::IsArray() const
@@ -814,61 +1045,196 @@ bool IniValue::IsArray() const
     VALIDATE_VALUE(false);
     return value->KeyValues.size() > 0;
 }
-unsigned int IniValue::GetArrayCount() const
+uint32 IniValue::GetArrayCount() const
 {
     VALIDATE_VALUE(0);
-    return (unsigned int)value->KeyValues.size();
+    return (uint32) value->KeyValues.size();
 }
-IniValueArray IniValue::operator[](int index) const
+IniValueArray IniValue::operator[](int32 index) const
 {
     VALIDATE_VALUE(IniValueArray());
     if ((index < 0) || (index >= value->KeyValues.size()))
         return IniValueArray();
 
-    return IniValueArray((std::string_view) value->KeyValues[index]);
+    return IniValueArray((string_view) value->KeyValues[index]);
+}
+
+void IniValue::operator=(bool value)
+{
+    PREPARE_VALUE;
+    if (value)
+        iniValue->KeyValue = "true";
+    else
+        iniValue->KeyValue = "false";
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(uint32 value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(uint64 value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(int32 value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(int64 value)
+{
+    WRITE_INI_NUMERIC_VALUE;
+}
+void IniValue::operator=(float value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3f", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(double value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%.3lf", value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(string_view value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(const char* value)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue = value;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(Graphics::Size value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = tmp.Format("%u x %u", value.Width, value.Height);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(Input::Key value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    if (!Utils::KeyUtils::ToString(value, tmp))
+        return;
+    iniValue->KeyValue = tmp;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(const initializer_list<std::string>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues = values;
+}
+void IniValue::operator=(const initializer_list<const char*>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val);
+    }
+}
+void IniValue::operator=(const initializer_list<bool>& values)
+{
+    PREPARE_VALUE;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(val ? "true" : "false");
+    }
+}
+template <typename T>
+void IniValueSetVector(void* Data, const initializer_list<T>& values)
+{
+    if (!Data)
+        return;
+    Ini::Value* iniValue = (Ini::Value*) Data;
+    iniValue->KeyValue.clear();
+    iniValue->KeyValues.clear();
+    iniValue->KeyValues.reserve(values.size());
+    NumericFormatter n;
+    for (auto val : values)
+    {
+        iniValue->KeyValues.push_back(std::string(n.ToDec(val)));
+    }
+}
+void IniValue::operator=(const initializer_list<uint32>& values)
+{
+    IniValueSetVector<uint32>(this->Data, values);
+}
+void IniValue::operator=(const initializer_list<uint64>& values)
+{
+    IniValueSetVector<uint64>(this->Data, values);
+}
+void IniValue::operator=(const initializer_list<int32>& values)
+{
+    IniValueSetVector<int32>(this->Data, values);
+}
+void IniValue::operator=(const initializer_list<int64>& values)
+{
+    IniValueSetVector<int64>(this->Data, values);
+}
+void IniValue::operator=(const initializer_list<float>& values)
+{
+    IniValueSetVector<float>(this->Data, values);
+}
+void IniValue::operator=(const initializer_list<double>& values)
+{
+    IniValueSetVector<double>(this->Data, values);
 }
 //============================================================================= INI Array Value ===
-std::optional<unsigned long long> IniValueArray::AsUInt64() const
+optional<uint64> IniValueArray::AsUInt64() const
 {
-    return Number::ToUInt64(std::string_view(text,len));
+    return Number::ToUInt64(string_view(text, len));
 }
-std::optional<long long> IniValueArray::AsInt64() const
+optional<int64> IniValueArray::AsInt64() const
 {
-    return Number::ToInt64(std::string_view(text, len));
+    return Number::ToInt64(string_view(text, len));
 }
-std::optional<unsigned int> IniValueArray::AsUInt32() const
+optional<uint32> IniValueArray::AsUInt32() const
 {
-    return Number::ToUInt32(std::string_view(text, len));
+    return Number::ToUInt32(string_view(text, len));
 }
-std::optional<int> IniValueArray::AsInt32() const
+optional<int32> IniValueArray::AsInt32() const
 {
-    return Number::ToInt32(std::string_view(text, len));
+    return Number::ToInt32(string_view(text, len));
 }
-std::optional<bool> IniValueArray::AsBool() const
+optional<bool> IniValueArray::AsBool() const
 {
-    return IniValue_ToBool(text,len);
+    return IniValue_ToBool(text, len);
 }
-std::optional<AppCUI::Input::Key> IniValueArray::AsKey() const
+optional<Input::Key> IniValueArray::AsKey() const
 {
-    Key k = KeyUtils::FromString(std::string_view(text, len));
+    Key k = KeyUtils::FromString(string_view(text, len));
     if (k == Key::None)
         return std::nullopt;
     return k;
 }
-std::optional<Graphics::Size> IniValueArray::AsSize() const
+optional<Graphics::Size> IniValueArray::AsSize() const
 {
     return IniValue_ToSize(text, len);
 }
-std::optional<float> IniValueArray::AsFloat() const
+optional<float> IniValueArray::AsFloat() const
 {
-    return Number::ToFloat(std::string_view(text, len));
+    return Number::ToFloat(string_view(text, len));
 }
-std::optional<double> IniValueArray::AsDouble() const
-{    
-    return Number::ToDouble(std::string_view(text, len));
+optional<double> IniValueArray::AsDouble() const
+{
+    return Number::ToDouble(string_view(text, len));
 }
 
-unsigned long long IniValueArray::ToUInt64(unsigned long long defaultValue) const
+uint64 IniValueArray::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
     if (result.has_value())
@@ -876,7 +1242,7 @@ unsigned long long IniValueArray::ToUInt64(unsigned long long defaultValue) cons
     else
         return defaultValue;
 }
-unsigned int IniValueArray::ToUInt32(unsigned int defaultValue) const
+uint32 IniValueArray::ToUInt32(uint32 defaultValue) const
 {
     auto result = this->AsUInt32();
     if (result.has_value())
@@ -884,7 +1250,7 @@ unsigned int IniValueArray::ToUInt32(unsigned int defaultValue) const
     else
         return defaultValue;
 }
-long long IniValueArray::ToInt64(long long defaultValue) const
+int64 IniValueArray::ToInt64(int64 defaultValue) const
 {
     auto result = this->AsInt64();
     if (result.has_value())
@@ -892,7 +1258,7 @@ long long IniValueArray::ToInt64(long long defaultValue) const
     else
         return defaultValue;
 }
-int IniValueArray::ToInt32(int defaultValue) const
+int32 IniValueArray::ToInt32(int32 defaultValue) const
 {
     auto result = this->AsInt32();
     if (result.has_value())
@@ -908,7 +1274,7 @@ bool IniValueArray::ToBool(bool defaultValue) const
     else
         return defaultValue;
 }
-AppCUI::Input::Key IniValueArray::ToKey(AppCUI::Input::Key defaultValue) const
+Input::Key IniValueArray::ToKey(Input::Key defaultValue) const
 {
     auto result = this->AsKey();
     if (result.has_value())
@@ -920,7 +1286,7 @@ const char* IniValueArray::ToString(const char* defaultValue) const
 {
     return text;
 }
-std::string_view IniValueArray::ToStringView(std::string_view defaultValue) const
+string_view IniValueArray::ToStringView(string_view defaultValue) const
 {
     auto result = this->AsStringView();
     if (result.has_value())
@@ -928,7 +1294,7 @@ std::string_view IniValueArray::ToStringView(std::string_view defaultValue) cons
     else
         return defaultValue;
 }
-AppCUI::Graphics::Size IniValueArray::ToSize(AppCUI::Graphics::Size defaultValue) const
+Graphics::Size IniValueArray::ToSize(Graphics::Size defaultValue) const
 {
     auto result = this->AsSize();
     if (result.has_value())
@@ -960,19 +1326,19 @@ IniObject::IniObject()
 IniObject::~IniObject()
 {
     if (Data)
-        delete ((AppCUI::Ini::Parser*) Data);
+        delete ((Ini::Parser*) Data);
     Data = nullptr;
 }
 bool IniObject::Init()
 {
     if (Data == nullptr)
     {
-        Data = new AppCUI::Ini::Parser();
+        Data = new Ini::Parser();
         CHECK(Data, false, "Fail to allocate memory for object parser !");
     }
     return true;
 }
-bool IniObject::CreateFromString(std::string_view text)
+bool IniObject::CreateFromString(string_view text)
 {
     CHECK(text.data(), false, "Expecting a valid (non-null) string !");
     CHECK(Init(), false, "Fail to initialize parser object !");
@@ -983,14 +1349,27 @@ bool IniObject::CreateFromString(std::string_view text)
 }
 bool IniObject::CreateFromFile(const std::filesystem::path& fileName)
 {
-    AppCUI::OS::File f;
-    unsigned int bufferSize;
-    CHECK(f.OpenRead(fileName), false, "Fail to open file: %s", fileName.string().c_str());
-    auto buf = f.ReadContentToBuffer(bufferSize);
+    auto buf = OS::File::ReadContent(fileName);
+    CHECK(buf.IsValid(), false, "Unable to read content of ini file: %s", fileName.string().c_str());
+    return CreateFromString(buf);
+}
+bool IniObject::Save(const std::filesystem::path& fileName)
+{
+    auto iniContent = this->ToString();
+    CHECK(!iniContent.empty(), false, "Fail to create ini content !");
+    OS::File f;
+    CHECK(f.Create(fileName, true), false, "Fail to create file: %s", fileName.string().c_str());
+    if (iniContent.size())
+    {
+        if (!f.Write(iniContent))
+        {
+            LOG_ERROR("Fail to write ini content to file: %s", fileName.string().c_str());
+            f.Close();
+            return false;
+        }
+    }
     f.Close();
-    CHECK(buf.get(), false, "Unable to read content of ini file: %s", fileName.string().c_str());
-    CHECK(bufferSize, false, "Empty INI file");
-    return CreateFromString(std::string_view(buf.get(), bufferSize));
+    return true;
 }
 bool IniObject::Create()
 {
@@ -998,8 +1377,26 @@ bool IniObject::Create()
     WRAPPER->Clear();
     return true;
 }
-
-bool IniObject::HasSection(std::string_view name) const
+void IniObject::Clear()
+{
+    if (this->Data)
+    {
+        WRAPPER->Clear();
+    }
+}
+bool IniObject::DeleteSection(string_view name)
+{
+    VALIDATE_INITED(false);
+    // null-strings or empty strings refer to the Default section that always exists
+    if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        WRAPPER->DefaultSection.Keys.clear();
+        return true;
+    }
+    WRAPPER->Sections.erase(__compute_hash__(name));
+    return true;
+}
+bool IniObject::HasSection(string_view name) const
 {
     VALIDATE_INITED(false);
     // null-strings or empty strings refer to the Default section that always exists
@@ -1007,7 +1404,7 @@ bool IniObject::HasSection(std::string_view name) const
         return true;
     return WRAPPER->Sections.contains(__compute_hash__(name));
 }
-IniSection IniObject::GetSection(std::string_view name)
+IniSection IniObject::GetSection(string_view name)
 {
     VALIDATE_INITED(IniSection());
     if ((name.data() == nullptr) || (name.length() == 0))
@@ -1017,24 +1414,50 @@ IniSection IniObject::GetSection(std::string_view name)
         return IniSection();
     return IniSection(result->second.get());
 }
-std::vector<IniSection> IniObject::GetSections() const
+IniSection IniObject::CreateSection(string_view name, bool emptyContent)
 {
-    VALIDATE_INITED(std::vector<IniSection>());
-    std::vector<IniSection> res;
+    if (this->Data == nullptr)
+    {
+        CHECK(this->Create(), IniSection(nullptr), "Fail to create INI object !");
+    }
+    // if no name is provided --> return the default section
+    if ((name.data() == nullptr) || (name.length() == 0))
+    {
+        if (emptyContent)
+            WRAPPER->DefaultSection.Keys.clear();
+        return IniSection(&(WRAPPER->DefaultSection));
+    }
+    // check if the section exists
+    auto hash   = __compute_hash__(name);
+    auto result = WRAPPER->Sections.find(hash);
+    if (result != WRAPPER->Sections.cend())
+    {
+        if (emptyContent)
+            result->second->Keys.clear();
+        return IniSection(result->second.get());
+    }
+    // create a new section
+    auto res = WRAPPER->Sections.emplace(hash, std::make_unique<Ini::Section>(name));
+    return IniSection(res.first->second.get());
+}
+vector<IniSection> IniObject::GetSections() const
+{
+    VALIDATE_INITED(vector<IniSection>());
+    vector<IniSection> res;
     res.reserve(WRAPPER->Sections.size());
     for (auto& s : WRAPPER->Sections)
         res.push_back(IniSection(s.second.get()));
     return res;
 }
-IniValue IniObject::GetValue(std::string_view valuePath)
+IniValue IniObject::GetValue(string_view valuePath)
 {
     // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
     VALIDATE_INITED(IniValue());
-    const unsigned char* start = (const unsigned char*) valuePath.data();
+    const uint8* start = (const uint8*) valuePath.data();
     CHECK(start, IniValue(), "Invalid value path (expecting a non-null object)");
-    const unsigned char* end = start + valuePath.size();
+    const uint8* end = start + valuePath.size();
     CHECK(start < end, IniValue(), "Invalid value path (expecting a non-empty object)");
-    const unsigned char* p = start;
+    const uint8* p = start;
     while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
         p++;
     if (p >= end)
@@ -1051,7 +1474,7 @@ IniValue IniObject::GetValue(std::string_view valuePath)
         auto result = WRAPPER->Sections.find(__compute_hash__(start, p));
         if (result == WRAPPER->Sections.cend())
             return IniValue();
-        AppCUI::Ini::Section* sect = result->second.get();
+        Ini::Section* sect = result->second.get();
         CHECK(sect, IniValue(), "Invalid section (null)");
         p++;
         CHECK(p < end, IniValue(), "Missing value from path !");
@@ -1061,10 +1484,58 @@ IniValue IniObject::GetValue(std::string_view valuePath)
         return IniValue(&value->second);
     }
 }
-unsigned int IniObject::GetSectionsCount()
+bool IniObject::DeleteValue(string_view valuePath)
+{
+    // valuePath is in the form "sectionName/sectionValue" or just "sectionValue" for default section
+    VALIDATE_INITED(false);
+    const uint8* start = (const uint8*) valuePath.data();
+    CHECK(start, false, "Invalid value path (expecting a non-null object)");
+    const uint8* end = start + valuePath.size();
+    CHECK(start < end, false, "Invalid value path (expecting a non-empty object)");
+    const uint8* p = start;
+    while ((p < end) && ((*p) != '/') && ((*p) != '\\'))
+        p++;
+    if (p >= end)
+    {
+        // no section was provided --> using the default one
+        WRAPPER->DefaultSection.Keys.erase(__compute_hash__(start, end));
+        return true;
+    }
+    else
+    {
+        // we have both a section and a value name
+        auto result = WRAPPER->Sections.find(__compute_hash__(start, p));
+        if (result == WRAPPER->Sections.cend())
+            return false;
+        Ini::Section* sect = result->second.get();
+        CHECK(sect, false, "Invalid section (null)");
+        p++;
+        CHECK(p < end, false, "Missing value from path !");
+        sect->Keys.erase(__compute_hash__(p, end));
+        return true;
+    }
+}
+uint32 IniObject::GetSectionsCount()
 {
     VALIDATE_INITED(0);
-    return (unsigned int) WRAPPER->Sections.size();
+    return (uint32) WRAPPER->Sections.size();
+}
+
+string_view IniObject::ToString()
+{
+    VALIDATE_INITED(string_view());
+    WRAPPER->toStringBuffer.reserve(4096);
+    WRAPPER->toStringBuffer.clear();
+
+    // add default section
+    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
+    // add rest of the sections
+    for (auto& entry : WRAPPER->Sections)
+    {
+        AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
+    }
+    // return result
+    return (string_view) WRAPPER->toStringBuffer;
 }
 
 #undef WRAPPER

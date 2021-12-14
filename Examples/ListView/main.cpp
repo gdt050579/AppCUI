@@ -3073,7 +3073,6 @@ const char* english_words[] = { "a",
 #define SHOW_DEFAULT_EXAMPLE 1000
 #define MY_GROUP             123
 
-
 class MyListViewExample : public Window
 {
   public:
@@ -3089,7 +3088,7 @@ class MyListViewExample : public Window
         lv->AddColumn("&Repr", TextAlignament::Center, 6);
         // add items
         lv->Reserve(100); // to populate the list faster
-        for (unsigned int tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
+        for (uint32 tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
         {
             lv->AddItem(
                   us_states[tr].Name,
@@ -3108,7 +3107,7 @@ class MyListViewExample : public Window
 class SimpleListExample : public Window
 {
   public:
-    SimpleListExample(bool hasCheckboxes): Window("Simple List Example", "d:c,w:30,h:14", WindowFlags::None)
+    SimpleListExample(bool hasCheckboxes) : Window("Simple List Example", "d:c,w:30,h:14", WindowFlags::None)
     {
         auto lv = Factory::ListView::Create(
               this,
@@ -3152,7 +3151,7 @@ class ColumnsExample : public Window
 class ListViewWithColors : public Window
 {
   public:
-    ListViewWithColors(): Window("ListView with colors", "d:c,w:30,h:14", WindowFlags::None)
+    ListViewWithColors() : Window("ListView with colors", "d:c,w:30,h:14", WindowFlags::None)
     {
         auto lv = Factory::ListView::Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::None);
         lv->AddColumn("Color", TextAlignament::Left, 10);
@@ -3278,7 +3277,7 @@ class SelectionDemo : public Window
         // columns
         lv->AddColumn("&Word", TextAlignament::Left, 60);
         // items
-        for (unsigned int tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
+        for (uint32 tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
         {
             lv->AddItem(english_words[tr]);
         }
@@ -3291,28 +3290,89 @@ class SelectionDemo : public Window
     }
 };
 
+class ItemTypesDemo : public Window
+{
+  public:
+    ItemTypesDemo() : Window("Item Types Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::HideColumns);
+        // columns
+        lv->AddColumn("", TextAlignament::Left, 60);
+        // items
+        ItemHandle h;
+        h = lv->AddItem("Normal item");
+        lv->SetItemType(h, ListViewItemType::Normal);
+        h = lv->AddItem("Highlighted item");
+        lv->SetItemType(h, ListViewItemType::Highlighted);
+        h = lv->AddItem("Grayed out item");
+        lv->SetItemType(h, ListViewItemType::GrayedOut);
+        h = lv->AddItem("Error item");
+        lv->SetItemType(h, ListViewItemType::ErrorInformation);
+        h = lv->AddItem("Warning item");
+        lv->SetItemType(h, ListViewItemType::WarningInformation);
+        h = lv->AddItem("Emphasized item (color 1)");
+        lv->SetItemType(h, ListViewItemType::Emphasized_1);
+        h = lv->AddItem("Emphasized item (color 2)");
+        lv->SetItemType(h, ListViewItemType::Emphasized_2);
+        h = lv->AddItem("Category item");
+        lv->SetItemType(h, ListViewItemType::Category);
+
+        Factory::Label::Create(
+              this,
+              "Each item can have a specific type that determinse either a color\nor the way it is drawn. This is done "
+              "via SetItemType method with\nListViewItemType constants",
+              "x:1,y:1,w:66,h:3");
+    }
+};
+
+class CategoryDemo : public Window
+{
+  public:
+    CategoryDemo() : Window("Category Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:13", ListViewFlags::HideColumns);
+        // columns
+        lv->AddColumn("", TextAlignament::Left, 55);
+        lv->AddColumn("", TextAlignament::Right, 4);
+        // items
+        ItemHandle h;
+        h = lv->AddItem("First chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Introduction", "1");
+        lv->AddItem("Related work", "5");
+        lv->AddItem("Explaining the problem", "11");
+
+        h = lv->AddItem("Second chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Databases", "20");
+        lv->AddItem("Results", "25");
+
+        h = lv->AddItem("Third chapter");
+        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Conclusions", "27");
+    }
+};
+
 class MyWin : public Window
 {
-    Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators,
-          cbAllowSelection,
+    Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect;
+          rbSelect, rbItemTypes, rbCategory;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:21", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:23", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
-        auto p = Factory::Panel::Create(this, "x:4,y:2,w:56,h:7");
+        auto p        = Factory::Panel::Create(this, "x:4,y:2,w:56,h:7");
         cbHideColumns = Factory::CheckBox::Create(p, "&Hide columns (item headers)", "x:1,y:0,w:50");
         cbCheckBoxes  = Factory::CheckBox::Create(p, "&Checkboxes (each item is checkable)", "x:1,y:1,w:50");
         cbHideColumnSeparators =
               Factory::CheckBox::Create(p, "Hide column separators (&vertical lines)", "x:1,y:2,w:50");
-        cbSort = Factory::CheckBox::Create(p, "&Sortable (columns can be used to sort)", "x:1,y:3,w:50");
-        cbItemSeparators =
-              Factory::CheckBox::Create(p, "Add a line after each item (item separators)", "x:1,y:4,w:50");
+        cbSort           = Factory::CheckBox::Create(p, "&Sortable (columns can be used to sort)", "x:1,y:3,w:50");
+        cbItemSeparators = Factory::CheckBox::Create(p, "Add a line after each item (item separators)", "x:1,y:4,w:50");
         cbAllowSelection = Factory::CheckBox::Create(p, "Enable &multiple selections mode", "x:1,y:5,w:50");
         cbHideSearchBar  = Factory::CheckBox::Create(p, "Hide search &bar (disable search)", "x:1,y:6,w:50");
 
@@ -3325,8 +3385,10 @@ class MyWin : public Window
               Factory::RadioBox::Create(this, "List view with items with different colors", "x:1,y:12,w:56", MY_GROUP);
         rbTree   = Factory::RadioBox::Create(this, "List view with tree-like visualisation", "x:1,y:13,w:56", MY_GROUP);
         rbSearch = Factory::RadioBox::Create(this, "Search & filter example", "x:1,y:14,w:56", MY_GROUP);
-        rbSelect = Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:15,w:56", MY_GROUP);
-
+        rbSelect =
+              Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:15,w:56", MY_GROUP);
+        rbItemTypes = Factory::RadioBox::Create(this, "Items types", "x:1,y:16,w:56", MY_GROUP);
+        rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:17,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:21", SHOW_DEFAULT_EXAMPLE);
 
@@ -3395,6 +3457,16 @@ class MyWin : public Window
         if (rbSelect->IsChecked())
         {
             SelectionDemo win;
+            win.Show();
+        }
+        if (rbItemTypes->IsChecked())
+        {
+            ItemTypesDemo win;
+            win.Show();
+        }
+        if (rbCategory->IsChecked())
+        {
+            CategoryDemo win;
             win.Show();
         }
     }

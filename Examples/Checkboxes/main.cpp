@@ -11,6 +11,7 @@ class MyWin : public Window
 {
     Reference<Label> lb;
     Reference<CheckBox> c3;
+
   public:
     MyWin() : Window("Checkbox example", "d:c,w:60,h:12", WindowFlags::None)
     {
@@ -18,7 +19,8 @@ class MyWin : public Window
         Factory::CheckBox::Create(this, "A inactive(disabled) checkbox", "x:1,y:2,w:56")->SetEnabled(false);
         c3 = Factory::CheckBox::Create(
               this,
-              "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be used\nto "
+              "A &multi line checkbox that has an ID (defined as\n\rA_CHECKBOX_ID with value 12345) that can be "
+              "used\nto "
               "see if the checkbox has been clicked",
               "x:1,y:4,w:56,h:4",
               A_CHECKBOX_ID);

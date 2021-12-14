@@ -10,12 +10,12 @@ using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
 using namespace AppCUI::Utils;
 
-constexpr unsigned int CELL_WITH_X = 1;
-constexpr unsigned int CELL_WITH_O = 2;
+constexpr uint32 CELL_WITH_X = 1;
+constexpr uint32 CELL_WITH_O = 2;
 
-constexpr unsigned int X_HAS_WON_EVENT = 123;
-constexpr unsigned int O_HAS_WON_EVENT = 321;
-constexpr unsigned int DRAW_GAME       = 444;
+constexpr uint32 X_HAS_WON_EVENT = 123;
+constexpr uint32 O_HAS_WON_EVENT = 321;
+constexpr uint32 DRAW_GAME       = 444;
 
 class TicTacToeTable : public UserControl
 {
@@ -114,9 +114,9 @@ class TicTacToeWin : public AppCUI::Controls::Window
     Reference<TicTacToeTable> game;
 
   public:
-    TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18",WindowFlags::None)
+    TicTacToeWin() : Window("TicTacToe", "d:c,w:20,h:18", WindowFlags::None)
     {
-        game = this->CreateChildControl<TicTacToeTable>("x:2,y:1,w:14,h:14");        
+        game = this->CreateChildControl<TicTacToeTable>("x:2,y:1,w:14,h:14");
     }
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
     {

@@ -1,11 +1,13 @@
 #include "Internal.hpp"
 
-using namespace AppCUI::OS;
+namespace AppCUI
+{
+using namespace OS;
+using namespace Utils;
 
 #define VALIDATE_FILE_HANLDE(returnValue)                                                                              \
     CHECK(this->FileID.Handle != INVALID_HANDLE_VALUE, returnValue, "File has not been opened !");
 #define F_HNDL ((HANDLE) this->FileID.Handle)
-
 
 File::File()
 {
@@ -17,7 +19,7 @@ File::~File()
 }
 
 bool File::OpenWrite(const std::filesystem::path& path)
-{    
+{
     Close();
     HANDLE hFile = CreateFileW(
           (LPCWSTR) path.u16string().c_str(),
@@ -77,7 +79,7 @@ bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
     return true;
 }
 
-bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool File::ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     bytesRead = 0;
     VALIDATE_FILE_HANLDE(false);
@@ -91,7 +93,7 @@ bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytes
     bytesRead = nrBytesRead;
     return true;
 }
-bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool File::WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     bytesWritten = 0;
     VALIDATE_FILE_HANLDE(false);
@@ -105,29 +107,29 @@ bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int
     bytesWritten = nrBytesWrittem;
     return true;
 }
-unsigned long long File::GetSize()
+uint64 File::GetSize()
 {
     VALIDATE_FILE_HANLDE(0);
     LARGE_INTEGER size;
     CHECK(GetFileSizeEx(F_HNDL, &size), 0, "GetFileSizeEx failed !");
-    return (unsigned long long) size.QuadPart;
+    return (uint64) size.QuadPart;
 }
-unsigned long long File::GetCurrentPos()
+uint64 File::GetCurrentPos()
 {
     VALIDATE_FILE_HANLDE(0);
     LARGE_INTEGER pos;
     pos.QuadPart = 0;
     CHECK(SetFilePointerEx(F_HNDL, pos, &pos, FILE_CURRENT), 0, "SetFilePointerEx failed !");
-    return (unsigned long long) pos.QuadPart;
+    return (uint64) pos.QuadPart;
 }
-bool File::SetSize(unsigned long long newSize)
+bool File::SetSize(uint64 newSize)
 {
     VALIDATE_FILE_HANLDE(false);
     CHECK(SetCurrentPos(newSize), false, "Error setting current size pointer !");
     CHECK(SetEndOfFile(F_HNDL), false, "Error on SetEndOfFile !");
     return true;
 }
-bool File::SetCurrentPos(unsigned long long newPosition)
+bool File::SetCurrentPos(uint64 newPosition)
 {
     VALIDATE_FILE_HANLDE(false);
     LARGE_INTEGER res;
@@ -144,6 +146,7 @@ void File::Close()
         this->FileID.Handle = INVALID_HANDLE_VALUE;
     }
 }
+} // namespace AppCUI
 
 #undef VALIDATE_FILE_HANLDE
 #undef F_HNDL

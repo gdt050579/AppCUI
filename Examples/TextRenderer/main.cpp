@@ -9,7 +9,6 @@ using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Dialogs;
 
-
 struct MyUserControl : public UserControl
 {
     CharacterBuffer c;
@@ -21,13 +20,13 @@ struct MyUserControl : public UserControl
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
 
-        for (unsigned int tr = 2; tr < 24; tr += 2)
+        for (uint32 tr = 2; tr < 24; tr += 2)
         {
             renderer.FillHorizontalLine(5, tr, 12, '-', ColorPair{ Color::White, Color::Blue });
             renderer.FillHorizontalLine(25, tr, 32, '-', ColorPair{ Color::White, Color::DarkGreen });
             renderer.FillHorizontalLine(45, tr, 52, '-', ColorPair{ Color::White, Color::DarkRed });
         }
-            
+
         // first batch (direct write through WriteText function)
         WriteTextParams params(WriteTextFlags::SingleLine);
         params.Width = 8;
@@ -68,10 +67,10 @@ struct MyUserControl : public UserControl
         params.Y     = 18;
         renderer.WriteText("1234", params);
 
-        params.Y     = 20;
+        params.Y = 20;
         renderer.WriteText("12345678", params);
 
-        params.Y     = 22;
+        params.Y = 22;
         renderer.WriteText("123456789ABCD", params);
 
         // second batch
@@ -91,7 +90,7 @@ struct MyUserControl : public UserControl
         ColorPair hkCP = ColorPair{ Color::Black, Color::White };
         renderer.WriteSingleLineText(45, 2, "1234", NoColorPair, hkCP, 2);
         renderer.WriteSingleLineText(45, 4, "123456789ABCD", NoColorPair, hkCP, 2);
-        renderer.WriteSingleLineText(45, 6, 8, "123456789ABCD", NoColorPair,hkCP, 2);
+        renderer.WriteSingleLineText(45, 6, 8, "123456789ABCD", NoColorPair, hkCP, 2);
         renderer.WriteSingleLineText(45, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Right);
         renderer.WriteSingleLineText(45, 10, 8, "1234", NoColorPair, hkCP, 2, TextAlignament::Right);
         renderer.WriteSingleLineText(45, 12, 8, "123456789ABCD", NoColorPair, hkCP, 2, TextAlignament::Right);
@@ -110,18 +109,21 @@ struct MyUserControl : public UserControl
         params.Align = TextAlignament::Left;
         params.X     = 62;
         params.Y     = 2;
-        renderer.WriteText("This is a multi-line string\n- it expends over 2 lines\n\r- it has no clipping wo width", params);
-        
+        renderer.WriteText(
+              "This is a multi-line string\n- it expends over 2 lines\n\r- it has no clipping wo width", params);
+
         renderer.FillRectSize(62, 7, 20, 3, ' ', ColorPair{ Color::White, Color::Blue });
         params.Flags |= WriteTextFlags::ClipToWidth;
         params.Y     = 7;
         params.Width = 20;
-        renderer.WriteText("This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
+        renderer.WriteText(
+              "This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
 
         renderer.FillRectSize(62, 11, 20, 3, ' ', ColorPair{ Color::White, Color::Blue });
         params.Y     = 11;
         params.Align = TextAlignament::Right;
-        renderer.WriteText("This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
+        renderer.WriteText(
+              "This is a multi-line string\n- Clipped to width\n\r- Long line being clipped by width", params);
 
         renderer.FillRectSize(62, 16, 20, 4, ' ', ColorPair{ Color::White, Color::Blue });
         params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
@@ -138,7 +140,7 @@ struct MyUserControl : public UserControl
 class MyWin : public AppCUI::Controls::Window
 {
   public:
-    MyWin() : Window("Single line strings", "d:c,w:100,h:26",WindowFlags::None)
+    MyWin() : Window("Single line strings", "d:c,w:100,h:26", WindowFlags::None)
     {
         this->AddControl<MyUserControl>(std::make_unique<MyUserControl>("x:0,y:0,w:100%,h:100%"));
     }

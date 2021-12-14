@@ -1,9 +1,9 @@
-#include "Internal.hpp"
-
-using namespace AppCUI::OS;
+#include "../../Internal.hpp"
 
 #define INVALID_FILE_HANDLE -1
 
+namespace AppCUI::OS
+{
 File::File()
 {
     this->FileID.fid = INVALID_FILE_HANDLE;
@@ -36,13 +36,16 @@ bool File::OpenRead(const std::filesystem::path& path)
 bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
 {
     Close();
-    int fileId = open(path.string().c_str(), overwriteExisting ? O_CREAT | O_RDWR | O_EXCL : O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
+    int fileId =
+          open(path.string().c_str(),
+               overwriteExisting ? O_CREAT | O_RDWR | O_EXCL : O_CREAT | O_RDWR,
+               S_IRWXU | S_IRWXG | S_IRWXO);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
     return true;
 }
 
-bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool File::ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     bytesRead = 0;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
@@ -54,7 +57,7 @@ bool File::ReadBuffer(void* buffer, unsigned int bufferSize, unsigned int& bytes
     return true;
 }
 
-bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool File::WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     bytesWritten = 0;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
@@ -66,7 +69,7 @@ bool File::WriteBuffer(const void* buffer, unsigned int bufferSize, unsigned int
     return true;
 }
 
-unsigned long long File::GetSize()
+uint64 File::GetSize()
 {
     struct stat st;
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
@@ -74,7 +77,7 @@ unsigned long long File::GetSize()
     return st.st_size;
 }
 
-unsigned long long File::GetCurrentPos()
+uint64 File::GetCurrentPos()
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
     off_t position = lseek(this->FileID.fid, 0, SEEK_CUR);
@@ -82,7 +85,7 @@ unsigned long long File::GetCurrentPos()
     return position;
 }
 
-bool File::SetSize(unsigned long long newSize)
+bool File::SetSize(uint64 newSize)
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.")
     CHECK(SetCurrentPos(newSize), false, "ERROR: %s", strerror(errno));
@@ -90,7 +93,7 @@ bool File::SetSize(unsigned long long newSize)
     return true;
 }
 
-bool File::SetCurrentPos(unsigned long long newPosition)
+bool File::SetCurrentPos(uint64 newPosition)
 {
     CHECK(this->FileID.fid != INVALID_FILE_HANDLE, false, "Invalid file handle.");
     off_t position    = newPosition;
@@ -107,4 +110,5 @@ void File::Close()
         close(FileID.fid);
         this->FileID.fid = INVALID_FILE_HANDLE;
     }
+}
 }

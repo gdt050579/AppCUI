@@ -57,9 +57,9 @@ int GetCharacterType(Graphics::Character* c)
         return PYTHON_CHAR_TYPE_OPERATOR;
     return PYTHON_CHAR_TYPE_OTHER;
 }
-bool Equal(Graphics::Character* start, unsigned int size, const char* text)
+bool Equal(Graphics::Character* start, uint32 size, const char* text)
 {
-    unsigned int tr;
+    uint32 tr;
     for (tr = 0; (tr < size) && (*text); tr++, text++, start++)
     {
         if ((*text) != start->Code)
@@ -67,16 +67,16 @@ bool Equal(Graphics::Character* start, unsigned int size, const char* text)
     }
     return ((tr == size) && ((*text) == 0));
 }
-bool IsKeyword(Graphics::Character* start, unsigned int size)
+bool IsKeyword(Graphics::Character* start, uint32 size)
 {
-    for (unsigned int tr = 0; tr < sizeof(PythonKeywords) / sizeof(const char*); tr++)
+    for (uint32 tr = 0; tr < sizeof(PythonKeywords) / sizeof(const char*); tr++)
     {
         if (Equal(start, size, PythonKeywords[tr]))
             return true;
     }
     return false;
 }
-void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCount, void*)
+void PythonHighligh(Reference<Control>, Graphics::Character* chars, uint32 charsCount)
 {
     Graphics::Character* end   = chars + charsCount;
     Graphics::Character* start = nullptr;
@@ -90,7 +90,7 @@ void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCoun
             start = chars;
             while ((chars < end) && (GetCharacterType(chars) == PYTHON_CHAR_TYPE_LETTER))
                 chars++;
-            if (IsKeyword(start, (unsigned int) (chars - start)))
+            if (IsKeyword(start, (uint32) (chars - start)))
                 col = ColorPair{ Color::Yellow, Color::Transparent };
             else
                 col = ColorPair{ Color::White, Color::Transparent };
@@ -148,18 +148,18 @@ void PythonHighligh(Control*, Graphics::Character* chars, unsigned int charsCoun
     }
 }
 
-
 int main()
 {
     if (!Application::Init())
         return 1;
     auto wnd = Factory::Window::Create("Python Editor", "d:c,w:40,h:20", WindowFlags::Sizeable);
-    Factory::TextArea::Create(
+    auto ta  = Factory::TextArea::Create(
           wnd,
           python_code,
-          "x:0,y:0,w:100%,h:100%",
-          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting,
-          PythonHighligh);
+          "d:c",
+          TextAreaFlags::ShowLineNumbers | TextAreaFlags::ScrollBars | TextAreaFlags::SyntaxHighlighting |
+                TextAreaFlags::ProcessTabKey);
+    ta->Handlers()->OnTextColor = PythonHighligh;
     Application::AddWindow(std::move(wnd));
     Application::Run();
     return 0;

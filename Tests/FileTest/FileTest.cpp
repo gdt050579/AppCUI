@@ -11,7 +11,7 @@ int main(void)
     AppCUI::OS::File app  = AppCUI::OS::File();
     app.Create(fileName, true);
     app.OpenWrite(fileName);
-    unsigned int bytesWritten = 0;
+    uint32 bytesWritten = 0;
     app.WriteBuffer("GDT1", 4, bytesWritten);
     printf("Size: %llu\n", app.GetSize());
     printf("Get poz: %llu\n", app.GetCurrentPos());

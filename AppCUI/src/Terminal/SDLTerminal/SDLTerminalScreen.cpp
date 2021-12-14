@@ -1,6 +1,6 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
-#include "Terminal/SDLTerminal/SDLTerminal.hpp"
+#include "SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
 #include <algorithm>
 #include <array>
@@ -10,9 +10,10 @@
 
 CMRC_DECLARE(font);
 
-using namespace AppCUI::Internal;
-using namespace AppCUI::Input;
-using namespace AppCUI::Application;
+namespace AppCUI::Internal
+{
+using namespace Input;
+using namespace Application;
 
 namespace fs = std::filesystem;
 
@@ -214,7 +215,7 @@ int codePageConversions(const int ch)
 }
 
 SDL_Texture* SDLTerminal::renderCharacter(
-      const unsigned int charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
+      const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
 {
     if (characterCache.find(charPacked) != characterCache.end())
     {
@@ -238,9 +239,9 @@ SDL_Texture* SDLTerminal::renderCharacter(
 void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
-    AppCUI::Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const std::size_t width                  = ScreenCanvas.GetWidth();
-    const std::size_t height                 = ScreenCanvas.GetHeight();
+    Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
+    const std::size_t width          = ScreenCanvas.GetWidth();
+    const std::size_t height         = ScreenCanvas.GetHeight();
 
     SDL_Rect WindowRect;
     WindowRect.w = charWidth;
@@ -250,7 +251,7 @@ void SDLTerminal::OnFlushToScreen()
     {
         for (std::size_t x = 0; x < width; x++)
         {
-            AppCUI::Graphics::Character ch = charsBuffer[y * width + x];
+            Graphics::Character ch = charsBuffer[y * width + x];
 
             SDL_Texture* glyphTexture = renderCharacter(
                   ch.PackedValue,
@@ -290,4 +291,5 @@ void SDLTerminal::uninitScreen()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
 }

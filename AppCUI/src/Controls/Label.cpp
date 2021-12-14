@@ -1,18 +1,15 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-
-Label::Label(const AppCUI::Utils::ConstString& caption, std::string_view layout)
-    : Control(new ControlContext(), caption, layout, true)
+namespace AppCUI::Controls
 {
-    auto Members = reinterpret_cast<ControlContext*>(this->Context);
+Label::Label(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, true)
+{
+    auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinHeight = 1;
     Members->Layout.MinWidth  = 1;
-    Members->HotKey = AppCUI::Input::Key::None; // A label can draw a hot key, but does not have an associated one
-    Members->Flags  = GATTR_ENABLE | GATTR_VISIBLE;
+    Members->HotKey           = Input::Key::None; // A label can draw a hot key, but does not have an associated one
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE;
 }
-
 
 void Label::Paint(Graphics::Renderer& renderer)
 {
@@ -34,3 +31,4 @@ void Label::Paint(Graphics::Renderer& renderer)
     }
     renderer.WriteText(Members->Text, params);
 }
+} // namespace AppCUI::Controls

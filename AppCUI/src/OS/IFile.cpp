@@ -1,31 +1,34 @@
 #include "AppCUI.hpp"
 
-using namespace AppCUI::OS;
+namespace AppCUI
+{
+using namespace OS;
+using namespace Utils;
 
 IFile::~IFile()
 {
 }
-bool IFile::ReadBuffer(void*, unsigned int, unsigned int&)
+bool IFile::ReadBuffer(void*, uint32, uint32&)
 {
     NOT_IMPLEMENTED(false);
 }
-bool IFile::WriteBuffer(const void*, unsigned int, unsigned int&)
+bool IFile::WriteBuffer(const void*, uint32, uint32&)
 {
     NOT_IMPLEMENTED(false);
 }
-unsigned long long IFile::GetSize()
+uint64 IFile::GetSize()
 {
     NOT_IMPLEMENTED(0);
 }
-unsigned long long IFile::GetCurrentPos()
+uint64 IFile::GetCurrentPos()
 {
     NOT_IMPLEMENTED(0);
 }
-bool IFile::SetSize(unsigned long long)
+bool IFile::SetSize(uint64)
 {
     NOT_IMPLEMENTED(false);
 }
-bool IFile::SetCurrentPos(unsigned long long)
+bool IFile::SetCurrentPos(uint64)
 {
     NOT_IMPLEMENTED(false);
 }
@@ -33,9 +36,9 @@ void IFile::Close()
 {
 }
 
-bool IFile::Read(void* buffer, unsigned int bufferSize)
+bool IFile::Read(void* buffer, uint32 bufferSize)
 {
-    unsigned int temp;
+    uint32 temp;
     CHECK(this->ReadBuffer(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
     CHECK(temp == bufferSize,
           false,
@@ -44,55 +47,85 @@ bool IFile::Read(void* buffer, unsigned int bufferSize)
           temp);
     return true;
 }
-bool IFile::Write(const void* buffer, unsigned int bufferSize)
+bool IFile::Write(const void* buffer, uint32 bufferSize)
 {
-    unsigned int temp;
+    uint32 temp;
     CHECK(this->WriteBuffer(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
     CHECK(temp == bufferSize, false, "Unable to write %lld bytes required (only %lld were written)", bufferSize, temp);
     return true;
 }
-bool IFile::Read(unsigned long long offset, void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool IFile::Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     bytesRead = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
     CHECK(this->ReadBuffer(buffer, bufferSize, bytesRead), false, "Fail to read %lld bytes", bufferSize);
     return true;
 }
-bool IFile::Write(unsigned long long offset, const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool IFile::Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     bytesWritten = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
     CHECK(this->WriteBuffer(buffer, bufferSize, bytesWritten), false, "Fail to read %lld bytes", bufferSize);
     return true;
 }
-bool IFile::Read(void* buffer, unsigned int bufferSize, unsigned int& bytesRead)
+bool IFile::Read(void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     return this->ReadBuffer(buffer, bufferSize, bytesRead);
 }
-bool IFile::Write(const void* buffer, unsigned int bufferSize, unsigned int& bytesWritten)
+bool IFile::Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     return this->WriteBuffer(buffer, bufferSize, bytesWritten);
 }
-std::unique_ptr<char[]> IFile::ReadContentToBuffer(unsigned int& bufferSize)
+
+bool IFile::Write(string_view text)
 {
-    bufferSize = 0;
-    CHECK(SetCurrentPos(0), nullptr, "Fail to position the current pointer to the start of the file");
-    unsigned long long file_size = this->GetSize();
-    CHECK(file_size > 0, nullptr, "Empty file !");
-    CHECK(file_size < 0xFFFFFF, nullptr, "File size exceed 4G size");
-    auto buf = std::make_unique<char[]>(file_size);
-    CHECK(this->Read(buf.get(), (unsigned int) file_size),
-          nullptr,
-          "Fail to read %d bytes from the file",
-          (unsigned int) file_size);
-    bufferSize = (unsigned int) file_size;
+    return Write(reinterpret_cast<const void*>(text.data()), static_cast<uint32>(text.length()));
+}
+bool IFile::Write(uint64 offset, string_view text, uint32& bytesWritten)
+{
+    return Write(offset, reinterpret_cast<const void*>(text.data()), static_cast<uint32>(text.length()), bytesWritten);
+}
+
+//======================================================================================[Static methods from File]===
+Buffer File::ReadContent(const std::filesystem::path& path)
+{
+    File f;
+    CHECK(f.OpenRead(path), Buffer(), "Fail to open: %s", path.string().c_str());
+    CHECK(f.SetCurrentPos(0),
+          Buffer(),
+          "Fail to position the current pointer to the start of the file: %s",
+          path.string().c_str());
+    auto file_size = f.GetSize();
+    CHECK(file_size > 0, Buffer(), "Empty file (%s)!", path.string().c_str());
+    CHECK(file_size < 0xFFFFFFF, Buffer(), "File size exceed 0xFFFFF bytes (%s)", path.string().c_str());
+    Buffer buf(file_size);
+    CHECK(f.Read(buf.GetData(), (uint32) file_size),
+          Buffer(),
+          "Fail to read %u bytes from the file %s",
+          (uint32) file_size,
+          path.string().c_str());
+    f.Close();
     return buf;
 }
-bool IFile::Write(std::string_view text)
+bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
 {
-    return Write(reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()));
+    File f;
+    CHECK(buf.GetLength() < 0xFFFFFFF,
+          false,
+          "Buffer size exceed 0xFFFFF bytes --> cannot create (%s)",
+          path.string().c_str());
+    CHECK(f.Create(path, true), false, "Fail to create: %s", path.string().c_str());
+    if (buf.Empty())
+    {
+        f.Close(); // empty file
+        return true;
+    }
+    CHECK(f.Write(buf.GetData(), (uint32) buf.GetLength()),
+          false,
+          "Fail to write %u bytes into %s",
+          (uint32) buf.GetLength(),
+          path.string().c_str());
+    f.Close();
+    return true;
 }
-bool IFile::Write(unsigned long long offset, std::string_view text, unsigned int& bytesWritten)
-{
-    return Write(offset, reinterpret_cast<const void*>(text.data()), static_cast<unsigned int>(text.length()), bytesWritten);
-}
+} // namespace AppCUI

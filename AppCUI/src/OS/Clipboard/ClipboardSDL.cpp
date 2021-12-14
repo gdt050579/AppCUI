@@ -1,6 +1,6 @@
 #include "Internal.hpp"
 #include "SDL.h"
-using namespace AppCUI::OS;
+using namespace OS;
 
 bool Clipboard::Clear()
 {
@@ -8,9 +8,9 @@ bool Clipboard::Clear()
     return true;
 }
 
-bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
+bool Clipboard::SetText(const ConstString& text)
 {
-    AppCUI::Utils::ConstStringObject textObj(text);
+    ConstStringObject textObj(text);
     if (textObj.Encoding == StringEncoding::Ascii)
     {
         // GDT: temporary fix - we can't guarantee that text is a NULL terminated string
@@ -23,7 +23,7 @@ bool Clipboard::SetText(const AppCUI::Utils::ConstString& text)
     NOT_IMPLEMENTED(false, "Support for UNICODE/UTF-8/Character is not implemented yet");
 }
 
-bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
+bool Clipboard::GetText(Utils::UnicodeStringBuilder& text)
 {
     if (SDL_HasClipboardText())
     {
@@ -33,4 +33,8 @@ bool Clipboard::GetText(AppCUI::Utils::UnicodeStringBuilder& text)
         SDL_free(cliptext);
     }
     return true;
+}
+bool Clipboard::HasText()
+{
+    return SDL_HasClipboardText();
 }

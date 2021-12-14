@@ -1,23 +1,23 @@
 #include "ControlContext.hpp"
 
-using namespace AppCUI::Controls;
-using namespace AppCUI::Graphics;
-using namespace AppCUI::Input;
+namespace AppCUI::Controls
+{
+using namespace Controls;
+using namespace Graphics;
+using namespace Input;
 
-RadioBox::RadioBox(
-      const AppCUI::Utils::ConstString& caption, std::string_view layout, int groupID, int controlID)
+RadioBox::RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
-    Members->Layout.MinHeight = 1;    
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Layout.MinHeight = 1;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     this->SetControlID(controlID);
     this->SetGroup(groupID);
 }
 
-
-void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
+void RadioBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
@@ -54,7 +54,7 @@ void AppCUI::Controls::RadioBox::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
         renderer.SetCursor(1, 0);
 }
-void AppCUI::Controls::RadioBox::OnHotKey()
+void RadioBox::OnHotKey()
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
     Control* parent = Members->Parent;
@@ -62,7 +62,7 @@ void AppCUI::Controls::RadioBox::OnHotKey()
     if ((parent) && (id > 0))
     {
         CREATE_CONTROL_CONTEXT(parent, pMembers, );
-        for (unsigned int tr = 0; tr < pMembers->ControlsCount; tr++)
+        for (uint32 tr = 0; tr < pMembers->ControlsCount; tr++)
         {
             if ((pMembers->Controls[tr]) && (pMembers->Controls[tr]->GetGroup() == id))
                 pMembers->Controls[tr]->SetChecked(false);
@@ -84,7 +84,7 @@ void AppCUI::Controls::RadioBox::OnHotKey()
         RaiseEvent(Event::CheckedStatusChanged);
     }
 }
-bool AppCUI::Controls::RadioBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t)
+bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16)
 {
     if (KeyCode == Key::Space)
     {
@@ -93,19 +93,19 @@ bool AppCUI::Controls::RadioBox::OnKeyEvent(AppCUI::Input::Key KeyCode, char16_t
     }
     return false;
 }
-void AppCUI::Controls::RadioBox::OnMouseReleased(int x, int y, AppCUI::Input::MouseButton)
+void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-bool AppCUI::Controls::RadioBox::OnMouseEnter()
+bool RadioBox::OnMouseEnter()
 {
     CREATE_CONTROL_CONTEXT(this, Members, false);
     if ((int) Members->Text.Len() >= Members->Layout.Width)
         this->ShowToolTip(Members->Text);
     return true;
 }
-bool AppCUI::Controls::RadioBox::OnMouseLeave()
+bool RadioBox::OnMouseLeave()
 {
     return true;
 }
@@ -114,3 +114,4 @@ Handlers::CheckState* RadioBox::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::CheckState);
 }
+} // namespace AppCUI::Controls
