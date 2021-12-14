@@ -188,6 +188,26 @@ bool Array32::Get(uint32 index, int32& value)
     value = *(int32*) (Data + Count);
     return true;
 }
+bool Array32::Insert(uint32 index, uint32 value)
+{
+    CHECK(index <= Count, false, "Invalid index - should be between [0 and %u]", Count);
+    VALIDATE_ALLOCATED_SPACE(Count + 1, false);
+    if (index==Count)
+    {
+        Data[Count++] = value;
+    }
+    else
+    {
+        memmove(Data + index + 1, Data + index, ((size_t) (Count - index)) << 2);
+        Data[index] = value;
+        Count++;
+    }
+    return true;
+}
+bool Array32::Insert(uint32 index, int32 value)
+{
+    return Insert(index, *(uint32*) &value);
+}
 bool Array32::Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
