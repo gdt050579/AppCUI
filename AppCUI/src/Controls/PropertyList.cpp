@@ -3,7 +3,8 @@
 
 namespace AppCUI
 {
-constexpr uint32 CATEGORY_MASK = 0x80000000;
+constexpr uint32 CATEGORY_FLAG       = 0x80000000;
+constexpr uint32 CATEGORY_INDEX_MASK = 0x7FFFFFFF;
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
@@ -19,7 +20,7 @@ int32 SortWithCategories(int32 i1, int32 i2, void* context)
 }
 int32 SortWithoutCategories(int32 i1, int32 i2, void* context)
 {
-    auto* PC = reinterpret_cast<PropertyListContext*>(context);
+    auto* PC       = reinterpret_cast<PropertyListContext*>(context);
     const auto& p1 = PC->properties[i1];
     const auto& p2 = PC->properties[i2];
 
@@ -46,17 +47,35 @@ void PropertyListContext::Refilter()
         // clear categories filtered items
         for (auto& cat : this->categories)
             cat.filteredItems = 0;
-        // insert categories 
+        // insert categories
         uint32 idx      = 0;
+        uint32 value    = 0;
         uint32 last_cat = 0xFFFFFFFF;
         while (idx < this->items.Len())
         {
             if (this->properties[idx].category != last_cat)
             {
                 last_cat = this->properties[idx].category;
-                this->items.Insert(idx, last_cat | CATEGORY_MASK);
+                this->items.Insert(idx, last_cat | CATEGORY_FLAG);
             }
             this->categories[this->properties[idx].category].filteredItems++;
+            idx++;
+        }
+        // fold categories
+        idx = 0;
+        while (idx < this->items.Len())
+        {
+            if ((this->items.Get(idx, value)) && (value & CATEGORY_FLAG) && (this->categories[value & CATEGORY_INDEX_MASK].folded))
+            {
+                // search for the next category
+                uint32 next = idx + 1;
+                while ((next < this->items.Len()) && (this->items.Get(next, value)) && ((value & CATEGORY_FLAG) == 0))
+                    next++;
+                if (next > (idx+1))
+                {
+                    // Delete indexes
+                }
+            } 
             idx++;
         }
     }
@@ -64,7 +83,6 @@ void PropertyListContext::Refilter()
     {
         this->items.Sort(SortWithoutCategories, this);
     }
-        
 }
 
 PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> obj)
