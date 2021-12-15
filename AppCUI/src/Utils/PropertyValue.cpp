@@ -82,6 +82,26 @@ void PropertyValue::operator=(u16string_view value)
 {
     CopyPropertyValue(this->buffer, &value, sizeof(u16string_view), PROPERTY_VALUE_STRING_UNICODE);
 }
+bool PropertyValue::IsOfType(PropertyType type) const
+{
+    switch (*this->buffer)
+    {
+    case PROPERTY_VALUE_NONE:
+        return false;
+    case PROPERTY_VALUE_BOOLEAN:
+        return type == PropertyType::Boolean;
+    case PROPERTY_VALUE_UNSIGNED_INTEGER:
+        return type == PropertyType::UnsignedInteger;
+    case PROPERTY_VALUE_SIGNED_INTEGER:
+        return type == PropertyType::SignedInteger;
+    case PROPERTY_VALUE_STRING_ASCII:
+    case PROPERTY_VALUE_STRING_UNICODE:
+        return type == PropertyType::String;
+    default:
+        // unknwon type
+        return false;
+    }
+}
 } // namespace AppCUI::Utils
 
 #undef COMPILE_ERROR_MSG

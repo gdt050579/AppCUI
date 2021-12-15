@@ -440,6 +440,18 @@ namespace Utils
         }
     };
 
+    enum class PropertyType : uint8
+    {
+        Boolean,
+        UnsignedInteger,
+        SignedInteger,
+        String,
+        Key,
+        Size,
+        Color,
+        List,
+        Custom
+    };
     class EXPORT PropertyValue
     {
         uint8 buffer[32];
@@ -457,19 +469,14 @@ namespace Utils
         void operator=(bool value);
         void operator=(string_view value);
         void operator=(u16string_view value);
+
+        bool IsOfType(PropertyType type) const;
+        inline bool operator==(PropertyType type) const
+        {
+            return IsOfType(type);
+        }
     };
-    enum class PropertyType : uint8
-    {
-        Boolean,
-        UnsignedInteger,
-        SignedInteger,
-        String,
-        Key,
-        Size,
-        Color,
-        List,
-        Custom
-    };
+
     struct Property
     {
         string_view category, name, help;
