@@ -1,4 +1,5 @@
 #include "ControlContext.hpp"
+#include <set>
 
 namespace AppCUI
 {
@@ -9,14 +10,26 @@ int32 SortWithCategories(int32 i1, int32 i2, void* context)
     int32 result;
     const auto& p1 = PC->properties[i1];
     const auto& p2 = PC->properties[i2];
-    result         = p1.category.compare(p2.category);
+    const auto* c1 = PC->categories[p1.category].name.GetText();
+    const auto* c2 = PC->categories[p2.category].name.GetText();
+    result         = String::Compare(c1, c2, true);
     if (result != 0)
         return result;
-    return p1.name.compare(p2.name);
+    return String::Compare(p1.name.GetText(), p2.name.GetText(), true);
 }
-bool PropertyListContext::IsItemFiltered(const Property& p)
+int32 SortWithoutCategories(int32 i1, int32 i2, void* context)
 {
-    NOT_IMPLEMENTED(false);
+    auto* PC = reinterpret_cast<PropertyListContext*>(context);
+    const auto& p1 = PC->properties[i1];
+    const auto& p2 = PC->properties[i2];
+
+    return String::Compare(p1.name.GetText(), p2.name.GetText(), true);
+}
+bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
+{
+    if (this->filterText.Empty())
+        return true;
+    return String::Contains(p.name.GetText(), this->filterText.GetText(), true);
 }
 void PropertyListContext::Refilter()
 {
@@ -27,41 +40,71 @@ void PropertyListContext::Refilter()
             this->items.Push(i);
     }
     // sort the data
-    this->items.Sort(SortWithCategories, this);
-    // insert categories if case
-    uint32 idx = 0;
-    string_view last_cat;
-    while (idx < this->items.Len())
+    if (this->showCategories)
     {
-        if (this->properties[idx].category != last_cat)
+        this->items.Sort(SortWithCategories, this);
+        // clear categories filtered items
+        for (auto& cat : this->categories)
+            cat.filteredItems = 0;
+        // insert categories 
+        uint32 idx      = 0;
+        uint32 last_cat = 0xFFFFFFFF;
+        while (idx < this->items.Len())
         {
-            last_cat = this->properties[idx].category;
-            this->items.Insert(idx, idx | CATEGORY_MASK);
+            if (this->properties[idx].category != last_cat)
+            {
+                last_cat = this->properties[idx].category;
+                this->items.Insert(idx, last_cat | CATEGORY_MASK);
+            }
+            this->categories[this->properties[idx].category].filteredItems++;
+            idx++;
         }
-        idx++;
     }
+    else
+    {
+        this->items.Sort(SortWithoutCategories, this);
+    }
+        
 }
 
 PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> obj)
     : Control(new PropertyListContext(), "", layout, false)
 {
+    auto* Members = (PropertyListContext*) this->Context;
+    Members->properties.reserve(64);
+    Members->categories.reserve(8);
+    Members->showCategories = true;
+
     SetObject(obj);
 }
 void PropertyList::SetObject(Reference<PropertiesInterface> obj)
 {
     auto* Members   = (PropertyListContext*) this->Context;
     Members->object = obj;
+    Members->categories.clear();
+    Members->properties.clear();
+
     if (obj.IsValid())
     {
-        Members->properties = std::move<>(obj->GetPropertiesList());
+        std::map<string_view, uint32> s;
+        uint32 idx = 0;
+        for (auto& e : obj->GetPropertiesList())
+        {
+            auto& pi = Members->properties.emplace_back();
+            pi.name  = e.name;
+            auto it  = s.find(e.category);
+            if (it != s.cend())
+                pi.category = it->second;
+            else
+            {
+                pi.category   = idx++;
+                s[e.category] = pi.category;
+            }
+        }
     }
-    else
-    {
-        Members->properties.clear();
-    }
+
     Members->items.Resize((uint32) Members->properties.size() * 2); // assume that each item has its own category
     Members->Refilter();
-    ;
 }
 PropertyList::~PropertyList()
 {

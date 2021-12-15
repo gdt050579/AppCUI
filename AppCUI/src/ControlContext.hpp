@@ -814,13 +814,28 @@ struct MenuContext
           const Graphics::Size& maxSize);
 };
 
+struct PropertyCategoryInfo
+{
+    FixSizeString<61> name;
+    uint32 totalItems;
+    uint32 filteredItems;
+    bool folded;
+};
+struct PropertyInfo
+{
+    FixSizeString<61> name;
+    uint32 category;
+};
 struct PropertyListContext: public ControlContext
 {
     Reference<PropertiesInterface> object;
-    vector<Property> properties;
+    vector<PropertyInfo> properties;
+    vector<PropertyCategoryInfo> categories;
     Array32 items;
+    FixSizeString<61> filterText;
+    bool showCategories;
 
-    bool IsItemFiltered(const Property& prop);
+    bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };
 
