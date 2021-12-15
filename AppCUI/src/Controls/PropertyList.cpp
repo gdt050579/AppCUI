@@ -44,7 +44,7 @@ void PropertyListContext::Refilter()
     // sort the data
     if (this->showCategories)
     {
-        this->items.Sort(SortWithCategories, this);
+        this->items.Sort(SortWithCategories, true, this);
         // clear categories filtered items
         for (auto& cat : this->categories)
             cat.filteredItems = 0;
@@ -54,12 +54,15 @@ void PropertyListContext::Refilter()
         uint32 last_cat = 0xFFFFFFFF;
         while (idx < this->items.Len())
         {
-            if (this->properties[idx].category != last_cat)
+            if (this->items.Get(idx, value))
             {
-                last_cat = this->properties[idx].category;
-                this->items.Insert(idx, last_cat | CATEGORY_FLAG);
+                if (this->properties[value].category != last_cat)
+                {
+                    last_cat = this->properties[value].category;
+                    this->items.Insert(idx, last_cat | CATEGORY_FLAG);
+                }
+                this->categories[this->properties[value].category].filteredItems++;
             }
-            this->categories[this->properties[idx].category].filteredItems++;
             idx++;
         }
         // fold categories if case
@@ -83,7 +86,7 @@ void PropertyListContext::Refilter()
     }
     else
     {
-        this->items.Sort(SortWithoutCategories, this);
+        this->items.Sort(SortWithoutCategories, true, this);
     }
 }
 

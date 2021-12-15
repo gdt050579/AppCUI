@@ -7,12 +7,17 @@ using namespace AppCUI::Graphics;
 
 class MyUserControl : public UserControl, public PropertiesInterface
 {
+    int32 x, y;
+    Size sz;
+    char16 ch;
+    ColorPair c;
+
   public:
     MyUserControl() : UserControl("d:c")
     {
     }
 
-    void Paint(Graphics::Renderer & renderer) override
+    void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         renderer.WriteSingleLineText(0, 0, "My user control", ColorPair{ Color::White, Color::Black });
@@ -28,7 +33,16 @@ class MyUserControl : public UserControl, public PropertiesInterface
     };
     vector<Property> GetPropertiesList() override
     {
-        return vector<Property>();
+        return vector<Property>({
+              { "Layout", "X", "" },
+              { "Layout", "Y", "" },
+              { "Layout", "Size", "" },
+              { "Look & Fill", "Fore color", "" },
+              { "Look & Fill", "Back color", "" },
+              { "Look & Fill", "Character", "" },
+              { "General", "Name", "" },
+              { "General", "Version", "" },
+        });
     };
 };
 class PropertyWindowExmaple : public Window
