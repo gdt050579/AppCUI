@@ -440,7 +440,25 @@ namespace Utils
         }
     };
 
-    enum class PropertyType: uint8
+    class EXPORT PropertyValue
+    {
+        uint8 buffer[32];
+
+      public:
+        PropertyValue();
+        void operator=(uint8 value);
+        void operator=(uint16 value);
+        void operator=(uint32 value);
+        void operator=(uint64 value);
+        void operator=(int8 value);
+        void operator=(int16 value);
+        void operator=(int32 value);
+        void operator=(int64 value);
+        void operator=(bool value);
+        void operator=(string_view value);
+        void operator=(u16string_view value);
+    };
+    enum class PropertyType : uint8
     {
         Boolean,
         UnsignedInteger,
@@ -470,7 +488,7 @@ namespace Utils
             : category(_category), name(_name), type(PropertyType::List), listValues(_listValues)
         {
         }
-        Property(string_view _category, string_view _name, string_view _listValues,string_view _help)
+        Property(string_view _category, string_view _name, string_view _listValues, string_view _help)
             : category(_category), name(_name), type(PropertyType::List), listValues(_listValues), help(_help)
         {
         }
