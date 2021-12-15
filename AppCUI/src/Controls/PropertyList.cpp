@@ -5,6 +5,7 @@ namespace AppCUI
 {
 constexpr uint32 CATEGORY_FLAG       = 0x80000000;
 constexpr uint32 CATEGORY_INDEX_MASK = 0x7FFFFFFF;
+
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
@@ -65,17 +66,18 @@ void PropertyListContext::Refilter()
         idx = 0;
         while (idx < this->items.Len())
         {
-            if ((this->items.Get(idx, value)) && (value & CATEGORY_FLAG) && (this->categories[value & CATEGORY_INDEX_MASK].folded))
+            if ((this->items.Get(idx, value)) && (value & CATEGORY_FLAG) &&
+                (this->categories[value & CATEGORY_INDEX_MASK].folded))
             {
                 // search for the next category
                 uint32 next = idx + 1;
                 while ((next < this->items.Len()) && (this->items.Get(next, value)) && ((value & CATEGORY_FLAG) == 0))
                     next++;
-                if (next > (idx+1))
+                if (next > (idx + 1))
                 {
                     this->items.Delete(idx + 1, (next - (idx + 1)));
                 }
-            } 
+            }
             idx++;
         }
     }
@@ -105,18 +107,27 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
     if (obj.IsValid())
     {
         std::map<string_view, uint32> s;
-        uint32 idx = 0;
+        // items
         for (auto& e : obj->GetPropertiesList())
         {
             auto& pi = Members->properties.emplace_back();
             pi.name  = e.name;
             auto it  = s.find(e.category);
             if (it != s.cend())
+            {
                 pi.category = it->second;
+                Members->categories[pi.category].totalItems++;
+            }
             else
             {
-                pi.category   = idx++;
+                pi.category   = (uint32)Members->categories.size();
                 s[e.category] = pi.category;
+                // add categoy
+                auto& cat = Members->categories.emplace_back();
+                cat.filteredItems = 0; // it will be recomputed on Members->Refilter()
+                cat.totalItems    = 1;
+                cat.folded        = false;
+                cat.name          = e.category;
             }
         }
     }
