@@ -208,6 +208,21 @@ bool Array32::Insert(uint32 index, int32 value)
 {
     return Insert(index, *(uint32*) &value);
 }
+bool Array32::Delete(uint32 start, uint32 size)
+{
+    CHECK(start < Count, false, "Invalid start position (%u) - should be between [0 and %u)", start, Count);
+    if (start + size>=Count)
+    {
+        this->Count = start; // truncate
+    }
+    else
+    {
+        memmove(Data + start + size, Data + start, ((size_t) (Count - (start + size))) << 2);
+        this->Count -= (start + size);
+    }
+    return true;
+}
+
 bool Array32::Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
