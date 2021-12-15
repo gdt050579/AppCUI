@@ -835,6 +835,9 @@ struct PropertyListContext: public ControlContext
     FixSizeString<61> filterText;
     bool showCategories;
 
+    void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void Paint(Graphics::Renderer& renderer);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };

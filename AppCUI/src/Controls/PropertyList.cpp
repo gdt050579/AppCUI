@@ -27,6 +27,70 @@ int32 SortWithoutCategories(int32 i1, int32 i2, void* context)
 
     return String::Compare(p1.name.GetText(), p2.name.GetText(), true);
 }
+void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer)
+{
+    if (index >= this->categories.size())
+        return;
+    const auto& cat = this->categories[index];
+    auto c          = ColorPair{ Color::Yellow, Color::DarkBlue };
+    int32 x         = 0;
+
+    
+    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth);
+    params.X     = x + 2;
+    params.Y     = y;
+    params.Color = c;
+    params.Width = this->Layout.Width - 5;
+    renderer.WriteText(cat.name, params);
+
+    
+    LocalString<32> tmp;
+    NumericFormatter n;
+    string_view txt;
+    if (cat.filteredItems < cat.totalItems)
+    {
+        txt = tmp.Format("%u/%u", cat.filteredItems, cat.totalItems);
+    }
+    else
+    {
+        txt = n.ToDec(cat.totalItems);
+    }
+    params.Align = TextAlignament::Right;
+    params.Width = txt.length();
+    params.X     = this->Layout.Width -1 - params.Width;
+    renderer.WriteText(txt, params);
+
+    renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleLeft : SpecialChars::TriangleDown, c);
+}
+void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
+{
+    if (index >= this->properties.size())
+        return;
+    const auto& prop = this->properties[index];
+    auto c           = ColorPair{ Color::Silver, Color::DarkBlue };
+    auto c_line      = ColorPair{ Color::DarkGreen, Color::DarkBlue };
+    int32 x          = 0;
+    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
+    params.X     = x + 3;
+    params.Y     = y;
+    params.Color = c;
+    params.Width = this->Layout.Width - 3;
+    renderer.WriteText(prop.name, params);
+    renderer.WriteSpecialCharacter(x + 3 + 10, y, SpecialChars::BoxVerticalSingleLine, c_line);
+}
+void PropertyListContext::Paint(Graphics::Renderer& renderer)
+{
+    uint32 value;
+    for (auto i = 1; i < this->Layout.Height; i++)
+    {
+        if (this->items.Get(i - 1, value) == false)
+            break;
+        if (value & CATEGORY_FLAG)
+            DrawCategory(value & CATEGORY_INDEX_MASK, i, renderer);
+        else
+            DrawProperty(value, i, renderer);
+    }
+}
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
 {
     if (this->filterText.Empty())
@@ -123,10 +187,10 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             }
             else
             {
-                pi.category   = (uint32)Members->categories.size();
+                pi.category   = (uint32) Members->categories.size();
                 s[e.category] = pi.category;
                 // add categoy
-                auto& cat = Members->categories.emplace_back();
+                auto& cat         = Members->categories.emplace_back();
                 cat.filteredItems = 0; // it will be recomputed on Members->Refilter()
                 cat.totalItems    = 1;
                 cat.folded        = false;
@@ -143,6 +207,7 @@ PropertyList::~PropertyList()
 }
 void PropertyList::Paint(Graphics::Renderer& renderer)
 {
+    reinterpret_cast<PropertyListContext*>(this->Context)->Paint(renderer);
 }
 bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
