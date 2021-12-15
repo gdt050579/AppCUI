@@ -440,9 +440,40 @@ namespace Utils
         }
     };
 
+    enum class PropertyType: uint8
+    {
+        Boolean,
+        UnsignedInteger,
+        SignedInteger,
+        String,
+        Key,
+        Size,
+        Color,
+        List,
+        Custom
+    };
     struct Property
     {
         string_view category, name, help;
+        PropertyType type;
+        string_view listValues;
+
+        Property(string_view _category, string_view _name, PropertyType _type)
+            : category(_category), name(_name), type(_type)
+        {
+        }
+        Property(string_view _category, string_view _name, PropertyType _type, string_view _help)
+            : category(_category), name(_name), type(_type), help(_help)
+        {
+        }
+        Property(string_view _category, string_view _name, string_view _listValues)
+            : category(_category), name(_name), type(PropertyType::List), listValues(_listValues)
+        {
+        }
+        Property(string_view _category, string_view _name, string_view _listValues,string_view _help)
+            : category(_category), name(_name), type(PropertyType::List), listValues(_listValues), help(_help)
+        {
+        }
     };
     struct EXPORT PropertiesInterface
     {

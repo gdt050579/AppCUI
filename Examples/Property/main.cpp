@@ -34,14 +34,16 @@ class MyUserControl : public UserControl, public PropertiesInterface
     vector<Property> GetPropertiesList() override
     {
         return vector<Property>({
-              { "Layout", "X", "" },
-              { "Layout", "Y", "" },
-              { "Layout", "Size", "" },
-              { "Look & Fill", "Fore color", "" },
-              { "Look & Fill", "Back color", "" },
-              { "Look & Fill", "Character", "" },
-              { "General", "Name", "" },
-              { "General", "Version", "" },
+              { "Layout", "X", PropertyType::SignedInteger},
+              { "Layout", "Y", PropertyType::SignedInteger },
+              { "Layout", "Size", PropertyType::Size },
+              { "Look & Fill", "Fore color", PropertyType::Color },
+              { "Look & Fill", "Back color", PropertyType::Color },
+              { "Look & Fill", "Character", PropertyType::String },
+              { "General", "Name", PropertyType::String },
+              { "General", "Version", PropertyType::String },
+              { "General", "Draw border", PropertyType::Boolean },
+              { "General", "Border Type", "SingleLine=1,DoubleLine=2,Block=3" },
         });
     };
 };

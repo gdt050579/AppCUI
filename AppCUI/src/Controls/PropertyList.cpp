@@ -35,15 +35,14 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
     auto c          = ColorPair{ Color::Yellow, Color::DarkBlue };
     int32 x         = 0;
 
-    
-    WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth);
+    WriteTextParams params(
+          WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth);
     params.X     = x + 2;
     params.Y     = y;
     params.Color = c;
     params.Width = this->Layout.Width - 5;
     renderer.WriteText(cat.name, params);
 
-    
     LocalString<32> tmp;
     NumericFormatter n;
     string_view txt;
@@ -56,8 +55,8 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         txt = n.ToDec(cat.totalItems);
     }
     params.Align = TextAlignament::Right;
-    params.Width = txt.length();
-    params.X     = this->Layout.Width -1 - params.Width;
+    params.Width = (uint32) txt.length();
+    params.X     = this->Layout.Width - 1 - (int32) params.Width;
     renderer.WriteText(txt, params);
 
     renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleLeft : SpecialChars::TriangleDown, c);
