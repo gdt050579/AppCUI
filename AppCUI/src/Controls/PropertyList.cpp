@@ -61,7 +61,7 @@ void PropertyListContext::Refilter()
             this->categories[this->properties[idx].category].filteredItems++;
             idx++;
         }
-        // fold categories
+        // fold categories if case
         idx = 0;
         while (idx < this->items.Len())
         {
@@ -73,7 +73,7 @@ void PropertyListContext::Refilter()
                     next++;
                 if (next > (idx+1))
                 {
-                    // Delete indexes
+                    this->items.Delete(idx + 1, (next - (idx + 1)));
                 }
             } 
             idx++;
