@@ -5,12 +5,27 @@ using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
+enum class MyControlProperty : uint32
+{
+    X,
+    Y,
+    Size,
+    ForeColor,
+    BackColor,
+    Character,
+    Name,
+    Version,
+    Border,
+    BorderType,
+};
+
 class MyUserControl : public UserControl, public PropertiesInterface
 {
     int32 x, y;
     Size sz;
     char16 ch;
     ColorPair c;
+    bool hasBorder;
 
   public:
     MyUserControl() : UserControl("d:c")
@@ -23,27 +38,57 @@ class MyUserControl : public UserControl, public PropertiesInterface
         renderer.WriteSingleLineText(0, 0, "My user control", ColorPair{ Color::White, Color::Black });
     }
     // PropertiesInterface
-    bool GetProperty(string_view category, string_view name) override
+    bool GetPropertyValue(uint32 id, PropertyValue& value) override
     {
-        NOT_IMPLEMENTED(false);
+        switch (static_cast<MyControlProperty>(id))
+        {
+        case MyControlProperty::X:
+            value = this->x;
+            return true;
+        case MyControlProperty::Y:
+            value = this->y;
+            return true;
+        case MyControlProperty::Size:
+            value = this->sz;
+            return true;
+        case MyControlProperty::ForeColor:
+            value = this->c.Foreground;
+            return true;
+        case MyControlProperty::BackColor:
+            value = this->c.Background;
+            return true;
+        case MyControlProperty::Name:
+            value = "My user control";
+            return true;
+        case MyControlProperty::Version:
+            value = "1.2.3";
+            return true;
+        case MyControlProperty::Border:
+            value = this->hasBorder;
+            return true;
+        case MyControlProperty::BorderType:
+            value = 2;
+            return true;
+        }
+        return false;
     };
-    bool SetProperty(string_view category, string_view name) override
+    void SetPropertyValue(uint32 id, const PropertyValue& value, String& error) override
     {
         NOT_IMPLEMENTED(false);
     };
     vector<Property> GetPropertiesList() override
     {
         return vector<Property>({
-              { "Layout", "X", PropertyType::SignedInteger},
-              { "Layout", "Y", PropertyType::SignedInteger },
-              { "Layout", "Size", PropertyType::Size },
-              { "Look & Fill", "Fore color", PropertyType::Color },
-              { "Look & Fill", "Back color", PropertyType::Color },
-              { "Look & Fill", "Character", PropertyType::String },
-              { "General", "Name", PropertyType::String },
-              { "General", "Version", PropertyType::String },
-              { "General", "Draw border", PropertyType::Boolean },
-              { "General", "Border Type", "SingleLine=1,DoubleLine=2,Block=3" },
+              { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::SignedInteger },
+              { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::SignedInteger },
+              { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
+              { (uint32) MyControlProperty::ForeColor, "Look & Fill", "Fore color", PropertyType::Color },
+              { (uint32) MyControlProperty::BackColor, "Look & Fill", "Back color", PropertyType::Color },
+              { (uint32) MyControlProperty::Character, "Look & Fill", "Character", PropertyType::String },
+              { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::String },
+              { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::String },
+              { (uint32) MyControlProperty::Border, "General", "Draw border", PropertyType::Boolean },
+              { (uint32) MyControlProperty::BorderType, "General", "Border Type", "SingleLine=1,DoubleLine=2,Block=3" },
         });
     };
 };

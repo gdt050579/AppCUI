@@ -479,32 +479,33 @@ namespace Utils
 
     struct Property
     {
+        uint32 id;
         string_view category, name, help;
         PropertyType type;
         string_view listValues;
 
-        Property(string_view _category, string_view _name, PropertyType _type)
-            : category(_category), name(_name), type(_type)
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
+            : id(ID), category(_category), name(_name), type(_type)
         {
         }
-        Property(string_view _category, string_view _name, PropertyType _type, string_view _help)
-            : category(_category), name(_name), type(_type), help(_help)
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, string_view _help)
+            : id(ID), category(_category), name(_name), type(_type), help(_help)
         {
         }
-        Property(string_view _category, string_view _name, string_view _listValues)
-            : category(_category), name(_name), type(PropertyType::List), listValues(_listValues)
+        Property(uint32 ID, string_view _category, string_view _name, string_view _listValues)
+            : id(ID), category(_category), name(_name), type(PropertyType::List), listValues(_listValues)
         {
         }
-        Property(string_view _category, string_view _name, string_view _listValues, string_view _help)
-            : category(_category), name(_name), type(PropertyType::List), listValues(_listValues), help(_help)
+        Property(uint32 ID, string_view _category, string_view _name, string_view _listValues, string_view _help)
+            : id(ID), category(_category), name(_name), type(PropertyType::List), listValues(_listValues), help(_help)
         {
         }
     };
     struct EXPORT PropertiesInterface
     {
-        virtual bool GetProperty(string_view category, string_view name) = 0;
-        virtual bool SetProperty(string_view category, string_view name) = 0;
-        virtual vector<Property> GetPropertiesList()                     = 0;
+        virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)       = 0;
+        virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value) = 0;
+        virtual vector<Property> GetPropertiesList()                                 = 0;
     };
 } // namespace Utils
 using Utils::ConstString;
