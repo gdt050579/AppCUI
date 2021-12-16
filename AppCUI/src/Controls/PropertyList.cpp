@@ -70,7 +70,7 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteText(tmp, params);
     }
     if (w > 0)
-        renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleLeft : SpecialChars::TriangleDown, c);
+        renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, c);
 }
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
@@ -206,6 +206,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+    uint32 idx;
 
     switch (keyCode)
     {
@@ -231,6 +232,17 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         return true;
     case Key::PageDown:
         MoveTo(this->currentPos + (uint32) std::max<int>(1, h));
+        return true;
+    case Key::Space:
+        if (this->items.Get(this->currentPos, idx))
+        {
+            if (idx & CATEGORY_FLAG)
+            {
+                idx &= CATEGORY_INDEX_MASK;
+                this->categories[idx].folded = !this->categories[idx].folded;
+                Refilter();
+            }
+        }
         return true;
     }
     return false;

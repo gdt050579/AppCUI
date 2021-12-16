@@ -217,8 +217,8 @@ bool Array32::Delete(uint32 start, uint32 size)
     }
     else
     {
-        memmove(Data + start + size, Data + start, ((size_t) (Count - (start + size))) << 2);
-        this->Count -= (start + size);
+        memmove(Data + start, Data + start+size, ((size_t) (Count - (start + size))) << 2);
+        this->Count -= size;
     }
     return true;
 }
