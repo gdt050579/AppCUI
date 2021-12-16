@@ -35,34 +35,42 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
     if (index >= this->categories.size())
         return;
     const auto& cat = this->categories[index];
-    auto c          = ColorPair{ Color::Yellow, Color::DarkBlue };
-    int32 x         = 0;
+    auto c          = ColorPair{ Color::Yellow, Color::Blue };
+    int32 x         = this->hasBorder ? 1 : 0;
+    int32 w         = this->hasBorder ? this->Layout.Width - 2 : this->Layout.Width;
+
+    renderer.FillHorizontalLine(x, y, w, ' ', c);
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth);
-    params.X     = x + 2;
-    params.Y     = y;
-    params.Color = c;
-    params.Width = this->Layout.Width - 5;
-    renderer.WriteText(cat.name, params);
+    params.Y = y;
+    if (w >= 5)
+    {
+        params.X     = x + 2;
+        params.Color = c;
+        params.Width = w - 5;
+        renderer.WriteText(cat.name, params);
+    }
 
     LocalString<32> tmp;
-    NumericFormatter n;
-    string_view txt;
     if (cat.filteredItems < cat.totalItems)
     {
-        txt = tmp.Format("%u/%u", cat.filteredItems, cat.totalItems);
+        tmp.SetFormat("[%u/%u]", cat.filteredItems, cat.totalItems);
     }
     else
     {
-        txt = n.ToDec(cat.totalItems);
+        tmp.SetFormat("[%u]", cat.totalItems);
     }
-    params.Align = TextAlignament::Right;
-    params.Width = (uint32) txt.length();
-    params.X     = this->Layout.Width - 1 - (int32) params.Width;
-    renderer.WriteText(txt, params);
-
-    renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleLeft : SpecialChars::TriangleDown, c);
+    if ((int32) tmp.Len() + 5 <= w)
+    {
+        params.Align = TextAlignament::Right;
+        params.Width = tmp.Len();
+        params.X     = w - 1;
+        params.Color = ColorPair{ Color::Gray, Color::Blue };
+        renderer.WriteText(tmp, params);
+    }
+    if (w > 0)
+        renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleLeft : SpecialChars::TriangleDown, c);
 }
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
@@ -71,7 +79,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     const auto& prop = this->properties[index];
     auto c           = ColorPair{ Color::Silver, Color::DarkBlue };
     auto c_line      = ColorPair{ Color::DarkGreen, Color::DarkBlue };
-    int32 x          = 0;
+    int32 x          = this->hasBorder ? 1 : 0;
     NumericFormatter n;
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
     if ((x + 3 + this->propertyNameWidth) < (int32) this->Layout.Width)
@@ -136,14 +144,23 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
 {
     uint32 value;
-    for (auto i = 1; i < this->Layout.Height; i++)
+    int32 y     = 1;
+    int32 max_y = this->Layout.Height;
+    if (this->hasBorder)
+    {
+        auto c = ColorPair{ Color::White, Color::Transparent };
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, false);
+        y++;
+        max_y--;
+    }
+    for (auto i = 1; (i < this->Layout.Height) && (y < max_y); i++, y++)
     {
         if (this->items.Get(i - 1, value) == false)
             break;
         if (value & CATEGORY_FLAG)
-            DrawCategory(value & CATEGORY_INDEX_MASK, i, renderer);
+            DrawCategory(value & CATEGORY_INDEX_MASK, y, renderer);
         else
-            DrawProperty(value, i, renderer);
+            DrawProperty(value, y, renderer);
     }
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
@@ -216,6 +233,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->properties.reserve(64);
     Members->categories.reserve(8);
     Members->showCategories    = true;
+    Members->hasBorder         = true;
     Members->propertyNameWidth = 14;
 
     SetObject(obj);

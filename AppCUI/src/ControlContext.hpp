@@ -838,6 +838,7 @@ struct PropertyListContext: public ControlContext
     FixSizeString<61> filterText;
     int32 propertyNameWidth;
     bool showCategories;
+    bool hasBorder;
 
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
