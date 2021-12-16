@@ -836,13 +836,17 @@ struct PropertyListContext: public ControlContext
     vector<PropertyCategoryInfo> categories;
     Array32 items;
     FixSizeString<61> filterText;
+    uint32 startView;
+    uint32 currentPos;
     int32 propertyNameWidth;
     bool showCategories;
     bool hasBorder;
 
+    void MoveTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
+    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };

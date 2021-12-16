@@ -153,15 +153,70 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         y++;
         max_y--;
     }
-    for (auto i = 1; (i < this->Layout.Height) && (y < max_y); i++, y++)
+    for (auto idx = this->startView; (idx < this->items.Len()) && (y < max_y); idx++, y++)
     {
-        if (this->items.Get(i - 1, value) == false)
+        if (this->items.Get(idx, value) == false)
             break;
         if (value & CATEGORY_FLAG)
             DrawCategory(value & CATEGORY_INDEX_MASK, y, renderer);
         else
             DrawProperty(value, y, renderer);
+        if (idx == this->currentPos)
+        {
+            if (this->hasBorder)
+                renderer.FillHorizontalLine(1, y, this->Layout.Width - 2, -1, ColorPair{ Color::Black, Color::White });
+            else
+                renderer.FillHorizontalLine(0, y, this->Layout.Width, -1, ColorPair{ Color::Black, Color::White });
+        }
     }
+}
+void PropertyListContext::MoveTo(uint32 newPos)
+{
+    if (this->items.Len() == 0)
+    {
+        this->currentPos = 0;
+        this->startView  = 0;
+        return;
+    }
+    if (newPos >= this->items.Len())
+        newPos = this->items.Len() - 1;
+    auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+    if (h < 1)
+        return; // sanity check
+    uint32 height = (uint32) h;
+    if ((startView <= newPos) && ((startView + height) > newPos))
+    {
+        this->currentPos = newPos;
+        return;
+    }
+    // adjust start view --> if before scroll up
+    if (newPos < startView)
+    {
+        this->currentPos = newPos;
+        this->startView  = newPos;
+        return;
+    }
+    // otherwise scroll down
+    this->currentPos = newPos;
+    if (newPos >= startView + height - 1)
+        this->startView = newPos - (height-1);
+    else
+        this->startView = 0;
+}
+bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
+{
+    switch (keyCode)
+    {
+    case Key::Up:
+        if (this->currentPos > 0)
+            MoveTo(this->currentPos - 1);
+        return true;
+    case Key::Down:
+        if (this->currentPos + 1 < this->items.Len())
+            MoveTo(this->currentPos + 1);
+        return true;
+    }
+    return false;
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
 {
@@ -235,6 +290,9 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->showCategories    = true;
     Members->hasBorder         = true;
     Members->propertyNameWidth = 14;
+    Members->startView         = 0;
+    Members->currentPos        = 0;
+    Members->Flags             = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
 
     SetObject(obj);
 }
@@ -287,7 +345,7 @@ void PropertyList::Paint(Graphics::Renderer& renderer)
 }
 bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<PropertyListContext*>(this->Context)->OnKeyEvent(keyCode, UnicodeChar);
 }
 void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
