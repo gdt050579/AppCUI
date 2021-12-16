@@ -74,19 +74,57 @@ class MyUserControl : public UserControl, public PropertiesInterface
     };
     void SetPropertyValue(uint32 id, const PropertyValue& value, String& error) override
     {
-        NOT_IMPLEMENTED(false);
+        Size tmpSz;
+        switch (static_cast<MyControlProperty>(id))
+        {
+        case MyControlProperty::X:
+            this->x = std::get<int32>(value);
+            break;
+        case MyControlProperty::Y:
+            this->y = std::get<int32>(value);
+            break;
+        case MyControlProperty::Size:
+            tmpSz = std::get<Size>(value);
+            if ((tmpSz.Width == 0) || (tmpSz.Height == 0))
+                error.Format(
+                      "Invalid size (%u x %u) --> Width/Height must be bigger than 0", tmpSz.Width, tmpSz.Height);
+            else
+                this->sz = tmpSz;
+            break;
+        case MyControlProperty::ForeColor:
+            this->c.Foreground = std::get<Color>(value);
+            break;
+        case MyControlProperty::BackColor:
+            this->c.Background = std::get<Color>(value);
+            break;
+        case MyControlProperty::Name:
+            // do nothing ==> read-only
+            break;
+        case MyControlProperty::Version:
+            // do nothing ==> read-only
+            break;
+        case MyControlProperty::Border:
+            this->hasBorder = std::get<bool>(value);
+            break;
+        case MyControlProperty::BorderType:
+            // value = 2;
+            break;
+        }
     };
+    void SetCustomPropetyValue(uint32 propertyID) override
+    {
+    }
     vector<Property> GetPropertiesList() override
     {
         return vector<Property>({
-              { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::SignedInteger },
-              { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::SignedInteger },
+              { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::Int32 },
+              { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::Int32 },
               { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
-              { (uint32) MyControlProperty::ForeColor, "Look & Fill", "Fore color", PropertyType::Color },
-              { (uint32) MyControlProperty::BackColor, "Look & Fill", "Back color", PropertyType::Color },
-              { (uint32) MyControlProperty::Character, "Look & Fill", "Character", PropertyType::String },
-              { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::String },
-              { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::String },
+              { (uint32) MyControlProperty::ForeColor, "Look & Feel", "Fore color", PropertyType::Color },
+              { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
+              { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Ascii },
+              { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Ascii },
+              { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::Border, "General", "Draw border", PropertyType::Boolean },
               { (uint32) MyControlProperty::BorderType, "General", "Border Type", "SingleLine=1,DoubleLine=2,Block=3" },
         });

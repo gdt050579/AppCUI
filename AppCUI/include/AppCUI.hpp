@@ -339,6 +339,7 @@ namespace Graphics
 }; // namespace Graphics
 namespace Utils
 {
+    class EXPORT String;
     using CharacterView = std::basic_string_view<Graphics::Character>;
     using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
     template <typename T>
@@ -440,41 +441,50 @@ namespace Utils
         }
     };
 
+    using PropertyValueFlags = uint64;
+    using PropertyValue = variant<
+          std::monostate,
+          bool,
+          uint8,
+          uint16,
+          uint32,
+          uint64,
+          int8,
+          int16,
+          int32,
+          int64,
+          float,
+          double,
+          string_view,
+          u8string_view,
+          u16string_view,
+          CharacterView,
+          /*Input::Key,*/
+          Graphics::Size,
+          Graphics::Color>;
     enum class PropertyType : uint8
     {
         Boolean,
-        UnsignedInteger,
-        SignedInteger,
-        String,
+        UInt8,
+        UInt16,
+        UInt32,
+        UInt64,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        Float,
+        Double,
+        Ascii,
+        UTF8,
+        Unicode,
+        CharacterView,
         Key,
         Size,
         Color,
         List,
+        Flags,
         Custom
-    };
-    class EXPORT PropertyValue
-    {
-        uint8 buffer[32];
-
-      public:
-        PropertyValue();
-        void operator=(uint8 value);
-        void operator=(uint16 value);
-        void operator=(uint32 value);
-        void operator=(uint64 value);
-        void operator=(int8 value);
-        void operator=(int16 value);
-        void operator=(int32 value);
-        void operator=(int64 value);
-        void operator=(bool value);
-        void operator=(string_view value);
-        void operator=(u16string_view value);
-
-        bool IsOfType(PropertyType type) const;
-        inline bool operator==(PropertyType type) const
-        {
-            return IsOfType(type);
-        }
     };
 
     struct Property
@@ -503,9 +513,10 @@ namespace Utils
     };
     struct EXPORT PropertiesInterface
     {
-        virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)       = 0;
-        virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value) = 0;
-        virtual vector<Property> GetPropertiesList()                                 = 0;
+        virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)                      = 0;
+        virtual void SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
+        virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
+        virtual vector<Property> GetPropertiesList()                                                = 0;
     };
 } // namespace Utils
 using Utils::ConstString;
