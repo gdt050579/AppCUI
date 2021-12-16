@@ -37,6 +37,41 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
           char16_t unicodeChar);
 
   private:
+    class PaintControlImplementationRightPiecePanels : public AppCUI::Controls::Handlers::PaintControlInterface
+    {
+        RunningState& rs;
+        const unsigned int id;
+
+      public:
+        PaintControlImplementationRightPiecePanels(RunningState& rs, unsigned int id);
+        void PaintControl(
+              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
+              AppCUI::Graphics::Renderer& renderer) override;
+    };
+
+    class PaintControlImplementationLeftPanel : public AppCUI::Controls::Handlers::PaintControlInterface
+    {
+        RunningState& rs;
+
+      public:
+        PaintControlImplementationLeftPanel(RunningState& rs);
+        void PaintControl(
+              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
+              AppCUI::Graphics::Renderer& renderer) override;
+    };
+
+    class OnKeyEventInterfaceImplementationLeftPanel : public AppCUI::Controls::Handlers::OnKeyEventInterface
+    {
+        RunningState& rs;
+
+      public:
+        OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs);
+        bool OnKeyEvent(
+              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
+              AppCUI::Input::Key keyCode,
+              char16_t unicodeChar) override;
+    };
+
     const std::shared_ptr<GameData>& data;
 
     unsigned int score = 0;
@@ -66,122 +101,11 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
     std::vector<Piece> piecesProcessed;
     std::optional<Piece> currentPiece;
 
-    class PaintControlImplementationRightPiecePanels : public AppCUI::Controls::Handlers::PaintControlInterface
-    {
-        RunningState& rs;
-        const unsigned int id;
-
-      public:
-        PaintControlImplementationRightPiecePanels(RunningState& rs, unsigned int id) : rs(rs), id(id)
-        {
-        }
-
-        void PaintControl(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
-        {
-            control->Paint(renderer);
-
-            if (rs.pieces.size() > id)
-            {
-                auto& piece = rs.pieces[id];
-                piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
-            }
-        }
-    };
-
     PaintControlImplementationRightPiecePanels pcirpp01{ *this, 0 };
     PaintControlImplementationRightPiecePanels pcirpp02{ *this, 1 };
     PaintControlImplementationRightPiecePanels pcirpp03{ *this, 2 };
 
-    class PaintControlImplementationLeftPanel : public AppCUI::Controls::Handlers::PaintControlInterface
-    {
-        RunningState& rs;
-
-      public:
-        PaintControlImplementationLeftPanel(RunningState& rs) : rs(rs)
-        {
-        }
-
-        void PaintControl(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
-        {
-            control->Paint(renderer);
-
-            if (rs.currentPiece.has_value())
-            {
-                if (rs.currentPiece->IsInitialPositionSet() == false)
-                {
-                    rs.currentPiece->SetInitialPosition(control->GetWidth() / 2, 1);
-                }
-                rs.currentPiece->Draw(renderer, rs.pieceScaleInLeftPanel);
-            }
-
-            for (auto& piece : rs.piecesProcessed)
-            {
-                piece.Draw(renderer, rs.pieceScaleInLeftPanel);
-            }
-        }
-    };
-
     PaintControlImplementationLeftPanel pcilp{ *this };
-
-    class OnKeyEventInterfaceImplementationLeftPanel : public AppCUI::Controls::Handlers::OnKeyEventInterface
-    {
-        RunningState& rs;
-
-      public:
-        OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs) : rs(rs)
-        {
-        }
-
-        bool OnKeyEvent(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-              AppCUI::Input::Key keyCode,
-              char16_t unicodeChar) override
-        {
-            switch (keyCode)
-            {
-            case AppCUI::Input::Key::Left:
-                if (rs.currentPiece.has_value())
-                {
-                    const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-                    if (rs.currentPiece->GetLeftXPosition() - bWidth > 0)
-                    {
-                        rs.currentPiece->UpdatePosition(-bWidth, 0);
-                        return true;
-                    }
-                }
-                break;
-            case AppCUI::Input::Key::Right:
-                if (rs.currentPiece.has_value())
-                {
-                    const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-                    if (rs.currentPiece->GetRightXPosition(rs.pieceScaleInLeftPanel) + bWidth < control->GetWidth())
-                    {
-                        rs.currentPiece->UpdatePosition(bWidth, 0);
-                        return true;
-                    }
-                }
-                break;
-
-            case AppCUI::Input::Key::Down:
-                if (rs.currentPiece.has_value())
-                {
-                    const auto bHeight = rs.currentPiece->GetBlockHeight(rs.pieceScaleInLeftPanel);
-                    if (rs.currentPiece->GetBottomYPosition(rs.pieceScaleInLeftPanel) + bHeight < control->GetHeight())
-                    {
-                        rs.currentPiece->UpdatePosition(0, bHeight);
-                        return true;
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-
-            return false;
-        }
-    };
 
     OnKeyEventInterfaceImplementationLeftPanel okeiilp{ *this };
 };

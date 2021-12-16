@@ -128,3 +128,96 @@ bool RunningState::OnKeyEvent(
 
     return false;
 }
+
+RunningState::PaintControlImplementationRightPiecePanels::PaintControlImplementationRightPiecePanels(
+      RunningState& rs, unsigned int id)
+    : rs(rs), id(id)
+{
+}
+
+void RunningState::PaintControlImplementationRightPiecePanels::PaintControl(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
+{
+    control->Paint(renderer);
+
+    if (rs.pieces.size() > id)
+    {
+        auto& piece = rs.pieces[id];
+        piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
+    }
+}
+
+RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLeftPanel(RunningState& rs) : rs(rs)
+{
+}
+
+void RunningState::PaintControlImplementationLeftPanel::PaintControl(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
+{
+    control->Paint(renderer);
+
+    if (rs.currentPiece.has_value())
+    {
+        if (rs.currentPiece->IsInitialPositionSet() == false)
+        {
+            rs.currentPiece->SetInitialPosition(control->GetWidth() / 2, 1);
+        }
+        rs.currentPiece->Draw(renderer, rs.pieceScaleInLeftPanel);
+    }
+
+    for (auto& piece : rs.piecesProcessed)
+    {
+        piece.Draw(renderer, rs.pieceScaleInLeftPanel);
+    }
+}
+
+RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs)
+    : rs(rs)
+{
+}
+
+bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
+      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+{
+    switch (keyCode)
+    {
+    case AppCUI::Input::Key::Left:
+        if (rs.currentPiece.has_value())
+        {
+            const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
+            if (rs.currentPiece->GetLeftXPosition() - bWidth > 0)
+            {
+                rs.currentPiece->UpdatePosition(-bWidth, 0);
+                return true;
+            }
+        }
+        break;
+    case AppCUI::Input::Key::Right:
+        if (rs.currentPiece.has_value())
+        {
+            const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
+            if (rs.currentPiece->GetRightXPosition(rs.pieceScaleInLeftPanel) + bWidth < control->GetWidth())
+            {
+                rs.currentPiece->UpdatePosition(bWidth, 0);
+                return true;
+            }
+        }
+        break;
+
+    case AppCUI::Input::Key::Down:
+        if (rs.currentPiece.has_value())
+        {
+            const auto bHeight = rs.currentPiece->GetBlockHeight(rs.pieceScaleInLeftPanel);
+            if (rs.currentPiece->GetBottomYPosition(rs.pieceScaleInLeftPanel) + bHeight < control->GetHeight())
+            {
+                rs.currentPiece->UpdatePosition(0, bHeight);
+                return true;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return false;
+}
