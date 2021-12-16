@@ -1,7 +1,7 @@
 #include "Piece.hpp"
 
-Piece::Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control)
-    : control(control), type(type)
+Piece::Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control, int x, int y)
+    : control(control), type(type), x(x), y(x)
 {
     switch (type)
     {
@@ -61,16 +61,19 @@ bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, bool center, i
             return false;
         }
 
-        const auto size = GetSize(type, scale);
+        const auto size = GetSize(scale);
         const int x     = std::max<>(1, static_cast<int>((w - size.Width) / 2));
         const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - 2 - size.Height)) / 2));
+        SetPosition(x, y);
 
-        return Draw(renderer, scale, x, y);
+        return Draw(renderer, scale);
     }
-    return Draw(renderer, scale, 1, 1);
+
+    SetPosition(1, 1);
+    return Draw(renderer, scale);
 }
 
-bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, const int x, const int y)
+bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale)
 {
     int xx = x;
     int yy = y;
@@ -81,7 +84,7 @@ bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, const int x, c
         {
             if (matrix[i][j] == 1)
             {
-                renderer.DrawRectSize(xx, yy, width * scale * 2, height * scale, color, false);
+                renderer.DrawRectSize(xx, yy, GetBlockWidth(scale), GetBlockHeight(scale), color, false);
             }
 
             xx += width * scale * 2;
@@ -94,7 +97,7 @@ bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, const int x, c
     return true;
 }
 
-AppCUI::Graphics::Size Piece::GetSize(PieceType type, int scale) const
+AppCUI::Graphics::Size Piece::GetSize(int scale) const
 {
     const auto w = width * scale * 2;
     const auto h = height * scale;
@@ -120,4 +123,63 @@ AppCUI::Graphics::Size Piece::GetSize(PieceType type, int scale) const
     }
 
     return { 0, 0 };
+}
+
+void Piece::UpdatePosition(int x, int y)
+{
+    this->x += x;
+    this->y += y;
+}
+
+void Piece::SetPosition(int x, int y)
+{
+    this->x = x;
+    this->y = y;
+}
+
+void Piece::SetInitialPosition(int x, int y)
+{
+    SetPosition(x, y);
+    isInitialPositionSet = true;
+}
+
+bool Piece::IsInitialPositionSet() const
+{
+    return isInitialPositionSet;
+}
+
+int Piece::GetBlockWidth(int scale) const
+{
+    return width * scale * 2;
+}
+
+int Piece::GetBlockHeight(int scale) const
+{
+    return height * scale;
+}
+
+int Piece::GetLeftXPosition() const
+{
+    return x;
+}
+
+int Piece::GetRightXPosition(int scale) const
+{
+    return x + GetSize(scale).Width;
+}
+
+int Piece::GetTopYPosition() const
+{
+    return y;
+}
+
+int Piece::GetBottomYPosition(int scale) const
+{
+    return y + GetSize(scale).Height;
+}
+
+bool Piece::TouchedTheBottom(int scale, int height) const
+{
+    const auto bHeight = GetBlockHeight(scale);
+    return GetBottomYPosition(scale) + bHeight > height;
 }

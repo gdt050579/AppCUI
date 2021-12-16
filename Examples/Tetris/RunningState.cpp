@@ -20,9 +20,12 @@ RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), 
     timePassedLabel->SetText("");
 
     page->Handlers()->OnKeyEvent          = this;
-    nextPiece01->Handlers()->PaintControl = &pci01;
-    nextPiece02->Handlers()->PaintControl = &pci02;
-    nextPiece03->Handlers()->PaintControl = &pci03;
+    nextPiece01->Handlers()->PaintControl = &pcirpp01;
+    nextPiece02->Handlers()->PaintControl = &pcirpp02;
+    nextPiece03->Handlers()->PaintControl = &pcirpp03;
+
+    leftPanel->Handlers()->PaintControl = &pcilp;
+    leftPanel->Handlers()->OnKeyEvent   = &okeiilp;
 }
 
 RunningState::~RunningState()
@@ -32,10 +35,10 @@ RunningState::~RunningState()
 
 void RunningState::Init()
 {
-    for (auto i = 0U; i < 3; i++)
+    while (pieces.size() < maxPiecesInQueue)
     {
         const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>() }));
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>(), 1, 1 }));
     }
 
     data->tab->SetCurrentTabPage(page);
@@ -53,15 +56,42 @@ bool RunningState::Update()
     ls.Format("Score: %u", score);
     scoreLabel->SetText(ls.GetText());
 
-    const auto delta = static_cast<unsigned long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC);
+    delta = static_cast<unsigned long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC);
     ls.Format("Time passed: %lus", delta);
     timePassedLabel->SetText(ls.GetText());
 
-    if (delta % pieceGeneration == 0)
+    if (currentPiece.has_value())
+    {
+        if (lastPieceAdvancementUpdate != delta)
+        {
+            const auto bHeight = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
+            if (currentPiece->GetBottomYPosition(pieceScaleInLeftPanel) + bHeight < leftPanel->GetHeight())
+            {
+                currentPiece->UpdatePosition(0, bHeight);
+            }
+            lastPieceAdvancementUpdate = delta;
+        }
+
+        if (currentPiece->TouchedTheBottom(pieceScaleInLeftPanel, leftPanel->GetHeight()))
+        {
+            piecesProcessed.emplace_back(*currentPiece);
+            currentPiece.reset();
+        }
+    }
+
+    if (currentPiece.has_value() == false)
+    {
+        if (pieces.size() > 0)
+        {
+            currentPiece.emplace(pieces.front());
+            pieces.pop_front();
+        }
+    }
+
+    while (pieces.size() < maxPiecesInQueue)
     {
         const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>() }));
-        pieces.pop_front();
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>(), 1, 1 }));
     }
 
     return true;
