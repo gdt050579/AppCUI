@@ -212,6 +212,98 @@ namespace StdIncludes
 
 using namespace StdIncludes;
 
+namespace Input
+{
+    enum class Key : uint32
+    {
+        None = 0,
+        F1   = 1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+        Enter,
+        Escape,
+        Insert,
+        Delete,
+        Backspace,
+        Tab,
+        Left,
+        Up,
+        Down,
+        Right,
+        PageUp,
+        PageDown,
+        Home,
+        End,
+        Space,
+        A,
+        B,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        N,
+        O,
+        P,
+        Q,
+        R,
+        S,
+        T,
+        U,
+        V,
+        W,
+        X,
+        Y,
+        Z,
+        N0,
+        N1,
+        N2,
+        N3,
+        N4,
+        N5,
+        N6,
+        N7,
+        N8,
+        N9,
+        Count, // must be the last
+
+        // Modifier flas
+        Alt   = 0x1000,
+        Ctrl  = 0x2000,
+        Shift = 0x4000
+    };
+    enum class MouseButton : uint32
+    {
+        None          = 0,
+        Left          = 0x01,
+        Center        = 0x02,
+        Right         = 0x04,
+        DoubleClicked = 0x08,
+    };
+    enum class MouseWheel : uint32
+    {
+        None = 0,
+        Up,
+        Down,
+        Left,
+        Right
+    };
+}; // namespace Input
 namespace Graphics
 {
     enum class Color : uint8
@@ -459,7 +551,7 @@ namespace Utils
           u8string_view,
           u16string_view,
           CharacterView,
-          /*Input::Key,*/
+          Input::Key,
           Graphics::Size,
           Graphics::Color>;
     enum class PropertyType : uint8
@@ -536,99 +628,6 @@ namespace Dialogs
         No     = 4,
     };
 }
-
-namespace Input
-{
-    enum class Key : uint32
-    {
-        None = 0,
-        F1   = 1,
-        F2,
-        F3,
-        F4,
-        F5,
-        F6,
-        F7,
-        F8,
-        F9,
-        F10,
-        F11,
-        F12,
-        Enter,
-        Escape,
-        Insert,
-        Delete,
-        Backspace,
-        Tab,
-        Left,
-        Up,
-        Down,
-        Right,
-        PageUp,
-        PageDown,
-        Home,
-        End,
-        Space,
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        K,
-        L,
-        M,
-        N,
-        O,
-        P,
-        Q,
-        R,
-        S,
-        T,
-        U,
-        V,
-        W,
-        X,
-        Y,
-        Z,
-        N0,
-        N1,
-        N2,
-        N3,
-        N4,
-        N5,
-        N6,
-        N7,
-        N8,
-        N9,
-        Count, // must be the last
-
-        // Modifier flas
-        Alt   = 0x1000,
-        Ctrl  = 0x2000,
-        Shift = 0x4000
-    };
-    enum class MouseButton : uint32
-    {
-        None          = 0,
-        Left          = 0x01,
-        Center        = 0x02,
-        Right         = 0x04,
-        DoubleClicked = 0x08,
-    };
-    enum class MouseWheel : uint32
-    {
-        None = 0,
-        Up,
-        Down,
-        Left,
-        Right
-    };
-}; // namespace Input
 namespace Utils
 {
     class EXPORT Array32

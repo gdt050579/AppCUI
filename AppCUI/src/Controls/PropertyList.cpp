@@ -3,9 +3,12 @@
 
 namespace AppCUI
 {
-constexpr uint32 CATEGORY_FLAG       = 0x80000000;
-constexpr uint32 CATEGORY_INDEX_MASK = 0x7FFFFFFF;
-
+constexpr uint32 CATEGORY_FLAG             = 0x80000000;
+constexpr uint32 CATEGORY_INDEX_MASK       = 0x7FFFFFFF;
+constexpr static string_view color_names[] = {
+    "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
+    "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
+};
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
@@ -69,13 +72,66 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     auto c           = ColorPair{ Color::Silver, Color::DarkBlue };
     auto c_line      = ColorPair{ Color::DarkGreen, Color::DarkBlue };
     int32 x          = 0;
+    NumericFormatter n;
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
-    params.X     = x + 3;
-    params.Y     = y;
-    params.Color = c;
-    params.Width = this->Layout.Width - 3;
-    renderer.WriteText(prop.name, params);
-    renderer.WriteSpecialCharacter(x + 3 + 10, y, SpecialChars::BoxVerticalSingleLine, c_line);
+    if ((x + 3 + this->propertyNameWidth) < (int32) this->Layout.Width)
+    {
+        params.X     = x + 3;
+        params.Y     = y;
+        params.Color = c;
+        params.Width = this->propertyNameWidth;
+        renderer.WriteText(prop.name, params);
+        renderer.WriteSpecialCharacter(x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, c_line);
+    }
+    if (this->object->GetPropertyValue(prop.id, tempPropValue))
+    {
+        string_view tmpAscii;
+        NumericFormatter n;
+        switch (prop.type)
+        {
+        case PropertyType::UInt8:
+            tmpAscii = n.ToDec(std::get<uint8>(tempPropValue));
+            break;
+        case PropertyType::UInt16:
+            tmpAscii = n.ToDec(std::get<uint16>(tempPropValue));
+            break;
+        case PropertyType::UInt32:
+            tmpAscii = n.ToDec(std::get<uint32>(tempPropValue));
+            break;
+        case PropertyType::UInt64:
+            tmpAscii = n.ToDec(std::get<uint64>(tempPropValue));
+            break;
+        case PropertyType::Int8:
+            tmpAscii = n.ToDec(std::get<int8>(tempPropValue));
+            break;
+        case PropertyType::Int16:
+            tmpAscii = n.ToDec(std::get<int16>(tempPropValue));
+            break;
+        case PropertyType::Int32:
+            tmpAscii = n.ToDec(std::get<int32>(tempPropValue));
+            break;
+        case PropertyType::Int64:
+            tmpAscii = n.ToDec(std::get<int64>(tempPropValue));
+            break;
+        case PropertyType::Ascii:
+            tmpAscii = std::get<string_view>(tempPropValue);
+            break;
+        case PropertyType::Color:
+            tmpAscii = color_names[static_cast<uint8>(std::get<Graphics::Color>(tempPropValue))];
+            break;
+        case PropertyType::Key:
+            tmpAscii = KeyUtils::GetKeyName(std::get<Input::Key>(tempPropValue));
+            break;
+        default:
+            tmpAscii = "<error>";
+            break;
+        }
+        params.X     = x + 4 + this->propertyNameWidth;
+        params.Y     = y;
+        params.Color = c;
+        params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine;
+        renderer.WriteText(tmpAscii, params);
+    }
 }
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
 {
@@ -159,7 +215,8 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     auto* Members = (PropertyListContext*) this->Context;
     Members->properties.reserve(64);
     Members->categories.reserve(8);
-    Members->showCategories = true;
+    Members->showCategories    = true;
+    Members->propertyNameWidth = 14;
 
     SetObject(obj);
 }
@@ -178,6 +235,8 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
         {
             auto& pi = Members->properties.emplace_back();
             pi.name  = e.name;
+            pi.type  = e.type;
+            pi.id    = e.id;
             auto it  = s.find(e.category);
             if (it != s.cend())
             {

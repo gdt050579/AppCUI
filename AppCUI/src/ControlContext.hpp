@@ -825,14 +825,18 @@ struct PropertyInfo
 {
     FixSizeString<61> name;
     uint32 category;
+    uint32 id;
+    PropertyType type;
 };
 struct PropertyListContext: public ControlContext
 {
+    PropertyValue tempPropValue;
     Reference<PropertiesInterface> object;
     vector<PropertyInfo> properties;
     vector<PropertyCategoryInfo> categories;
     Array32 items;
     FixSizeString<61> filterText;
+    int32 propertyNameWidth;
     bool showCategories;
 
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);

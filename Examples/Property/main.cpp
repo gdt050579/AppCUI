@@ -30,6 +30,12 @@ class MyUserControl : public UserControl, public PropertiesInterface
   public:
     MyUserControl() : UserControl("d:c")
     {
+        x = 2;
+        y = 3;
+        sz = { 15, 5 };
+        ch = 'X';
+        c  = ColorPair{Color::Red, Color::Black};
+        hasBorder = true;
     }
 
     void Paint(Graphics::Renderer& renderer) override
