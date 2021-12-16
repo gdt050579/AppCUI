@@ -199,12 +199,14 @@ void PropertyListContext::MoveTo(uint32 newPos)
     // otherwise scroll down
     this->currentPos = newPos;
     if (newPos >= startView + height - 1)
-        this->startView = newPos - (height-1);
+        this->startView = newPos - (height - 1);
     else
         this->startView = 0;
 }
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
+    auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+
     switch (keyCode)
     {
     case Key::Up:
@@ -214,6 +216,21 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     case Key::Down:
         if (this->currentPos + 1 < this->items.Len())
             MoveTo(this->currentPos + 1);
+        return true;
+    case Key::Home:
+        MoveTo(0);
+        return true;
+    case Key::End:
+        MoveTo(this->items.Len());
+        return true;
+    case Key::PageUp:
+        if ((h >= 1) && (((uint32) h) > this->currentPos))
+            MoveTo(this->currentPos - (uint32) h);
+        else
+            MoveTo(0);
+        return true;
+    case Key::PageDown:
+        MoveTo(this->currentPos + (uint32) std::max<int>(1, h));
         return true;
     }
     return false;
