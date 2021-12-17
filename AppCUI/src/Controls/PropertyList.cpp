@@ -137,7 +137,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         params.X     = x + 4 + this->propertyNameWidth;
         params.Y     = y;
         params.Color = Colors.Item.Value;
-        params.Width = (int32)this->Layout.Width - (x + 3 + this->propertyNameWidth);
+        params.Width = (int32) this->Layout.Width - (x + 3 + this->propertyNameWidth);
         params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
         renderer.WriteText(tmpAscii, params);
     }
@@ -148,6 +148,9 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     int32 y     = 1;
     int32 max_y = this->Layout.Height;
     auto c      = this->Cfg->PropertList.Border;
+
+    if (this->propertyNameWidth == 0)
+        this->SetPropertyNameWidth(this->Layout.Width * 4 / 10, false);
 
     if ((this->Flags & GATTR_ENABLE) == 0)
     {
@@ -188,6 +191,16 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
                 renderer.FillHorizontalLine(0, y, this->Layout.Width, -1, ColorPair{ Color::Black, Color::White });
         }
     }
+}
+void PropertyListContext::SetPropertyNameWidth(int32 value, bool adjustPercentage)
+{
+    if (this->hasBorder)
+        value = std::min<>(this->Layout.Width - 8, value);
+    else
+        value = std::min<>(this->Layout.Width - 6, value);
+    this->propertyNameWidth = std::max<>(2, value);
+    if (adjustPercentage)
+        this->propetyNamePercentage = (float) this->propertyNameWidth / (float) (this->Layout.Width);
 }
 void PropertyListContext::MoveTo(uint32 newPos)
 {
@@ -252,6 +265,12 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     case Key::PageDown:
         MoveTo(this->currentPos + (uint32) std::max<int>(1, h));
         return true;
+    case Key::Left:
+        SetPropertyNameWidth(this->propertyNameWidth - 1, true);
+        return true;
+    case Key::Right:
+        SetPropertyNameWidth(this->propertyNameWidth + 1, true);
+        return true;
     case Key::Space:
         if (this->items.Get(this->currentPos, idx))
         {
@@ -284,7 +303,7 @@ void PropertyListContext::Refilter()
     if (this->showCategories)
     {
         this->items.Sort(SortWithCategories, true, this);
-        // clear categories filtered items
+        // clear categories filtered items;
         for (auto& cat : this->categories)
             cat.filteredItems = 0;
         // insert categories
@@ -335,15 +354,16 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     auto* Members = (PropertyListContext*) this->Context;
     Members->properties.reserve(64);
     Members->categories.reserve(8);
-    Members->showCategories    = true;
-    Members->hasBorder         = true;
-    Members->propertyNameWidth = 14;
-    Members->startView         = 0;
-    Members->currentPos        = 0;
-    Members->Flags             = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    Members->Layout.MinWidth   = 7;
-    Members->Layout.MinHeight  = 4;
-    
+    Members->showCategories        = true;
+    Members->hasBorder             = true;
+    Members->propertyNameWidth     = 0;
+    Members->startView             = 0;
+    Members->currentPos            = 0;
+    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
+    Members->Layout.MinHeight      = 4;
+    Members->propetyNamePercentage = 0.4f; // 40% of width is the property name 
+
     SetObject(obj);
 }
 void PropertyList::SetObject(Reference<PropertiesInterface> obj)
@@ -392,6 +412,15 @@ PropertyList::~PropertyList()
 void PropertyList::Paint(Graphics::Renderer& renderer)
 {
     reinterpret_cast<PropertyListContext*>(this->Context)->Paint(renderer);
+}
+
+void PropertyList::OnAfterResize(int newWidth, int)
+{
+    auto* Members = (PropertyListContext*) this->Context;
+    if (Members->propertyNameWidth == 0)
+        Members->SetPropertyNameWidth(newWidth * Members->propetyNamePercentage, false);
+    else
+        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
 }
 bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {

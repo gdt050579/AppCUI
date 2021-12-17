@@ -844,9 +844,11 @@ struct PropertyListContext : public ControlContext
     uint32 startView;
     uint32 currentPos;
     int32 propertyNameWidth;
+    float propetyNamePercentage;
     bool showCategories;
     bool hasBorder;
 
+    void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);

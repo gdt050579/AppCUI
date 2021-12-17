@@ -3765,6 +3765,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
+        void OnAfterResize(int newWidth, int newHeight) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
