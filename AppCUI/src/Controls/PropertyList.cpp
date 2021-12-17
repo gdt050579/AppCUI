@@ -341,7 +341,9 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->startView         = 0;
     Members->currentPos        = 0;
     Members->Flags             = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-
+    Members->Layout.MinWidth   = 7;
+    Members->Layout.MinHeight  = 4;
+    
     SetObject(obj);
 }
 void PropertyList::SetObject(Reference<PropertiesInterface> obj)
