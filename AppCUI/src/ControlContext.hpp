@@ -828,8 +828,13 @@ struct PropertyInfo
     uint32 id;
     PropertyType type;
 };
-struct PropertyListContext: public ControlContext
+struct PropertyListContext : public ControlContext
 {
+    struct
+    {
+        decltype(AppCUI::Application::Config::PropertList.Category) Category;
+        decltype(AppCUI::Application::Config::PropertList.Item) Item;
+    } Colors;
     PropertyValue tempPropValue;
     Reference<PropertiesInterface> object;
     vector<PropertyInfo> properties;
@@ -850,7 +855,6 @@ struct PropertyListContext: public ControlContext
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };
-
 
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \

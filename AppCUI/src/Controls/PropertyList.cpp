@@ -35,11 +35,10 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
     if (index >= this->categories.size())
         return;
     const auto& cat = this->categories[index];
-    auto c          = ColorPair{ Color::Yellow, Color::Blue };
     int32 x         = this->hasBorder ? 1 : 0;
     int32 w         = this->hasBorder ? this->Layout.Width - 2 : this->Layout.Width;
 
-    renderer.FillHorizontalLine(x, y, w, ' ', c);
+    renderer.FillHorizontalLine(x, y, w, ' ', Colors.Category.Text);
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth);
@@ -47,7 +46,7 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
     if (w >= 5)
     {
         params.X     = x + 2;
-        params.Color = c;
+        params.Color = Colors.Category.Text;
         params.Width = w - 5;
         renderer.WriteText(cat.name, params);
     }
@@ -66,30 +65,31 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         params.Align = TextAlignament::Right;
         params.Width = tmp.Len();
         params.X     = w - 1;
-        params.Color = ColorPair{ Color::Gray, Color::Blue };
+        params.Color = Colors.Category.Stats;
         renderer.WriteText(tmp, params);
     }
     if (w > 0)
-        renderer.WriteSpecialCharacter(x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, c);
+        renderer.WriteSpecialCharacter(
+              x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, Colors.Category.Arrow);
 }
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
     if (index >= this->properties.size())
         return;
     const auto& prop = this->properties[index];
-    auto c           = ColorPair{ Color::Silver, Color::DarkBlue };
-    auto c_line      = ColorPair{ Color::DarkGreen, Color::DarkBlue };
-    int32 x          = this->hasBorder ? 1 : 0;
+
+    int32 x = this->hasBorder ? 1 : 0;
     NumericFormatter n;
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
     if ((x + 3 + this->propertyNameWidth) < (int32) this->Layout.Width)
     {
         params.X     = x + 3;
         params.Y     = y;
-        params.Color = c;
+        params.Color = Colors.Item.Text;
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
-        renderer.WriteSpecialCharacter(x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, c_line);
+        renderer.WriteSpecialCharacter(
+              x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, Colors.Item.LineSeparator);
     }
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
@@ -136,8 +136,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         }
         params.X     = x + 4 + this->propertyNameWidth;
         params.Y     = y;
-        params.Color = c;
-        params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine;
+        params.Color = Colors.Item.Value;
+        params.Width = (int32)this->Layout.Width - (x + 3 + this->propertyNameWidth);
+        params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
         renderer.WriteText(tmpAscii, params);
     }
 }
@@ -146,9 +147,27 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     uint32 value;
     int32 y     = 1;
     int32 max_y = this->Layout.Height;
+    auto c      = this->Cfg->PropertList.Border;
+
+    if ((this->Flags & GATTR_ENABLE) == 0)
+    {
+        c                               = this->Cfg->PropertList.Inactive;
+        this->Colors.Category.Arrow     = c;
+        this->Colors.Category.Stats     = c;
+        this->Colors.Category.Text      = c;
+        this->Colors.Item.LineSeparator = c;
+        this->Colors.Item.ReadOnly      = c;
+        this->Colors.Item.Text          = c;
+        this->Colors.Item.Value         = c;
+    }
+    else
+    {
+        this->Colors.Category = this->Cfg->PropertList.Category;
+        this->Colors.Item     = this->Cfg->PropertList.Item;
+    }
+    renderer.Clear(' ', c);
     if (this->hasBorder)
     {
-        auto c = ColorPair{ Color::White, Color::Transparent };
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, false);
         y++;
         max_y--;
@@ -161,7 +180,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
             DrawCategory(value & CATEGORY_INDEX_MASK, y, renderer);
         else
             DrawProperty(value, y, renderer);
-        if (idx == this->currentPos)
+        if ((this->Focused) && (idx == this->currentPos))
         {
             if (this->hasBorder)
                 renderer.FillHorizontalLine(1, y, this->Layout.Width - 2, -1, ColorPair{ Color::Black, Color::White });

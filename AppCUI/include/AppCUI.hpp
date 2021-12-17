@@ -4532,6 +4532,20 @@ namespace Application
             } Text;
             Graphics::ColorPair Header;
         } Grid;
+        struct
+        {
+            Graphics::ColorPair Inactive;
+            Graphics::ColorPair Cursor;
+            Graphics::ColorPair Border;
+            struct
+            {
+                Graphics::ColorPair Text, Stats, Arrow;
+            } Category;
+            struct
+            {
+                Graphics::ColorPair Text, LineSeparator, Value, ReadOnly;
+            } Item;
+        } PropertList;
         void SetDarkTheme();
     };
 

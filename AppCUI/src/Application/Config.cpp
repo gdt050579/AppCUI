@@ -353,5 +353,16 @@ void Config::SetDarkTheme()
     this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::DarkRed };
     this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
+
+    this->PropertList.Border             = ColorPair{ Color::White, Color::DarkBlue };
+    this->PropertList.Cursor             = ColorPair{ Color::Black, Color::White };
+    this->PropertList.Inactive           = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertList.Category.Text      = ColorPair{ Color::White, Color::Blue };
+    this->PropertList.Category.Arrow     = ColorPair{ Color::Green, Color::Blue };
+    this->PropertList.Category.Stats     = ColorPair{ Color::Gray, Color::Blue };
+    this->PropertList.Item.Text          = ColorPair{ Color::Silver, Color::DarkBlue };
+    this->PropertList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
+    this->PropertList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->PropertList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
 }
 } // namespace AppCUI::Application
