@@ -17,31 +17,66 @@ enum class MyControlProperty : uint32
     Version,
     Border,
     BorderType,
+    AnimationStarted,
+    AnimationSpeed
 };
 
 class MyUserControl : public UserControl, public PropertiesInterface
 {
-    int32 x, y;
+    int32 x, y, addX, addY;
     Size sz;
     char16 ch;
     ColorPair c;
     bool hasBorder;
+    int32 counter;
 
   public:
     MyUserControl() : UserControl("d:c")
     {
-        x = 2;
-        y = 3;
-        sz = { 15, 5 };
-        ch = 'X';
-        c  = ColorPair{Color::Red, Color::Black};
+        counter   = 0;
+        x         = 2;
+        y         = 3;
+        addX      = 1;
+        addY      = -1;
+        sz        = { 15, 5 };
+        ch        = 'X';
+        c         = ColorPair{ Color::Red, Color::Black };
         hasBorder = true;
     }
-
+    bool OnFrameUpdate() override
+    {
+        counter++;
+        if (counter < 3)
+            return false;
+        counter = 0;
+        x += addX;
+        y += addY;
+        if (x < 0)
+        {
+            x    = 0;
+            addX = 1;
+        }
+        if (x > this->GetWidth())
+        {
+            x    = this->GetWidth();
+            addX = -1;
+        }
+        if (y < 0)
+        {
+            y    = 0;
+            addY = 1;
+        }
+        if (y > this->GetHeight())
+        {
+            y    = this->GetHeight();
+            addY = -1;
+        }
+        return true;
+    }
     void Paint(Graphics::Renderer& renderer) override
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
-        renderer.WriteSingleLineText(0, 0, "My user control", ColorPair{ Color::White, Color::Black });
+        renderer.FillRect(x, y, x + sz.Width - 1, y + sz.Height - 1, ch, c);
     }
     // PropertiesInterface
     bool GetPropertyValue(uint32 id, PropertyValue& value) override
@@ -129,27 +164,32 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::ForeColor, "Look & Feel", "Fore color", PropertyType::Color },
               { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
               { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Ascii },
+              { (uint32) MyControlProperty::Border, "Look & Feel", "Draw border", PropertyType::Boolean },
+              { (uint32) MyControlProperty::BorderType, "Look & Feel", "Border Type", "Single=1,Double=2,Thick=3" },
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Ascii },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
-              { (uint32) MyControlProperty::Border, "General", "Draw border", PropertyType::Boolean },
-              { (uint32) MyControlProperty::BorderType, "General", "Border Type", "SingleLine=1,DoubleLine=2,Block=3" },
+              { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
+              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", "Slow=1,Normal=2,Fast=3" },
+
         });
     };
 };
 class PropertyWindowExmaple : public Window
 {
+    Reference<MyUserControl> ct;
+
   public:
     PropertyWindowExmaple() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto sp = Factory::Splitter::Create(this, "d:c", true);
-        auto ct = sp->CreateChildControl<MyUserControl>();
+        ct      = sp->CreateChildControl<MyUserControl>();
         auto pl = sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>());
         sp->SetSecondPanelSize(30);
     }
 };
 int main()
 {
-    if (!Application::Init())
+    if (!Application::Init(InitializationFlags::EnableFPSMode))
         return 1;
     Application::AddWindow(std::make_unique<PropertyWindowExmaple>());
     Application::Run();
