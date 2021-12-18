@@ -2,16 +2,16 @@
 
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
-    page            = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    leftPanel       = AppCUI::Controls::Factory::Panel::Create(page, "Game", "t:0,b:0,w:75%,x:0%,a:l");
-    rightPanel      = AppCUI::Controls::Factory::Panel::Create(page, "Info", "t:0,b:0,w:25%,x:100%,a:r");
-    stats           = AppCUI::Controls::Factory::Panel::Create(rightPanel, "Stats", "d:t,h:30%");
-    scoreLabel      = AppCUI::Controls::Factory::Label::Create(stats, "0", "t:1,b:0,w:50%,x:2%,a:l");
-    timePassedLabel = AppCUI::Controls::Factory::Label::Create(stats, "0", "t:2,b:0,w:50%,x:2%,a:l");
-    nextPiece       = AppCUI::Controls::Factory::Panel::Create(rightPanel, "Next Pieces", "d:b,h:70%");
-    nextPiece01     = AppCUI::Controls::Factory::Panel::Create(nextPiece, "01", "d:t,h:35%");
-    nextPiece02     = AppCUI::Controls::Factory::Panel::Create(nextPiece, "02", "d:c,h:33%");
-    nextPiece03     = AppCUI::Controls::Factory::Panel::Create(nextPiece, "03", "d:b,h:33%");
+    page            = Factory::TabPage::Create(data->tab, "");
+    leftPanel       = Factory::Panel::Create(page, "Game", "t:0,b:0,w:75%,x:0%,a:l");
+    rightPanel      = Factory::Panel::Create(page, "Info", "t:0,b:0,w:25%,x:100%,a:r");
+    stats           = Factory::Panel::Create(rightPanel, "Stats", "d:t,h:30%");
+    scoreLabel      = Factory::Label::Create(stats, "0", "t:1,b:0,w:50%,x:2%,a:l");
+    timePassedLabel = Factory::Label::Create(stats, "0", "t:2,b:0,w:50%,x:2%,a:l");
+    nextPiece       = Factory::Panel::Create(rightPanel, "Next Pieces", "d:b,h:70%");
+    nextPiece01     = Factory::Panel::Create(nextPiece, "01", "d:t,h:35%");
+    nextPiece02     = Factory::Panel::Create(nextPiece, "02", "d:c,h:33%");
+    nextPiece03     = Factory::Panel::Create(nextPiece, "03", "d:b,h:33%");
 
     page->SetText("");
     leftPanel->SetText("");
@@ -38,21 +38,20 @@ void RunningState::Init()
     while (pieces.size() < maxPiecesInQueue)
     {
         const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>(), 1, 1 }));
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<Control>(), 1, 1 }));
     }
 
     data->tab->SetCurrentTabPage(page);
 }
 
-bool RunningState::HandleEvent(
-      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool RunningState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
 {
     return false;
 }
 
 bool RunningState::Update()
 {
-    AppCUI::Utils::LocalString<128> ls;
+    LocalString<128> ls;
     ls.Format("Score: %u", score);
     scoreLabel->SetText(ls.GetText());
 
@@ -62,14 +61,14 @@ bool RunningState::Update()
 
     if (currentPiece.has_value())
     {
-        if (lastPieceAdvancementUpdate != delta)
+        if (currentPieceUpdated != delta)
         {
             const auto bHeight = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
             if (currentPiece->GetBottomYPosition(pieceScaleInLeftPanel) + bHeight < leftPanel->GetHeight())
             {
                 currentPiece->UpdatePosition(0, bHeight);
             }
-            lastPieceAdvancementUpdate = delta;
+            currentPieceUpdated = delta;
         }
 
         if (currentPiece->TouchedTheBottom(pieceScaleInLeftPanel, leftPanel->GetHeight()))
@@ -91,17 +90,16 @@ bool RunningState::Update()
     while (pieces.size() < maxPiecesInQueue)
     {
         const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<AppCUI::Controls::Control>(), 1, 1 }));
+        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<Control>(), 1, 1 }));
     }
 
     return true;
 }
 
-void RunningState::Draw(AppCUI::Graphics::Renderer& renderer)
+void RunningState::Draw(Renderer& renderer)
 {
     renderer.HideCursor();
-    renderer.Clear(
-          ' ', AppCUI::Graphics::ColorPair{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::DarkBlue });
+    renderer.Clear(' ', ColorPair{ Color::White, Color::DarkBlue });
 }
 
 void RunningState::Pause()
@@ -113,13 +111,12 @@ void RunningState::Resume()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool RunningState::OnKeyEvent(
-      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+bool RunningState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
 
 {
     switch (keyCode)
     {
-    case AppCUI::Input::Key::Escape:
+    case Key::Escape:
         this->data->machine->PushState<PauseState>(this->data, false);
         return true;
     default:
@@ -136,7 +133,7 @@ RunningState::PaintControlImplementationRightPiecePanels::PaintControlImplementa
 }
 
 void RunningState::PaintControlImplementationRightPiecePanels::PaintControl(
-      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
+      Reference<Control> control, Renderer& renderer)
 {
     control->Paint(renderer);
 
@@ -151,8 +148,7 @@ RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLef
 {
 }
 
-void RunningState::PaintControlImplementationLeftPanel::PaintControl(
-      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Graphics::Renderer& renderer)
+void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<Control> control, Renderer& renderer)
 {
     control->Paint(renderer);
 
@@ -177,11 +173,11 @@ RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImp
 }
 
 bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
-      AppCUI::Controls::Reference<AppCUI::Controls::Control> control, AppCUI::Input::Key keyCode, char16_t unicodeChar)
+      Reference<Control> control, Key keyCode, char16_t unicodeChar)
 {
     switch (keyCode)
     {
-    case AppCUI::Input::Key::Left:
+    case Key::Left:
         if (rs.currentPiece.has_value())
         {
             const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
@@ -192,7 +188,7 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
             }
         }
         break;
-    case AppCUI::Input::Key::Right:
+    case Key::Right:
         if (rs.currentPiece.has_value())
         {
             const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
@@ -204,7 +200,7 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
         }
         break;
 
-    case AppCUI::Input::Key::Down:
+    case Key::Down:
         if (rs.currentPiece.has_value())
         {
             const auto bHeight = rs.currentPiece->GetBlockHeight(rs.pieceScaleInLeftPanel);

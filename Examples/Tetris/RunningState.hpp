@@ -7,7 +7,12 @@
 
 #include <random>
 
-class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEventInterface
+using namespace AppCUI::Utils;
+using namespace AppCUI::Input;
+using namespace AppCUI::Controls;
+using namespace AppCUI::Graphics;
+
+class RunningState : public State, public Handlers::OnKeyEventInterface
 {
   public:
     explicit RunningState(const std::shared_ptr<GameData>& data);
@@ -21,55 +26,42 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
 
     void Init() override;
 
-    bool HandleEvent(
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
-          AppCUI::Controls::Event eventType,
-          int controlID) override;
+    bool HandleEvent(Reference<::Control> ctrl, Event eventType, int controlID) override;
     bool Update() override;
-    void Draw(AppCUI::Graphics::Renderer& renderer) override;
+    void Draw(Renderer& renderer) override;
 
     void Pause() override;
     void Resume() override;
 
-    bool OnKeyEvent(
-          AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-          AppCUI::Input::Key keyCode,
-          char16_t unicodeChar);
+    bool OnKeyEvent(Reference<::Control> control, Key keyCode, char16_t unicodeChar);
 
   private:
-    class PaintControlImplementationRightPiecePanels : public AppCUI::Controls::Handlers::PaintControlInterface
+    class PaintControlImplementationRightPiecePanels : public Handlers::PaintControlInterface
     {
         RunningState& rs;
         const unsigned int id;
 
       public:
         PaintControlImplementationRightPiecePanels(RunningState& rs, unsigned int id);
-        void PaintControl(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-              AppCUI::Graphics::Renderer& renderer) override;
+        void PaintControl(::Reference<::Control> control, ::Renderer& renderer) override;
     };
 
-    class PaintControlImplementationLeftPanel : public AppCUI::Controls::Handlers::PaintControlInterface
+    class PaintControlImplementationLeftPanel : public Handlers::PaintControlInterface
     {
         RunningState& rs;
 
       public:
         PaintControlImplementationLeftPanel(RunningState& rs);
-        void PaintControl(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-              AppCUI::Graphics::Renderer& renderer) override;
+        void PaintControl(Reference<::Control> control, ::Renderer& renderer) override;
     };
 
-    class OnKeyEventInterfaceImplementationLeftPanel : public AppCUI::Controls::Handlers::OnKeyEventInterface
+    class OnKeyEventInterfaceImplementationLeftPanel : public Handlers::OnKeyEventInterface
     {
         RunningState& rs;
 
       public:
         OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs);
-        bool OnKeyEvent(
-              AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-              AppCUI::Input::Key keyCode,
-              char16_t unicodeChar) override;
+        bool OnKeyEvent(Reference<::Control> control, Key keyCode, char16_t unicodeChar) override;
     };
 
     const std::shared_ptr<GameData>& data;
@@ -80,26 +72,26 @@ class RunningState : public State, public AppCUI::Controls::Handlers::OnKeyEvent
     clock_t initialTime{};
     const unsigned int maxPiecesInQueue      = 3U;
     unsigned long delta                      = 0;
-    unsigned long lastPieceAdvancementUpdate = -1;
+    unsigned long currentPieceUpdated        = -1;
     const unsigned int pieceScaleInLeftPanel = 4;
 
     std::random_device r;
     std::default_random_engine e1{ r() };
     std::uniform_int_distribution<int> uniform_dist{ 0, static_cast<int>(PieceType::End) - 1 };
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page          = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> leftPanel       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece01     = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece02     = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> nextPiece03     = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> rightPanel      = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> stats           = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> scoreLabel      = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Label> timePassedLabel = nullptr;
-
     std::vector<Piece> piecesProcessed;
     std::optional<Piece> currentPiece;
+
+    Reference<TabPage> page          = nullptr;
+    Reference<Panel> leftPanel       = nullptr;
+    Reference<Panel> nextPiece       = nullptr;
+    Reference<Panel> nextPiece01     = nullptr;
+    Reference<Panel> nextPiece02     = nullptr;
+    Reference<Panel> nextPiece03     = nullptr;
+    Reference<Panel> rightPanel      = nullptr;
+    Reference<Panel> stats           = nullptr;
+    Reference<Label> scoreLabel      = nullptr;
+    Reference<Label> timePassedLabel = nullptr;
 
     PaintControlImplementationRightPiecePanels pcirpp01{ *this, 0 };
     PaintControlImplementationRightPiecePanels pcirpp02{ *this, 1 };
