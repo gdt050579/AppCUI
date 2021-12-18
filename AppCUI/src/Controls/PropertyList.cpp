@@ -106,6 +106,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     {
         string_view tmpAscii;
         NumericFormatter n;
+        LocalString<32> tmpString;
+        Size tmpSize;
         switch (prop.type)
         {
         case PropertyType::Boolean:
@@ -150,6 +152,10 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         case PropertyType::Key:
             tmpAscii = KeyUtils::GetKeyName(std::get<Input::Key>(tempPropValue));
             break;
+        case PropertyType::Size:
+            tmpSize = std::get<Graphics::Size>(tempPropValue);
+            tmpAscii = tmpString.Format("%u x %u", tmpSize.Width, tmpSize.Height);
+            break;
         }
 
         if (w > 0)
@@ -182,6 +188,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             case PropertyType::Double:
             case PropertyType::Ascii:
             case PropertyType::Key:
+            case PropertyType::Size:
                 // value is already converted to ascii string --> printed
                 renderer.WriteText(tmpAscii, params);
                 break;
