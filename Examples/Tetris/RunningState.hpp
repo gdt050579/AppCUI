@@ -81,6 +81,13 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
 
     std::vector<Piece> piecesProcessed;
     std::optional<Piece> currentPiece;
+    bool matrix[50][50]{ 0 }; // no need for more than 50
+    unsigned int maxtrixVSize  = 0;
+    unsigned int maxtrixHSize  = 0;
+    unsigned int matrixXLeft   = 0;
+    unsigned int matrixXRight  = 0;
+    unsigned int matrixYTop    = 0;
+    unsigned int matrixYBottom = 0;
 
     Reference<TabPage> page          = nullptr;
     Reference<Panel> leftPanel       = nullptr;

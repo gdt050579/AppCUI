@@ -51,6 +51,23 @@ bool RunningState::HandleEvent(Reference<Control> ctrl, Event eventType, int con
 
 bool RunningState::Update()
 {
+    if (currentPiece.has_value())
+    {
+        // compute # of squares on horizontal
+        const auto bWidth     = currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
+        const auto panelWidth = leftPanel->GetWidth() - 2;
+        maxtrixHSize          = panelWidth / bWidth;
+        matrixXLeft           = 1 + (panelWidth % bWidth) / 2;
+        matrixXRight          = panelWidth - matrixXLeft;
+
+        // compute # of squares on vertical
+        const auto bHeight     = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
+        const auto panelHeight = leftPanel->GetHeight() - 2;
+        maxtrixVSize           = panelHeight / bHeight;
+        matrixYTop             = 1 + (panelHeight % bHeight) / 2;
+        matrixYBottom          = panelHeight - matrixYTop;
+    }
+
     LocalString<128> ls;
     ls.Format("Score: %u", score);
     scoreLabel->SetText(ls.GetText());
@@ -156,6 +173,7 @@ void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<C
     {
         if (rs.currentPiece->IsInitialPositionSet() == false)
         {
+            // TODO: set position based on matrix
             rs.currentPiece->SetInitialPosition(control->GetWidth() / 2, 1);
         }
         rs.currentPiece->Draw(renderer, rs.pieceScaleInLeftPanel);
