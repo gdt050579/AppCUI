@@ -125,6 +125,12 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         case PropertyType::Int64:
             tmpAscii = n.ToDec(std::get<int64>(tempPropValue));
             break;
+        case PropertyType::Float:
+            tmpAscii = n.ToDec(std::get<float>(tempPropValue));
+            break;
+        case PropertyType::Double:
+            tmpAscii = n.ToDec(std::get<double>(tempPropValue));
+            break;
         case PropertyType::Ascii:
             tmpAscii = std::get<string_view>(tempPropValue);
             break;
@@ -158,6 +164,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             case PropertyType::Int16:
             case PropertyType::Int32:
             case PropertyType::Int64:
+            case PropertyType::Float:
+            case PropertyType::Double:
             case PropertyType::Ascii:
             case PropertyType::Key:
                 // value is already converted to ascii string --> printed
