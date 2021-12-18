@@ -416,20 +416,21 @@ Reference<Controls::Grid> Factory::Grid::Create(
 }
 
 //======[PROPERTYLIST]===============================================================================
-Pointer<Controls::PropertyList> Factory::PropertyList::Create(string_view layout, Reference<PropertiesInterface> object)
+Pointer<Controls::PropertyList> Factory::PropertyList::Create(
+      string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
 {
-    return POINTER<Controls::PropertyList>(new Controls::PropertyList(layout, object));
+    return POINTER<Controls::PropertyList>(new Controls::PropertyList(layout, object, flags));
 }
 Reference<Controls::PropertyList> Factory::PropertyList::Create(
-      Controls::Control* parent, string_view layout, Reference<PropertiesInterface> object)
+      Controls::Control* parent, string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object));
+    return parent->AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object, flags));
 }
 Reference<Controls::PropertyList> Factory::PropertyList::Create(
-      Controls::Control& parent, string_view layout, Reference<PropertiesInterface> object)
+      Controls::Control& parent, string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
 {
-    return parent.AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object));
+    return parent.AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object, flags));
 }
 
 } // namespace AppCUI

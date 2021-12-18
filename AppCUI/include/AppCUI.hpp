@@ -534,7 +534,7 @@ namespace Utils
     };
 
     using PropertyValueFlags = uint64;
-    using PropertyValue = variant<
+    using PropertyValue      = variant<
           std::monostate,
           bool,
           uint8,
@@ -3758,10 +3758,16 @@ namespace Controls
         friend Control;
     };
 
+    enum class PropertyListFlags : uint32
+    {
+        None   = 0x000000,
+        Border = 0x000100,
+    };
     class EXPORT PropertyList : public Control
     {
       protected:
-        PropertyList(string_view layout, Reference<PropertiesInterface> object);
+        PropertyList(
+              string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags = PropertyListFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4143,11 +4149,20 @@ namespace Controls
             PropertyList() = delete;
 
           public:
-            static Pointer<Controls::PropertyList> Create(string_view layout, Reference<PropertiesInterface> object);
+            static Pointer<Controls::PropertyList> Create(
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
             static Reference<Controls::PropertyList> Create(
-                  Controls::Control* parent, string_view layout, Reference<PropertiesInterface> object);
+                  Controls::Control* parent,
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
             static Reference<Controls::PropertyList> Create(
-                  Controls::Control& parent, string_view layout, Reference<PropertiesInterface> object);
+                  Controls::Control& parent,
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
         };
     } // namespace Factory
 
@@ -4600,5 +4615,6 @@ ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 
 #undef ADD_FLAG_OPERATORS

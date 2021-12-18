@@ -183,7 +183,7 @@ class PropertyWindowExmaple : public Window
     {
         auto sp = Factory::Splitter::Create(this, "d:c", true);
         ct      = sp->CreateChildControl<MyUserControl>();
-        auto pl = sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>());
+        auto pl = sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>(), PropertyListFlags::Border);
         sp->SetSecondPanelSize(30);
     }
 };

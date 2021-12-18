@@ -348,21 +348,21 @@ void PropertyListContext::Refilter()
     }
 }
 
-PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> obj)
+PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> obj, PropertyListFlags flags)
     : Control(new PropertyListContext(), "", layout, false)
 {
     auto* Members = (PropertyListContext*) this->Context;
     Members->properties.reserve(64);
     Members->categories.reserve(8);
     Members->showCategories        = true;
-    Members->hasBorder             = true;
+    Members->hasBorder             = (flags & PropertyListFlags::Border) != PropertyListFlags::None;
     Members->propertyNameWidth     = 0;
     Members->startView             = 0;
     Members->currentPos            = 0;
-    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32)flags;
     Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
     Members->Layout.MinHeight      = 4;
-    Members->propetyNamePercentage = 0.4f; // 40% of width is the property name 
+    Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
 
     SetObject(obj);
 }
@@ -418,7 +418,7 @@ void PropertyList::OnAfterResize(int newWidth, int)
 {
     auto* Members = (PropertyListContext*) this->Context;
     if (Members->propertyNameWidth == 0)
-        Members->SetPropertyNameWidth(newWidth * Members->propetyNamePercentage, false);
+        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
     else
         Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
 }
