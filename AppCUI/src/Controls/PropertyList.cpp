@@ -107,6 +107,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         string_view tmpAscii;
         u16string_view tmpUnicode;
         u8string_view tmpUTF8;
+        CharacterView tmpCharView;
         NumericFormatter n;
         LocalString<32> tmpString;
         Size tmpSize;
@@ -153,6 +154,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             break;
         case PropertyType::UTF8:
             tmpUTF8 = std::get<u8string_view>(tempPropValue);
+            break;
+        case PropertyType::CharacterView:
+            tmpCharView = std::get<CharacterView>(tempPropValue);
             break;
         case PropertyType::Color:
             tmpAscii = color_names[static_cast<uint8>(std::get<Graphics::Color>(tempPropValue))];
@@ -201,12 +205,13 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 renderer.WriteText(tmpAscii, params);
                 break;
             case PropertyType::Unicode:
-                // value is already converted to unicode string --> printed
                 renderer.WriteText(tmpUnicode, params);
                 break;
             case PropertyType::UTF8:
-                // value is already converted to UTF8 string --> printed
                 renderer.WriteText(tmpUTF8, params);
+                break;
+            case PropertyType::CharacterView:
+                renderer.WriteText(tmpCharView, params);
                 break;
             case PropertyType::Color:
                 renderer.WriteSpecialCharacter(
