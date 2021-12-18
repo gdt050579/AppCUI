@@ -95,6 +95,13 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
               x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, Colors.Item.LineSeparator);
     }
     bool readOnly = this->object->IsPropertyValueReadOnly(prop.id);
+    auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + 5 + this->propertyNameWidth))
+                                    : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
+    params.X      = x + 4 + this->propertyNameWidth;
+    params.Y      = y;
+    params.Color  = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
+    params.Flags  = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
+
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
         string_view tmpAscii;
@@ -143,20 +150,11 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         case PropertyType::Key:
             tmpAscii = KeyUtils::GetKeyName(std::get<Input::Key>(tempPropValue));
             break;
-        default:
-            tmpAscii = "<error>";
-            break;
         }
-        auto w = this->hasBorder ? ((int32) this->Layout.Width - (x + 5 + this->propertyNameWidth))
-                                 : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
+
         if (w > 0)
         {
-            params.X     = x + 4 + this->propertyNameWidth;
-            params.Y     = y;
-            params.Color = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
             params.Width = (uint32) w;
-            params.Flags =
-                  WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
 
             switch (prop.type)
             {
@@ -201,9 +199,18 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 }
                 break;
             default:
-                tmpAscii = "<error>";
+                renderer.WriteText("<Internal error - fail to process item type>", params);
                 break;
             }
+        }
+    }
+    else
+    {
+        if (w > 0)
+        {
+            params.Width = (uint32) w;
+            params.Color = Colors.Item.Error;
+            renderer.WriteText("<Unable to read item value>", params);
         }
     }
 }
@@ -229,6 +236,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Item.Value         = c;
         this->Colors.Item.Checked       = c;
         this->Colors.Item.Unchecked     = c;
+        this->Colors.Item.Error         = c;
     }
     else
     {

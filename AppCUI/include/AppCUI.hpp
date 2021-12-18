@@ -4560,7 +4560,7 @@ namespace Application
             } Category;
             struct
             {
-                Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked;
+                Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked, Error;
             } Item;
         } PropertList;
         void SetDarkTheme();
