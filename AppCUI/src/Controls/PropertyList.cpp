@@ -105,6 +105,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
         string_view tmpAscii;
+        u16string_view tmpUnicode;
+        u8string_view tmpUTF8;
         NumericFormatter n;
         LocalString<32> tmpString;
         Size tmpSize;
@@ -146,6 +148,12 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         case PropertyType::Ascii:
             tmpAscii = std::get<string_view>(tempPropValue);
             break;
+        case PropertyType::Unicode:
+            tmpUnicode = std::get<u16string_view>(tempPropValue);
+            break;
+        case PropertyType::UTF8:
+            tmpUTF8 = std::get<u8string_view>(tempPropValue);
+            break;
         case PropertyType::Color:
             tmpAscii = color_names[static_cast<uint8>(std::get<Graphics::Color>(tempPropValue))];
             break;
@@ -153,7 +161,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = KeyUtils::GetKeyName(std::get<Input::Key>(tempPropValue));
             break;
         case PropertyType::Size:
-            tmpSize = std::get<Graphics::Size>(tempPropValue);
+            tmpSize  = std::get<Graphics::Size>(tempPropValue);
             tmpAscii = tmpString.Format("%u x %u", tmpSize.Width, tmpSize.Height);
             break;
         }
@@ -191,6 +199,14 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             case PropertyType::Size:
                 // value is already converted to ascii string --> printed
                 renderer.WriteText(tmpAscii, params);
+                break;
+            case PropertyType::Unicode:
+                // value is already converted to unicode string --> printed
+                renderer.WriteText(tmpUnicode, params);
+                break;
+            case PropertyType::UTF8:
+                // value is already converted to UTF8 string --> printed
+                renderer.WriteText(tmpUTF8, params);
                 break;
             case PropertyType::Color:
                 renderer.WriteSpecialCharacter(
