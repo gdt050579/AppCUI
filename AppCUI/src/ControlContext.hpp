@@ -824,6 +824,7 @@ struct PropertyCategoryInfo
 struct PropertyInfo
 {
     FixSizeString<61> name;
+    std::map<uint64, FixSizeUnicode<48>> listValues;
     uint32 category;
     uint32 id;
     PropertyType type;

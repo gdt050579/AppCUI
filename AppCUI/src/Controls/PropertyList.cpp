@@ -17,13 +17,13 @@ class ListItemsParser
 
     inline const T* SkipSpaces(const T* pos) const
     {
-        while ((pos < end) && (((*pos) == ' ') || ((*pos) == '\t') || ((*pos) == '\n') || ((*pos) != '\r')))
+        while ((pos < end) && (((*pos) == ' ') || ((*pos) == '\t') || ((*pos) == '\n') || ((*pos) == '\r')))
             pos++;
         return pos;
     }
-    inline const T* SkipUntilSpace(const T* pos) const
+    inline const T* SkipWord(const T* pos) const
     {
-        while ((pos < end) && ((*pos) != ' ') && ((*pos) != '\t') && ((*pos) != '\n') && ((*pos) != '\r'))
+        while ((pos < end) && ((*pos) > 32) && ((*pos) != '=') && ((*pos) != ';') && ((*pos) != ','))
             pos++;
         return pos;
     }
@@ -51,38 +51,38 @@ class ListItemsParser
         char* v_ascii;
         FixSizeUnicode<48> keyName;
 
+        CHECK(p, false, "Expecting a valid NON-NULL buffer for ListItemParser !");
+
         while (p < end)
         {
             k_start = SkipSpaces(p);
-            k_end   = SkipUntilSpace(k_start);
+            k_end   = SkipWord(k_start);
             p       = SkipSpaces(k_end);
-            if (CheckNextChar(p, '=', '=', true) == false)
-                return false;
+            CHECK(CheckNextChar(p, '=', '=', true), false, "");
             v_start = SkipSpaces(p + 1);
-            v_end   = SkipUntilSpace(v_start);
+            v_end   = SkipWord(v_start);
             p       = SkipSpaces(v_end);
-            if (CheckNextChar(p, ',', ';', false) == false)
-                return false;
+            CHECK(CheckNextChar(p, ',', ';', false), false, "");
             p = SkipSpaces(p + 1);
-            if ((v_start == v_end) || (k_start == k_end))
-                return false;
-            if ((v_end - v_start) > 127)
-                return false;
+            CHECK(v_start < v_end, false, "Expecting a value in list");
+            CHECK(k_start < k_end, false, "Expecting a key in list");
+            CHECK((v_end - v_start) < 127, false, "Numbers in list must not exceed 126 characters");
+
             v_ascii = asciiValue;
             while (v_start < v_end)
             {
-                if (((*v_start) <= 32) || ((*v_start) > 127))
-                    return false; // not even a number
+                CHECK((((*v_start) > 32) && ((*v_start) < 127)),
+                      false,
+                      "Invalid character representation for a number");
                 *v_ascii = (char) (*v_start);
                 v_ascii++;
                 v_start++;
             }
             string_view value((const char*) asciiValue, (size_t) (v_ascii - asciiValue));
             auto res = Number::ToUInt64(value);
-            if (!res.has_value())
-                return false; // invalid value
+            CHECK(res.has_value(), false, "Invalid value (or invalid uint64 value) in list");
             keyName.Clear();
-            while (k_start<k_end)
+            while (k_start < k_end)
             {
                 if (!keyName.AddChar(*k_start))
                     break;
@@ -90,6 +90,7 @@ class ListItemsParser
             }
             result[res.value()] = keyName;
         }
+        return true;
     }
 };
 
@@ -568,7 +569,17 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             pi.name  = e.name;
             pi.type  = e.type;
             pi.id    = e.id;
-            auto it  = s.find(e.category);
+            if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List))
+            {
+                // we need to process list of flags/values
+                ListItemsParser<char> parser(e.listValues.data(), e.listValues.data() + e.listValues.size());
+                if (parser.Create(pi.listValues)==false)
+                {
+                    // clear all data                   
+                    pi.listValues.clear();
+                }
+            }
+            auto it = s.find(e.category);
             if (it != s.cend())
             {
                 pi.category = it->second;
