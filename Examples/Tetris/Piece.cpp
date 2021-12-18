@@ -84,6 +84,10 @@ bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale)
         {
             if (matrix[i][j] == 1)
             {
+                renderer.FillRectSize(xx, yy, GetBlockWidth(scale), GetBlockHeight(scale), '-', color);
+            }
+            else
+            {
                 renderer.DrawRectSize(xx, yy, GetBlockWidth(scale), GetBlockHeight(scale), color, false);
             }
 
@@ -137,17 +141,6 @@ void Piece::SetPosition(int x, int y)
     this->y = y;
 }
 
-void Piece::SetInitialPosition(int x, int y)
-{
-    SetPosition(x, y);
-    isInitialPositionSet = true;
-}
-
-bool Piece::IsInitialPositionSet() const
-{
-    return isInitialPositionSet;
-}
-
 int Piece::GetBlockWidth(int scale) const
 {
     return width * scale * 2;
@@ -178,8 +171,23 @@ int Piece::GetBottomYPosition(int scale) const
     return y + GetSize(scale).Height;
 }
 
-bool Piece::TouchedTheBottom(int scale, int height) const
+bool Piece::CanAdvanceOnYAxis(int scale, int height) const
 {
     const auto bHeight = GetBlockHeight(scale);
     return GetBottomYPosition(scale) + bHeight > height;
+}
+
+void Piece::Rotate()
+{
+    std::array<std::array<bool, cells>, cells> tMatrix{ 0 };
+
+    for (int i = 0; i < matrix.size(); i++)
+    {
+        for (int j = 0; j < matrix[i].size(); j++)
+        {
+            tMatrix[j][matrix.size() - i - 1] = matrix[i][j];
+        }
+    }
+
+    matrix = tMatrix;
 }

@@ -6,6 +6,7 @@
 #include "Piece.hpp"
 
 #include <random>
+#include <array>
 
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
@@ -81,13 +82,13 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
 
     std::vector<Piece> piecesProcessed;
     std::optional<Piece> currentPiece;
-    bool matrix[50][50]{ 0 }; // no need for more than 50
-    unsigned int maxtrixVSize  = 0;
-    unsigned int maxtrixHSize  = 0;
-    unsigned int matrixXLeft   = 0;
-    unsigned int matrixXRight  = 0;
-    unsigned int matrixYTop    = 0;
-    unsigned int matrixYBottom = 0;
+    std::array<std::array<bool, 50>, 50> matrix{ false };
+    int maxtrixVSize  = 0;
+    int maxtrixHSize  = 0;
+    int matrixXLeft   = 0;
+    int matrixXRight  = 0;
+    int matrixYTop    = 0;
+    int matrixYBottom = 0;
 
     Reference<TabPage> page          = nullptr;
     Reference<Panel> leftPanel       = nullptr;
@@ -107,4 +108,6 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     PaintControlImplementationLeftPanel pcilp{ *this };
 
     OnKeyEventInterfaceImplementationLeftPanel okeiilp{ *this };
+
+    void SetMatrixData();
 };

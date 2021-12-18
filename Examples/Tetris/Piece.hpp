@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AppCUI.hpp"
+#include <array>
 
 enum class PieceType
 {
@@ -24,10 +25,9 @@ class Piece
     int x                           = 0;
     int y                           = 0;
     AppCUI::Graphics::ColorPair color{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::Transparent };
-    char matrix[cells][cells]{ 0 };
+    std::array<std::array<bool, cells>, cells> matrix{ 0 };
     AppCUI::Utils::Reference<AppCUI::Controls::Control> control = nullptr;
     const PieceType type;
-    bool isInitialPositionSet = false;
 
   public:
     Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control, int x, int y);
@@ -37,13 +37,12 @@ class Piece
     AppCUI::Graphics::Size GetSize(int scale) const;
     void UpdatePosition(int x, int y);
     void SetPosition(int x, int y);
-    void SetInitialPosition(int x, int y);
-    bool IsInitialPositionSet() const;
     int GetBlockWidth(int scale) const;
     int GetBlockHeight(int scale) const;
     int GetLeftXPosition() const;
     int GetRightXPosition(int scale) const;
     int GetTopYPosition() const;
     int GetBottomYPosition(int scale) const;
-    bool TouchedTheBottom(int scale, int height) const;
+    bool CanAdvanceOnYAxis(int scale, int height) const;
+    void Rotate();
 };

@@ -35,12 +35,6 @@ RunningState::~RunningState()
 
 void RunningState::Init()
 {
-    while (pieces.size() < maxPiecesInQueue)
-    {
-        const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<Control>(), 1, 1 }));
-    }
-
     data->tab->SetCurrentTabPage(page);
 }
 
@@ -51,23 +45,6 @@ bool RunningState::HandleEvent(Reference<Control> ctrl, Event eventType, int con
 
 bool RunningState::Update()
 {
-    if (currentPiece.has_value())
-    {
-        // compute # of squares on horizontal
-        const auto bWidth     = currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
-        const auto panelWidth = leftPanel->GetWidth() - 2;
-        maxtrixHSize          = panelWidth / bWidth;
-        matrixXLeft           = 1 + (panelWidth % bWidth) / 2;
-        matrixXRight          = panelWidth - matrixXLeft;
-
-        // compute # of squares on vertical
-        const auto bHeight     = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
-        const auto panelHeight = leftPanel->GetHeight() - 2;
-        maxtrixVSize           = panelHeight / bHeight;
-        matrixYTop             = 1 + (panelHeight % bHeight) / 2;
-        matrixYBottom          = panelHeight - matrixYTop;
-    }
-
     LocalString<128> ls;
     ls.Format("Score: %u", score);
     scoreLabel->SetText(ls.GetText());
@@ -88,7 +65,7 @@ bool RunningState::Update()
             currentPieceUpdated = delta;
         }
 
-        if (currentPiece->TouchedTheBottom(pieceScaleInLeftPanel, leftPanel->GetHeight()))
+        if (currentPiece->CanAdvanceOnYAxis(pieceScaleInLeftPanel, matrixYBottom))
         {
             piecesProcessed.emplace_back(*currentPiece);
             currentPiece.reset();
@@ -101,13 +78,17 @@ bool RunningState::Update()
         {
             currentPiece.emplace(pieces.front());
             pieces.pop_front();
+
+            SetMatrixData();
+            const auto x = (maxtrixHSize / 2) * currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
+            currentPiece->SetPosition(x, matrixYTop);
         }
     }
 
     while (pieces.size() < maxPiecesInQueue)
     {
-        const auto piece = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back((Piece{ piece, nextPiece.DownCast<Control>(), 1, 1 }));
+        const auto pieceType = static_cast<PieceType>(uniform_dist(e1));
+        pieces.emplace_back(Piece{ pieceType, nextPiece.DownCast<Control>(), 1, matrixYTop });
     }
 
     return true;
@@ -143,6 +124,26 @@ bool RunningState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t 
     return false;
 }
 
+void RunningState::SetMatrixData()
+{
+    if (currentPiece.has_value())
+    {
+        // compute # of squares on horizontal
+        const auto bWidth     = currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
+        const auto panelWidth = leftPanel->GetWidth() - 2;
+        maxtrixHSize          = panelWidth / bWidth;
+        matrixXLeft           = 1 + (panelWidth % bWidth) / 2;
+        matrixXRight          = panelWidth - matrixXLeft;
+
+        // compute # of squares on vertical
+        const auto bHeight     = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
+        const auto panelHeight = leftPanel->GetHeight() - 2;
+        maxtrixVSize           = panelHeight / bHeight;
+        matrixYTop             = 1 + (panelHeight % bHeight) / 2;
+        matrixYBottom          = panelHeight - matrixYTop;
+    }
+}
+
 RunningState::PaintControlImplementationRightPiecePanels::PaintControlImplementationRightPiecePanels(
       RunningState& rs, unsigned int id)
     : rs(rs), id(id)
@@ -171,11 +172,6 @@ void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<C
 
     if (rs.currentPiece.has_value())
     {
-        if (rs.currentPiece->IsInitialPositionSet() == false)
-        {
-            // TODO: set position based on matrix
-            rs.currentPiece->SetInitialPosition(control->GetWidth() / 2, 1);
-        }
         rs.currentPiece->Draw(renderer, rs.pieceScaleInLeftPanel);
     }
 
@@ -199,7 +195,8 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
         if (rs.currentPiece.has_value())
         {
             const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-            if (rs.currentPiece->GetLeftXPosition() - bWidth > 0)
+            const auto x      = rs.currentPiece->GetLeftXPosition();
+            if (x - bWidth >= rs.matrixXLeft)
             {
                 rs.currentPiece->UpdatePosition(-bWidth, 0);
                 return true;
@@ -210,7 +207,8 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
         if (rs.currentPiece.has_value())
         {
             const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-            if (rs.currentPiece->GetRightXPosition(rs.pieceScaleInLeftPanel) + bWidth < control->GetWidth())
+            const auto x      = rs.currentPiece->GetRightXPosition(rs.pieceScaleInLeftPanel);
+            if (x + bWidth < rs.matrixXRight)
             {
                 rs.currentPiece->UpdatePosition(bWidth, 0);
                 return true;
@@ -222,13 +220,23 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
         if (rs.currentPiece.has_value())
         {
             const auto bHeight = rs.currentPiece->GetBlockHeight(rs.pieceScaleInLeftPanel);
-            if (rs.currentPiece->GetBottomYPosition(rs.pieceScaleInLeftPanel) + bHeight < control->GetHeight())
+            const auto y       = rs.currentPiece->GetBottomYPosition(rs.pieceScaleInLeftPanel);
+            if (y + bHeight < control->GetHeight())
             {
                 rs.currentPiece->UpdatePosition(0, bHeight);
                 return true;
             }
         }
         break;
+
+    case Key::Space:
+        if (rs.currentPiece.has_value())
+        {
+            rs.currentPiece->Rotate();
+            return true;
+        }
+        break;
+
     default:
         break;
     }
