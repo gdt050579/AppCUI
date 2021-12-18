@@ -144,7 +144,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = "<error>";
             break;
         }
-        auto w = this->hasBorder ? ((int32) this->Layout.Width - (x + 3 + this->propertyNameWidth))
+        auto w = this->hasBorder ? ((int32) this->Layout.Width - (x + 5 + this->propertyNameWidth))
                                  : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
         if (w > 0)
         {
@@ -152,7 +152,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             params.Y     = y;
             params.Color = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
             params.Width = (uint32) w;
-            params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+            params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
 
             switch (prop.type)
             {
