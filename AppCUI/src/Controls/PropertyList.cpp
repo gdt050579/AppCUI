@@ -94,7 +94,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, Colors.Item.LineSeparator);
     }
-    bool readOnly = this->object->IsPropertyValueReadOnly(prop.id);
+    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
     auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + 5 + this->propertyNameWidth))
                                     : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
     params.X      = x + 4 + this->propertyNameWidth;

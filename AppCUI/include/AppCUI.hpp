@@ -3761,14 +3761,17 @@ namespace Controls
 
     enum class PropertyListFlags : uint32
     {
-        None   = 0x000000,
-        Border = 0x000100,
+        None     = 0x000000,
+        Border   = 0x000100,
+        ReadOnly = 0x000200,
     };
     class EXPORT PropertyList : public Control
     {
       protected:
         PropertyList(
-              string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags = PropertyListFlags::None);
+              string_view layout,
+              Reference<PropertiesInterface> object,
+              PropertyListFlags flags = PropertyListFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
