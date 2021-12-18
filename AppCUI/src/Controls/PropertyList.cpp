@@ -9,25 +9,25 @@ constexpr static string_view color_names[] = {
     "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
 };
-template <typename T>
+
 class ListItemsParser
 {
-    const T* start;
-    const T* end;
+    const char16* start;
+    const char16* end;
 
-    inline const T* SkipSpaces(const T* pos) const
+    inline const char16* SkipSpaces(const char16* pos) const
     {
         while ((pos < end) && (((*pos) == ' ') || ((*pos) == '\t') || ((*pos) == '\n') || ((*pos) == '\r')))
             pos++;
         return pos;
     }
-    inline const T* SkipWord(const T* pos) const
+    inline const char16* SkipWord(const char16* pos) const
     {
         while ((pos < end) && ((*pos) > 32) && ((*pos) != '=') && ((*pos) != ';') && ((*pos) != ','))
             pos++;
         return pos;
     }
-    inline bool CheckNextChar(const T* pos, char c1, char c2, bool failIfEndOfBuffer) const
+    inline bool CheckNextChar(const char16* pos, char c1, char c2, bool failIfEndOfBuffer) const
     {
         if ((pos < end) && (((*pos) == c1) || ((*pos) == c2)))
             return true;
@@ -37,19 +37,18 @@ class ListItemsParser
     }
 
   public:
-    ListItemsParser(const T* _start, const T* _end) : start(_start), end(_end)
+    ListItemsParser(const char16* _start, const char16* _end) : start(_start), end(_end)
     {
     }
     bool Create(std::map<uint64, FixSizeUnicode<48>>& result)
     {
-        const T* k_start;
-        const T* k_end;
-        const T* v_start;
-        const T* v_end;
-        const T* p = start;
+        const char16* k_start;
+        const char16* k_end;
+        const char16* v_start;
+        const char16* v_end;
+        const char16* p = start;
         char asciiValue[128];
         char* v_ascii;
-        FixSizeUnicode<48> keyName;
 
         CHECK(p, false, "Expecting a valid NON-NULL buffer for ListItemParser !");
 
@@ -81,14 +80,7 @@ class ListItemsParser
             string_view value((const char*) asciiValue, (size_t) (v_ascii - asciiValue));
             auto res = Number::ToUInt64(value);
             CHECK(res.has_value(), false, "Invalid value (or invalid uint64 value) in list");
-            keyName.Clear();
-            while (k_start < k_end)
-            {
-                if (!keyName.AddChar(*k_start))
-                    break;
-                k_start++;
-            }
-            result[res.value()] = keyName;
+            result[res.value()] = u16string_view{ k_start, (size_t) (k_end - k_start) };
         }
         return true;
     }
@@ -573,7 +565,7 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             {
                 LocalUnicodeStringBuilder<1024> tempValues(e.values);
                 // we need to process list of flags/values
-                ListItemsParser<char16_t> parser(tempValues.GetString(), tempValues.GetString()+tempValues.Len());
+                ListItemsParser parser(tempValues.GetString(), tempValues.GetString()+tempValues.Len());
                 if (parser.Create(pi.listValues)==false)
                 {
                     // clear all data                   
