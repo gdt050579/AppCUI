@@ -72,6 +72,9 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, Colors.Category.Arrow);
 }
+void PropertyListContext::DrawPropertItemString(WriteTextParams& params, string_view text, Graphics::Renderer& renderer)
+{
+}
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
     if (index >= this->properties.size())
@@ -135,14 +138,51 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = "<error>";
             break;
         }
-        params.X     = x + 4 + this->propertyNameWidth;
-        params.Y     = y;
-        params.Color = Colors.Item.Value;
-        params.Width = (int32) this->Layout.Width - (x + 3 + this->propertyNameWidth);
-        params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
-        if (readOnly)
-            params.Color = Colors.Item.ReadOnly;
-        renderer.WriteText(tmpAscii, params);
+        auto w = this->hasBorder ? ((int32) this->Layout.Width - (x + 3 + this->propertyNameWidth))
+                                 : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
+        if (w > 0)
+        {
+            params.X     = x + 4 + this->propertyNameWidth;
+            params.Y     = y;
+            params.Color = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
+            params.Width = (uint32) w;
+            params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+
+            switch (prop.type)
+            {
+            case PropertyType::UInt8:
+            case PropertyType::UInt16:
+            case PropertyType::UInt32:
+            case PropertyType::UInt64:
+            case PropertyType::Int8:
+            case PropertyType::Int16:
+            case PropertyType::Int32:
+            case PropertyType::Int64:
+            case PropertyType::Ascii:
+            case PropertyType::Key:
+                // value is already converted to ascii string --> printed
+                renderer.WriteText(tmpAscii, params);
+                break;
+            case PropertyType::Color:
+                renderer.WriteSpecialCharacter(
+                      params.X,
+                      y,
+                      SpecialChars::BlockCentered,
+                      ColorPair{ std::get<Graphics::Color>(tempPropValue), Color::Transparent });
+                params.X += 2;
+                if (w > 2)
+                {
+                    params.Width -= 2;
+                    renderer.WriteText(tmpAscii, params);
+                }
+                break;
+            default:
+                tmpAscii = "<error>";
+                break;
+            }
+
+            
+        }
     }
 }
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
@@ -362,7 +402,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->propertyNameWidth     = 0;
     Members->startView             = 0;
     Members->currentPos            = 0;
-    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32)flags;
+    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
     Members->Layout.MinHeight      = 4;
     Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
