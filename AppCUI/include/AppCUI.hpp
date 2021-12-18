@@ -556,7 +556,7 @@ namespace Utils
           Graphics::Color>;
     enum class PropertyType : uint8
     {
-        Boolean,
+        Boolean = 0,
         UInt8,
         UInt16,
         UInt32,
@@ -608,6 +608,7 @@ namespace Utils
         virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)                      = 0;
         virtual void SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
+        virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual vector<Property> GetPropertiesList()                                                = 0;
     };
 } // namespace Utils

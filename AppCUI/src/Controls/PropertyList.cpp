@@ -91,6 +91,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, Colors.Item.LineSeparator);
     }
+    bool readOnly = this->object->IsPropertyValueReadOnly(prop.id);
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
         string_view tmpAscii;
@@ -139,6 +140,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         params.Color = Colors.Item.Value;
         params.Width = (int32) this->Layout.Width - (x + 3 + this->propertyNameWidth);
         params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+        if (readOnly)
+            params.Color = Colors.Item.ReadOnly;
         renderer.WriteText(tmpAscii, params);
     }
 }

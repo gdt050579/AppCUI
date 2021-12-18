@@ -155,6 +155,10 @@ class MyUserControl : public UserControl, public PropertiesInterface
     void SetCustomPropetyValue(uint32 propertyID) override
     {
     }
+    bool IsPropertyValueReadOnly(uint32 propertyID) override
+    {
+        return (propertyID == (uint32) MyControlProperty::Name) || (propertyID == (uint32) MyControlProperty::Version);
+    }
     vector<Property> GetPropertiesList() override
     {
         return vector<Property>({
@@ -183,7 +187,8 @@ class PropertyWindowExmaple : public Window
     {
         auto sp = Factory::Splitter::Create(this, "d:c", true);
         ct      = sp->CreateChildControl<MyUserControl>();
-        auto pl = sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>(), PropertyListFlags::Border);
+        auto pl =
+              sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>(), PropertyListFlags::Border);
         sp->SetSecondPanelSize(30);
     }
 };
