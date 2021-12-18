@@ -27,21 +27,22 @@ class MyUserControl : public UserControl, public PropertiesInterface
     Size sz;
     char16 ch;
     ColorPair c;
-    bool hasBorder;
+    bool hasBorder, animationStarted;
     int32 counter;
 
   public:
     MyUserControl() : UserControl("d:c")
     {
-        counter   = 0;
-        x         = 2;
-        y         = 3;
-        addX      = 1;
-        addY      = -1;
-        sz        = { 15, 5 };
-        ch        = 'X';
-        c         = ColorPair{ Color::Red, Color::Black };
-        hasBorder = true;
+        counter          = 0;
+        x                = 2;
+        y                = 3;
+        addX             = 1;
+        addY             = -1;
+        sz               = { 15, 5 };
+        ch               = 'X';
+        c                = ColorPair{ Color::Red, Color::Black };
+        hasBorder        = false;
+        animationStarted = true;
     }
     bool OnFrameUpdate() override
     {
@@ -109,6 +110,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         case MyControlProperty::BorderType:
             value = 2;
+            return true;
+        case MyControlProperty::AnimationStarted:
+            value = animationStarted;
             return true;
         }
         return false;

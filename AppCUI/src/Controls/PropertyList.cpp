@@ -101,6 +101,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         NumericFormatter n;
         switch (prop.type)
         {
+        case PropertyType::Boolean:
+            tmpAscii = std::get<bool>(tempPropValue) ? "(Yes)" : "(No)";
+            break;
         case PropertyType::UInt8:
             tmpAscii = n.ToDec(std::get<uint8>(tempPropValue));
             break;
@@ -152,10 +155,23 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             params.Y     = y;
             params.Color = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
             params.Width = (uint32) w;
-            params.Flags = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
+            params.Flags =
+                  WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
 
             switch (prop.type)
             {
+            case PropertyType::Boolean:
+                if (std::get<bool>(tempPropValue))
+                    renderer.WriteSpecialCharacter(params.X, y, SpecialChars::CheckMark, Colors.Item.Checked);
+                else
+                    renderer.WriteCharacter(params.X, y, 'x', Colors.Item.Unchecked);
+                params.X += 2;
+                if (w > 2)
+                {
+                    params.Width -= 2;
+                    renderer.WriteText(tmpAscii, params);
+                }
+                break;
             case PropertyType::UInt8:
             case PropertyType::UInt16:
             case PropertyType::UInt32:
@@ -188,8 +204,6 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 tmpAscii = "<error>";
                 break;
             }
-
-            
         }
     }
 }
@@ -213,6 +227,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Item.ReadOnly      = c;
         this->Colors.Item.Text          = c;
         this->Colors.Item.Value         = c;
+        this->Colors.Item.Checked       = c;
+        this->Colors.Item.Unchecked     = c;
     }
     else
     {

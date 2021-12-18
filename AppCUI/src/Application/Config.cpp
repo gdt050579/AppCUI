@@ -364,5 +364,7 @@ void Config::SetDarkTheme()
     this->PropertList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
     this->PropertList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
     this->PropertList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
+    this->PropertList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
 }
 } // namespace AppCUI::Application
