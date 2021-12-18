@@ -1496,6 +1496,16 @@ namespace Utils
                 Clear();
             }
         }
+        constexpr bool AddChar(T ch)
+        {
+            if (size < Size)
+            {
+                data[size++] = ch;
+                data[size]   = 0;
+                return true;
+            }
+            return false;
+        }
         constexpr inline uint16 Len() const
         {
             return size;

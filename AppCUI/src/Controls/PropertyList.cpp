@@ -9,6 +9,90 @@ constexpr static string_view color_names[] = {
     "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
 };
+template <typename T>
+class ListItemsParser
+{
+    const T* start;
+    const T* end;
+
+    inline const T* SkipSpaces(const T* pos) const
+    {
+        while ((pos < end) && (((*pos) == ' ') || ((*pos) == '\t') || ((*pos) == '\n') || ((*pos) != '\r')))
+            pos++;
+        return pos;
+    }
+    inline const T* SkipUntilSpace(const T* pos) const
+    {
+        while ((pos < end) && ((*pos) != ' ') && ((*pos) != '\t') && ((*pos) != '\n') && ((*pos) != '\r'))
+            pos++;
+        return pos;
+    }
+    inline bool CheckNextChar(const T* pos, char c1, char c2, bool failIfEndOfBuffer) const
+    {
+        if ((pos < end) && (((*pos) == c1) || ((*pos) == c2)))
+            return true;
+        if ((pos >= end) && (!failIfEndOfBuffer))
+            return true;
+        return false;
+    }
+
+  public:
+    ListItemsParser(const T* _start, const T* _end) : start(_start), end(_end)
+    {
+    }
+    bool Create(std::map<uint64, FixSizeUnicode<48>>& result)
+    {
+        const T* k_start;
+        const T* k_end;
+        const T* v_start;
+        const T* v_end;
+        const T* p = start;
+        char asciiValue[128];
+        char* v_ascii;
+        FixSizeUnicode<48> keyName;
+
+        while (p < end)
+        {
+            k_start = SkipSpaces(p);
+            k_end   = SkipUntilSpace(k_start);
+            p       = SkipSpaces(k_end);
+            if (CheckNextChar(p, '=', '=', true) == false)
+                return false;
+            v_start = SkipSpaces(p + 1);
+            v_end   = SkipUntilSpace(v_start);
+            p       = SkipSpaces(v_end);
+            if (CheckNextChar(p, ',', ';', false) == false)
+                return false;
+            p = SkipSpaces(p + 1);
+            if ((v_start == v_end) || (k_start == k_end))
+                return false;
+            if ((v_end - v_start) > 127)
+                return false;
+            v_ascii = asciiValue;
+            while (v_start < v_end)
+            {
+                if (((*v_start) <= 32) || ((*v_start) > 127))
+                    return false; // not even a number
+                *v_ascii = (char) (*v_start);
+                v_ascii++;
+                v_start++;
+            }
+            string_view value((const char*) asciiValue, (size_t) (v_ascii - asciiValue));
+            auto res = Number::ToUInt64(value);
+            if (!res.has_value())
+                return false; // invalid value
+            keyName.Clear();
+            while (k_start<k_end)
+            {
+                if (!keyName.AddChar(*k_start))
+                    break;
+                k_start++;
+            }
+            result[res.value()] = keyName;
+        }
+    }
+};
+
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
@@ -72,9 +156,7 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, Colors.Category.Arrow);
 }
-void PropertyListContext::DrawPropertItemString(WriteTextParams& params, string_view text, Graphics::Renderer& renderer)
-{
-}
+
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
     if (index >= this->properties.size())
