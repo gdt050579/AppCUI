@@ -1452,41 +1452,41 @@ namespace Utils
         {
         }
     };
-    template <uint16 Size>
-    class FixSizeString
+    template <uint16 Size, typename T, typename T_view>
+    class GenericFixSizeString
     {
         static_assert(Size > 0);
-        char data[Size + 1];
+        T data[Size + 1];
         uint16 size;
 
       public:
-        FixSizeString() : size(0)
+        GenericFixSizeString() : size(0)
         {
             data[0] = 0;
         }
-        FixSizeString(string_view txt)
+        GenericFixSizeString(T_view txt)
         {
             Set(txt);
         }
-        constexpr inline operator string_view() const
+        constexpr inline operator T_view() const
         {
-            return string_view{ data, size };
+            return T_view{ data, size };
         }
         constexpr inline operator bool() const
         {
             return this->size != 0;
         }
-        void Set(string_view txt)
+        void Set(T_view txt)
         {
             size = (uint16) std::min((size_t) Size, txt.length());
-            memcpy(data, txt.data(), size);
+            memcpy(data, txt.data(), size * sizeof(T));
             data[size] = 0;
         }
-        void Set(const char* text)
+        void Set(const T* text)
         {
             if (text)
             {
-                const char* e = text;
+                const T* e = text;
                 while (*e)
                     e++;
                 Set(string_view{ text, static_cast<size_t>(e - text) });
@@ -1500,7 +1500,7 @@ namespace Utils
         {
             return size;
         }
-        constexpr inline const char* GetText() const
+        constexpr inline const T* GetText() const
         {
             return data;
         }
@@ -1508,7 +1508,7 @@ namespace Utils
         {
             return Size;
         }
-        inline FixSizeString& operator=(string_view txt)
+        inline GenericFixSizeString& operator=(T_view txt)
         {
             Set(txt);
             return *this;
@@ -1523,6 +1523,11 @@ namespace Utils
             return this->size == 0;
         }
     };
+    template <uint16 Size>
+    using FixSizeString  = GenericFixSizeString<Size, char, string_view>;
+
+    template <uint16 Size>
+    using FixSizeUnicode = GenericFixSizeString<Size, char16_t, u16string_view>;
 
     class EXPORT KeyUtils
     {
