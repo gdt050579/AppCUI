@@ -173,11 +173,11 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
               { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Ascii },
               { (uint32) MyControlProperty::Border, "Look & Feel", "Draw border", PropertyType::Boolean },
-              { (uint32) MyControlProperty::BorderType, "Look & Feel", "Border Type", "Single=1,Double=2,Thick=3" },
+              { (uint32) MyControlProperty::BorderType, "Look & Feel", "Border Type", PropertyType::List, "Single=1,Double=2,Thick=3" },
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
-              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", "Slow=1,Normal=2,Fast=3" },
+              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "Slow=1,Normal=2,Fast=3" },
         });
     };
 };

@@ -571,8 +571,9 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             pi.id    = e.id;
             if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List))
             {
+                LocalUnicodeStringBuilder<1024> tempValues(e.values);
                 // we need to process list of flags/values
-                ListItemsParser<char> parser(e.listValues.data(), e.listValues.data() + e.listValues.size());
+                ListItemsParser<char16_t> parser(tempValues.GetString(), tempValues.GetString()+tempValues.Len());
                 if (parser.Create(pi.listValues)==false)
                 {
                     // clear all data                   
