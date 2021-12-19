@@ -18,7 +18,8 @@ enum class MyControlProperty : uint32
     Border,
     BorderType,
     AnimationStarted,
-    AnimationSpeed
+    AnimationSpeed,
+    Flags
 };
 
 class MyUserControl : public UserControl, public PropertiesInterface
@@ -122,6 +123,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::AnimationSpeed:
             value = frameDelay;
             return true;
+        case MyControlProperty::Flags:
+            value = 59;
+            return true;
         }
         return false;
     };
@@ -162,6 +166,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::BorderType:
             // value = 2;
             break;
+
         }
     };
     void SetCustomPropetyValue(uint32 propertyID) override
@@ -194,6 +199,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 "Speed",
                 PropertyType::List,
                 "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
+              { (uint32) MyControlProperty::Flags, "General", "File flags", PropertyType::Flags, "Read=1,Write=2,Execute=4,Shared=8" },
         });
     };
 };

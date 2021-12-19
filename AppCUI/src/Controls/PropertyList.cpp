@@ -258,6 +258,50 @@ void PropertyListContext::DrawListProperty(
               params);
     }
 }
+void PropertyListContext::DrawFlagsProperty(
+      WriteTextParams& params, PropertyValue& pv, const PropertyInfo& pi, Graphics::Renderer& renderer, bool readOnly)
+{
+    uint64 result;
+    LocalString<64> errText;
+    LocalUnicodeStringBuilder<1024> flagList;
+    if (PropertValueToUInt64(pv, result))
+    {
+        bool first = true;
+        for (auto& e : pi.listValues)
+        {
+            if ((result & e.first) == (e.first))
+            {
+                if (!first)
+                    flagList.Add(u",");
+                flagList.Add(e.second.GetText());
+                first = false;
+                result -= e.first; // remove flag
+            }
+        }
+        if (result != 0)
+        {
+            flagList.Add(u" +[Unk bits: 0x");
+            NumericFormatter n;
+            flagList.Add(n.ToHex(result));
+            flagList.Add(u"]");
+        }        
+        renderer.WriteText(flagList, params);
+        if (!readOnly)
+        {
+            // draw the expand arrow
+            auto X = params.X + params.Width - 2;
+            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
+        }
+    }
+    else
+    {
+        params.Color = Colors.Item.Error;
+        renderer.WriteText(
+              "Invalid value type for list (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
+              params);
+    }
+}
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
     if (index >= this->properties.size())
@@ -301,7 +345,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = std::get<bool>(tempPropValue) ? "(Yes)" : "(No)";
             break;
         case PropertyType::Char8:
-            tmpCh16 = std::get<char8>(tempPropValue);
+            tmpCh16  = std::get<char8>(tempPropValue);
             tmpAscii = tmpString.Format(
                   "| 0x%04X | Dec:%u |", (uint32) (*(uint16*) &tmpCh16), (uint32) (*(uint16*) &tmpCh16));
             break;
@@ -434,6 +478,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 break;
             case PropertyType::List:
                 DrawListProperty(params, tempPropValue, prop, renderer, readOnly);
+                break;
+            case PropertyType::Flags:
+                DrawFlagsProperty(params, tempPropValue, prop, renderer, readOnly);
                 break;
 
             default:

@@ -858,6 +858,12 @@ struct PropertyListContext : public ControlContext
           const PropertyInfo& pi,
           Graphics::Renderer& renderer,
           bool readOnly);
+    void DrawFlagsProperty(
+          WriteTextParams& params,
+          PropertyValue& pv,
+          const PropertyInfo& pi,
+          Graphics::Renderer& renderer,
+          bool readOnly);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
