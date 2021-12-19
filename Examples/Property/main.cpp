@@ -28,12 +28,14 @@ class MyUserControl : public UserControl, public PropertiesInterface
     char16 ch;
     ColorPair c;
     bool hasBorder, animationStarted;
-    int32 counter;
+    uint32 frameDelay;
+    uint32 counter;
 
   public:
     MyUserControl() : UserControl("d:c")
     {
         counter          = 0;
+        frameDelay       = 3;
         x                = 2;
         y                = 3;
         addX             = 1;
@@ -47,7 +49,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     bool OnFrameUpdate() override
     {
         counter++;
-        if (counter < 3)
+        if (counter < frameDelay)
             return false;
         counter = 0;
         x += addX;
@@ -114,6 +116,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::AnimationStarted:
             value = animationStarted;
             return true;
+        case MyControlProperty::AnimationSpeed:
+            value = frameDelay;
+            return true;
         }
         return false;
     };
@@ -177,7 +182,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
-              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "  Very Slow   = 1,Slow=2,Normal=3,Fast=4, Super Fast = 5" },
+              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
         });
     };
 };

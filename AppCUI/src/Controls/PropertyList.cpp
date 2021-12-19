@@ -69,7 +69,7 @@ class ListItemsParser
             p       = SkipSpaces(k_end);
             CHECK(CheckNextChar(p, '=', '=', true), false, "");
             v_start = SkipSpaces(p + 1);
-            v_end   = SkipWord(v_start, ',',';');
+            v_end   = SkipWord(v_start, ',', ';');
             p       = SkipSpaces(v_end);
             CHECK(CheckNextChar(p, ',', ';', false), false, "");
             p = SkipSpaces(p + 1);
@@ -96,7 +96,7 @@ class ListItemsParser
     }
 };
 
-bool PropertValueToUInt64(const PropertyValue& value, uint64 & result)
+bool PropertValueToUInt64(const PropertyValue& value, uint64& result)
 {
     if (std::holds_alternative<uint64>(value))
     {
@@ -225,7 +225,39 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, Colors.Category.Arrow);
 }
-
+void PropertyListContext::DrawListProperty(
+      WriteTextParams& params, PropertyValue& pv, const PropertyInfo& pi, Graphics::Renderer& renderer, bool readOnly)
+{
+    uint64 result;
+    LocalString<128> errText;
+    if (PropertValueToUInt64(pv, result))
+    {
+        auto it = pi.listValues.find(result);
+        if (it != pi.listValues.cend())
+        {
+            renderer.WriteText(it->second, params);
+        }
+        else
+        {
+            params.Color = Colors.Item.Error;
+            renderer.WriteText(errText.Format("Value %llu is not among list accepted values", result), params);
+        }
+        if (!readOnly)
+        {
+            // draw the expand arrow
+            auto X = params.X + params.Width - 2;
+            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::TriangleDown, Colors.Item.Checked);
+        }
+    }
+    else
+    {
+        params.Color = Colors.Item.Error;
+        renderer.WriteText(
+              "Invalid value type for list (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
+              params);
+    }
+}
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
 {
     if (index >= this->properties.size())
@@ -319,6 +351,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpSize  = std::get<Graphics::Size>(tempPropValue);
             tmpAscii = tmpString.Format("%u x %u", tmpSize.Width, tmpSize.Height);
             break;
+        case PropertyType::List:
+            break; // have its own drawing method
         }
 
         if (w > 0)
@@ -376,6 +410,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                     params.Width -= 2;
                     renderer.WriteText(tmpAscii, params);
                 }
+                break;
+            case PropertyType::List:
+                DrawListProperty(params, tempPropValue, prop, renderer, readOnly);
                 break;
             default:
                 renderer.WriteText("<Internal error - fail to process item type>", params);

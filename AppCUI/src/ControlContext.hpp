@@ -852,6 +852,12 @@ struct PropertyListContext : public ControlContext
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void DrawListProperty(
+          WriteTextParams& params,
+          PropertyValue& pv,
+          const PropertyInfo& pi,
+          Graphics::Renderer& renderer,
+          bool readOnly);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
