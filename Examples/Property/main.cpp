@@ -177,7 +177,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
-              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "VerySlow = 1,Slow=2,Normal=3,Fast=4, SuperFast = 5" },
+              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "  Very Slow   = 1,Slow=2,Normal=3,Fast=4, Super Fast = 5" },
         });
     };
 };

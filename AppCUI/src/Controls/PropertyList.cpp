@@ -21,10 +21,20 @@ class ListItemsParser
             pos++;
         return pos;
     }
-    inline const char16* SkipWord(const char16* pos) const
+    inline const char16* SkipWord(const char16* pos, char c1, char c2) const
     {
-        while ((pos < end) && ((*pos) > 32) && ((*pos) != '=') && ((*pos) != ';') && ((*pos) != ','))
+        auto st = pos;
+        while ((pos < end) && ((*pos) != c1) && ((*pos) != c2))
             pos++;
+        if (pos < end) // I've reached either a `c1` or `c2` character
+        {
+            // go back and skip spaces/tabs or new lines
+            pos--;
+            while ((pos > st) && (((*pos) == ' ') || ((*pos) == '\t') || ((*pos) == '\n') || ((*pos) == '\r')))
+                pos--;
+            pos++; // next char
+        }
+
         return pos;
     }
     inline bool CheckNextChar(const char16* pos, char c1, char c2, bool failIfEndOfBuffer) const
@@ -55,11 +65,11 @@ class ListItemsParser
         while (p < end)
         {
             k_start = SkipSpaces(p);
-            k_end   = SkipWord(k_start);
+            k_end   = SkipWord(k_start, '=', '=');
             p       = SkipSpaces(k_end);
             CHECK(CheckNextChar(p, '=', '=', true), false, "");
             v_start = SkipSpaces(p + 1);
-            v_end   = SkipWord(v_start);
+            v_end   = SkipWord(v_start, ',',';');
             p       = SkipSpaces(v_end);
             CHECK(CheckNextChar(p, ',', ';', false), false, "");
             p = SkipSpaces(p + 1);
@@ -565,10 +575,10 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             {
                 LocalUnicodeStringBuilder<1024> tempValues(e.values);
                 // we need to process list of flags/values
-                ListItemsParser parser(tempValues.GetString(), tempValues.GetString()+tempValues.Len());
-                if (parser.Create(pi.listValues)==false)
+                ListItemsParser parser(tempValues.GetString(), tempValues.GetString() + tempValues.Len());
+                if (parser.Create(pi.listValues) == false)
                 {
-                    // clear all data                   
+                    // clear all data
                     pi.listValues.clear();
                 }
             }
