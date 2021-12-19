@@ -96,6 +96,72 @@ class ListItemsParser
     }
 };
 
+bool PropertValueToUInt64(const PropertyValue& value, uint64 & result)
+{
+    if (std::holds_alternative<uint64>(value))
+    {
+        result = std::get<uint64>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint32>(value))
+    {
+        result = std::get<uint32>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint16>(value))
+    {
+        result = std::get<uint16>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint8>(value))
+    {
+        result = std::get<uint8>(value);
+        return true;
+    }
+    // check for ints --> but only if positive
+    if (std::holds_alternative<int64>(value))
+    {
+        auto intResult = std::get<int64>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int32>(value))
+    {
+        auto intResult = std::get<int32>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int16>(value))
+    {
+        auto intResult = std::get<int16>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int8>(value))
+    {
+        auto intResult = std::get<int8>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    RETURNERROR(false, "Unknwon (non-convertable) variant type for list/flag members");
+}
+
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
