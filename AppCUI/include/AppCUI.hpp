@@ -1934,6 +1934,7 @@ namespace Graphics
         CheckMark,
         MenuSign,
         FourPoints,
+        ThreePointsHorizontal,
 
         // extended ascii codes (195 / 251C, 194 / 252C, 180 / 2524, 193 / 2534) / Graphics Extended Code Page 1252
         // https://en.wikipedia.org/wiki/Windows-1252
