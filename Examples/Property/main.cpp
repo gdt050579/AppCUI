@@ -19,7 +19,8 @@ enum class MyControlProperty : uint32
     BorderType,
     AnimationStarted,
     AnimationSpeed,
-    Flags
+    Flags,
+    Custom
 };
 
 class MyUserControl : public UserControl, public PropertiesInterface
@@ -126,6 +127,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::Flags:
             value = 59;
             return true;
+        case MyControlProperty::Custom:
+            value = "Custom string representation";
+            return true;
         }
         return false;
     };
@@ -200,6 +204,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 PropertyType::List,
                 "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
               { (uint32) MyControlProperty::Flags, "General", "File flags", PropertyType::Flags, "Read=1,Write=2,Execute=4,Shared=8" },
+              { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         });
     };
 };

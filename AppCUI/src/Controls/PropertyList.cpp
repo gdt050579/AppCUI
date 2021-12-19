@@ -284,7 +284,7 @@ void PropertyListContext::DrawFlagsProperty(
             NumericFormatter n;
             flagList.Add(n.ToHex(result));
             flagList.Add(u"]");
-        }        
+        }
         renderer.WriteText(flagList, params);
         if (!readOnly)
         {
@@ -298,8 +298,47 @@ void PropertyListContext::DrawFlagsProperty(
     {
         params.Color = Colors.Item.Error;
         renderer.WriteText(
-              "Invalid value type for list (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
+              "Invalid value type for flags (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
               params);
+    }
+}
+void PropertyListContext::DrawCustomProperty(
+      WriteTextParams& params, PropertyValue& pv, Graphics::Renderer& renderer, bool readOnly)
+{
+    bool found = false;
+    LocalString<64> errText;
+    ConstString stringRepr;
+    if (std::holds_alternative<string_view>(pv))
+    {
+        stringRepr = std::get<string_view>(pv);
+        found      = true;
+    }
+    else if (std::holds_alternative<u16string_view>(pv))
+    {
+        stringRepr = std::get<u16string_view>(pv);
+        found      = true;
+    }
+    else if (std::holds_alternative<u8string_view>(pv))
+    {
+        stringRepr = std::get<u8string_view>(pv);
+        found      = true;
+    }
+
+    if (found)
+    {
+        renderer.WriteText(stringRepr, params);
+        if (!readOnly)
+        {
+            // draw the expand arrow
+            auto X = params.X + params.Width - 2;
+            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
+        }
+    }
+    else
+    {
+        params.Color = Colors.Item.Error;
+        renderer.WriteText("Invalid value type for list (expecting a string (ascii/unicode/UTF-8)", params);
     }
 }
 void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
@@ -407,7 +446,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = tmpString.Format("%u x %u", tmpSize.Width, tmpSize.Height);
             break;
         case PropertyType::List:
-            break; // have its own drawing method
+        case PropertyType::Flags:
+        case PropertyType::Custom:
+            break; // have their own drawing method
         }
 
         if (w > 0)
@@ -481,6 +522,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 break;
             case PropertyType::Flags:
                 DrawFlagsProperty(params, tempPropValue, prop, renderer, readOnly);
+                break;
+            case PropertyType::Custom:
+                DrawCustomProperty(params, tempPropValue, renderer, readOnly);
                 break;
 
             default:
