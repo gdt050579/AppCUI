@@ -537,6 +537,8 @@ namespace Utils
     using PropertyValue      = variant<
           std::monostate,
           bool,
+          char8,
+          char16,
           uint8,
           uint16,
           uint32,
@@ -557,6 +559,8 @@ namespace Utils
     enum class PropertyType : uint8
     {
         Boolean = 0,
+        Char8,
+        Char16,
         UInt8,
         UInt16,
         UInt32,
@@ -585,7 +589,6 @@ namespace Utils
         string_view category, name, help;
         PropertyType type;
         ConstString values;
-
 
         Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
             : id(ID), category(_category), name(_name), type(_type)
@@ -1527,7 +1530,7 @@ namespace Utils
         }
     };
     template <uint16 Size>
-    using FixSizeString  = GenericFixSizeString<Size, char, string_view>;
+    using FixSizeString = GenericFixSizeString<Size, char, string_view>;
 
     template <uint16 Size>
     using FixSizeUnicode = GenericFixSizeString<Size, char16_t, u16string_view>;

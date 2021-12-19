@@ -107,6 +107,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::Version:
             value = "1.2.3";
             return true;
+        case MyControlProperty::Character:
+            value = ch;
+            return true;
         case MyControlProperty::Border:
             value = this->hasBorder;
             return true;
@@ -176,13 +179,21 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
               { (uint32) MyControlProperty::ForeColor, "Look & Feel", "Fore color", PropertyType::Color },
               { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
-              { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Ascii },
+              { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Char16 },
               { (uint32) MyControlProperty::Border, "Look & Feel", "Draw border", PropertyType::Boolean },
-              { (uint32) MyControlProperty::BorderType, "Look & Feel", "Border Type", PropertyType::List, "Single=1,Double=2,Thick=3" },
+              { (uint32) MyControlProperty::BorderType,
+                "Look & Feel",
+                "Border Type",
+                PropertyType::List,
+                "Single=1,Double=2,Thick=3" },
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
-              { (uint32) MyControlProperty::AnimationSpeed, "Animation", "Speed", PropertyType::List, "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
+              { (uint32) MyControlProperty::AnimationSpeed,
+                "Animation",
+                "Speed",
+                PropertyType::List,
+                "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
         });
     };
 };

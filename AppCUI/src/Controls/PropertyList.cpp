@@ -294,10 +294,21 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         NumericFormatter n;
         LocalString<32> tmpString;
         Size tmpSize;
+        char16 tmpCh16;
         switch (prop.type)
         {
         case PropertyType::Boolean:
             tmpAscii = std::get<bool>(tempPropValue) ? "(Yes)" : "(No)";
+            break;
+        case PropertyType::Char8:
+            tmpCh16 = std::get<char8>(tempPropValue);
+            tmpAscii = tmpString.Format(
+                  "| 0x%04X | Dec:%u |", (uint32) (*(uint16*) &tmpCh16), (uint32) (*(uint16*) &tmpCh16));
+            break;
+        case PropertyType::Char16:
+            tmpCh16  = std::get<char16>(tempPropValue);
+            tmpAscii = tmpString.Format(
+                  "| 0x%04X | Dec:%u |", (uint32) (*(uint16*) &tmpCh16), (uint32) (*(uint16*) &tmpCh16));
             break;
         case PropertyType::UInt8:
             tmpAscii = n.ToDec(std::get<uint8>(tempPropValue));
@@ -411,9 +422,20 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                     renderer.WriteText(tmpAscii, params);
                 }
                 break;
+            case PropertyType::Char8:
+            case PropertyType::Char16:
+                renderer.WriteCharacter(params.X, y, tmpCh16, params.Color);
+                params.X += 2;
+                if (w > 2)
+                {
+                    params.Width -= 2;
+                    renderer.WriteText(tmpAscii, params);
+                }
+                break;
             case PropertyType::List:
                 DrawListProperty(params, tempPropValue, prop, renderer, readOnly);
                 break;
+
             default:
                 renderer.WriteText("<Internal error - fail to process item type>", params);
                 break;
