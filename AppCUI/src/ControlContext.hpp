@@ -854,6 +854,7 @@ struct PropertyListContext : public ControlContext
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveToPropetyIndex(uint32 idx);
     void MoveTo(uint32 newPos);
+    void MoveScrollTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
     void DrawListProperty(
           WriteTextParams& params,
@@ -874,6 +875,7 @@ struct PropertyListContext : public ControlContext
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };

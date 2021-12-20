@@ -645,7 +645,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
     }
     if (newPos >= this->items.Len())
         newPos = this->items.Len() - 1;
-    auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
     if (h < 1)
         return; // sanity check
     uint32 height = (uint32) h;
@@ -667,6 +667,34 @@ void PropertyListContext::MoveTo(uint32 newPos)
         this->startView = newPos - (height - 1);
     else
         this->startView = 0;
+}
+void PropertyListContext::MoveScrollTo(uint32 newPos)
+{
+    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+    if (h < 1)
+        return; // sanity check
+    if (newPos + h <= items.Len())
+        startView = newPos;
+    else
+    {
+        if (h > items.Len())
+            startView = 0;
+        else
+            startView = items.Len() - h;
+    }
+    if (this->currentPos < startView)
+        MoveTo(startView);
+    else
+    {
+        if (items.Len() > 0)
+        {
+            auto last = startView + h - 1;
+            if (last >= items.Len())
+                last = items.Len() - 1;
+            if (this->currentPos > last)
+                MoveTo(last);
+        }
+    }
 }
 void PropertyListContext::MoveToPropetyIndex(uint32 idx)
 {
@@ -734,7 +762,6 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
-    
 
     switch (keyCode)
     {
@@ -781,6 +808,20 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         return true;
     return false;
 }
+bool PropertyListContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    switch (direction)
+    {
+    case MouseWheel::Up:
+        if (this->startView > 0)
+            MoveScrollTo(this->startView - 1);
+        return true;
+    case MouseWheel::Down:
+        MoveScrollTo(this->startView + 1);
+        return true;
+    }
+    return false;
+}
 void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     // check for filter mode
@@ -800,7 +841,6 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
             ExecuteItemAction();
         return;
     }
-
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
 {
@@ -968,7 +1008,7 @@ bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button)
 }
 bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseWheel(x, y, direction);
 }
 bool PropertyList::OnMouseOver(int x, int y)
 {
