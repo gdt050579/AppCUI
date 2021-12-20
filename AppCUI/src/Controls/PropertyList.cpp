@@ -682,6 +682,19 @@ void PropertyListContext::MoveToPropetyIndex(uint32 idx)
     // nothing found ==> move to first item
     MoveTo(0);
 }
+void PropertyListContext::ExecuteItemAction()
+{
+    uint32 idx;
+    if (this->items.Get(this->currentPos, idx))
+    {
+        if (idx & CATEGORY_FLAG)
+        {
+            idx &= CATEGORY_INDEX_MASK;
+            this->categories[idx].folded = !this->categories[idx].folded;
+            Refilter();
+        }
+    }
+}
 bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar)
 {
     uint32 idx;
@@ -721,7 +734,7 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
-    uint32 idx;
+    
 
     switch (keyCode)
     {
@@ -755,21 +768,39 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         SetPropertyNameWidth(this->propertyNameWidth + 1, true);
         return true;
     case Key::Space:
-        if (this->items.Get(this->currentPos, idx))
+    case Key::Enter:
+        if (!this->filteredMode)
         {
-            if (idx & CATEGORY_FLAG)
-            {
-                idx &= CATEGORY_INDEX_MASK;
-                this->categories[idx].folded = !this->categories[idx].folded;
-                Refilter();
-            }
+            ExecuteItemAction();
+            return true;
         }
-        return true;
+        break; // else allow it to be process by ProcessFilterKey
     }
 
     if (ProcessFilterKey(keyCode, UnicodeChar))
         return true;
     return false;
+}
+void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+    // check for filter mode
+    if ((this->hasBorder) && (y == this->Layout.Height - 1))
+    {
+        this->filteredMode = true;
+        return;
+    }
+    // check for item click
+    auto y_poz = this->hasBorder ? y - 1 : y;
+    if ((y_poz >= 0) && (((uint32) y_poz) + startView < this->items.Len()))
+    {
+        // click on one item
+        this->filteredMode = false;
+        MoveTo(((uint32) y_poz) + startView);
+        if ((button & MouseButton::DoubleClicked) != MouseButton::None)
+            ExecuteItemAction();
+        return;
+    }
+
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
 {
@@ -929,6 +960,7 @@ void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button)
 }
 void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    reinterpret_cast<PropertyListContext*>(this->Context)->OnMousePressed(x, y, button);
 }
 bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button)
 {

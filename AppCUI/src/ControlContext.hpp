@@ -850,6 +850,7 @@ struct PropertyListContext : public ControlContext
     bool hasBorder;
     bool filteredMode;
 
+    void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveToPropetyIndex(uint32 idx);
     void MoveTo(uint32 newPos);
@@ -872,6 +873,7 @@ struct PropertyListContext : public ControlContext
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
 };
