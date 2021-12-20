@@ -1502,6 +1502,16 @@ namespace Utils
             }
             return false;
         }
+        constexpr bool Truncate(uint16 newSize)
+        {
+            if (newSize < size)
+            {
+                size          = newSize;
+                data[newSize] = 0;
+                return true;
+            }
+            return false;
+        }
         constexpr inline uint16 Len() const
         {
             return size;
@@ -4570,6 +4580,10 @@ namespace Application
             Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor;
             Graphics::ColorPair Border;
+            struct
+            {
+                Graphics::ColorPair Text, Focused;
+            } Filter;
             struct
             {
                 Graphics::ColorPair Text, Stats, Arrow;

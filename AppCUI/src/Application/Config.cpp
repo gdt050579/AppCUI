@@ -367,5 +367,7 @@ void Config::SetDarkTheme()
     this->PropertList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
     this->PropertList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
     this->PropertList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
+    this->PropertList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
 }
 } // namespace AppCUI::Application

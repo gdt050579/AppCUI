@@ -5,6 +5,7 @@ namespace AppCUI
 {
 constexpr uint32 CATEGORY_FLAG             = 0x80000000;
 constexpr uint32 CATEGORY_INDEX_MASK       = 0x7FFFFFFF;
+constexpr int32 FILTER_PREFERED_WIDTH      = 17;
 constexpr static string_view color_names[] = {
     "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
@@ -546,10 +547,25 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         }
     }
 }
+void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
+{
+    auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
+    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', Cfg->PropertList.Filter.Text);
+    auto col = Cfg->PropertList.Filter.Text;
+
+    if (this->filterText.Len() <= filterWidth)
+        renderer.WriteSingleLineText(3, this->Layout.Height - 1, this->filterText, col);
+    else
+        renderer.WriteSingleLineText(
+              3,
+              this->Layout.Height - 1,
+              string_view{ this->filterText.GetText() + this->filterText.Len() - filterWidth, (size_t) filterWidth },
+              col);
+}
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
 {
     uint32 value;
-    int32 y     = 1;
+    int32 y     = 0;
     int32 max_y = this->Layout.Height;
     auto c      = this->Cfg->PropertList.Border;
 
@@ -579,6 +595,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     if (this->hasBorder)
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, false);
+        if ((this->Focused) && (this->Layout.Width > 9))
+            DrawFilterBar(renderer);
         y++;
         max_y--;
     }
@@ -642,6 +660,25 @@ void PropertyListContext::MoveTo(uint32 newPos)
     else
         this->startView = 0;
 }
+bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar)
+{
+    if ((UnicodeChar >= 32) && (UnicodeChar < 127))
+    {
+        this->filterText.AddChar((char) UnicodeChar);
+        Refilter();
+        return true;
+    }
+    if (keyCode == Key::Backspace)
+    {
+        if (this->filterText.Len())
+        {
+            this->filterText.Truncate(this->filterText.Len() - 1);
+            Refilter();
+        }
+        return true;
+    }
+    return false;
+}
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
@@ -690,6 +727,9 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         }
         return true;
     }
+
+    if (ProcessFilterKey(keyCode, UnicodeChar))
+        return true;
     return false;
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)

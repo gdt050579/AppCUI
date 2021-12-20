@@ -866,7 +866,9 @@ struct PropertyListContext : public ControlContext
           bool readOnly);
     void DrawCustomProperty(WriteTextParams& params, PropertyValue& pv, Graphics::Renderer& renderer, bool readOnly);
     void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void DrawFilterBar(Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
+    bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
