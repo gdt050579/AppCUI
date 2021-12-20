@@ -671,7 +671,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
 void PropertyListContext::MoveToPropetyIndex(uint32 idx)
 {
     auto ptr = this->items.GetUInt32Array();
-    for (auto pos = 0U; pos < this->items.Len();pos++,ptr++)
+    for (auto pos = 0U; pos < this->items.Len(); pos++, ptr++)
     {
         if ((*ptr) == idx)
         {
@@ -711,10 +711,10 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         this->filteredMode = true;
         return true;
     }
-    if (keyCode == Key::Escape)
+    if ((keyCode == Key::Escape) && (this->filteredMode))
     {
         this->filteredMode = false;
-        return true; 
+        return true;
     }
     return false;
 }
