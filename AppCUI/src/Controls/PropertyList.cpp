@@ -345,25 +345,28 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
 {
     if (index >= this->properties.size())
         return;
-    const auto& prop = this->properties[index];
-
-    int32 x = this->hasBorder ? 1 : 0;
+    const auto& prop       = this->properties[index];
+    const int32 extraSpace = this->showCategories ? 3 : 0;
+    int32 x                = this->hasBorder ? 1 : 0;
     NumericFormatter n;
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth);
-    if ((x + 3 + this->propertyNameWidth) < (int32) this->Layout.Width)
+    if ((x + extraSpace + this->propertyNameWidth) < (int32) this->Layout.Width)
     {
-        params.X     = x + 3;
+        params.X     = x + extraSpace;
         params.Y     = y;
         params.Color = Colors.Item.Text;
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
         renderer.WriteSpecialCharacter(
-              x + 3 + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, Colors.Item.LineSeparator);
+              x + extraSpace + this->propertyNameWidth,
+              y,
+              SpecialChars::BoxVerticalSingleLine,
+              Colors.Item.LineSeparator);
     }
     bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
-    auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + 5 + this->propertyNameWidth))
-                                    : ((int32) this->Layout.Width - (x + 4 + this->propertyNameWidth));
-    params.X      = x + 4 + this->propertyNameWidth;
+    auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
+                                    : ((int32) this->Layout.Width - (x + extraSpace + 1 + this->propertyNameWidth));
+    params.X      = x + extraSpace + 1 + this->propertyNameWidth;
     params.Y      = y;
     params.Color  = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
     params.Flags  = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
@@ -758,7 +761,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     auto* Members = (PropertyListContext*) this->Context;
     Members->properties.reserve(64);
     Members->categories.reserve(8);
-    Members->showCategories        = true;
+    Members->showCategories        = (flags & PropertyListFlags::HideCategories) == PropertyListFlags::None;
     Members->hasBorder             = (flags & PropertyListFlags::Border) != PropertyListFlags::None;
     Members->propertyNameWidth     = 0;
     Members->startView             = 0;

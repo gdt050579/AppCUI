@@ -3773,9 +3773,10 @@ namespace Controls
 
     enum class PropertyListFlags : uint32
     {
-        None     = 0x000000,
-        Border   = 0x000100,
-        ReadOnly = 0x000200,
+        None           = 0x000000,
+        Border         = 0x000100,
+        ReadOnly       = 0x000200,
+        HideCategories = 0x000400,
     };
     class EXPORT PropertyList : public Control
     {
