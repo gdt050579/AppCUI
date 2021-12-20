@@ -701,6 +701,11 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         }
         return true;
     }
+    if (keyCode == Key::Escape)
+    {
+        // switch to normal mode
+        return true; 
+    }
     return false;
 }
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
