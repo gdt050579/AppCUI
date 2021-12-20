@@ -848,6 +848,7 @@ struct PropertyListContext : public ControlContext
     float propetyNamePercentage;
     bool showCategories;
     bool hasBorder;
+    bool filteredMode;
 
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveToPropetyIndex(uint32 idx);

@@ -551,16 +551,24 @@ void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 {
     auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
     renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', Cfg->PropertList.Filter.Text);
-    auto col = Cfg->PropertList.Filter.Text;
+    auto col = this->filteredMode ? Cfg->PropertList.Filter.Focused : Cfg->PropertList.Filter.Text;
 
     if (this->filterText.Len() <= filterWidth)
+    {
         renderer.WriteSingleLineText(3, this->Layout.Height - 1, this->filterText, col);
+        if (this->filteredMode)
+            renderer.SetCursor(3 + this->filterText.Len(), this->Layout.Height - 1);
+    }
     else
+    {
         renderer.WriteSingleLineText(
               3,
               this->Layout.Height - 1,
               string_view{ this->filterText.GetText() + this->filterText.Len() - filterWidth, (size_t) filterWidth },
               col);
+        if (this->filteredMode)
+            renderer.SetCursor(3 + filterWidth, this->Layout.Height - 1);
+    }
 }
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
 {
@@ -686,6 +694,7 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
             MoveToPropetyIndex(idx);
         else
             MoveTo(0); // first index
+        this->filteredMode = true;
         return true;
     }
     if (keyCode == Key::Backspace)
@@ -699,11 +708,12 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
             else
                 MoveTo(0); // first index
         }
+        this->filteredMode = true;
         return true;
     }
     if (keyCode == Key::Escape)
     {
-        // switch to normal mode
+        this->filteredMode = false;
         return true; 
     }
     return false;
@@ -839,6 +849,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
     Members->Layout.MinHeight      = 4;
     Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
+    Members->filteredMode          = false;
 
     SetObject(obj);
 }
