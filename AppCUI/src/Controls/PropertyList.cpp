@@ -660,12 +660,32 @@ void PropertyListContext::MoveTo(uint32 newPos)
     else
         this->startView = 0;
 }
+void PropertyListContext::MoveToPropetyIndex(uint32 idx)
+{
+    auto ptr = this->items.GetUInt32Array();
+    for (auto pos = 0U; pos < this->items.Len();pos++,ptr++)
+    {
+        if ((*ptr) == idx)
+        {
+            MoveTo(pos);
+            return;
+        }
+    }
+    // nothing found ==> move to first item
+    MoveTo(0);
+}
 bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar)
 {
+    uint32 idx;
+    auto hasIndex = this->items.Get(this->currentPos, idx);
     if ((UnicodeChar >= 32) && (UnicodeChar < 127))
     {
         this->filterText.AddChar((char) UnicodeChar);
         Refilter();
+        if (hasIndex)
+            MoveToPropetyIndex(idx);
+        else
+            MoveTo(0); // first index
         return true;
     }
     if (keyCode == Key::Backspace)
@@ -674,6 +694,10 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         {
             this->filterText.Truncate(this->filterText.Len() - 1);
             Refilter();
+            if (hasIndex)
+                MoveToPropetyIndex(idx);
+            else
+                MoveTo(0); // first index
         }
         return true;
     }

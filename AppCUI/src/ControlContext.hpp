@@ -850,6 +850,7 @@ struct PropertyListContext : public ControlContext
     bool hasBorder;
 
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
+    void MoveToPropetyIndex(uint32 idx);
     void MoveTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
     void DrawListProperty(
