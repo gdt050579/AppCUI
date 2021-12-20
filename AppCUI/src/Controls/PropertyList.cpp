@@ -358,11 +358,10 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         params.Color = Colors.Item.Text;
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
+        auto col = (this->separatorStatus == PropertySeparatorStatus::None) ? Colors.Item.LineSeparator
+                                                                            : Colors.Item.Checked;
         renderer.WriteSpecialCharacter(
-              x + extraSpace + this->propertyNameWidth,
-              y,
-              SpecialChars::BoxVerticalSingleLine,
-              Colors.Item.LineSeparator);
+              x + extraSpace + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, col);
     }
     bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
     auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
@@ -677,7 +676,7 @@ void PropertyListContext::MoveScrollTo(uint32 newPos)
         startView = newPos;
     else
     {
-        if (h > items.Len())
+        if ((uint32)h > items.Len())
             startView = 0;
         else
             startView = items.Len() - h;
@@ -830,6 +829,12 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
         this->filteredMode = true;
         return;
     }
+    // check separator
+    if (x == GetSeparatorXPos())
+    {
+        this->separatorStatus = PropertySeparatorStatus::Drag;
+        return;
+    }
     // check for item click
     auto y_poz = this->hasBorder ? y - 1 : y;
     if ((y_poz >= 0) && (((uint32) y_poz) + startView < this->items.Len()))
@@ -841,6 +846,51 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
             ExecuteItemAction();
         return;
     }
+}
+
+bool PropertyListContext::OnMouseOver(int x, int y)
+{
+    if (GetSeparatorXPos() == x)
+    {
+        if (separatorStatus == PropertySeparatorStatus::None)
+        {
+            separatorStatus = PropertySeparatorStatus::Over;
+            return true;
+        }
+    }
+    else
+    {
+        if (separatorStatus == PropertySeparatorStatus::Over)
+        {
+            separatorStatus = PropertySeparatorStatus::None;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool PropertyListContext::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    if (separatorStatus == PropertySeparatorStatus::Drag)
+    {
+        this->SetPropertyNameWidth(this->propertyNameWidth + (x - this->GetSeparatorXPos()), true);
+        return true;
+    }
+    return false;
+}
+bool PropertyListContext::OnMouseLeave()
+{
+    if (this->separatorStatus != PropertySeparatorStatus::None)
+    {
+        this->separatorStatus = PropertySeparatorStatus::None;
+        return true;
+    }
+    return false;
+}
+void PropertyListContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+    this->separatorStatus = PropertySeparatorStatus::None;
 }
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
 {
@@ -921,6 +971,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->Layout.MinHeight      = 4;
     Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
     Members->filteredMode          = false;
+    Members->separatorStatus       = PropertySeparatorStatus::None;
 
     SetObject(obj);
 }
@@ -997,6 +1048,7 @@ bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
+    reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseReleased(x, y, button);
 }
 void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button)
 {
@@ -1004,7 +1056,7 @@ void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button)
 }
 bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseDrag(x, y, button);
 }
 bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
@@ -1012,11 +1064,11 @@ bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 }
 bool PropertyList::OnMouseOver(int x, int y)
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseOver(x, y);
 }
 bool PropertyList::OnMouseLeave()
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseLeave();
 }
 
 void PropertyList::OnUpdateScrollBars()

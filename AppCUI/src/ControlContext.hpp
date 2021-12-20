@@ -829,6 +829,12 @@ struct PropertyInfo
     uint32 id;
     PropertyType type;
 };
+enum class PropertySeparatorStatus: uint8
+{
+    None,
+    Over,
+    Drag
+};
 struct PropertyListContext : public ControlContext
 {
     struct
@@ -849,6 +855,7 @@ struct PropertyListContext : public ControlContext
     bool showCategories;
     bool hasBorder;
     bool filteredMode;
+    PropertySeparatorStatus separatorStatus;
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
@@ -876,8 +883,17 @@ struct PropertyListContext : public ControlContext
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseOver(int x, int y);
+    bool OnMouseLeave();
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
+
+    inline constexpr int32 GetSeparatorXPos() const
+    {
+        return (this->showCategories ? 3 : 0) + (this->hasBorder ? 1 : 0) + this->propertyNameWidth;
+    }
 };
 
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
