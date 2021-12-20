@@ -966,7 +966,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->propertyNameWidth     = 0;
     Members->startView             = 0;
     Members->currentPos            = 0;
-    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
+    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | (uint32) flags;
     Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
     Members->Layout.MinHeight      = 4;
     Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
@@ -1073,6 +1073,12 @@ bool PropertyList::OnMouseLeave()
 
 void PropertyList::OnUpdateScrollBars()
 {
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 count = Members->items.Len();
+    if (count > 0)
+        count--;
+    UpdateVScrollBar(Members->currentPos, count);
 }
 
 } // namespace AppCUI
