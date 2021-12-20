@@ -809,14 +809,21 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 bool PropertyListContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
+    auto currentStartView = this->startView;
     switch (direction)
     {
     case MouseWheel::Up:
         if (this->startView > 0)
             MoveScrollTo(this->startView - 1);
+        // if scroll did not changed, move the cursor
+        if ((currentStartView == this->startView) && (this->currentPos > 0))
+            MoveTo(this->currentPos - 1);
         return true;
     case MouseWheel::Down:
         MoveScrollTo(this->startView + 1);
+        // if scroll did not changed, move the cursor
+        if (currentStartView == this->startView)
+            MoveTo(this->currentPos + 1);
         return true;
     }
     return false;
