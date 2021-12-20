@@ -676,7 +676,7 @@ void PropertyListContext::MoveScrollTo(uint32 newPos)
         startView = newPos;
     else
     {
-        if ((uint32)h > items.Len())
+        if ((uint32) h > items.Len())
             startView = 0;
         else
             startView = items.Len() - h;
@@ -961,17 +961,18 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     auto* Members = (PropertyListContext*) this->Context;
     Members->properties.reserve(64);
     Members->categories.reserve(8);
-    Members->showCategories        = (flags & PropertyListFlags::HideCategories) == PropertyListFlags::None;
-    Members->hasBorder             = (flags & PropertyListFlags::Border) != PropertyListFlags::None;
-    Members->propertyNameWidth     = 0;
-    Members->startView             = 0;
-    Members->currentPos            = 0;
-    Members->Flags                 = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | (uint32) flags;
-    Members->Layout.MinWidth       = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
-    Members->Layout.MinHeight      = 4;
-    Members->propetyNamePercentage = 0.4f; // 40% of width is the property name
-    Members->filteredMode          = false;
-    Members->separatorStatus       = PropertySeparatorStatus::None;
+    Members->showCategories            = (flags & PropertyListFlags::HideCategories) == PropertyListFlags::None;
+    Members->hasBorder                 = (flags & PropertyListFlags::Border) != PropertyListFlags::None;
+    Members->propertyNameWidth         = 0;
+    Members->startView                 = 0;
+    Members->currentPos                = 0;
+    Members->Flags                     = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | (uint32) flags;
+    Members->Layout.MinWidth           = 10; // 3 spaces+2chars(name)+1char(bar)+2chars(value)+2chars(border)
+    Members->Layout.MinHeight          = 4;
+    Members->propetyNamePercentage     = 0.4f; // 40% of width is the property name
+    Members->filteredMode              = false;
+    Members->separatorStatus           = PropertySeparatorStatus::None;
+    Members->ScrollBars.OutsideControl = !Members->hasBorder;
 
     SetObject(obj);
 }
