@@ -155,9 +155,26 @@ class PropertyTextEditDialog : public Window
             txt->SetFocus();
         }
     }
+    template <typename T>
+    void UpdateStringPropertyValue(const T& value)
+    {
+        LocalString<512> error;
+
+        if (object->SetPropertyValue(prop.id, value, error))
+        {
+            // all good
+            this->Exit(1);
+            return;
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError("Error", error);
+        }
+    }
     void Validate()
     {
         LocalString<256> asciiValue;
+        LocalUnicodeStringBuilder<256> unicodeValue;
 
         switch (prop.type)
         {
@@ -183,6 +200,9 @@ class PropertyTextEditDialog : public Window
                 txt->SetFocus();
                 return; // value was not validated
             }
+            break;
+        case PropertyType::Unicode:
+            unicodeValue.Set(txt->GetText());
             break;
         }
         // update the value
@@ -220,6 +240,15 @@ class PropertyTextEditDialog : public Window
             break;
         case PropertyType::Size:
             UpdateNumericPropertValue<Size>(Size::FromString(asciiValue), asciiValue, "Size");
+            break;
+        case PropertyType::Ascii:
+            UpdateStringPropertyValue<string_view>(asciiValue);
+            break;
+        case PropertyType::CharacterView:
+            UpdateStringPropertyValue<CharacterView>(txt->GetText());
+            break;
+        case PropertyType::Unicode:
+            UpdateStringPropertyValue<u16string_view>(unicodeValue);
             break;
         }
     };

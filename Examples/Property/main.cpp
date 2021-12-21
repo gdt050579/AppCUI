@@ -32,6 +32,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     bool hasBorder, animationStarted;
     uint32 frameDelay;
     uint32 counter;
+    std::u16string name;
 
   public:
     MyUserControl() : UserControl("d:c")
@@ -47,6 +48,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
         c                = ColorPair{ Color::Red, Color::Black };
         hasBorder        = false;
         animationStarted = true;
+        name             = u"Dragoș";
     }
     bool OnFrameUpdate() override
     {
@@ -104,7 +106,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
             value = this->c.Background;
             return true;
         case MyControlProperty::Name:
-            value = u"Dragoș";
+            value = name;
             return true;
         case MyControlProperty::Version:
             value = "1.2.3";
@@ -175,7 +177,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
             this->c.Background = std::get<Color>(value);
             return true;
         case MyControlProperty::Name:
-            // do nothing ==> read-only
+            name = std::get<u16string_view>(value);
             return true;
         case MyControlProperty::Version:
             // do nothing ==> read-only
@@ -195,7 +197,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     }
     bool IsPropertyValueReadOnly(uint32 propertyID) override
     {
-        return (propertyID == (uint32) MyControlProperty::Name) || (propertyID == (uint32) MyControlProperty::Version);
+        return (propertyID == (uint32) MyControlProperty::Version);
     }
     vector<Property> GetPropertiesList() override
     {
