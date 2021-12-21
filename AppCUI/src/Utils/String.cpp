@@ -496,12 +496,13 @@ bool String::Set(const String* text)
 }
 bool String::Set(u16string_view unicodeText)
 {
-    VALIDATE_ALLOCATED_SPACE(unicodeText.size() + 1, false);
     CHECK(unicodeText.size() < 0xFFFFFE, false, "Unicode text is too large");
+    VALIDATE_ALLOCATED_SPACE((uint32) unicodeText.size() + 1, false);
+
     auto* p = unicodeText.data();
     auto* e = p + unicodeText.size();
     auto* t = this->Text;
-    while (p<e)
+    while (p < e)
     {
         if (((*p) > 0) && ((*p) <= 127))
             *t = (char) (*p);
@@ -512,14 +513,15 @@ bool String::Set(u16string_view unicodeText)
         t++;
         p++;
     }
-    *t = 0;
+    *t         = 0;
     this->Size = (uint32) unicodeText.size();
     return true;
 }
 bool String::Set(CharacterView unicodeText)
 {
-    VALIDATE_ALLOCATED_SPACE(unicodeText.size() + 1, false);
     CHECK(unicodeText.size() < 0xFFFFFE, false, "Unicode text is too large");
+    VALIDATE_ALLOCATED_SPACE((uint32) unicodeText.size() + 1, false);
+
     auto* p = unicodeText.data();
     auto* e = p + unicodeText.size();
     auto* t = this->Text;
