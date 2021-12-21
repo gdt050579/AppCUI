@@ -342,7 +342,7 @@ void PropertyListContext::DrawCustomProperty(
         renderer.WriteText("Invalid value type for list (expecting a string (ascii/unicode/UTF-8)", params);
     }
 }
-void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer)
+void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer, bool& readOnlyStatus)
 {
     if (index >= this->properties.size())
         return;
@@ -363,13 +363,14 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x + extraSpace + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, col);
     }
-    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
-    auto w        = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
-                                    : ((int32) this->Layout.Width - (x + extraSpace + 1 + this->propertyNameWidth));
-    params.X      = x + extraSpace + 1 + this->propertyNameWidth;
-    params.Y      = y;
-    params.Color  = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
-    params.Flags  = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
+    bool readOnly  = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
+    auto w         = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
+                                     : ((int32) this->Layout.Width - (x + extraSpace + 1 + this->propertyNameWidth));
+    readOnlyStatus = readOnly;
+    params.X       = x + extraSpace + 1 + this->propertyNameWidth;
+    params.Y       = y;
+    params.Color   = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
+    params.Flags   = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
 
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
@@ -549,8 +550,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
 void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 {
     auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
-    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', Cfg->PropertList.Filter.Text);
-    auto col = this->filteredMode ? Cfg->PropertList.Filter.Focused : Cfg->PropertList.Filter.Text;
+    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', Cfg->PropertyList.Filter.Text);
+    auto col = this->filteredMode ? Cfg->PropertyList.Filter.Focused : Cfg->PropertyList.Filter.Text;
 
     if (this->filterText.Len() <= filterWidth)
     {
@@ -572,16 +573,17 @@ void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
 {
     uint32 value;
-    int32 y     = 0;
-    int32 max_y = this->Layout.Height;
-    auto c      = this->Cfg->PropertList.Border;
+    int32 y             = 0;
+    int32 max_y         = this->Layout.Height;
+    auto c              = this->Cfg->PropertyList.Border;
+    bool readOnlyStatus = false;
 
     if (this->propertyNameWidth == 0)
         this->SetPropertyNameWidth(this->Layout.Width * 4 / 10, false);
 
     if ((this->Flags & GATTR_ENABLE) == 0)
     {
-        c                               = this->Cfg->PropertList.Inactive;
+        c                               = this->Cfg->PropertyList.Inactive;
         this->Colors.Category.Arrow     = c;
         this->Colors.Category.Stats     = c;
         this->Colors.Category.Text      = c;
@@ -595,8 +597,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     }
     else
     {
-        this->Colors.Category = this->Cfg->PropertList.Category;
-        this->Colors.Item     = this->Cfg->PropertList.Item;
+        this->Colors.Category = this->Cfg->PropertyList.Category;
+        this->Colors.Item     = this->Cfg->PropertyList.Item;
     }
     renderer.Clear(' ', c);
     if (this->hasBorder)
@@ -612,15 +614,19 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         if (this->items.Get(idx, value) == false)
             break;
         if (value & CATEGORY_FLAG)
+        {
             DrawCategory(value & CATEGORY_INDEX_MASK, y, renderer);
+            readOnlyStatus = false;
+        }
         else
-            DrawProperty(value, y, renderer);
+            DrawProperty(value, y, renderer, readOnlyStatus);
         if ((this->Focused) && (idx == this->currentPos))
         {
+            const auto col = readOnlyStatus ? Cfg->PropertyList.CursorReadOnly : Cfg->PropertyList.Cursor;
             if (this->hasBorder)
-                renderer.FillHorizontalLine(1, y, this->Layout.Width - 2, -1, ColorPair{ Color::Black, Color::White });
+                renderer.FillHorizontalLine(1, y, this->Layout.Width - 2, -1, col);
             else
-                renderer.FillHorizontalLine(0, y, this->Layout.Width, -1, ColorPair{ Color::Black, Color::White });
+                renderer.FillHorizontalLine(0, y, this->Layout.Width, -1, col);
         }
     }
 }

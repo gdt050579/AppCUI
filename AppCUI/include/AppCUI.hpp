@@ -4578,7 +4578,7 @@ namespace Application
         struct
         {
             Graphics::ColorPair Inactive;
-            Graphics::ColorPair Cursor;
+            Graphics::ColorPair Cursor, CursorReadOnly;
             Graphics::ColorPair Border;
             struct
             {
@@ -4592,7 +4592,7 @@ namespace Application
             {
                 Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked, Error;
             } Item;
-        } PropertList;
+        } PropertyList;
         void SetDarkTheme();
     };
 

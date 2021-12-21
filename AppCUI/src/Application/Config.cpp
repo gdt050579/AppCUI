@@ -354,20 +354,21 @@ void Config::SetDarkTheme()
     this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 
-    this->PropertList.Border             = ColorPair{ Color::White, Color::DarkBlue };
-    this->PropertList.Cursor             = ColorPair{ Color::Black, Color::White };
-    this->PropertList.Inactive           = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->PropertList.Category.Text      = ColorPair{ Color::White, Color::Blue };
-    this->PropertList.Category.Arrow     = ColorPair{ Color::Green, Color::Blue };
-    this->PropertList.Category.Stats     = ColorPair{ Color::Gray, Color::Blue };
-    this->PropertList.Item.Text          = ColorPair{ Color::Silver, Color::DarkBlue };
-    this->PropertList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
-    this->PropertList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->PropertList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->PropertList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
-    this->PropertList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
-    this->PropertList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
-    this->PropertList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
-    this->PropertList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
+    this->PropertyList.Border             = ColorPair{ Color::White, Color::DarkBlue };
+    this->PropertyList.Cursor             = ColorPair{ Color::Black, Color::White };
+    this->PropertyList.CursorReadOnly     = ColorPair{ Color::Gray, Color::White };
+    this->PropertyList.Inactive           = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertyList.Category.Text      = ColorPair{ Color::White, Color::Blue };
+    this->PropertyList.Category.Arrow     = ColorPair{ Color::Green, Color::Blue };
+    this->PropertyList.Category.Stats     = ColorPair{ Color::Gray, Color::Blue };
+    this->PropertyList.Item.Text          = ColorPair{ Color::Silver, Color::DarkBlue };
+    this->PropertyList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
+    this->PropertyList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->PropertyList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertyList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
+    this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertyList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
+    this->PropertyList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
 }
 } // namespace AppCUI::Application

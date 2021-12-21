@@ -839,8 +839,8 @@ struct PropertyListContext : public ControlContext
 {
     struct
     {
-        decltype(AppCUI::Application::Config::PropertList.Category) Category;
-        decltype(AppCUI::Application::Config::PropertList.Item) Item;
+        decltype(AppCUI::Application::Config::PropertyList.Category) Category;
+        decltype(AppCUI::Application::Config::PropertyList.Item) Item;
     } Colors;
     PropertyValue tempPropValue;
     Reference<PropertiesInterface> object;
@@ -876,7 +876,7 @@ struct PropertyListContext : public ControlContext
           Graphics::Renderer& renderer,
           bool readOnly);
     void DrawCustomProperty(WriteTextParams& params, PropertyValue& pv, Graphics::Renderer& renderer, bool readOnly);
-    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer, bool &readOnlyStatus);
     void DrawFilterBar(Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
