@@ -32,6 +32,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     bool hasBorder, animationStarted;
     uint32 frameDelay;
     uint32 counter;
+    uint32 flags;
     std::u16string name;
 
   public:
@@ -48,6 +49,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
         c                = ColorPair{ Color::Red, Color::Black };
         hasBorder        = false;
         animationStarted = true;
+        flags            = 59;
         name             = u"Dragoș";
     }
     bool OnFrameUpdate() override
@@ -129,7 +131,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
             value = frameDelay;
             return true;
         case MyControlProperty::Flags:
-            value = 59;
+            value = flags;
             return true;
         case MyControlProperty::Custom:
             value = "Custom string representation";
@@ -195,6 +197,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         case MyControlProperty::AnimationSpeed:
             this->frameDelay = (uint32) std::get<uint64>(value);
+            return true;
+        case MyControlProperty::Flags:
+            this->flags = (uint32) std::get<uint64>(value);
             return true;
         }
         error.SetFormat("Unknwon property ID: %u", (uint32) id);

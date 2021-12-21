@@ -154,6 +154,101 @@ class PropertyEditDialog : public Window
     virtual void Validate()             = 0;
 };
 
+class PropertyFlagsEditDialog : public PropertyEditDialog
+{
+    Reference<ListView> lv;
+    ItemHandle* items;
+
+  public:
+    PropertyFlagsEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly), items(nullptr)
+    {
+    }
+    ~PropertyFlagsEditDialog()
+    {
+        if (items)
+            delete[] items;
+        items = nullptr;
+    }
+    void OnInitPropertyDialog() override
+    {
+        lv = Factory::ListView::Create(
+              this,
+              "l:1,t:1,r:1,b:3",
+              ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::SearchMode);
+        lv->AddColumn("", TextAlignament::Left, 100);
+        if (prop.listValues.size() > 0)
+        {
+            items   = new ItemHandle[prop.listValues.size()];
+            auto* i = items;
+            for (auto& entry : prop.listValues)
+            {
+                *i = lv->AddItem(entry.second);
+                lv->SetItemData(*i, entry.first);
+                i++;
+            }
+        }
+        lv->SetFocus();
+    }
+    void Refresh() override
+    {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            uint64 result;
+            if (PropertyValueToUInt64(tempPropValue, result))
+            {
+                auto* i = items;
+                auto* e = items + prop.listValues.size();
+                while (i < e)
+                {
+                    auto flagValue = lv->GetItemData(*i, 0);
+                    lv->SetItemCheck(*i, (flagValue & result) == flagValue);
+                    i++;
+                }
+            }
+            else
+            {
+                Dialogs::MessageBox::ShowError(
+                      "Error",
+                      tmpString.Format(
+                            "Item value should be an index (uint8/16/32/64 or int8/16/32/64) for %s",
+                            prop.name.GetText()));
+            }
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        lv->SetFocus();
+    }
+    void Validate() override
+    {
+        if (lv->GetItemsCount() == 0)
+            return;
+        LocalString<256> error;
+        uint64 value = 0;
+        auto* i      = items;
+        auto* e      = items + prop.listValues.size();
+        while (i < e)
+        {
+            if (lv->IsItemChecked(*i))
+                value |= lv->GetItemData(*i, 0);
+            i++;
+        }
+        if (object->SetPropertyValue(prop.id, value, error))
+        {
+            this->Exit(0);
+            return;
+        }
+        // error
+        Dialogs::MessageBox::ShowError("Error", error);
+        lv->SetFocus();
+    }
+};
 class PropertyListEditDialog : public PropertyEditDialog
 {
     Reference<ListView> lv;
@@ -172,7 +267,7 @@ class PropertyListEditDialog : public PropertyEditDialog
     }
     void OnInitPropertyDialog() override
     {
-        lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns);
+        lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         lv->AddColumn("", TextAlignament::Left, 100);
         if (prop.listValues.size() > 0)
         {
@@ -1122,6 +1217,11 @@ void PropertyListContext::EditAndUpdateList(const PropertyInfo& prop)
     PropertyListEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.ShowDialog();
 }
+void PropertyListContext::EditAndUpdateFlags(const PropertyInfo& prop)
+{
+    PropertyFlagsEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
+    dlg.ShowDialog();
+}
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
     if (IsPropertyReadOnly(prop))
@@ -1186,6 +1286,8 @@ void PropertyListContext::ExecuteItemAction()
                 EditAndUpdateList(this->properties[idx]);
                 break;
             case PropertyType::Flags:
+                EditAndUpdateFlags(this->properties[idx]);
+                break;
             case PropertyType::Custom:
                 break; // have their own drawing method
             }
