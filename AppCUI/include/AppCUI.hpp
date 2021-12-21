@@ -889,6 +889,8 @@ namespace Utils
         bool Set(const char* text, uint32 size = 0xFFFFFFFF);
         bool Set(const String& text);
         bool Set(const String* text);
+        bool Set(u16string_view unicodeText);
+        bool Set(CharacterView unicodeText);
         bool SetChars(char ch, uint32 count);
 
         bool SetFormat(const char* format, ...);

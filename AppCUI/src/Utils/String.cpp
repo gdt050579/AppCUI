@@ -494,6 +494,50 @@ bool String::Set(const String* text)
     CHECK(text, false, "Expecting a non-null first parameter !");
     return this->Set(text->Text, text->Size);
 }
+bool String::Set(u16string_view unicodeText)
+{
+    VALIDATE_ALLOCATED_SPACE(unicodeText.size() + 1, false);
+    CHECK(unicodeText.size() < 0xFFFFFE, false, "Unicode text is too large");
+    auto* p = unicodeText.data();
+    auto* e = p + unicodeText.size();
+    auto* t = this->Text;
+    while (p<e)
+    {
+        if (((*p) > 0) && ((*p) <= 127))
+            *t = (char) (*p);
+        else
+        {
+            RETURNERROR(false, "Invalid (non-ascii) character [Code: %u]", (uint32) *p);
+        }
+        t++;
+        p++;
+    }
+    *t = 0;
+    this->Size = (uint32) unicodeText.size();
+    return true;
+}
+bool String::Set(CharacterView unicodeText)
+{
+    VALIDATE_ALLOCATED_SPACE(unicodeText.size() + 1, false);
+    CHECK(unicodeText.size() < 0xFFFFFE, false, "Unicode text is too large");
+    auto* p = unicodeText.data();
+    auto* e = p + unicodeText.size();
+    auto* t = this->Text;
+    while (p < e)
+    {
+        if ((p->Code > 0) && (p->Code <= 127))
+            *t = (char) p->Code;
+        else
+        {
+            RETURNERROR(false, "Invalid (non-ascii) character [Code: %u]", (uint32) p->Code);
+        }
+        t++;
+        p++;
+    }
+    *t         = 0;
+    this->Size = (uint32) unicodeText.size();
+    return true;
+}
 bool String::SetChars(char ch, uint32 count)
 {
     CHECK(ch, false, "NULL character can not be added !");
