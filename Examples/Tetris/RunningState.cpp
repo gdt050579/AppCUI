@@ -46,7 +46,7 @@ bool RunningState::HandleEvent(Reference<Control> ctrl, Event eventType, int con
 bool RunningState::Update()
 {
     LocalString<128> ls;
-    ls.Format("Score: %u", score);
+    ls.Format("Score: %u", board.GetScore());
     scoreLabel->SetText(ls.GetText());
 
     delta = static_cast<unsigned long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC);
@@ -103,12 +103,10 @@ void RunningState::PaintControlImplementationRightPiecePanels::PaintControl(
       Reference<Control> control, Renderer& renderer)
 {
     control->Paint(renderer);
-
-    if (board.pieces.size() > id)
-    {
-        auto& piece = board.pieces[id];
-        piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
-    }
+    board.DrawPieceById(
+          renderer,
+          id,
+          { static_cast<unsigned int>(control->GetWidth()), static_cast<unsigned int>(control->GetHeight()) });
 }
 
 RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLeftPanel(Board& board) : board(board)
@@ -118,16 +116,7 @@ RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLef
 void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<Control> control, Renderer& renderer)
 {
     control->Paint(renderer);
-
-    if (board.currentPiece.has_value())
-    {
-        board.currentPiece->Draw(renderer, board.scale);
-    }
-
-    for (auto& piece : board.piecesProcessed)
-    {
-        piece.Draw(renderer, board.scale);
-    }
+    board.Draw(renderer);
 }
 
 RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImplementationLeftPanel(Board& board)
@@ -149,7 +138,7 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
         return board.AdvanceOnYAxis();
 
     case Key::Space:
-        return board.currentPiece->Rotate();
+        return board.Rotate();
 
     default:
         break;

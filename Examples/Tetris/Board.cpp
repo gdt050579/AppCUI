@@ -93,6 +93,22 @@ bool Board::AdvanceOnXAxisRight()
     return true;
 }
 
+bool Board::Rotate()
+{
+    if (currentPiece.has_value() == false)
+    {
+        return false;
+    }
+
+    currentPiece->Rotate();
+
+    const auto& piecePositionOnBoard = currentPiece->GetPositionOnBoard();
+    const auto& pieceMatrix          = currentPiece->GetMatrix();
+    // TODO: update on board
+
+    return true;
+}
+
 void Board::Update(
       int scale, unsigned int maxPiecesInQueue, const Reference<Control> control, const Size& size, unsigned long delta)
 {
@@ -150,4 +166,37 @@ void Board::SetMatrixBounds(const Size& size)
         matrixYTop             = 1 + (panelHeight % bHeight) / 2;
         matrixYBottom          = panelHeight - matrixYTop;
     }
+}
+
+bool Board::Draw(Renderer& renderer)
+{
+    if (currentPiece.has_value())
+    {
+        currentPiece->Draw(renderer, scale);
+    }
+
+    for (auto& piece : piecesProcessed)
+    {
+        piece.Draw(renderer, scale);
+    }
+
+    return true;
+}
+
+bool Board::DrawPieceById(Renderer& renderer, unsigned int id, const Size& size)
+{
+    if (pieces.size() <= id)
+    {
+        return false;
+    }
+
+    auto& piece = pieces[id];
+    piece.Draw(renderer, 3, true, size);
+
+    return true;
+}
+
+unsigned int Board::GetScore() const
+{
+    return score;
 }

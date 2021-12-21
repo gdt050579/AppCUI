@@ -52,18 +52,18 @@ Piece::Piece(const PieceType type, const Reference<Control> control, const Point
     }
 }
 
-bool Piece::Draw(Renderer& renderer, int scale, bool center, int w, int h)
+bool Piece::Draw(Renderer& renderer, int scale, bool center, const Size& canvasSize)
 {
     if (center)
     {
-        if (w < 2 || h < 2)
+        if (canvasSize.Width < 2 || canvasSize.Height < 2)
         {
             return false;
         }
 
         const auto size = GetSize(scale);
-        const int x     = std::max<>(1, static_cast<int>((w - size.Width) / 2));
-        const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - 2 - size.Height)) / 2));
+        const int x     = std::max<>(1, static_cast<int>((canvasSize.Width - size.Width) / 2));
+        const int y     = std::max<>(1, static_cast<int>(static_cast<int>((canvasSize.Height - 2 - size.Height)) / 2));
         SetPosition({ x, y });
 
         return Draw(renderer, scale);

@@ -8,7 +8,7 @@
 
 class Board
 {
-  public:
+  private:
     std::array<std::array<bool, 50>, 50> matrix{ false };
     int maxtrixVSize  = 0;
     int maxtrixHSize  = 0;
@@ -28,9 +28,13 @@ class Board
 
     int scale = 1;
 
+    unsigned int score = 0;
+
+  public:
     bool AdvanceOnYAxis();
     bool AdvanceOnXAxisLeft();
     bool AdvanceOnXAxisRight();
+    bool Rotate();
 
     void Update(
           int scale,
@@ -39,6 +43,11 @@ class Board
           const Size& size,
           unsigned long delta);
     void SetMatrixBounds(const Size& size);
+
+    bool Draw(Renderer& renderer);
+    bool DrawPieceById(Renderer& renderer, unsigned int id, const Size& size);
+
+    unsigned int GetScore() const;
 
   private:
     bool CanAdvanceOnYAxis() const;

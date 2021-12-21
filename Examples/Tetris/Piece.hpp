@@ -36,7 +36,7 @@ class Piece
   public:
     Piece(const PieceType type, const Reference<Control> control, const Point& position);
 
-    bool Draw(Renderer& renderer, int scale, bool center, int w, int h);
+    bool Draw(Renderer& renderer, int scale, bool center, const Size& canvasSize);
     bool Draw(Renderer& renderer, int scale);
     Size GetSize(int scale) const;
     void UpdatePosition(const Point& delta);
