@@ -38,7 +38,7 @@ class Board
           const Reference<Control> control,
           const Size& size,
           unsigned long delta);
-    void SetMatrixData(const Size& size);
+    void SetMatrixBounds(const Size& size);
 
   private:
     bool CanAdvanceOnYAxis() const;

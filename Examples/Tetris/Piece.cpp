@@ -187,3 +187,14 @@ bool Piece::Rotate()
 
     return true;
 }
+
+void Piece::SetPositionOnBoardMatrix(const Point& position)
+{
+    positionOnBoard = position;
+}
+
+void Piece::UpdatePositionOnBoardMatrix(const Point& position)
+{
+    positionOnBoard.X += position.X;
+    positionOnBoard.Y += position.Y;
+}

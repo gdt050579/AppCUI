@@ -48,6 +48,7 @@ bool Board::AdvanceOnYAxis()
 
     const auto bHeight = currentPiece->GetBlockHeight(scale);
     currentPiece->UpdatePosition({ 0, bHeight });
+    currentPiece->UpdatePositionOnBoardMatrix({ 0, 1 });
 
     return true;
 }
@@ -61,6 +62,7 @@ bool Board::AdvanceOnXAxisLeft()
 
     const auto bWidth = currentPiece->GetBlockWidth(scale);
     currentPiece->UpdatePosition({ -bWidth, 0 });
+    currentPiece->UpdatePositionOnBoardMatrix({ -1, 0 });
 
     return true;
 }
@@ -74,6 +76,7 @@ bool Board::AdvanceOnXAxisRight()
 
     const auto bWidth = currentPiece->GetBlockWidth(scale);
     currentPiece->UpdatePosition({ bWidth, 0 });
+    currentPiece->UpdatePositionOnBoardMatrix({ 1, 0 });
 
     return true;
 }
@@ -103,9 +106,10 @@ void Board::Update(
             currentPiece.emplace(pieces.front());
             pieces.pop_front();
 
-            SetMatrixData(size);
+            SetMatrixBounds(size);
             const auto x = (maxtrixHSize / 2) * currentPiece->GetBlockWidth(scale);
             currentPiece->SetPosition({ x, matrixYTop });
+            currentPiece->SetPositionOnBoardMatrix({ maxtrixHSize / 2 - 1, 0 });
         }
     }
 
@@ -116,7 +120,7 @@ void Board::Update(
     }
 }
 
-void Board::SetMatrixData(const Size& size)
+void Board::SetMatrixBounds(const Size& size)
 {
     if (currentPiece.has_value())
     {
