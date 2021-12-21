@@ -4,6 +4,7 @@
 #include "Game.hpp"
 #include "PauseState.hpp"
 #include "Piece.hpp"
+#include "Board.hpp"
 
 #include <random>
 #include <array>
@@ -80,15 +81,9 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     std::default_random_engine e1{ r() };
     std::uniform_int_distribution<int> uniform_dist{ 0, static_cast<int>(PieceType::End) - 1 };
 
+    Board board;
     std::vector<Piece> piecesProcessed;
     std::optional<Piece> currentPiece;
-    std::array<std::array<bool, 50>, 50> matrix{ false };
-    int maxtrixVSize  = 0;
-    int maxtrixHSize  = 0;
-    int matrixXLeft   = 0;
-    int matrixXRight  = 0;
-    int matrixYTop    = 0;
-    int matrixYBottom = 0;
 
     Reference<TabPage> page          = nullptr;
     Reference<Panel> leftPanel       = nullptr;

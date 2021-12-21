@@ -43,6 +43,5 @@ class Piece
     int GetRightXPosition(int scale) const;
     int GetTopYPosition() const;
     int GetBottomYPosition(int scale) const;
-    bool CanAdvanceOnYAxis(int scale, int height) const;
     void Rotate();
 };

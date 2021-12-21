@@ -55,24 +55,18 @@ bool RunningState::Update()
 
     if (currentPiece.has_value())
     {
-        if (currentPieceUpdated != delta)
-        {
-            const auto bHeight = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
-            if (currentPiece->GetBottomYPosition(pieceScaleInLeftPanel) + bHeight < leftPanel->GetHeight())
-            {
-                currentPiece->UpdatePosition(0, bHeight);
-            }
-            currentPieceUpdated = delta;
-        }
-
-        if (currentPiece->CanAdvanceOnYAxis(pieceScaleInLeftPanel, matrixYBottom))
+        if (board.CanAdvanceOnYAxis(currentPiece.value(), pieceScaleInLeftPanel) == false)
         {
             piecesProcessed.emplace_back(*currentPiece);
             currentPiece.reset();
         }
+        else if (currentPieceUpdated != delta)
+        {
+            currentPieceUpdated = delta;
+            board.AdvanceOnYAxis(currentPiece.value(), pieceScaleInLeftPanel);
+        }
     }
-
-    if (currentPiece.has_value() == false)
+    else
     {
         if (pieces.size() > 0)
         {
@@ -80,15 +74,15 @@ bool RunningState::Update()
             pieces.pop_front();
 
             SetMatrixData();
-            const auto x = (maxtrixHSize / 2) * currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
-            currentPiece->SetPosition(x, matrixYTop);
+            const auto x = (board.maxtrixHSize / 2) * currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
+            currentPiece->SetPosition(x, board.matrixYTop);
         }
     }
 
     while (pieces.size() < maxPiecesInQueue)
     {
         const auto pieceType = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back(Piece{ pieceType, nextPiece.DownCast<Control>(), 1, matrixYTop });
+        pieces.emplace_back(Piece{ pieceType, nextPiece.DownCast<Control>(), 1, board.matrixYTop });
     }
 
     return true;
@@ -131,16 +125,16 @@ void RunningState::SetMatrixData()
         // compute # of squares on horizontal
         const auto bWidth     = currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
         const auto panelWidth = leftPanel->GetWidth() - 2;
-        maxtrixHSize          = panelWidth / bWidth;
-        matrixXLeft           = 1 + (panelWidth % bWidth) / 2;
-        matrixXRight          = panelWidth - matrixXLeft;
+        board.maxtrixHSize    = panelWidth / bWidth;
+        board.matrixXLeft     = 1 + (panelWidth % bWidth) / 2;
+        board.matrixXRight    = panelWidth - board.matrixXLeft;
 
         // compute # of squares on vertical
         const auto bHeight     = currentPiece->GetBlockHeight(pieceScaleInLeftPanel);
         const auto panelHeight = leftPanel->GetHeight() - 2;
-        maxtrixVSize           = panelHeight / bHeight;
-        matrixYTop             = 1 + (panelHeight % bHeight) / 2;
-        matrixYBottom          = panelHeight - matrixYTop;
+        board.maxtrixVSize     = panelHeight / bHeight;
+        board.matrixYTop       = 1 + (panelHeight % bHeight) / 2;
+        board.matrixYBottom    = panelHeight - board.matrixYTop;
     }
 }
 
@@ -189,53 +183,39 @@ RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImp
 bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
       Reference<Control> control, Key keyCode, char16_t unicodeChar)
 {
+    if (rs.currentPiece.has_value() == false)
+    {
+        return false;
+    }
+
     switch (keyCode)
     {
     case Key::Left:
-        if (rs.currentPiece.has_value())
+        if (rs.board.CanAdvanceOnXAxisLeft(rs.currentPiece.value(), rs.pieceScaleInLeftPanel))
         {
-            const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-            const auto x      = rs.currentPiece->GetLeftXPosition();
-            if (x - bWidth >= rs.matrixXLeft)
-            {
-                rs.currentPiece->UpdatePosition(-bWidth, 0);
-                return true;
-            }
+            rs.board.AdvanceOnXAxisLeft(rs.currentPiece.value(), rs.pieceScaleInLeftPanel);
+            return true;
         }
         break;
     case Key::Right:
-        if (rs.currentPiece.has_value())
+        if (rs.board.CanAdvanceOnXAxisRight(rs.currentPiece.value(), rs.pieceScaleInLeftPanel))
         {
-            const auto bWidth = rs.currentPiece->GetBlockWidth(rs.pieceScaleInLeftPanel);
-            const auto x      = rs.currentPiece->GetRightXPosition(rs.pieceScaleInLeftPanel);
-            if (x + bWidth < rs.matrixXRight)
-            {
-                rs.currentPiece->UpdatePosition(bWidth, 0);
-                return true;
-            }
+            rs.board.AdvanceOnXAxisRight(rs.currentPiece.value(), rs.pieceScaleInLeftPanel);
+            return true;
         }
         break;
 
     case Key::Down:
-        if (rs.currentPiece.has_value())
+        if (rs.board.CanAdvanceOnYAxis(rs.currentPiece.value(), rs.pieceScaleInLeftPanel))
         {
-            const auto bHeight = rs.currentPiece->GetBlockHeight(rs.pieceScaleInLeftPanel);
-            const auto y       = rs.currentPiece->GetBottomYPosition(rs.pieceScaleInLeftPanel);
-            if (y + bHeight < control->GetHeight())
-            {
-                rs.currentPiece->UpdatePosition(0, bHeight);
-                return true;
-            }
+            rs.board.AdvanceOnYAxis(rs.currentPiece.value(), rs.pieceScaleInLeftPanel);
+            return true;
         }
         break;
 
     case Key::Space:
-        if (rs.currentPiece.has_value())
-        {
-            rs.currentPiece->Rotate();
-            return true;
-        }
-        break;
+        rs.currentPiece->Rotate();
+        return true;
 
     default:
         break;

@@ -109,19 +109,19 @@ AppCUI::Graphics::Size Piece::GetSize(int scale) const
     switch (type)
     {
     case PieceType::I:
-        return { w, h * 4 };
+        return { w, h * 3 };
     case PieceType::O:
-        return { w * 2, h * 2 };
+        return { w * 2, h };
     case PieceType::T:
-        return { w * 2, h * 3 };
+        return { w * 2, h * 2 };
     case PieceType::S:
-        return { w * 3, h * 2 };
+        return { w * 3, h };
     case PieceType::L:
-        return { w * 3, h * 2 };
+        return { w * 3, h };
     case PieceType::Z:
-        return { w * 3, h * 2 };
+        return { w * 3, h };
     case PieceType::J:
-        return { w * 3, h * 2 };
+        return { w * 3, h };
     default:
         break;
     }
@@ -169,12 +169,6 @@ int Piece::GetTopYPosition() const
 int Piece::GetBottomYPosition(int scale) const
 {
     return y + GetSize(scale).Height;
-}
-
-bool Piece::CanAdvanceOnYAxis(int scale, int height) const
-{
-    const auto bHeight = GetBlockHeight(scale);
-    return GetBottomYPosition(scale) + bHeight > height;
 }
 
 void Piece::Rotate()
