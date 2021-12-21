@@ -19,6 +19,89 @@ constexpr static string_view color_names[] = {
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
 };
 
+class PropertyEditDialog : public Window
+{
+  protected:
+    const PropertyInfo& prop;
+    Reference<PropertiesInterface> object;
+    bool isReadOnly;
+
+    PropertyEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : Window("Edit", "d:c,w:40,h:20", WindowFlags::NoCloseButton), prop(_prop), object(_object),
+          isReadOnly(readOnly)
+    {
+        this->OnInitPropertyDialog();
+        if (readOnly)
+        {
+            Factory::Button::Create(this, "&Refresh", "l:7,b:0,w:12", BUTTON_COMMAND_REFRESH);
+            Factory::Button::Create(this, "&Close", "l:21,b:0,w:12", BUTTON_COMMAND_CANCEL);
+            this->SetText("View");
+        }
+        else
+        {
+            Factory::Button::Create(this, "&Refresh", "l:2,b:0,w:11", BUTTON_COMMAND_REFRESH);
+            Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
+            Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
+        }
+        this->Refresh();
+    }
+
+  public:
+    bool OnEvent(Reference<Control> sender, Event eventType, int id) override
+    {
+        switch (eventType)
+        {
+        case Event::WindowClose:
+            this->Exit(0);
+            return true;
+        case Event::WindowAccept:
+            if (this->isReadOnly)
+                this->Exit(1);
+            else
+                Validate();
+            return true;
+        case Event::ButtonClicked:
+            if (id == BUTTON_COMMAND_REFRESH)
+                this->Refresh();
+            else if (id == BUTTON_COMMAND_OK)
+            {
+                if (this->isReadOnly)
+                    this->Exit(1);
+                else
+                    Validate();
+            }
+            else if (id == BUTTON_COMMAND_CANCEL)
+                this->Exit(0);
+            return true;
+        }
+        return false;
+    }
+    virtual void OnInitPropertyDialog() = 0;
+    virtual void Refresh()              = 0;
+    virtual void Validate()             = 0;
+};
+
+class PropertyListEditDialog : public PropertyEditDialog
+{
+    Reference<ListView> lv;
+
+  public:
+    PropertyListEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : PropertyEditDialog(_prop, _object, readOnly)
+    {
+    }
+    void OnInitPropertyDialog() override
+    {
+        lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns);
+        lv->AddColumn("", TextAlignament::Left, 100);
+    }
+    void Refresh() override
+    {
+    }
+    void Validate() override
+    {
+    }
+};
 class PropertyTextEditDialog : public Window
 {
     Reference<TextField> txt;
@@ -987,6 +1070,11 @@ void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
     PropertyTextEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.Show();
 }
+void PropertyListContext::EditAndUpdateList(const PropertyInfo& prop)
+{
+    PropertyListEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
+    dlg.Show();
+}
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
     if (IsPropertyReadOnly(prop))
@@ -1048,6 +1136,8 @@ void PropertyListContext::ExecuteItemAction()
                 break;
 
             case PropertyType::List:
+                EditAndUpdateList(this->properties[idx]);
+                break;
             case PropertyType::Flags:
             case PropertyType::Custom:
                 break; // have their own drawing method
