@@ -250,6 +250,9 @@ class PropertyTextEditDialog : public Window
         case PropertyType::Unicode:
             UpdateStringPropertyValue<u16string_view>(unicodeValue);
             break;
+        default:
+            Dialogs::MessageBox::ShowError("Error", "Update for this type is not implemented yet");
+            break;
         }
     };
 };
