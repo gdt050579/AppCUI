@@ -26,11 +26,11 @@ class PropertyEditDialog : public Window
     Reference<PropertiesInterface> object;
     bool isReadOnly;
 
-    PropertyEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : Window("Edit", "d:c,w:40,h:20", WindowFlags::NoCloseButton), prop(_prop), object(_object),
+    PropertyEditDialog(string_view layout, const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : Window("Edit", layout, WindowFlags::NoCloseButton), prop(_prop), object(_object),
           isReadOnly(readOnly)
     {
-        this->OnInitPropertyDialog();
+        
         if (readOnly)
         {
             Factory::Button::Create(this, "&Refresh", "l:7,b:0,w:12", BUTTON_COMMAND_REFRESH);
@@ -43,10 +43,16 @@ class PropertyEditDialog : public Window
             Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
             Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
         }
-        this->Refresh();
+        
     }
 
   public:
+    void ShowDialog()
+    {
+        this->OnInitPropertyDialog();
+        this->Refresh();
+        this->Show();
+    }
     bool OnEvent(Reference<Control> sender, Event eventType, int id) override
     {
         switch (eventType)
@@ -87,7 +93,7 @@ class PropertyListEditDialog : public PropertyEditDialog
 
   public:
     PropertyListEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : PropertyEditDialog(_prop, _object, readOnly)
+        : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly)
     {
     }
     void OnInitPropertyDialog() override
@@ -102,37 +108,25 @@ class PropertyListEditDialog : public PropertyEditDialog
     {
     }
 };
-class PropertyTextEditDialog : public Window
+class PropertyTextEditDialog : public PropertyEditDialog
 {
     Reference<TextField> txt;
-    const PropertyInfo& prop;
-    Reference<PropertiesInterface> object;
-    bool isReadOnly;
 
   public:
     PropertyTextEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : Window("Edit", "d:c,w:40,h:8", WindowFlags::NoCloseButton), prop(_prop), object(_object), isReadOnly(readOnly)
+        : PropertyEditDialog("d:c,w:40,h:8", _prop, _object, readOnly)
+    {
+    }
+    void OnInitPropertyDialog() override
     {
         Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
 
-        if (readOnly)
-        {
+        if (isReadOnly)
             txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1", TextFieldFlags::Readonly);
-            Factory::Button::Create(this, "&Refresh", "l:7,b:0,w:12", BUTTON_COMMAND_REFRESH);
-            Factory::Button::Create(this, "&Close", "l:21,b:0,w:12", BUTTON_COMMAND_CANCEL);
-            this->SetText("View");
-        }
         else
-        {
             txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1");
-            Factory::Button::Create(this, "&Refresh", "l:2,b:0,w:11", BUTTON_COMMAND_REFRESH);
-            Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
-            Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
-        }
-        txt->SetFocus();
-        Refresh();
     }
-    void Refresh()
+    void Refresh() override
     {
         PropertyValue tempPropValue;
         LocalString<256> tmpString;
@@ -203,27 +197,6 @@ class PropertyTextEditDialog : public Window
         }
         txt->SetFocus();
     }
-    bool OnEvent(Reference<Control> sender, Event eventType, int id) override
-    {
-        switch (eventType)
-        {
-        case Event::WindowClose:
-            this->Exit(0);
-            return true;
-        case Event::WindowAccept:
-            Validate();
-            return true;
-        case Event::ButtonClicked:
-            if (id == BUTTON_COMMAND_REFRESH)
-                Refresh();
-            else if (id == BUTTON_COMMAND_OK)
-                Validate();
-            else if (id == BUTTON_COMMAND_CANCEL)
-                this->Exit(0);
-            return true;
-        }
-        return false;
-    }
 
     template <typename T>
     void UpdateNumericPropertValue(std::optional<T> value, String& asciiValue, string_view typeName)
@@ -266,13 +239,8 @@ class PropertyTextEditDialog : public Window
             Dialogs::MessageBox::ShowError("Error", error);
         }
     }
-    void Validate()
+    void Validate() override
     {
-        if (isReadOnly)
-        {
-            Exit(1);
-            return;
-        }
         LocalString<256> asciiValue;
         LocalUnicodeStringBuilder<256> unicodeValue;
 
@@ -1068,12 +1036,12 @@ void PropertyListContext::MoveToPropetyIndex(uint32 idx)
 void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
 {
     PropertyTextEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
-    dlg.Show();
+    dlg.ShowDialog();
 }
 void PropertyListContext::EditAndUpdateList(const PropertyInfo& prop)
 {
     PropertyListEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
-    dlg.Show();
+    dlg.ShowDialog();
 }
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
