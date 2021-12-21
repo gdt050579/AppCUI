@@ -136,9 +136,7 @@ class PropertyTextEditDialog : public Window
         LocalString<512> error;
         if (value.has_value())
         {
-            error.Clear();
-            object->SetPropertyValue(prop.id, value.value(), error);
-            if (error.Len() == 0)
+            if (object->SetPropertyValue(prop.id, value.value(), error))
             {
                 // all good
                 this->Exit(1);

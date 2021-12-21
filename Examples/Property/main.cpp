@@ -133,45 +133,62 @@ class MyUserControl : public UserControl, public PropertiesInterface
         }
         return false;
     };
-    void SetPropertyValue(uint32 id, const PropertyValue& value, String& error) override
+    bool SetPropertyValue(uint32 id, const PropertyValue& value, String& error) override
     {
         Size tmpSz;
+        int32 tmpValue;
         switch (static_cast<MyControlProperty>(id))
         {
         case MyControlProperty::X:
-            this->x = std::get<int32>(value);
-            break;
+            tmpValue = std::get<int32>(value);
+            if (tmpValue < 0)
+            {
+                error.Format("X coordonate must be positive (%d)", tmpValue);
+                return false;
+            }
+            this->x = tmpValue;
+            return true;
         case MyControlProperty::Y:
-            this->y = std::get<int32>(value);
-            break;
+            tmpValue = std::get<int32>(value);
+            if (tmpValue < 0)
+            {
+                error.Format("Y coordonate must be positive (%d)", tmpValue);
+                return false;
+            }
+            this->y = tmpValue;
+            return true;
         case MyControlProperty::Size:
             tmpSz = std::get<Size>(value);
             if ((tmpSz.Width == 0) || (tmpSz.Height == 0))
+            {
                 error.Format(
                       "Invalid size (%u x %u) --> Width/Height must be bigger than 0", tmpSz.Width, tmpSz.Height);
+                return false;
+            }
             else
                 this->sz = tmpSz;
-            break;
+            return true;
         case MyControlProperty::ForeColor:
             this->c.Foreground = std::get<Color>(value);
-            break;
+            return true;
         case MyControlProperty::BackColor:
             this->c.Background = std::get<Color>(value);
-            break;
+            return true;
         case MyControlProperty::Name:
             // do nothing ==> read-only
-            break;
+            return true;
         case MyControlProperty::Version:
             // do nothing ==> read-only
-            break;
+            return true;
         case MyControlProperty::Border:
             this->hasBorder = std::get<bool>(value);
-            break;
+            return true;
         case MyControlProperty::BorderType:
             // value = 2;
-            break;
-
+            return true;
         }
+        error.SetFormat("Unknwon property ID: %u", (uint32) id);
+        return false;
     };
     void SetCustomPropetyValue(uint32 propertyID) override
     {
@@ -203,7 +220,11 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 "Speed",
                 PropertyType::List,
                 "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
-              { (uint32) MyControlProperty::Flags, "General", "File flags", PropertyType::Flags, "Read=1,Write=2,Execute=4,Shared=8" },
+              { (uint32) MyControlProperty::Flags,
+                "General",
+                "File flags",
+                PropertyType::Flags,
+                "Read=1,Write=2,Execute=4,Shared=8" },
               { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         });
     };

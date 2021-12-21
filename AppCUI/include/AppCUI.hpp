@@ -603,7 +603,7 @@ namespace Utils
     struct EXPORT PropertiesInterface
     {
         virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)                      = 0;
-        virtual void SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
+        virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual vector<Property> GetPropertiesList()                                                = 0;
