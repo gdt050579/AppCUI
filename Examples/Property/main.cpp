@@ -22,6 +22,12 @@ enum class MyControlProperty : uint32
     Flags,
     Custom
 };
+enum class BorderType : uint8
+{
+    Single = 1,
+    Double = 2,
+    Thick  = 3
+};
 
 class MyUserControl : public UserControl, public PropertiesInterface
 {
@@ -33,6 +39,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     uint32 frameDelay;
     uint32 counter;
     uint32 flags;
+    BorderType borderType;
     std::u16string name;
 
   public:
@@ -49,6 +56,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
         c                = ColorPair{ Color::Red, Color::Black };
         hasBorder        = false;
         animationStarted = true;
+        borderType       = BorderType::Single;
         flags            = 59;
         name             = u"Dragoș";
     }
@@ -88,6 +96,26 @@ class MyUserControl : public UserControl, public PropertiesInterface
     {
         renderer.Clear(' ', ColorPair{ Color::White, Color::Black });
         renderer.FillRect(x, y, x + sz.Width - 1, y + sz.Height - 1, ch, c);
+
+        if (hasBorder)
+        {
+            switch (borderType)
+            {
+            case BorderType::Single:
+                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, false);
+                break;
+            case BorderType::Double:
+                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, true);
+                break;
+            case BorderType::Thick:
+                renderer.FillHorizontalLineWithSpecialChar(x - 1, y - 1, x + sz.Width, SpecialChars::BlockLowerHalf, c);
+                renderer.FillHorizontalLineWithSpecialChar(
+                      x - 1, y + sz.Height, x + sz.Width, SpecialChars::BlockUpperHalf, c);
+                renderer.FillVerticalLineWithSpecialChar(x - 1, y, y + sz.Height - 1, SpecialChars::BlockLeftHalf, c);
+                renderer.FillVerticalLineWithSpecialChar(x + sz.Width, y, y + sz.Height - 1, SpecialChars::BlockRightHalf, c);
+                break;
+            }
+        }
     }
     // PropertiesInterface
     bool GetPropertyValue(uint32 id, PropertyValue& value) override
@@ -122,7 +150,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
             value = this->hasBorder;
             return true;
         case MyControlProperty::BorderType:
-            value = 2;
+            value = (uint8) borderType;
             return true;
         case MyControlProperty::AnimationStarted:
             value = animationStarted;
@@ -190,7 +218,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
             this->hasBorder = std::get<bool>(value);
             return true;
         case MyControlProperty::BorderType:
-            // value = 2;
+            this->borderType = static_cast<BorderType>(std::get<uint64>(value));
             return true;
         case MyControlProperty::AnimationStarted:
             this->animationStarted = std::get<bool>(value);
