@@ -630,7 +630,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteSpecialCharacter(
               x + extraSpace + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, col);
     }
-    bool readOnly  = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
+    bool readOnly  = IsPropertyReadOnly(prop);
     auto w         = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
                                      : ((int32) this->Layout.Width - (x + extraSpace + 1 + this->propertyNameWidth));
     readOnlyStatus = readOnly;
@@ -984,19 +984,17 @@ void PropertyListContext::MoveToPropetyIndex(uint32 idx)
 }
 void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
 {
-    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
-    PropertyTextEditDialog dlg(prop, object, readOnly);
+    PropertyTextEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.Show();
 }
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
-    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
-    if (readOnly)
+    if (IsPropertyReadOnly(prop))
         return;
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
     {
         LocalString<256> error;
-        if (this->object->SetPropertyValue(prop.id, !(std::get<bool>(tempPropValue)),error) == false)
+        if (this->object->SetPropertyValue(prop.id, !(std::get<bool>(tempPropValue)), error) == false)
         {
             Dialogs::MessageBox::ShowError("Error", error);
         }

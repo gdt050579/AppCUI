@@ -829,7 +829,7 @@ struct PropertyInfo
     uint32 id;
     PropertyType type;
 };
-enum class PropertySeparatorStatus: uint8
+enum class PropertySeparatorStatus : uint8
 {
     None,
     Over,
@@ -876,7 +876,7 @@ struct PropertyListContext : public ControlContext
           Graphics::Renderer& renderer,
           bool readOnly);
     void DrawCustomProperty(WriteTextParams& params, PropertyValue& pv, Graphics::Renderer& renderer, bool readOnly);
-    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer, bool &readOnlyStatus);
+    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer, bool& readOnlyStatus);
     void DrawFilterBar(Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
@@ -895,6 +895,10 @@ struct PropertyListContext : public ControlContext
     inline constexpr int32 GetSeparatorXPos() const
     {
         return (this->showCategories ? 3 : 0) + (this->hasBorder ? 1 : 0) + this->propertyNameWidth;
+    }
+    inline constexpr bool IsPropertyReadOnly(const PropertyInfo& prop) 
+    {
+        return ((this->Flags && PropertyListFlags::ReadOnly) ? true : this->object->IsPropertyValueReadOnly(prop.id));
     }
 };
 
