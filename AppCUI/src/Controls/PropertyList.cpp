@@ -202,6 +202,7 @@ class PropertyTextEditDialog : public Window
             }
             break;
         case PropertyType::Unicode:
+        case PropertyType::UTF8:
             unicodeValue.Set(txt->GetText());
             break;
         }
@@ -249,6 +250,9 @@ class PropertyTextEditDialog : public Window
             break;
         case PropertyType::Unicode:
             UpdateStringPropertyValue<u16string_view>(unicodeValue);
+            break;
+        case PropertyType::UTF8:
+            UpdateStringPropertyValue<u8string_view>((std::u8string)unicodeValue);
             break;
         default:
             Dialogs::MessageBox::ShowError("Error", "Update for this type is not implemented yet");

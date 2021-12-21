@@ -1,4 +1,5 @@
 #include "Internal.hpp"
+#include <codecvt>
 
 namespace AppCUI
 {
@@ -298,6 +299,14 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
         output.reserve((size_t) this->length + 1);
         output = u16string_view{ this->chars, this->length };
     }
+}
+void UnicodeStringBuilder::ToString(std::u8string& output) const
+{
+    // very inneficient, but hopefully not needed
+    std::u16string tmp;
+    ToString(tmp);
+    auto result = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(tmp);
+    output      = u8string_view{ (const char8_t*)result.c_str(), result.length() };
 }
 void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const
 {

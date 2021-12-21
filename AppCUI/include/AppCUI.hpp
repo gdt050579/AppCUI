@@ -995,6 +995,7 @@ namespace Utils
 
         void ToString(std::string& output) const;
         void ToString(std::u16string& output) const;
+        void ToString(std::u8string& output) const;
         void ToPath(std::filesystem::path& output) const;
 
         inline void Clear()
@@ -1021,6 +1022,12 @@ namespace Utils
         inline operator std::string() const
         {
             std::string temp;
+            ToString(temp);
+            return temp;
+        }
+        inline operator std::u8string() const
+        {
+            std::u8string temp;
             ToString(temp);
             return temp;
         }
