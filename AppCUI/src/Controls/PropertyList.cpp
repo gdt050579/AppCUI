@@ -129,10 +129,37 @@ class PropertyTextEditDialog : public Window
         }
         return false;
     }
+
+    template <typename T>
+    void UpdateNumericPropertValue(std::optional<T> value, String& asciiValue, string_view typeName)
+    {
+        LocalString<512> error;
+        if (value.has_value())
+        {
+            error.Clear();
+            object->SetPropertyValue(prop.id, value.value(), error);
+            if (error.Len() == 0)
+            {
+                // all good
+                this->Exit(1);
+                return;
+            }
+            else
+            {
+                Dialogs::MessageBox::ShowError("Error", error);
+            }
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error",
+                  error.Format("Fail to convert '%s' to a valid '%s' value", asciiValue.GetText(), typeName.data()));
+            txt->SetFocus();
+        }
+    }
     void Validate()
     {
         LocalString<256> asciiValue;
-        LocalString<512> error;
 
         switch (prop.type)
         {
@@ -164,28 +191,34 @@ class PropertyTextEditDialog : public Window
         switch (prop.type)
         {
         case PropertyType::UInt8:
-            const auto result = Number::ToUInt8(asciiValue);
-            if (result.has_value())
-            {
-                error.Clear();
-                object->SetPropertyValue(prop.id, result.value(), error);
-                if (error.Len()==0)
-                {
-                    // all good
-                    this->Exit(1);
-                    return;
-                }
-                else
-                {
-                    Dialogs::MessageBox::ShowError("Error", error);
-                }
-            }
-            else
-            {
-                Dialogs::MessageBox::ShowError(
-                      "Error", error.Format("Fail to convert '%s' to a valid UInt8 value", asciiValue.GetText()));
-                txt->SetFocus();
-            }
+            UpdateNumericPropertValue<uint8>(Number::ToUInt8(asciiValue), asciiValue, "UInt8");
+            break;
+        case PropertyType::UInt16:
+            UpdateNumericPropertValue<uint16>(Number::ToUInt16(asciiValue), asciiValue, "UInt16");
+            break;
+        case PropertyType::UInt32:
+            UpdateNumericPropertValue<uint32>(Number::ToUInt32(asciiValue), asciiValue, "UInt32");
+            break;
+        case PropertyType::UInt64:
+            UpdateNumericPropertValue<uint64>(Number::ToUInt64(asciiValue), asciiValue, "UInt64");
+            break;
+        case PropertyType::Int8:
+            UpdateNumericPropertValue<int8>(Number::ToInt8(asciiValue), asciiValue, "Int8");
+            break;
+        case PropertyType::Int16:
+            UpdateNumericPropertValue<int16>(Number::ToInt16(asciiValue), asciiValue, "Int16");
+            break;
+        case PropertyType::Int32:
+            UpdateNumericPropertValue<int32>(Number::ToInt32(asciiValue), asciiValue, "Int32");
+            break;
+        case PropertyType::Int64:
+            UpdateNumericPropertValue<int64>(Number::ToInt64(asciiValue), asciiValue, "Int64");
+            break;
+        case PropertyType::Float:
+            UpdateNumericPropertValue<float>(Number::ToFloat(asciiValue), asciiValue, "Float");
+            break;
+        case PropertyType::Double:
+            UpdateNumericPropertValue<double>(Number::ToDouble(asciiValue), asciiValue, "Double");
             break;
         }
     };
