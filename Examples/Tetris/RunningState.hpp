@@ -6,9 +6,6 @@
 #include "Piece.hpp"
 #include "Board.hpp"
 
-#include <random>
-#include <array>
-
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 using namespace AppCUI::Controls;
@@ -69,21 +66,13 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     const std::shared_ptr<GameData>& data;
 
     unsigned int score = 0;
-    std::deque<Piece> pieces{};
 
     clock_t initialTime{};
     const unsigned int maxPiecesInQueue      = 3U;
     unsigned long delta                      = 0;
-    unsigned long currentPieceUpdated        = -1;
     const unsigned int pieceScaleInLeftPanel = 4;
 
-    std::random_device r;
-    std::default_random_engine e1{ r() };
-    std::uniform_int_distribution<int> uniform_dist{ 0, static_cast<int>(PieceType::End) - 1 };
-
     Board board;
-    std::vector<Piece> piecesProcessed;
-    std::optional<Piece> currentPiece;
 
     Reference<TabPage> page          = nullptr;
     Reference<Panel> leftPanel       = nullptr;
@@ -103,6 +92,4 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     PaintControlImplementationLeftPanel pcilp{ *this };
 
     OnKeyEventInterfaceImplementationLeftPanel okeiilp{ *this };
-
-    void SetMatrixData();
 };

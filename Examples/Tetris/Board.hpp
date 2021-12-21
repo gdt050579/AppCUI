@@ -2,7 +2,9 @@
 
 #include "Piece.hpp"
 
+#include <random>
 #include <array>
+#include <deque>
 
 class Board
 {
@@ -15,10 +17,27 @@ class Board
     int matrixYTop    = 0;
     int matrixYBottom = 0;
 
-    bool CanAdvanceOnYAxis(const Piece& piece, int scale) const;
-    bool CanAdvanceOnXAxisLeft(const Piece& piece, int scale) const;
-    bool CanAdvanceOnXAxisRight(const Piece& piece, int scale) const;
-    void AdvanceOnYAxis(Piece& piece, int scale);
-    void AdvanceOnXAxisLeft(Piece& piece, int scale);
-    void AdvanceOnXAxisRight(Piece& piece, int scale);
+    std::deque<Piece> pieces{};
+    std::vector<Piece> piecesProcessed;
+    std::optional<Piece> currentPiece;
+    unsigned long currentPieceUpdated = -1;
+
+    std::random_device r;
+    std::default_random_engine e1{ r() };
+    std::uniform_int_distribution<int> uniform_dist{ 0, static_cast<int>(PieceType::End) - 1 };
+
+    bool CanAdvanceOnYAxis(int scale) const;
+    bool CanAdvanceOnXAxisLeft(int scale) const;
+    bool CanAdvanceOnXAxisRight(int scale) const;
+    void AdvanceOnYAxis(int scale);
+    void AdvanceOnXAxisLeft(int scale);
+    void AdvanceOnXAxisRight(int scale);
+
+    void Update(
+          int scale,
+          unsigned int maxPiecesInQueue,
+          const Reference<Control> control,
+          const Size& size,
+          unsigned long delta);
+    void SetMatrixData(int scale, const Size& size);
 };
