@@ -24,16 +24,28 @@ class PropertyTextEditDialog : public Window
     Reference<TextField> txt;
     const PropertyInfo& prop;
     Reference<PropertiesInterface> object;
+    bool isReadOnly;
 
   public:
-    PropertyTextEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object)
-        : Window("Edit", "d:c,w:40,h:8", WindowFlags::NoCloseButton), prop(_prop), object(_object)
+    PropertyTextEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : Window("Edit", "d:c,w:40,h:8", WindowFlags::NoCloseButton), prop(_prop), object(_object), isReadOnly(readOnly)
     {
         Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
-        txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1");
-        Factory::Button::Create(this, "&Refresh", "l:2,b:0,w:11", BUTTON_COMMAND_REFRESH);
-        Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
-        Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
+
+        if (readOnly)
+        {
+            txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1", TextFieldFlags::Readonly);
+            Factory::Button::Create(this, "&Refresh", "l:7,b:0,w:12", BUTTON_COMMAND_REFRESH);
+            Factory::Button::Create(this, "&Close", "l:21,b:0,w:12", BUTTON_COMMAND_CANCEL);
+            this->SetText("View");
+        }
+        else
+        {
+            txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1");
+            Factory::Button::Create(this, "&Refresh", "l:2,b:0,w:11", BUTTON_COMMAND_REFRESH);
+            Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
+            Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
+        }
         txt->SetFocus();
         Refresh();
     }
@@ -173,6 +185,11 @@ class PropertyTextEditDialog : public Window
     }
     void Validate()
     {
+        if (isReadOnly)
+        {
+            Exit(1);
+            return;
+        }
         LocalString<256> asciiValue;
         LocalUnicodeStringBuilder<256> unicodeValue;
 
@@ -252,7 +269,7 @@ class PropertyTextEditDialog : public Window
             UpdateStringPropertyValue<u16string_view>(unicodeValue);
             break;
         case PropertyType::UTF8:
-            UpdateStringPropertyValue<u8string_view>((std::u8string)unicodeValue);
+            UpdateStringPropertyValue<u8string_view>((std::u8string) unicodeValue);
             break;
         default:
             Dialogs::MessageBox::ShowError("Error", "Update for this type is not implemented yet");
@@ -967,7 +984,8 @@ void PropertyListContext::MoveToPropetyIndex(uint32 idx)
 }
 void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
 {
-    PropertyTextEditDialog dlg(prop, object);
+    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
+    PropertyTextEditDialog dlg(prop, object, readOnly);
     dlg.Show();
 }
 void PropertyListContext::ExecuteItemAction()
