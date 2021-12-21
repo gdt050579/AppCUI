@@ -1,7 +1,7 @@
 #include "Piece.hpp"
 
-Piece::Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control, int x, int y)
-    : control(control), type(type), x(x), y(x)
+Piece::Piece(const PieceType type, const Reference<Control> control, const Point& position)
+    : control(control), type(type), position(position)
 {
     switch (type)
     {
@@ -52,7 +52,7 @@ Piece::Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Contro
     }
 }
 
-bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, bool center, int w, int h)
+bool Piece::Draw(Renderer& renderer, int scale, bool center, int w, int h)
 {
     if (center)
     {
@@ -64,47 +64,48 @@ bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale, bool center, i
         const auto size = GetSize(scale);
         const int x     = std::max<>(1, static_cast<int>((w - size.Width) / 2));
         const int y     = std::max<>(1, static_cast<int>(static_cast<int>((h - 2 - size.Height)) / 2));
-        SetPosition(x, y);
+        SetPosition({ x, y });
 
         return Draw(renderer, scale);
     }
 
-    SetPosition(1, 1);
+    SetPosition({ 1, 1 });
     return Draw(renderer, scale);
 }
 
-bool Piece::Draw(AppCUI::Graphics::Renderer& renderer, int scale)
+bool Piece::Draw(Renderer& renderer, int scale)
 {
-    int xx = x;
-    int yy = y;
+    Point tmpPosition = position;
 
-    for (auto i = 0U; i < cells; i++)
+    for (auto i = 0U; i < rows; i++)
     {
-        for (auto j = 0U; j < cells; j++)
+        for (auto j = 0U; j < columns; j++)
         {
             if (matrix[i][j] == 1)
             {
-                renderer.FillRectSize(xx, yy, GetBlockWidth(scale), GetBlockHeight(scale), '-', color);
+                renderer.FillRectSize(
+                      tmpPosition.X, tmpPosition.Y, GetBlockWidth(scale), GetBlockHeight(scale), '-', color);
             }
             else
             {
-                renderer.DrawRectSize(xx, yy, GetBlockWidth(scale), GetBlockHeight(scale), color, false);
+                renderer.DrawRectSize(
+                      tmpPosition.X, tmpPosition.Y, GetBlockWidth(scale), GetBlockHeight(scale), color, false);
             }
 
-            xx += width * scale * 2;
+            tmpPosition.X += size.Width * scale * 2;
         }
 
-        xx = x;
-        yy += height * scale;
+        tmpPosition.X = position.X;
+        tmpPosition.Y += size.Height * scale;
     }
 
     return true;
 }
 
-AppCUI::Graphics::Size Piece::GetSize(int scale) const
+Size Piece::GetSize(int scale) const
 {
-    const auto w = width * scale * 2;
-    const auto h = height * scale;
+    const auto w = size.Width * scale * 2;
+    const auto h = size.Height * scale;
 
     switch (type)
     {
@@ -129,59 +130,58 @@ AppCUI::Graphics::Size Piece::GetSize(int scale) const
     return { 0, 0 };
 }
 
-void Piece::UpdatePosition(int x, int y)
+void Piece::UpdatePosition(const Point& delta)
 {
-    this->x += x;
-    this->y += y;
+    position.X += delta.X;
+    position.Y += delta.Y;
 }
 
-void Piece::SetPosition(int x, int y)
+void Piece::SetPosition(const Point& newPosition)
 {
-    this->x = x;
-    this->y = y;
+    position = newPosition;
 }
 
 int Piece::GetBlockWidth(int scale) const
 {
-    return width * scale * 2;
+    return size.Width * scale * 2;
 }
 
 int Piece::GetBlockHeight(int scale) const
 {
-    return height * scale;
+    return size.Height * scale;
 }
 
 int Piece::GetLeftXPosition() const
 {
-    return x;
+    return position.X;
 }
 
 int Piece::GetRightXPosition(int scale) const
 {
-    return x + GetSize(scale).Width;
+    return position.X + GetSize(scale).Width;
 }
 
 int Piece::GetTopYPosition() const
 {
-    return y;
+    return position.Y;
 }
 
 int Piece::GetBottomYPosition(int scale) const
 {
-    return y + GetSize(scale).Height;
+    return position.Y + GetSize(scale).Height;
 }
 
 void Piece::Rotate()
 {
-    std::array<std::array<bool, cells>, cells> tMatrix{ 0 };
+    std::array<std::array<bool, rows>, columns> tmp{ 0 };
 
-    for (int i = 0; i < matrix.size(); i++)
+    for (auto i = 0U; i < matrix.size(); i++)
     {
-        for (int j = 0; j < matrix[i].size(); j++)
+        for (auto j = 0U; j < matrix[i].size(); j++)
         {
-            tMatrix[j][matrix.size() - i - 1] = matrix[i][j];
+            tmp[j][matrix.size() - i - 1] = matrix[i][j];
         }
     }
 
-    matrix = tMatrix;
+    matrix = tmp;
 }

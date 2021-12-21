@@ -27,17 +27,17 @@ bool Board::CanAdvanceOnXAxisRight(const Piece& piece, int scale) const
 void Board::AdvanceOnYAxis(Piece& piece, int scale)
 {
     const auto bHeight = piece.GetBlockHeight(scale);
-    piece.UpdatePosition(0, bHeight);
+    piece.UpdatePosition({ 0, bHeight });
 }
 
 void Board::AdvanceOnXAxisLeft(Piece& piece, int scale)
 {
     const auto bWidth = piece.GetBlockWidth(scale);
-    piece.UpdatePosition(-bWidth, 0);
+    piece.UpdatePosition({ -bWidth, 0 });
 }
 
 void Board::AdvanceOnXAxisRight(Piece& piece, int scale)
 {
     const auto bWidth = piece.GetBlockWidth(scale);
-    piece.UpdatePosition(bWidth, 0);
+    piece.UpdatePosition({ bWidth, 0 });
 }

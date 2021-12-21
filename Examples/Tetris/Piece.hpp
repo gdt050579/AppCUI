@@ -3,6 +3,10 @@
 #include "AppCUI.hpp"
 #include <array>
 
+using namespace AppCUI::Utils;
+using namespace AppCUI::Graphics;
+using namespace AppCUI::Controls;
+
 enum class PieceType
 {
     I = 0,
@@ -19,24 +23,24 @@ enum class PieceType
 class Piece
 {
   private:
-    static const unsigned int cells = 4;
-    unsigned int width              = 1;
-    unsigned int height             = 1;
-    int x                           = 0;
-    int y                           = 0;
-    AppCUI::Graphics::ColorPair color{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::Transparent };
-    std::array<std::array<bool, cells>, cells> matrix{ 0 };
-    AppCUI::Utils::Reference<AppCUI::Controls::Control> control = nullptr;
+    static const unsigned int rows    = 4;
+    static const unsigned int columns = 4;
+    Size size{ 1, 1 }; // on canvas
+    ColorPair color{ Color::White, Color::Transparent };
+    std::array<std::array<bool, rows>, columns> matrix{ 0 };
+    Reference<Control> control = nullptr;
     const PieceType type;
+    Point position{ 0, 0 }; // x, y on canvas
+    Point positionOnBoard{ 0, 0 };
 
   public:
-    Piece(const PieceType type, const AppCUI::Utils::Reference<AppCUI::Controls::Control> control, int x, int y);
+    Piece(const PieceType type, const Reference<Control> control, const Point& position);
 
-    bool Draw(AppCUI::Graphics::Renderer& renderer, int scale, bool center, int w, int h);
-    bool Draw(AppCUI::Graphics::Renderer& renderer, int scale);
-    AppCUI::Graphics::Size GetSize(int scale) const;
-    void UpdatePosition(int x, int y);
-    void SetPosition(int x, int y);
+    bool Draw(Renderer& renderer, int scale, bool center, int w, int h);
+    bool Draw(Renderer& renderer, int scale);
+    Size GetSize(int scale) const;
+    void UpdatePosition(const Point& delta);
+    void SetPosition(const Point& newPosition);
     int GetBlockWidth(int scale) const;
     int GetBlockHeight(int scale) const;
     int GetLeftXPosition() const;

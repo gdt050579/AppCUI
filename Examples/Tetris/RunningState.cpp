@@ -75,14 +75,14 @@ bool RunningState::Update()
 
             SetMatrixData();
             const auto x = (board.maxtrixHSize / 2) * currentPiece->GetBlockWidth(pieceScaleInLeftPanel);
-            currentPiece->SetPosition(x, board.matrixYTop);
+            currentPiece->SetPosition({ x, board.matrixYTop });
         }
     }
 
     while (pieces.size() < maxPiecesInQueue)
     {
         const auto pieceType = static_cast<PieceType>(uniform_dist(e1));
-        pieces.emplace_back(Piece{ pieceType, nextPiece.DownCast<Control>(), 1, board.matrixYTop });
+        pieces.emplace_front(Piece{ pieceType, nextPiece.DownCast<Control>(), { 1, board.matrixYTop } });
     }
 
     return true;
