@@ -202,7 +202,12 @@ class MyUserControl : public UserControl, public PropertiesInterface
     }
     bool IsPropertyValueReadOnly(uint32 propertyID) override
     {
-        return (propertyID == (uint32) MyControlProperty::Version);
+        // if hasBorder is false, than BorderType is readOnly and can not be changed
+        if ((hasBorder == false) && (propertyID == (uint32) MyControlProperty::BorderType))
+            return true;
+        if (propertyID == (uint32) MyControlProperty::Version)
+            return true;
+        return false;
     }
     vector<Property> GetPropertiesList() override
     {
