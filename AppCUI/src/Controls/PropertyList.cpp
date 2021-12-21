@@ -1,14 +1,194 @@
 #include "ControlContext.hpp"
 #include <set>
 
+#ifdef MessageBox
+#    undef MessageBox
+#endif
+
 namespace AppCUI
 {
-constexpr uint32 CATEGORY_FLAG             = 0x80000000;
-constexpr uint32 CATEGORY_INDEX_MASK       = 0x7FFFFFFF;
-constexpr int32 FILTER_PREFERED_WIDTH      = 17;
+constexpr uint32 CATEGORY_FLAG         = 0x80000000;
+constexpr uint32 CATEGORY_INDEX_MASK   = 0x7FFFFFFF;
+constexpr int32 FILTER_PREFERED_WIDTH  = 17;
+constexpr int32 BUTTON_COMMAND_REFRESH = 1;
+constexpr int32 BUTTON_COMMAND_OK      = 2;
+constexpr int32 BUTTON_COMMAND_CANCEL  = 3;
+
 constexpr static string_view color_names[] = {
     "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
+};
+
+class PropertyTextEditDialog : public Window
+{
+    Reference<TextField> txt;
+    const PropertyInfo& prop;
+    Reference<PropertiesInterface> object;
+
+  public:
+    PropertyTextEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object)
+        : Window("Edit", "d:c,w:40,h:8", WindowFlags::NoCloseButton), prop(_prop), object(_object)
+    {
+        Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
+        txt = Factory::TextField::Create(this, "", "t:2,l:1,r:1");
+        Factory::Button::Create(this, "&Refresh", "l:2,b:0,w:11", BUTTON_COMMAND_REFRESH);
+        Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
+        Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
+        txt->SetFocus();
+        Refresh();
+    }
+    void Refresh()
+    {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+        NumericFormatter n;
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            switch (prop.type)
+            {
+            case PropertyType::UInt8:
+                txt->SetText(n.ToDec(std::get<uint8>(tempPropValue)));
+                break;
+            case PropertyType::UInt16:
+                txt->SetText(n.ToDec(std::get<uint16>(tempPropValue)));
+                break;
+            case PropertyType::UInt32:
+                txt->SetText(n.ToDec(std::get<uint32>(tempPropValue)));
+                break;
+            case PropertyType::UInt64:
+                txt->SetText(n.ToDec(std::get<uint64>(tempPropValue)));
+                break;
+            case PropertyType::Int8:
+                txt->SetText(n.ToDec(std::get<int8>(tempPropValue)));
+                break;
+            case PropertyType::Int16:
+                txt->SetText(n.ToDec(std::get<int16>(tempPropValue)));
+                break;
+            case PropertyType::Int32:
+                txt->SetText(n.ToDec(std::get<int32>(tempPropValue)));
+                break;
+            case PropertyType::Int64:
+                txt->SetText(n.ToDec(std::get<int64>(tempPropValue)));
+                break;
+            case PropertyType::Float:
+                txt->SetText(n.ToDec(std::get<float>(tempPropValue)));
+                break;
+            case PropertyType::Double:
+                txt->SetText(n.ToDec(std::get<double>(tempPropValue)));
+                break;
+            case PropertyType::Ascii:
+                txt->SetText(std::get<string_view>(tempPropValue));
+                break;
+            case PropertyType::Unicode:
+                txt->SetText(std::get<u16string_view>(tempPropValue));
+                break;
+            case PropertyType::UTF8:
+                txt->SetText(std::get<u8string_view>(tempPropValue));
+                break;
+            case PropertyType::CharacterView:
+                txt->SetText(std::get<CharacterView>(tempPropValue));
+                break;
+            case PropertyType::Size:
+                txt->SetText(tmpString.Format(
+                      "%u x %u", std::get<Size>(tempPropValue).Width, std::get<Size>(tempPropValue).Height));
+                break;
+            default:
+                txt->SetText("");
+                Dialogs::MessageBox::ShowError(
+                      "Error",
+                      tmpString.Format("Unknown property type (%u) for %s", (uint32) prop.type, prop.name.GetText()));
+                break;
+            }
+        }
+        else
+        {
+            txt->SetText("");
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        txt->SetFocus();
+    }
+    bool OnEvent(Reference<Control> sender, Event eventType, int id) override
+    {
+        switch (eventType)
+        {
+        case Event::WindowClose:
+            this->Exit(0);
+            return true;
+        case Event::WindowAccept:
+            Validate();
+            return true;
+        case Event::ButtonClicked:
+            if (id == BUTTON_COMMAND_REFRESH)
+                Refresh();
+            else if (id == BUTTON_COMMAND_OK)
+                Validate();
+            else if (id == BUTTON_COMMAND_CANCEL)
+                this->Exit(0);
+            return true;
+        }
+        return false;
+    }
+    void Validate()
+    {
+        LocalString<256> asciiValue;
+        LocalString<512> error;
+
+        switch (prop.type)
+        {
+        case PropertyType::UInt8:
+        case PropertyType::UInt16:
+        case PropertyType::UInt32:
+        case PropertyType::UInt64:
+        case PropertyType::Int8:
+        case PropertyType::Int16:
+        case PropertyType::Int32:
+        case PropertyType::Int64:
+        case PropertyType::Float:
+        case PropertyType::Double:
+        case PropertyType::Ascii:
+        case PropertyType::Size:
+            // an ascii text is required
+            if (!asciiValue.Set((CharacterView) txt->GetText()))
+            {
+                Dialogs::MessageBox::ShowError(
+                      "Error",
+                      "Fail to convert value to ascii (make sure that you did not introduced any unicode characters or "
+                      "control characters)");
+                txt->SetFocus();
+                return; // value was not validated
+            }
+            break;
+        }
+        // update the value
+        switch (prop.type)
+        {
+        case PropertyType::UInt8:
+            const auto result = Number::ToUInt8(asciiValue);
+            if (result.has_value())
+            {
+                error.Clear();
+                object->SetPropertyValue(prop.id, result.value(), error);
+                if (error.Len()==0)
+                {
+                    // all good
+                    this->Exit(1);
+                    return;
+                }
+                else
+                {
+                    Dialogs::MessageBox::ShowError("Error", error);
+                }
+            }
+            else
+            {
+                Dialogs::MessageBox::ShowError(
+                      "Error", error.Format("Fail to convert '%s' to a valid UInt8 value", asciiValue.GetText()));
+                txt->SetFocus();
+            }
+            break;
+        }
+    };
 };
 
 class ListItemsParser
@@ -715,6 +895,11 @@ void PropertyListContext::MoveToPropetyIndex(uint32 idx)
     // nothing found ==> move to first item
     MoveTo(0);
 }
+void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
+{
+    PropertyTextEditDialog dlg(prop, object);
+    dlg.Show();
+}
 void PropertyListContext::ExecuteItemAction()
 {
     uint32 idx;
@@ -725,6 +910,43 @@ void PropertyListContext::ExecuteItemAction()
             idx &= CATEGORY_INDEX_MASK;
             this->categories[idx].folded = !this->categories[idx].folded;
             Refilter();
+        }
+        else
+        {
+            switch (this->properties[idx].type)
+            {
+            case PropertyType::Boolean:
+                break;
+            case PropertyType::Char8:
+            case PropertyType::Char16:
+                break;
+            case PropertyType::UInt8:
+            case PropertyType::UInt16:
+            case PropertyType::UInt32:
+            case PropertyType::UInt64:
+            case PropertyType::Int8:
+            case PropertyType::Int16:
+            case PropertyType::Int32:
+            case PropertyType::Int64:
+            case PropertyType::Float:
+            case PropertyType::Double:
+            case PropertyType::Ascii:
+            case PropertyType::Unicode:
+            case PropertyType::UTF8:
+            case PropertyType::CharacterView:
+            case PropertyType::Size:
+                EditAndUpdateText(this->properties[idx]);
+                break;
+            case PropertyType::Color:
+                break;
+            case PropertyType::Key:
+                break;
+
+            case PropertyType::List:
+            case PropertyType::Flags:
+            case PropertyType::Custom:
+                break; // have their own drawing method
+            }
         }
     }
 }

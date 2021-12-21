@@ -889,6 +889,7 @@ struct PropertyListContext : public ControlContext
     void OnMouseReleased(int x, int y, Input::MouseButton button);
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
+    void EditAndUpdateText(const PropertyInfo& prop);
 
     inline constexpr int32 GetSeparatorXPos() const
     {
