@@ -1289,7 +1289,8 @@ void PropertyListContext::ExecuteItemAction()
                 EditAndUpdateFlags(this->properties[idx]);
                 break;
             case PropertyType::Custom:
-                break; // have their own drawing method
+                object->SetCustomPropetyValue(this->properties[idx].id);
+                break; 
             }
         }
     }
