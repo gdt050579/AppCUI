@@ -220,6 +220,9 @@ class PropertyTextEditDialog : public Window
         case PropertyType::Double:
             UpdateNumericPropertValue<double>(Number::ToDouble(asciiValue), asciiValue, "Double");
             break;
+        case PropertyType::Size:
+            UpdateNumericPropertValue<Size>(Size::FromString(asciiValue), asciiValue, "Size");
+            break;
         }
     };
 };
