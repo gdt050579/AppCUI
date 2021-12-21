@@ -26,12 +26,11 @@ class Board
     std::default_random_engine e1{ r() };
     std::uniform_int_distribution<int> uniform_dist{ 0, static_cast<int>(PieceType::End) - 1 };
 
-    bool CanAdvanceOnYAxis(int scale) const;
-    bool CanAdvanceOnXAxisLeft(int scale) const;
-    bool CanAdvanceOnXAxisRight(int scale) const;
-    void AdvanceOnYAxis(int scale);
-    void AdvanceOnXAxisLeft(int scale);
-    void AdvanceOnXAxisRight(int scale);
+    int scale = 1;
+
+    bool AdvanceOnYAxis();
+    bool AdvanceOnXAxisLeft();
+    bool AdvanceOnXAxisRight();
 
     void Update(
           int scale,
@@ -39,5 +38,10 @@ class Board
           const Reference<Control> control,
           const Size& size,
           unsigned long delta);
-    void SetMatrixData(int scale, const Size& size);
+    void SetMatrixData(const Size& size);
+
+  private:
+    bool CanAdvanceOnYAxis() const;
+    bool CanAdvanceOnXAxisLeft() const;
+    bool CanAdvanceOnXAxisRight() const;
 };

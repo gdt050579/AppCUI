@@ -171,7 +171,7 @@ int Piece::GetBottomYPosition(int scale) const
     return position.Y + GetSize(scale).Height;
 }
 
-void Piece::Rotate()
+bool Piece::Rotate()
 {
     std::array<std::array<bool, rows>, columns> tmp{ 0 };
 
@@ -184,4 +184,6 @@ void Piece::Rotate()
     }
 
     matrix = tmp;
+
+    return true;
 }

@@ -25,42 +25,42 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
 
     void Init() override;
 
-    bool HandleEvent(Reference<::Control> ctrl, Event eventType, int controlID) override;
+    bool HandleEvent(Reference<Control> ctrl, Event eventType, int controlID) override;
     bool Update() override;
     void Draw(Renderer& renderer) override;
 
     void Pause() override;
     void Resume() override;
 
-    bool OnKeyEvent(Reference<::Control> control, Key keyCode, char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
 
   private:
     class PaintControlImplementationRightPiecePanels : public Handlers::PaintControlInterface
     {
-        RunningState& rs;
+        Board& board;
         const unsigned int id;
 
       public:
-        PaintControlImplementationRightPiecePanels(RunningState& rs, unsigned int id);
-        void PaintControl(::Reference<::Control> control, ::Renderer& renderer) override;
+        PaintControlImplementationRightPiecePanels(Board& board, unsigned int id);
+        void PaintControl(Reference<Control> control, Renderer& renderer) override;
     };
 
     class PaintControlImplementationLeftPanel : public Handlers::PaintControlInterface
     {
-        RunningState& rs;
+        Board& board;
 
       public:
-        PaintControlImplementationLeftPanel(RunningState& rs);
-        void PaintControl(Reference<::Control> control, ::Renderer& renderer) override;
+        PaintControlImplementationLeftPanel(Board& board);
+        void PaintControl(Reference<Control> control, Renderer& renderer) override;
     };
 
     class OnKeyEventInterfaceImplementationLeftPanel : public Handlers::OnKeyEventInterface
     {
-        RunningState& rs;
+        Board& board;
 
       public:
-        OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs);
-        bool OnKeyEvent(Reference<::Control> control, Key keyCode, char16_t unicodeChar) override;
+        OnKeyEventInterfaceImplementationLeftPanel(Board& board);
+        bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar) override;
     };
 
     const std::shared_ptr<GameData>& data;
@@ -85,11 +85,11 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     Reference<Label> scoreLabel      = nullptr;
     Reference<Label> timePassedLabel = nullptr;
 
-    PaintControlImplementationRightPiecePanels pcirpp01{ *this, 0 };
-    PaintControlImplementationRightPiecePanels pcirpp02{ *this, 1 };
-    PaintControlImplementationRightPiecePanels pcirpp03{ *this, 2 };
+    PaintControlImplementationRightPiecePanels pcirpp01{ board, 0 };
+    PaintControlImplementationRightPiecePanels pcirpp02{ board, 1 };
+    PaintControlImplementationRightPiecePanels pcirpp03{ board, 2 };
 
-    PaintControlImplementationLeftPanel pcilp{ *this };
+    PaintControlImplementationLeftPanel pcilp{ board };
 
-    OnKeyEventInterfaceImplementationLeftPanel okeiilp{ *this };
+    OnKeyEventInterfaceImplementationLeftPanel okeiilp{ board };
 };

@@ -94,8 +94,8 @@ bool RunningState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t 
 }
 
 RunningState::PaintControlImplementationRightPiecePanels::PaintControlImplementationRightPiecePanels(
-      RunningState& rs, unsigned int id)
-    : rs(rs), id(id)
+      Board& board, unsigned int id)
+    : board(board), id(id)
 {
 }
 
@@ -104,14 +104,14 @@ void RunningState::PaintControlImplementationRightPiecePanels::PaintControl(
 {
     control->Paint(renderer);
 
-    if (rs.board.pieces.size() > id)
+    if (board.pieces.size() > id)
     {
-        auto& piece = rs.board.pieces[id];
+        auto& piece = board.pieces[id];
         piece.Draw(renderer, 3, true, control->GetWidth(), control->GetHeight());
     }
 }
 
-RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLeftPanel(RunningState& rs) : rs(rs)
+RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLeftPanel(Board& board) : board(board)
 {
 }
 
@@ -119,58 +119,37 @@ void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<C
 {
     control->Paint(renderer);
 
-    if (rs.board.currentPiece.has_value())
+    if (board.currentPiece.has_value())
     {
-        rs.board.currentPiece->Draw(renderer, rs.pieceScaleInLeftPanel);
+        board.currentPiece->Draw(renderer, board.scale);
     }
 
-    for (auto& piece : rs.board.piecesProcessed)
+    for (auto& piece : board.piecesProcessed)
     {
-        piece.Draw(renderer, rs.pieceScaleInLeftPanel);
+        piece.Draw(renderer, board.scale);
     }
 }
 
-RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImplementationLeftPanel(RunningState& rs)
-    : rs(rs)
+RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImplementationLeftPanel(Board& board)
+    : board(board)
 {
 }
 
 bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
       Reference<Control> control, Key keyCode, char16_t unicodeChar)
 {
-    if (rs.board.currentPiece.has_value() == false)
-    {
-        return false;
-    }
-
     switch (keyCode)
     {
     case Key::Left:
-        if (rs.board.CanAdvanceOnXAxisLeft(rs.pieceScaleInLeftPanel))
-        {
-            rs.board.AdvanceOnXAxisLeft(rs.pieceScaleInLeftPanel);
-            return true;
-        }
-        break;
+        return board.AdvanceOnXAxisLeft();
     case Key::Right:
-        if (rs.board.CanAdvanceOnXAxisRight(rs.pieceScaleInLeftPanel))
-        {
-            rs.board.AdvanceOnXAxisRight(rs.pieceScaleInLeftPanel);
-            return true;
-        }
-        break;
+        return board.AdvanceOnXAxisRight();
 
     case Key::Down:
-        if (rs.board.CanAdvanceOnYAxis(rs.pieceScaleInLeftPanel))
-        {
-            rs.board.AdvanceOnYAxis(rs.pieceScaleInLeftPanel);
-            return true;
-        }
-        break;
+        return board.AdvanceOnYAxis();
 
     case Key::Space:
-        rs.board.currentPiece->Rotate();
-        return true;
+        return board.currentPiece->Rotate();
 
     default:
         break;

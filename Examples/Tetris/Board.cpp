@@ -1,6 +1,6 @@
 #include "Board.hpp"
 
-bool Board::CanAdvanceOnYAxis(int scale) const
+bool Board::CanAdvanceOnYAxis() const
 {
     if (currentPiece.has_value() == false)
     {
@@ -13,7 +13,7 @@ bool Board::CanAdvanceOnYAxis(int scale) const
     return canAdvance;
 }
 
-bool Board::CanAdvanceOnXAxisLeft(int scale) const
+bool Board::CanAdvanceOnXAxisLeft() const
 {
     if (currentPiece.has_value() == false)
     {
@@ -26,7 +26,7 @@ bool Board::CanAdvanceOnXAxisLeft(int scale) const
     return canAdvance;
 }
 
-bool Board::CanAdvanceOnXAxisRight(int scale) const
+bool Board::CanAdvanceOnXAxisRight() const
 {
     if (currentPiece.has_value() == false)
     {
@@ -39,45 +39,53 @@ bool Board::CanAdvanceOnXAxisRight(int scale) const
     return canAdvance;
 }
 
-void Board::AdvanceOnYAxis(int scale)
+bool Board::AdvanceOnYAxis()
 {
-    if (currentPiece.has_value() == false)
+    if (CanAdvanceOnYAxis() == false)
     {
-        return;
+        return false;
     }
 
     const auto bHeight = currentPiece->GetBlockHeight(scale);
     currentPiece->UpdatePosition({ 0, bHeight });
+
+    return true;
 }
 
-void Board::AdvanceOnXAxisLeft(int scale)
+bool Board::AdvanceOnXAxisLeft()
 {
-    if (currentPiece.has_value() == false)
+    if (CanAdvanceOnXAxisLeft() == false)
     {
-        return;
+        return false;
     }
 
     const auto bWidth = currentPiece->GetBlockWidth(scale);
     currentPiece->UpdatePosition({ -bWidth, 0 });
+
+    return true;
 }
 
-void Board::AdvanceOnXAxisRight(int scale)
+bool Board::AdvanceOnXAxisRight()
 {
-    if (currentPiece.has_value() == false)
+    if (CanAdvanceOnXAxisRight() == false)
     {
-        return;
+        return false;
     }
 
     const auto bWidth = currentPiece->GetBlockWidth(scale);
     currentPiece->UpdatePosition({ bWidth, 0 });
+
+    return true;
 }
 
 void Board::Update(
       int scale, unsigned int maxPiecesInQueue, const Reference<Control> control, const Size& size, unsigned long delta)
 {
+    this->scale = scale;
+
     if (currentPiece.has_value())
     {
-        if (CanAdvanceOnYAxis(scale) == false)
+        if (CanAdvanceOnYAxis() == false)
         {
             piecesProcessed.emplace_back(*currentPiece);
             currentPiece.reset();
@@ -85,7 +93,7 @@ void Board::Update(
         else if (currentPieceUpdated != delta)
         {
             currentPieceUpdated = delta;
-            AdvanceOnYAxis(scale);
+            AdvanceOnYAxis();
         }
     }
     else
@@ -95,7 +103,7 @@ void Board::Update(
             currentPiece.emplace(pieces.front());
             pieces.pop_front();
 
-            SetMatrixData(scale, size);
+            SetMatrixData(size);
             const auto x = (maxtrixHSize / 2) * currentPiece->GetBlockWidth(scale);
             currentPiece->SetPosition({ x, matrixYTop });
         }
@@ -108,7 +116,7 @@ void Board::Update(
     }
 }
 
-void Board::SetMatrixData(int scale, const Size& size)
+void Board::SetMatrixData(const Size& size)
 {
     if (currentPiece.has_value())
     {
