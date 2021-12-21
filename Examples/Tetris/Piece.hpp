@@ -49,6 +49,9 @@ class Piece
     int GetBottomYPosition(int scale) const;
     bool Rotate();
 
+    const std::array<std::array<bool, rows>, columns>& GetMatrix() const;
+    const Point& GetPositionOnBoard() const;
+
     void SetPositionOnBoardMatrix(const Point& position);
     void UpdatePositionOnBoardMatrix(const Point& position);
 };

@@ -50,6 +50,10 @@ bool Board::AdvanceOnYAxis()
     currentPiece->UpdatePosition({ 0, bHeight });
     currentPiece->UpdatePositionOnBoardMatrix({ 0, 1 });
 
+    const auto& piecePositionOnBoard = currentPiece->GetPositionOnBoard();
+    const auto& pieceMatrix          = currentPiece->GetMatrix();
+    // TODO: update on board
+
     return true;
 }
 
@@ -64,6 +68,10 @@ bool Board::AdvanceOnXAxisLeft()
     currentPiece->UpdatePosition({ -bWidth, 0 });
     currentPiece->UpdatePositionOnBoardMatrix({ -1, 0 });
 
+    const auto& piecePositionOnBoard = currentPiece->GetPositionOnBoard();
+    const auto& pieceMatrix          = currentPiece->GetMatrix();
+    // TODO: update on board
+
     return true;
 }
 
@@ -77,6 +85,10 @@ bool Board::AdvanceOnXAxisRight()
     const auto bWidth = currentPiece->GetBlockWidth(scale);
     currentPiece->UpdatePosition({ bWidth, 0 });
     currentPiece->UpdatePositionOnBoardMatrix({ 1, 0 });
+
+    const auto& piecePositionOnBoard = currentPiece->GetPositionOnBoard();
+    const auto& pieceMatrix          = currentPiece->GetMatrix();
+    // TODO: update on board
 
     return true;
 }

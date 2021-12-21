@@ -188,6 +188,16 @@ bool Piece::Rotate()
     return true;
 }
 
+const std::array<std::array<bool, Piece::rows>, Piece::columns>& Piece::GetMatrix() const
+{
+    return matrix;
+}
+
+const Point& Piece::GetPositionOnBoard() const
+{
+    return positionOnBoard;
+}
+
 void Piece::SetPositionOnBoardMatrix(const Point& position)
 {
     positionOnBoard = position;
