@@ -340,6 +340,7 @@ namespace Graphics
             Width  = width;
             Height = height;
         }
+        static EXPORT optional<Size> FromString(string_view text);
     };
     struct Point
     {
