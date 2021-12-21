@@ -988,6 +988,24 @@ void PropertyListContext::EditAndUpdateText(const PropertyInfo& prop)
     PropertyTextEditDialog dlg(prop, object, readOnly);
     dlg.Show();
 }
+void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
+{
+    bool readOnly = this->Flags && PropertyListFlags::ReadOnly ? true : this->object->IsPropertyValueReadOnly(prop.id);
+    if (readOnly)
+        return;
+    if (this->object->GetPropertyValue(prop.id, tempPropValue))
+    {
+        LocalString<256> error;
+        if (this->object->SetPropertyValue(prop.id, !(std::get<bool>(tempPropValue)),error) == false)
+        {
+            Dialogs::MessageBox::ShowError("Error", error);
+        }
+    }
+    else
+    {
+        Dialogs::MessageBox::ShowError("Error", "Fail to retrive object value");
+    }
+}
 void PropertyListContext::ExecuteItemAction()
 {
     uint32 idx;
@@ -1004,6 +1022,7 @@ void PropertyListContext::ExecuteItemAction()
             switch (this->properties[idx].type)
             {
             case PropertyType::Boolean:
+                EditAndUpdateBool(this->properties[idx]);
                 break;
             case PropertyType::Char8:
             case PropertyType::Char16:

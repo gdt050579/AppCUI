@@ -890,6 +890,7 @@ struct PropertyListContext : public ControlContext
     bool IsItemFiltered(const PropertyInfo& prop);
     void Refilter();
     void EditAndUpdateText(const PropertyInfo& prop);
+    void EditAndUpdateBool(const PropertyInfo& prop);
 
     inline constexpr int32 GetSeparatorXPos() const
     {

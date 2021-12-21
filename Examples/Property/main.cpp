@@ -52,6 +52,8 @@ class MyUserControl : public UserControl, public PropertiesInterface
     }
     bool OnFrameUpdate() override
     {
+        if (!animationStarted)
+            return false;
         counter++;
         if (counter < frameDelay)
             return false;
@@ -187,6 +189,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         case MyControlProperty::BorderType:
             // value = 2;
+            return true;
+        case MyControlProperty::AnimationStarted:
+            this->animationStarted = std::get<bool>(value);
             return true;
         }
         error.SetFormat("Unknwon property ID: %u", (uint32) id);
