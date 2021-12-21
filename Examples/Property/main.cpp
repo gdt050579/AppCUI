@@ -193,6 +193,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::AnimationStarted:
             this->animationStarted = std::get<bool>(value);
             return true;
+        case MyControlProperty::AnimationSpeed:
+            this->frameDelay = (uint32) std::get<uint64>(value);
+            return true;
         }
         error.SetFormat("Unknwon property ID: %u", (uint32) id);
         return false;

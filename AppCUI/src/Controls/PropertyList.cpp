@@ -13,12 +13,77 @@ constexpr int32 FILTER_PREFERED_WIDTH  = 17;
 constexpr int32 BUTTON_COMMAND_REFRESH = 1;
 constexpr int32 BUTTON_COMMAND_OK      = 2;
 constexpr int32 BUTTON_COMMAND_CANCEL  = 3;
+constexpr uint64 INVALID_LISTVIEW_ITEM = 0xFFFFFFFFFFFFFFFFULL;
 
 constexpr static string_view color_names[] = {
     "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
     "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
 };
-
+bool PropertyValueToUInt64(const PropertyValue& value, uint64& result)
+{
+    if (std::holds_alternative<uint64>(value))
+    {
+        result = std::get<uint64>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint32>(value))
+    {
+        result = std::get<uint32>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint16>(value))
+    {
+        result = std::get<uint16>(value);
+        return true;
+    }
+    if (std::holds_alternative<uint8>(value))
+    {
+        result = std::get<uint8>(value);
+        return true;
+    }
+    // check for ints --> but only if positive
+    if (std::holds_alternative<int64>(value))
+    {
+        auto intResult = std::get<int64>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int32>(value))
+    {
+        auto intResult = std::get<int32>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int16>(value))
+    {
+        auto intResult = std::get<int16>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    if (std::holds_alternative<int8>(value))
+    {
+        auto intResult = std::get<int8>(value);
+        if (intResult >= 0)
+        {
+            result = (uint64) intResult;
+            return true;
+        }
+        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
+    }
+    RETURNERROR(false, "Unknwon (non-convertable) variant type for list/flag members");
+}
 class PropertyEditDialog : public Window
 {
   protected:
@@ -26,11 +91,10 @@ class PropertyEditDialog : public Window
     Reference<PropertiesInterface> object;
     bool isReadOnly;
 
-    PropertyEditDialog(string_view layout, const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : Window("Edit", layout, WindowFlags::NoCloseButton), prop(_prop), object(_object),
-          isReadOnly(readOnly)
+    PropertyEditDialog(
+          string_view layout, const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : Window("Edit", layout, WindowFlags::NoCloseButton), prop(_prop), object(_object), isReadOnly(readOnly)
     {
-        
         if (readOnly)
         {
             Factory::Button::Create(this, "&Refresh", "l:7,b:0,w:12", BUTTON_COMMAND_REFRESH);
@@ -43,7 +107,6 @@ class PropertyEditDialog : public Window
             Factory::Button::Create(this, "&Ok", "l:14,b:0,w:11", BUTTON_COMMAND_OK);
             Factory::Button::Create(this, "&Cancel", "l:26,b:0,w:11", BUTTON_COMMAND_CANCEL);
         }
-        
     }
 
   public:
@@ -64,6 +127,10 @@ class PropertyEditDialog : public Window
             if (this->isReadOnly)
                 this->Exit(1);
             else
+                Validate();
+            return true;
+        case Event::ListViewItemClicked:
+            if (!this->isReadOnly)
                 Validate();
             return true;
         case Event::ButtonClicked:
@@ -90,22 +157,98 @@ class PropertyEditDialog : public Window
 class PropertyListEditDialog : public PropertyEditDialog
 {
     Reference<ListView> lv;
+    ItemHandle* items;
 
   public:
     PropertyListEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly)
+        : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly), items(nullptr)
     {
+    }
+    ~PropertyListEditDialog()
+    {
+        if (items)
+            delete[] items;
+        items = nullptr;
     }
     void OnInitPropertyDialog() override
     {
         lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns);
         lv->AddColumn("", TextAlignament::Left, 100);
+        if (prop.listValues.size() > 0)
+        {
+            items   = new ItemHandle[prop.listValues.size()];
+            auto* i = items;
+            for (auto& entry : prop.listValues)
+            {
+                *i = lv->AddItem(entry.second);
+                lv->SetItemData(*i, entry.first);
+                i++;
+            }
+        }
+        lv->SetFocus();
     }
     void Refresh() override
     {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+        auto* i = items;
+        auto* e = items + prop.listValues.size();
+        while (i < e)
+        {
+            lv->SetItemType(*i, ListViewItemType::Normal);
+            i++;
+        }
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            uint64 result;
+            if (PropertyValueToUInt64(tempPropValue, result))
+            {
+                i = items;
+                while (i < e)
+                {
+                    if (lv->GetItemData(*i, INVALID_LISTVIEW_ITEM) == result)
+                        lv->SetItemType(*i, ListViewItemType::Emphasized_1);
+                    i++;
+                }
+            }
+            else
+            {
+                Dialogs::MessageBox::ShowError(
+                      "Error",
+                      tmpString.Format(
+                            "Item value should be an index (uint8/16/32/64 or int8/16/32/64) for %s",
+                            prop.name.GetText()));
+            }
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        lv->SetFocus();
     }
     void Validate() override
     {
+        if (lv->GetItemsCount() == 0)
+            return;
+        LocalString<256> error;
+        auto result = lv->GetItemData(lv->GetCurrentItem(), INVALID_LISTVIEW_ITEM);
+        if (result != INVALID_LISTVIEW_ITEM)
+        {
+            if (object->SetPropertyValue(prop.id, result, error))
+            {
+                this->Exit(0);
+                return;
+            }
+            // error
+            Dialogs::MessageBox::ShowError("Error", error);
+            lv->SetFocus();
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError("Error", "Internal error - invalid item !");
+            lv->SetFocus();
+        }
     }
 };
 class PropertyTextEditDialog : public PropertyEditDialog
@@ -415,72 +558,6 @@ class ListItemsParser
     }
 };
 
-bool PropertValueToUInt64(const PropertyValue& value, uint64& result)
-{
-    if (std::holds_alternative<uint64>(value))
-    {
-        result = std::get<uint64>(value);
-        return true;
-    }
-    if (std::holds_alternative<uint32>(value))
-    {
-        result = std::get<uint32>(value);
-        return true;
-    }
-    if (std::holds_alternative<uint16>(value))
-    {
-        result = std::get<uint16>(value);
-        return true;
-    }
-    if (std::holds_alternative<uint8>(value))
-    {
-        result = std::get<uint8>(value);
-        return true;
-    }
-    // check for ints --> but only if positive
-    if (std::holds_alternative<int64>(value))
-    {
-        auto intResult = std::get<int64>(value);
-        if (intResult >= 0)
-        {
-            result = (uint64) intResult;
-            return true;
-        }
-        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
-    }
-    if (std::holds_alternative<int32>(value))
-    {
-        auto intResult = std::get<int32>(value);
-        if (intResult >= 0)
-        {
-            result = (uint64) intResult;
-            return true;
-        }
-        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
-    }
-    if (std::holds_alternative<int16>(value))
-    {
-        auto intResult = std::get<int16>(value);
-        if (intResult >= 0)
-        {
-            result = (uint64) intResult;
-            return true;
-        }
-        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
-    }
-    if (std::holds_alternative<int8>(value))
-    {
-        auto intResult = std::get<int8>(value);
-        if (intResult >= 0)
-        {
-            result = (uint64) intResult;
-            return true;
-        }
-        RETURNERROR(false, "Invalid (non-positive) value for list/flag members");
-    }
-    RETURNERROR(false, "Unknwon (non-convertable) variant type for list/flag members");
-}
-
 int32 SortWithCategories(int32 i1, int32 i2, void* context)
 {
     auto* PC = reinterpret_cast<PropertyListContext*>(context);
@@ -541,15 +618,17 @@ void PropertyListContext::DrawCategory(uint32 index, int32 y, Graphics::Renderer
         renderer.WriteText(tmp, params);
     }
     if (w > 0)
+    {
         renderer.WriteSpecialCharacter(
               x, y, cat.folded ? SpecialChars::TriangleRight : SpecialChars::TriangleDown, Colors.Category.Arrow);
+    }
 }
 void PropertyListContext::DrawListProperty(
       WriteTextParams& params, PropertyValue& pv, const PropertyInfo& pi, Graphics::Renderer& renderer, bool readOnly)
 {
     uint64 result;
     LocalString<128> errText;
-    if (PropertValueToUInt64(pv, result))
+    if (PropertyValueToUInt64(pv, result))
     {
         auto it = pi.listValues.find(result);
         if (it != pi.listValues.cend())
@@ -583,7 +662,7 @@ void PropertyListContext::DrawFlagsProperty(
     uint64 result;
     LocalString<64> errText;
     LocalUnicodeStringBuilder<1024> flagList;
-    if (PropertValueToUInt64(pv, result))
+    if (PropertyValueToUInt64(pv, result))
     {
         bool first = true;
         for (auto& e : pi.listValues)
