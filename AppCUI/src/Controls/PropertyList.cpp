@@ -984,7 +984,10 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpAscii = color_names[static_cast<uint8>(std::get<Graphics::Color>(tempPropValue))];
             break;
         case PropertyType::Key:
-            tmpAscii = KeyUtils::GetKeyName(std::get<Input::Key>(tempPropValue));
+            if (KeyUtils::ToString(std::get<Input::Key>(tempPropValue), tmpString))
+                tmpAscii = tmpString.ToStringView();
+            else
+                tmpAscii = "?";
             break;
         case PropertyType::Size:
             tmpSize  = std::get<Graphics::Size>(tempPropValue);
