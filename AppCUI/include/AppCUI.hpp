@@ -2521,6 +2521,7 @@ namespace Controls
         class EXPORT Grid;
         class EXPORT PropertyList;
         class EXPORT KeySelector;
+        class EXPORT ColorPicker;
     }; // namespace Factory
     enum class Event : uint32
     {
@@ -3848,11 +3849,33 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
+        virtual ~KeySelector();
 
         void SetSelectedKey(Input::Key keyCode);
         Input::Key GetSelectedKey();
 
         friend Factory::KeySelector;
+        friend Control;
+    };
+    class EXPORT ColorPicker : public Control
+    {
+      protected:
+        ColorPicker(string_view layout, Graphics::Color color);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnHotKey() override;
+        bool OnMouseLeave() override;
+        bool OnMouseEnter() override;
+        bool OnMouseOver(int x, int y) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnExpandView(Graphics::Clip& expandedClip) override;
+        void OnPackView() override;
+        virtual ~ColorPicker();
+
+        friend Factory::ColorPicker;
         friend Control;
     };
 

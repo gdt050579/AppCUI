@@ -13,7 +13,9 @@ KeySelector::KeySelector(string_view layout, Input::Key keyCode, KeySelectorFlag
     Members->key              = keyCode;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
 }
-
+KeySelector::~KeySelector()
+{
+}
 void KeySelector::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, );

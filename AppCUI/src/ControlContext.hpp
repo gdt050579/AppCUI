@@ -908,6 +908,10 @@ struct KeySelectorContext : public ControlContext
 {
     Input::Key key;
 };
+struct ColorPickerContext : public ControlContext
+{
+    Graphics::Color color;
+};
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \
