@@ -160,7 +160,7 @@ class PropertyKeyEditDialog : public PropertyEditDialog
 
   public:
     PropertyKeyEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : PropertyEditDialog("d:c,w:40,h:12", _prop, _object, readOnly)
+        : PropertyEditDialog("d:c,w:40,h:8", _prop, _object, readOnly)
     {
     }
     void OnInitPropertyDialog() override
@@ -168,9 +168,9 @@ class PropertyKeyEditDialog : public PropertyEditDialog
         Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
 
         if (isReadOnly)
-            key = Factory::KeySelector::Create(this, "t:2,l:1,r:1", Key::None, KeySelectorFlags::None);
-        else
             key = Factory::KeySelector::Create(this, "t:2,l:1,r:1", Key::None, KeySelectorFlags::ReadOnly);
+        else
+            key = Factory::KeySelector::Create(this, "t:2,l:1,r:1", Key::None, KeySelectorFlags::None);
         key->SetFocus();
     }
     void Refresh() override

@@ -61,7 +61,9 @@ bool KeySelector::OnKeyEvent(Key KeyCode, char16 characterCode)
             return false;
         break;        
     }
-    Members->key = KeyCode;
+    // set the new value only if not in a read-only mode
+    if (!(Members->Flags && KeySelectorFlags::ReadOnly))
+        Members->key = KeyCode;
 
     return true;
 }
