@@ -4273,6 +4273,17 @@ namespace Controls
                   Input::Key keyCode     = Input::Key::None,
                   KeySelectorFlags flags = KeySelectorFlags::None);
         };
+        class EXPORT ColorPicker
+        {
+            ColorPicker() = delete;
+
+          public:
+            static Reference<Controls::ColorPicker> Create(
+                  Controls::Control* parent, string_view layout, Graphics::Color color);
+            static Reference<Controls::ColorPicker> Create(
+                  Controls::Control& parent, string_view layout, Graphics::Color color);
+            static Pointer<Controls::ColorPicker> Create(string_view layout, Graphics::Color color);
+        };
     } // namespace Factory
 
 }; // namespace Controls
