@@ -1557,6 +1557,8 @@ namespace Utils
 
     class EXPORT KeyUtils
     {
+        KeyUtils() = delete;
+
       public:
         constexpr static const uint32 KEY_SHIFT_MASK = 0x7000;
         constexpr static const uint32 KEY_SHIFT_BITS = 12;
@@ -1571,6 +1573,14 @@ namespace Utils
         static Input::Key FromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
+    };
+
+    class EXPORT ColorUtils
+    {
+        ColorUtils() = delete;
+
+      public:
+        static string_view GetColorName(Graphics::Color color);
     };
 
     class EXPORT IniValueArray

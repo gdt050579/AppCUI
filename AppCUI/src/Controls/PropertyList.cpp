@@ -15,10 +15,6 @@ constexpr int32 BUTTON_COMMAND_OK      = 2;
 constexpr int32 BUTTON_COMMAND_CANCEL  = 3;
 constexpr uint64 INVALID_LISTVIEW_ITEM = 0xFFFFFFFFFFFFFFFFULL;
 
-constexpr static string_view color_names[] = {
-    "Black", "DarkBlue", "DarkGreen", "Teal", "DarkRed", "Magenta", "Olive", "Silver",      "Gray",
-    "Blue",  "Green",    "Aqua",      "Red",  "Pink",    "Yellow",  "White", "Transparent",
-};
 bool PropertyValueToUInt64(const PropertyValue& value, uint64& result)
 {
     if (std::holds_alternative<uint64>(value))
@@ -981,7 +977,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             tmpCharView = std::get<CharacterView>(tempPropValue);
             break;
         case PropertyType::Color:
-            tmpAscii = color_names[static_cast<uint8>(std::get<Graphics::Color>(tempPropValue))];
+            tmpAscii = ColorUtils::GetColorName(std::get<Graphics::Color>(tempPropValue));
             break;
         case PropertyType::Key:
             if (KeyUtils::ToString(std::get<Input::Key>(tempPropValue), tmpString))
@@ -1348,7 +1344,7 @@ void PropertyListContext::ExecuteItemAction()
                 break;
             case PropertyType::Custom:
                 object->SetCustomPropetyValue(this->properties[idx].id);
-                break; 
+                break;
             }
         }
     }
