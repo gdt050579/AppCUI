@@ -53,7 +53,7 @@ bool KeySelector::OnKeyEvent(Key KeyCode, char16 characterCode)
             return false;
         break;
     case Key::Tab:
-        if (!(Members->Flags && KeySelectorFlags::ProcessEscape))
+        if (!(Members->Flags && KeySelectorFlags::ProcessTab))
             return false;
         break;
     case Key::Escape:
@@ -65,15 +65,25 @@ bool KeySelector::OnKeyEvent(Key KeyCode, char16 characterCode)
 
     return true;
 }
+void KeySelector::SetSelectedKey(Input::Key keyCode)
+{
+    CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, );
+    Members->key = keyCode;
+}
+Input::Key KeySelector::GetSelectedKey()
+{
+    CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, Key::None);
+    return Members->key;
+}
 bool KeySelector::OnMouseEnter()
 {
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, false);
     this->ShowToolTip("Press a key when control has focus");
     return true;
 }
 bool KeySelector::OnMouseLeave()
 {
-    CREATE_CONTROL_CONTEXT(this, Members, false);
+    CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, false);
     this->HideToolTip();
     return true;
 }

@@ -3848,6 +3848,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
+        void SetSelectedKey(Input::Key keyCode);
+        Input::Key GetSelectedKey();
+
         friend Factory::KeySelector;
         friend Control;
     };

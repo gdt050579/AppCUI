@@ -10,7 +10,7 @@ class ExampleWin : public Window
   public:
     ExampleWin() : Window("Example", "d:c,w:40,h:10", WindowFlags::None)
     {
-        Factory::KeySelector::Create(this, "x:1,y:1,w:38");
+        Factory::KeySelector::Create(this, "x:1,y:1,w:38", Input::Key::None, KeySelectorFlags::ProcessReturn);
         Factory::Button::Create(this, "A button", "d:b,w:20", 123);
     }
 };
