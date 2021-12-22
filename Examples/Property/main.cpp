@@ -19,6 +19,7 @@ enum class MyControlProperty : uint32
     BorderType,
     AnimationStarted,
     AnimationSpeed,
+    AnimationKey,
     Flags,
     Custom
 };
@@ -41,24 +42,26 @@ class MyUserControl : public UserControl, public PropertiesInterface
     uint32 flags;
     BorderType borderType;
     std::u16string name;
+    Input::Key keyToStopAnimation;
 
   public:
     MyUserControl() : UserControl("d:c")
     {
-        counter          = 0;
-        frameDelay       = 3;
-        x                = 2;
-        y                = 3;
-        addX             = 1;
-        addY             = -1;
-        sz               = { 15, 5 };
-        ch               = 'X';
-        c                = ColorPair{ Color::Red, Color::Black };
-        hasBorder        = false;
-        animationStarted = true;
-        borderType       = BorderType::Single;
-        flags            = 59;
-        name             = u"Dragoș";
+        counter            = 0;
+        frameDelay         = 3;
+        x                  = 2;
+        y                  = 3;
+        addX               = 1;
+        addY               = -1;
+        sz                 = { 15, 5 };
+        ch                 = 'X';
+        c                  = ColorPair{ Color::Red, Color::Black };
+        hasBorder          = false;
+        animationStarted   = true;
+        borderType         = BorderType::Single;
+        flags              = 59;
+        name               = u"Dragoș";
+        keyToStopAnimation = Input::Key::F1;
     }
     bool OnFrameUpdate() override
     {
@@ -112,10 +115,20 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 renderer.FillHorizontalLineWithSpecialChar(
                       x - 1, y + sz.Height, x + sz.Width, SpecialChars::BlockUpperHalf, c);
                 renderer.FillVerticalLineWithSpecialChar(x - 1, y, y + sz.Height - 1, SpecialChars::BlockLeftHalf, c);
-                renderer.FillVerticalLineWithSpecialChar(x + sz.Width, y, y + sz.Height - 1, SpecialChars::BlockRightHalf, c);
+                renderer.FillVerticalLineWithSpecialChar(
+                      x + sz.Width, y, y + sz.Height - 1, SpecialChars::BlockRightHalf, c);
                 break;
             }
         }
+    }
+    bool OnKeyEvent(Input::Key code, char16) override
+    {
+        if (code == keyToStopAnimation)
+        {
+            animationStarted = !animationStarted;
+            return true;
+        }
+        return false;
     }
     // PropertiesInterface
     bool GetPropertyValue(uint32 id, PropertyValue& value) override
@@ -163,6 +176,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         case MyControlProperty::Custom:
             value = "Custom string representation";
+            return true;
+        case MyControlProperty::AnimationKey:
+            value = keyToStopAnimation;
             return true;
         }
         return false;
@@ -229,6 +245,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::Flags:
             this->flags = (uint32) std::get<uint64>(value);
             return true;
+        case MyControlProperty::AnimationKey:
+            this->keyToStopAnimation = std::get<Input::Key>(value);
+            return true;
         }
         error.SetFormat("Unknwon property ID: %u", (uint32) id);
         return false;
@@ -263,6 +282,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
               { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
+              { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
               { (uint32) MyControlProperty::AnimationSpeed,
                 "Animation",
                 "Speed",
