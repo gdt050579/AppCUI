@@ -3833,6 +3833,7 @@ namespace Controls
         ProcessTab    = 0x000100,
         ProcessReturn = 0x000200,
         ProcessEscape = 0x000400,
+        ReadOnly      = 0x000800,
     };
     class EXPORT KeySelector : public Control
     {

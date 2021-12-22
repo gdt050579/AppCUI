@@ -893,6 +893,7 @@ struct PropertyListContext : public ControlContext
     void EditAndUpdateBool(const PropertyInfo& prop);
     void EditAndUpdateList(const PropertyInfo& prop);
     void EditAndUpdateFlags(const PropertyInfo& prop);
+    void EditAndUpdateKey(const PropertyInfo& prop);
 
     inline constexpr int32 GetSeparatorXPos() const
     {
