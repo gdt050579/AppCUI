@@ -433,6 +433,24 @@ Reference<Controls::PropertyList> Factory::PropertyList::Create(
     return parent.AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object, flags));
 }
 
+//======[KEYSELECTOR]================================================================================
+Pointer<Controls::KeySelector> Factory::KeySelector::Create(
+      string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    return POINTER<Controls::KeySelector>(new Controls::KeySelector(layout, keyCode, flags));
+}
+Reference<Controls::KeySelector> Factory::KeySelector::Create(
+      Controls::Control* parent, string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::KeySelector>(Factory::KeySelector::Create(layout, keyCode, flags));
+}
+Reference<Controls::KeySelector> Factory::KeySelector::Create(
+      Controls::Control& parent, string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    return parent.AddControl<Controls::KeySelector>(Factory::KeySelector::Create(layout, keyCode, flags));
+}
+
 } // namespace AppCUI
 #undef VALIDATE_PARENT
 #undef POINTER

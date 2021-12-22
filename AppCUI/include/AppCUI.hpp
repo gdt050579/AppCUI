@@ -3837,7 +3837,10 @@ namespace Controls
     class EXPORT KeySelector : public Control
     {
       protected:
-        KeySelector(string_view layout, KeySelectorFlags flags = KeySelectorFlags::None);
+        KeySelector(
+              string_view layout,
+              Input::Key keyCode     = Input::Key::None,
+              KeySelectorFlags flags = KeySelectorFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4228,9 +4231,20 @@ namespace Controls
             KeySelector() = delete;
 
           public:
-            static Reference<Controls::KeySelector> Create(Controls::Control* parent, string_view layout);
-            static Reference<Controls::KeySelector> Create(Controls::Control& parent, string_view layout);
-            static Pointer<Controls::KeySelector> Create(string_view layout);
+            static Reference<Controls::KeySelector> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
+            static Reference<Controls::KeySelector> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
+            static Pointer<Controls::KeySelector> Create(
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
         };
     } // namespace Factory
 
