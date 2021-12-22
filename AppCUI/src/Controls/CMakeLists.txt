@@ -23,4 +23,5 @@ target_sources(AppCUI PRIVATE
 	Window.cpp
 	Grid.cpp
 	TextControlDefaultMenu.cpp
-	PropertyList.cpp)
+	PropertyList.cpp
+	KeySelector.cpp)

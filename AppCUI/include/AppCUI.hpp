@@ -2520,6 +2520,7 @@ namespace Controls
         class EXPORT Tree;
         class EXPORT Grid;
         class EXPORT PropertyList;
+        class EXPORT KeySelector;
     }; // namespace Factory
     enum class Event : uint32
     {
@@ -3826,6 +3827,27 @@ namespace Controls
         friend Factory::PropertyList;
         friend Control;
     };
+    enum class KeySelectorFlags : uint32
+    {
+        None          = 0x000000,
+        ProcessTab    = 0x000100,
+        ProcessReturn = 0x000200,
+        ProcessEscape = 0x000400,
+    };
+    class EXPORT KeySelector : public Control
+    {
+      protected:
+        KeySelector(string_view layout, KeySelectorFlags flags = KeySelectorFlags::None);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
+
+        friend Factory::KeySelector;
+        friend Control;
+    };
 
     namespace Factory
     {
@@ -4200,6 +4222,15 @@ namespace Controls
                   string_view layout,
                   Reference<PropertiesInterface> object,
                   PropertyListFlags flags = PropertyListFlags::None);
+        };
+        class EXPORT KeySelector
+        {
+            KeySelector() = delete;
+
+          public:
+            static Reference<Controls::KeySelector> Create(Controls::Control* parent, string_view layout);
+            static Reference<Controls::KeySelector> Create(Controls::Control& parent, string_view layout);
+            static Pointer<Controls::KeySelector> Create(string_view layout);
         };
     } // namespace Factory
 
@@ -4657,5 +4688,6 @@ ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
 
 #undef ADD_FLAG_OPERATORS

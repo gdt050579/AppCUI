@@ -903,7 +903,10 @@ struct PropertyListContext : public ControlContext
         return ((this->Flags && PropertyListFlags::ReadOnly) ? true : this->object->IsPropertyValueReadOnly(prop.id));
     }
 };
-
+struct KeySelectorContext : public ControlContext
+{
+    Input::Key key;
+};
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \
