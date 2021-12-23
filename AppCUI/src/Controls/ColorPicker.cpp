@@ -254,5 +254,12 @@ void ColorPicker::OnPackView()
 {
     reinterpret_cast<ColorPickerContext*>(this->Context)->headerYOffset = 0; // reset position
 }
-
+void ColorPicker::SetColor(Graphics::Color color)
+{
+    reinterpret_cast<ColorPickerContext*>(this->Context)->color = color;
+}
+Graphics::Color ColorPicker::GetColor()
+{
+    return reinterpret_cast<ColorPickerContext*>(this->Context)->color;
+}
 } // namespace AppCUI

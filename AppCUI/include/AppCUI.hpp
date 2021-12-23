@@ -3884,6 +3884,9 @@ namespace Controls
         void OnPackView() override;
         virtual ~ColorPicker();
 
+        void SetColor(Graphics::Color color);
+        Graphics::Color GetColor();
+
         friend Factory::ColorPicker;
         friend Control;
     };
