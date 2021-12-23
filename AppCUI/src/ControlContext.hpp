@@ -921,6 +921,8 @@ struct ColorPickerContext : public ControlContext
     uint32 MouseToObject(int x, int y);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseOver(int x, int y);
+    void NextColor(int32 offset, bool isExpanded);
+    bool OnKeyEvent(Input::Key keyCode);
 
     void OnExpandView(Graphics::Clip& expandedClip);
 };

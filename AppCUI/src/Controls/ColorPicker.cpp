@@ -123,6 +123,70 @@ void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
     if (obj != NO_COLOR_OBJECT)
         this->color = static_cast<Color>((uint8)obj);
 }
+void ColorPickerContext::NextColor(int32 offset, bool isExpanded)
+{
+    if (colorObject == NO_COLOR_OBJECT)
+        colorObject = (uint32) Color::Black;
+    
+    if (isExpanded)
+    {
+        auto result = (int32) colorObject + offset;
+        // specific cases
+        if ((result == 4) && (offset == 1))
+            result = 16; // transparent
+        else if ((result == 17) && (offset == 1))
+            result = 0;
+        else if ((result == -1) && (offset == -1))
+            result = 16; // transparent
+        else if ((result == 15) && (offset == -1))
+            result = 3;
+        else
+        {
+            if (result < 0)
+                result += 16;
+            if (result >= 16)
+                result -= 16;
+        }
+        colorObject = (uint32) result;
+    }
+    else
+    {
+        auto result = (int32) this->color + offset;
+        if (result < 0)
+            result = 0;
+        if (result >= 16)
+            result = 16;
+        color = static_cast<Color>((uint8) result);
+    }
+
+   
+}
+bool ColorPickerContext::OnKeyEvent(Input::Key keyCode)
+{
+    bool isExpanded = (this->Flags & GATTR_EXPANDED) != 0;
+    switch (keyCode)
+    {
+    case Key::Space:
+    case Key::Enter:
+        if ((isExpanded) && (colorObject != NO_COLOR_OBJECT))
+            this->color = static_cast<Color>((uint8) colorObject);
+        return true;
+    case Key::Up:
+        NextColor(isExpanded ? -4 : -1, isExpanded);
+        return true;
+    case Key::Down:
+        NextColor(isExpanded ? 4 : 1, isExpanded);
+        return true;
+    case Key::Left:
+        NextColor(-1, isExpanded);
+        return true;
+    case Key::Right:
+        NextColor(1, isExpanded);
+        return true;
+    }
+    return false;
+}
+
 ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     : Control(new ColorPickerContext(), "", layout, false)
 {
@@ -145,7 +209,15 @@ void ColorPicker::Paint(Graphics::Renderer& renderer)
 }
 bool ColorPicker::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
-    NOT_IMPLEMENTED(false);
+    bool result = reinterpret_cast<ColorPickerContext*>(this->Context)->OnKeyEvent(keyCode);
+    switch (keyCode)
+    {
+    case Key::Space:
+    case Key::Enter:
+        OnHotKey();
+        return true;
+    }
+    return result;
 }
 void ColorPicker::OnHotKey()
 {
