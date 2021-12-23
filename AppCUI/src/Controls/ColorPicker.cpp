@@ -3,6 +3,7 @@
 namespace AppCUI
 {
 constexpr int32 COLORPICEKR_HEIGHT     = 7;
+constexpr uint32 NO_COLOR_OBJECT       = 0xFFFFFFFF;
 constexpr static Color reverse_color[] = {
     Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::Black,
     Color::Black, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::Black, Color::Black,
@@ -15,6 +16,7 @@ void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
     expandedClip.ClipRect.Height = COLORPICEKR_HEIGHT;
     this->headerYOffset          = 0;
     this->yOffset                = 1;
+    this->colorObject            = NO_COLOR_OBJECT;
     if (expandedClip.ScreenPosition.Y + COLORPICEKR_HEIGHT >= (int32) size.Height)
     {
         this->headerYOffset = COLORPICEKR_HEIGHT - 1;
@@ -63,9 +65,27 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
                 renderer.WriteSpecialCharacter(
                       x * 3 + 2, y + 1 + this->yOffset, SpecialChars::CheckMark, ColorPair{ c2, c });
             }
+            if (y * 4 + x == colorObject)
+            {
+                auto c2 = reverse_color[y * 4 + x];
+                renderer.WriteSpecialCharacter(
+                      x * 3 + 1, y + 1 + this->yOffset, SpecialChars::TriangleRight, ColorPair{ c2, c });
+                renderer.WriteSpecialCharacter(
+                      x * 3 + 3, y + 1 + this->yOffset, SpecialChars::TriangleLeft, ColorPair{ c2, c });
+                renderer.SetCursor(x * 3 + 2, y + 1 + this->yOffset);
+            }
         }
     }
-    renderer.WriteSingleLineText(15, 1 + this->yOffset, "[ ] Transparent", col);
+    if (colorObject == (uint32)Color::Transparent)
+    {
+        renderer.WriteSingleLineText(15, 1 + this->yOffset, "[ ] Transparent", Cfg->ComboBox.Focus.Button);
+        renderer.SetCursor(16, 1 + this->yOffset);
+    }
+    else
+    {
+        renderer.WriteSingleLineText(15, 1 + this->yOffset, "[ ] Transparent", col);
+    }
+    
     if (color == Color::Transparent)
         renderer.WriteSpecialCharacter(16, 1 + this->yOffset, SpecialChars::CheckMark, Cfg->ComboBox.Focus.Button);
     renderer.DrawVerticalLine(13, 1 + this->yOffset, 4 + this->yOffset, col, true);
@@ -77,21 +97,31 @@ void ColorPickerContext::Paint(Graphics::Renderer& renderer)
     if (this->Flags & GATTR_EXPANDED)
         PaintColorBox(renderer);
 }
-void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
+uint32 ColorPickerContext::MouseToObject(int x, int y)
 {
     if (!(this->Flags & GATTR_EXPANDED))
-        return;
+        return NO_COLOR_OBJECT;
     if ((x > 0) && (x < 13) && (y > this->yOffset) && (y < this->yOffset + 5))
-    {
-        // one of the regular color
-        this->color = static_cast<Color>(((x - 1) / 3) + (y - (this->yOffset + 1)) * 4);
-        return;
-    }
+        return (((x - 1) / 3) + (y - (this->yOffset + 1)) * 4);
     if ((y == 1 + this->yOffset) && (x >= 15) && (x <= 29))
+        return (uint32) (Color::Transparent);
+    return NO_COLOR_OBJECT;
+}
+bool ColorPickerContext::OnMouseOver(int x, int y)
+{
+    auto obj = MouseToObject(x, y);
+    if (obj != this->colorObject)
     {
-        this->color = Color::Transparent;
-        return;
+        this->colorObject = obj;
+        return true;
     }
+    return false;
+}
+void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+    auto obj = MouseToObject(x, y);
+    if (obj != NO_COLOR_OBJECT)
+        this->color = static_cast<Color>((uint8)obj);
 }
 ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     : Control(new ColorPickerContext(), "", layout, false)
@@ -104,6 +134,7 @@ ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     Members->color            = _color;
     Members->headerYOffset    = 0;
     Members->yOffset          = 1;
+    Members->colorObject      = NO_COLOR_OBJECT;
 }
 ColorPicker::~ColorPicker()
 {
@@ -136,7 +167,7 @@ bool ColorPicker::OnMouseEnter()
 }
 bool ColorPicker::OnMouseOver(int x, int y)
 {
-    NOT_IMPLEMENTED(false);
+    return reinterpret_cast<ColorPickerContext*>(this->Context)->OnMouseOver(x, y);
 }
 void ColorPicker::OnMousePressed(int x, int y, Input::MouseButton button)
 {

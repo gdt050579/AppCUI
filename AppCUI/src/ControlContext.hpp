@@ -913,11 +913,14 @@ struct ColorPickerContext : public ControlContext
     Graphics::Color color;
     int32 headerYOffset;
     int32 yOffset;
+    uint32 colorObject;
 
     void PaintColorBox(Graphics::Renderer& renderer);
     void PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
+    uint32 MouseToObject(int x, int y);
     void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseOver(int x, int y);
 
     void OnExpandView(Graphics::Clip& expandedClip);
 };
