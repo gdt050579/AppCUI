@@ -2549,6 +2549,8 @@ namespace Controls
         ListViewItemClicked,
         ComboBoxSelectedItemChanged,
         ComboBoxClosed,
+        ColorPickerSelectedColorChanged,
+        ColorPickerClosed,
         TerminateApplication,
         Command,
         NumericSelectorValueChanged,

@@ -914,6 +914,7 @@ struct ColorPickerContext : public ControlContext
     int32 headerYOffset;
     int32 yOffset;
     uint32 colorObject;
+    Reference<Control> host;
 
     void PaintColorBox(Graphics::Renderer& renderer);
     void PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer);

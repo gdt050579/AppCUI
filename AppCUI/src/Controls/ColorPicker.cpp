@@ -121,7 +121,10 @@ void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     auto obj = MouseToObject(x, y);
     if (obj != NO_COLOR_OBJECT)
-        this->color = static_cast<Color>((uint8)obj);
+    {
+        this->color = static_cast<Color>((uint8) obj);
+        host->RaiseEvent(Event::ColorPickerSelectedColorChanged);
+    }
 }
 void ColorPickerContext::NextColor(int32 offset, bool isExpanded)
 {
@@ -157,6 +160,7 @@ void ColorPickerContext::NextColor(int32 offset, bool isExpanded)
         if (result >= 16)
             result = 16;
         color = static_cast<Color>((uint8) result);
+        host->RaiseEvent(Event::ColorPickerSelectedColorChanged);
     }
 
    
@@ -169,7 +173,10 @@ bool ColorPickerContext::OnKeyEvent(Input::Key keyCode)
     case Key::Space:
     case Key::Enter:
         if ((isExpanded) && (colorObject != NO_COLOR_OBJECT))
+        {
             this->color = static_cast<Color>((uint8) colorObject);
+            host->RaiseEvent(Event::ColorPickerSelectedColorChanged);
+        }
         return true;
     case Key::Up:
         NextColor(isExpanded ? -4 : -1, isExpanded);
@@ -199,6 +206,7 @@ ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     Members->headerYOffset    = 0;
     Members->yOffset          = 1;
     Members->colorObject      = NO_COLOR_OBJECT;
+    Members->host             = this;
 }
 ColorPicker::~ColorPicker()
 {
@@ -227,6 +235,7 @@ void ColorPicker::OnHotKey()
     else
     {
         this->PackView();
+        RaiseEvent(Event::ColorPickerClosed);
     }
 }
 bool ColorPicker::OnMouseLeave()
