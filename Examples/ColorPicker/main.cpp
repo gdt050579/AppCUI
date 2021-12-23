@@ -8,9 +8,9 @@ using namespace AppCUI::Controls;
 class ExampleWin : public Window
 {
   public:
-    ExampleWin() : Window("Example", "d:c,w:40,h:10", WindowFlags::None)
+    ExampleWin() : Window("Example", "d:c,w:40,h:10", WindowFlags::Sizeable)
     {
-        Factory::ColorPicker::Create(this, "x:1,y:1,w:38", Graphics::Color::DarkGreen);
+        Factory::ColorPicker::Create(this, "l:1,t:1,r:1", Graphics::Color::DarkGreen);
         Factory::Button::Create(this, "A button", "d:b,w:20", 123);
     }
 };

@@ -1,18 +1,51 @@
 #include "ControlContext.hpp"
 
-namespace AppCUI::Controls
+namespace AppCUI
 {
+void ColorPickerContext::PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer)
+{
+    auto* cbc = &this->Cfg->ComboBox.Normal;
+    if ((this->Flags & GATTR_ENABLE) == 0)
+        cbc = &this->Cfg->ComboBox.Inactive;
+    if (this->Focused)
+        cbc = &this->Cfg->ComboBox.Focus;
+    else if (this->MouseIsOver)
+        cbc = &this->Cfg->ComboBox.Hover;
+
+    if (width>5)
+    {
+        renderer.FillHorizontalLine(x, y, x + (int)width - 6, ' ', cbc->Text);       
+        renderer.WriteSingleLineText(x + 3, y, width - 4, ColorUtils::GetColorName(this->color), cbc->Text);
+        renderer.WriteSpecialCharacter(
+              x + 1, y, SpecialChars::BlockCentered, ColorPair{ this->color, Color::Transparent });
+    }
+    if (width >= 3)
+    {
+        renderer.WriteSingleLineText(x + (int)width - 3, y, "   ", cbc->Button);
+        renderer.WriteSpecialCharacter(x + (int) width - 2, y, SpecialChars::TriangleDown, cbc->Button);
+    }
+}
+void ColorPickerContext::Paint(Graphics::Renderer& renderer)
+{
+    PaintHeader(0,0,this->Layout.Width,renderer);
+}
+
 ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     : Control(new ColorPickerContext(), "", layout, false)
 {
-    auto Members   = reinterpret_cast<ColorPickerContext*>(this->Context);
-    Members->color = _color;
+    auto Members              = reinterpret_cast<ColorPickerContext*>(this->Context);
+    Members->Layout.MinWidth  = 7;
+    Members->Layout.MinHeight = 1;
+    Members->Layout.MaxHeight = 1;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->color            = _color;
 }
 ColorPicker::~ColorPicker()
 {
 }
 void ColorPicker::Paint(Graphics::Renderer& renderer)
 {
+    reinterpret_cast<ColorPickerContext*>(this->Context)->Paint(renderer);
 }
 bool ColorPicker::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
@@ -47,4 +80,4 @@ void ColorPicker::OnPackView()
 {
 }
 
-} // namespace AppCUI::Controls
+} // namespace AppCUI
