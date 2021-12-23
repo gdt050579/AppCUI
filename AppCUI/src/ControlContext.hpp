@@ -917,6 +917,7 @@ struct ColorPickerContext : public ControlContext
     void PaintColorBox(Graphics::Renderer& renderer);
     void PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
 
     void OnExpandView(Graphics::Clip& expandedClip);
 };

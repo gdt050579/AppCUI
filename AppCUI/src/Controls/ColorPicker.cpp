@@ -2,10 +2,10 @@
 
 namespace AppCUI
 {
-constexpr int32 COLORPICEKR_HEIGHT = 7;
-constexpr static Color reverse_color[]    = {
-    Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White,
-    Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black,
+constexpr int32 COLORPICEKR_HEIGHT     = 7;
+constexpr static Color reverse_color[] = {
+    Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::Black,
+    Color::Black, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::Black, Color::Black,
 };
 void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
 {
@@ -21,7 +21,7 @@ void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
         this->yOffset       = 0;
         expandedClip.ScreenPosition.Y -= this->headerYOffset;
         expandedClip.ClipRect.Y = expandedClip.ScreenPosition.Y;
-    }    
+    }
 }
 void ColorPickerContext::PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer)
 {
@@ -56,7 +56,7 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
         for (auto x = 0U; x < 4; x++)
         {
             auto c = static_cast<Color>(y * 4 + x);
-            renderer.FillHorizontalLineSize(x * 3 + 1, y + 1 + this->yOffset, 3, ' ', ColorPair{Color::Black,c});
+            renderer.FillHorizontalLineSize(x * 3 + 1, y + 1 + this->yOffset, 3, ' ', ColorPair{ Color::Black, c });
             if (c == color)
             {
                 auto c2 = reverse_color[y * 4 + x];
@@ -65,6 +65,9 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
             }
         }
     }
+    renderer.WriteSingleLineText(15, 1 + this->yOffset, "[ ] Transparent", col);
+    if (color == Color::Transparent)
+        renderer.WriteSpecialCharacter(16, 1 + this->yOffset, SpecialChars::CheckMark, Cfg->ComboBox.Focus.Button);
     renderer.DrawVerticalLine(13, 1 + this->yOffset, 4 + this->yOffset, col, true);
     renderer.DrawRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, col, false);
 }
@@ -74,7 +77,22 @@ void ColorPickerContext::Paint(Graphics::Renderer& renderer)
     if (this->Flags & GATTR_EXPANDED)
         PaintColorBox(renderer);
 }
-
+void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+    if (!(this->Flags & GATTR_EXPANDED))
+        return;
+    if ((x > 0) && (x < 13) && (y > this->yOffset) && (y < this->yOffset + 5))
+    {
+        // one of the regular color
+        this->color = static_cast<Color>(((x - 1) / 3) + (y - (this->yOffset + 1)) * 4);
+        return;
+    }
+    if ((y == 1 + this->yOffset) && (x >= 15) && (x <= 29))
+    {
+        this->color = Color::Transparent;
+        return;
+    }
+}
 ColorPicker::ColorPicker(string_view layout, Graphics::Color _color)
     : Control(new ColorPickerContext(), "", layout, false)
 {
@@ -122,6 +140,7 @@ bool ColorPicker::OnMouseOver(int x, int y)
 }
 void ColorPicker::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    reinterpret_cast<ColorPickerContext*>(this->Context)->OnMousePressed(x, y, button);
     OnHotKey();
 }
 void ColorPicker::OnExpandView(Graphics::Clip& expandedClip)
