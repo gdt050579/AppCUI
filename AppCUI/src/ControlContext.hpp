@@ -911,9 +911,14 @@ struct KeySelectorContext : public ControlContext
 struct ColorPickerContext : public ControlContext
 {
     Graphics::Color color;
+    int32 headerYOffset;
+    int32 yOffset;
 
+    void PaintColorBox(Graphics::Renderer& renderer);
     void PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
+
+    void OnExpandView(Graphics::Clip& expandedClip);
 };
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
