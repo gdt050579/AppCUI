@@ -3,6 +3,10 @@
 namespace AppCUI
 {
 constexpr int32 COLORPICEKR_HEIGHT = 7;
+constexpr static Color reverse_color[]    = {
+    Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White,
+    Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black, Color::Black,
+};
 void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
 {
     Size size;
@@ -46,7 +50,6 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
 {
     const auto col = Cfg->ComboBox.Focus.Text;
     renderer.FillRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, ' ', col);
-    renderer.DrawRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, col, false);
     // draw colors
     for (auto y = 0U; y < 4; y++)
     {
@@ -54,8 +57,16 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
         {
             auto c = static_cast<Color>(y * 4 + x);
             renderer.FillHorizontalLineSize(x * 3 + 1, y + 1 + this->yOffset, 3, ' ', ColorPair{Color::Black,c});
+            if (c == color)
+            {
+                auto c2 = reverse_color[y * 4 + x];
+                renderer.WriteSpecialCharacter(
+                      x * 3 + 2, y + 1 + this->yOffset, SpecialChars::CheckMark, ColorPair{ c2, c });
+            }
         }
     }
+    renderer.DrawVerticalLine(13, 1 + this->yOffset, 4 + this->yOffset, col, true);
+    renderer.DrawRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, col, false);
 }
 void ColorPickerContext::Paint(Graphics::Renderer& renderer)
 {
