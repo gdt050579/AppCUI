@@ -257,6 +257,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
     };
     void SetCustomPropetyValue(uint32 propertyID) override
     {
+        AppCUI::Dialogs::MessageBox::ShowNotification("Info", "Custom window for propert chage");
     }
     bool IsPropertyValueReadOnly(uint32 propertyID) override
     {
