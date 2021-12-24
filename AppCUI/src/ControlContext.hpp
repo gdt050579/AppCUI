@@ -930,8 +930,14 @@ struct ColorPickerContext : public ControlContext
 };
 struct CharacterTableContext : public ControlContext
 {
-    int32 character;
+    uint32 character;
+    uint32 startView;
+    void Paint(Graphics::Renderer& renderer);
 
+    constexpr inline int32 GetCharPerWidth() const
+    {
+        return (this->Layout.Width - 8) / 2;
+    }
 };
 
 
