@@ -373,7 +373,7 @@ void Config::SetDarkTheme()
 
     this->CharacterTable.Focus.Border    = ColorPair{ Color::White, Color::Transparent };
     this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
-    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Yellow, Color::Magenta };
+    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Black, Color::Teal };
     this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
     this->CharacterTable.Normal.Border   = ColorPair{ Color::Silver, Color::Transparent };
     this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
@@ -387,5 +387,7 @@ void Config::SetDarkTheme()
     this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.NormalValue     = ColorPair{ Color::Gray, Color::DarkRed };
+    this->CharacterTable.ActiveValue     = ColorPair{ Color::Yellow, Color::DarkRed };
 }
 } // namespace AppCUI::Application

@@ -4734,6 +4734,7 @@ namespace Application
             {
                 Graphics::ColorPair Border, Text, Offset, Cursor;
             } Focus, Normal, Inactive, Hover;
+            Graphics::ColorPair NormalValue, ActiveValue;
         } CharacterTable;
         void SetDarkTheme();
     };

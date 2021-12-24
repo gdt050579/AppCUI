@@ -932,6 +932,7 @@ struct CharacterTableContext : public ControlContext
 {
     uint32 character;
     uint32 startView;
+    bool editMode;
     
     void MoveTo(uint32 newCharCode);
     void Paint(Graphics::Renderer& renderer);
