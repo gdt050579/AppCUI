@@ -3908,6 +3908,9 @@ namespace Controls
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
 
+        void SetCharacter(char16 character);
+        char16 GetCharacter();
+
         friend Factory::CharacterTable;
         friend Control;
     };
