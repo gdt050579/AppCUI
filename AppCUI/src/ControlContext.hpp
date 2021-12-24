@@ -932,7 +932,10 @@ struct CharacterTableContext : public ControlContext
 {
     uint32 character;
     uint32 startView;
+    
+    void MoveTo(uint32 newCharCode);
     void Paint(Graphics::Renderer& renderer);
+    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
 
     constexpr inline int32 GetCharPerWidth() const
     {
