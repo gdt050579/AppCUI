@@ -932,11 +932,14 @@ struct CharacterTableContext : public ControlContext
 {
     uint32 character;
     uint32 startView;
+    uint32 hoverChar;
     bool editMode;
     
     void MoveTo(uint32 newCharCode);
     void Paint(Graphics::Renderer& renderer);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
+    uint32 MousePosToChar(int x, int y);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
 
     constexpr inline int32 GetCharPerWidth() const
     {
