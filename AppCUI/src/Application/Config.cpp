@@ -370,5 +370,22 @@ void Config::SetDarkTheme()
     this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
     this->PropertyList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
     this->PropertyList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
+
+    this->CharacterTable.Focus.Border    = ColorPair{ Color::White, Color::Transparent };
+    this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
+    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Yellow, Color::Magenta };
+    this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Normal.Border   = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Normal.Offset   = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Normal.Text     = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Hover.Border    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Cursor    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Offset    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Text      = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
 }
 } // namespace AppCUI::Application

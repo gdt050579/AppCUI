@@ -4728,6 +4728,13 @@ namespace Application
                 Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked, Error;
             } Item;
         } PropertyList;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Border, Text, Offset, Cursor;
+            } Focus, Normal, Inactive, Hover;
+        } CharacterTable;
         void SetDarkTheme();
     };
 
