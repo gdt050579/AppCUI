@@ -2532,6 +2532,7 @@ namespace Controls
         class EXPORT PropertyList;
         class EXPORT KeySelector;
         class EXPORT ColorPicker;
+        class EXPORT CharacterTable;
     }; // namespace Factory
     enum class Event : uint32
     {
@@ -3892,12 +3893,13 @@ namespace Controls
         friend Factory::ColorPicker;
         friend Control;
     };
-    class EXPORT CharacterTable: public Control
+    class EXPORT CharacterTable : public Control
     {
       protected:
         CharacterTable(string_view layout);
-        virtual ~CharacterTable();
+
       public:
+        virtual ~CharacterTable();
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3905,6 +3907,9 @@ namespace Controls
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
+
+        friend Factory::CharacterTable;
+        friend Control;
     };
 
     namespace Factory
@@ -4311,6 +4316,15 @@ namespace Controls
             static Reference<Controls::ColorPicker> Create(
                   Controls::Control& parent, string_view layout, Graphics::Color color);
             static Pointer<Controls::ColorPicker> Create(string_view layout, Graphics::Color color);
+        };
+        class EXPORT CharacterTable
+        {
+            CharacterTable() = delete;
+
+          public:
+            static Reference<Controls::CharacterTable> Create(Controls::Control* parent, string_view layout);
+            static Reference<Controls::CharacterTable> Create(Controls::Control& parent, string_view layout);
+            static Pointer<Controls::CharacterTable> Create(string_view layout);
         };
     } // namespace Factory
 

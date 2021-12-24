@@ -452,6 +452,20 @@ Reference<Controls::ColorPicker> Factory::ColorPicker::Create(
     return parent.AddControl<Controls::ColorPicker>(Factory::ColorPicker::Create(layout, color));
 }
 
+//======[CHARACTERTABLE]=============================================================================
+Pointer<Controls::CharacterTable> Factory::CharacterTable::Create(string_view layout)
+{
+    return POINTER<Controls::CharacterTable>(new Controls::CharacterTable(layout));
+}
+Reference<Controls::CharacterTable> Factory::CharacterTable::Create(Controls::Control* parent, string_view layout)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::CharacterTable>(Factory::CharacterTable::Create(layout));
+}
+Reference<Controls::CharacterTable> Factory::CharacterTable::Create(Controls::Control& parent, string_view layout)
+{
+    return parent.AddControl<Controls::CharacterTable>(Factory::CharacterTable::Create(layout));
+}
 } // namespace AppCUI
 #undef VALIDATE_PARENT
 #undef POINTER
