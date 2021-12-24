@@ -928,6 +928,13 @@ struct ColorPickerContext : public ControlContext
 
     void OnExpandView(Graphics::Clip& expandedClip);
 };
+struct CharacterTableContext
+{
+    int32 character;
+
+};
+
+
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \

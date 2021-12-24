@@ -25,4 +25,5 @@ target_sources(AppCUI PRIVATE
 	TextControlDefaultMenu.cpp
 	PropertyList.cpp
 	KeySelector.cpp
-	ColorPicker.cpp)
+	ColorPicker.cpp
+	CharacterTable.cpp)
