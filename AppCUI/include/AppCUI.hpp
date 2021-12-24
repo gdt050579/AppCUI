@@ -1459,11 +1459,17 @@ namespace Utils
         {
         }
     };
-    template <uint16 Size, typename T, typename T_view>
+    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>  
     class GenericFixSizeString
-    {
-        static_assert(Size > 0);
-        T data[Size + 1];
+    {        
+        static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
+        static_assert(ACTUAL_SIZE > 0);
+        static_assert(
+              (std::is_same<T, char>::value && std::is_same<T_view, string_view>::value) ||
+              (std::is_same<T, char8>::value && std::is_same<T_view, string_view>::value) ||
+              (std::is_same<T, char16>::value && std::is_same<T_view, u16string_view>::value) ||
+              (std::is_same<T, char32_t>::value && std::is_same<T_view, std::u32string_view>::value));
+        T data[ACTUAL_SIZE + 1];
         uint16 size;
 
       public:
@@ -1485,7 +1491,7 @@ namespace Utils
         }
         void Set(T_view txt)
         {
-            size = (uint16) std::min((size_t) Size, txt.length());
+            size = (uint16) std::min((size_t) ACTUAL_SIZE, txt.length());
             memcpy(data, txt.data(), size * sizeof(T));
             data[size] = 0;
         }
@@ -1505,7 +1511,7 @@ namespace Utils
         }
         constexpr bool AddChar(T ch)
         {
-            if (size < Size)
+            if (size < ACTUAL_SIZE)
             {
                 data[size++] = ch;
                 data[size]   = 0;
@@ -1533,7 +1539,7 @@ namespace Utils
         }
         constexpr inline uint16 MaxSize() const
         {
-            return Size;
+            return ACTUAL_SIZE;
         }
         inline GenericFixSizeString& operator=(T_view txt)
         {

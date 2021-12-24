@@ -2,7 +2,11 @@
 
 namespace AppCUI
 {
-constexpr uint32 INVALID_CHARACTER = 0xFFFFFFFF;
+constexpr uint32 INVALID_CHARACTER         = 0xFFFFFFFF;
+constexpr int32 CHARACTER_X_OFFSET         = 7;
+constexpr int32 OFFSET_X_RIGHT_MARGIN      = 5;
+constexpr int32 CHARACTER_HEX_VALUE_OFFSET = 4;
+
 void CharacterTableContext::MoveTo(uint32 newCharCode)
 {
     newCharCode   = std::min<uint32>(0xFFFF, newCharCode);
@@ -136,9 +140,9 @@ uint32 CharacterTableContext::MousePosToChar(int x, int y)
 {
     if ((y <= 0) || (y >= (this->Layout.Height - 1)))
         return INVALID_CHARACTER;
-    if ((x < 7) || (x >= this->Layout.Width))
+    if ((x < CHARACTER_X_OFFSET) || (x >= this->Layout.Width))
         return INVALID_CHARACTER;
-    x -= 7;
+    x -= CHARACTER_X_OFFSET;
     x = x >> 1;
     if (x >= this->GetCharPerWidth())
         return INVALID_CHARACTER;
@@ -201,20 +205,22 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
         col = &this->Cfg->CharacterTable.Hover;
 
     renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
-    renderer.DrawVerticalLine(5, 1, this->Layout.Height - 2, col->Border, false);
-    renderer.FillRect(1, 1, 4, this->Layout.Height - 2, ' ', col->Offset);
+    renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, col->Border, false);
+    renderer.FillRect(1, 1, OFFSET_X_RIGHT_MARGIN - 1, this->Layout.Height - 2, ' ', col->Offset);
     if (Focused)
     {
         renderer.WriteSingleLineText(1, this->Layout.Height - 1, " 0x     ", Cfg->CharacterTable.NormalValue);
         auto v = n.ToHex(this->character);
         if (editMode)
         {
-            renderer.WriteSingleLineText(4, this->Layout.Height - 1, v, Cfg->CharacterTable.ActiveValue);
-            renderer.SetCursor(4 + (int32) v.length(), this->Layout.Height - 1);
+            renderer.WriteSingleLineText(
+                  CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->CharacterTable.ActiveValue);
+            renderer.SetCursor(CHARACTER_HEX_VALUE_OFFSET + (int32) v.length(), this->Layout.Height - 1);
         }
         else
         {
-            renderer.WriteSingleLineText(4, this->Layout.Height - 1, v, Cfg->CharacterTable.NormalValue);
+            renderer.WriteSingleLineText(
+                  CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->CharacterTable.NormalValue);
         }
     }
     renderer.SetClipMargins(1, 1, 1, 1);
@@ -225,15 +231,17 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
     for (auto y = 0; y < this->Layout.Height - 2; y++)
     {
         // write the offset
-        renderer.WriteSingleLineText(4, y + 1, n.ToHex(charCode), col->Offset, TextAlignament::Right);
+        renderer.WriteSingleLineText(
+              OFFSET_X_RIGHT_MARGIN - 1, y + 1, n.ToHex(charCode), col->Offset, TextAlignament::Right);
         for (auto x = 0; (x < w) && (charCode < 0x10000); x++, charCode++)
         {
-            renderer.WriteCharacter(x * 2 + 7, y + 1, charCode, col->Text);
+            renderer.WriteCharacter(x * 2 + CHARACTER_X_OFFSET, y + 1, charCode, col->Text);
             if (charCode == character)
             {
-                renderer.FillHorizontalLine(x * 2 + 6, y + 1, x * 2 + 8, -1, col->Cursor);
+                renderer.FillHorizontalLine(
+                      x * 2 + CHARACTER_X_OFFSET - 1, y + 1, x * 2 + CHARACTER_X_OFFSET + 1, -1, col->Cursor);
                 if ((this->Focused) && (!editMode))
-                    renderer.SetCursor(x * 2 + 7, y + 1);
+                    renderer.SetCursor(x * 2 + CHARACTER_X_OFFSET, y + 1);
             }
         }
 
