@@ -28,6 +28,12 @@ In this example we can see the display of characters with values from `0` to `25
 
 ---
 
+Also check out some of our more advanced controls such as PropertyList that allows one to configure the behavior of different controls or object.
+
+![PropertyList display example](docs/example_images/property_list.png)
+
+---
+
 _AppCUI_ also supports animantions with a stable 30 frames per second, [BadApple](https://github.com/gdt050579/AppCUI/tree/main/Examples/BadApple) is an ascii art animation, that is also a good example of custom drawing and extensibility of components.
 
 ![BadApple ascii art](docs/example_images/badapple.gif)
