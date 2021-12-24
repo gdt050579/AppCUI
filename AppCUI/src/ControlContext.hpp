@@ -940,6 +940,7 @@ struct CharacterTableContext : public ControlContext
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     uint32 MousePosToChar(int x, int y);
     void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(Input::MouseWheel direction);
 
     constexpr inline int32 GetCharPerWidth() const
     {

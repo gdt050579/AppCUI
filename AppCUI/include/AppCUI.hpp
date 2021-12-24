@@ -3902,11 +3902,11 @@ namespace Controls
         virtual ~CharacterTable();
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnHotKey() override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
 
         friend Factory::CharacterTable;
         friend Control;
