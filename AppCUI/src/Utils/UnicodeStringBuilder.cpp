@@ -56,8 +56,9 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
     // invalid 16 bytes encoding
     RETURNERROR(false, "Invalid UTF-8 encoding ");
 }
-bool Utils::ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result)
+bool Utils::ConvertUnicodeCharToUTF8Chat(char16 _ch, UTF8Char& result)
 {
+    uint32 ch     = static_cast<uint32>(_ch);
     result.Length = 0;
     if (ch < 128)
     {
@@ -69,7 +70,7 @@ bool Utils::ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result)
     uint8 extra = 64;
     uint8 last  = 0xC0;
 
-    while (ch >= extra)
+    while (ch >= ((uint32)extra))
     {
         result.Values[result.Length++] = (ch & 63) | 0x80;
         ch >>= 6;
