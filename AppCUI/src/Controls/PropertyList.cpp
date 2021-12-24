@@ -763,7 +763,7 @@ class ListItemsParser
     ListItemsParser(const char16* _start, const char16* _end) : start(_start), end(_end)
     {
     }
-    bool Create(std::map<uint64, FixSizeUnicode<48>>& result)
+    bool Create(std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>>& result)
     {
         const char16* k_start;
         const char16* k_end;

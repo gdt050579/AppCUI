@@ -814,17 +814,19 @@ struct MenuContext
           const Graphics::Size& maxSize);
 };
 
+constexpr uint16 PROPERTY_NAME_MAXCHARS  = 61; // 61+3[2 for size, 1 for \0] = 64 bytes for the entire name field
+constexpr uint16 PROPERTY_VALUE_MAXCHARS = 45; // 45+3[2 for size, 1 for \0] = 48 bytes for the entire value field
 struct PropertyCategoryInfo
 {
-    FixSizeString<61> name;
+    FixSizeString<PROPERTY_NAME_MAXCHARS> name;
     uint32 totalItems;
     uint32 filteredItems;
     bool folded;
 };
 struct PropertyInfo
 {
-    FixSizeString<61> name;
-    std::map<uint64, FixSizeUnicode<48>> listValues;
+    FixSizeString<PROPERTY_NAME_MAXCHARS> name;
+    std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>> listValues;
     uint32 category;
     uint32 id;
     PropertyType type;
@@ -847,7 +849,7 @@ struct PropertyListContext : public ControlContext
     vector<PropertyInfo> properties;
     vector<PropertyCategoryInfo> categories;
     Array32 items;
-    FixSizeString<61> filterText;
+    FixSizeString<PROPERTY_NAME_MAXCHARS> filterText;
     uint32 startView;
     uint32 currentPos;
     int32 propertyNameWidth;
@@ -901,7 +903,7 @@ struct PropertyListContext : public ControlContext
     {
         return (this->showCategories ? 3 : 0) + (this->hasBorder ? 1 : 0) + this->propertyNameWidth;
     }
-    inline constexpr bool IsPropertyReadOnly(const PropertyInfo& prop) 
+    inline constexpr bool IsPropertyReadOnly(const PropertyInfo& prop)
     {
         return ((this->Flags && PropertyListFlags::ReadOnly) ? true : this->object->IsPropertyValueReadOnly(prop.id));
     }
@@ -936,21 +938,20 @@ struct CharacterTableContext : public ControlContext
     uint32 startView;
     uint32 hoverChar;
     bool editMode;
-    
+
     void MoveTo(uint32 newCharCode);
     void Paint(Graphics::Renderer& renderer);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     uint32 MousePosToChar(int x, int y);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(Input::MouseWheel direction);
-    bool OnMouseOver(int x, int y, uint32 &code, int &toolTipX);
+    bool OnMouseOver(int x, int y, uint32& code, int& toolTipX);
 
     constexpr inline int32 GetCharPerWidth() const
     {
         return (this->Layout.Width - 8) / 2;
     }
 };
-
 
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
