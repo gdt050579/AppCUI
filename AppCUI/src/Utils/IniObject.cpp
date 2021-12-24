@@ -854,40 +854,6 @@ optional<bool> IniValue_ToBool(const char* txt, uint32 len)
     RETURNERROR(
           std::nullopt, "value can not be converted into a bool (accepted values are 'yes', 'no', 'true' or 'false'")
 }
-optional<Graphics::Size> IniValue_ToSize(const char* txt, uint32 len)
-{
-    const char* start = txt;
-    const char* end   = start + len;
-    CHECK(start, std::nullopt, "Expecting a non-null value for size");
-    CHECK(len >= 3, std::nullopt, "Value (%s) is too small (expecting at least 3 chars <width>x<height>", start);
-    uint32 sz    = 0;
-    auto p_width = Number::ToUInt16(
-          string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces, &sz);
-    CHECK(p_width.has_value(),
-          std::nullopt,
-          "Expecting a valid format for size - eithed 'width x height' or 'width , height'");
-    uint32 width = p_width.value();
-    start += sz;
-    CHECK(start < end,
-          std::nullopt,
-          "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
-    CHECK((*start == 'x') || (*start == 'X') || (*start == ','),
-          std::nullopt,
-          "Invalid format for size --> expcting either a 'x' or ',' after the width");
-    start++;
-    CHECK(start < end,
-          std::nullopt,
-          "Expecting a valid format for size - eithed 'width x height' or 'width , height' --> Missing height value !");
-    auto p_height =
-          Number::ToUInt16(string_view(start, end - start), NumberParseFlags::Base10 | NumberParseFlags::TrimSpaces);
-    CHECK(p_height.has_value(),
-          std::nullopt,
-          "Expecting a valid format for size - eithed 'width x height' or 'width , height' -> height value is invalid");
-    uint32 height = p_height.value();
-    CHECK(width > 0, std::nullopt, "Width must be bigger than 0");
-    CHECK(height > 0, std::nullopt, "Height must be bigger than 0");
-    return Graphics::Size(width, height);
-}
 
 optional<uint64> IniValue::AsUInt64() const
 {
@@ -935,7 +901,7 @@ optional<string_view> IniValue::AsStringView() const
 optional<Graphics::Size> IniValue::AsSize() const
 {
     VALIDATE_VALUE(std::nullopt);
-    return IniValue_ToSize(value->KeyValue.c_str(), (uint32) value->KeyValue.size());
+    return Graphics::Size::FromString(value->KeyValue);
 }
 optional<float> IniValue::AsFloat() const
 {
@@ -1223,7 +1189,7 @@ optional<Input::Key> IniValueArray::AsKey() const
 }
 optional<Graphics::Size> IniValueArray::AsSize() const
 {
-    return IniValue_ToSize(text, len);
+    return Graphics::Size::FromString(string_view{ text, (size_t) len });
 }
 optional<float> IniValueArray::AsFloat() const
 {

@@ -1,4 +1,5 @@
 #include "Internal.hpp"
+#include <codecvt>
 
 namespace AppCUI
 {
@@ -54,6 +55,30 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
     }
     // invalid 16 bytes encoding
     RETURNERROR(false, "Invalid UTF-8 encoding ");
+}
+bool Utils::ConvertUnicodeCharToUTF8Chat(char16 _ch, UTF8Char& result)
+{
+    uint32 ch     = static_cast<uint32>(_ch);
+    result.Length = 0;
+    if (ch < 128)
+    {
+        result.Length    = 1;
+        result.Values[0] = (uint8) ch;
+        return true;
+    }
+    // unicode char
+    uint8 extra = 64;
+    uint8 last  = 0xC0;
+
+    while (ch >= ((uint32)extra))
+    {
+        result.Values[result.Length++] = (ch & 63) | 0x80;
+        ch >>= 6;
+        last |= extra;
+        extra >>= 1;
+    }
+    result.Values[result.Length++] = last | ch;
+    return true;
 }
 
 void UnicodeStringBuilder::Create(char16* localBuffer, size_t localBufferSize)
@@ -297,6 +322,25 @@ void UnicodeStringBuilder::ToString(std::u16string& output) const
     {
         output.reserve((size_t) this->length + 1);
         output = u16string_view{ this->chars, this->length };
+    }
+}
+void UnicodeStringBuilder::ToString(std::u8string& output) const
+{
+    if (this->chars == nullptr)
+        output.clear();
+    else
+    {
+        output.reserve((size_t) this->length + 1);
+        output.clear();
+        UTF8Char u8Char;
+        auto* p = this->chars;
+        auto* e = p + this->length;
+        while (p<e)
+        {
+            ConvertUnicodeCharToUTF8Chat(*p, u8Char);
+            for (int i = (int32) u8Char.Length - 1; i >= 0; i--)
+                output += u8Char.Values[i];
+        }
     }
 }
 void UnicodeStringBuilder::ToPath(std::filesystem::path& output) const

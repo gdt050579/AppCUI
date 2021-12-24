@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 #include <functional>
+#include <string.h>
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -212,6 +213,98 @@ namespace StdIncludes
 
 using namespace StdIncludes;
 
+namespace Input
+{
+    enum class Key : uint32
+    {
+        None = 0,
+        F1   = 1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+        Enter,
+        Escape,
+        Insert,
+        Delete,
+        Backspace,
+        Tab,
+        Left,
+        Up,
+        Down,
+        Right,
+        PageUp,
+        PageDown,
+        Home,
+        End,
+        Space,
+        A,
+        B,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        N,
+        O,
+        P,
+        Q,
+        R,
+        S,
+        T,
+        U,
+        V,
+        W,
+        X,
+        Y,
+        Z,
+        N0,
+        N1,
+        N2,
+        N3,
+        N4,
+        N5,
+        N6,
+        N7,
+        N8,
+        N9,
+        Count, // must be the last
+
+        // Modifier flags
+        Alt   = 0x1000,
+        Ctrl  = 0x2000,
+        Shift = 0x4000
+    };
+    enum class MouseButton : uint32
+    {
+        None          = 0,
+        Left          = 0x01,
+        Center        = 0x02,
+        Right         = 0x04,
+        DoubleClicked = 0x08,
+    };
+    enum class MouseWheel : uint32
+    {
+        None = 0,
+        Up,
+        Down,
+        Left,
+        Right
+    };
+}; // namespace Input
 namespace Graphics
 {
     enum class Color : uint8
@@ -248,6 +341,7 @@ namespace Graphics
             Width  = width;
             Height = height;
         }
+        static EXPORT optional<Size> FromString(string_view text);
     };
     struct Point
     {
@@ -339,6 +433,7 @@ namespace Graphics
 }; // namespace Graphics
 namespace Utils
 {
+    class EXPORT String;
     using CharacterView = std::basic_string_view<Graphics::Character>;
     using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
     template <typename T>
@@ -439,6 +534,81 @@ namespace Utils
             return GenericRef(this->ptr);
         }
     };
+
+    using PropertyValueFlags = uint64;
+    using PropertyValue      = variant<
+          std::monostate,
+          bool,
+          char8,
+          char16,
+          uint8,
+          uint16,
+          uint32,
+          uint64,
+          int8,
+          int16,
+          int32,
+          int64,
+          float,
+          double,
+          string_view,
+          u8string_view,
+          u16string_view,
+          CharacterView,
+          Input::Key,
+          Graphics::Size,
+          Graphics::Color>;
+    enum class PropertyType : uint8
+    {
+        Boolean = 0,
+        Char8,
+        Char16,
+        UInt8,
+        UInt16,
+        UInt32,
+        UInt64,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        Float,
+        Double,
+        Ascii,
+        UTF8,
+        Unicode,
+        CharacterView,
+        Key,
+        Size,
+        Color,
+        List,
+        Flags,
+        Custom
+    };
+
+    struct Property
+    {
+        uint32 id;
+        string_view category, name, help;
+        PropertyType type;
+        ConstString values;
+
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
+            : id(ID), category(_category), name(_name), type(_type)
+        {
+        }
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, const ConstString _values)
+            : id(ID), category(_category), name(_name), type(_type), values(_values)
+        {
+        }
+    };
+    struct EXPORT PropertiesInterface
+    {
+        virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)                      = 0;
+        virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
+        virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
+        virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
+        virtual vector<Property> GetPropertiesList()                                                = 0;
+    };
 } // namespace Utils
 using Utils::ConstString;
 namespace Application
@@ -457,99 +627,6 @@ namespace Dialogs
         No     = 4,
     };
 }
-
-namespace Input
-{
-    enum class Key : uint32
-    {
-        None = 0,
-        F1   = 1,
-        F2,
-        F3,
-        F4,
-        F5,
-        F6,
-        F7,
-        F8,
-        F9,
-        F10,
-        F11,
-        F12,
-        Enter,
-        Escape,
-        Insert,
-        Delete,
-        Backspace,
-        Tab,
-        Left,
-        Up,
-        Down,
-        Right,
-        PageUp,
-        PageDown,
-        Home,
-        End,
-        Space,
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        K,
-        L,
-        M,
-        N,
-        O,
-        P,
-        Q,
-        R,
-        S,
-        T,
-        U,
-        V,
-        W,
-        X,
-        Y,
-        Z,
-        N0,
-        N1,
-        N2,
-        N3,
-        N4,
-        N5,
-        N6,
-        N7,
-        N8,
-        N9,
-        Count, // must be the last
-
-        // Modifier flas
-        Alt   = 0x1000,
-        Ctrl  = 0x2000,
-        Shift = 0x4000
-    };
-    enum class MouseButton : uint32
-    {
-        None          = 0,
-        Left          = 0x01,
-        Center        = 0x02,
-        Right         = 0x04,
-        DoubleClicked = 0x08,
-    };
-    enum class MouseWheel : uint32
-    {
-        None = 0,
-        Up,
-        Down,
-        Left,
-        Right
-    };
-}; // namespace Input
 namespace Utils
 {
     class EXPORT Array32
@@ -593,6 +670,9 @@ namespace Utils
         bool Resize(uint32 newSize);
         bool Push(uint32 value);
         bool Push(int32 value);
+        bool Insert(uint32 index, uint32 value);
+        bool Insert(uint32 index, int32 value);
+        bool Delete(uint32 start, uint32 size);
         bool Get(uint32 index, uint32& value);
         bool Get(uint32 index, int32& value);
 
@@ -811,6 +891,8 @@ namespace Utils
         bool Set(const char* text, uint32 size = 0xFFFFFFFF);
         bool Set(const String& text);
         bool Set(const String* text);
+        bool Set(u16string_view unicodeText);
+        bool Set(CharacterView unicodeText);
         bool SetChars(char ch, uint32 count);
 
         bool SetFormat(const char* format, ...);
@@ -914,6 +996,7 @@ namespace Utils
 
         void ToString(std::string& output) const;
         void ToString(std::u16string& output) const;
+        void ToString(std::u8string& output) const;
         void ToPath(std::filesystem::path& output) const;
 
         inline void Clear()
@@ -940,6 +1023,12 @@ namespace Utils
         inline operator std::string() const
         {
             std::string temp;
+            ToString(temp);
+            return temp;
+        }
+        inline operator std::u8string() const
+        {
+            std::u8string temp;
             ToString(temp);
             return temp;
         }
@@ -1370,41 +1459,47 @@ namespace Utils
         {
         }
     };
-    template <uint16 Size>
-    class FixSizeString
-    {
-        static_assert(Size > 0);
-        char data[Size + 1];
+    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>  
+    class GenericFixSizeString
+    {        
+        static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
+        static_assert(ACTUAL_SIZE > 0);
+        static_assert(
+              (std::is_same<T, char>::value && std::is_same<T_view, string_view>::value) ||
+              (std::is_same<T, char8>::value && std::is_same<T_view, string_view>::value) ||
+              (std::is_same<T, char16>::value && std::is_same<T_view, u16string_view>::value) ||
+              (std::is_same<T, char32_t>::value && std::is_same<T_view, std::u32string_view>::value));
+        T data[ACTUAL_SIZE + 1];
         uint16 size;
 
       public:
-        FixSizeString() : size(0)
+        GenericFixSizeString() : size(0)
         {
             data[0] = 0;
         }
-        FixSizeString(string_view txt)
+        GenericFixSizeString(T_view txt)
         {
             Set(txt);
         }
-        constexpr inline operator string_view() const
+        constexpr inline operator T_view() const
         {
-            return string_view{ data, size };
+            return T_view{ data, size };
         }
         constexpr inline operator bool() const
         {
             return this->size != 0;
         }
-        void Set(string_view txt)
+        void Set(T_view txt)
         {
-            size = (uint16) std::min((size_t) Size, txt.length());
-            memcpy(data, txt.data(), size);
+            size = (uint16) std::min((size_t) ACTUAL_SIZE, txt.length());
+            memcpy(data, txt.data(), size * sizeof(T));
             data[size] = 0;
         }
-        void Set(const char* text)
+        void Set(const T* text)
         {
             if (text)
             {
-                const char* e = text;
+                const T* e = text;
                 while (*e)
                     e++;
                 Set(string_view{ text, static_cast<size_t>(e - text) });
@@ -1414,19 +1509,39 @@ namespace Utils
                 Clear();
             }
         }
+        constexpr bool AddChar(T ch)
+        {
+            if (size < ACTUAL_SIZE)
+            {
+                data[size++] = ch;
+                data[size]   = 0;
+                return true;
+            }
+            return false;
+        }
+        constexpr bool Truncate(uint16 newSize)
+        {
+            if (newSize < size)
+            {
+                size          = newSize;
+                data[newSize] = 0;
+                return true;
+            }
+            return false;
+        }
         constexpr inline uint16 Len() const
         {
             return size;
         }
-        constexpr inline const char* GetText() const
+        constexpr inline const T* GetText() const
         {
             return data;
         }
         constexpr inline uint16 MaxSize() const
         {
-            return Size;
+            return ACTUAL_SIZE;
         }
-        inline FixSizeString& operator=(string_view txt)
+        inline GenericFixSizeString& operator=(T_view txt)
         {
             Set(txt);
             return *this;
@@ -1441,9 +1556,16 @@ namespace Utils
             return this->size == 0;
         }
     };
+    template <uint16 Size>
+    using FixSizeString = GenericFixSizeString<Size, char, string_view>;
+
+    template <uint16 Size>
+    using FixSizeUnicode = GenericFixSizeString<Size, char16_t, u16string_view>;
 
     class EXPORT KeyUtils
     {
+        KeyUtils() = delete;
+
       public:
         constexpr static const uint32 KEY_SHIFT_MASK = 0x7000;
         constexpr static const uint32 KEY_SHIFT_BITS = 12;
@@ -1458,6 +1580,14 @@ namespace Utils
         static Input::Key FromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
+    };
+
+    class EXPORT ColorUtils
+    {
+        ColorUtils() = delete;
+
+      public:
+        static string_view GetColorName(Graphics::Color color);
     };
 
     class EXPORT IniValueArray
@@ -1841,6 +1971,7 @@ namespace Graphics
         CheckMark,
         MenuSign,
         FourPoints,
+        ThreePointsHorizontal,
 
         // extended ascii codes (195 / 251C, 194 / 252C, 180 / 2524, 193 / 2534) / Graphics Extended Code Page 1252
         // https://en.wikipedia.org/wiki/Windows-1252
@@ -2405,6 +2536,10 @@ namespace Controls
         class EXPORT Desktop;
         class EXPORT Tree;
         class EXPORT Grid;
+        class EXPORT PropertyList;
+        class EXPORT KeySelector;
+        class EXPORT ColorPicker;
+        class EXPORT CharacterTable;
     }; // namespace Factory
     enum class Event : uint32
     {
@@ -2422,6 +2557,8 @@ namespace Controls
         ListViewItemClicked,
         ComboBoxSelectedItemChanged,
         ComboBoxClosed,
+        ColorPickerSelectedColorChanged,
+        ColorPickerClosed,
         TerminateApplication,
         Command,
         NumericSelectorValueChanged,
@@ -2438,6 +2575,7 @@ namespace Controls
     class EXPORT Menu;
     class EXPORT Window;
     class EXPORT Grid;
+    class EXPORT PropertyList;
 
     using namespace Utils;
 
@@ -3676,6 +3814,115 @@ namespace Controls
         friend Control;
     };
 
+    enum class PropertyListFlags : uint32
+    {
+        None           = 0x000000,
+        Border         = 0x000100,
+        ReadOnly       = 0x000200,
+        HideCategories = 0x000400,
+    };
+    class EXPORT PropertyList : public Control
+    {
+      protected:
+        PropertyList(
+              string_view layout,
+              Reference<PropertiesInterface> object,
+              PropertyListFlags flags = PropertyListFlags::None);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        void OnAfterResize(int newWidth, int newHeight) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnUpdateScrollBars() override;
+
+        void SetObject(Reference<PropertiesInterface> object);
+
+        virtual ~PropertyList();
+
+      private:
+        friend Factory::PropertyList;
+        friend Control;
+    };
+    enum class KeySelectorFlags : uint32
+    {
+        None          = 0x000000,
+        ProcessTab    = 0x000100,
+        ProcessReturn = 0x000200,
+        ProcessEscape = 0x000400,
+        ReadOnly      = 0x000800,
+    };
+    class EXPORT KeySelector : public Control
+    {
+      protected:
+        KeySelector(
+              string_view layout,
+              Input::Key keyCode     = Input::Key::None,
+              KeySelectorFlags flags = KeySelectorFlags::None);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
+        virtual ~KeySelector();
+
+        void SetSelectedKey(Input::Key keyCode);
+        Input::Key GetSelectedKey();
+
+        friend Factory::KeySelector;
+        friend Control;
+    };
+    class EXPORT ColorPicker : public Control
+    {
+      protected:
+        ColorPicker(string_view layout, Graphics::Color color);
+
+      public:
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnHotKey() override;
+        bool OnMouseLeave() override;
+        bool OnMouseEnter() override;
+        bool OnMouseOver(int x, int y) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnExpandView(Graphics::Clip& expandedClip) override;
+        void OnPackView() override;
+        virtual ~ColorPicker();
+
+        void SetColor(Graphics::Color color);
+        Graphics::Color GetColor();
+
+        friend Factory::ColorPicker;
+        friend Control;
+    };
+    class EXPORT CharacterTable : public Control
+    {
+      protected:
+        CharacterTable(string_view layout);
+
+      public:
+        virtual ~CharacterTable();
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        bool OnMouseLeave() override;
+        bool OnMouseEnter() override;
+        bool OnMouseOver(int x, int y) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+
+        void SetCharacter(char16 character);
+        char16 GetCharacter();
+
+        friend Factory::CharacterTable;
+        friend Control;
+    };
+
     namespace Factory
     {
         class EXPORT Label
@@ -3990,7 +4237,6 @@ namespace Controls
           public:
             static Pointer<Controls::Desktop> Create();
         };
-
         class EXPORT Tree
         {
             Tree() = delete;
@@ -4011,7 +4257,6 @@ namespace Controls
                   const Controls::TreeFlags flags = Controls::TreeFlags::None,
                   const uint32 noOfColumns        = 1);
         };
-
         class EXPORT Grid
         {
             Grid() = delete;
@@ -4031,6 +4276,66 @@ namespace Controls
                   uint32 columnsNo,
                   uint32 rowsNo,
                   Controls::GridFlags flags);
+        };
+        class EXPORT PropertyList
+        {
+            PropertyList() = delete;
+
+          public:
+            static Pointer<Controls::PropertyList> Create(
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
+            static Reference<Controls::PropertyList> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
+            static Reference<Controls::PropertyList> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Reference<PropertiesInterface> object,
+                  PropertyListFlags flags = PropertyListFlags::None);
+        };
+        class EXPORT KeySelector
+        {
+            KeySelector() = delete;
+
+          public:
+            static Reference<Controls::KeySelector> Create(
+                  Controls::Control* parent,
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
+            static Reference<Controls::KeySelector> Create(
+                  Controls::Control& parent,
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
+            static Pointer<Controls::KeySelector> Create(
+                  string_view layout,
+                  Input::Key keyCode     = Input::Key::None,
+                  KeySelectorFlags flags = KeySelectorFlags::None);
+        };
+        class EXPORT ColorPicker
+        {
+            ColorPicker() = delete;
+
+          public:
+            static Reference<Controls::ColorPicker> Create(
+                  Controls::Control* parent, string_view layout, Graphics::Color color);
+            static Reference<Controls::ColorPicker> Create(
+                  Controls::Control& parent, string_view layout, Graphics::Color color);
+            static Pointer<Controls::ColorPicker> Create(string_view layout, Graphics::Color color);
+        };
+        class EXPORT CharacterTable
+        {
+            CharacterTable() = delete;
+
+          public:
+            static Reference<Controls::CharacterTable> Create(Controls::Control* parent, string_view layout);
+            static Reference<Controls::CharacterTable> Create(Controls::Control& parent, string_view layout);
+            static Pointer<Controls::CharacterTable> Create(string_view layout);
         };
     } // namespace Factory
 
@@ -4416,6 +4721,32 @@ namespace Application
             } Text;
             Graphics::ColorPair Header;
         } Grid;
+        struct
+        {
+            Graphics::ColorPair Inactive;
+            Graphics::ColorPair Cursor, CursorReadOnly;
+            Graphics::ColorPair Border;
+            struct
+            {
+                Graphics::ColorPair Text, Focused;
+            } Filter;
+            struct
+            {
+                Graphics::ColorPair Text, Stats, Arrow;
+            } Category;
+            struct
+            {
+                Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked, Error;
+            } Item;
+        } PropertyList;
+        struct
+        {
+            struct
+            {
+                Graphics::ColorPair Border, Text, Offset, Cursor;
+            } Focus, Normal, Inactive, Hover;
+            Graphics::ColorPair NormalValue, ActiveValue;
+        } CharacterTable;
         void SetDarkTheme();
     };
 
@@ -4469,5 +4800,7 @@ ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
 
 #undef ADD_FLAG_OPERATORS
