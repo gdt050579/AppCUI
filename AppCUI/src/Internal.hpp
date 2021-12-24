@@ -304,7 +304,7 @@ namespace Utils
         uint32 Length;
     };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
-    bool ConvertUnicodeChatToUTF8Chat(char16 ch, UTF8Char& result);
+    bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
 } // namespace Utils
 namespace Log
 {

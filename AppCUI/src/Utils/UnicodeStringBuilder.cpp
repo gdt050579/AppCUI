@@ -56,7 +56,7 @@ bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, U
     // invalid 16 bytes encoding
     RETURNERROR(false, "Invalid UTF-8 encoding ");
 }
-bool Utils::ConvertUnicodeChatToUTF8Chat(char16 ch, UTF8Char& result)
+bool Utils::ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result)
 {
     result.Length = 0;
     if (ch < 128)
@@ -336,7 +336,7 @@ void UnicodeStringBuilder::ToString(std::u8string& output) const
         auto* e = p + this->length;
         while (p<e)
         {
-            ConvertUnicodeChatToUTF8Chat(*p, u8Char);
+            ConvertUnicodeCharToUTF8Chat(*p, u8Char);
             for (int i = (int32) u8Char.Length - 1; i >= 0; i--)
                 output += u8Char.Values[i];
         }

@@ -283,7 +283,7 @@ namespace Input
         N9,
         Count, // must be the last
 
-        // Modifier flas
+        // Modifier flags
         Alt   = 0x1000,
         Ctrl  = 0x2000,
         Shift = 0x4000
