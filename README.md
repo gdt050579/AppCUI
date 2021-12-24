@@ -30,7 +30,7 @@ In this example we can see the display of characters with values from `0` to `25
 
 Also check out some of our more advanced controls such as PropertyList that allows one to configure the behavior of different controls or object.
 
-![PropertyList display example](docs/example_images/property_list.png)
+![PropertyList display example](docs/example_images/property_list.gif)
 
 ---
 
