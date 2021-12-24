@@ -930,6 +930,7 @@ struct ColorPickerContext : public ControlContext
 };
 struct CharacterTableContext : public ControlContext
 {
+    Reference<Control> host;
     uint32 character;
     uint32 startView;
     uint32 hoverChar;
@@ -941,6 +942,7 @@ struct CharacterTableContext : public ControlContext
     uint32 MousePosToChar(int x, int y);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(Input::MouseWheel direction);
+    bool OnMouseOver(int x, int y, uint32 &code, int &toolTipX);
 
     constexpr inline int32 GetCharPerWidth() const
     {
