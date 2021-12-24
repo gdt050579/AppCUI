@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 #include <functional>
+#include <string.h>
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
