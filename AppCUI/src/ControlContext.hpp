@@ -928,7 +928,7 @@ struct ColorPickerContext : public ControlContext
 
     void OnExpandView(Graphics::Clip& expandedClip);
 };
-struct CharacterTableContext
+struct CharacterTableContext : public ControlContext
 {
     int32 character;
 
