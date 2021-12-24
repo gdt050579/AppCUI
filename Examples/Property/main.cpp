@@ -248,6 +248,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
         case MyControlProperty::AnimationKey:
             this->keyToStopAnimation = std::get<Input::Key>(value);
             return true;
+        case MyControlProperty::Character:
+            this->ch = std::get<char16>(value);
+            return true;
         }
         error.SetFormat("Unknwon property ID: %u", (uint32) id);
         return false;

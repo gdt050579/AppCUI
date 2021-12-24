@@ -150,6 +150,68 @@ class PropertyEditDialog : public Window
     virtual void Validate()             = 0;
 };
 
+class PropertyCharEditDialog : public PropertyEditDialog
+{
+    Reference<CharacterTable> chTable;
+    bool isChar8;
+
+  public:
+    PropertyCharEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly, bool char8value)
+        : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly), isChar8(char8value)
+    {
+    }
+    void OnInitPropertyDialog() override
+    {
+        chTable = Factory::CharacterTable::Create(this, "t:2,l:1,r:1,b:2");
+        chTable->SetEnabled(!isReadOnly);
+        if (!isReadOnly)
+            chTable->SetFocus();
+    }
+    void Refresh() override
+    {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            if (std::holds_alternative<char8>(tempPropValue))
+                chTable->SetCharacter(std::get<char8>(tempPropValue));
+            if (std::holds_alternative<char16>(tempPropValue))
+                chTable->SetCharacter(std::get<char16>(tempPropValue));
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        if (!isReadOnly)
+            chTable->SetFocus();
+    }
+    void Validate() override
+    {
+        LocalString<256> error;
+        char16 ch = chTable->GetCharacter();
+        if (this->isChar8)
+        {
+            if (object->SetPropertyValue(prop.id, (char8)ch, error))
+            {
+                this->Exit(0);
+                return;
+            }
+        }
+        else
+        {
+            if (object->SetPropertyValue(prop.id, (char16) ch, error))
+            {
+                this->Exit(0);
+                return;
+            }
+        }
+        // error
+        Dialogs::MessageBox::ShowError("Error", error);
+        chTable->SetFocus();
+    }
+};
 class PropertyColorEditDialog : public PropertyEditDialog
 {
     Reference<ColorPicker> col;
@@ -1328,6 +1390,11 @@ void PropertyListContext::EditAndUpdateColor(const PropertyInfo& prop)
     PropertyColorEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.ShowDialog();
 }
+void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isChar8)
+{
+    PropertyCharEditDialog dlg(prop, object, IsPropertyReadOnly(prop), isChar8);
+    dlg.ShowDialog();
+}
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
     if (IsPropertyReadOnly(prop))
@@ -1365,6 +1432,7 @@ void PropertyListContext::ExecuteItemAction()
                 break;
             case PropertyType::Char8:
             case PropertyType::Char16:
+                EditAndUpdateChar(this->properties[idx], this->properties[idx].type == PropertyType::Char8);
                 break;
             case PropertyType::UInt8:
             case PropertyType::UInt16:
