@@ -7,15 +7,15 @@ namespace AppCUI
 {
 #define CTRLC ((ControlContext*) Context)
 
-#define CHAR_TYPE_EOS       0
-#define CHAR_TYPE_OTHER     1
-#define CHAR_TYPE_WORD      2
-#define CHAR_TYPE_NUMBER    3
-#define CHAR_TYPE_SPACE     4
-#define CHAR_TYPE_EQ        5
-#define CHAR_TYPE_SEPARATOR 6
-#define CHAR_TYPE_POINT     7
-#define CHAR_TYPE_MINUS     8
+constexpr uint8 CHAR_TYPE_EOS       = 0;
+constexpr uint8 CHAR_TYPE_OTHER     = 1;
+constexpr uint8 CHAR_TYPE_WORD      = 2;
+constexpr uint8 CHAR_TYPE_NUMBER    = 3;
+constexpr uint8 CHAR_TYPE_SPACE     = 4;
+constexpr uint8 CHAR_TYPE_EQ        = 5;
+constexpr uint8 CHAR_TYPE_SEPARATOR = 6;
+constexpr uint8 CHAR_TYPE_POINT     = 7;
+constexpr uint8 CHAR_TYPE_MINUS     = 8;
 
 //=========================================
 // THIS CODE WAS AUTOMATICALLY GENERATED !
@@ -419,7 +419,7 @@ uint8 __char_types__[256] = {
 };
 
 // <xxx> (Arrow left, 3 character, Arrow right)
-#define MINIM_SCORLL_BAR_LENGTH 5
+constexpr uint32 MINIM_SCORLL_BAR_LENGTH = 5;
 
 bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Application::Config*)
 {
@@ -495,7 +495,7 @@ inline const uint8* SkipSpaces(const uint8* start, const uint8* end)
 }
 inline const uint8* ComputeValueHash(const uint8* s, const uint8* e, uint32& hashValue)
 {
-    hashValue          = 0;
+    hashValue    = 0;
     uint32 index = 0;
     while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
     {
@@ -1180,9 +1180,8 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxVerticalValue)
             {
-                const auto sz = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
-                const auto poz =
-                      static_cast<uint32>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
+                const auto sz  = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
+                const auto poz = static_cast<uint32>((sz * ScrollBars.VerticalValue) / ScrollBars.MaxVerticalValue);
                 renderer.WriteSpecialCharacter(
                       x, ScrollBars.TopMargin + 1 + poz, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
@@ -1198,9 +1197,8 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows);
             if (ScrollBars.MaxHorizontalValue)
             {
-                const auto sz = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
-                const auto poz =
-                      static_cast<uint32>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
+                const auto sz  = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
+                const auto poz = static_cast<uint32>((sz * ScrollBars.HorizontalValue) / ScrollBars.MaxHorizontalValue);
                 renderer.WriteSpecialCharacter(
                       ScrollBars.LeftMargin + 1 + poz, y, SpecialChars::BlockCentered, Cfg->ScrollBar.Position);
             }
