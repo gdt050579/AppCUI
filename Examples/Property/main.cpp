@@ -291,7 +291,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 "Animation",
                 "Speed",
                 PropertyType::List,
-                "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 0" },
+                "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
               { (uint32) MyControlProperty::Flags,
                 "General",
                 "File flags",
