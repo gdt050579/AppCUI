@@ -254,7 +254,7 @@ CharacterTable::CharacterTable(string_view layout) : Control(new CharacterTableC
     auto Members              = reinterpret_cast<CharacterTableContext*>(this->Context);
     Members->Layout.MinWidth  = 10;
     Members->Layout.MinHeight = 3;
-    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL;
     Members->character        = 0;
     Members->startView        = 0;
     Members->editMode         = false;
@@ -314,7 +314,10 @@ void CharacterTable::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     reinterpret_cast<CharacterTableContext*>(this->Context)->OnMousePressed(x, y, button);
 }
-
+void CharacterTable::OnUpdateScrollBars()
+{
+    UpdateVScrollBar(reinterpret_cast<CharacterTableContext*>(this->Context)->character, 0xFFFF);
+}
 void CharacterTable::SetCharacter(char16 character)
 {
     reinterpret_cast<CharacterTableContext*>(this->Context)->MoveTo(character);

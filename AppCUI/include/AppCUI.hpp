@@ -3915,6 +3915,7 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnUpdateScrollBars() override;
 
         void SetCharacter(char16 character);
         char16 GetCharacter();
