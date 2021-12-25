@@ -110,7 +110,7 @@ bool _parse_number_string_buffer_(const uint8* start, const uint8* end, _parse_n
         if (charValue >= res.Base)
             break;
         newValue = (res.Value * res.Base) + (uint64) charValue;
-        CHECK(newValue > res.Value, false, "Integer overflow !");
+        CHECK(newValue >= res.Value, false, "Integer overflow !");
         res.Value = newValue;
         start++;
     }
