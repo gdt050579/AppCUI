@@ -353,5 +353,41 @@ void Config::SetDarkTheme()
     this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::DarkRed };
     this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
+
+    this->PropertyList.Border             = ColorPair{ Color::White, Color::DarkBlue };
+    this->PropertyList.Cursor             = ColorPair{ Color::Black, Color::White };
+    this->PropertyList.CursorReadOnly     = ColorPair{ Color::Gray, Color::White };
+    this->PropertyList.Inactive           = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertyList.Category.Text      = ColorPair{ Color::White, Color::Blue };
+    this->PropertyList.Category.Arrow     = ColorPair{ Color::Green, Color::Blue };
+    this->PropertyList.Category.Stats     = ColorPair{ Color::Gray, Color::Blue };
+    this->PropertyList.Item.Text          = ColorPair{ Color::Silver, Color::DarkBlue };
+    this->PropertyList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
+    this->PropertyList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->PropertyList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
+    this->PropertyList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
+    this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertyList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
+    this->PropertyList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
+
+    this->CharacterTable.Focus.Border    = ColorPair{ Color::White, Color::Transparent };
+    this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
+    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Black, Color::Teal };
+    this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Normal.Border   = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Normal.Offset   = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Normal.Text     = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Hover.Border    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Cursor    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Offset    = ColorPair{ Color::Yellow, Color::Transparent };
+    this->CharacterTable.Hover.Text      = ColorPair{ Color::Silver, Color::Transparent };
+    this->CharacterTable.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
+    this->CharacterTable.NormalValue     = ColorPair{ Color::Gray, Color::DarkRed };
+    this->CharacterTable.ActiveValue     = ColorPair{ Color::Yellow, Color::DarkRed };
 }
 } // namespace AppCUI::Application

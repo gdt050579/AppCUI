@@ -298,7 +298,13 @@ namespace Utils
         uint16 Value;
         uint32 Length;
     };
+    struct UTF8Char
+    {
+        uint8 Values[8];
+        uint32 Length;
+    };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
+    bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
 } // namespace Utils
 namespace Log
 {

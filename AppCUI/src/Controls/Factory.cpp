@@ -334,22 +334,14 @@ POINTER<Controls::NumericSelector> Factory::NumericSelector::Create(
     return POINTER<Controls::NumericSelector>(new Controls::NumericSelector(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
-      Controls::Control* parent,
-      const int64 minValue,
-      const int64 maxValue,
-      int64 value,
-      string_view layout)
+      Controls::Control* parent, const int64 minValue, const int64 maxValue, int64 value, string_view layout)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::NumericSelector>(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
 }
 REFERENCE<NumericSelector> Factory::NumericSelector::Create(
-      Controls::Control& parent,
-      const int64 minValue,
-      const int64 maxValue,
-      int64 value,
-      string_view layout)
+      Controls::Control& parent, const int64 minValue, const int64 maxValue, int64 value, string_view layout)
 {
     return parent.AddControl<Controls::NumericSelector>(
           Factory::NumericSelector::Create(minValue, maxValue, value, layout));
@@ -395,24 +387,84 @@ Pointer<Controls::Grid> Factory::Grid::Create(
 }
 
 Reference<Controls::Grid> Factory::Grid::Create(
-      Controls::Control* parent,
-      string_view layout,
-      uint32 columnsNo,
-      uint32 rowsNo,
-      Controls::GridFlags flags)
+      Controls::Control* parent, string_view layout, uint32 columnsNo, uint32 rowsNo, Controls::GridFlags flags)
 {
     VALIDATE_PARENT;
     return parent->AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
 }
 
 Reference<Controls::Grid> Factory::Grid::Create(
-      Controls::Control& parent,
-      string_view layout,
-      uint32 columnsNo,
-      uint32 rowsNo,
-      Controls::GridFlags flags)
+      Controls::Control& parent, string_view layout, uint32 columnsNo, uint32 rowsNo, Controls::GridFlags flags)
 {
     return parent.AddControl<Controls::Grid>(Factory::Grid::Create(layout, columnsNo, rowsNo, flags));
+}
+
+//======[PROPERTYLIST]===============================================================================
+Pointer<Controls::PropertyList> Factory::PropertyList::Create(
+      string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
+{
+    return POINTER<Controls::PropertyList>(new Controls::PropertyList(layout, object, flags));
+}
+Reference<Controls::PropertyList> Factory::PropertyList::Create(
+      Controls::Control* parent, string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object, flags));
+}
+Reference<Controls::PropertyList> Factory::PropertyList::Create(
+      Controls::Control& parent, string_view layout, Reference<PropertiesInterface> object, PropertyListFlags flags)
+{
+    return parent.AddControl<Controls::PropertyList>(Factory::PropertyList::Create(layout, object, flags));
+}
+
+//======[KEYSELECTOR]================================================================================
+Pointer<Controls::KeySelector> Factory::KeySelector::Create(
+      string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    return POINTER<Controls::KeySelector>(new Controls::KeySelector(layout, keyCode, flags));
+}
+Reference<Controls::KeySelector> Factory::KeySelector::Create(
+      Controls::Control* parent, string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::KeySelector>(Factory::KeySelector::Create(layout, keyCode, flags));
+}
+Reference<Controls::KeySelector> Factory::KeySelector::Create(
+      Controls::Control& parent, string_view layout, Input::Key keyCode, KeySelectorFlags flags)
+{
+    return parent.AddControl<Controls::KeySelector>(Factory::KeySelector::Create(layout, keyCode, flags));
+}
+
+//======[COLORPICKER]================================================================================
+Pointer<Controls::ColorPicker> Factory::ColorPicker::Create(string_view layout, Graphics::Color color)
+{
+    return POINTER<Controls::ColorPicker>(new Controls::ColorPicker(layout, color));
+}
+Reference<Controls::ColorPicker> Factory::ColorPicker::Create(
+      Controls::Control* parent, string_view layout, Graphics::Color color)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::ColorPicker>(Factory::ColorPicker::Create(layout, color));
+}
+Reference<Controls::ColorPicker> Factory::ColorPicker::Create(
+      Controls::Control& parent, string_view layout, Graphics::Color color)
+{
+    return parent.AddControl<Controls::ColorPicker>(Factory::ColorPicker::Create(layout, color));
+}
+
+//======[CHARACTERTABLE]=============================================================================
+Pointer<Controls::CharacterTable> Factory::CharacterTable::Create(string_view layout)
+{
+    return POINTER<Controls::CharacterTable>(new Controls::CharacterTable(layout));
+}
+Reference<Controls::CharacterTable> Factory::CharacterTable::Create(Controls::Control* parent, string_view layout)
+{
+    VALIDATE_PARENT;
+    return parent->AddControl<Controls::CharacterTable>(Factory::CharacterTable::Create(layout));
+}
+Reference<Controls::CharacterTable> Factory::CharacterTable::Create(Controls::Control& parent, string_view layout)
+{
+    return parent.AddControl<Controls::CharacterTable>(Factory::CharacterTable::Create(layout));
 }
 } // namespace AppCUI
 #undef VALIDATE_PARENT

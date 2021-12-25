@@ -815,6 +815,145 @@ struct MenuContext
           const Graphics::Size& maxSize);
 };
 
+constexpr uint16 PROPERTY_NAME_MAXCHARS  = 61; // 61+3[2 for size, 1 for \0] = 64 bytes for the entire name field
+constexpr uint16 PROPERTY_VALUE_MAXCHARS = 45; // 45+3[2 for size, 1 for \0] = 48 bytes for the entire value field
+struct PropertyCategoryInfo
+{
+    FixSizeString<PROPERTY_NAME_MAXCHARS> name;
+    uint32 totalItems;
+    uint32 filteredItems;
+    bool folded;
+};
+struct PropertyInfo
+{
+    FixSizeString<PROPERTY_NAME_MAXCHARS> name;
+    std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>> listValues;
+    uint32 category;
+    uint32 id;
+    PropertyType type;
+};
+enum class PropertySeparatorStatus : uint8
+{
+    None,
+    Over,
+    Drag
+};
+struct PropertyListContext : public ControlContext
+{
+    struct
+    {
+        decltype(AppCUI::Application::Config::PropertyList.Category) Category;
+        decltype(AppCUI::Application::Config::PropertyList.Item) Item;
+    } Colors;
+    PropertyValue tempPropValue;
+    Reference<PropertiesInterface> object;
+    vector<PropertyInfo> properties;
+    vector<PropertyCategoryInfo> categories;
+    Array32 items;
+    FixSizeString<PROPERTY_NAME_MAXCHARS> filterText;
+    uint32 startView;
+    uint32 currentPos;
+    int32 propertyNameWidth;
+    float propetyNamePercentage;
+    bool showCategories;
+    bool hasBorder;
+    bool filteredMode;
+    PropertySeparatorStatus separatorStatus;
+
+    void ExecuteItemAction();
+    void SetPropertyNameWidth(int32 value, bool adjustPercentage);
+    void MoveToPropetyIndex(uint32 idx);
+    void MoveTo(uint32 newPos);
+    void MoveScrollTo(uint32 newPos);
+    void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
+    void DrawListProperty(
+          WriteTextParams& params,
+          PropertyValue& pv,
+          const PropertyInfo& pi,
+          Graphics::Renderer& renderer,
+          bool readOnly);
+    void DrawFlagsProperty(
+          WriteTextParams& params,
+          PropertyValue& pv,
+          const PropertyInfo& pi,
+          Graphics::Renderer& renderer,
+          bool readOnly);
+    void DrawCustomProperty(WriteTextParams& params, PropertyValue& pv, Graphics::Renderer& renderer, bool readOnly);
+    void DrawProperty(uint32 index, int32 y, Graphics::Renderer& renderer, bool& readOnlyStatus);
+    void DrawFilterBar(Graphics::Renderer& renderer);
+    void Paint(Graphics::Renderer& renderer);
+    bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
+    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseOver(int x, int y);
+    bool OnMouseLeave();
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
+    bool IsItemFiltered(const PropertyInfo& prop);
+    void Refilter();
+    void EditAndUpdateText(const PropertyInfo& prop);
+    void EditAndUpdateBool(const PropertyInfo& prop);
+    void EditAndUpdateList(const PropertyInfo& prop);
+    void EditAndUpdateFlags(const PropertyInfo& prop);
+    void EditAndUpdateKey(const PropertyInfo& prop);
+    void EditAndUpdateColor(const PropertyInfo& prop);
+    void EditAndUpdateChar(const PropertyInfo& prop, bool isChar8);
+
+    inline constexpr int32 GetSeparatorXPos() const
+    {
+        return (this->showCategories ? 3 : 0) + (this->hasBorder ? 1 : 0) + this->propertyNameWidth;
+    }
+    inline constexpr bool IsPropertyReadOnly(const PropertyInfo& prop)
+    {
+        return ((this->Flags && PropertyListFlags::ReadOnly) ? true : this->object->IsPropertyValueReadOnly(prop.id));
+    }
+};
+struct KeySelectorContext : public ControlContext
+{
+    Input::Key key;
+};
+struct ColorPickerContext : public ControlContext
+{
+    Graphics::Color color;
+    int32 headerYOffset;
+    int32 yOffset;
+    uint32 colorObject;
+    Reference<Control> host;
+
+    void PaintColorBox(Graphics::Renderer& renderer);
+    void PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer);
+    void Paint(Graphics::Renderer& renderer);
+    uint32 MouseToObject(int x, int y);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseOver(int x, int y);
+    void NextColor(int32 offset, bool isExpanded);
+    bool OnKeyEvent(Input::Key keyCode);
+
+    void OnExpandView(Graphics::Clip& expandedClip);
+};
+struct CharacterTableContext : public ControlContext
+{
+    Reference<Control> host;
+    uint32 character;
+    uint32 startView;
+    uint32 hoverChar;
+    bool editMode;
+
+    void MoveTo(uint32 newCharCode);
+    void Paint(Graphics::Renderer& renderer);
+    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
+    uint32 MousePosToChar(int x, int y);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(Input::MouseWheel direction);
+    bool OnMouseOver(int x, int y, uint32& code, int& toolTipX);
+
+    constexpr inline int32 GetCharPerWidth() const
+    {
+        return (this->Layout.Width - 8) / 2;
+    }
+};
+
 #define CREATE_CONTROL_CONTEXT(object, name, retValue)                                                                 \
     ControlContext* name = (ControlContext*) ((object)->Context);                                                      \
     if (name == nullptr)                                                                                               \
