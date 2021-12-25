@@ -3,6 +3,8 @@
 #include "AppCUI.hpp"
 #include <array>
 
+namespace Tetris
+{
 using namespace AppCUI::Utils;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
@@ -30,17 +32,13 @@ class Piece
     std::array<std::array<bool, rows>, columns> matrix{ 0 };
     Reference<Control> control = nullptr;
     const PieceType type;
-    Point position{ 0, 0 }; // x, y on canvas
     Point positionOnBoard{ 0, 0 };
 
   public:
     Piece(const PieceType type, const Reference<Control> control, const Point& position);
 
-    bool Draw(Renderer& renderer, int scale, bool center, const Size& canvasSize);
-    bool Draw(Renderer& renderer, int scale);
+    bool Draw(Renderer& renderer, int scale, const Point& position);
     Size GetSize(int scale) const;
-    void UpdatePosition(const Point& delta);
-    void SetPosition(const Point& newPosition);
     int GetBlockWidth(int scale) const;
     int GetBlockHeight(int scale) const;
     int GetLeftXPosition() const;
@@ -52,6 +50,7 @@ class Piece
     const std::array<std::array<bool, rows>, columns>& GetMatrix() const;
     const Point& GetPositionOnBoard() const;
 
-    void SetPositionOnBoardMatrix(const Point& position);
-    void UpdatePositionOnBoardMatrix(const Point& position);
+    void SetPositionOnBoard(const Point& position);
+    void UpdatePositionOnBoard(const Point& position);
 };
+} // namespace Tetris

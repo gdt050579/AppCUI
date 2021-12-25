@@ -1,5 +1,7 @@
 #include "RunningState.hpp"
 
+namespace Tetris
+{
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
     page            = Factory::TabPage::Create(data->tab, "");
@@ -53,12 +55,21 @@ bool RunningState::Update()
     ls.Format("Time passed: %lus", delta);
     timePassedLabel->SetText(ls.GetText());
 
+    bool gameOver = false;
     board.Update(
           pieceScaleInLeftPanel,
           maxPiecesInQueue,
           nextPiece.DownCast<Control>(),
           { leftPanel->GetWidth() - 2U, leftPanel->GetHeight() - 2U },
-          delta);
+          delta,
+          gameOver);
+
+    if (gameOver)
+    {
+        data->score       = board.GetScore();
+        data->timeElapsed = delta;
+        data->machine->PushState<GameOverState>(data, true);
+    }
 
     return true;
 }
@@ -106,7 +117,8 @@ void RunningState::PaintControlImplementationRightPiecePanels::PaintControl(
     board.DrawPieceById(
           renderer,
           id,
-          { static_cast<unsigned int>(control->GetWidth()), static_cast<unsigned int>(control->GetHeight()) });
+          { static_cast<unsigned int>(control->GetWidth()), static_cast<unsigned int>(control->GetHeight()) },
+          2);
 }
 
 RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLeftPanel(Board& board) : board(board)
@@ -116,7 +128,9 @@ RunningState::PaintControlImplementationLeftPanel::PaintControlImplementationLef
 void RunningState::PaintControlImplementationLeftPanel::PaintControl(Reference<Control> control, Renderer& renderer)
 {
     control->Paint(renderer);
-    board.Draw(renderer);
+    board.Draw(
+          renderer,
+          { static_cast<unsigned int>(control->GetWidth()), static_cast<unsigned int>(control->GetHeight()) });
 }
 
 RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImplementationLeftPanel(Board& board)
@@ -146,3 +160,4 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
 
     return false;
 }
+} // namespace Tetris

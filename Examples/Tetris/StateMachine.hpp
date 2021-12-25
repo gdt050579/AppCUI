@@ -5,6 +5,8 @@
 
 #include "State.hpp"
 
+namespace Tetris
+{
 class StateMachine
 {
   public:
@@ -41,3 +43,4 @@ class StateMachine
     bool isAdding    = false;
     bool isReplacing = false;
 };
+} // namespace Tetris

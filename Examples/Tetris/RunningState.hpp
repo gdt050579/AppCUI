@@ -3,9 +3,12 @@
 #include "State.hpp"
 #include "Game.hpp"
 #include "PauseState.hpp"
+#include "GameOverState.hpp"
 #include "Piece.hpp"
 #include "Board.hpp"
 
+namespace Tetris
+{
 using namespace AppCUI::Utils;
 using namespace AppCUI::Input;
 using namespace AppCUI::Controls;
@@ -91,3 +94,4 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
 
     OnKeyEventInterfaceImplementationLeftPanel okeiilp{ board };
 };
+} // namespace Tetris

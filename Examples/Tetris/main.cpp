@@ -1,16 +1,16 @@
 #include "Game.hpp"
 
+using namespace AppCUI::Application;
+
 int main()
 {
-    if (AppCUI::Application::Init(
-              AppCUI::Application::InitializationFlags::SingleWindowApp |
-              AppCUI::Application::InitializationFlags::Maximized |
-              AppCUI::Application::InitializationFlags::EnableFPSMode) == false)
+    if (Init(InitializationFlags::SingleWindowApp | InitializationFlags::Maximized |
+             InitializationFlags::EnableFPSMode) == false)
     {
         return 1;
     }
 
-    AppCUI::Application::RunSingleApp(std::make_unique<Game>());
+    RunSingleApp(std::make_unique<Tetris::Game>());
 
     return 0;
 }

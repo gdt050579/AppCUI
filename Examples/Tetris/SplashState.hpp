@@ -6,6 +6,12 @@
 #include "State.hpp"
 #include "Game.hpp"
 
+namespace Tetris
+{
+using namespace AppCUI::Utils;
+using namespace AppCUI::Controls;
+using namespace AppCUI::Graphics;
+
 class SplashState : public State
 {
   public:
@@ -20,12 +26,9 @@ class SplashState : public State
 
     void Init() override;
 
-    bool HandleEvent(
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
-          AppCUI::Controls::Event eventType,
-          int controlID) override;
+    bool HandleEvent(Reference<Control> ctrl, Event eventType, int controlID) override;
     bool Update() override;
-    void Draw(AppCUI::Graphics::Renderer& renderer) override;
+    void Draw(Renderer& renderer) override;
 
     void Pause() override;
     void Resume() override;
@@ -37,7 +40,8 @@ class SplashState : public State
 
     const int stateDuration = 3; // seconds
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page       = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::ImageViewer> viewer = nullptr;
-    AppCUI::Graphics::Image img;
+    Reference<TabPage> page       = nullptr;
+    Reference<ImageViewer> viewer = nullptr;
+    Image img;
 };
+} // namespace Tetris

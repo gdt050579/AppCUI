@@ -3,10 +3,12 @@
 
 #include <chrono>
 
+namespace Tetris
+{
 SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
-    page   = AppCUI::Controls::Factory::TabPage::Create(data->tab, "");
-    viewer = AppCUI::Controls::Factory::ImageViewer::Create(page, "d:c,w:86,h:9", AppCUI::Controls::ViewerFlags::HideScrollBar);
+    page   = Factory::TabPage::Create(data->tab, "");
+    viewer = Factory::ImageViewer::Create(page, "d:c,w:86,h:9", ViewerFlags::HideScrollBar);
 
     img.Create(
           35,
@@ -19,10 +21,7 @@ SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), in
           "44774447744444774447747744774444477"
           "44774447777444774447747774774777777");
 
-    viewer->SetImage(
-          img,
-          AppCUI::Graphics::ImageRenderingMethod::PixelTo64ColorsLargeBlock,
-          AppCUI::Graphics::ImageScaleMethod::NoScale);
+    viewer->SetImage(img, ImageRenderingMethod::PixelTo64ColorsLargeBlock, ImageScaleMethod::NoScale);
 }
 
 SplashState::~SplashState()
@@ -35,8 +34,7 @@ void SplashState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool SplashState::HandleEvent(
-      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool SplashState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
 {
     return false;
 }
@@ -51,11 +49,10 @@ bool SplashState::Update()
     return true;
 }
 
-void SplashState::Draw(AppCUI::Graphics::Renderer& renderer)
+void SplashState::Draw(Renderer& renderer)
 {
     renderer.HideCursor();
-    renderer.Clear(
-          ' ', AppCUI::Graphics::ColorPair{ AppCUI::Graphics::Color::White, AppCUI::Graphics::Color::DarkRed });
+    renderer.Clear(' ', ColorPair{ Color::White, Color::DarkRed });
 }
 
 void SplashState::Pause()
@@ -66,3 +63,4 @@ void SplashState::Resume()
 {
     data->tab->SetCurrentTabPage(page);
 }
+} // namespace Tetris

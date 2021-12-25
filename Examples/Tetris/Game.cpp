@@ -1,18 +1,18 @@
 #include "Game.hpp"
 #include "SplashState.hpp"
 
+namespace Tetris
+{
 Game::Game() noexcept
 {
-    data->tab = AppCUI::Controls::Factory::Tab::Create(
-          this, "d:c", AppCUI::Controls::TabFlags::HideTabs | AppCUI::Controls::TabFlags::TransparentBackground);
+    data->tab = Factory::Tab::Create(this, "d:c", TabFlags::HideTabs | TabFlags::TransparentBackground);
     data->machine->PushState<SplashState>(data);
     data->machine->ProcessStackAction();
 }
 
-bool Game::OnEvent(
-      AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl, AppCUI::Controls::Event eventType, int controlID)
+bool Game::OnEvent(Reference<Control> ctrl, Event eventType, int controlID)
 {
-    if (AppCUI::Controls::SingleApp::OnEvent(ctrl, eventType, controlID))
+    if (SingleApp::OnEvent(ctrl, eventType, controlID))
     {
         return true;
     }
@@ -20,9 +20,9 @@ bool Game::OnEvent(
     return data->machine->PeekState()->HandleEvent(ctrl, eventType, controlID);
 }
 
-void Game::Paint(AppCUI::Graphics::Renderer& r)
+void Game::Paint(Renderer& rd)
 {
-    data->machine->PeekState()->Draw(r);
+    data->machine->PeekState()->Draw(rd);
 }
 
 bool Game::OnFrameUpdate()
@@ -32,3 +32,4 @@ bool Game::OnFrameUpdate()
 
     return updated || actionTaken;
 }
+} // namespace Tetris

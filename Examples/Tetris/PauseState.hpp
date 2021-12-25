@@ -4,7 +4,14 @@
 #include "Game.hpp"
 #include "MainMenuState.hpp"
 
-class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventInterface
+namespace Tetris
+{
+using namespace AppCUI::Controls;
+using namespace AppCUI::Utils;
+using namespace AppCUI::Graphics;
+using namespace AppCUI::Input;
+
+class PauseState : public State, public Handlers::OnKeyEventInterface
 {
   public:
     explicit PauseState(const std::shared_ptr<GameData>& data);
@@ -18,12 +25,9 @@ class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventIn
 
     void Init() override;
 
-    bool HandleEvent(
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
-          AppCUI::Controls::Event eventType,
-          int controlID) override;
+    bool HandleEvent(Reference<Control> ctrl, Event eventType, int controlID) override;
     bool Update() override;
-    void Draw(AppCUI::Graphics::Renderer& renderer) override;
+    void Draw(Renderer& renderer) override;
 
     void Pause() override;
     void Resume() override;
@@ -31,15 +35,13 @@ class PauseState : public State, public AppCUI::Controls::Handlers::OnKeyEventIn
   private:
     const std::shared_ptr<GameData>& data;
 
-    AppCUI::Utils::Reference<AppCUI::Controls::TabPage> page                = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Panel> menu                  = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Button> resumeButton         = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Button> exitToMainMenuButton = nullptr;
-    AppCUI::Utils::Reference<AppCUI::Controls::Button> exitButton           = nullptr;
+    Reference<TabPage> page                = nullptr;
+    Reference<Panel> gameOver              = nullptr;
+    Reference<Button> resumeButton         = nullptr;
+    Reference<Button> exitToMainMenuButton = nullptr;
+    Reference<Button> exitButton           = nullptr;
 
     bool DoActionForControl(int controlID);
-    bool OnKeyEvent(
-          AppCUI::Controls::Reference<AppCUI::Controls::Control> control,
-          AppCUI::Input::Key keyCode,
-          char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
 };
+} // namespace Tetris

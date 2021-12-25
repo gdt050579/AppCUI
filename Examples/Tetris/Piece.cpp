@@ -1,7 +1,9 @@
 #include "Piece.hpp"
 
+namespace Tetris
+{
 Piece::Piece(const PieceType type, const Reference<Control> control, const Point& position)
-    : control(control), type(type), position(position)
+    : control(control), type(type)
 {
     switch (type)
     {
@@ -52,51 +54,25 @@ Piece::Piece(const PieceType type, const Reference<Control> control, const Point
     }
 }
 
-bool Piece::Draw(Renderer& renderer, int scale, bool center, const Size& canvasSize)
-{
-    if (center)
-    {
-        if (canvasSize.Width < 2 || canvasSize.Height < 2)
-        {
-            return false;
-        }
-
-        const auto size = GetSize(scale);
-        const int x     = std::max<>(1, static_cast<int>((canvasSize.Width - size.Width) / 2));
-        const int y     = std::max<>(1, static_cast<int>(static_cast<int>((canvasSize.Height - 2 - size.Height)) / 2));
-        SetPosition({ x, y });
-
-        return Draw(renderer, scale);
-    }
-
-    SetPosition({ 1, 1 });
-    return Draw(renderer, scale);
-}
-
-bool Piece::Draw(Renderer& renderer, int scale)
+bool Piece::Draw(Renderer& renderer, int scale, const Point& position)
 {
     Point tmpPosition = position;
+    const auto w      = GetBlockWidth(scale);
+    const auto h      = GetBlockHeight(scale);
 
-    for (auto i = 0U; i < rows; i++)
+    for (auto y = 0U; y < rows; y++)
     {
-        for (auto j = 0U; j < columns; j++)
+        for (auto x = 0U; x < columns; x++)
         {
-            if (matrix[i][j] == 1)
+            if (matrix[y][x] == true)
             {
-                renderer.FillRectSize(
-                      tmpPosition.X, tmpPosition.Y, GetBlockWidth(scale), GetBlockHeight(scale), '-', color);
+                renderer.DrawRectSize(tmpPosition.X, tmpPosition.Y, w, h, color, false);
             }
-            else
-            {
-                renderer.DrawRectSize(
-                      tmpPosition.X, tmpPosition.Y, GetBlockWidth(scale), GetBlockHeight(scale), color, false);
-            }
-
-            tmpPosition.X += size.Width * scale * 2;
+            tmpPosition.X += w;
         }
 
         tmpPosition.X = position.X;
-        tmpPosition.Y += size.Height * scale;
+        tmpPosition.Y += h;
     }
 
     return true;
@@ -130,17 +106,6 @@ Size Piece::GetSize(int scale) const
     return { 0, 0 };
 }
 
-void Piece::UpdatePosition(const Point& delta)
-{
-    position.X += delta.X;
-    position.Y += delta.Y;
-}
-
-void Piece::SetPosition(const Point& newPosition)
-{
-    position = newPosition;
-}
-
 int Piece::GetBlockWidth(int scale) const
 {
     return size.Width * scale * 2;
@@ -149,26 +114,6 @@ int Piece::GetBlockWidth(int scale) const
 int Piece::GetBlockHeight(int scale) const
 {
     return size.Height * scale;
-}
-
-int Piece::GetLeftXPosition() const
-{
-    return position.X;
-}
-
-int Piece::GetRightXPosition(int scale) const
-{
-    return position.X + GetSize(scale).Width;
-}
-
-int Piece::GetTopYPosition() const
-{
-    return position.Y;
-}
-
-int Piece::GetBottomYPosition(int scale) const
-{
-    return position.Y + GetSize(scale).Height;
 }
 
 bool Piece::Rotate()
@@ -198,13 +143,14 @@ const Point& Piece::GetPositionOnBoard() const
     return positionOnBoard;
 }
 
-void Piece::SetPositionOnBoardMatrix(const Point& position)
+void Piece::SetPositionOnBoard(const Point& position)
 {
     positionOnBoard = position;
 }
 
-void Piece::UpdatePositionOnBoardMatrix(const Point& position)
+void Piece::UpdatePositionOnBoard(const Point& position)
 {
     positionOnBoard.X += position.X;
     positionOnBoard.Y += position.Y;
 }
+} // namespace Tetris

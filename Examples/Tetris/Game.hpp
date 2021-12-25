@@ -3,10 +3,19 @@
 #include "AppCUI.hpp"
 #include "StateMachine.hpp"
 
+namespace Tetris
+{
+using namespace AppCUI::Utils;
+using namespace AppCUI::Controls;
+using namespace AppCUI::Graphics;
+
 struct GameData
 {
-    std::shared_ptr<StateMachine> machine               = std::make_shared<StateMachine>(StateMachine());
-    AppCUI::Utils::Reference<AppCUI::Controls::Tab> tab = nullptr;
+    std::shared_ptr<StateMachine> machine = std::make_shared<StateMachine>(StateMachine());
+    Reference<Tab> tab                    = nullptr;
+
+    unsigned int score        = 0;
+    unsigned long timeElapsed = 0;
 
     GameData() = default;
 
@@ -28,7 +37,7 @@ enum class game_progress
     Lose    = 3
 };
 
-class Game : public AppCUI::Controls::SingleApp
+class Game : public SingleApp
 {
   public:
     Game() noexcept;
@@ -40,13 +49,11 @@ class Game : public AppCUI::Controls::SingleApp
 
     ~Game() = default;
 
-    bool OnEvent(
-          AppCUI::Utils::Reference<AppCUI::Controls::Control> ctrl,
-          AppCUI::Controls::Event eventType,
-          int controlID) override;
-    void Paint(AppCUI::Graphics::Renderer& r) override;
+    bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override;
+    void Paint(Renderer& rd) override;
     bool OnFrameUpdate() override;
 
   private:
     std::shared_ptr<GameData> data = std::make_shared<GameData>(GameData());
 };
+} // namespace Tetris
