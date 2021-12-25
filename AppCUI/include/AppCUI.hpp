@@ -607,7 +607,7 @@ namespace Utils
         virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
-        virtual vector<Property> GetPropertiesList()                                                = 0;
+        virtual const vector<Property> GetPropertiesList()                                          = 0;
     };
 } // namespace Utils
 using Utils::ConstString;
@@ -1459,9 +1459,9 @@ namespace Utils
         {
         }
     };
-    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>  
+    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>
     class GenericFixSizeString
-    {        
+    {
         static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
         static_assert(ACTUAL_SIZE > 0);
         static_assert(

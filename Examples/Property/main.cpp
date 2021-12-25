@@ -268,9 +268,9 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         return false;
     }
-    vector<Property> GetPropertiesList() override
+    const vector<Property> GetPropertiesList() override
     {
-        return vector<Property>({
+        return {
               { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::Int32 },
               { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::Int32 },
               { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
@@ -298,7 +298,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 PropertyType::Flags,
                 "Read=1,Write=2,Execute=4,Shared=8" },
               { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
-        });
+        };
     };
 };
 class PropertyWindowExmaple : public Window
