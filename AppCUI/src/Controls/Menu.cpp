@@ -12,9 +12,9 @@ using namespace Input;
     CHECK(menuItem < CTX->ItemsCount,                                                                                  \
           retValue,                                                                                                    \
           "Invalid index: %u (should be a value between [0..%u)",                                                      \
-          (uint32) menuItem,                                                                                     \
+          (uint32) menuItem,                                                                                           \
           CTX->ItemsCount);
-#define NO_MENUITEM_SELECTED 0xFFFFFFFF
+constexpr uint32 NO_MENUITEM_SELECTED = 0xFFFFFFFFU;
 
 MenuItem::MenuItem()
 {
@@ -210,8 +210,7 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
             auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
             renderer.WriteSingleLineText(this->Width - (uint32) k_n.size(), tr, k_n, itemCol->ShortCut);
-            renderer.WriteSingleLineText(
-                  this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, itemCol->ShortCut);
+            renderer.WriteSingleLineText(this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, itemCol->ShortCut);
         }
     }
 }
@@ -594,7 +593,7 @@ void MenuContext::Show(
     uint32 maxHotKeyWidth = 0;
     for (uint32 tr = 0; tr < this->ItemsCount; tr++)
     {
-        auto i               = this->Items[tr].get();
+        auto i         = this->Items[tr].get();
         uint32 w_left  = i->Name.Len() + 4;
         uint32 w_right = 0;
         if ((i->Type == MenuItemType::Radio) || (i->Type == MenuItemType::Check))

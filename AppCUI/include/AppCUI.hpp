@@ -607,7 +607,7 @@ namespace Utils
         virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropetyValue(uint32 propertyID)                                       = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
-        virtual vector<Property> GetPropertiesList()                                                = 0;
+        virtual const vector<Property> GetPropertiesList()                                          = 0;
     };
 } // namespace Utils
 using Utils::ConstString;
