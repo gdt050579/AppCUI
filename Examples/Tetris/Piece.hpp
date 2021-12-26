@@ -29,7 +29,7 @@ class Piece
     static const unsigned int columns = 4;
     Size size{ 1, 1 }; // on canvas
     ColorPair color{ Color::White, Color::Transparent };
-    std::array<std::array<bool, rows>, columns> matrix{ 0 };
+    std::array<std::array<bool, rows>, columns> matrix{ { { false } } };
     Reference<Control> control = nullptr;
     const PieceType type;
     Point positionOnBoard{ 0, 0 };

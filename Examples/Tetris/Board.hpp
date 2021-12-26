@@ -13,7 +13,7 @@ constexpr auto boardSize = 50U;
 class Board
 {
   private:
-    std::array<std::array<bool, boardSize>, boardSize> matrix{ false };
+    std::array<std::array<bool, boardSize>, boardSize> matrix{ { { false } } };
     int matrixVSize   = 0;
     int matrixHSize   = 0;
     int matrixXLeft   = 0;

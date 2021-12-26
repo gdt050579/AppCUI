@@ -736,7 +736,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             renderer.WriteSingleLineText(btn->X + 2, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
             if (btn->IsChecked())
             {
-                c1 = Members->Focused & (!hoverOrPressed) ? wcfg->ControlBar.CheckMark : c_i->Text;
+                c1 = (Members->Focused && (!hoverOrPressed)) ? wcfg->ControlBar.CheckMark : c_i->Text;
                 renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, c1);
             }
             drawSeparators = true;

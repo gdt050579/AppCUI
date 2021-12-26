@@ -118,7 +118,7 @@ int Piece::GetBlockHeight(int scale) const
 
 bool Piece::Rotate()
 {
-    std::array<std::array<bool, rows>, columns> tmp{ 0 };
+    std::array<std::array<bool, rows>, columns> tmp{ { { false } } };
 
     for (auto i = 0U; i < matrix.size(); i++)
     {
