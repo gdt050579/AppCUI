@@ -1683,7 +1683,10 @@ void PropertyListContext::Refilter()
                     last_cat = this->properties[value].category;
                     this->items.Insert(idx, last_cat | CATEGORY_FLAG);
                 }
-                this->categories[this->properties[value].category].filteredItems++;
+                else
+                {
+                    this->categories[this->properties[value].category].filteredItems++;
+                }
             }
             idx++;
         }
