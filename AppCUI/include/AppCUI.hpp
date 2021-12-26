@@ -1459,9 +1459,9 @@ namespace Utils
         {
         }
     };
-    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>  
+    template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>
     class GenericFixSizeString
-    {        
+    {
         static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
         static_assert(ACTUAL_SIZE > 0);
         static_assert(
@@ -3299,9 +3299,8 @@ namespace Controls
     };
     enum class ViewerFlags : uint32
     {
-        None          = 0,
-        HScroll       = 0x000010,
-        VScroll       = 0x000020,
+        /* 0 -> 0x40 (GATTR) */
+        None          = 0x000000,
         Border        = 0x000100,
         HideScrollBar = 0x000200
     };
