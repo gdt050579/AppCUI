@@ -4,6 +4,8 @@ namespace Snake
 {
 bool Board::SetDirection(HeadingTo direction)
 {
+    CHECK(directionUpdated, false, "");
+
     // you can't change direction 180 degrees
     if (this->direction == HeadingTo::Down && direction == HeadingTo::Up ||
         direction == HeadingTo::Down && this->direction == HeadingTo::Up ||
@@ -13,14 +15,8 @@ bool Board::SetDirection(HeadingTo direction)
         return false;
     }
 
-    this->direction = direction;
-
-    return true;
-}
-
-bool Board::SetNextCurrentPiece()
-{
-    // TODO: fruit
+    this->direction  = direction;
+    directionUpdated = false;
 
     return true;
 }
@@ -76,9 +72,37 @@ Board::IsCollidingOn Board::IsColliding()
         return IsCollidingOn::Self;
     }
 
-    // TODO:
+    if (fruit.has_value())
+    {
+        const auto& fruitPosition = fruit->GetPosition();
+        if (fruitPosition.X == snakeHead.X && fruitPosition.Y == snakeHead.Y)
+        {
+            return IsCollidingOn::Fruit;
+        }
+    }
 
     return IsCollidingOn::None;
+}
+
+void Board::GenerateFruit()
+{
+    std::uniform_int_distribution<int> uidMapH{ 0, std::min<>(matrixHSize - 1, boardSize - 1) };
+    std::uniform_int_distribution<int> uidMapV{ 0, std::min<>(matrixVSize - 1, boardSize - 1) };
+
+    Point p{ -1, -1 };
+    do
+    {
+        p.X = uidMapH(dre);
+        p.Y = uidMapV(dre);
+    } while (matrix[p.Y][p.X]);
+
+    if (fruit.has_value())
+    {
+        const auto& pOld       = fruit->GetPosition();
+        matrix[pOld.Y][pOld.X] = false;
+    }
+    fruit.emplace(Fruit{ p, static_cast<Color>(uidFruitColor(dre)) });
+    matrix[p.Y][p.X] = true;
 }
 
 void Board::Update(
@@ -90,11 +114,7 @@ void Board::Update(
       bool& gameOver)
 {
     gameOver = false;
-    level    = static_cast<unsigned int>(delta / deltaSecondsToIncreaseLevel);
-    if (level == 0)
-    {
-        level++;
-    }
+    level    = static_cast<unsigned int>(delta / deltaLevelIncrease) + 1;
 
     this->scale = scale;
     SetMatrixBounds(size);
@@ -102,48 +122,56 @@ void Board::Update(
     if (matrixHSize != 0 && matrixVSize != 0)
     {
         snake.SetInitialPosition({ matrixHSize / 2, matrixVSize / 2 });
+
+        if (fruit.has_value() == false)
+        {
+            GenerateFruit();
+        }
     }
 
     IsCollidingOn collided = IsCollidingOn::None;
-    if (delta != snakeUpdated)
+    if (delta != snakeUpdated || snakeUpdated == -1)
     {
+        // TODO: I might need to trigger a redraw here in order for slice to actually work..
         slice              = 1.0 / (level * 2.0);
         double deltaUpdate = delta - snakeUpdated;
         if (deltaUpdate > slice)
         {
-            for (auto i = 0.0; i < deltaUpdate / slice - 1; i++)
+            switch (direction)
             {
-                switch (direction)
-                {
-                case Snake::Board::HeadingTo::Left:
-                    snake.UpdatePosition({ -1, 0 });
-                    break;
-                case Snake::Board::HeadingTo::Right:
-                    snake.UpdatePosition({ 1, 0 });
-                    break;
-                case Snake::Board::HeadingTo::Up:
-                    snake.UpdatePosition({ 0, -1 });
-                    break;
-                case Snake::Board::HeadingTo::Down:
-                    snake.UpdatePosition({ 0, 1 });
-                    break;
-                case Snake::Board::HeadingTo::None:
-                    break;
-                default:
-                    break;
-                }
+            case Snake::Board::HeadingTo::Left:
+                snake.UpdatePosition({ -1, 0 });
+                break;
+            case Snake::Board::HeadingTo::Right:
+                snake.UpdatePosition({ 1, 0 });
+                break;
+            case Snake::Board::HeadingTo::Up:
+                snake.UpdatePosition({ 0, -1 });
+                break;
+            case Snake::Board::HeadingTo::Down:
+                snake.UpdatePosition({ 0, 1 });
+                break;
+            case Snake::Board::HeadingTo::None:
+                break;
+            default:
+                break;
+            }
 
-                collided = IsColliding();
-                if (collided != IsCollidingOn::None && collided != IsCollidingOn::Fruit)
-                {
-                    break;
-                }
+            collided = IsColliding();
+
+            if (collided == IsCollidingOn::Fruit)
+            {
+                snake.Ate();
+                score += fruit->GetScore();
+                GenerateFruit();
             }
 
             ClearSnakeFootprint();
             AddSnakeFootprint();
 
             snakeUpdated = delta;
+
+            directionUpdated = true;
         }
     }
 
@@ -158,16 +186,12 @@ void Board::SetMatrixBounds(const Size& canvasSize)
     // compute # of squares on horizontal
     const auto w          = static_cast<int>(size.Width * scale * 2);
     const auto panelWidth = canvasSize.Width;
-    matrixHSize           = panelWidth / w;
-    matrixXLeft           = 1 + (panelWidth % w) / 2;
-    matrixXRight          = panelWidth - matrixXLeft;
+    matrixHSize           = std::min<>(static_cast<int>(panelWidth / w), boardSize);
 
     // compute # of squares on vertical
     const auto h           = static_cast<int>(size.Height * scale);
     const auto panelHeight = canvasSize.Height;
-    matrixVSize            = panelHeight / h;
-    matrixYTop             = 1 + (panelHeight % h) / 2;
-    matrixYBottom          = panelHeight - matrixYTop;
+    matrixVSize            = std::min<>(static_cast<int>(panelHeight / h), boardSize);
 }
 
 bool Board::Draw(Renderer& renderer, const Size& canvasSize)
@@ -182,7 +206,12 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
 
     const auto& snakeHead = snake.GetPositionOnBoard();
     const auto& snakeBody = snake.GetBody();
-    Point position        = { xStart, yStart };
+    auto fruitPosition    = Point{ -1, -1 };
+    if (fruit.has_value())
+    {
+        fruitPosition = fruit->GetPosition();
+    }
+    Point position = { xStart, yStart };
 
     for (auto y = 0; y < matrixVSize; y++)
     {
@@ -192,6 +221,15 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
             {
                 if (y == snakeHead.Y && x == snakeHead.X)
                 {
+                    const auto wQuad = w / 4;
+                    const auto hQuad = h / 4;
+                    renderer.FillRectSize(
+                          position.X + wQuad,
+                          position.Y + hQuad,
+                          wQuad * 2,
+                          hQuad * 2,
+                          ' ',
+                          { Color::White, Color::White });
                     renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetHeadColor(), true);
                 }
                 else if (std::any_of(
@@ -201,7 +239,15 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
                 {
                     renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetBodyColor(), false);
                 }
-                // TODO:
+                else if (y == fruitPosition.Y && x == fruitPosition.X)
+                {
+                    const auto wQuad = w / 4;
+                    const auto hQuad = h / 4;
+
+                    renderer.FillRectSize(
+                          position.X + wQuad, position.Y + hQuad, wQuad * 2, hQuad * 2, ' ', fruit->GetColor());
+                    renderer.DrawRectSize(position.X, position.Y, w, h, { Color::White, Color::Transparent }, false);
+                }
             }
 
             position.X += w;

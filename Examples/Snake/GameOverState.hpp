@@ -41,11 +41,13 @@ class GameOverState : public State, public Handlers::OnKeyEventInterface
     Reference<Panel> gameOver         = nullptr;
     Reference<Label> scoreLabel       = nullptr;
     Reference<Label> timeElapsedLabel = nullptr;
+    Reference<Label> levelLabel       = nullptr;
     Reference<Label> messageLabel     = nullptr;
 
     unsigned int score;
     unsigned long timeElapsed; // in seconds
+    unsigned int level;
 
     bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
 };
-} // namespace Tetris
+} // namespace Snake

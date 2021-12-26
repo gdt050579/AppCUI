@@ -49,6 +49,9 @@ bool RunningState::Update()
     ls.Format("Time passed: %lus", delta);
     timePassedLabel->SetText(ls.GetText());
 
+    ls.Format("Level: %u", board.GetLevel());
+    levelLabel->SetText(ls.GetText());
+
     bool gameOver = false;
     board.Update(
           pieceScaleInLeftPanel,
@@ -62,6 +65,7 @@ bool RunningState::Update()
     {
         data->score       = board.GetScore();
         data->timeElapsed = delta;
+        data->level       = board.GetLevel();
         data->machine->PushState<GameOverState>(data, true);
     }
 

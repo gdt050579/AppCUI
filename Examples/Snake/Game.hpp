@@ -16,6 +16,7 @@ struct GameData
 
     unsigned int score        = 0;
     unsigned long timeElapsed = 0;
+    unsigned int level        = 0;
 
     GameData() = default;
 
@@ -56,4 +57,4 @@ class Game : public SingleApp
   private:
     std::shared_ptr<GameData> data = std::make_shared<GameData>(GameData());
 };
-} // namespace Tetris
+} // namespace Snake

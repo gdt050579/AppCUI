@@ -4,13 +4,14 @@
 namespace Snake
 {
 GameOverState::GameOverState(const std::shared_ptr<GameData>& data)
-    : data(data), score(data->score), timeElapsed(data->timeElapsed)
+    : data(data), score(data->score), timeElapsed(data->timeElapsed), level(data->level)
 {
     page             = Factory::TabPage::Create(data->tab, "");
     gameOver         = Factory::Panel::Create(page, "Game over", "d:c,h:9,w:60");
     scoreLabel       = Factory::Label::Create(gameOver, "0", "t:1,b:0,w:100%,x:2%,a:l");
     timeElapsedLabel = Factory::Label::Create(gameOver, "0", "t:2,b:0,w:100%,x:2%,a:l");
-    messageLabel     = Factory::Label::Create(gameOver, "0", "t:4,b:0,w:100%,x:2%,a:l");
+    levelLabel       = Factory::Label::Create(gameOver, "0", "t:3,b:0,w:100%,x:2%,a:l");
+    messageLabel     = Factory::Label::Create(gameOver, "0", "t:5,b:0,w:100%,x:2%,a:l");
 
     gameOver->Handlers()->OnKeyEvent = this;
 
@@ -22,6 +23,9 @@ GameOverState::GameOverState(const std::shared_ptr<GameData>& data)
 
     ls.Format("Time elapsed: %lus", timeElapsed);
     timeElapsedLabel->SetText(ls.GetText());
+
+    ls.Format("Level: %u", level);
+    levelLabel->SetText(ls.GetText());
 }
 
 GameOverState::~GameOverState()
@@ -68,4 +72,4 @@ bool GameOverState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t
 
     return true;
 }
-} // namespace Tetris
+} // namespace Snake

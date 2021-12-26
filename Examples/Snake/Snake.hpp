@@ -18,11 +18,13 @@ class SnakeBody
     ColorPair headColor{ Color::White, Color::Transparent };
     ColorPair bodyColor{ Color::White, Color::Transparent };
 
+    bool snakeAte = false;
   public:
     SnakeBody(const Point& initialPosition);
 
     void SetInitialPosition(const Point& initialPosition);
     void UpdatePosition(const Point& delta);
+    void Ate();
 
     const std::vector<Point>& GetBody() const;
     const Point& GetPositionOnBoard() const;

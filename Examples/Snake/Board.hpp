@@ -3,6 +3,7 @@
 #include <AppCUI.hpp>
 
 #include "Snake.hpp"
+#include "Fruit.hpp"
 
 #include <random>
 #include <array>
@@ -14,7 +15,7 @@ using namespace AppCUI::Utils;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 
-constexpr auto boardSize = 50U;
+constexpr auto boardSize = 50;
 
 class Board
 {
@@ -30,28 +31,27 @@ class Board
 
   private:
     std::array<std::array<bool, boardSize>, boardSize> matrix{ false };
-    int matrixVSize   = 0;
-    int matrixHSize   = 0;
-    int matrixXLeft   = 0;
-    int matrixXRight  = 0;
-    int matrixYTop    = 0;
-    int matrixYBottom = 0;
+    int matrixVSize = 0;
+    int matrixHSize = 0;
 
     Size size{ 1, 1 }; // block size on canvas
 
     SnakeBody snake{ { 0, 0 } };
-    double slice        = 0;
-    double snakeUpdated = 0;
+    double slice          = 0;
+    double snakeUpdated   = -1;
+    bool directionUpdated = false;
+
+    std::optional<Fruit> fruit;
 
     std::random_device rd;
     std::default_random_engine dre{ rd() };
-    std::uniform_int_distribution<int> uid{ 0, 10 /* spawned object type */ };
+    std::uniform_int_distribution<int> uidFruitColor{ 0, static_cast<int>(Color::Transparent) - 1 };
 
     double scale = 0.5;
 
-    unsigned int score                             = 0;
-    unsigned int level                             = 1;
-    const unsigned int deltaSecondsToIncreaseLevel = 10;
+    unsigned int score                    = 0;
+    unsigned int level                    = 1;
+    const unsigned int deltaLevelIncrease = 40;
 
     enum class IsCollidingOn
     {
@@ -84,10 +84,11 @@ class Board
     bool SetDirection(HeadingTo direction);
 
   private:
-    bool SetNextCurrentPiece();
     bool ClearSnakeFootprint();
     bool AddSnakeFootprint();
 
     IsCollidingOn IsColliding();
+
+    void GenerateFruit();
 };
 } // namespace Snake

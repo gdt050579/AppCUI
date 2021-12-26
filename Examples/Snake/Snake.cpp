@@ -38,7 +38,19 @@ void SnakeBody::UpdatePosition(const Point& delta)
 {
     const Point p{ body[0].X + delta.X, body[0].Y + delta.Y };
     body.insert(body.begin(), p);
-    body.pop_back();
+
+    if (snakeAte == false)
+    {
+        body.pop_back();
+    }
+    else
+    {
+        snakeAte = false;
+    }
+}
+void SnakeBody::Ate()
+{
+    snakeAte = true;
 }
 const ColorPair& SnakeBody::GetHeadColor() const
 {
