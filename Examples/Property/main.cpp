@@ -314,6 +314,10 @@ class PropertyWindowExmaple : public Window
               sp->CreateChildControl<PropertyList>("d:c", ct.UpCast<PropertiesInterface>(), PropertyListFlags::Border);
         sp->SetSecondPanelSize(30);
     }
+    //void Paint(Graphics::Renderer & renderer) override
+    //{
+    //    renderer.Clear(' ', ColorPair{ Color::White, Color::Blue });
+    //}
 };
 int main()
 {

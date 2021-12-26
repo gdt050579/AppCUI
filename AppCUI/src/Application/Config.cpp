@@ -354,20 +354,20 @@ void Config::SetDarkTheme()
     this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 
-    this->PropertyList.Border             = ColorPair{ Color::White, Color::DarkBlue };
+    this->PropertyList.Border             = ColorPair{ Color::White, Color::Transparent };
     this->PropertyList.Cursor             = ColorPair{ Color::Black, Color::White };
     this->PropertyList.CursorReadOnly     = ColorPair{ Color::Gray, Color::White };
-    this->PropertyList.Inactive           = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->PropertyList.Category.Text      = ColorPair{ Color::White, Color::Blue };
-    this->PropertyList.Category.Arrow     = ColorPair{ Color::Green, Color::Blue };
-    this->PropertyList.Category.Stats     = ColorPair{ Color::Gray, Color::Blue };
-    this->PropertyList.Item.Text          = ColorPair{ Color::Silver, Color::DarkBlue };
-    this->PropertyList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::DarkBlue };
-    this->PropertyList.Item.Value         = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->PropertyList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->PropertyList.Item.Checked       = ColorPair{ Color::Aqua, Color::DarkBlue };
-    this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::DarkBlue };
-    this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::DarkBlue };
+    this->PropertyList.Inactive           = ColorPair{ Color::Gray, Color::Transparent };
+    this->PropertyList.Category.Text      = ColorPair{ Color::White, Color::Magenta };
+    this->PropertyList.Category.Arrow     = ColorPair{ Color::Green, Color::Magenta };
+    this->PropertyList.Category.Stats     = ColorPair{ Color::Gray, Color::Magenta };
+    this->PropertyList.Item.Text          = ColorPair{ Color::Silver, Color::Transparent };
+    this->PropertyList.Item.LineSeparator = ColorPair{ Color::DarkGreen, Color::Transparent };
+    this->PropertyList.Item.Value         = ColorPair{ Color::Yellow, Color::Transparent };
+    this->PropertyList.Item.ReadOnly      = ColorPair{ Color::Gray, Color::Transparent };
+    this->PropertyList.Item.Checked       = ColorPair{ Color::Aqua, Color::Transparent };
+    this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::Transparent };
+    this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::Transparent };
     this->PropertyList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
     this->PropertyList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
 
