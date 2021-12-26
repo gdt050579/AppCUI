@@ -34,7 +34,7 @@ void GameOverState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool GameOverState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool GameOverState::HandleEvent(Reference<Control> /*ctrl*/, Event /*eventType*/, int /*controlID*/)
 {
     return false;
 }
@@ -59,7 +59,7 @@ void GameOverState::Resume()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool GameOverState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
+bool GameOverState::OnKeyEvent(Reference<Control> /*control*/, Key keyCode, char16_t /*unicodeChar*/)
 {
     if (keyCode == Key::Enter)
     {

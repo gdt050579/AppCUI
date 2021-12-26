@@ -1574,16 +1574,16 @@ bool Controls::Control::SetTextWithHotKey(const ConstString& caption, uint32 hot
         switch (txt.Encoding)
         {
         case StringEncoding::Ascii:
-            result = this->SetHotKey(((char*) txt.Data)[hotKeyTextOffset]);
+            result = this->SetHotKey(((const char*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::Unicode16:
-            result = this->SetHotKey(((char16*) txt.Data)[hotKeyTextOffset]);
+            result = this->SetHotKey(((const char16*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::CharacterBuffer:
-            result = this->SetHotKey(((Character*) txt.Data)[hotKeyTextOffset].Code);
+            result = this->SetHotKey(((const Character*) txt.Data)[hotKeyTextOffset].Code);
             break;
         case StringEncoding::UTF8:
-            result = this->SetHotKey(((uint8*) txt.Data)[hotKeyTextOffset]);
+            result = this->SetHotKey(((const uint8*) txt.Data)[hotKeyTextOffset]);
             break;
         }
         if (result)
@@ -1733,7 +1733,7 @@ void Controls::Control::RaiseEvent(Event eventType, int ID)
 {
     Application::RaiseEvent(this, this, eventType, ID);
 }
-void Controls::Control::Paint(Graphics::Renderer& renderer)
+void Controls::Control::Paint(Graphics::Renderer& /*renderer*/)
 {
 }
 bool Controls::Control::IsInitialized()

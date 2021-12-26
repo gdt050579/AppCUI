@@ -1,5 +1,6 @@
 #include "AppCUI.hpp"
 #include <stdio.h>
+#include <cinttypes>
 
 using namespace AppCUI;
 using namespace AppCUI::Application;
@@ -13,13 +14,13 @@ int main(void)
     app.OpenWrite(fileName);
     uint32 bytesWritten = 0;
     app.WriteBuffer("GDT1", 4, bytesWritten);
-    printf("Size: %llu\n", app.GetSize());
-    printf("Get poz: %llu\n", app.GetCurrentPos());
+    printf("Size: %" PRIu64 "\n", app.GetSize());
+    printf("Get poz: %" PRIu64 "\n", app.GetCurrentPos());
     app.SetCurrentPos(app.GetSize() / 2);
-    printf("New poz: %llu\n", app.GetCurrentPos());
+    printf("New poz: %" PRIu64 "\n", app.GetCurrentPos());
     app.SetSize(app.GetSize() / 2);
-    printf("New size: %llu\n", app.GetSize());
-    printf("Get poz: %llu\n", app.GetCurrentPos());
+    printf("New size: %" PRIu64 "\n", app.GetSize());
+    printf("Get poz: %" PRIu64 "\n", app.GetCurrentPos());
     app.Close();
     return 0;
 }

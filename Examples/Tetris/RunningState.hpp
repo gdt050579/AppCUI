@@ -19,10 +19,10 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
   public:
     explicit RunningState(const std::shared_ptr<GameData>& data);
 
-    RunningState(const RunningState& other)     = default;
-    RunningState(RunningState&& other) noexcept = default;
-    RunningState& operator=(const RunningState& other) = default;
-    RunningState& operator=(RunningState&& other) noexcept = default;
+    RunningState(const RunningState& other)     = delete;
+    RunningState(RunningState&& other) noexcept = delete;
+    RunningState& operator=(const RunningState& other) = delete;
+    RunningState& operator=(RunningState&& other) noexcept = delete;
 
     ~RunningState();
 
@@ -35,7 +35,7 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     void Pause() override;
     void Resume() override;
 
-    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar) override;
 
   private:
     class PaintControlImplementationRightPiecePanels : public Handlers::PaintControlInterface

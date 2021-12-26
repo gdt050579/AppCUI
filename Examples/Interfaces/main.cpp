@@ -27,11 +27,11 @@ class MyWin : public Window,
         auto cb                        = this->CreateChildControl<CheckBox>("I am not checked", "x:1,y:3,w:30", 123);
         cb->Handlers()->OnCheck        = this;
     }
-    void OnButtonPressed(Reference<Button> r) override
+    void OnButtonPressed(Reference<Button> /*r*/) override
     {
         Dialogs::MessageBox::ShowNotification("Button", "This button was pressed !");
     };
-    void PaintControl(Reference<Control> c, Renderer& r) override
+    void PaintControl(Reference<Control> /*c*/, Renderer& r) override
     {
         r.Clear('X', ColorPair{ Color::Red, Color::Black });
     };

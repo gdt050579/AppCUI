@@ -18,10 +18,10 @@ class GameOverState : public State, public Handlers::OnKeyEventInterface
   public:
     explicit GameOverState(const std::shared_ptr<GameData>& data);
 
-    GameOverState(const GameOverState& other)     = default;
-    GameOverState(GameOverState&& other) noexcept = default;
-    GameOverState& operator=(const GameOverState& other) = default;
-    GameOverState& operator=(GameOverState&& other) noexcept = default;
+    GameOverState(const GameOverState& other)     = delete;
+    GameOverState(GameOverState&& other) noexcept = delete;
+    GameOverState& operator=(const GameOverState& other) = delete;
+    GameOverState& operator=(GameOverState&& other) noexcept = delete;
 
     ~GameOverState();
 
@@ -46,6 +46,6 @@ class GameOverState : public State, public Handlers::OnKeyEventInterface
     unsigned int score;
     unsigned long timeElapsed; // in seconds
 
-    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar) override;
 };
 } // namespace Tetris

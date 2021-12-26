@@ -167,7 +167,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                       p.is_directory());
             }
         }
-        catch (std::exception e)
+        catch (std::exception& e)
         {
             LOG_ERROR("%s", e.what());
         }

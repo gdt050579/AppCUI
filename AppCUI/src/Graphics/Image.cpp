@@ -134,7 +134,7 @@ bool Image::Create(uint32 imageWidth, uint32 imageHeight)
 bool Image::Create(uint32 imageWidth, uint32 imageHeight, string_view image)
 {
     CHECK(Create(imageWidth, imageHeight), false, "");
-    auto s = image.data();
+    auto s = reinterpret_cast<const unsigned char*>(image.data());
     auto e = s + std::min<>(image.size(), (size_t) imageWidth * (size_t) imageHeight);
     auto p = this->pixels;
     while (s < e)

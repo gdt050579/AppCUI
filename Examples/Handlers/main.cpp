@@ -14,7 +14,7 @@ int main()
     auto wnd = Factory::Window::Create("Test", "d:c,w:40,h:10");
 
     // a handler to handle key event for wnd
-    wnd->Handlers()->OnKeyEvent = [](Reference<Control> c, Key keyCode, char16 unicodeChar)
+    wnd->Handlers()->OnKeyEvent = [](Reference<Control> /*c*/, Key keyCode, char16 /*unicodeChar*/)
     {
         if (keyCode == Key::Backspace)
         {
@@ -26,12 +26,12 @@ int main()
 
     auto btn = Factory::Button::Create(wnd, "Push Me", "x:1,y:1,w:10", 123);
     // a handler to handle button click
-    btn->Handlers()->OnButtonPressed = [](Reference<Button> r)
+    btn->Handlers()->OnButtonPressed = [](Reference<Button> /*r*/)
     { Dialogs::MessageBox::ShowNotification("Button", "This button was pressed !"); };
 
     auto p = Factory::Panel::Create(wnd, "x:12,y:1,w:5,h:2");
     // a handler to handle paint event
-    p->Handlers()->PaintControl = [](Reference<Control> c, Renderer& r) {
+    p->Handlers()->PaintControl = [](Reference<Control> /*c*/, Renderer& r) {
         r.Clear('X', ColorPair{ Color::Red, Color::Black });
     };
 

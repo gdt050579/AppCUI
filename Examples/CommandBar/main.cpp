@@ -44,7 +44,7 @@ class MyUserControl : public UserControl
         }
         cmp_ID++;
     }
-    void Paint(AppCUI::Graphics::Renderer& r)
+    void Paint(AppCUI::Graphics::Renderer& r) override
     {
         if (this->HasFocus())
             r.Clear('x', ColorPair{ Color::White, Color::Red });
@@ -63,7 +63,7 @@ class MyUserControl2 : public UserControl
     MyUserControl2(std::string_view layout) : UserControl("", layout)
     {
     }
-    void Paint(AppCUI::Graphics::Renderer& r)
+    void Paint(AppCUI::Graphics::Renderer& r) override
     {
         if (this->HasFocus())
             r.Clear('#', ColorPair{ Color::White, Color::DarkGreen });

@@ -75,7 +75,7 @@ Tree::Tree(string_view layout, const TreeFlags flags, const uint32 noOfColumns)
     cc->orderedItems.reserve(100);
 }
 
-bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const
+bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) const
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1037,7 +1037,7 @@ bool Tree::OnMouseOver(int x, int y)
     return false;
 }
 
-bool Tree::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool Tree::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     switch (direction)
     {
@@ -1438,13 +1438,13 @@ bool Tree::IsMouseOnBorder(int x, int y) const
     return (x == 0 || x == cc->Layout.Width - BorderOffset) || (y == 0 || y == cc->Layout.Width - BorderOffset);
 }
 
-bool Tree::IsMouseOnColumnHeader(int x, int y) const
+bool Tree::IsMouseOnColumnHeader(int /*x*/, int /*y*/) const
 {
     // TODO:
     return false;
 }
 
-bool Tree::IsMouseOnColumnSeparator(int x, int y) const
+bool Tree::IsMouseOnColumnSeparator(int /*x*/, int /*y*/) const
 {
     // TODO:
     return false;
@@ -1466,7 +1466,7 @@ bool Tree::IsMouseOnSearchField(int x, int y) const
     return false;
 }
 
-bool Tree::AdjustElementsOnResize(const int newWidth, const int newHeight)
+bool Tree::AdjustElementsOnResize(const int /*newWidth*/, const int /*newHeight*/)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -1696,7 +1696,6 @@ bool Tree::ProcessOrderedItems(const ItemHandle handle, const bool clear)
             const auto& root = cc->items[rootHandle];
             for (auto& childHandle : root.children)
             {
-                const auto& child = cc->items[childHandle];
                 ProcessOrderedItems(childHandle, false);
             }
         }

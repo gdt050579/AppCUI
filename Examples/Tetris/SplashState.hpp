@@ -17,10 +17,10 @@ class SplashState : public State
   public:
     explicit SplashState(const std::shared_ptr<GameData>& data);
 
-    SplashState(const SplashState& other)     = default;
-    SplashState(SplashState&& other) noexcept = default;
-    SplashState& operator=(const SplashState& other) = default;
-    SplashState& operator=(SplashState&& other) noexcept = default;
+    SplashState(const SplashState& other)     = delete;
+    SplashState(SplashState&& other) noexcept = delete;
+    SplashState& operator=(const SplashState& other) = delete;
+    SplashState& operator=(SplashState&& other) noexcept = delete;
 
     ~SplashState();
 

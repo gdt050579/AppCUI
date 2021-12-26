@@ -381,7 +381,7 @@ void FileDialogWindow::ProcessTextFieldInput()
     err.clear();
     // remove becuase of invalid paths keeps returing an error code, even if the path does not exists
     // const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
-    const bool isDir = std::filesystem::is_directory(candidateResultedPath);
+    //const bool isDir = std::filesystem::is_directory(candidateResultedPath);
     // if (err)
     //{
     //    MessageBox::ShowError(

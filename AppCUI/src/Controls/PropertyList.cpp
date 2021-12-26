@@ -113,7 +113,7 @@ class PropertyEditDialog : public Window
         this->Refresh();
         this->Show();
     }
-    bool OnEvent(Reference<Control> sender, Event eventType, int id) override
+    bool OnEvent(Reference<Control> /*sender*/, Event eventType, int id) override
     {
         switch (eventType)
         {
@@ -1557,7 +1557,7 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         return true;
     return false;
 }
-bool PropertyListContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool PropertyListContext::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     auto currentStartView = this->startView;
     switch (direction)
@@ -1605,7 +1605,7 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
     }
 }
 
-bool PropertyListContext::OnMouseOver(int x, int y)
+bool PropertyListContext::OnMouseOver(int x, int /*y*/)
 {
     if (GetSeparatorXPos() == x)
     {
@@ -1627,7 +1627,7 @@ bool PropertyListContext::OnMouseOver(int x, int y)
     return false;
 }
 
-bool PropertyListContext::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool PropertyListContext::OnMouseDrag(int x, int /*y*/, Input::MouseButton /*button*/)
 {
     if (separatorStatus == PropertySeparatorStatus::Drag)
     {
@@ -1645,7 +1645,7 @@ bool PropertyListContext::OnMouseLeave()
     }
     return false;
 }
-void PropertyListContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+void PropertyListContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/)
 {
     this->separatorStatus = PropertySeparatorStatus::None;
 }
