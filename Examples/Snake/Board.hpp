@@ -67,13 +67,7 @@ class Board
     HeadingTo direction = HeadingTo::Left;
 
   public:
-    void Update(
-          int scale,
-          unsigned int maxPiecesInQueue,
-          const Reference<Control> control,
-          const Size& size,
-          unsigned long delta,
-          bool& gameOver);
+    void Update(int scale, const Reference<Control> control, const Size& size, unsigned long delta, bool& gameOver);
     void SetMatrixBounds(const Size& canvasSize);
 
     bool Draw(Renderer& renderer, const Size& canvasSize);

@@ -23,8 +23,7 @@ bool Board::SetDirection(HeadingTo direction)
 
 bool Board::ClearSnakeFootprint()
 {
-    const auto& position = snake.GetPositionOnBoard();
-    const auto& body     = snake.GetBody();
+    const auto& body = snake.GetBody();
     for (const auto& point : body)
     {
         if (point.X < 0 || point.Y < 0)
@@ -39,8 +38,7 @@ bool Board::ClearSnakeFootprint()
 
 bool Board::AddSnakeFootprint()
 {
-    const auto& position = snake.GetPositionOnBoard();
-    const auto& body     = snake.GetBody();
+    const auto& body = snake.GetBody();
     for (const auto& point : body)
     {
         if (point.X < 0 || point.Y < 0)
@@ -107,7 +105,6 @@ void Board::GenerateFruit()
 
 void Board::Update(
       int scale,
-      unsigned int maxPiecesInQueue,
       const Reference<Control> control,
       const Size& size,
       unsigned long delta,

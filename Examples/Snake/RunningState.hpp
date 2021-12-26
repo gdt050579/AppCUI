@@ -58,7 +58,6 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
     const std::shared_ptr<GameData>& data;
 
     clock_t initialTime{};
-    const unsigned int maxPiecesInQueue      = 3U;
     unsigned long delta                      = 0;
     const unsigned int pieceScaleInLeftPanel = 4;
 

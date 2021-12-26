@@ -55,7 +55,6 @@ bool RunningState::Update()
     bool gameOver = false;
     board.Update(
           pieceScaleInLeftPanel,
-          maxPiecesInQueue,
           rightPanel.DownCast<Control>(),
           { leftPanel->GetWidth() - 2U, leftPanel->GetHeight() - 2U },
           delta,
