@@ -118,7 +118,7 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
         };
         // iterate from all top level windows and see if a hot-key is being associated
         auto winList          = app->AppDesktop->GetChildrenList();
-        const auto endWinList = winList + app->AppDesktop->GetChildernCount();
+        const auto endWinList = winList + app->AppDesktop->GetChildrenCount();
         if (winList)
         {
             for (; winList < endWinList; winList++)
@@ -303,9 +303,13 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     if (Members->handlers)
     {
         if (Members->handlers->PaintControl.obj)
+        {
             Members->handlers->PaintControl.obj->PaintControl(ctrl, renderer);
+        }
         else
+        {
             ctrl->Paint(renderer);
+        }
     }
     else
     {
@@ -326,7 +330,6 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     renderer.ResetClip(); // make sure that the entire surface is available
     app->terminal->ScreenCanvas.ExtendAbsoluteClipInAllDirections(1);
     renderer.DrawRectSize(0, 0, ctrl->GetWidth(), ctrl->GetHeight(), { Color::White, Color::Transparent }, false);
-
 #endif
 
     const auto cnt = Members->ControlsCount;
@@ -1337,7 +1340,7 @@ bool ApplicationImpl::Uninit()
 void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
 {
     auto winList      = this->AppDesktop->GetChildrenList();
-    auto winListCount = this->AppDesktop->GetChildernCount();
+    auto winListCount = this->AppDesktop->GetChildrenCount();
     auto y            = 0;
     auto x            = 0;
     int tempSz        = 0;

@@ -22,17 +22,16 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
 }
 
 CanvasViewer::CanvasViewer(
-      const ConstString& caption,
-      string_view layout,
-      uint32 canvasWidth,
-      uint32 canvasHeight,
-      ViewerFlags flags)
+      const ConstString& caption, string_view layout, uint32 canvasWidth, uint32 canvasHeight, ViewerFlags flags)
     : Control(new CanvasControlContext(), caption, layout, true)
 {
     auto Members = reinterpret_cast<CanvasControlContext*>(this->Context);
 
-    Members->Flags =
-          GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_VSCROLL | GATTR_HSCROLL | ((uint32) flags);
+    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | ((uint32) flags);
+    if (((((uint32) flags) & ((uint32) ViewerFlags::HideScrollBar)) == 0))
+    {
+        Members->Flags |= (GATTR_VSCROLL | GATTR_HSCROLL);
+    }
     Members->CanvasScrollX             = 0;
     Members->CanvasScrollY             = 0;
     Members->mouseDragX                = 0;

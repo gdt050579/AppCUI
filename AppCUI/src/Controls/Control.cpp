@@ -1444,7 +1444,7 @@ Reference<Control> Controls::Control::GetChild(uint32 index)
           CTRLC->ControlsCount - 1);
     return CTRLC->Controls[index];
 }
-uint32 Controls::Control::GetChildernCount()
+uint32 Controls::Control::GetChildrenCount()
 {
     return CTRLC->ControlsCount;
 }

@@ -2884,7 +2884,7 @@ namespace Controls
         Reference<Control> GetParent();
         Control** GetChildrenList();
         Reference<Control> GetChild(uint32 index);
-        uint32 GetChildernCount();
+        uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
 
         // Events
@@ -3299,8 +3299,10 @@ namespace Controls
     };
     enum class ViewerFlags : uint32
     {
-        None   = 0,
-        Border = 0x000100,
+        /* 0 -> 0x40 (GATTR) */
+        None          = 0x000000,
+        Border        = 0x000100,
+        HideScrollBar = 0x000200
     };
     class EXPORT CanvasViewer : public Control
     {
