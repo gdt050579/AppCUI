@@ -118,9 +118,9 @@ Board::IsCollidingOn Board::IsColliding(const Piece& piece, const Point& futureP
     }
 
     const auto& pieceMatrix = piece.GetMatrix();
-    for (auto y = 0ULL; y < pieceMatrix.size(); y++)
+    for (auto y = 0LL; y < static_cast<int64_t>(pieceMatrix.size()); y++)
     {
-        for (auto x = 0ULL; x < pieceMatrix[y].size(); x++)
+        for (auto x = 0LL; x < static_cast<int64_t>(pieceMatrix[y].size()); x++)
         {
             if (pieceMatrix[y][x] == true)
             {

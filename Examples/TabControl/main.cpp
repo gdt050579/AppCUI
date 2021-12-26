@@ -16,7 +16,7 @@ class TabNoFocusExample : public Window
     Reference<Tab> tb;
 
   public:
-    TabNoFocusExample(TabFlags flags, uint32 tabSize, int tabsCount)
+    TabNoFocusExample(TabFlags flags, uint32 /*tabSize*/, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         tb       = Factory::Tab::Create(this, "l:2,t:4,r:2,b:2", flags);
@@ -61,7 +61,7 @@ class TabExampleWin2 : public Window
     Reference<Tab> tb_h, tb_v;
 
   public:
-    TabExampleWin2(TabFlags flags, uint32 tabSize, int tabsCount)
+    TabExampleWin2(TabFlags flags, uint32 /*tabSize*/, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto spv = Factory::Splitter::Create(this, "d:c", true);

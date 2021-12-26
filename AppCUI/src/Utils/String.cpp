@@ -168,7 +168,6 @@ bool String::StartsWith(string_view sir1, string_view sir2, bool ignoreCase)
 {
     auto p1   = (const uint8*) sir1.data();
     auto p2   = (const uint8*) sir2.data();
-    auto p1_e = p1 + sir1.length();
     auto p2_e = p2 + sir2.length();
     CHECK(p1, false, "");
     CHECK(p2, false, "");
@@ -700,13 +699,13 @@ string_view String::Format(const char* format, ...)
     va_list args;
     int32 len, len2;
 
-    CHECK(format, nullptr, "Expecting a valid(non-null) format parameter !");
+    CHECK(format, "", "Expecting a valid(non-null) format parameter !");
     va_start(args, format);
     len = vsnprintf(nullptr, 0, format, args);
     va_end(args);
-    CHECK(len >= 0, nullptr, "Invalid format (unable to format your string) !");
+    CHECK(len >= 0, "", "Invalid format (unable to format your string) !");
 
-    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, nullptr);
+    VALIDATE_ALLOCATED_SPACE(((uint32) len) + 2, "");
 
     va_start(args, format);
     len2 = vsnprintf(Text, (Allocated & 0x7FFFFFFF) - 1, format, args);
@@ -714,7 +713,7 @@ string_view String::Format(const char* format, ...)
     if (len2 < 0)
     {
         Clear();
-        RETURNERROR(nullptr, "Fail on vsnprintf !");
+        RETURNERROR("", "Fail on vsnprintf !");
     }
     this->Size       = ((uint32) len2);
     Text[this->Size] = 0;

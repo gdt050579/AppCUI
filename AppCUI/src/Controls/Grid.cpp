@@ -63,7 +63,7 @@ void Grid::Paint(Renderer& renderer)
     }
 }
 
-bool Grid::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
+bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -99,6 +99,7 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t UnicodeChar)
             context->selectedCellsIndexes.clear();
             return true;
         }
+        break;
     case Input::Key::Ctrl | Input::Key::C:
         if (context->CopySelectedCellsContent())
         {
@@ -252,7 +253,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     }
 }
 
-void Grid::OnMouseReleased(int x, int y, MouseButton button)
+void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton /*button*/)
 {
 }
 
@@ -1289,7 +1290,6 @@ bool GridControlContext::PasteContentToSelectedCells()
 
     if (tokens.size() > selectedCellsIndexes.size())
     {
-        const auto delta = selectedCellsIndexes.size() - tokens.size() + 1;
         const auto start = tokens.begin() + selectedCellsIndexes.size() - 1U;
 
         LocalUnicodeStringBuilder<2048> lusbLastToken;

@@ -22,7 +22,7 @@ struct GameData
     GameData(const GameData& other)     = delete;
     GameData(GameData&& other) noexcept = default;
 
-    explicit GameData(GameData* other){};
+    explicit GameData(GameData* /*other*/){};
     GameData& operator=(const GameData& other) = delete;
     GameData& operator=(GameData&& other) noexcept = delete;
 

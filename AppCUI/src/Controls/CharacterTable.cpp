@@ -151,7 +151,7 @@ uint32 CharacterTableContext::MousePosToChar(int x, int y)
         return INVALID_CHARACTER;
     return c_code;
 }
-void CharacterTableContext::OnMousePressed(int x, int y, Input::MouseButton button)
+void CharacterTableContext::OnMousePressed(int x, int y, Input::MouseButton /*button*/)
 {
     if (y == (this->Layout.Height - 1))
     {
@@ -271,7 +271,7 @@ bool CharacterTable::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return reinterpret_cast<CharacterTableContext*>(this->Context)->OnKeyEvent(keyCode, UnicodeChar);
 }
-bool CharacterTable::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool CharacterTable::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     return reinterpret_cast<CharacterTableContext*>(this->Context)->OnMouseWheel(direction);
 }

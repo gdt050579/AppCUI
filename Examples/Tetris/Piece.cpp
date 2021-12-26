@@ -2,7 +2,7 @@
 
 namespace Tetris
 {
-Piece::Piece(const PieceType type, const Reference<Control> control, const Point& position)
+Piece::Piece(const PieceType type, const Reference<Control> control, const Point& /*position*/)
     : control(control), type(type)
 {
     switch (type)

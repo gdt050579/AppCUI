@@ -89,7 +89,7 @@ bool Password::OnMouseDrag(int x, int y, Input::MouseButton)
     }
     return false;
 }
-void Password::OnMouseReleased(int x, int y, Input::MouseButton)
+void Password::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton)
 {
     SetChecked(false);
 }

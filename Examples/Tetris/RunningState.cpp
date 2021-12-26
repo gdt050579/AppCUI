@@ -40,7 +40,7 @@ void RunningState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool RunningState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool RunningState::HandleEvent(Reference<Control> /*ctrl*/, Event /*eventType*/, int /*controlID*/)
 {
     return false;
 }
@@ -89,7 +89,7 @@ void RunningState::Resume()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool RunningState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
+bool RunningState::OnKeyEvent(Reference<Control> /*control*/, Key keyCode, char16_t /*unicodeChar*/)
 
 {
     switch (keyCode)
@@ -139,7 +139,7 @@ RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEventInterfaceImp
 }
 
 bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
-      Reference<Control> control, Key keyCode, char16_t unicodeChar)
+      Reference<Control> /*control*/, Key keyCode, char16_t /*unicodeChar*/)
 {
     switch (keyCode)
     {

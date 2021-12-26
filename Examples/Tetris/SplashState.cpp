@@ -34,7 +34,7 @@ void SplashState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool SplashState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool SplashState::HandleEvent(Reference<Control> /*ctrl*/, Event /*eventType*/, int /*controlID*/)
 {
     return false;
 }

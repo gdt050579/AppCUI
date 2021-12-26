@@ -401,16 +401,16 @@ bool Controls::WindowControlsBar::SetItemTextWithHotKey(
         switch (txt.Encoding)
         {
         case StringEncoding::Ascii:
-            ch = (((char*) txt.Data)[hotKeyTextOffset]);
+            ch = (((const char*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::Unicode16:
-            ch = (((char16*) txt.Data)[hotKeyTextOffset]);
+            ch = (((const char16*) txt.Data)[hotKeyTextOffset]);
             break;
         case StringEncoding::CharacterBuffer:
-            ch = (((Character*) txt.Data)[hotKeyTextOffset].Code);
+            ch = (((const Character*) txt.Data)[hotKeyTextOffset].Code);
             break;
         case StringEncoding::UTF8:
-            ch = (((uint8*) txt.Data)[hotKeyTextOffset]);
+            ch = (((const uint8*) txt.Data)[hotKeyTextOffset]);
             break;
         }
         if (ch != 0)

@@ -111,7 +111,7 @@ string_view NumericFormatter::ToDecStringSigned(int64 value)
 }
 string_view NumericFormatter::ToBaseUnsigned(uint64 value, uint8 base)
 {
-    CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
+    CHECK((base >= 2) && (base <= 16), "", "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)
     {
     case 2:
@@ -128,7 +128,7 @@ string_view NumericFormatter::ToBaseUnsigned(uint64 value, uint8 base)
 }
 string_view NumericFormatter::ToBaseSigned(int64 value, uint8 base)
 {
-    CHECK((base >= 2) && (base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", base);
+    CHECK((base >= 2) && (base <= 16), "", "Expecting a valid base (2..16) --> received: %d", base);
     switch (base)
     {
     case 2:
@@ -146,7 +146,7 @@ string_view NumericFormatter::ToBaseSigned(int64 value, uint8 base)
 
 string_view NumericFormatter::ToStringUnsigned(uint64 value, NumericFormat fmt)
 {
-    CHECK((fmt.Base >= 2) && (fmt.Base <= 16), nullptr, "Expecting a valid base (2..16) --> received: %d", fmt.Base);
+    CHECK((fmt.Base >= 2) && (fmt.Base <= 16), "", "Expecting a valid base (2..16) --> received: %d", fmt.Base);
     char* s;
     char* e;
     const char* base_letter;

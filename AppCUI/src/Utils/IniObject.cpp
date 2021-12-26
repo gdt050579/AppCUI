@@ -376,7 +376,6 @@ void Ini::Parser::SkipArrayWord()
     // asume it starts with a valid character (not a space)
     // we'll have to parse until we find a space, a terminator or a new line
 
-    BuffPtr p_start = current;
     while (current < end)
     {
         auto type = Ini_Char_Type[*current];
@@ -1248,7 +1247,7 @@ Input::Key IniValueArray::ToKey(Input::Key defaultValue) const
     else
         return defaultValue;
 }
-const char* IniValueArray::ToString(const char* defaultValue) const
+const char* IniValueArray::ToString(const char* /*defaultValue*/) const
 {
     return text;
 }

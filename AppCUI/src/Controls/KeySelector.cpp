@@ -43,7 +43,7 @@ void KeySelector::Paint(Graphics::Renderer& renderer)
         renderer.SetCursor(1, 0);
 }
 
-bool KeySelector::OnKeyEvent(Key KeyCode, char16 characterCode)
+bool KeySelector::OnKeyEvent(Key KeyCode, char16 /*characterCode*/)
 {
     CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, false);
 

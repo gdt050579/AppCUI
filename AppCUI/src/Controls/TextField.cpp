@@ -578,7 +578,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
         renderer.SetCursor(x + 1, y);
     }
 }
-void TextField::OnAfterResize(int newWidth, int newHeight)
+void TextField::OnAfterResize(int /*newWidth*/, int /*newHeight*/)
 {
     CREATE_TYPECONTROL_CONTEXT(TextFieldControlContext, Members, );
     int sz            = Members->Text.Len();
@@ -648,7 +648,7 @@ void TextField::OnMousePressed(int x, int y, Input::MouseButton button)
         }
     }
 }
-bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlID)
+bool TextField::OnEvent(Reference<Control> /*sender*/, Event eventType, int controlID)
 {
     if (eventType == Event::Command)
     {
@@ -679,12 +679,12 @@ bool TextField::OnEvent(Reference<Control> sender, Event eventType, int controlI
     }
     return false;
 }
-bool TextField::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool TextField::OnMouseDrag(int x, int y, Input::MouseButton /*button*/)
 {
     TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), true);
     return true;
 }
-void TextField::OnMouseReleased(int x, int y, Input::MouseButton button)
+void TextField::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
 }

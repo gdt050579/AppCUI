@@ -148,7 +148,7 @@ bool ColorPickerContext::OnMouseOver(int x, int y)
     }
     return false;
 }
-void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton button)
+void ColorPickerContext::OnMousePressed(int x, int y, Input::MouseButton /*button*/)
 {
     auto obj = MouseToObject(x, y);
     if (obj != NO_COLOR_OBJECT)
@@ -246,7 +246,7 @@ void ColorPicker::Paint(Graphics::Renderer& renderer)
 {
     reinterpret_cast<ColorPickerContext*>(this->Context)->Paint(renderer);
 }
-bool ColorPicker::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
+bool ColorPicker::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
 {
     bool result = reinterpret_cast<ColorPickerContext*>(this->Context)->OnKeyEvent(keyCode);
     switch (keyCode)
