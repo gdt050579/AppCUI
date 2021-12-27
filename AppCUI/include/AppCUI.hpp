@@ -2349,7 +2349,8 @@ namespace Graphics
     {
         Single = 0,
         Double,
-        SingleThick
+        SingleThick,
+        Border
     };
     class EXPORT Canvas;
     class EXPORT Renderer
