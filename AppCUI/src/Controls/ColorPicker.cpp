@@ -119,7 +119,8 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
               Cfg->ComboBox.Focus.Button);
     renderer.DrawVerticalLine(
           SPACES_PER_COLOR * COLOR_MATRIX_WIDTH + 1, 1 + this->yOffset, COLOR_MATRIX_HEIGHT + this->yOffset, col, true);
-    renderer.DrawRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, col, false);
+    renderer.DrawRect(
+          0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, col, LineType::Single);
 }
 void ColorPickerContext::Paint(Graphics::Renderer& renderer)
 {

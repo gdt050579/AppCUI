@@ -2345,7 +2345,11 @@ namespace Graphics
             return *this;
         }
     };
-
+    enum class LineType: uint8
+    {
+        Single = 0,
+        Double
+    };
     class EXPORT Canvas;
     class EXPORT Renderer
     {
@@ -2390,8 +2394,8 @@ namespace Graphics
         // Rectangle
         bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
         bool FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, const ColorPair color);
-        bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, bool doubleLine);
+        bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, LineType lineType);
+        bool DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, LineType lineType);
 
         // Characters
         bool GetCharacter(int x, int y, Character& c);

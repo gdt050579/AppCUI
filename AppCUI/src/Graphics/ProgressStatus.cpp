@@ -54,7 +54,7 @@ void ProgressStatus_Paint_Panel()
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT,
           PSData.App->config.ProgressStatus.Border,
-          false);
+          LineType::Single);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
                 WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin,

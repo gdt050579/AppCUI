@@ -59,7 +59,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
 
     if (Members->Flags & ((uint32) ViewerFlags::Border))
     {
-        renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, false);
+        renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, col->Border, LineType::Single);
         if (Members->Layout.Width > 6)
         {
             WriteTextParams params(

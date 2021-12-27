@@ -204,7 +204,7 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
     else if (this->MouseIsOver)
         col = &this->Cfg->CharacterTable.Hover;
 
-    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
+    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, LineType::Single);
     renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, col->Border, false);
     renderer.FillRect(1, 1, OFFSET_X_RIGHT_MARGIN - 1, this->Layout.Height - 2, ' ', col->Offset);
     if (Focused)

@@ -371,7 +371,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
     lm = tm = rm = bm = 0;
     if (Flags & (uint32) TextAreaFlags::Border)
     {
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, false);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, LineType::Single);
         lm = tm = rm = bm = 1;
         renderer.SetClipMargins(1, 1, 1, 1);
     }
