@@ -375,7 +375,7 @@ bool Renderer::SetCursor(int x, int y)
     this->Cursor.Visible = true;
     return true;
 }
-bool Renderer::WriteCharacter(int x, int y, int charCode, const ColorPair color)
+bool Renderer::WriteCharacter(int x, int y, int charCode, ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, y);
@@ -426,12 +426,12 @@ bool Renderer::GetCharacter(int x, int y, Character& c)
     return true;
 }
 
-bool Renderer::WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color)
+bool Renderer::WriteSpecialCharacter(int x, int y, SpecialChars charID, ColorPair color)
 {
     return WriteCharacter(x, y, SpecialCharacters[(uint32) charID], color);
 }
 
-bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
+bool Renderer::_ClearEntireSurface(int character, ColorPair color)
 {
     CHECK_CANVAS_INITIALIZE;
     Character* s = this->Characters;
@@ -452,7 +452,7 @@ bool Renderer::_ClearEntireSurface(int character, const ColorPair color)
     }
     return true;
 }
-bool Renderer::Clear(int charCode, const ColorPair color)
+bool Renderer::Clear(int charCode, ColorPair color)
 {
     CHECK_VISIBLE;
     if ((Clip.Left == 0) && (Clip.Top == 0) && (static_cast<unsigned>(Clip.Right + 1) == this->Width) &&
@@ -471,11 +471,11 @@ bool Renderer::Clear(int charCode, const ColorPair color)
               color);
     }
 }
-bool Renderer::ClearWithSpecialChar(SpecialChars charID, const ColorPair color)
+bool Renderer::ClearWithSpecialChar(SpecialChars charID, ColorPair color)
 {
     return Clear(SpecialCharacters[(uint32) charID], color);
 }
-bool Renderer::FillHorizontalLine(int left, int y, int right, int charCode, const ColorPair color)
+bool Renderer::FillHorizontalLine(int left, int y, int right, int charCode, ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, y);
@@ -507,16 +507,16 @@ bool Renderer::FillHorizontalLine(int left, int y, int right, int charCode, cons
     }
     return true;
 }
-bool Renderer::FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color)
+bool Renderer::FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, ColorPair color)
 {
     return FillHorizontalLine(left, y, right, SpecialCharacters[(uint32) charID], color);
 }
-bool Renderer::FillHorizontalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color)
+bool Renderer::FillHorizontalLineSize(int x, int y, uint32 size, int charCode, ColorPair color)
 {
     CHECK(size > 0, false, "");
     return FillHorizontalLine(x, y, x + ((int) size) - 1, charCode, color);
 }
-bool Renderer::DrawHorizontalLine(int left, int y, int right, const ColorPair color, bool singleLine)
+bool Renderer::DrawHorizontalLine(int left, int y, int right, ColorPair color, bool singleLine)
 {
     if (singleLine)
         return FillHorizontalLine(
@@ -525,7 +525,7 @@ bool Renderer::DrawHorizontalLine(int left, int y, int right, const ColorPair co
         return FillHorizontalLine(
               left, y, right, SpecialCharacters[(uint32) Graphics::SpecialChars::BoxHorizontalDoubleLine], color);
 }
-bool Renderer::FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color)
+bool Renderer::FillVerticalLine(int x, int top, int bottom, int charCode, ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(x, top);
@@ -557,16 +557,16 @@ bool Renderer::FillVerticalLine(int x, int top, int bottom, int charCode, const 
     }
     return true;
 }
-bool Renderer::FillVerticalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color)
+bool Renderer::FillVerticalLineSize(int x, int y, uint32 size, int charCode, ColorPair color)
 {
     CHECK(size > 0, false, "");
     return FillVerticalLine(x, y, y + ((int) size) - 1, charCode, color);
 }
-bool Renderer::FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color)
+bool Renderer::FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, ColorPair color)
 {
     return FillVerticalLine(x, top, bottom, SpecialCharacters[(uint32) charID], color);
 }
-bool Renderer::DrawVerticalLine(int x, int top, int bottom, const ColorPair color, bool singleLine)
+bool Renderer::DrawVerticalLine(int x, int top, int bottom, ColorPair color, bool singleLine)
 {
     if (singleLine)
         return FillVerticalLine(
@@ -575,7 +575,7 @@ bool Renderer::DrawVerticalLine(int x, int top, int bottom, const ColorPair colo
         return FillVerticalLine(
               x, top, bottom, SpecialCharacters[(uint32) Graphics::SpecialChars::BoxVerticalDoubleLine], color);
 }
-bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color)
+bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, ColorPair color)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -615,7 +615,7 @@ bool Renderer::FillRect(int left, int top, int right, int bottom, int charCode, 
     }
     return true;
 }
-bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPair color, LineType lineType)
+bool Renderer::DrawRect(int left, int top, int right, int bottom, ColorPair color, LineType lineType)
 {
     CHECK_VISIBLE;
     TRANSLATE_COORDONATES(left, top);
@@ -786,12 +786,12 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     }
     return true;
 }
-bool Renderer::FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, const ColorPair color)
+bool Renderer::FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, ColorPair color)
 {
     CHECK(((width > 0) && (height > 0)), false, "");
     return FillRect(x, y, x + ((int) width) - 1, y + ((int) height) - 1, charCode, color);
 }
-bool Renderer::DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, LineType lineType)
+bool Renderer::DrawRectSize(int x, int y, uint32 width, uint32 height, ColorPair color, LineType lineType)
 {
     CHECK(((width > 0) && (height > 0)), false, "");
     return DrawRect(x, y, x + ((int) width) - 1, y + ((int) height) - 1, color, lineType);

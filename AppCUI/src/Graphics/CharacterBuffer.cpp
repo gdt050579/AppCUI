@@ -222,7 +222,7 @@ bool CharacterBuffer::Grow(size_t newSize)
     Allocated = (uint32) alingSize;
     return true;
 }
-bool CharacterBuffer::Resize(uint32 size, char16 character, const ColorPair color)
+bool CharacterBuffer::Resize(uint32 size, char16 character, ColorPair color)
 {
     if (size == this->Count)
         return true; // nothing to do
@@ -246,7 +246,7 @@ bool CharacterBuffer::Resize(uint32 size, char16 character, const ColorPair colo
     this->Count = size;
     return true;
 }
-bool CharacterBuffer::Fill(char16 character, uint32 size, const ColorPair color)
+bool CharacterBuffer::Fill(char16 character, uint32 size, ColorPair color)
 {
     Character c;
 
@@ -277,7 +277,7 @@ bool CharacterBuffer::Set(const CharacterBuffer& obj)
     this->Count = obj.Count;
     return true;
 }
-bool CharacterBuffer::Add(const ConstString& text, const ColorPair color)
+bool CharacterBuffer::Add(const ConstString& text, ColorPair color)
 {
     ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
@@ -318,7 +318,7 @@ bool CharacterBuffer::Add(const ConstString& text, const ColorPair color)
     this->Count += (uint32) sz;
     return true;
 }
-bool CharacterBuffer::Set(const ConstString& text, const ColorPair color)
+bool CharacterBuffer::Set(const ConstString& text, ColorPair color)
 {
     this->Count = 0;
     return Add(text, color);
@@ -328,7 +328,7 @@ bool CharacterBuffer::SetWithHotKey(
       uint32& hotKeyCharacterPosition,
       Input::Key& hotKey,
       Input::Key hotKeyModifier,
-      const ColorPair color)
+      ColorPair color)
 {
     ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
@@ -423,7 +423,7 @@ bool CharacterBuffer::DeleteChar(uint32 position)
     this->Count--;
     return true;
 }
-bool CharacterBuffer::Insert(const ConstString& text, uint32 position, const ColorPair color)
+bool CharacterBuffer::Insert(const ConstString& text, uint32 position, ColorPair color)
 {
     ConstStringObject textObj(text);
     LocalUnicodeStringBuilder<1024> ub;
@@ -487,7 +487,7 @@ bool CharacterBuffer::Insert(const ConstString& text, uint32 position, const Col
     return true;
 }
 
-bool CharacterBuffer::InsertChar(uint16 characterCode, uint32 position, const ColorPair color)
+bool CharacterBuffer::InsertChar(uint16 characterCode, uint32 position, ColorPair color)
 {
     VALIDATE_ALLOCATED_SPACE(((size_t) this->Count) + 1, false);
     CHECK(position <= this->Count,
@@ -505,7 +505,7 @@ bool CharacterBuffer::InsertChar(uint16 characterCode, uint32 position, const Co
     this->Count++;
     return true;
 }
-bool CharacterBuffer::SetColor(uint32 start, uint32 end, const ColorPair color)
+bool CharacterBuffer::SetColor(uint32 start, uint32 end, ColorPair color)
 {
     if (end > this->Count)
         end = this->Count;
@@ -554,7 +554,7 @@ bool CharacterBuffer::ConvertToLower(uint32 start, uint32 end)
     }
     return true;
 }
-void CharacterBuffer::SetColor(const ColorPair color)
+void CharacterBuffer::SetColor(ColorPair color)
 {
     Character* ch = this->Buffer;
     size_t sz     = this->Count;
