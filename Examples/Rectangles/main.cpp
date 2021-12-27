@@ -18,6 +18,7 @@ class ExampleWin : public Window
         Window::Paint(renderer);
         DR(renderer, 0, 0, LineType::Single, "Single");
         DR(renderer, 1, 0, LineType::Double, "Double");
+        DR(renderer, 2, 0, LineType::SingleThick, "Single Thick");
     }
     void DR(Renderer& renderer, int32 x, int32 y, LineType lineType, string_view name)
     {

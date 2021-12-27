@@ -2348,7 +2348,8 @@ namespace Graphics
     enum class LineType: uint8
     {
         Single = 0,
-        Double
+        Double,
+        SingleThick
     };
     class EXPORT Canvas;
     class EXPORT Renderer
