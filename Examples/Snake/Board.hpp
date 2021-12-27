@@ -51,7 +51,7 @@ class Board
 
     unsigned int score                    = 0;
     unsigned int level                    = 1;
-    const unsigned int deltaLevelIncrease = 40;
+    const unsigned int deltaLevelIncrease = 30 * CLOCKS_PER_SEC;
 
     enum class IsCollidingOn
     {

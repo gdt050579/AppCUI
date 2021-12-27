@@ -28,23 +28,20 @@ class Piece
     static const unsigned int rows    = 4;
     static const unsigned int columns = 4;
     Size size{ 1, 1 }; // on canvas
-    ColorPair color{ Color::White, Color::Transparent };
+    ColorPair colorBorder{ Color::White, Color::Transparent };
+    ColorPair colorBody{ Color::White, Color::Transparent };
     std::array<std::array<bool, rows>, columns> matrix{ { { false } } };
     Reference<Control> control = nullptr;
     const PieceType type;
     Point positionOnBoard{ 0, 0 };
 
   public:
-    Piece(const PieceType type, const Reference<Control> control, const Point& position);
+    Piece(const PieceType type, const Reference<Control> control, const ColorPair& bodyColor);
 
     bool Draw(Renderer& renderer, int scale, const Point& position);
     Size GetSize(int scale) const;
     int GetBlockWidth(int scale) const;
     int GetBlockHeight(int scale) const;
-    int GetLeftXPosition() const;
-    int GetRightXPosition(int scale) const;
-    int GetTopYPosition() const;
-    int GetBottomYPosition(int scale) const;
     bool Rotate();
 
     const std::array<std::array<bool, rows>, columns>& GetMatrix() const;
@@ -52,5 +49,10 @@ class Piece
 
     void SetPositionOnBoard(const Point& position);
     void UpdatePositionOnBoard(const Point& position);
+
+    void SetBorderColor(const ColorPair& color);
+    void SetBodyColor(const ColorPair& color);
+    const ColorPair& GetBorderColor() const;
+    const ColorPair& GetBodyColor() const;
 };
 } // namespace Tetris
