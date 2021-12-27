@@ -2161,24 +2161,24 @@ namespace Graphics
             return (Buffer == nullptr) || (Count == 0);
         }
 
-        bool Resize(uint32 size, char16 character = ' ', const ColorPair color = NoColorPair);
-        bool Fill(char16 character, uint32 size, const ColorPair color = NoColorPair);
+        bool Resize(uint32 size, char16 character = ' ', ColorPair color = NoColorPair);
+        bool Fill(char16 character, uint32 size, ColorPair color = NoColorPair);
         bool Set(const CharacterBuffer& obj);
-        bool Add(const ConstString& text, const ColorPair color = NoColorPair);
-        bool Set(const ConstString& text, const ColorPair color = NoColorPair);
+        bool Add(const ConstString& text, ColorPair color = NoColorPair);
+        bool Set(const ConstString& text, ColorPair color = NoColorPair);
         bool SetWithHotKey(
               const ConstString& text,
               uint32& hotKeyCharacterPosition,
               Input::Key& hotKey,
               Input::Key hotKeyModifier = Input::Key::None,
-              const ColorPair color     = NoColorPair);
+              ColorPair color     = NoColorPair);
 
         bool Delete(uint32 start, uint32 end);
         bool DeleteChar(uint32 position);
-        bool Insert(const ConstString& text, uint32 position, const ColorPair color = NoColorPair);
-        bool InsertChar(uint16 characterCode, uint32 position, const ColorPair color = NoColorPair);
-        bool SetColor(uint32 start, uint32 end, const ColorPair color);
-        void SetColor(const ColorPair color);
+        bool Insert(const ConstString& text, uint32 position, ColorPair color = NoColorPair);
+        bool InsertChar(uint16 characterCode, uint32 position, ColorPair color = NoColorPair);
+        bool SetColor(uint32 start, uint32 end, ColorPair color);
+        void SetColor(ColorPair color);
         bool CopyString(Utils::String& text, uint32 start, uint32 end);
         bool CopyString(Utils::String& text);
         bool ConvertToUpper(uint32 start, uint32 end);
@@ -2345,7 +2345,16 @@ namespace Graphics
             return *this;
         }
     };
-
+    enum class LineType: uint8
+    {
+        Single = 0,
+        Double,
+        SingleThick,
+        Border,
+        Ascii,
+        AsciiRound,
+        SingleRound,
+    };
     class EXPORT Canvas;
     class EXPORT Renderer
     {
@@ -2370,33 +2379,33 @@ namespace Graphics
         ~Renderer();
 
         void _Destroy();
-        bool _ClearEntireSurface(int character, const ColorPair color);
+        bool _ClearEntireSurface(int character, ColorPair color);
         bool _Compute_DrawTextInfo_SingleLine_(
               const WriteTextParams& params, size_t charactersCount, void* drawTextInfoOutput);
 
       public:
         // Horizontal lines
-        bool FillHorizontalLine(int left, int y, int right, int charCode, const ColorPair color);
-        bool FillHorizontalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
-        bool FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, const ColorPair color);
-        bool DrawHorizontalLine(int left, int y, int right, const ColorPair color, bool singleLine = true);
+        bool FillHorizontalLine(int left, int y, int right, int charCode, ColorPair color);
+        bool FillHorizontalLineSize(int x, int y, uint32 size, int charCode, ColorPair color);
+        bool FillHorizontalLineWithSpecialChar(int left, int y, int right, SpecialChars charID, ColorPair color);
+        bool DrawHorizontalLine(int left, int y, int right, ColorPair color, bool singleLine = true);
 
         // Vertical lines
-        bool FillVerticalLine(int x, int top, int bottom, int charCode, const ColorPair color);
-        bool FillVerticalLineSize(int x, int y, uint32 size, int charCode, const ColorPair color);
-        bool FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, const ColorPair color);
-        bool DrawVerticalLine(int x, int top, int bottom, const ColorPair color, bool singleLine = true);
+        bool FillVerticalLine(int x, int top, int bottom, int charCode, ColorPair color);
+        bool FillVerticalLineSize(int x, int y, uint32 size, int charCode, ColorPair color);
+        bool FillVerticalLineWithSpecialChar(int x, int top, int bottom, SpecialChars charID, ColorPair color);
+        bool DrawVerticalLine(int x, int top, int bottom, ColorPair color, bool singleLine = true);
 
         // Rectangle
-        bool FillRect(int left, int top, int right, int bottom, int charCode, const ColorPair color);
-        bool FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, const ColorPair color);
-        bool DrawRect(int left, int top, int right, int bottom, const ColorPair color, bool doubleLine);
-        bool DrawRectSize(int x, int y, uint32 width, uint32 height, const ColorPair color, bool doubleLine);
+        bool FillRect(int left, int top, int right, int bottom, int charCode, ColorPair color);
+        bool FillRectSize(int x, int y, uint32 width, uint32 height, int charCode, ColorPair color);
+        bool DrawRect(int left, int top, int right, int bottom, ColorPair color, LineType lineType);
+        bool DrawRectSize(int x, int y, uint32 width, uint32 height, ColorPair color, LineType lineType);
 
         // Characters
         bool GetCharacter(int x, int y, Character& c);
-        bool WriteCharacter(int x, int y, int charCode, const ColorPair color);
-        bool WriteSpecialCharacter(int x, int y, SpecialChars charID, const ColorPair color);
+        bool WriteCharacter(int x, int y, int charCode, ColorPair color);
+        bool WriteSpecialCharacter(int x, int y, SpecialChars charID, ColorPair color);
 
         // Texts
         bool WriteText(const ConstString& text, const WriteTextParams& params);
@@ -2441,8 +2450,8 @@ namespace Graphics
         bool DrawCanvas(int x, int y, const Canvas& canvas, const ColorPair overwriteColor = NoColorPair);
 
         // Clear
-        bool ClearWithSpecialChar(SpecialChars charID, const ColorPair color);
-        bool Clear(int charCode, const ColorPair color);
+        bool ClearWithSpecialChar(SpecialChars charID, ColorPair color);
+        bool Clear(int charCode, ColorPair color);
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
@@ -2470,8 +2479,8 @@ namespace Graphics
       public:
         Canvas();
         ~Canvas();
-        bool Create(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
-        bool Resize(uint32 width, uint32 height, int fillCharacter = ' ', const ColorPair color = DefaultColorPair);
+        bool Create(uint32 width, uint32 height, int fillCharacter = ' ', ColorPair color = DefaultColorPair);
+        bool Resize(uint32 width, uint32 height, int fillCharacter = ' ', ColorPair color = DefaultColorPair);
 
         // Clipping & Translate
         void SetAbsoluteClip(const Graphics::Clip& clip);
@@ -2482,7 +2491,7 @@ namespace Graphics
 
         void Reset();
         void DarkenScreen();
-        bool ClearEntireSurface(int character, const ColorPair color);
+        bool ClearEntireSurface(int character, ColorPair color);
 
         // inlines
         inline uint32 GetWidth() const

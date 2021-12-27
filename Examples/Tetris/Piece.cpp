@@ -69,7 +69,7 @@ bool Piece::Draw(Renderer& renderer, int scale, const Point& position)
             if (matrix[y][x] == true)
             {
                 renderer.FillRectSize(tmpPosition.X + 1, tmpPosition.Y + 1, w - 1, h - 1, ' ', colorBody);
-                // renderer.DrawRectSize(tmpPosition.X, tmpPosition.Y, w, h, colorBorder, false);
+                // renderer.DrawRectSize(tmpPosition.X, tmpPosition.Y, w, h, colorBorder, LineType::Single);
             }
             tmpPosition.X += w;
         }

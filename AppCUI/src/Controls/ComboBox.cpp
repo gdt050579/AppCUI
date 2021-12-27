@@ -543,7 +543,12 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         renderer.FillRect(
               0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
         renderer.DrawRect(
-              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, Members->Cfg->ComboBox.Focus.Text, false);
+              0,
+              1,
+              Members->Layout.Width - 1,
+              Members->ExpandedHeight,
+              Members->Cfg->ComboBox.Focus.Text,
+              LineType::Single);
         params.X     = 1;
         params.Width = Members->Layout.Width - 2;
         params.Color = Members->Cfg->ComboBox.Focus.Text;

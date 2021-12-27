@@ -227,14 +227,14 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
                           hQuad * 2,
                           ' ',
                           { Color::White, Color::White });
-                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetHeadColor(), true);
+                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetHeadColor(), LineType::Double);
                 }
                 else if (std::any_of(
                                snakeBody.begin(),
                                snakeBody.end(),
                                [x, y](const Point& p) { return p.X == x && p.Y == y; }))
                 {
-                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetBodyColor(), false);
+                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetBodyColor(), LineType::Single);
                 }
                 else if (y == fruitPosition.Y && x == fruitPosition.X)
                 {
@@ -243,7 +243,8 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
 
                     renderer.FillRectSize(
                           position.X + wQuad, position.Y + hQuad, wQuad * 2, hQuad * 2, ' ', fruit->GetColor());
-                    renderer.DrawRectSize(position.X, position.Y, w, h, { Color::White, Color::Transparent }, false);
+                    renderer.DrawRectSize(
+                          position.X, position.Y, w, h, { Color::White, Color::Transparent }, LineType::Single);
                 }
             }
 

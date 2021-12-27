@@ -348,7 +348,7 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
     {
         for (auto x = 0; x < matrixHSize; x++)
         {
-            // renderer.DrawRectSize(position.X, position.Y, w, h, colorBorder, false);
+            // renderer.DrawRectSize(position.X, position.Y, w, h, colorBorder, LineType::Single);
 
             if (matrix[y][x].first == true)
             {

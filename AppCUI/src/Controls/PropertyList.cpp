@@ -1254,7 +1254,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', c);
     if (this->hasBorder)
     {
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, false);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, LineType::Single);
         if ((this->Focused) && (this->Layout.Width > 9))
             DrawFilterBar(renderer);
         y++;
