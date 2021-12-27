@@ -10,7 +10,7 @@ constexpr int32 RECT_HEIGHT = 3;
 class ExampleWin : public Window
 {
   public:
-    ExampleWin() : Window("Rectangles", "d:c,w:80,h:23", WindowFlags::None)
+    ExampleWin() : Window("Rectangles", "d:c,w:80,h:13", WindowFlags::None)
     {
     }
     void Paint(Renderer& renderer) override
