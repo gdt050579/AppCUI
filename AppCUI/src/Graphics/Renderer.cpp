@@ -25,6 +25,7 @@ struct LineTypeChars line_types_chars[] = {
     { 0x2554, 0x2550, 0x2557, 0x2551, 0x255D, 0x2550, 0x255A, 0x2551 }, /* Double Lines */
     { 0x250F, 0x2501, 0x2513, 0x2503, 0x251B, 0x2501, 0x2517, 0x2503 }, /* Single Thick lines */
     { 0x2584, 0x2584, 0x2584, 0x2588, 0x2580, 0x2580, 0x2580, 0x2588 }, /* Border */
+    { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
 };
 
 int* SpecialCharacters = nullptr;
@@ -639,8 +640,8 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     // top line
     if (top == orig_top)
     {
-        p = this->OffsetRows[top] + left;
-        e = this->OffsetRows[top] + right;
+        p            = this->OffsetRows[top] + left;
+        e            = this->OffsetRows[top] + right;
         char_to_draw = chrs.Top;
         if (NO_TRANSPARENCY(color))
         {
@@ -662,8 +663,8 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     // bottom line
     if (bottom == orig_bottom)
     {
-        p = this->OffsetRows[bottom] + left;
-        e = this->OffsetRows[bottom] + right;
+        p            = this->OffsetRows[bottom] + left;
+        e            = this->OffsetRows[bottom] + right;
         char_to_draw = chrs.Bottom;
         if (NO_TRANSPARENCY(color))
         {
@@ -685,8 +686,8 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     // left line
     if (left == orig_left)
     {
-        p = this->OffsetRows[top] + left;
-        e = this->OffsetRows[bottom] + left;
+        p            = this->OffsetRows[top] + left;
+        e            = this->OffsetRows[bottom] + left;
         char_to_draw = chrs.Left;
         if (NO_TRANSPARENCY(color))
         {
@@ -708,8 +709,8 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     // right line
     if (right == orig_right)
     {
-        p = this->OffsetRows[top] + right;
-        e = this->OffsetRows[bottom] + right;
+        p            = this->OffsetRows[top] + right;
+        e            = this->OffsetRows[bottom] + right;
         char_to_draw = chrs.Right;
         if (NO_TRANSPARENCY(color))
         {
@@ -732,7 +733,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     if ((left == orig_left) && (top == orig_top))
     {
         char_to_draw = chrs.TopLeft;
-        p = this->OffsetRows[top] + left;
+        p            = this->OffsetRows[top] + left;
         if (NO_TRANSPARENCY(color))
         {
             SET_CHARACTER(p, char_to_draw, color);
@@ -745,7 +746,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     if ((left == orig_left) && (bottom == orig_bottom))
     {
         char_to_draw = chrs.BottomLeft;
-        p = this->OffsetRows[bottom] + left;
+        p            = this->OffsetRows[bottom] + left;
         if (NO_TRANSPARENCY(color))
         {
             SET_CHARACTER(p, char_to_draw, color);
@@ -758,7 +759,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     if ((right == orig_right) && (bottom == orig_bottom))
     {
         char_to_draw = chrs.BottomRight;
-        p = this->OffsetRows[bottom] + right;
+        p            = this->OffsetRows[bottom] + right;
         if (NO_TRANSPARENCY(color))
         {
             SET_CHARACTER(p, char_to_draw, color);
@@ -771,7 +772,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, const ColorPai
     if ((right == orig_right) && (top == orig_top))
     {
         char_to_draw = chrs.TopRight;
-        p = this->OffsetRows[top] + right;
+        p            = this->OffsetRows[top] + right;
         if (NO_TRANSPARENCY(color))
         {
             SET_CHARACTER(p, char_to_draw, color);
