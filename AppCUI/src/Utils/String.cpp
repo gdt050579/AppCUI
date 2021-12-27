@@ -426,8 +426,7 @@ bool String::Grow(uint32 newSize)
     return true;
 }
 
-// ============================================================================================[ADD
-// FUNCTIONS]=====================
+// ==============================================================[ADD FUNCTIONS]=====================
 bool String::Add(const char* text, uint32 txSize)
 {
     CHECK(text, false, "Expecting a non-null parameter !");
@@ -441,6 +440,11 @@ bool String::Add(const char* text, uint32 txSize)
 bool String::Add(const String& text)
 {
     return this->Add(text.Text, text.Size);
+}
+bool String::Add(string_view text)
+{
+    CHECK(text.length() <= 0x7FFFFFFF, false, "");
+    return this->Add(text.data(), (uint32) text.length());
 }
 bool String::Add(const String* text)
 {
@@ -487,6 +491,11 @@ bool String::Set(const char* text, uint32 txSize)
 bool String::Set(const String& text)
 {
     return this->Set(text.Text, text.Size);
+}
+bool String::Set(string_view text)
+{
+    CHECK(text.length() <= 0x7FFFFFFF, false, "");
+    return this->Set(text.data(), (uint32) text.length());
 }
 bool String::Set(const String* text)
 {

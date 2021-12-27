@@ -879,6 +879,7 @@ namespace Utils
         bool SetChar(int32 index, char value);
 
         bool Add(const char* text, uint32 size = 0xFFFFFFFF);
+        bool Add(string_view text);
         bool Add(const String& text);
         bool Add(const String* text);
         bool AddChar(char ch);
@@ -890,6 +891,7 @@ namespace Utils
 
         bool Set(const char* text, uint32 size = 0xFFFFFFFF);
         bool Set(const String& text);
+        bool Set(string_view text);
         bool Set(const String* text);
         bool Set(u16string_view unicodeText);
         bool Set(CharacterView unicodeText);
