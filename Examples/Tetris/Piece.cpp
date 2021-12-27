@@ -2,7 +2,7 @@
 
 namespace Tetris
 {
-Piece::Piece(const PieceType type, const Reference<Control> control, const Point& /*position*/)
+Piece::Piece(const PieceType type, const Reference<Control> control, const ColorPair& bodyColor)
     : control(control), type(type)
 {
     switch (type)
@@ -52,6 +52,8 @@ Piece::Piece(const PieceType type, const Reference<Control> control, const Point
     default:
         break;
     }
+
+    this->colorBody = bodyColor;
 }
 
 bool Piece::Draw(Renderer& renderer, int scale, const Point& position)
@@ -66,7 +68,8 @@ bool Piece::Draw(Renderer& renderer, int scale, const Point& position)
         {
             if (matrix[y][x] == true)
             {
-                renderer.DrawRectSize(tmpPosition.X, tmpPosition.Y, w, h, color, false);
+                renderer.FillRectSize(tmpPosition.X + 1, tmpPosition.Y + 1, w - 1, h - 1, ' ', colorBody);
+                // renderer.DrawRectSize(tmpPosition.X, tmpPosition.Y, w, h, colorBorder, false);
             }
             tmpPosition.X += w;
         }
@@ -152,5 +155,25 @@ void Piece::UpdatePositionOnBoard(const Point& position)
 {
     positionOnBoard.X += position.X;
     positionOnBoard.Y += position.Y;
+}
+
+void Piece::SetBorderColor(const ColorPair& color)
+{
+    colorBorder = color;
+}
+
+void Piece::SetBodyColor(const ColorPair& color)
+{
+    colorBody = color;
+}
+
+const ColorPair& Piece::GetBorderColor() const
+{
+    return colorBorder;
+}
+
+const ColorPair& Piece::GetBodyColor() const
+{
+    return colorBody;
 }
 } // namespace Tetris

@@ -65,7 +65,8 @@ bool Board::ClearPieceFootprint(const Piece& piece)
         {
             if (pieceMatrix[y][x] == true)
             {
-                matrix[positionOnBoard.Y + y][positionOnBoard.X + x] = false;
+                matrix[positionOnBoard.Y + y][positionOnBoard.X + x].first  = false;
+                matrix[positionOnBoard.Y + y][positionOnBoard.X + x].second = Color::White;
             }
         }
     }
@@ -89,7 +90,8 @@ bool Board::AddPieceFootprint(const Piece& piece)
         {
             if (pieceMatrix[y][x] == true)
             {
-                matrix[positionOnBoard.Y + y][positionOnBoard.X + x] = true;
+                matrix[positionOnBoard.Y + y][positionOnBoard.X + x].first  = true;
+                matrix[positionOnBoard.Y + y][positionOnBoard.X + x].second = piece.GetBodyColor().Foreground;
             }
         }
     }
@@ -148,7 +150,7 @@ Board::IsCollidingOn Board::IsColliding(const Piece& piece, const Point& futureP
                     return IsCollidingOn::Top;
                 }
 
-                if (matrix[futurePosition.Y + y][futurePosition.X + x] == true)
+                if (matrix[futurePosition.Y + y][futurePosition.X + x].first == true)
                 {
                     const auto xDelta = futurePosition.X - currentPosition.X;
                     const auto yDelta = futurePosition.Y - currentPosition.Y;
@@ -202,7 +204,8 @@ bool Board::HandleLineCompletion()
     auto y = 0;
     for (const auto& row : matrix)
     {
-        if (std::all_of(row.begin(), row.begin() + matrixHSize, [](bool value) { return value; }))
+        if (std::all_of(
+                  row.begin(), row.begin() + matrixHSize, [](std::pair<bool, Color> value) { return value.first; }))
         {
             rowsCompleted.push_back(y);
         }
@@ -215,7 +218,7 @@ bool Board::HandleLineCompletion()
     {
         if (row == 0)
         {
-            matrix[0] = { false };
+            matrix[0] = { std::pair<bool, Color>{ false, Color::White } };
         }
 
         for (auto y = row; y > 0; y--)
@@ -286,8 +289,9 @@ void Board::Update(
 
     while (pieces.size() < maxPiecesInQueue)
     {
-        const auto pieceType = static_cast<PieceType>(uid(dre));
-        pieces.emplace_back(Piece{ pieceType, control, { 1, matrixYTop } });
+        const auto pieceType  = static_cast<PieceType>(uid(dre));
+        const auto pieceColor = colorMap.at(uidPieceColor(dre));
+        pieces.emplace_back(Piece{ pieceType, control, { pieceColor, pieceColor } });
     }
 
     if (currentPiece.has_value())
@@ -344,9 +348,12 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
     {
         for (auto x = 0; x < matrixHSize; x++)
         {
-            if (matrix[y][x] == true)
+            // renderer.DrawRectSize(position.X, position.Y, w, h, colorBorder, false);
+
+            if (matrix[y][x].first == true)
             {
-                renderer.DrawRectSize(position.X, position.Y, w, h, color, false);
+                renderer.FillRectSize(
+                      position.X + 1, position.Y + 1, w - 1, h - 1, ' ', { Color::Transparent, matrix[y][x].second });
             }
 
             position.X += w;
