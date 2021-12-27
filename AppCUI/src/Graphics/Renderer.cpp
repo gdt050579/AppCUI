@@ -27,7 +27,7 @@ struct LineTypeChars line_types_chars[] = {
     { 0x2584, 0x2584, 0x2584, 0x2588, 0x2580, 0x2580, 0x2580, 0x2588 }, /* Border */
     { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
     { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
-    { 0x256D, 0x2500, 0x256E, 0x2502, 0x256F, 0x2500, 0x2560, 0x2502 }, /* Single Round */
+    { 0x256D, 0x2500, 0x256E, 0x2502, 0x256F, 0x2500, 0x2570, 0x2502 }, /* Single Round */
 };
 
 int* SpecialCharacters = nullptr;

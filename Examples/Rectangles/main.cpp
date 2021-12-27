@@ -21,8 +21,11 @@ class ExampleWin : public Window
         DR(renderer, 2, 0, LineType::SingleThick, "Single Thick");
         DR(renderer, 3, 0, LineType::Border, "Border");
 
-        DR(renderer, 0, 1, LineType::Ascii, "Ascii");
-        DR(renderer, 1, 1, LineType::AsciiRound, "Ascii Round");
+        DR(renderer, 0, 1, LineType::SingleRound, "Single Round");
+
+        DR(renderer, 0, 2, LineType::Ascii, "Ascii");
+        DR(renderer, 1, 2, LineType::AsciiRound, "Ascii Round");
+        
     }
     void DR(Renderer& renderer, int32 x, int32 y, LineType lineType, string_view name)
     {
