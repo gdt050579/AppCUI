@@ -102,7 +102,8 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
     textParams.Width = this->TextWidth;
 
     renderer.Clear(' ', col->Background);
-    renderer.DrawRectSize(0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, false);
+    renderer.DrawRectSize(
+          0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, LineType::Single);
     // draw scroll buttons if case
     if (this->VisibleItemsCount < this->ItemsCount)
     {

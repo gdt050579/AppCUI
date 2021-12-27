@@ -9,7 +9,7 @@ Canvas::Canvas()
 Canvas::~Canvas()
 {
 }
-bool Canvas::Create(uint32 width, uint32 height, int fillCharacter, const ColorPair color)
+bool Canvas::Create(uint32 width, uint32 height, int fillCharacter, ColorPair color)
 {
     CHECK(width > 0, false, "Width must be greater than 0.");
     CHECK(height > 0, false, "Height must be greater than 0.");
@@ -38,7 +38,7 @@ bool Canvas::Create(uint32 width, uint32 height, int fillCharacter, const ColorP
 
     return true;
 }
-bool Canvas::Resize(uint32 width, uint32 height, int fillCharacter, const ColorPair color)
+bool Canvas::Resize(uint32 width, uint32 height, int fillCharacter, ColorPair color)
 {
     if (this->Characters == nullptr)
         return Create(width, height, fillCharacter, color);
@@ -182,7 +182,7 @@ void Canvas::DarkenScreen()
         start++;
     }
 }
-bool Canvas::ClearEntireSurface(int character, const ColorPair color)
+bool Canvas::ClearEntireSurface(int character, ColorPair color)
 {
     return _ClearEntireSurface(character, color);
 }

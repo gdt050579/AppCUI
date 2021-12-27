@@ -616,7 +616,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->Window;
     ColorPair colorTitle, colorWindow, c1, c2;
-    bool doubleLine;
+    LineType lineType;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
         wcfg = &Members->Cfg->DialogWarning;
@@ -633,16 +633,16 @@ void Window::Paint(Graphics::Renderer& renderer)
         sepColor    = wcfg->ControlBar.Separators.Focused;
         colorTitle  = wcfg->TitleActiveColor;
         colorWindow = wcfg->ActiveColor;
-        doubleLine  = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE;
+        lineType    = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE ? LineType::Double : LineType::Single;
     }
     else
     {
         colorTitle  = wcfg->TitleInactiveColor;
         colorWindow = wcfg->InactiveColor;
-        doubleLine  = false;
+        lineType    = LineType::Single;
     }
     renderer.Clear(' ', colorWindow);
-    renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, doubleLine);
+    renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, lineType);
 
     auto* btn = Members->ControlBar.Items;
     for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++, btn++)

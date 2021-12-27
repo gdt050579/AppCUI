@@ -105,10 +105,10 @@ class MyUserControl : public UserControl, public PropertiesInterface
             switch (borderType)
             {
             case BorderType::Single:
-                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, false);
+                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, LineType::Single);
                 break;
             case BorderType::Double:
-                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, true);
+                renderer.DrawRect(x - 1, y - 1, x + sz.Width, y + sz.Height, c, LineType::Double);
                 break;
             case BorderType::Thick:
                 renderer.FillHorizontalLineWithSpecialChar(x - 1, y - 1, x + sz.Width, SpecialChars::BlockLowerHalf, c);

@@ -366,7 +366,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     else if (this->MouseIsOver)
         lvCol = &this->Cfg->ListView.Hover;
 
-    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, false);
+    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, LineType::Single);
     renderer.SetClipMargins(1, 1, 1, 1);
     if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
     {
