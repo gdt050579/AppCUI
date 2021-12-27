@@ -22,6 +22,10 @@ RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), 
 
     leftPanel->Handlers()->PaintControl = &pcilp;
     leftPanel->Handlers()->OnKeyEvent   = &okeiilp;
+
+    data->level       = 0;
+    data->score       = 0;
+    data->timeElapsed = 0;
 }
 
 RunningState::~RunningState()
@@ -45,8 +49,8 @@ bool RunningState::Update()
     ls.Format("Score: %u", board.GetScore());
     scoreLabel->SetText(ls.GetText());
 
-    delta = static_cast<unsigned long>((clock() - initialTime) * 1.0 / CLOCKS_PER_SEC);
-    ls.Format("Time passed: %lus", delta);
+    delta = static_cast<unsigned long>((clock() - initialTime) * 1.0);
+    ls.Format("Time passed: %lus", delta / CLOCKS_PER_SEC);
     timePassedLabel->SetText(ls.GetText());
 
     ls.Format("Level: %u", board.GetLevel());
@@ -63,7 +67,7 @@ bool RunningState::Update()
     if (gameOver)
     {
         data->score       = board.GetScore();
-        data->timeElapsed = delta;
+        data->timeElapsed = delta / CLOCKS_PER_SEC;
         data->level       = board.GetLevel();
         data->machine->PushState<GameOverState>(data, true);
     }

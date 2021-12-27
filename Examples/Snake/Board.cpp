@@ -103,12 +103,7 @@ void Board::GenerateFruit()
     matrix[p.Y][p.X] = true;
 }
 
-void Board::Update(
-      int scale,
-      const Reference<Control> control,
-      const Size& size,
-      unsigned long delta,
-      bool& gameOver)
+void Board::Update(int scale, const Reference<Control> control, const Size& size, unsigned long delta, bool& gameOver)
 {
     gameOver = false;
     level    = static_cast<unsigned int>(delta / deltaLevelIncrease) + 1;
@@ -129,8 +124,7 @@ void Board::Update(
     IsCollidingOn collided = IsCollidingOn::None;
     if (delta != snakeUpdated || snakeUpdated == -1)
     {
-        // TODO: I might need to trigger a redraw here in order for slice to actually work..
-        slice              = 1.0 / (level * 2.0);
+        slice              = 1000.0 / (level * 2.0);
         double deltaUpdate = delta - snakeUpdated;
         if (deltaUpdate > slice)
         {
