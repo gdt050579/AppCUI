@@ -2352,6 +2352,8 @@ namespace Graphics
         SingleThick,
         Border,
         Ascii,
+        AsciiRound,
+        SingleRound,
     };
     class EXPORT Canvas;
     class EXPORT Renderer
