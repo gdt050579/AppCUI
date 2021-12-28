@@ -157,7 +157,8 @@ class PropertyCharEditDialog : public PropertyEditDialog
     bool isChar8;
 
   public:
-    PropertyCharEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly, bool char8value)
+    PropertyCharEditDialog(
+          const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly, bool char8value)
         : PropertyEditDialog("d:c,w:40,h:20", _prop, _object, readOnly), isChar8(char8value)
     {
     }
@@ -194,7 +195,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
         char16 ch = chTable->GetCharacter();
         if (this->isChar8)
         {
-            if (object->SetPropertyValue(prop.id, (char8)ch, error))
+            if (object->SetPropertyValue(prop.id, (char8) ch, error))
             {
                 this->Exit(0);
                 return;
@@ -763,7 +764,7 @@ class ListItemsParser
     ListItemsParser(const char16* _start, const char16* _end) : start(_start), end(_end)
     {
     }
-    bool Create(std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>>& result)
+    bool CreateDictionary(std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>>& result)
     {
         const char16* k_start;
         const char16* k_end;
@@ -806,6 +807,26 @@ class ListItemsParser
             result[res.value()] = u16string_view{ k_start, (size_t) (k_end - k_start) };
         }
         return true;
+    }
+    bool CreateBooleanValues(std::map<uint64, FixSizeUnicode<PROPERTY_VALUE_MAXCHARS>>& result)
+    {
+        const char16* k_start;
+        const char16* k_end;
+        const char16* p = start;
+        uint64 val      = 0; // false;
+
+        CHECK(p, false, "Expecting a valid NON-NULL buffer for ListItemParser !");
+
+        while ((p < end) && (val < 2))
+        {
+            k_start = SkipSpaces(p);
+            k_end   = SkipWord(k_start, ',', ';');
+            p       = SkipSpaces(k_end);
+            CHECK(CheckNextChar(p, ',', ';', false), false, "");
+            p             = SkipSpaces(p + 1);
+            result[val++] = u16string_view{ k_start, (size_t) (k_end - k_start) };
+        }
+        return ((val == 2) && (p >= end));
     }
 };
 
@@ -1033,7 +1054,14 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         switch (prop.type)
         {
         case PropertyType::Boolean:
-            tmpAscii = std::get<bool>(tempPropValue) ? "(Yes)" : "(No)";
+            if (prop.listValues.size() == 2)
+            {
+                tmpUnicode = prop.listValues.find(std::get<bool>(tempPropValue) ? 1 : 0)->second;
+            }
+            else
+            {
+                tmpAscii = std::get<bool>(tempPropValue) ? "(Yes)" : "(No)";
+            }
             break;
         case PropertyType::Char8:
             tmpCh16  = std::get<char8>(tempPropValue);
@@ -1113,15 +1141,22 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             switch (prop.type)
             {
             case PropertyType::Boolean:
-                if (std::get<bool>(tempPropValue))
-                    renderer.WriteSpecialCharacter(params.X, y, SpecialChars::CheckMark, Colors.Item.Checked);
-                else
-                    renderer.WriteCharacter(params.X, y, 'x', Colors.Item.Unchecked);
-                params.X += 2;
-                if (w > 2)
+                if (prop.listValues.size()==2)
                 {
-                    params.Width -= 2;
-                    renderer.WriteText(tmpAscii, params);
+                    renderer.WriteText(tmpUnicode, params);
+                }
+                else
+                {
+                    if (std::get<bool>(tempPropValue))
+                        renderer.WriteSpecialCharacter(params.X, y, SpecialChars::CheckMark, Colors.Item.Checked);
+                    else
+                        renderer.WriteCharacter(params.X, y, 'x', Colors.Item.Unchecked);
+                    params.X += 2;
+                    if (w > 2)
+                    {
+                        params.Width -= 2;
+                        renderer.WriteText(tmpAscii, params);
+                    }
                 }
                 break;
             case PropertyType::UInt8:
@@ -1753,12 +1788,18 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             pi.name  = e.name;
             pi.type  = e.type;
             pi.id    = e.id;
-            if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List))
+            if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List) ||
+                (pi.type == PropertyType::Boolean))
             {
                 LocalUnicodeStringBuilder<1024> tempValues(e.values);
                 // we need to process list of flags/values
                 ListItemsParser parser(tempValues.GetString(), tempValues.GetString() + tempValues.Len());
-                if (parser.Create(pi.listValues) == false)
+                auto result = false;
+                if (pi.type == PropertyType::Boolean)
+                    result = parser.CreateBooleanValues(pi.listValues);
+                else
+                    result = parser.CreateDictionary(pi.listValues);
+                if (!result)
                 {
                     // clear all data
                     pi.listValues.clear();

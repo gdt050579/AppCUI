@@ -285,7 +285,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
                 "Single=1,Double=2,Thick=3" },
               { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
               { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
-              { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean },
+              { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean, "Stopped,Running" },
               { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
               { (uint32) MyControlProperty::AnimationSpeed,
                 "Animation",
