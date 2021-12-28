@@ -358,6 +358,12 @@ namespace Graphics
             Y = y;
         }
     };
+
+    inline bool operator==(const Point& lhs, const Point& rhs)
+    {
+        return lhs.X == rhs.X && lhs.Y == rhs.Y;
+    }
+
     struct ColorPair
     {
         Color Foreground;
@@ -2173,7 +2179,7 @@ namespace Graphics
               uint32& hotKeyCharacterPosition,
               Input::Key& hotKey,
               Input::Key hotKeyModifier = Input::Key::None,
-              ColorPair color     = NoColorPair);
+              ColorPair color           = NoColorPair);
 
         bool Delete(uint32 start, uint32 end);
         bool DeleteChar(uint32 position);

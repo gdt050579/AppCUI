@@ -12,23 +12,25 @@ using namespace AppCUI::Graphics;
 class SnakeBody
 {
   private:
-    std::vector<Point> body;
+    std::vector<std::pair<Point, ColorPair>> body;
     bool initialPositionSet = false;
 
-    ColorPair headColor{ Color::White, Color::Transparent };
-    ColorPair bodyColor{ Color::White, Color::Transparent };
+    ColorPair headColor{ Color::Gray, Color::DarkRed };
+    ColorPair bodyColor{ Color::White, Color::White };
 
     bool snakeAte = false;
+    ColorPair lastColorAte{};
+
   public:
     SnakeBody(const Point& initialPosition);
 
     void SetInitialPosition(const Point& initialPosition);
     void UpdatePosition(const Point& delta);
-    void Ate();
+    void Ate(const ColorPair& color);
 
-    const std::vector<Point>& GetBody() const;
+    const std::vector<std::pair<Point, ColorPair>>& GetBody() const;
     const Point& GetPositionOnBoard() const;
     const ColorPair& GetHeadColor() const;
-    const ColorPair& GetBodyColor() const;
+    const ColorPair& GetBodyColor(const Point& position) const;
 };
 } // namespace Snake
