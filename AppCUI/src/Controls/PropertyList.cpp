@@ -1613,6 +1613,17 @@ bool PropertyListContext::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel d
     }
     return false;
 }
+bool PropertyListContext::MouseToItem(int x, int y, uint32& itemIndex)
+{
+    // check for item click
+    auto y_poz = this->hasBorder ? y - 1 : y;
+    if ((y_poz >= 0) && (((uint32) y_poz) + startView < this->items.Len()))
+    {
+        itemIndex = ((uint32) y_poz) + startView;
+        return true;
+    }
+    return false;
+}
 void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     // check for filter mode
@@ -1628,12 +1639,12 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
         return;
     }
     // check for item click
-    auto y_poz = this->hasBorder ? y - 1 : y;
-    if ((y_poz >= 0) && (((uint32) y_poz) + startView < this->items.Len()))
+    uint32 idx;
+    if (MouseToItem(x,y,idx))
     {
         // click on one item
         this->filteredMode = false;
-        MoveTo(((uint32) y_poz) + startView);
+        MoveTo(idx);
         if ((button & MouseButton::DoubleClicked) != MouseButton::None)
             ExecuteItemAction();
         return;

@@ -884,6 +884,7 @@ struct PropertyListContext : public ControlContext
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
+    bool MouseToItem(int x, int y, uint32 &itemIndex);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool OnMouseDrag(int x, int y, Input::MouseButton button);
