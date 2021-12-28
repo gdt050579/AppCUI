@@ -2353,7 +2353,7 @@ namespace Graphics
             return *this;
         }
     };
-    enum class LineType: uint8
+    enum class LineType : uint8
     {
         Single = 0,
         Double,
@@ -3370,7 +3370,9 @@ namespace Controls
         HideCurrentItemWhenNotFocused = 0x002000,
         AllowMultipleItemsSelection   = 0x004000,
         SearchMode                    = 0x008000,
-        HideSearchBar                 = 0x010000
+        HideSearchBar                 = 0x010000,
+        HideBorder                    = 0x020000,
+        HideScrollBar                 = 0x040000
     };
     enum class ListViewItemType : uint16
     {

@@ -3356,17 +3356,17 @@ class CategoryDemo : public Window
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
-          cbHideSearchBar;
+          cbHideSearchBar, cbHideBorder, cbHideScrollBar;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
           rbSelect, rbItemTypes, rbCategory;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:23", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:25", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
-        auto p        = Factory::Panel::Create(this, "x:4,y:2,w:56,h:7");
+        auto p        = Factory::Panel::Create(this, "x:4,y:2,w:56,h:9");
         cbHideColumns = Factory::CheckBox::Create(p, "&Hide columns (item headers)", "x:1,y:0,w:50");
         cbCheckBoxes  = Factory::CheckBox::Create(p, "&Checkboxes (each item is checkable)", "x:1,y:1,w:50");
         cbHideColumnSeparators =
@@ -3375,22 +3375,24 @@ class MyWin : public Window
         cbItemSeparators = Factory::CheckBox::Create(p, "Add a line after each item (item separators)", "x:1,y:4,w:50");
         cbAllowSelection = Factory::CheckBox::Create(p, "Enable &multiple selections mode", "x:1,y:5,w:50");
         cbHideSearchBar  = Factory::CheckBox::Create(p, "Hide search &bar (disable search)", "x:1,y:6,w:50");
+        cbHideBorder     = Factory::CheckBox::Create(p, "Hide border", "x:1,y:7,w:50");
+        cbHideScrollBar  = Factory::CheckBox::Create(p, "Hide scroll bar", "x:1,y:8,w:50");
 
-        rbSimpleList = Factory::RadioBox::Create(this, "A very simple list with items", "x:1,y:9,w:56", MY_GROUP);
-        cbSimpleListCheckboxes = Factory::CheckBox::Create(this, "Has checkboxes", "x:5,y:10,w:30");
+        rbSimpleList = Factory::RadioBox::Create(this, "A very simple list with items", "x:1,y:11,w:56", MY_GROUP);
+        cbSimpleListCheckboxes = Factory::CheckBox::Create(this, "Has checkboxes", "x:5,y:12,w:30");
 
         rbSortAndColumnsFeatures =
-              Factory::RadioBox::Create(this, "Columns example (sort & resize)", "x:1,y:11,w:56", MY_GROUP);
+              Factory::RadioBox::Create(this, "Columns example (sort & resize)", "x:1,y:13,w:56", MY_GROUP);
         rbColors =
-              Factory::RadioBox::Create(this, "List view with items with different colors", "x:1,y:12,w:56", MY_GROUP);
-        rbTree   = Factory::RadioBox::Create(this, "List view with tree-like visualisation", "x:1,y:13,w:56", MY_GROUP);
-        rbSearch = Factory::RadioBox::Create(this, "Search & filter example", "x:1,y:14,w:56", MY_GROUP);
+              Factory::RadioBox::Create(this, "List view with items with different colors", "x:1,y:14,w:56", MY_GROUP);
+        rbTree   = Factory::RadioBox::Create(this, "List view with tree-like visualisation", "x:1,y:15,w:56", MY_GROUP);
+        rbSearch = Factory::RadioBox::Create(this, "Search & filter example", "x:1,y:16,w:56", MY_GROUP);
         rbSelect =
-              Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:15,w:56", MY_GROUP);
-        rbItemTypes = Factory::RadioBox::Create(this, "Items types", "x:1,y:16,w:56", MY_GROUP);
-        rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:17,w:56", MY_GROUP);
+              Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:17,w:56", MY_GROUP);
+        rbItemTypes = Factory::RadioBox::Create(this, "Items types", "x:1,y:18,w:56", MY_GROUP);
+        rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:19,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
-        Factory::Button::Create(this, "Show example", "d:b,w:21", SHOW_DEFAULT_EXAMPLE);
+        Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
         UpdateFeaturesEnableStatus();
     }
@@ -3403,6 +3405,9 @@ class MyWin : public Window
         cbItemSeparators->SetEnabled(rbCustomizedListView->IsChecked());
         cbAllowSelection->SetEnabled(rbCustomizedListView->IsChecked());
         cbHideSearchBar->SetEnabled(rbCustomizedListView->IsChecked());
+        cbHideBorder->SetEnabled(rbCustomizedListView->IsChecked());
+        cbHideScrollBar->SetEnabled(rbCustomizedListView->IsChecked());
+
         cbSimpleListCheckboxes->SetEnabled(rbSimpleList->IsChecked());
     }
     void ShowListView()
@@ -3423,6 +3428,10 @@ class MyWin : public Window
             flags = flags | ListViewFlags::AllowMultipleItemsSelection;
         if (cbHideSearchBar->IsChecked())
             flags = flags | ListViewFlags::HideSearchBar;
+        if (cbHideScrollBar->IsChecked())
+            flags = flags | ListViewFlags::HideScrollBar;
+        if (cbHideBorder->IsChecked())
+            flags = flags | ListViewFlags::HideBorder;
 
         if (rbCustomizedListView->IsChecked())
         {

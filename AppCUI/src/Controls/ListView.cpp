@@ -366,8 +366,12 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     else if (this->MouseIsOver)
         lvCol = &this->Cfg->ListView.Hover;
 
-    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, LineType::Single);
+    if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
+    {
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, LineType::Single);
+    }
     renderer.SetClipMargins(1, 1, 1, 1);
+
     if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
     {
         DrawColumn(renderer);
@@ -1397,8 +1401,12 @@ ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListVi
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | GATTR_HSCROLL | GATTR_VSCROLL | (uint32) flags;
-    Members->ScrollBars.LeftMargin = 25;
+    Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
+    if (((((uint32) flags) & ((uint32) ListViewFlags::HideScrollBar)) == 0))
+    {
+        Members->Flags |= (GATTR_HSCROLL | GATTR_VSCROLL);
+        Members->ScrollBars.LeftMargin = 25;
+    }
     // allocate items
     ASSERT(Members->Items.Indexes.Create(32), "Fail to allocate Listview indexes");
     Members->Items.List.reserve(32);
