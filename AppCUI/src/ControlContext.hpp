@@ -838,6 +838,11 @@ enum class PropertySeparatorStatus : uint8
     Over,
     Drag
 };
+enum class PropertyItemLocation: uint8
+{
+    None,
+    CollapseExpandButton
+};
 struct PropertyListContext : public ControlContext
 {
     struct
@@ -884,7 +889,7 @@ struct PropertyListContext : public ControlContext
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
-    bool MouseToItem(int x, int y, uint32 &itemIndex);
+    bool MouseToItem(int x, int y, uint32& itemIndex, PropertyItemLocation& loc);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool OnMouseDrag(int x, int y, Input::MouseButton button);

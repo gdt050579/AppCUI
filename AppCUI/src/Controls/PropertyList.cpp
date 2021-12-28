@@ -1141,7 +1141,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             switch (prop.type)
             {
             case PropertyType::Boolean:
-                if (prop.listValues.size()==2)
+                if (prop.listValues.size() == 2)
                 {
                     renderer.WriteText(tmpUnicode, params);
                 }
@@ -1613,13 +1613,30 @@ bool PropertyListContext::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel d
     }
     return false;
 }
-bool PropertyListContext::MouseToItem(int x, int y, uint32& itemIndex)
+bool PropertyListContext::MouseToItem(int x, int y, uint32& itemIndex, PropertyItemLocation& loc)
 {
     // check for item click
     auto y_poz = this->hasBorder ? y - 1 : y;
+    auto x_poz = this->hasBorder ? x - 1 : x;
     if ((y_poz >= 0) && (((uint32) y_poz) + startView < this->items.Len()))
     {
+        loc       = PropertyItemLocation::None;
         itemIndex = ((uint32) y_poz) + startView;
+        uint32 value;
+        if (this->items.Get(itemIndex, value))
+        {
+            if (value & CATEGORY_FLAG)
+            {
+                // category
+                value = value & CATEGORY_INDEX_MASK;
+                if (x_poz == 0)
+                    loc = PropertyItemLocation::CollapseExpandButton;
+            }
+            else
+            {
+                // normal item
+            }
+        }
         return true;
     }
     return false;
@@ -1640,12 +1657,13 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
     }
     // check for item click
     uint32 idx;
-    if (MouseToItem(x,y,idx))
+    PropertyItemLocation loc;
+    if (MouseToItem(x, y, idx, loc))
     {
         // click on one item
         this->filteredMode = false;
         MoveTo(idx);
-        if ((button & MouseButton::DoubleClicked) != MouseButton::None)
+        if (((button & MouseButton::DoubleClicked) != MouseButton::None) || (loc != PropertyItemLocation::None))
             ExecuteItemAction();
         return;
     }
