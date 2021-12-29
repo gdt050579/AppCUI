@@ -24,7 +24,7 @@ bool Board::SetDirection(HeadingTo direction)
 bool Board::ClearSnakeFootprint()
 {
     const auto& body = snake.GetBody();
-    for (const auto& point : body)
+    for (const auto& [point, color] : body)
     {
         if (point.X < 0 || point.Y < 0)
         {
@@ -39,7 +39,7 @@ bool Board::ClearSnakeFootprint()
 bool Board::AddSnakeFootprint()
 {
     const auto& body = snake.GetBody();
-    for (const auto& point : body)
+    for (const auto& [point, color] : body)
     {
         if (point.X < 0 || point.Y < 0)
         {
@@ -65,7 +65,7 @@ Board::IsCollidingOn Board::IsColliding()
     if (std::any_of(
               snakeBody.begin() + 1, // skip the head
               snakeBody.end(),
-              [snakeHead](const Point& p) { return p.X == snakeHead.X && p.Y == snakeHead.Y; }))
+              [snakeHead](const auto& e) { return e.first == snakeHead; }))
     {
         return IsCollidingOn::Self;
     }
@@ -73,7 +73,7 @@ Board::IsCollidingOn Board::IsColliding()
     if (fruit.has_value())
     {
         const auto& fruitPosition = fruit->GetPosition();
-        if (fruitPosition.X == snakeHead.X && fruitPosition.Y == snakeHead.Y)
+        if (fruitPosition == snakeHead)
         {
             return IsCollidingOn::Fruit;
         }
@@ -152,7 +152,7 @@ void Board::Update(int scale, const Reference<Control> control, const Size& size
 
             if (collided == IsCollidingOn::Fruit)
             {
-                snake.Ate();
+                snake.Ate(fruit->GetColor());
                 score += fruit->GetScore();
                 GenerateFruit();
             }
@@ -212,23 +212,51 @@ bool Board::Draw(Renderer& renderer, const Size& canvasSize)
             {
                 if (y == snakeHead.Y && x == snakeHead.X)
                 {
-                    const auto wQuad = w / 4;
-                    const auto hQuad = h / 4;
-                    renderer.FillRectSize(
-                          position.X + wQuad,
-                          position.Y + hQuad,
-                          wQuad * 2,
-                          hQuad * 2,
-                          ' ',
-                          { Color::White, Color::White });
-                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetHeadColor(), LineType::Double);
+                    renderer.FillRectSize(position.X, position.Y, w, h, ' ', snake.GetHeadColor());
+
+                    Point leftEye{ position.X + 1, position.Y + 1 };
+                    Point rightEye{ position.X + w - 2, position.Y + 1 };
+                    SpecialChars eye{ SpecialChars::TriangleUp };
+
+                    switch (direction)
+                    {
+                    case Snake::Board::HeadingTo::Left:
+                        eye      = SpecialChars::TriangleLeft;
+                        leftEye  = { position.X + 2, position.Y };
+                        rightEye = { position.X + 2, position.Y + h - 1 };
+                        break;
+                    case Snake::Board::HeadingTo::Right:
+                        leftEye  = { position.X + w - 2, position.Y };
+                        rightEye = { position.X + w - 2, position.Y + h - 1 };
+                        eye      = SpecialChars::TriangleRight;
+                        break;
+                    case Snake::Board::HeadingTo::Up:
+                        eye      = SpecialChars::TriangleUp;
+                        leftEye  = { position.X + 1, position.Y + 1 };
+                        rightEye = { position.X + w - 2, position.Y + 1 };
+                        break;
+                    case Snake::Board::HeadingTo::Down:
+                        eye      = SpecialChars::TriangleDown;
+                        leftEye  = { position.X + 1, position.Y + h - 2 };
+                        rightEye = { position.X + w - 2, position.Y + h - 2 };
+                        break;
+                    case Snake::Board::HeadingTo::None:
+                        break;
+                    default:
+                        break;
+                    }
+
+                    renderer.WriteSpecialCharacter(leftEye.X, leftEye.Y, eye, { Color::White, Color::Transparent });
+                    renderer.WriteSpecialCharacter(rightEye.X, rightEye.Y, eye, { Color::White, Color::Transparent });
                 }
                 else if (std::any_of(
                                snakeBody.begin(),
                                snakeBody.end(),
-                               [x, y](const Point& p) { return p.X == x && p.Y == y; }))
+                               [x, y](const auto& e) { return e.first.X == x && e.first.Y == y; }))
                 {
-                    renderer.DrawRectSize(position.X, position.Y, w, h, snake.GetBodyColor(), LineType::Single);
+                    const auto& color = snake.GetBodyColor({ x, y });
+                    renderer.FillRectSize(position.X, position.Y, w, h, ' ', color);
+                    renderer.DrawRectSize(position.X, position.Y, w, h, color, LineType::Single);
                 }
                 else if (y == fruitPosition.Y && x == fruitPosition.X)
                 {
