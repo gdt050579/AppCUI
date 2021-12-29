@@ -864,6 +864,8 @@ struct PropertyListContext : public ControlContext
     bool hasBorder;
     bool filteredMode;
     PropertySeparatorStatus separatorStatus;
+    PropertyItemLocation hoveredItemStatus;
+    uint32 hoveredItemIDX;
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
@@ -893,7 +895,7 @@ struct PropertyListContext : public ControlContext
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
     bool OnMouseDrag(int x, int y, Input::MouseButton button);
-    bool OnMouseOver(int x, int y);
+    bool OnMouseOver(int x, int y, PropertyItemLocation& loc);
     bool OnMouseLeave();
     void OnMouseReleased(int x, int y, Input::MouseButton button);
     bool IsItemFiltered(const PropertyInfo& prop);
