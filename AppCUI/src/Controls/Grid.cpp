@@ -36,6 +36,8 @@ void Grid::Paint(Renderer& renderer)
     auto context = reinterpret_cast<GridControlContext*>(Context);
     context->UpdateGridParameters(true);
 
+    renderer.Clear(' ', context->Cfg->Grid.Background.Grid);
+
     if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
     {
         context->DrawHeader(renderer);
