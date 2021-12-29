@@ -689,10 +689,13 @@ namespace Utils
     class BufferView
     {
         const uint8* data;
-        const size_t length;
+        size_t length;
 
       public:
         BufferView() : data(nullptr), length(0)
+        {
+        }
+        BufferView(const BufferView& bv) : data(bv.data), length(bv.length)
         {
         }
         BufferView(const void* ptr, size_t len) : data((const uint8*) ptr), length(len)
@@ -704,6 +707,12 @@ namespace Utils
         inline uint8 operator[](size_t index) const
         {
             return data[index];
+        }
+        inline BufferView& operator=(const BufferView& bv)
+        {
+            this->data   = bv.data;
+            this->length = bv.length;
+            return *this;
         }
         inline bool IsValid() const
         {
