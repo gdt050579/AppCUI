@@ -15,6 +15,7 @@ constexpr int32 BUTTON_COMMAND_REFRESH = 1;
 constexpr int32 BUTTON_COMMAND_OK      = 2;
 constexpr int32 BUTTON_COMMAND_CANCEL  = 3;
 constexpr uint64 INVALID_LISTVIEW_ITEM = 0xFFFFFFFFFFFFFFFFULL;
+constexpr uint32 INVALID_ITEM          = 0xFFFFFFFFU;
 
 bool PropertyValueToUInt64(const PropertyValue& value, uint64& result)
 {
@@ -1669,25 +1670,56 @@ void PropertyListContext::OnMousePressed(int x, int y, Input::MouseButton button
     }
 }
 
-bool PropertyListContext::OnMouseOver(int x, int /*y*/)
+bool PropertyListContext::OnMouseOver(int x, int y, PropertyItemLocation& loc)
 {
     if (GetSeparatorXPos() == x)
     {
         if (separatorStatus == PropertySeparatorStatus::None)
         {
             separatorStatus = PropertySeparatorStatus::Over;
+            loc             = PropertyItemLocation::None;
             return true;
         }
     }
     else
     {
+        auto result = false;
         if (separatorStatus == PropertySeparatorStatus::Over)
         {
             separatorStatus = PropertySeparatorStatus::None;
-            return true;
+            loc             = PropertyItemLocation::None;
+            result          = true;
         }
+        uint32 idx;
+        if (MouseToItem(x, y, idx, loc))
+        {
+            if (idx == this->hoveredItemIDX)
+            {
+                if (this->hoveredItemStatus != loc)
+                {
+                    this->hoveredItemStatus = loc;
+                    result                  = true;
+                }
+            }
+            else
+            {
+                this->hoveredItemIDX    = idx;
+                this->hoveredItemStatus = loc;
+                result                  = true;
+            }
+        }
+        else
+        {
+            if (this->hoveredItemStatus != PropertyItemLocation::None)
+            {
+                this->hoveredItemIDX    = INVALID_ITEM;
+                this->hoveredItemStatus = PropertyItemLocation::None;
+                result                  = true;
+            }
+            loc = PropertyItemLocation::None;
+        }
+        return result;
     }
-
     return false;
 }
 
@@ -1702,9 +1734,12 @@ bool PropertyListContext::OnMouseDrag(int x, int /*y*/, Input::MouseButton /*but
 }
 bool PropertyListContext::OnMouseLeave()
 {
-    if (this->separatorStatus != PropertySeparatorStatus::None)
+    if ((this->separatorStatus != PropertySeparatorStatus::None) ||
+        (this->hoveredItemStatus != PropertyItemLocation::None))
     {
-        this->separatorStatus = PropertySeparatorStatus::None;
+        this->separatorStatus   = PropertySeparatorStatus::None;
+        this->hoveredItemStatus = PropertyItemLocation::None;
+        this->hoveredItemIDX    = INVALID_ITEM;
         return true;
     }
     return false;
@@ -1796,6 +1831,8 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->propetyNamePercentage     = 0.4f; // 40% of width is the property name
     Members->filteredMode              = false;
     Members->separatorStatus           = PropertySeparatorStatus::None;
+    Members->hoveredItemStatus         = PropertyItemLocation::None;
+    Members->hoveredItemIDX            = INVALID_ITEM;
     Members->ScrollBars.OutsideControl = !Members->hasBorder;
 
     SetObject(obj);
@@ -1895,7 +1932,22 @@ bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 }
 bool PropertyList::OnMouseOver(int x, int y)
 {
-    return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseOver(x, y);
+    PropertyItemLocation loc;
+    if (reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseOver(x, y, loc) == false)
+        return false;
+    switch (loc)
+    {
+    case PropertyItemLocation::None:
+        this->HideToolTip();
+        break;
+    case PropertyItemLocation::CollapseExpandButton:
+        this->ShowToolTip("Click to expand/collapse category", x, y);
+        break;
+    default:
+        this->HideToolTip();
+        break;
+    }
+    return true;
 }
 bool PropertyList::OnMouseLeave()
 {
