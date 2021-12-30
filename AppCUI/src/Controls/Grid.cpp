@@ -24,11 +24,12 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->rowsNo    = rowsNo;
     context->flags     = flags;
 
-    context->CenterMatrix();
+    context->ResetMatrixPosition();
     context->UpdateGridParameters();
 
     context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
     context->headers.reserve(context->columnsNo);
+    context->SetDefaultHeaderValues();
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -38,10 +39,7 @@ void Grid::Paint(Renderer& renderer)
 
     renderer.Clear(' ', context->Cfg->Grid.Background.Grid);
 
-    if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        context->DrawHeader(renderer);
-    }
+    context->DrawHeader(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
     {
@@ -515,31 +513,10 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
     for (const auto& value : headerValues)
     {
         LocalUnicodeStringBuilder<1024> lusb{ value };
-        context->headers.push_back({ textAlignment, lusb });
+        context->headers.push_back({ textAlignment, Grid::CellType::String, lusb });
     }
 
     return true;
-}
-
-void Controls::Grid::ShowHeader(bool show)
-{
-    auto context = reinterpret_cast<GridControlContext*>(Context);
-    if (show)
-    {
-        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideHeader));
-    }
-    else
-    {
-        context->flags |= GridFlags::HideHeader;
-    }
-
-    Application::Repaint();
-}
-
-bool Controls::Grid::IsHeaderVisible() const
-{
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-    return ((context->flags & GridFlags::HideHeader) == GridFlags::HideHeader) == false;
 }
 
 Point Controls::Grid::GetHoveredLocation() const
@@ -591,16 +568,36 @@ AppCUI::Graphics::Point Controls::Grid::GetSelectionLocationsEnd() const
     return { static_cast<int32>(cell / context->columnsNo), static_cast<int32>(cell % context->columnsNo) };
 }
 
+void Controls::Grid::ResetHeaderValues()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    context->SetDefaultHeaderValues();
+}
+
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
-    for (auto i = 0U; i <= columnsNo; i++)
+    if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
-        const auto x = offsetX + i * cWidth;
-        for (auto j = 0U; j <= rowsNo; j++)
+        for (auto i = 0U; i <= columnsNo; i++)
         {
-            const auto y  = offsetY + j * cHeight;
-            const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
-            renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Normal);
+            const auto x = offsetX + i * cWidth;
+            for (auto j = 0U; j <= rowsNo; j++)
+            {
+                const auto y = offsetY + j * cHeight;
+
+                const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Normal);
+            }
+        }
+    }
+    else
+    {
+        const auto y1 = offsetY + 1;
+        const auto y2 = offsetY + rowsNo * cHeight - 1;
+        for (auto i = 0U; i <= columnsNo; i++)
+        {
+            const auto x = offsetX + i * cWidth;
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Box.Normal);
         }
     }
 
@@ -621,6 +618,9 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xLeft, yBottom, SpecialChars::BoxBottomLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, color);
+
+        renderer.DrawVerticalLine(xLeft, yTop + 1, yBottom - 1, color);
+        renderer.DrawVerticalLine(xRight, yTop + 1, yBottom - 1, color);
     }
 
     if (selectedCellsIndexes.size() > 0 && ((flags & GridFlags::HideSelectedCell) == GridFlags::None))
@@ -634,6 +634,14 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 
         const auto eci = endCellIndex % columnsNo + 1U;
         const auto eri = endCellIndex / columnsNo + 1U;
+
+        const auto y1 = offsetY + sri * cHeight + 1;
+        const auto y2 = y1 + (eri - sri) * cHeight;
+        for (auto i = sci; i <= eci; i++)
+        {
+            const auto x = offsetX + i * cWidth;
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Box.Selected);
+        }
 
         for (auto i = sci; i <= eci; i++)
         {
@@ -766,11 +774,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxMidleLeft;
-            }
-            return SpecialChars::BoxTopLeftCornerSingleLine;
+            return SpecialChars::BoxMidleLeft;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -785,11 +789,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxMidleRight;
-            }
-            return SpecialChars::BoxTopRightCornerSingleLine;
+            return SpecialChars::BoxMidleRight;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -804,11 +804,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxCrossSingleLine;
-            }
-            return SpecialChars::BoxMidleTop;
+            return SpecialChars::BoxCrossSingleLine;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -937,12 +933,12 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo; i++)
     {
         const auto x = offsetX + i * cWidth;
-        const auto y = offsetY - cHeight;
+        const auto y = offsetY - cHeight + 1;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
             const auto endY = offsetY + cHeight;
-            renderer.DrawVerticalLine(x, y, endY - 1, Cfg->Grid.Lines.Vertical.Normal, true);
+            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Vertical.Normal, true);
         }
     }
 
@@ -954,24 +950,27 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
     {
-        for (auto i = 0U; i <= columnsNo; i++)
+        if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
         {
-            const auto x = offsetX + i * cWidth;
-            const auto y = offsetY - cHeight;
+            for (auto i = 0U; i <= columnsNo; i++)
+            {
+                const auto x = offsetX + i * cWidth;
+                const auto y = offsetY - cHeight;
 
-            if (i == 0)
-            {
-                renderer.WriteSpecialCharacter(
-                      x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
-            }
-            else if (i == columnsNo)
-            {
-                renderer.WriteSpecialCharacter(
-                      x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
-            }
-            else
-            {
-                renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Vertical.Normal);
+                if (i == 0)
+                {
+                    renderer.WriteSpecialCharacter(
+                          x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+                }
+                else if (i == columnsNo)
+                {
+                    renderer.WriteSpecialCharacter(
+                          x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+                }
+                else
+                {
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Vertical.Normal);
+                }
             }
         }
     }
@@ -988,7 +987,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
-        renderer.WriteText(it->content, wtp);
+        renderer.WriteText(std::get<std::u16string>(it->content), wtp);
 
         std::advance(it, 1);
     }
@@ -1005,14 +1004,14 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
         cHeight = static_cast<uint32>(Layout.Height / rowsNo);
         if (Layout.Width != 0 || Layout.Height != 0)
         {
-            cWidth  = std::max<>(cWidth, minCellWidth);
-            cHeight = std::max<>(cHeight, minCellHeight);
+            cWidth  = std::max<>(cWidth + 1, minCellWidth);
+            cHeight = std::max<>(cHeight + 1, minCellHeight);
         }
     }
 
     if (((flags & GridFlags::DisableMove) != GridFlags::DisableMove) && startedMoving == false)
     {
-        CenterMatrix();
+        ResetMatrixPosition();
     }
 
     // sort selected cells for better drawing
@@ -1058,40 +1057,10 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
     UpdateGridParameters(true);
 }
 
-void GridControlContext::CenterMatrix()
+void GridControlContext::ResetMatrixPosition()
 {
-    // center matrix
-    offsetX = (Layout.Width - static_cast<int32>(cWidth * columnsNo)) / 2;
-
-    auto deltaHeight = Layout.Height - static_cast<int32>(cHeight * rowsNo);
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        if (deltaHeight > static_cast<int32>(cHeight))
-        {
-            deltaHeight -= cHeight;
-        }
-        else
-        {
-            deltaHeight = 0;
-        }
-    }
-
-    offsetY = static_cast<int32>(deltaHeight / 2);
-
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        offsetY += cHeight;
-    }
-
-    if (offsetX < 0)
-    {
-        offsetX = 0;
-    }
-
-    if (offsetY < 0)
-    {
-        offsetY = 0;
-    }
+    offsetX = -1;
+    offsetY = cHeight - 1; /* header */
 }
 
 void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
@@ -1502,5 +1471,18 @@ bool GridControlContext::PasteContentToSelectedCells()
     }
 
     return true;
+}
+
+void GridControlContext::SetDefaultHeaderValues()
+{
+    headers.clear();
+    LocalUnicodeStringBuilder<256> lusb;
+    LocalString<256> ls;
+    for (auto i = 0ULL; i < columnsNo; i++)
+    {
+        ls.SetFormat("Column_%llu", i);
+        lusb.Set(ls);
+        headers.push_back({ TextAlignament::Left, Grid::CellType::String, lusb });
+    }
 }
 } // namespace AppCUI

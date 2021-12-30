@@ -645,12 +645,6 @@ struct GridCellData
     variant<bool, std::u16string> content;
 };
 
-struct GridHeaderCellData
-{
-    TextAlignament ta = TextAlignament::Left;
-    std::u16string content;
-};
-
 class GridControlContext : public ControlContext
 {
   public:
@@ -670,11 +664,11 @@ class GridControlContext : public ControlContext
 
     std::map<uint32, GridCellData> cells;
     std::u16string separator{ u"," };
-    std::vector<GridHeaderCellData> headers;
+    std::vector<GridCellData> headers;
 
     bool startedMoving = false;
 
-    Point lastLocationDraggedRightClicked{ 0,0 };
+    Point lastLocationDraggedRightClicked{ 0, 0 };
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
@@ -696,13 +690,14 @@ class GridControlContext : public ControlContext
     bool DrawHeader(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
-    void CenterMatrix();
+    void ResetMatrixPosition();
     void UpdatePositions(int32 offsetX, int32 offsetY);
     bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
     bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
     bool ToggleBooleanCell();
     bool CopySelectedCellsContent() const;
     bool PasteContentToSelectedCells();
+    void SetDefaultHeaderValues();
 };
 
 enum class MenuItemType : uint32
@@ -840,7 +835,7 @@ enum class PropertySeparatorStatus : uint8
     Over,
     Drag
 };
-enum class PropertyItemLocation: uint8
+enum class PropertyItemLocation : uint8
 {
     None,
     CollapseExpandButton

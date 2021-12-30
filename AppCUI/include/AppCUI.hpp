@@ -3794,9 +3794,8 @@ namespace Controls
         HideHoveredCell       = 0x000800,
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
-        HideHeader            = 0x004000,
-        DisableZoom           = 0x008000,
-        DisableMove           = 0x010000
+        DisableZoom           = 0x004000,
+        DisableMove           = 0x008000
     };
 
     class EXPORT Grid : public Control
@@ -3841,11 +3840,10 @@ namespace Controls
         bool UpdateHeaderValues(
               const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
-        void ShowHeader(bool show);
-        bool IsHeaderVisible() const;
         AppCUI::Graphics::Point GetHoveredLocation() const;
         AppCUI::Graphics::Point GetSelectionLocationsStart() const;
         AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
+        void ResetHeaderValues();
 
       private:
         friend Factory::Grid;
