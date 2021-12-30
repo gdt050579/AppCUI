@@ -1502,7 +1502,7 @@ void PropertyListContext::ExecuteItemAction()
                 EditAndUpdateFlags(this->properties[idx]);
                 break;
             case PropertyType::Custom:
-                object->SetCustomPropetyValue(this->properties[idx].id);
+                object->SetCustomPropertyValue(this->properties[idx].id);
                 break;
             }
         }
