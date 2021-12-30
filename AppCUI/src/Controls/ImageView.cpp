@@ -3,11 +3,11 @@
 
 namespace AppCUI::Controls
 {
-ImageViewer::ImageViewer(const ConstString& caption, string_view layout, ViewerFlags flags)
+ImageView::ImageView(const ConstString& caption, string_view layout, ViewerFlags flags)
     : CanvasViewer(caption, layout, 16, 16, flags)
 {
 }
-bool ImageViewer::SetImage(
+bool ImageView::SetImage(
       const Graphics::Image& img, Graphics::ImageRenderingMethod method, Graphics::ImageScaleMethod scale)
 {
     auto c = GetCanvas();

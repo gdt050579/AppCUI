@@ -8,7 +8,7 @@ namespace Tetris
 SplashState::SplashState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
     page   = Factory::TabPage::Create(data->tab, "");
-    viewer = Factory::ImageViewer::Create(page, "d:c,w:86,h:9", ViewerFlags::HideScrollBar);
+    viewer = Factory::ImageView::Create(page, "d:c,w:86,h:9", ViewerFlags::HideScrollBar);
 
     img.Create(
           35,

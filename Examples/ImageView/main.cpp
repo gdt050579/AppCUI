@@ -6543,7 +6543,7 @@ class ImageWinViewer : public Window
     ImageWinViewer(const AppCUI::Graphics::Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
         : Window("Image view", "d:c,w:100%,h:100%", WindowFlags::None)
     {
-        Factory::ImageViewer::Create(this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
+        Factory::ImageView::Create(this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
     }
 };
 

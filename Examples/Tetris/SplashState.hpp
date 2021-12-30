@@ -41,7 +41,7 @@ class SplashState : public State
     const int stateDuration = 3; // seconds
 
     Reference<TabPage> page       = nullptr;
-    Reference<ImageViewer> viewer = nullptr;
+    Reference<ImageView> viewer = nullptr;
     Image img;
 };
 } // namespace Tetris

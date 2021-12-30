@@ -2554,7 +2554,7 @@ namespace Controls
         class EXPORT TabPage;
         class EXPORT Tab;
         class EXPORT CanvasViewer;
-        class EXPORT ImageViewer;
+        class EXPORT ImageView;
         class EXPORT ListView;
         class EXPORT ComboBox;
         class EXPORT NumericSelector;
@@ -3356,16 +3356,16 @@ namespace Controls
         friend Factory::CanvasViewer;
         friend Control;
     };
-    class EXPORT ImageViewer : public CanvasViewer
+    class EXPORT ImageView : public CanvasViewer
     {
       protected:
-        ImageViewer(const ConstString& caption, string_view layout, ViewerFlags flags);
+        ImageView(const ConstString& caption, string_view layout, ViewerFlags flags);
 
       public:
         bool SetImage(
               const Graphics::Image& img, Graphics::ImageRenderingMethod method, Graphics::ImageScaleMethod scale);
 
-        friend Factory::ImageViewer;
+        friend Factory::ImageView;
         friend Control;
     };
     enum class ListViewFlags : uint32
@@ -4166,31 +4166,31 @@ namespace Controls
                   uint32 canvasHeight,
                   Controls::ViewerFlags flags = ViewerFlags::None);
         };
-        class EXPORT ImageViewer
+        class EXPORT ImageView
         {
-            ImageViewer() = delete;
+            ImageView() = delete;
 
           public:
-            static Pointer<Controls::ImageViewer> Create(
+            static Pointer<Controls::ImageView> Create(
                   string_view layout, Controls::ViewerFlags flags = Controls::ViewerFlags::None);
-            static Reference<Controls::ImageViewer> Create(
+            static Reference<Controls::ImageView> Create(
                   Controls::Control* parent,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
-            static Reference<Controls::ImageViewer> Create(
+            static Reference<Controls::ImageView> Create(
                   Controls::Control& parent,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
-            static Pointer<Controls::ImageViewer> Create(
+            static Pointer<Controls::ImageView> Create(
                   const ConstString& caption,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
-            static Reference<Controls::ImageViewer> Create(
+            static Reference<Controls::ImageView> Create(
                   Controls::Control* parent,
                   const ConstString& caption,
                   string_view layout,
                   Controls::ViewerFlags flags = Controls::ViewerFlags::None);
-            static Reference<Controls::ImageViewer> Create(
+            static Reference<Controls::ImageView> Create(
                   Controls::Control& parent,
                   const ConstString& caption,
                   string_view layout,

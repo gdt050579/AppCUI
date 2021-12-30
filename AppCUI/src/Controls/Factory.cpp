@@ -260,36 +260,36 @@ POINTER<Controls::CanvasViewer> Factory::CanvasViewer::Create(
 }
 
 //======[IMAGEVIEWER]================================================================================
-POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(string_view layout, Controls::ViewerFlags flags)
+POINTER<Controls::ImageView> Factory::ImageView::Create(string_view layout, Controls::ViewerFlags flags)
 {
-    return POINTER<Controls::ImageViewer>(new Controls::ImageViewer("", layout, flags));
+    return POINTER<Controls::ImageView>(new Controls::ImageView("", layout, flags));
 }
-REFERENCE<ImageViewer> Factory::ImageViewer::Create(
+REFERENCE<ImageView> Factory::ImageView::Create(
       Controls::Control* parent, string_view layout, Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
+    return parent->AddControl<Controls::ImageView>(Factory::ImageView::Create("", layout, flags));
 }
-REFERENCE<ImageViewer> Factory::ImageViewer::Create(
+REFERENCE<ImageView> Factory::ImageView::Create(
       Controls::Control& parent, string_view layout, Controls::ViewerFlags flags)
 {
-    return parent.AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create("", layout, flags));
+    return parent.AddControl<Controls::ImageView>(Factory::ImageView::Create("", layout, flags));
 }
-POINTER<Controls::ImageViewer> Factory::ImageViewer::Create(
+POINTER<Controls::ImageView> Factory::ImageView::Create(
       const ConstString& caption, string_view layout, Controls::ViewerFlags flags)
 {
-    return POINTER<Controls::ImageViewer>(new Controls::ImageViewer(caption, layout, flags));
+    return POINTER<Controls::ImageView>(new Controls::ImageView(caption, layout, flags));
 }
-REFERENCE<ImageViewer> Factory::ImageViewer::Create(
+REFERENCE<ImageView> Factory::ImageView::Create(
       Controls::Control* parent, const ConstString& caption, string_view layout, Controls::ViewerFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
+    return parent->AddControl<Controls::ImageView>(Factory::ImageView::Create(caption, layout, flags));
 }
-REFERENCE<ImageViewer> Factory::ImageViewer::Create(
+REFERENCE<ImageView> Factory::ImageView::Create(
       Controls::Control& parent, const ConstString& caption, string_view layout, Controls::ViewerFlags flags)
 {
-    return parent.AddControl<Controls::ImageViewer>(Factory::ImageViewer::Create(caption, layout, flags));
+    return parent.AddControl<Controls::ImageView>(Factory::ImageView::Create(caption, layout, flags));
 }
 
 //======[LISTVIEW]===================================================================================

@@ -8,7 +8,7 @@ target_sources(AppCUI PRIVATE
         Factory.cpp
 	Label.cpp 
 	ListView.cpp
-	ImageViewer.cpp
+	ImageView.cpp
 	NumericSelector.cpp
 	Panel.cpp 
 	Password.cpp
