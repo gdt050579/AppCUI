@@ -663,8 +663,8 @@ class GridControlContext : public ControlContext
 
     uint32 cWidth  = 0U;
     uint32 cHeight = 0U;
-    int32 offsetX  = 0U;
-    int32 offsetY  = 0U;
+    int32 offsetX  = 0;
+    int32 offsetY  = 0;
 
     Menu rightClickMenu;
 

@@ -10,7 +10,7 @@ constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 constexpr auto MenuCommandMergeCells = 0x01U;
 
 constexpr auto minCellWidth  = 0x03U;
-constexpr auto minCellHeight = 0x03U;
+constexpr auto minCellHeight = 0x02U;
 
 Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
@@ -849,6 +849,11 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
     {
         cWidth  = static_cast<uint32>(Layout.Width / columnsNo);
         cHeight = static_cast<uint32>(Layout.Height / rowsNo);
+        if (Layout.Width != 0 || Layout.Height != 0)
+        {
+            cWidth  = std::max<>(cWidth, minCellWidth);
+            cHeight = std::max<>(cHeight, minCellHeight);
+        }
     }
 
     if (((flags & GridFlags::DisableMove) != GridFlags::DisableMove) && startedMoving == false)
@@ -902,12 +907,12 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
 void GridControlContext::CenterMatrix()
 {
     // center matrix
-    offsetX = static_cast<uint32>((Layout.Width - cWidth * columnsNo) / 2);
+    offsetX = (Layout.Width - static_cast<int32>(cWidth * columnsNo)) / 2;
 
-    auto deltaHeight = (Layout.Height - cHeight * rowsNo);
+    auto deltaHeight = Layout.Height - static_cast<int32>(cHeight * rowsNo);
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
     {
-        if (deltaHeight > cHeight)
+        if (deltaHeight > static_cast<int32>(cHeight))
         {
             deltaHeight -= cHeight;
         }
@@ -917,11 +922,21 @@ void GridControlContext::CenterMatrix()
         }
     }
 
-    offsetY = static_cast<uint32>(deltaHeight / 2);
+    offsetY = static_cast<int32>(deltaHeight / 2);
 
     if ((flags & GridFlags::HideHeader) == GridFlags::None)
     {
         offsetY += cHeight;
+    }
+
+    if (offsetX < 0)
+    {
+        offsetX = 0;
+    }
+
+    if (offsetY < 0)
+    {
+        offsetY = 0;
     }
 }
 
