@@ -574,6 +574,22 @@ void Controls::Grid::ResetHeaderValues()
     context->SetDefaultHeaderValues();
 }
 
+void Controls::Grid::ToggleHorizontalLines()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::HideHorizontalLines) == GridFlags::None)
+    {
+        context->flags |= GridFlags::HideHorizontalLines;
+    }
+    else
+    {
+        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideHorizontalLines));
+    }
+
+    context->UpdateGridParameters();
+    Application::Repaint();
+}
+
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
@@ -1005,7 +1021,8 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
         if (Layout.Width != 0 || Layout.Height != 0)
         {
             cWidth  = std::max<>(cWidth + 1, minCellWidth);
-            cHeight = std::max<>(cHeight + 1, minCellHeight);
+            cHeight = std::max<>(
+                  cHeight + 1 - ((flags & GridFlags::HideHorizontalLines) != GridFlags::None), minCellHeight);
         }
     }
 

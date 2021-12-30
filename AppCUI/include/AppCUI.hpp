@@ -3844,6 +3844,7 @@ namespace Controls
         AppCUI::Graphics::Point GetSelectionLocationsStart() const;
         AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
         void ResetHeaderValues();
+        void ToggleHorizontalLines();
 
       private:
         friend Factory::Grid;
