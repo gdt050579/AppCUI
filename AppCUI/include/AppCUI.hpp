@@ -3296,6 +3296,8 @@ namespace Controls
 
       public:
         bool SetCurrentTabPageByIndex(uint32 index);
+        bool GoToNextTabPage();
+        bool GoToPreviousTabPage();
         bool SetCurrentTabPageByRef(Reference<Control> page);
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)

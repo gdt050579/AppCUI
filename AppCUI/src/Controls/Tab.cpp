@@ -315,6 +315,14 @@ bool Tab::SetCurrentTabPageByIndex(uint32 index)
 {
     return Tab_SetCurrentTabPageByIndex(this, index, false);
 }
+bool Tab::GoToNextTabPage()
+{
+    return NextTab(this);
+}
+bool Tab::GoToPreviousTabPage()
+{
+    return PreviousTab(this);
+}
 bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
 {
     uint32 index = 0xFFFFFFFF;
