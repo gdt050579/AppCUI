@@ -3840,6 +3840,8 @@ namespace Controls
         bool UpdateHeaderValues(
               const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+        void ShowHeader(bool show);
+        bool IsHeaderShown() const;
 
       private:
         friend Factory::Grid;

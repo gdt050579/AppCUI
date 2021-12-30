@@ -437,6 +437,27 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
     return true;
 }
 
+void Controls::Grid::ShowHeader(bool show)
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    if (show)
+    {
+        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideHeader));
+    }
+    else
+    {
+        context->flags |= GridFlags::HideHeader;
+    }
+
+    Application::Repaint();
+}
+
+bool Controls::Grid::IsHeaderShown() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    return ((context->flags & GridFlags::HideHeader) == GridFlags::HideHeader) == false;
+}
+
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
     for (auto i = 0U; i <= columnsNo; i++)
@@ -830,7 +851,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         wtp.X     = offsetX + i * cWidth + 1; // 1 -> line
-        wtp.Y     = offsetY - cHeight / 2 - 1;
+        wtp.Y     = offsetY - cHeight / 2;
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
