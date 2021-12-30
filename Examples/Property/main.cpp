@@ -255,7 +255,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
         error.SetFormat("Unknwon property ID: %u", (uint32) id);
         return false;
     };
-    void SetCustomPropetyValue(uint32 /*propertyID*/) override
+    void SetCustomPropertyValue(uint32 /*propertyID*/) override
     {
         AppCUI::Dialogs::MessageBox::ShowNotification("Info", "Custom window for propert chage");
     }
