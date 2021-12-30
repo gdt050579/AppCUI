@@ -220,6 +220,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         {
             context->rightClickMenu.Show(x, y);
         }
+        context->lastLocationDraggedRightClicked = { x, y };
         break;
     case MouseButton::Left | MouseButton::DoubleClicked:
     {
@@ -255,8 +256,25 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     }
 }
 
-void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton /*button*/)
+void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton button)
 {
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    switch (button)
+    {
+    case AppCUI::Input::MouseButton::None:
+        break;
+    case AppCUI::Input::MouseButton::Left:
+        break;
+    case AppCUI::Input::MouseButton::Center:
+        break;
+    case AppCUI::Input::MouseButton::Right:
+        context->lastLocationDraggedRightClicked = { 0, 0 };
+        break;
+    case AppCUI::Input::MouseButton::DoubleClicked:
+        break;
+    default:
+        break;
+    }
 }
 
 bool Grid::OnMouseDrag(int x, int y, MouseButton button)
@@ -309,8 +327,74 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
     case Input::MouseButton::Center:
         break;
     case Input::MouseButton::Right:
+        if ((context->flags & GridFlags::DisableMove) == GridFlags::None)
+        {
+            const bool left   = x < context->lastLocationDraggedRightClicked.X;
+            const bool right  = x > context->lastLocationDraggedRightClicked.X;
+            const bool top    = y < context->lastLocationDraggedRightClicked.Y;
+            const bool bottom = y > context->lastLocationDraggedRightClicked.Y;
+            const bool noH    = x == context->lastLocationDraggedRightClicked.X;
+            const bool noV    = y == context->lastLocationDraggedRightClicked.Y;
+
+            if (left == false && right == false && top == false && bottom == false)
+            {
+                break;
+            }
+
+            int xDelta = 0;
+            if (noH == false)
+            {
+                xDelta = left - right;
+            }
+
+            int yDelta = 0;
+            if (noV == false)
+            {
+                yDelta = top - bottom;
+            }
+
+            context->UpdatePositions(xDelta, yDelta);
+            context->startedMoving                   = true;
+            context->lastLocationDraggedRightClicked = { x, y };
+            return true;
+        }
         break;
     case Input::MouseButton::DoubleClicked:
+        break;
+    default:
+        break;
+    }
+
+    return false;
+}
+
+bool Controls::Grid::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    switch (direction)
+    {
+    case AppCUI::Input::MouseWheel::None:
+        break;
+    case AppCUI::Input::MouseWheel::Up:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            context->startedMoving = true;
+            context->UpdateDimensions(1, 1);
+            return true;
+        }
+        break;
+    case AppCUI::Input::MouseWheel::Down:
+        if ((context->flags & GridFlags::DisableZoom) == GridFlags::None)
+        {
+            context->startedMoving = true;
+            context->UpdateDimensions(-1, -1);
+            return true;
+        }
+        break;
+    case AppCUI::Input::MouseWheel::Left:
+        break;
+    case AppCUI::Input::MouseWheel::Right:
         break;
     default:
         break;
@@ -456,6 +540,55 @@ bool Controls::Grid::IsHeaderVisible() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return ((context->flags & GridFlags::HideHeader) == GridFlags::HideHeader) == false;
+}
+
+Point Controls::Grid::GetHoveredLocation() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->hoveredCellIndex == 0xFFFFFFFF)
+    {
+        return { -1, -1 };
+    }
+
+    return { static_cast<int32>(context->hoveredCellIndex / context->columnsNo),
+             static_cast<int32>(context->hoveredCellIndex % context->columnsNo) };
+}
+
+AppCUI::Graphics::Point Controls::Grid::GetSelectionLocationsStart() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->selectedCellsIndexes.size() == 0)
+    {
+        return { -1, -1 };
+    }
+
+    const auto cell = context->selectedCellsIndexes[0];
+    if (cell == 0xFFFFFFFF)
+    {
+        return { -1, -1 };
+    }
+
+    return { static_cast<int32>(cell / context->columnsNo), static_cast<int32>(cell % context->columnsNo) };
+}
+
+AppCUI::Graphics::Point Controls::Grid::GetSelectionLocationsEnd() const
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+
+    if (context->selectedCellsIndexes.size() == 0)
+    {
+        return { -1, -1 };
+    }
+
+    const auto cell = context->selectedCellsIndexes[context->selectedCellsIndexes.size() - 1];
+    if (cell == 0xFFFFFFFF)
+    {
+        return { -1, -1 };
+    }
+
+    return { static_cast<int32>(cell / context->columnsNo), static_cast<int32>(cell % context->columnsNo) };
 }
 
 void GridControlContext::DrawBoxes(Renderer& renderer)

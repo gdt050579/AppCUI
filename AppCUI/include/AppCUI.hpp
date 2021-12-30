@@ -3817,6 +3817,7 @@ namespace Controls
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnLoseFocus() override;
@@ -3842,6 +3843,9 @@ namespace Controls
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
         void ShowHeader(bool show);
         bool IsHeaderVisible() const;
+        AppCUI::Graphics::Point GetHoveredLocation() const;
+        AppCUI::Graphics::Point GetSelectionLocationsStart() const;
+        AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
 
       private:
         friend Factory::Grid;

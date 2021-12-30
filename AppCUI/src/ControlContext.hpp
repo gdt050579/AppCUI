@@ -674,6 +674,8 @@ class GridControlContext : public ControlContext
 
     bool startedMoving = false;
 
+    Point lastLocationDraggedRightClicked{ 0,0 };
+
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex);
