@@ -452,7 +452,7 @@ void Controls::Grid::ShowHeader(bool show)
     Application::Repaint();
 }
 
-bool Controls::Grid::IsHeaderShown() const
+bool Controls::Grid::IsHeaderVisible() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     return ((context->flags & GridFlags::HideHeader) == GridFlags::HideHeader) == false;

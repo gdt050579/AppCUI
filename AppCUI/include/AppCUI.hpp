@@ -3841,7 +3841,7 @@ namespace Controls
               const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
         void ShowHeader(bool show);
-        bool IsHeaderShown() const;
+        bool IsHeaderVisible() const;
 
       private:
         friend Factory::Grid;
