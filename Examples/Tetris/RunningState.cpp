@@ -59,7 +59,7 @@ bool RunningState::Update()
     board.Update(
           pieceScaleInLeftPanel,
           maxPiecesInQueue,
-          nextPiece.DownCast<Control>(),
+          nextPiece.ToBase<Control>(),
           { leftPanel->GetWidth() - 2U, leftPanel->GetHeight() - 2U },
           delta,
           gameOver);

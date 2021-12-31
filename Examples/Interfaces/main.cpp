@@ -44,14 +44,14 @@ class MyWin : public Window,
     }
     void OnFocus(Reference<Control> c) override
     {
-        if (b.UpCast<Control>() == c)
+        if (b.ToBase<Control>() == c)
         {
             b->SetText("Push Me");
         }
     }
     void OnLoseFocus(Reference<Control> c) override
     {
-        if (b.UpCast<Control>() == c)
+        if (b.ToBase<Control>() == c)
         {
             b->SetText("Push");
         }

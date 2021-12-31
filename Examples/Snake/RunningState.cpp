@@ -59,7 +59,7 @@ bool RunningState::Update()
     bool gameOver = false;
     board.Update(
           pieceScaleInLeftPanel,
-          rightPanel.DownCast<Control>(),
+          rightPanel.ToBase<Control>(),
           { leftPanel->GetWidth() - 2U, leftPanel->GetHeight() - 2U },
           delta,
           gameOver);
