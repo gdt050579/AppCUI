@@ -75,16 +75,17 @@ class RunningState : public State, public Handlers::OnKeyEventInterface
 
     Board board;
 
-    Reference<TabPage> page          = nullptr;
-    Reference<Panel> leftPanel       = nullptr;
-    Reference<Panel> nextPiece       = nullptr;
-    Reference<Panel> nextPiece01     = nullptr;
-    Reference<Panel> nextPiece02     = nullptr;
-    Reference<Panel> nextPiece03     = nullptr;
-    Reference<Panel> rightPanel      = nullptr;
-    Reference<Panel> stats           = nullptr;
-    Reference<Label> scoreLabel      = nullptr;
-    Reference<Label> timePassedLabel = nullptr;
+    Reference<TabPage> page            = nullptr;
+    Reference<Panel> leftPanel         = nullptr;
+    Reference<Panel> nextPiece         = nullptr;
+    Reference<Panel> nextPiece01       = nullptr;
+    Reference<Panel> nextPiece02       = nullptr;
+    Reference<Panel> nextPiece03       = nullptr;
+    Reference<Panel> rightPanel        = nullptr;
+    Reference<Panel> stats             = nullptr;
+    Reference<Label> scoreLabel        = nullptr;
+    Reference<Label> timePassedLabel   = nullptr;
+    Reference<Label> trainingModeLabel = nullptr;
 
     PaintControlImplementationRightPiecePanels pcirpp01{ board, 0 };
     PaintControlImplementationRightPiecePanels pcirpp02{ board, 1 };

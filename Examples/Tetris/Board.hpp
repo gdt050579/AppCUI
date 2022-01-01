@@ -43,6 +43,8 @@ class Board
 
     unsigned int score = 0;
 
+    bool trainingMode = false;
+
     enum class IsCollidingOn
     {
         Left,
@@ -72,6 +74,9 @@ class Board
     bool DrawPieceById(Renderer& renderer, unsigned int id, const Size& canvasSize, int scale);
 
     unsigned int GetScore() const;
+
+    void ToggleTrainingMode();
+    bool GetTrainingMode() const;
 
   private:
     bool CanAdvanceOnYAxis();
