@@ -4,22 +4,24 @@ namespace Tetris
 {
 RunningState::RunningState(const std::shared_ptr<GameData>& data) : data(data), initialTime(clock())
 {
-    page            = Factory::TabPage::Create(data->tab, "");
-    leftPanel       = Factory::Panel::Create(page, "Game", "t:0,b:0,w:75%,x:0%,a:l");
-    rightPanel      = Factory::Panel::Create(page, "Info", "t:0,b:0,w:25%,x:100%,a:r");
-    stats           = Factory::Panel::Create(rightPanel, "Stats", "d:t,h:30%");
-    scoreLabel      = Factory::Label::Create(stats, "0", "t:1,b:0,w:50%,x:2%,a:l");
-    timePassedLabel = Factory::Label::Create(stats, "0", "t:2,b:0,w:50%,x:2%,a:l");
-    nextPiece       = Factory::Panel::Create(rightPanel, "Next Pieces", "d:b,h:70%");
-    nextPiece01     = Factory::Panel::Create(nextPiece, "01", "d:t,h:35%");
-    nextPiece02     = Factory::Panel::Create(nextPiece, "02", "d:c,h:33%");
-    nextPiece03     = Factory::Panel::Create(nextPiece, "03", "d:b,h:33%");
+    page              = Factory::TabPage::Create(data->tab, "");
+    leftPanel         = Factory::Panel::Create(page, "Game", "t:0,b:0,w:75%,x:0%,a:l");
+    rightPanel        = Factory::Panel::Create(page, "Info", "t:0,b:0,w:25%,x:100%,a:r");
+    stats             = Factory::Panel::Create(rightPanel, "Stats", "d:t,h:30%");
+    scoreLabel        = Factory::Label::Create(stats, "0", "t:1,b:0,w:50%,x:2%,a:l");
+    timePassedLabel   = Factory::Label::Create(stats, "0", "t:2,b:0,w:50%,x:2%,a:l");
+    trainingModeLabel = Factory::Label::Create(stats, "False", "t:3,b:0,w:50%,x:2%,a:l");
+    nextPiece         = Factory::Panel::Create(rightPanel, "Next Pieces", "d:b,h:70%");
+    nextPiece01       = Factory::Panel::Create(nextPiece, "01", "d:t,h:35%");
+    nextPiece02       = Factory::Panel::Create(nextPiece, "02", "d:c,h:33%");
+    nextPiece03       = Factory::Panel::Create(nextPiece, "03", "d:b,h:33%");
 
     page->SetText("");
     leftPanel->SetText("");
     rightPanel->SetText("");
     scoreLabel->SetText("");
     timePassedLabel->SetText("");
+    trainingModeLabel->SetText("");
 
     page->Handlers()->OnKeyEvent          = this;
     nextPiece01->Handlers()->PaintControl = &pcirpp01;
@@ -55,11 +57,20 @@ bool RunningState::Update()
     ls.Format("Time passed: %lus", delta);
     timePassedLabel->SetText(ls.GetText());
 
+    if (board.GetTrainingMode())
+    {
+        trainingModeLabel->SetText("Training mode: true");
+    }
+    else
+    {
+        trainingModeLabel->SetText("Training mode: false");
+    }
+
     bool gameOver = false;
     board.Update(
           pieceScaleInLeftPanel,
           maxPiecesInQueue,
-          nextPiece.DownCast<Control>(),
+          nextPiece.ToBase<Control>(),
           { leftPanel->GetWidth() - 2U, leftPanel->GetHeight() - 2U },
           delta,
           gameOver);
@@ -151,8 +162,12 @@ bool RunningState::OnKeyEventInterfaceImplementationLeftPanel::OnKeyEvent(
     case Key::Down:
         return board.AdvanceOnYAxis();
 
+    case Key::Up:
     case Key::Space:
         return board.Rotate();
+
+    case Key::T:
+        board.ToggleTrainingMode();
 
     default:
         break;

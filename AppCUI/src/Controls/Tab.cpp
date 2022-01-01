@@ -1,15 +1,17 @@
 #include "ControlContext.hpp"
 
-#define TAB_DISPLAY_MODE_TOP    0
-#define TAB_DISPLAY_MODE_BOTTOM 1
-#define TAB_DISPLAY_MODE_LEFT   2
-#define TAB_DISPLAY_MODE_LIST   3
-#define TAB_DISPLAY_MODE_NOTABS 4
+
 
 #define TAB_DISPLAY_MODE(flags) (((flags) >> 8) & 0xF)
 
 namespace AppCUI
 {
+constexpr uint32 TAB_DISPLAY_MODE_TOP    = 0;
+constexpr uint32 TAB_DISPLAY_MODE_BOTTOM = 1;
+constexpr uint32 TAB_DISPLAY_MODE_LEFT   = 2;
+constexpr uint32 TAB_DISPLAY_MODE_LIST   = 3;
+constexpr uint32 TAB_DISPLAY_MODE_NOTABS = 4;
+
 void TabControlContext::UpdateMargins()
 {
     switch (TAB_DISPLAY_MODE(this->Flags))
@@ -297,8 +299,7 @@ bool TabPage::OnBeforeResize(int, int)
 {
     return true;
 }
-Tab::Tab(string_view layout, TabFlags flags, uint32 tabPageSize)
-    : Control(new TabControlContext(), "", layout, false)
+Tab::Tab(string_view layout, TabFlags flags, uint32 tabPageSize) : Control(new TabControlContext(), "", layout, false)
 {
     tabPageSize = std::min<>(1000U, tabPageSize);
     tabPageSize = std::max<>(10U, tabPageSize);

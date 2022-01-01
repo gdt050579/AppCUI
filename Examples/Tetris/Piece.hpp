@@ -42,7 +42,7 @@ class Piece
     Size GetSize(int scale) const;
     int GetBlockWidth(int scale) const;
     int GetBlockHeight(int scale) const;
-    bool Rotate();
+    bool Rotate(const Size& boardSize);
 
     const std::array<std::array<bool, rows>, columns>& GetMatrix() const;
     const Point& GetPositionOnBoard() const;

@@ -169,8 +169,8 @@ void Config::SetDarkTheme()
 
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
-    this->Tab.TabBarColor            = ColorPair{ Color::Silver, Color::Gray };
-    this->Tab.TabBarHotKeyColor      = ColorPair{ Color::White, Color::Gray };
+    this->Tab.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
+    this->Tab.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
     this->Tab.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
     this->Tab.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
     this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };

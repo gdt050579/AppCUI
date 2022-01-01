@@ -119,19 +119,53 @@ int Piece::GetBlockHeight(int scale) const
     return size.Height * scale;
 }
 
-bool Piece::Rotate()
+bool Piece::Rotate(const Size& boardSize)
 {
     std::array<std::array<bool, rows>, columns> tmp{ { { false } } };
 
-    for (auto i = 0U; i < matrix.size(); i++)
+    for (auto y = 0U; y < matrix.size(); y++)
     {
-        for (auto j = 0U; j < matrix[i].size(); j++)
+        for (auto x = 0U; x < matrix[y].size(); x++)
         {
-            tmp[j][matrix.size() - i - 1] = matrix[i][j];
+            tmp[y][x] = matrix[matrix.size() - x - 1][y];
         }
     }
 
     matrix = tmp;
+
+    Point lowest  = { 0, 0 };
+    Point highest = { 0, 0 };
+    for (auto y = 0U; y < matrix.size(); y++)
+    {
+        for (auto x = 0U; x < matrix[y].size(); x++)
+        {
+            if (matrix[y][x] == true)
+            {
+                lowest.X = std::min<>(positionOnBoard.X + static_cast<int>(x), lowest.X);
+                lowest.Y = std::min<>(positionOnBoard.Y + static_cast<int>(y), lowest.Y);
+
+                highest.X = std::max<>(positionOnBoard.X + static_cast<int>(x), highest.X);
+                highest.Y = std::max<>(positionOnBoard.Y + static_cast<int>(y), highest.Y);
+            }
+        }
+    }
+
+    if (lowest.X < 0)
+    {
+        UpdatePositionOnBoard({ -lowest.X, 0 });
+    }
+    else if (highest.X >= static_cast<int>(boardSize.Width))
+    {
+        UpdatePositionOnBoard({ -(highest.X - static_cast<int>(boardSize.Width)) - 1, 0 });
+    }
+    if (lowest.Y < 0)
+    {
+        UpdatePositionOnBoard({ 0, -lowest.Y });
+    }
+    else if (highest.Y >= static_cast<int>(boardSize.Height))
+    {
+        UpdatePositionOnBoard({ -(highest.Y - static_cast<int>(boardSize.Height)) - 1, 0 });
+    }
 
     return true;
 }

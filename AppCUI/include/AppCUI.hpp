@@ -516,18 +516,14 @@ namespace Utils
         {
             return ptr != nullptr;
         }
+
         template <typename C>
-        constexpr inline Reference<C> To()
+        constexpr inline Reference<C> ToBase()
         {
             return Reference<C>(this->ptr);
         }
         template <typename C>
-        constexpr inline Reference<C> UpCast()
-        {
-            return Reference<C>(this->ptr);
-        }
-        template <typename C>
-        constexpr inline Reference<C> DownCast()
+        constexpr inline Reference<C> ToObjectRef()
         {
             return Reference<C>((C*) (this->ptr));
         }
@@ -2852,7 +2848,7 @@ namespace Controls
         template <typename T>
         Reference<T> AddControl(unique_ptr<T> control)
         {
-            return this->AddChildControl(std::move(control)).template DownCast<T>();
+            return this->AddChildControl(std::move(control)).template ToObjectRef<T>();
         }
         template <typename T, typename... Arguments>
         Reference<T> CreateChildControl(Arguments... args)
@@ -2864,7 +2860,7 @@ namespace Controls
         template <typename T>
         bool RemoveControl(Reference<T>& control)
         {
-            if (RemoveControlByRef(control.template To<Controls::Control>()))
+            if (RemoveControlByRef(control.template ToBase<Controls::Control>()))
             {
                 control.Reset();
                 return true;
@@ -3302,7 +3298,7 @@ namespace Controls
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)
         {
-            return SetCurrentTabPageByRef(page.template DownCast<Control>());
+            return SetCurrentTabPageByRef(page.template ToBase<Control>());
         }
         bool SetTabPageTitleSize(uint32 newSize);
         bool SetTabPageName(uint32 index, const ConstString& name);

@@ -16,10 +16,10 @@ bool MessageBoxWindowEventHandler(Reference<Control> control, Controls::Event ev
     switch (eventType)
     {
     case Event::WindowClose:
-        control.DownCast<Window>()->Exit(Result::Cancel);
+        control.ToObjectRef<Window>()->Exit(Result::Cancel);
         return true;
     case Event::ButtonClicked:
-        control.DownCast<Window>()->Exit(controlID);
+        control.ToObjectRef<Window>()->Exit(controlID);
         return true;
     default:
         return false;

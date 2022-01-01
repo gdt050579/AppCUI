@@ -107,9 +107,6 @@ Board::IsCollidingOn Board::IsColliding(const Point& futurePosition)
 
 Board::IsCollidingOn Board::IsColliding(const Piece& piece, const Point& futurePosition)
 {
-    CHECK(futurePosition.X > -1, IsCollidingOn::Left, "");
-    CHECK(futurePosition.Y > -1, IsCollidingOn::Bottom, "");
-
     // if future position is current position means that the piece is generated on the board
     // should not clear current board data in order to check if it collides with something existent
     // -> game over
@@ -268,7 +265,7 @@ bool Board::Rotate()
     CHECK(currentPiece.has_value(), false, "");
 
     ClearPieceFootprint();
-    currentPiece->Rotate();
+    currentPiece->Rotate({ static_cast<unsigned int>(matrixHSize), static_cast<unsigned int>(matrixVSize) });
     AddPieceFootprint();
 
     return true;
@@ -306,7 +303,10 @@ void Board::Update(
         else if (currentPieceUpdated != delta)
         {
             currentPieceUpdated = delta;
-            AdvanceOnYAxis();
+            if (trainingMode == false)
+            {
+                AdvanceOnYAxis();
+            }
         }
     }
     else
@@ -382,5 +382,15 @@ bool Board::DrawPieceById(Renderer& renderer, unsigned int id, const Size& canva
 unsigned int Board::GetScore() const
 {
     return score;
+}
+
+void Board::ToggleTrainingMode()
+{
+    trainingMode = !trainingMode;
+}
+
+bool Board::GetTrainingMode() const
+{
+    return trainingMode;
 }
 } // namespace Tetris

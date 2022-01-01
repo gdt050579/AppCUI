@@ -38,7 +38,7 @@ class MyWin : public Window
         }
         if (eventType == Event::ComboBoxSelectedItemChanged)
         {
-            auto c = sender.DownCast<ComboBox>();
+            auto c = sender.ToObjectRef<ComboBox>();
             AppCUI::Utils::LocalUnicodeStringBuilder<128> temp;
             temp.Add(c->GetCurrentItemText());
             temp.Add(" => Index: ");
