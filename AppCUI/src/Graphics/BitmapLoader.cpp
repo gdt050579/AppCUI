@@ -147,9 +147,10 @@ bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
 {
     uint32 x          = 0;
     uint32 y          = d.height - 1;
-    uint32 pxWidth    = (d.width & 7) == 0 ? (d.width >> 8) : (d.width >> 8) + 1;
+    uint32 pxWidth    = (d.width & 7) == 0 ? (d.width >> 3) : (d.width >> 3) + 1;
     uint32 rowPadding = (4 - (pxWidth & 3)) & 3;
     Color c;
+
     while (d.px <= d.end)
     {
         auto val = *d.px;
