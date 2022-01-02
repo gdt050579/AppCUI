@@ -71,7 +71,7 @@ bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
     uint32 rowPadding = (4 - ((d.width * 3) & 3)) & 3;
     while (d.px + 3 <= d.end)
     {
-        CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
+        CHECK(img.SetPixel(x, y, Pixel(d.px[2], d.px[1], d.px[0])),
               false,
               "Fail to set pixel on %u,%u coordonates",
               x,
