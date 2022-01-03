@@ -2727,14 +2727,14 @@ namespace Controls
 
         struct OnValidateCharacterInterface
         {
-            virtual void OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) = 0;
+            virtual bool OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) = 0;
         };
         struct OnValidateCharacterCallback : public OnValidateCharacterInterface
         {
             OnValidateCharacterHandler callback;
-            virtual void OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) override
+            virtual bool OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) override
             {
-                callback(ctrl, character);
+                return callback(ctrl, character);
             };
         };
 
