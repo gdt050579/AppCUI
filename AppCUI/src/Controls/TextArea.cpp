@@ -659,6 +659,12 @@ void TextAreaControlContext::AddChar(char16 ch)
 {
     if ((Flags & (uint32) TextAreaFlags::Readonly) != 0)
         return;
+    if (this->handlers)
+    {
+        auto h = (Handlers::TextControl*) (this->handlers.get());
+        if ((h->OnValidateCharacter.obj) && (h->OnValidateCharacter.obj->OnValidateCharacter(this->Host, ch) == false))
+            return;
+    }
     DeleteSelected();
     if (Text.InsertChar(ch, View.CurrentPosition))
     {
