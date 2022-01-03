@@ -602,7 +602,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
                 const auto y = offsetY + j * cHeight;
 
                 const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
-                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Normal);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Normal);
             }
         }
     }
@@ -613,7 +613,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         for (auto i = 0U; i <= columnsNo; i++)
         {
             const auto x = offsetX + i * cWidth;
-            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Box.Normal);
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Normal);
         }
     }
 
@@ -628,7 +628,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto yTop    = offsetY + rowIndex * cHeight;
         const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
 
-        const auto& color = Cfg->Grid.Lines.Box.Hovered;
+        const auto& color = Cfg->Grid.Lines.Hovered;
 
         renderer.WriteSpecialCharacter(xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
@@ -656,7 +656,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         for (auto i = sci; i <= eci; i++)
         {
             const auto x = offsetX + i * cWidth;
-            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Box.Selected);
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
         }
 
         for (auto i = sci; i <= eci; i++)
@@ -666,7 +666,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
             {
                 const auto y  = offsetY + j * cHeight;
                 const auto sc = ComputeBoxType(i, j, sci, sri, eci, eri);
-                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Selected);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Selected);
             }
         }
     }
@@ -686,7 +686,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (i < columnsNo)
                 {
                     const auto endX = offsetX + (i + 1) * cWidth;
-                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Grid.Lines.Horizontal.Normal, true);
+                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Grid.Lines.Normal, true);
                 }
             }
 
@@ -695,7 +695,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (j < rowsNo)
                 {
                     const auto endY = offsetY + (j + 1) * cHeight;
-                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Grid.Lines.Vertical.Normal, true);
+                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Grid.Lines.Normal, true);
                 }
             }
         }
@@ -703,26 +703,26 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
     const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
-        ColorPair vertical   = Cfg->Grid.Lines.Vertical.Normal;
-        ColorPair horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+        ColorPair vertical   = Cfg->Grid.Lines.Normal;
+        ColorPair horizontal = Cfg->Grid.Lines.Normal;
 
         switch (cellType)
         {
         case GridCellStatus::Normal:
-            vertical   = Cfg->Grid.Lines.Vertical.Normal;
-            horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+            vertical   = Cfg->Grid.Lines.Normal;
+            horizontal = Cfg->Grid.Lines.Normal;
             break;
         case GridCellStatus::Selected:
-            vertical   = Cfg->Grid.Lines.Vertical.Selected;
-            horizontal = Cfg->Grid.Lines.Horizontal.Selected;
+            vertical   = Cfg->Grid.Lines.Selected;
+            horizontal = Cfg->Grid.Lines.Selected;
             break;
         case GridCellStatus::Hovered:
-            vertical   = Cfg->Grid.Lines.Vertical.Hovered;
-            horizontal = Cfg->Grid.Lines.Horizontal.Hovered;
+            vertical   = Cfg->Grid.Lines.Hovered;
+            horizontal = Cfg->Grid.Lines.Hovered;
             break;
         default:
-            vertical   = Cfg->Grid.Lines.Vertical.Normal;
-            horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+            vertical   = Cfg->Grid.Lines.Normal;
+            horizontal = Cfg->Grid.Lines.Normal;
             break;
         }
 
@@ -954,14 +954,14 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
             const auto endY = offsetY + cHeight;
-            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Vertical.Normal, true);
+            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Normal, true);
         }
     }
 
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
         renderer.DrawHorizontalLine(
-              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Vertical.Normal, true);
+              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Normal, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
@@ -976,16 +976,16 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
                 if (i == 0)
                 {
                     renderer.WriteSpecialCharacter(
-                          x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+                          x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Normal);
                 }
                 else if (i == columnsNo)
                 {
                     renderer.WriteSpecialCharacter(
-                          x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
+                          x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Normal);
                 }
                 else
                 {
-                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Vertical.Normal);
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Normal);
                 }
             }
         }

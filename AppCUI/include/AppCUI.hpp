@@ -4728,18 +4728,7 @@ namespace Application
         {
             struct
             {
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Horizontal;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Vertical;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Box;
+                Graphics::ColorPair Normal, Selected, Hovered;
             } Lines;
             struct
             {
