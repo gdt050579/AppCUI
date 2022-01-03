@@ -1,11 +1,5 @@
 #include "ControlContext.hpp"
 
-#define GATTR_VERTICAL    1024
-#define SPLITTER_BAR_SIZE 1
-
-#define SPLITTER_DRAG_STATUS_NONE 0
-#define SPLITTER_DRAG_STATUS_MOVE 1
-
 namespace AppCUI
 {
 constexpr int MIN_SPLITTER_SIZE = 4;
@@ -16,6 +10,9 @@ constexpr int SPLITTER_TOOLTIPTEXT_RIGHT  = 1;
 constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
+
+constexpr uint32 GATTR_VERTICAL = 1024;
+constexpr int32 SPLITTER_BAR_SIZE = 1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                  "Click to maximize right panel",
