@@ -2614,10 +2614,11 @@ namespace Controls
         using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
-        using OnAfterSetTextHandler   = void (*)(Reference<Controls::Control> control);
-        using OnTextRightClickHandler = void (*)(Reference<Controls::Control> control, int x, int y);
-        using OnTextColorHandler      = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
+        using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
+        using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
+        using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
+        using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
+        using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
 
         struct OnButtonPressedInterface
         {
@@ -2724,6 +2725,19 @@ namespace Controls
             };
         };
 
+        struct OnValidateCharacterInterface
+        {
+            virtual void OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) = 0;
+        };
+        struct OnValidateCharacterCallback : public OnValidateCharacterInterface
+        {
+            OnValidateCharacterHandler callback;
+            virtual void OnValidateCharacter(Reference<Controls::Control> ctrl, char16 character) override
+            {
+                callback(ctrl, character);
+            };
+        };
+
         struct OnTextRightClickInterface
         {
             virtual void OnTextRightClick(Reference<Controls::Control> ctrl, int x, int y) = 0;
@@ -2811,6 +2825,8 @@ namespace Controls
         {
             Wrapper<OnTextColorInterface, OnTextColorCallback, OnTextColorHandler> OnTextColor;
             Wrapper<OnTextRightClickInterface, OnTextRightClickCallback, OnTextRightClickHandler> OnTextRightClick;
+            Wrapper<OnValidateCharacterInterface, OnValidateCharacterCallback, OnValidateCharacterHandler>
+                  OnValidateCharacter;
         };
 
         using ListViewItemComparer = int (*)(
