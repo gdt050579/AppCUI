@@ -201,6 +201,12 @@ void TextField_AddChar(TextField* control, char16 ch)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     EXIT_IF_READONLY();
+    if (Members->handlers)
+    {
+        auto h = (Handlers::TextControl*) (Members->handlers.get());
+        if ((h->OnValidateCharacter.obj) && (h->OnValidateCharacter.obj->OnValidateCharacter(control, ch) == false))
+            return;
+    }
     TextField_DeleteSelected(control);
     if (Members->Cursor.Pos > (int) Members->Text.Len())
         Members->Text.InsertChar(ch, Members->Text.Len());
