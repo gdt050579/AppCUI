@@ -2,8 +2,8 @@
 
 namespace AppCUI::Utils::Number
 {
-#define NUMBER_FLAG_NEGATIVE 0x00000001
-#define NUMBER_FLAG_SECOND   0x00000002
+constexpr uint32 NUMBER_FLAG_NEGATIVE = 0x00000001U;
+constexpr uint32 NUMBER_FLAG_SECOND   = 0x00000002U;
 
 uint8 __base_translation__[256] = {
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
@@ -120,9 +120,9 @@ bool _parse_number_string_buffer_(const uint8* start, const uint8* end, _parse_n
     if ((*start) == '.')
     {
         start++;
-        res.SecondValue            = 0;
-        uint64 devide  = 1;
-        uint64 s_value = 0;
+        res.SecondValue = 0;
+        uint64 devide   = 1;
+        uint64 s_value  = 0;
         res.Flags |= NUMBER_FLAG_SECOND;
         // consider only base 10
         while (start < end)
@@ -254,9 +254,7 @@ optional<int64> ToInt64(string_view text, NumberParseFlags flags, uint32* size)
     }
     else
     {
-        CHECK(res.Value <= ((uint64) ((1ULL << 63) - 1)),
-              std::nullopt,
-              "Value can not be stored in a int64 variable");
+        CHECK(res.Value <= ((uint64) ((1ULL << 63) - 1)), std::nullopt, "Value can not be stored in a int64 variable");
         return (int64) (res.Value);
     }
 }

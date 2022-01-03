@@ -16,8 +16,8 @@ struct BMP_Header
 struct BMP_InfoHeader
 {
     uint32 sizeOfHeader;
-    uint32 width;
-    uint32 height;
+    int32 width;
+    int32 height;
     uint16 colorPlanes;
     uint16 bitsPerPixel;
     uint32 comppresionMethod;
@@ -39,10 +39,11 @@ struct DIBPaintBuffer
     const BMP_InfoHeader* header;
 };
 
-bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d)
+bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
 {
     uint32 x          = 0;
-    uint32 y          = d.height - 1;
+    uint32 y          = bottomUp ? d.height - 1 : 0;
+    uint32 last_y     = bottomUp ? 0 : d.height - 1;
     uint32 rowPadding = 0;
     while (d.px + 4 <= d.end)
     {
@@ -55,23 +56,27 @@ bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d)
         x++;
         if (x == d.width)
         {
-            if (y == 0)
+            if (y == last_y)
                 return true;
             d.px += rowPadding;
             x = 0;
-            y--;
+            if (bottomUp)
+                y--;
+            else
+                y++;
         }
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
+bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
 {
     uint32 x          = 0;
-    uint32 y          = d.height - 1;
+    uint32 y          = bottomUp ? d.height - 1 : 0;
+    uint32 last_y     = bottomUp ? 0 : d.height - 1;
     uint32 rowPadding = (4 - ((d.width * 3) & 3)) & 3;
     while (d.px + 3 <= d.end)
     {
-        CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
+        CHECK(img.SetPixel(x, y, Pixel(d.px[2], d.px[1], d.px[0])),
               false,
               "Fail to set pixel on %u,%u coordonates",
               x,
@@ -80,19 +85,23 @@ bool Paint_24bits_DIB(Image& img, DIBPaintBuffer& d)
         x++;
         if (x == d.width)
         {
-            if (y == 0)
+            if (y == last_y)
                 return true;
             d.px += rowPadding;
             x = 0;
-            y--;
+            if (bottomUp)
+                y--;
+            else
+                y++;
         }
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d)
+bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
 {
     uint32 x          = 0;
-    uint32 y          = d.height - 1;
+    uint32 y          = bottomUp ? d.height - 1 : 0;
+    uint32 last_y     = bottomUp ? 0 : d.height - 1;
     uint32 rowPadding = (4 - (d.width & 3)) & 3;
     while (d.px <= d.end)
     {
@@ -101,19 +110,23 @@ bool Paint_256color_DIB(Image& img, DIBPaintBuffer& d)
         x++;
         if (x == d.width)
         {
-            if (y == 0)
+            if (y == last_y)
                 return true;
             d.px += rowPadding;
             x = 0;
-            y--;
+            if (bottomUp)
+                y--;
+            else
+                y++;
         }
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
+bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
 {
     uint32 x          = 0;
-    uint32 y          = d.height - 1;
+    uint32 y          = bottomUp ? d.height - 1 : 0;
+    uint32 last_y     = bottomUp ? 0 : d.height - 1;
     uint32 pxWidth    = (d.width & 1) + (d.width >> 1); // for 3 the result is 2, for 8 the result is 4
     uint32 rowPadding = (4 - (pxWidth & 3)) & 3;
     while (d.px <= d.end)
@@ -130,11 +143,14 @@ bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
             x++;
             if (x == d.width)
             {
-                if (y == 0)
+                if (y == last_y)
                     return true;
                 d.px += rowPadding;
                 x = 0;
-                y--;
+                if (bottomUp)
+                    y--;
+                else
+                    y++;
                 break;
             }
             val = val << 4;
@@ -143,13 +159,15 @@ bool Paint_16color_DIB(Image& img, DIBPaintBuffer& d)
     }
     RETURNERROR(false, "Premature end of bitmap buffer !");
 }
-bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
+bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
 {
     uint32 x          = 0;
-    uint32 y          = d.height - 1;
-    uint32 pxWidth    = (d.width & 7) == 0 ? (d.width >> 8) : (d.width >> 8) + 1;
+    uint32 y          = bottomUp ? d.height - 1 : 0;
+    uint32 last_y     = bottomUp ? 0 : d.height - 1;
+    uint32 pxWidth    = (d.width & 7) == 0 ? (d.width >> 3) : (d.width >> 3) + 1;
     uint32 rowPadding = (4 - (pxWidth & 3)) & 3;
     Color c;
+
     while (d.px <= d.end)
     {
         auto val = *d.px;
@@ -164,11 +182,14 @@ bool Paint_monochrome_DIB(Image& img, DIBPaintBuffer& d)
             x++;
             if (x == d.width)
             {
-                if (y == 0)
+                if (y == last_y)
                     return true;
                 d.px += rowPadding;
                 x = 0;
-                y--;
+                if (bottomUp)
+                    y--;
+                else
+                    y++;
                 break;
             }
             val = val << 1;
@@ -188,9 +209,9 @@ bool LoadDIBToImage(Image& img, const uint8* buffer, uint32 size, bool isIcon)
     CHECK(h->comppresionMethod == BITMAP_COMPRESSION_METHID_BI_RGB,
           false,
           "Only BI_RGB compression method is supported");
-    auto width = h->width;
-    CHECK(width > 0, false, "Invalid width (should be bigger than 0)");
-    auto height = h->height;
+    CHECK(h->width > 0, false, "Width can not be a negative or 0 value value !");
+    auto width = (uint32)h->width;
+    auto height = h->height >= 0 ? (uint32) h->height : (uint32) (-h->height);
     if (isIcon)
     {
         CHECK((h->height & 1) == 0, false, "Height must be a multiple of 2 --> value is %u ", h->height);
@@ -218,21 +239,21 @@ bool LoadDIBToImage(Image& img, const uint8* buffer, uint32 size, bool isIcon)
     switch (h->bitsPerPixel)
     {
     case 1:
-        return Paint_monochrome_DIB(img, dpb);
+        return Paint_monochrome_DIB(img, dpb, h->height>=0);
     case 4:
         // set color table
         dpb.px += 64; // 16 entries x 4 (RGBA)
         dpb.colorTable = reinterpret_cast<const uint32*>(buffer + sizeof(BMP_InfoHeader));
-        return Paint_16color_DIB(img, dpb);
+        return Paint_16color_DIB(img, dpb, h->height >= 0);
     case 8:
         // set color table
         dpb.px += 1024; // 256 entries x 4 (RGBA)
         dpb.colorTable = reinterpret_cast<const uint32*>(buffer + sizeof(BMP_InfoHeader));
-        return Paint_256color_DIB(img, dpb);
+        return Paint_256color_DIB(img, dpb, h->height >= 0);
     case 24:
-        return Paint_24bits_DIB(img, dpb);
+        return Paint_24bits_DIB(img, dpb, h->height >= 0);
     case 32:
-        return Paint_32bits_DIB(img, dpb);
+        return Paint_32bits_DIB(img, dpb, h->height >= 0);
     }
     RETURNERROR(false, "Paint method for %d bits/pixels is not implemeted !", h->bitsPerPixel);
 }

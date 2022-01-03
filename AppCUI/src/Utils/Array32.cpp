@@ -1,7 +1,7 @@
 #include "AppCUI.hpp"
 #include <string.h>
 
-#define ARRAY32_FLAG_STACK_BUFFER 0x80000000
+
 #define VALIDATE_ALLOCATED_SPACE(requiredItems, returnValue)                                                           \
     if ((requiredItems) > (Allocated & 0x7FFFFFFF))                                                                    \
     {                                                                                                                  \
@@ -10,6 +10,8 @@
 
 namespace AppCUI::Utils
 {
+constexpr uint32 ARRAY32_FLAG_STACK_BUFFER = 0x80000000U;
+
 template <typename T>
 void __HeapSortContext(
       T* Data, int32 (*cmpFunc)(T elem1, T elem2, void* Context), int32 nrElements, bool ascendent, void* Context)
@@ -106,7 +108,7 @@ bool Array32::Grow(uint32 newSize)
     {
         memcpy(temp, Data, ((size_t) Count) << 2); /* multiply by 4 --> size of int32/uint32*/
         if ((Allocated & ARRAY32_FLAG_STACK_BUFFER) == 0)
-            delete Data;
+            delete []Data;
     }
     Data      = temp;
     Allocated = newSize;
@@ -126,7 +128,7 @@ Array32::~Array32()
 void Array32::Destroy()
 {
     if ((Data) && ((Allocated & ARRAY32_FLAG_STACK_BUFFER) == 0))
-        delete Data;
+        delete []Data;
     this->Data      = nullptr;
     this->Count     = 0;
     this->Allocated = 0;
