@@ -24,6 +24,11 @@ void HighlightNumberAndCapitalLetters(Reference<Control>, Graphics::Character* c
     }
 }
 
+bool OnlyNumbers(Reference<Control>, char16 character)
+{
+    return (character >= '0') && (character <= '9');
+}
+
 class MyWin : public AppCUI::Controls::Window,
               public AppCUI::Controls::Handlers::OnAfterSetTextInterface,
               public AppCUI::Controls::Handlers::OnButtonPressedInterface,
@@ -34,7 +39,7 @@ class MyWin : public AppCUI::Controls::Window,
     AppCUI::Controls::Menu mnu;
 
   public:
-    MyWin() : Window("Text Field Example", "d:c,w:70,h:20", WindowFlags::Sizeable)
+    MyWin() : Window("Text Field Example", "d:c,w:70,h:22", WindowFlags::Sizeable)
     {
         Factory::Label::Create(this, "&Normal text", "x:1,y:1,w:15");
         Factory::TextField::Create(this, "a normal text", "l:19,t:1,r:1")->SetHotKey('N');
@@ -68,6 +73,9 @@ class MyWin : public AppCUI::Controls::Window,
         tx_custommenu->Handlers()->OnTextRightClick = this;
         mnu.AddCommandItem("Set ... Hello World", MENU_CMD_SET_HELLO_WORLD);
         mnu.AddCommandItem("Empty text", MENU_CMD_CLEAR_TEXT);
+
+        Factory::Label::Create(this, "Just numbers", "x:1,y:17,w:16");
+        Factory::TextField::Create(this, "", "l:19,t:17,r:1,h:1")->Handlers()->OnValidateCharacter = OnlyNumbers;
     }
     bool OnEvent(Reference<Control>, Event eventType, int id) override
     {

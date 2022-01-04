@@ -31,22 +31,22 @@ using BuffPtr = const uint8*;
 // we use the firts 4 bits for an enum like value, and the rest of the 4 bits for a bitmask
 // bitmask is required to fasten some parse operations
 
-#define CHAR_TYPE_OTHER         0
-#define CHAR_TYPE_SPACE         1
-#define CHAR_TYPE_STRING        2
-#define CHAR_TYPE_EQ            3
-#define CHAR_TYPE_SECTION_START 4
-#define CHAR_TYPE_SECTION_END   5
-#define CHAR_TYPE_COMMA         6
+constexpr uint8 CHAR_TYPE_OTHER         = 0;
+constexpr uint8 CHAR_TYPE_SPACE         = 1;
+constexpr uint8 CHAR_TYPE_STRING        = 2;
+constexpr uint8 CHAR_TYPE_EQ            = 3;
+constexpr uint8 CHAR_TYPE_SECTION_START = 4;
+constexpr uint8 CHAR_TYPE_SECTION_END   = 5;
+constexpr uint8 CHAR_TYPE_COMMA         = 6;
 // max value is 0x0F
 
 // bitflags
-#define CHAR_TYPE_COMMENT        0x10
-#define CHAR_TYPE_NEW_LINE       0x20
-#define CHAR_TYPE_COMMENT_OR_NL  0x30
-#define CHAR_TYPE_WORD           0x40
-#define CHAR_TYPE_NUMBER         0x80
-#define CHAR_TYPE_WORD_OR_NUMBER 0xC0
+constexpr uint8 CHAR_TYPE_COMMENT        = 0x10;
+constexpr uint8 CHAR_TYPE_NEW_LINE       = 0x20;
+constexpr uint8 CHAR_TYPE_COMMENT_OR_NL  = 0x30;
+constexpr uint8 CHAR_TYPE_WORD           = 0x40;
+constexpr uint8 CHAR_TYPE_NUMBER         = 0x80;
+constexpr uint8 CHAR_TYPE_WORD_OR_NUMBER = 0xC0;
 
 #define PARSER_CHECK(condition, returnValue, errorMessage)                                                             \
     if (!(condition))                                                                                                  \
