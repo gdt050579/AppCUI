@@ -590,9 +590,26 @@ void Controls::Grid::ToggleHorizontalLines()
     Application::Repaint();
 }
 
+void Controls::Grid::ToggleVerticalLines()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::HideVerticalLines) == GridFlags::None)
+    {
+        context->flags |= GridFlags::HideVerticalLines;
+    }
+    else
+    {
+        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideVerticalLines));
+    }
+
+    context->UpdateGridParameters();
+    Application::Repaint();
+}
+
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
-    if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
+    if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
+        (flags & GridFlags::HideVerticalLines) == GridFlags::None)
     {
         for (auto i = 0U; i <= columnsNo; i++)
         {
@@ -606,7 +623,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
             }
         }
     }
-    else
+    else if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
     {
         const auto y1 = offsetY + 1;
         const auto y2 = offsetY + rowsNo * cHeight - 1;
@@ -651,12 +668,12 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto eci = endCellIndex % columnsNo + 1U;
         const auto eri = endCellIndex / columnsNo + 1U;
 
-        const auto y1 = offsetY + sri * cHeight + 1;
-        const auto y2 = y1 + (eri - sri) * cHeight;
+        const auto y1 = offsetY + sri * cHeight;
+        const auto y2 = y1 + (eri - sri) * cHeight - 1;
         for (auto i = sci; i <= eci; i++)
         {
             const auto x = offsetX + i * cWidth;
-            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
+            // renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
         }
 
         for (auto i = sci; i <= eci; i++)
@@ -790,7 +807,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            return SpecialChars::BoxMidleLeft;
+            return SpecialChars::BoxTopLeftCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -805,7 +822,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            return SpecialChars::BoxMidleRight;
+            return SpecialChars::BoxTopRightCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -820,7 +837,7 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            return SpecialChars::BoxCrossSingleLine;
+            return SpecialChars::BoxMidleTop;
         }
         else if (rowIndex == endRowsIndex)
         {
@@ -992,7 +1009,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     }
 
     WriteTextParams wtp;
-    wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
+    wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
     wtp.Color = Cfg->Grid.Text.Normal;
 
     auto it = headers.begin();
