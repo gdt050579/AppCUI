@@ -13,7 +13,7 @@ int main(void)
     app.Create(fileName, true);
     app.OpenWrite(fileName);
     uint32 bytesWritten = 0;
-    app.WriteBuffer("GDT1", 4, bytesWritten);
+    app.Write("GDT1", 4, bytesWritten);
     printf("Size: %" PRIu64 "\n", app.GetSize());
     printf("Get poz: %" PRIu64 "\n", app.GetCurrentPos());
     app.SetCurrentPos(app.GetSize() / 2);
