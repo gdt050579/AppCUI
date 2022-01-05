@@ -7,8 +7,6 @@ using namespace Graphics;
 
 constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
-constexpr auto MenuCommandMergeCells = 0x01U;
-
 constexpr auto minCellWidth  = 0x03U;
 constexpr auto minCellHeight = 0x02U;
 
@@ -27,7 +25,6 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->ResetMatrixPosition();
     context->UpdateGridParameters();
 
-    context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
     context->headers.reserve(context->columnsNo);
     context->SetDefaultHeaderValues();
 }
@@ -214,10 +211,6 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     case MouseButton::Center:
         break;
     case MouseButton::Right:
-        if (context->selectedCellsIndexes.size() > 1)
-        {
-            context->rightClickMenu.Show(x, y);
-        }
         context->lastLocationDraggedRightClicked = { x, y };
         break;
     case MouseButton::Left | MouseButton::DoubleClicked:
@@ -427,16 +420,17 @@ void Grid::OnLoseFocus()
 
 bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
 {
-    if (eventType == Event::Command)
+    switch (eventType)
     {
-        switch (controlID)
-        {
-        case MenuCommandMergeCells:
-            // TODO:
-            break;
-        default:
-            break;
-        }
+    case Event::Command:
+        //switch (controlID)
+        //{
+        //default:
+        //    break;
+        //}
+        break;
+    default:
+        break;
     }
 
     return false;

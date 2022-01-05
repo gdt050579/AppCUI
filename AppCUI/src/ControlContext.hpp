@@ -660,8 +660,6 @@ class GridControlContext : public ControlContext
     int32 offsetX  = 0;
     int32 offsetY  = 0;
 
-    Menu rightClickMenu;
-
     std::map<uint32, GridCellData> cells;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
