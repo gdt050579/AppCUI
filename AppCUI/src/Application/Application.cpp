@@ -262,12 +262,13 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
 {
     CHECKRET(ctrl != nullptr, "");
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
-    if ((Members->Flags & GATTR_VISIBLE) == 0)
+    if (((Members->Flags & GATTR_VISIBLE) == 0) || (!Members->ScreenClip.Visible))
         return;
-    // draw myself
+    // set clip
     app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ScreenClip);
     app->terminal->ScreenCanvas.SetTranslate(
           Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
+
     if (focused != Members->Focused)
     {
         Members->Focused = focused;
