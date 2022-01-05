@@ -1,8 +1,9 @@
 #include "ControlContext.hpp"
 
-#define PANEL_ATTR_BORDER 1024
+
 namespace AppCUI::Controls
 {
+constexpr uint32 PANEL_ATTR_BORDER = 1024;
 Panel::Panel(const ConstString& caption, string_view layout) : Control(new ControlContext(), caption, layout, false)
 {
     auto Members = reinterpret_cast<ControlContext*>(this->Context);
