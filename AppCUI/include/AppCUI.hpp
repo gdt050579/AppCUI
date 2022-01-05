@@ -1851,7 +1851,8 @@ namespace OS
         template <typename T>
         bool Write(uint64 offset, const T& obj)
         {
-            return Write(offset, (const void*) &obj, (uint32) sizeof(T));
+            uint32 bytesWritten;
+            return (Write(offset, (const void*) &obj, (uint32) sizeof(T), bytesWritten)) && (bytesWritten == sizeof(T));
         }
     };
 
