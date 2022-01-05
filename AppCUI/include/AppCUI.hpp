@@ -1808,24 +1808,29 @@ namespace OS
     };
     class EXPORT IFile
     {
+      protected:
+        // virtual methods (protected)
+        virtual bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead);
+        virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+
       public:
         virtual ~IFile();
 
-        // virtual methods
-        virtual bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead);
-        virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
+        // virtual methods (public)
         virtual uint64 GetSize();
         virtual uint64 GetCurrentPos();
         virtual bool SetSize(uint64 newSize);
         virtual bool SetCurrentPos(uint64 newPosition);
         virtual void Close();
 
-        // other methods
+        // read methods
         bool Read(void* buffer, uint32 bufferSize, uint32& bytesRead);
-        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Read(void* buffer, uint32 bufferSize);
-        bool Write(const void* buffer, uint32 bufferSize);
         bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
+
+        // write methods
+        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);        
+        bool Write(const void* buffer, uint32 bufferSize);
         bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(string_view text);
         bool Write(uint64 offset, string_view text, uint32& bytesWritten);
@@ -1840,6 +1845,10 @@ namespace OS
             uint32 u32Value;
             int fid;
         } FileID;
+
+      protected:
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
 
       public:
         File();
@@ -1864,8 +1873,6 @@ namespace OS
          */
         bool Create(const std::filesystem::path& path, bool overwriteExisting = true);
 
-        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
-        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
         uint64 GetSize() override;
         uint64 GetCurrentPos() override;
         bool SetSize(uint64 newSize) override;

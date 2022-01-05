@@ -1,9 +1,10 @@
 #include "../../Internal.hpp"
 
-#define INVALID_FILE_HANDLE -1
 
 namespace AppCUI::OS
 {
+constexpr int32 INVALID_FILE_HANDLE = -1;
+
 File::File()
 {
     this->FileID.fid = INVALID_FILE_HANDLE;

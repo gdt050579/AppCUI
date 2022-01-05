@@ -36,6 +36,7 @@ void IFile::Close()
 {
 }
 
+//====================================[READ METHODS]==========================================
 bool IFile::Read(void* buffer, uint32 bufferSize)
 {
     uint32 temp;
@@ -47,18 +48,24 @@ bool IFile::Read(void* buffer, uint32 bufferSize)
           temp);
     return true;
 }
-bool IFile::Write(const void* buffer, uint32 bufferSize)
-{
-    uint32 temp;
-    CHECK(this->WriteBuffer(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
-    CHECK(temp == bufferSize, false, "Unable to write %lld bytes required (only %lld were written)", bufferSize, temp);
-    return true;
-}
 bool IFile::Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     bytesRead = 0;
     CHECK(this->SetCurrentPos(offset), false, "Fail to move cursor to offset: %lld", offset);
     CHECK(this->ReadBuffer(buffer, bufferSize, bytesRead), false, "Fail to read %lld bytes", bufferSize);
+    return true;
+}
+bool IFile::Read(void* buffer, uint32 bufferSize, uint32& bytesRead)
+{
+    return this->ReadBuffer(buffer, bufferSize, bytesRead);
+}
+
+//====================================[WRITE METHODS]=========================================
+bool IFile::Write(const void* buffer, uint32 bufferSize)
+{
+    uint32 temp;
+    CHECK(this->WriteBuffer(buffer, bufferSize, temp), false, "Fail to read %lld bytes", bufferSize);
+    CHECK(temp == bufferSize, false, "Unable to write %lld bytes required (only %lld were written)", bufferSize, temp);
     return true;
 }
 bool IFile::Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten)
@@ -68,15 +75,10 @@ bool IFile::Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& 
     CHECK(this->WriteBuffer(buffer, bufferSize, bytesWritten), false, "Fail to read %lld bytes", bufferSize);
     return true;
 }
-bool IFile::Read(void* buffer, uint32 bufferSize, uint32& bytesRead)
-{
-    return this->ReadBuffer(buffer, bufferSize, bytesRead);
-}
 bool IFile::Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten)
 {
     return this->WriteBuffer(buffer, bufferSize, bytesWritten);
 }
-
 bool IFile::Write(string_view text)
 {
     return Write(reinterpret_cast<const void*>(text.data()), static_cast<uint32>(text.length()));

@@ -102,7 +102,7 @@ class BadApple : public AppCUI::Controls::Window
             std::vector<std::string> frame;
             for (uint32 i = 0; i < VIDEO_HEIGHT; i++)
             {
-                txtFile.ReadBuffer(videoBuffer, VIDEO_WIDTH, bytesRead);
+                txtFile.Read(videoBuffer, VIDEO_WIDTH, bytesRead);
                 videoBuffer[VIDEO_WIDTH] = 0;
                 frame.push_back(videoBuffer);
                 if (bytesRead == 0)
