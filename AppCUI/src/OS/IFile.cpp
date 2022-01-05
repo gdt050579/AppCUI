@@ -59,7 +59,23 @@ bool IFile::Read(void* buffer, uint32 bufferSize, uint32& bytesRead)
 {
     return this->ReadBuffer(buffer, bufferSize, bytesRead);
 }
+bool IFile::Read(AppCUI::Utils::Buffer& buf, uint32 size)
+{
+    buf.Resize(size);
+    return Read((void*) buf.GetData(), size);
+}
+bool IFile::Read(uint64 offset, AppCUI::Utils::Buffer& buf, uint32 size)
+{
+    uint32 bytesRead;
+    buf.Resize(size);
 
+    if ((Read(offset, (void*) buf.GetData(), size, bytesRead) == false) || (bytesRead == size))
+    {
+        buf.Resize(0);
+        return false;
+    }
+    return true;
+}
 //====================================[WRITE METHODS]=========================================
 bool IFile::Write(const void* buffer, uint32 bufferSize)
 {

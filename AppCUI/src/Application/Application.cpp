@@ -264,6 +264,14 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     CREATE_CONTROL_CONTEXT(ctrl, Members, );
     if (((Members->Flags & GATTR_VISIBLE) == 0) || (!Members->ScreenClip.Visible))
         return;
+
+    // check if started
+    if (!Members->Started)
+    {
+        Members->Started = true;
+        ctrl->OnStart();
+    }
+
     // set clip
     app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ScreenClip);
     app->terminal->ScreenCanvas.SetTranslate(

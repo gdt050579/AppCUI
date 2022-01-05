@@ -107,7 +107,7 @@ struct ControlContext
     Controls::Control* Parent;
     Application::Config* Cfg;
     Graphics::CharacterBuffer Text;
-    bool Inited, Focused, MouseIsOver;
+    bool Inited, Focused, MouseIsOver, Started;
 
     // Handlers
     unique_ptr<Controls::Handlers::Control> handlers;
