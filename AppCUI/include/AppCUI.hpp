@@ -1829,7 +1829,7 @@ namespace OS
         bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
 
         // write methods
-        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);        
+        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(const void* buffer, uint32 bufferSize);
         bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(string_view text);
@@ -3814,7 +3814,8 @@ namespace Controls
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
         DisableZoom           = 0x004000,
-        DisableMove           = 0x008000
+        DisableMove           = 0x008000,
+        Sort                  = 0x010000
     };
 
     class EXPORT Grid : public Control

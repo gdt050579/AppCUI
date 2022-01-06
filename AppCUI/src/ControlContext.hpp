@@ -668,6 +668,8 @@ class GridControlContext : public ControlContext
 
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
+    std::vector<bool> columnsSort;
+
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex);
@@ -696,6 +698,7 @@ class GridControlContext : public ControlContext
     bool CopySelectedCellsContent() const;
     bool PasteContentToSelectedCells();
     void SetDefaultHeaderValues();
+    void ToggleSorting(int x, int y);
 };
 
 enum class MenuItemType : uint32

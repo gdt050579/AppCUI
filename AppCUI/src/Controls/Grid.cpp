@@ -22,6 +22,8 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->rowsNo    = rowsNo;
     context->flags     = flags;
 
+    context->columnsSort.insert(context->columnsSort.end(), columnsNo, true);
+
     context->ResetMatrixPosition();
     context->UpdateGridParameters();
 
@@ -205,6 +207,11 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         {
             context->anchorCellIndex = index;
             context->selectedCellsIndexes.emplace_back(index);
+        }
+
+        if ((context->flags & GridFlags::Sort) != GridFlags::None)
+        {
+            context->ToggleSorting(x, y);
         }
     }
     break;
@@ -423,9 +430,9 @@ bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
     switch (eventType)
     {
     case Event::Command:
-        //switch (controlID)
+        // switch (controlID)
         //{
-        //default:
+        // default:
         //    break;
         //}
         break;
@@ -959,12 +966,12 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
     for (auto i = 0U; i <= columnsNo; i++)
     {
-        const auto x = offsetX + i * cWidth;
-        const auto y = offsetY - cHeight + 1;
+        const auto x    = offsetX + i * cWidth;
+        const auto y    = offsetY - cHeight + 1;
+        const auto endY = offsetY + cHeight;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            const auto endY = offsetY + cHeight;
             renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Normal, true);
         }
     }
@@ -1015,6 +1022,16 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         wtp.Align = it->ta;
 
         renderer.WriteText(std::get<std::u16string>(it->content), wtp);
+
+        if ((flags & GridFlags::Sort) != GridFlags::None)
+        {
+            const auto endX = wtp.X + cWidth - 1;
+            renderer.WriteSpecialCharacter(
+                  endX - 1,
+                  wtp.Y,
+                  columnsSort[i] ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  { Color::Black, Color::Transparent });
+        }
 
         std::advance(it, 1);
     }
@@ -1511,6 +1528,27 @@ void GridControlContext::SetDefaultHeaderValues()
         ls.SetFormat("Column_%llu", i);
         lusb.Set(ls);
         headers.push_back({ TextAlignament::Left, Grid::CellType::String, lusb });
+    }
+}
+
+void GridControlContext::ToggleSorting(int x, int y)
+{
+    auto it = headers.begin();
+    for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
+    {
+        const auto xHeader    = offsetX + i * cWidth + 1; // 1 -> line
+        const auto yHeader    = offsetY - cHeight / 2;
+        const auto endXHeader = xHeader + cWidth - 2;
+
+        if (x == endXHeader && y == yHeader)
+        {
+            columnsSort[i] = !columnsSort[i];
+            // TODO: actual sorting
+            
+            break;
+        }
+
+        std::advance(it, 1);
     }
 }
 } // namespace AppCUI
