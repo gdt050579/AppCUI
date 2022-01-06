@@ -6,12 +6,10 @@ namespace AppCUI::Graphics
 using namespace Internal;
 using namespace std::chrono;
 
-#define MAX_PROGRESS_STATUS_TITLE           36
-#define MAX_PROGRESS_STATUS_TEXT            52
-#define PROGRESS_STATUS_PANEL_WIDTH         60
-#define MAX_PROGRESS_TIME_TEXT              50
-#define PROGRESS_STATUS_PANEL_HEIGHT        8
-#define MIN_SECONDS_BEFORE_SHOWING_PROGRESS 2
+constexpr uint32 PROGRESS_STATUS_PANEL_WIDTH         = 60;
+constexpr uint32 PROGRESS_STATUS_PANEL_HEIGHT        = 8;
+constexpr uint64 MIN_SECONDS_BEFORE_SHOWING_PROGRESS = 2;
+constexpr uint32 MAX_PROGRESS_TIME_TEXT              = 35;
 
 // remove MessageBox definition that comes with Windows.h header
 #ifdef MessageBox
@@ -30,8 +28,7 @@ struct ProgressStatusData
     Clip WindowClip;
     ApplicationImpl* App;
     char progressString[5];
-    char timeString[MAX_PROGRESS_TIME_TEXT];
-    int timeStringSize;
+    Utils::FixSizeString<MAX_PROGRESS_TIME_TEXT> timeStr;
     uint32 Progress;
 };
 
@@ -43,6 +40,7 @@ void ProgressStatus_Paint_Panel()
     auto canvas = &PSData.App->terminal->ScreenCanvas;
 
     canvas->DarkenScreen();
+    ;
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
@@ -99,9 +97,9 @@ void ProgressStatus_Paint_Status()
         canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.ProgressStatus.Text);
     }
     canvas->WriteSingleLineText(
-          (PROGRESS_STATUS_PANEL_WIDTH - 2) - PSData.timeStringSize,
+          (PROGRESS_STATUS_PANEL_WIDTH - 2) - (uint32) PSData.timeStr.Len(),
           4,
-          string_view(PSData.timeString, PSData.timeStringSize),
+          PSData.timeStr,
           PSData.App->config.ProgressStatus.Time);
 
     PSData.App->terminal->Update();
@@ -110,8 +108,7 @@ void ProgressStatus_ComputeTime(uint64 time)
 {
     if (time == 0)
     {
-        PSData.timeString[0]  = 0;
-        PSData.timeStringSize = 0;
+        PSData.timeStr.Clear();
         return;
     }
     uint32 days  = (uint32) (time / (24 * 60 * 60));
@@ -122,28 +119,27 @@ void ProgressStatus_ComputeTime(uint64 time)
     uint32 sec   = (uint32) (time % 60);
     if (days >= 10)
     {
-        Utils::String::Set(PSData.timeString, "More than 10 days", MAX_PROGRESS_TIME_TEXT);
-        PSData.timeStringSize = 17;
+        PSData.timeStr = "More than 10 days";
         return;
     }
-    int index = 0;
+    char temp[128];
+    char* p = temp;
+    uint32 sz;
     if (days > 0)
     {
-        PSData.timeString[0] = '0' + days;
-        PSData.timeString[1] = 'd';
-        PSData.timeString[2] = ' ';
-        index                = 3;
+        *p++ = '0' + days;
+        *p++ = 'd';
+        *p++ = ' ';
     }
-    PSData.timeString[index++] = '0' + hours / 10;
-    PSData.timeString[index++] = '0' + hours % 10;
-    PSData.timeString[index++] = ':';
-    PSData.timeString[index++] = '0' + min / 10;
-    PSData.timeString[index++] = '0' + min % 10;
-    PSData.timeString[index++] = ':';
-    PSData.timeString[index++] = '0' + sec / 10;
-    PSData.timeString[index++] = '0' + sec % 10;
-    PSData.timeString[index]   = 0;
-    PSData.timeStringSize      = index;
+    *p++          = '0' + hours / 10;
+    *p++          = '0' + hours % 10;
+    *p++          = ':';
+    *p++          = '0' + min / 10;
+    *p++          = '0' + min % 10;
+    *p++          = ':';
+    *p++          = '0' + sec / 10;
+    *p++          = '0' + sec % 10;
+    PSData.timeStr = { (const char*) temp, (size_t) (p-temp) };
 }
 void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
 {
@@ -153,8 +149,8 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
     PSData.Showed   = false;
     PSData.WindowClip.Reset();
     PSData.WindowClip.Set(
-          (appSize.Width - PROGRESS_STATUS_PANEL_WIDTH) / 2,
-          (appSize.Height - PROGRESS_STATUS_PANEL_HEIGHT) / 2,
+          ((int32) appSize.Width - (int32) PROGRESS_STATUS_PANEL_WIDTH) / 2,
+          ((int32) appSize.Height - (int32) PROGRESS_STATUS_PANEL_HEIGHT) / 2,
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT);
     PSData.App               = Application::GetApplication();
@@ -166,7 +162,7 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
     PSData.Progress          = 0;
     PSData.Ellapsed          = 0;
     PSData.LastEllapsed      = 0;
-    PSData.timeString[0]     = 0;
+    PSData.timeStr.Clear();
     if (PSData.Title.Set(Title) == false)
     {
         LOG_WARNING("Fail to set title for progress status object !");

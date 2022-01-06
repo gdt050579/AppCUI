@@ -16,7 +16,7 @@ class MyWin : public AppCUI::Controls::Window
         Factory::Button::Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
         Factory::Label::Create(
               this,
-              "Compute how many odd numbers are between\n1 and 100.000 in a verry inneficient way ...",
+              "Compute how many odd numbers are between\n1 and 1.000.000 in a verry inneficient way ...",
               "x:1,y:1,w:50,h:2");
 
         Factory::Button::Create(this, "Compute", "r:1,t:4,w:14", BUTTON_COMPUTE_PRIME);
@@ -50,10 +50,10 @@ class MyWin : public AppCUI::Controls::Window
         uint64 value = 1;
         uint64 count = 0;
 
-        // in this case we know the maximum value (100.000) so we can use it to initialize the progress status
-        ProgressStatus::Init("Compute", 100000);
+        // in this case we know the maximum value (1.000.000) so we can use it to initialize the progress status
+        ProgressStatus::Init("Compute", 1000000);
 
-        while (value < 100000)
+        while (value < 1000000)
         {
             if (IsOdd(value))
             {
