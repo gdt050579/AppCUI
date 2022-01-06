@@ -1827,6 +1827,15 @@ namespace OS
         bool Read(void* buffer, uint32 bufferSize, uint32& bytesRead);
         bool Read(void* buffer, uint32 bufferSize);
         bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
+        bool Read(Utils::Buffer& buf, uint32 size);
+        bool Read(uint64 offset, Utils::Buffer& buf, uint32 size);
+        
+        template <typename T>
+        bool Read(T& obj)
+        {
+            return Read((void*) &obj, (uint32)sizeof(T));
+        }
+
 
         // write methods
         bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
@@ -1834,6 +1843,17 @@ namespace OS
         bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(string_view text);
         bool Write(uint64 offset, string_view text, uint32& bytesWritten);
+        template <typename T>
+        bool Write(const T& obj)
+        {
+            return Write((const void*) &obj, (uint32) sizeof(T));
+        }
+        template <typename T>
+        bool Write(uint64 offset, const T& obj)
+        {
+            uint32 bytesWritten;
+            return (Write(offset, (const void*) &obj, (uint32) sizeof(T), bytesWritten)) && (bytesWritten == sizeof(T));
+        }
     };
 
     class EXPORT File : public IFile
@@ -2959,6 +2979,7 @@ namespace Controls
         virtual void Paint(Graphics::Renderer& renderer);
 
         // virtual methods
+        virtual void OnStart();
         virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();

@@ -618,6 +618,7 @@ ControlContext::ControlContext()
     this->ControlID                                = 0;
     this->Focused                                  = false;
     this->MouseIsOver                              = false;
+    this->Started                                  = false;
     this->Cfg                                      = Application::GetAppConfig();
     this->HotKeyOffset                             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
     this->ScrollBars.LeftMargin                    = 2;
@@ -1742,6 +1743,9 @@ bool Controls::Control::IsInitialized()
     return CTRLC->Inited;
 }
 // Evenimente
+void Controls::Control::OnStart()
+{
+}
 bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
