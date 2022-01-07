@@ -1198,6 +1198,39 @@ bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
         {
             anchorCellIndex         = newCellIndex;
             selectedCellsIndexes[0] = newCellIndex;
+
+            const int xLeft  = offsetX + columnIndex * cWidth;
+            const int xRight = offsetX + (columnIndex + 1) * cWidth;
+
+            const int yTop    = offsetY + rowIndex * cHeight;
+            const int yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+            if (xLeft < 0)
+            {
+                const auto partial = std::abs(offsetX) % cWidth;
+                offsetX += (partial != 0 ? partial : cWidth);
+                startedMoving = true;
+            }
+
+            if (xRight > Layout.Width)
+            {
+                offsetX -= xRight - Layout.Width + 1;
+                startedMoving = true;
+            }
+
+            if (yTop < 0)
+            {
+                const auto partial = std::abs(offsetY) % cHeight;
+                offsetY += (partial != 0 ? partial : cHeight);
+                startedMoving = true;
+            }
+
+            if (yBottom > Layout.Height)
+            {
+                offsetY -= yBottom - Layout.Height + 1;
+                startedMoving = true;
+            }
+
             return true;
         }
     }
