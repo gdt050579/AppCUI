@@ -1829,13 +1829,12 @@ namespace OS
         bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
         bool Read(Utils::Buffer& buf, uint32 size);
         bool Read(uint64 offset, Utils::Buffer& buf, uint32 size);
-        
+
         template <typename T>
         bool Read(T& obj)
         {
-            return Read((void*) &obj, (uint32)sizeof(T));
+            return Read((void*) &obj, (uint32) sizeof(T));
         }
-
 
         // write methods
         bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
@@ -3869,13 +3868,15 @@ namespace Controls
               uint32 index,
               CellType cellType,
               const variant<bool, ConstString>& content,
-              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
+              bool                                   = false);
         bool UpdateCell(
               uint32 x,
               uint32 y,
               CellType cellType,
               const variant<bool, ConstString>& content,
-              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
+              bool                                   = false);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
         bool UpdateHeaderValues(
@@ -3887,6 +3888,7 @@ namespace Controls
         void ResetHeaderValues();
         void ToggleHorizontalLines();
         void ToggleVerticalLines();
+        void Sort();
 
       private:
         friend Factory::Grid;

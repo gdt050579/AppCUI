@@ -698,7 +698,9 @@ class GridControlContext : public ControlContext
     bool CopySelectedCellsContent() const;
     bool PasteContentToSelectedCells();
     void SetDefaultHeaderValues();
+    void ReserveMap();
     void ToggleSorting(int x, int y);
+    void SortColumn(int index);
 };
 
 enum class MenuItemType : uint32

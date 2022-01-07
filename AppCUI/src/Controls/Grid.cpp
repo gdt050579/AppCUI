@@ -29,6 +29,9 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
 
     context->headers.reserve(context->columnsNo);
     context->SetDefaultHeaderValues();
+
+    context->ReserveMap();
+    Sort();
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -456,7 +459,11 @@ Size Grid::GetGridDimensions() const
 }
 
 bool Grid::UpdateCell(
-      uint32 index, CellType cellType, const std::variant<bool, ConstString>& content, TextAlignament textAlignment)
+      uint32 index,
+      CellType cellType,
+      const std::variant<bool, ConstString>& content,
+      TextAlignament textAlignment,
+      bool sort)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
@@ -476,6 +483,14 @@ bool Grid::UpdateCell(
 
     context->cells[index] = { textAlignment, cellType, cellData };
 
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        if (sort)
+        {
+            context->SortColumn(index % context->rowsNo);
+        }
+    }
+
     return true;
 }
 
@@ -484,11 +499,20 @@ bool Grid::UpdateCell(
       uint32 y,
       CellType cellType,
       const std::variant<bool, ConstString>& content,
-      Graphics::TextAlignament textAlignment)
+      Graphics::TextAlignament textAlignment,
+      bool sort)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);
     const auto cellIndex = context->columnsNo * y + x;
     CHECK(UpdateCell(cellIndex, cellType, content, textAlignment), false, "");
+
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        if (sort)
+        {
+            context->SortColumn(x);
+        }
+    }
 
     return true;
 }
@@ -515,6 +539,14 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
     {
         LocalUnicodeStringBuilder<1024> lusb{ value };
         context->headers.push_back({ textAlignment, Grid::CellType::String, lusb });
+    }
+
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < context->columnsNo; i++)
+        {
+            context->SortColumn(i);
+        }
     }
 
     return true;
@@ -605,6 +637,18 @@ void Controls::Grid::ToggleVerticalLines()
 
     context->UpdateGridParameters();
     Application::Repaint();
+}
+
+void Controls::Grid::Sort()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < context->columnsNo; i++)
+        {
+            context->SortColumn(i);
+        }
+    }
 }
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
@@ -1354,6 +1398,11 @@ bool GridControlContext::ToggleBooleanCell()
     const auto value = std::get<bool>(content);
     content          = !value;
 
+    if ((flags & GridFlags::Sort) != GridFlags::None)
+    {
+        SortColumn(index % columnsNo);
+    }
+
     return true;
 }
 
@@ -1515,6 +1564,14 @@ bool GridControlContext::PasteContentToSelectedCells()
         std::advance(index, 1);
     }
 
+    if ((flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < columnsNo; i++)
+        {
+            SortColumn(i);
+        }
+    }
+
     return true;
 }
 
@@ -1531,6 +1588,14 @@ void GridControlContext::SetDefaultHeaderValues()
     }
 }
 
+void GridControlContext::ReserveMap()
+{
+    for (auto i = 0U; i < columnsNo * rowsNo; i++)
+    {
+        cells[i] = { Graphics::TextAlignament::Left, Grid::CellType::String, u"" };
+    }
+}
+
 void GridControlContext::ToggleSorting(int x, int y)
 {
     auto it = headers.begin();
@@ -1543,12 +1608,82 @@ void GridControlContext::ToggleSorting(int x, int y)
         if (x == endXHeader && y == yHeader)
         {
             columnsSort[i] = !columnsSort[i];
-            // TODO: actual sorting
-            
+            SortColumn(i);
             break;
         }
 
         std::advance(it, 1);
+    }
+}
+
+void GridControlContext::SortColumn(int colIndex)
+{
+    // this is not that efficient - you could replace it with indexes, sort and then swap
+    std::vector<GridCellData> column;
+    column.reserve(rowsNo);
+    for (auto j = 0U; j < rowsNo; j++)
+    {
+        const auto cell = colIndex + j * columnsNo;
+        column.emplace_back(cells.at(cell));
+    }
+
+    std::sort(
+          column.begin(),
+          column.end(),
+          [](const GridCellData& a, const GridCellData& b) -> bool
+          {
+              if (std::holds_alternative<bool>(a.content) && std::holds_alternative<bool>(b.content))
+              {
+                  return std::get<bool>(a.content) == std::get<bool>(b.content);
+              }
+
+              if (std::holds_alternative<std::u16string>(a.content) &&
+                  std::holds_alternative<std::u16string>(b.content))
+              {
+                  const std::u16string valueA(std::get<std::u16string>(a.content));
+                  const std::u16string valueB(std::get<std::u16string>(b.content));
+
+                  return valueA.compare(valueB) < 0;
+              }
+
+              if (std::holds_alternative<std::u16string>(a.content))
+              {
+                  const std::u16string valueA(std::get<std::u16string>(a.content));
+
+                  std::u16string valueB(u"True");
+                  if (std::get<bool>(b.content) == false)
+                  {
+                      valueB = u"False";
+                  }
+
+                  return valueA.compare(valueB) < 0;
+              }
+
+              if (std::holds_alternative<std::u16string>(b.content))
+              {
+                  const std::u16string valueB(std::get<std::u16string>(b.content));
+
+                  std::u16string valueA(u"True");
+                  if (std::get<bool>(a.content) == false)
+                  {
+                      valueA = u"False";
+                  }
+
+                  return valueA.compare(valueB) < 0;
+              }
+
+              return true;
+          });
+
+    if (columnsSort[colIndex] == false)
+    {
+        std::reverse(column.begin(), column.end());
+    }
+
+    for (auto j = 0U; j < rowsNo; j++)
+    {
+        const auto cell = colIndex + j * columnsNo;
+        cells[cell]     = column[j];
     }
 }
 } // namespace AppCUI
