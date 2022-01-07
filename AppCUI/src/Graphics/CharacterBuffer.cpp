@@ -9,8 +9,8 @@ using namespace Utils;
 
 // 24 bits for max size
 // it is important that maxSize (24 bits) x sizeof(Character) (4) cand always be repesented on 32 bits
-#define MAX_ALLOCATION_SIZE 0x00FFFFFF
-#define ALOCATION_MASK      0x00FFFFFF
+constexpr uint32 MAX_ALLOCATION_SIZE = 0x00FFFFFFU;
+constexpr uint32 ALOCATION_MASK      = 0x00FFFFFFU;
 
 #define VALIDATE_ALLOCATED_SPACE(requiredSpace, returnValue)                                                           \
     if ((requiredSpace) > (Allocated & ALOCATION_MASK))                                                                \
