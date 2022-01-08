@@ -338,15 +338,16 @@ void Config::SetDarkTheme()
     this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
 
-    this->Grid.Lines.Normal             = ColorPair{ Color::White, Color::Transparent };
-    this->Grid.Lines.Selected           = ColorPair{ Color::Pink, Color::Transparent };
-    this->Grid.Lines.Hovered            = ColorPair{ Color::Yellow, Color::Transparent };
-    this->Grid.Background.Grid          = ColorPair{ Color::Transparent, Color::DarkBlue };
-    this->Grid.Background.Cell.Normal   = this->Grid.Background.Grid;
-    this->Grid.Background.Cell.Selected = ColorPair{ Color::Pink, Color::Transparent };
-    this->Grid.Background.Cell.Hovered  = ColorPair{ Color::Transparent, Color::Yellow };
-    this->Grid.Text.Normal              = ColorPair{ Color::White, Color::Transparent };
-    this->Grid.Header                   = ColorPair{ Color::Black, Color::Magenta };
+    this->Grid.Lines.Normal              = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Lines.Selected            = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Lines.Hovered             = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Grid.Background.Grid           = ColorPair{ Color::Transparent, Color::DarkBlue };
+    this->Grid.Background.Cell.Normal    = this->Grid.Background.Grid;
+    this->Grid.Background.Cell.Selected  = ColorPair{ Color::Pink, Color::Transparent };
+    this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::Yellow };
+    this->Grid.Background.Cell.Duplicate = ColorPair{ Color::Transparent, Color::Green };
+    this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
+    this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 
     this->PropertyList.Border             = ColorPair{ Color::White, Color::Transparent };
     this->PropertyList.Cursor             = ColorPair{ Color::Black, Color::White };

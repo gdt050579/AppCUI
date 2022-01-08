@@ -3835,18 +3835,12 @@ namespace Controls
         TransparentBackground = 0x002000,
         DisableZoom           = 0x004000,
         DisableMove           = 0x008000,
-        Sort                  = 0x010000
+        Sort                  = 0x010000,
+        DisableDuplicates     = 0x020000
     };
 
     class EXPORT Grid : public Control
     {
-      public:
-        enum class CellType
-        {
-            Boolean = 0,
-            String  = 1
-        };
-
       protected:
         Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
 
@@ -3866,15 +3860,13 @@ namespace Controls
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,
-              CellType cellType,
-              const variant<bool, ConstString>& content,
+              ConstString content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
               bool                                   = false);
         bool UpdateCell(
               uint32 x,
               uint32 y,
-              CellType cellType,
-              const variant<bool, ConstString>& content,
+              ConstString content,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
               bool                                   = false);
         const ConstString GetSeparator() const;
@@ -4783,7 +4775,7 @@ namespace Application
                 Graphics::ColorPair Grid;
                 struct
                 {
-                    Graphics::ColorPair Normal, Selected, Hovered;
+                    Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
                 } Cell;
             } Background;
             struct

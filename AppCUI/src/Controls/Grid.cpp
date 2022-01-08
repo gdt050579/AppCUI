@@ -71,12 +71,6 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 
     switch (keyCode)
     {
-    case Input::Key::Space:
-        if (context->ToggleBooleanCell())
-        {
-            return true;
-        }
-        break;
     case Input::Key::Left:
     case Input::Key::Right:
     case Input::Key::Up:
@@ -99,6 +93,7 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
         if (context->selectedCellsIndexes.size() > 0)
         {
             context->selectedCellsIndexes.clear();
+            context->duplicatedCellsIndexes.clear();
             return true;
         }
         break;
@@ -216,6 +211,11 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         {
             context->ToggleSorting(x, y);
         }
+
+        if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+        {
+            context->FindDuplicates();
+        }
     }
     break;
     case MouseButton::Center:
@@ -224,30 +224,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
         context->lastLocationDraggedRightClicked = { x, y };
         break;
     case MouseButton::Left | MouseButton::DoubleClicked:
-    {
-        const auto index = context->ComputeCellNumber(x, y);
-        if (index == InvalidCellIndex)
-        {
-            break;
-        }
-
-        auto& cellData      = context->cells[index];
-        const auto cellType = cellData.ct;
-        if (cellType != Grid::CellType::Boolean)
-        {
-            break;
-        }
-
-        auto& content = cellData.content;
-        if (std::holds_alternative<bool>(content) == false)
-        {
-            break;
-        }
-
-        const auto value = std::get<bool>(content);
-        content          = !value;
-    }
-    break;
+        break;
     case MouseButton::Center | MouseButton::DoubleClicked:
         break;
     case MouseButton::Right | MouseButton::DoubleClicked:
@@ -322,6 +299,10 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
             }
         }
 
+        if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+        {
+            context->FindDuplicates();
+        }
         return true;
     }
     break;
@@ -458,30 +439,14 @@ Size Grid::GetGridDimensions() const
     return { context->columnsNo, context->rowsNo };
 }
 
-bool Grid::UpdateCell(
-      uint32 index,
-      CellType cellType,
-      const std::variant<bool, ConstString>& content,
-      TextAlignament textAlignment,
-      bool sort)
+bool Grid::UpdateCell(uint32 index, ConstString content, TextAlignament textAlignment, bool sort)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
-    std::variant<bool, std::u16string> cellData;
-    if (std::holds_alternative<bool>(content))
-    {
-        cellData = std::get<bool>(content);
-    }
-    else if (std::holds_alternative<ConstString>(content))
-    {
-        const auto& cs = std::get<ConstString>(content);
-        Utils::UnicodeStringBuilder usb{ cs };
-        std::u16string u16s(usb);
-        cellData = u16s;
-    }
-
-    context->cells[index] = { textAlignment, cellType, cellData };
+    Utils::UnicodeStringBuilder usb{ content };
+    std::u16string u16s(usb);
+    context->cells[index] = { textAlignment, u16s };
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
@@ -491,20 +456,19 @@ bool Grid::UpdateCell(
         }
     }
 
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
+    }
+
     return true;
 }
 
-bool Grid::UpdateCell(
-      uint32 x,
-      uint32 y,
-      CellType cellType,
-      const std::variant<bool, ConstString>& content,
-      Graphics::TextAlignament textAlignment,
-      bool sort)
+bool Grid::UpdateCell(uint32 x, uint32 y, ConstString content, Graphics::TextAlignament textAlignment, bool sort)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);
     const auto cellIndex = context->columnsNo * y + x;
-    CHECK(UpdateCell(cellIndex, cellType, content, textAlignment), false, "");
+    CHECK(UpdateCell(cellIndex, content, textAlignment), false, "");
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
@@ -538,7 +502,7 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
     for (const auto& value : headerValues)
     {
         LocalUnicodeStringBuilder<1024> lusb{ value };
-        context->headers.push_back({ textAlignment, Grid::CellType::String, lusb });
+        context->headers.push_back({ textAlignment, lusb });
     }
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
@@ -547,6 +511,11 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
         {
             context->SortColumn(i);
         }
+    }
+
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
     }
 
     return true;
@@ -648,6 +617,11 @@ void Controls::Grid::Sort()
         {
             context->SortColumn(i);
         }
+    }
+
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
     }
 }
 
@@ -915,6 +889,14 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
             DrawCellBackground(renderer, GridCellStatus::Selected, cellIndex);
         }
     }
+
+    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
+    {
+        for (const auto& cellIndex : duplicatedCellsIndexes)
+        {
+            DrawCellBackground(renderer, GridCellStatus::Duplicate, cellIndex);
+        }
+    }
 }
 
 void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j)
@@ -936,6 +918,9 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
         break;
     case GridCellStatus::Hovered:
         color = Cfg->Grid.Background.Cell.Hovered;
+        break;
+    case GridCellStatus::Duplicate:
+        color = Cfg->Grid.Background.Cell.Duplicate;
         break;
     default:
         color = Cfg->Grid.Background.Cell.Normal;
@@ -971,34 +956,7 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     wtp.Width = cWidth - 1;
     wtp.Align = data.ta;
 
-    switch (data.ct)
-    {
-    case Grid::CellType::Boolean:
-        if (std::holds_alternative<bool>(data.content))
-        {
-            const auto value = std::get<bool>(data.content);
-            if (value)
-            {
-                renderer.WriteText("True", wtp);
-            }
-            else
-            {
-                renderer.WriteText("False", wtp);
-            }
-            return true;
-        }
-        return false;
-    case Grid::CellType::String:
-        if (std::holds_alternative<std::u16string>(data.content))
-        {
-            const auto& value = std::get<std::u16string>(data.content);
-            renderer.WriteText(value, wtp);
-            return true;
-        }
-        return false;
-    default:
-        break;
-    }
+    renderer.WriteText(data.content, wtp);
 
     return false;
 }
@@ -1065,7 +1023,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
-        renderer.WriteText(std::get<std::u16string>(it->content), wtp);
+        renderer.WriteText(it->content, wtp);
 
         if ((flags & GridFlags::Sort) != GridFlags::None)
         {
@@ -1229,6 +1187,14 @@ bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
             {
                 offsetY -= yBottom - Layout.Height + 1;
                 startedMoving = true;
+            }
+
+            if ((flags & GridFlags::DisableDuplicates) == GridFlags::None)
+            {
+                if (selectedCellsIndexes.size() == 1)
+                {
+                    FindDuplicates();
+                }
             }
 
             return true;
@@ -1404,36 +1370,12 @@ bool GridControlContext::SelectCellsByKeys(Input::Key keyCode)
         }
     }
 
-    return true;
-}
-
-bool GridControlContext::ToggleBooleanCell()
-{
-    if (selectedCellsIndexes.size() != 1)
+    if ((flags & GridFlags::DisableDuplicates) == GridFlags::None)
     {
-        return false;
-    }
-
-    const auto index    = selectedCellsIndexes[0];
-    auto& cellData      = cells[index];
-    const auto cellType = cellData.ct;
-    if (cellType != Grid::CellType::Boolean)
-    {
-        return false;
-    }
-
-    auto& content = cellData.content;
-    if (std::holds_alternative<bool>(content) == false)
-    {
-        return false;
-    }
-
-    const auto value = std::get<bool>(content);
-    content          = !value;
-
-    if ((flags & GridFlags::Sort) != GridFlags::None)
-    {
-        SortColumn(index % columnsNo);
+        if (selectedCellsIndexes.size() == 1)
+        {
+            FindDuplicates();
+        }
     }
 
     return true;
@@ -1470,32 +1412,7 @@ bool GridControlContext::CopySelectedCellsContent() const
             if (it != cells.end())
             {
                 const auto& data = it->second;
-                switch (data.ct)
-                {
-                case Grid::CellType::Boolean:
-                    if (std::holds_alternative<bool>(data.content))
-                    {
-                        const auto value = std::get<bool>(data.content);
-                        if (value)
-                        {
-                            cs = "True";
-                        }
-                        else
-                        {
-                            cs = "False";
-                        }
-                    }
-                    break;
-                case Grid::CellType::String:
-                    if (std::holds_alternative<std::u16string>(data.content))
-                    {
-                        const auto& value = std::get<std::u16string>(data.content);
-                        cs                = value;
-                    }
-                    break;
-                default:
-                    break;
-                }
+                cs               = data.content;
             }
 
             lusb.Add(cs);
@@ -1574,25 +1491,8 @@ bool GridControlContext::PasteContentToSelectedCells()
     auto index = selectedCellsIndexes.begin();
     for (const auto& token : tokens)
     {
-        auto& data = cells.at(*index);
-
-        switch (data.ct)
-        {
-        case Grid::CellType::Boolean:
-            if (std::holds_alternative<bool>(data.content))
-            {
-                data.content = (token.compare(u"True") == 0);
-            }
-            break;
-        case Grid::CellType::String:
-            if (std::holds_alternative<std::u16string>(data.content))
-            {
-                data.content = token;
-            }
-            break;
-        default:
-            break;
-        }
+        auto& data   = cells.at(*index);
+        data.content = token;
 
         std::advance(index, 1);
     }
@@ -1617,7 +1517,7 @@ void GridControlContext::SetDefaultHeaderValues()
     {
         ls.SetFormat("Column_%llu", i);
         lusb.Set(ls);
-        headers.push_back({ TextAlignament::Left, Grid::CellType::String, lusb });
+        headers.push_back({ TextAlignament::Left, lusb });
     }
 }
 
@@ -1625,7 +1525,7 @@ void GridControlContext::ReserveMap()
 {
     for (auto i = 0U; i < columnsNo * rowsNo; i++)
     {
-        cells[i] = { Graphics::TextAlignament::Left, Grid::CellType::String, u"" };
+        cells[i] = { Graphics::TextAlignament::Left, u"" };
     }
 }
 
@@ -1663,50 +1563,7 @@ void GridControlContext::SortColumn(int colIndex)
     std::sort(
           column.begin(),
           column.end(),
-          [](const GridCellData& a, const GridCellData& b) -> bool
-          {
-              if (std::holds_alternative<bool>(a.content) && std::holds_alternative<bool>(b.content))
-              {
-                  return std::get<bool>(a.content) == std::get<bool>(b.content);
-              }
-
-              if (std::holds_alternative<std::u16string>(a.content) &&
-                  std::holds_alternative<std::u16string>(b.content))
-              {
-                  const std::u16string valueA(std::get<std::u16string>(a.content));
-                  const std::u16string valueB(std::get<std::u16string>(b.content));
-
-                  return valueA.compare(valueB) < 0;
-              }
-
-              if (std::holds_alternative<std::u16string>(a.content))
-              {
-                  const std::u16string valueA(std::get<std::u16string>(a.content));
-
-                  std::u16string valueB(u"True");
-                  if (std::get<bool>(b.content) == false)
-                  {
-                      valueB = u"False";
-                  }
-
-                  return valueA.compare(valueB) < 0;
-              }
-
-              if (std::holds_alternative<std::u16string>(b.content))
-              {
-                  const std::u16string valueB(std::get<std::u16string>(b.content));
-
-                  std::u16string valueA(u"True");
-                  if (std::get<bool>(a.content) == false)
-                  {
-                      valueA = u"False";
-                  }
-
-                  return valueA.compare(valueB) < 0;
-              }
-
-              return true;
-          });
+          [](const GridCellData& a, const GridCellData& b) -> bool { return a.content.compare(b.content) < 0; });
 
     if (columnsSort[colIndex] == false)
     {
@@ -1717,6 +1574,21 @@ void GridControlContext::SortColumn(int colIndex)
     {
         const auto cell = colIndex + j * columnsNo;
         cells[cell]     = column[j];
+    }
+}
+
+void GridControlContext::FindDuplicates()
+{
+    duplicatedCellsIndexes.clear();
+    CHECKRET(selectedCellsIndexes.size() == 1, "");
+
+    const auto& content = cells[selectedCellsIndexes[0]].content;
+    for (const auto& [key, value] : cells)
+    {
+        if (content.compare(value.content) == 0)
+        {
+            duplicatedCellsIndexes.emplace_back(key);
+        }
     }
 }
 } // namespace AppCUI
