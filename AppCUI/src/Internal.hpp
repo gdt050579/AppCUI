@@ -9,12 +9,6 @@
 #include <memory>
 
 
-
-//#define MouseLockedObject::None        0
-//#define MouseLockedObject::CommandBar 1
-//#define MouseLockedObject::Control     2
-
-
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
 #define NEW_LINE_CODE 10
