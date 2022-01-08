@@ -692,7 +692,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         for (auto i = sci; i <= eci; i++)
         {
             const auto x = offsetX + i * cWidth;
-            // renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
         }
 
         for (auto i = sci; i <= eci; i++)
@@ -756,6 +756,10 @@ void GridControlContext::DrawLines(Renderer& renderer)
             vertical   = Cfg->Grid.Lines.Hovered;
             horizontal = Cfg->Grid.Lines.Hovered;
             break;
+        case GridCellStatus::Duplicate:
+            vertical   = Cfg->Grid.Lines.Duplicate;
+            horizontal = Cfg->Grid.Lines.Duplicate;
+            break;
         default:
             vertical   = Cfg->Grid.Lines.Normal;
             horizontal = Cfg->Grid.Lines.Normal;
@@ -781,6 +785,14 @@ void GridControlContext::DrawLines(Renderer& renderer)
     if (hoveredCellIndex != InvalidCellIndex && ((flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
         drawLines(hoveredCellIndex, GridCellStatus::Hovered);
+    }
+
+    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
+    {
+        for (const auto& cellIndex : duplicatedCellsIndexes)
+        {
+            drawLines(cellIndex, GridCellStatus::Duplicate);
+        }
     }
 
     if (selectedCellsIndexes.size() > 0 && ((flags & GridFlags::HideSelectedCell) == GridFlags::None))
@@ -877,6 +889,14 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
         }
     }
 
+    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
+    {
+        for (const auto& cellIndex : duplicatedCellsIndexes)
+        {
+            DrawCellBackground(renderer, GridCellStatus::Duplicate, cellIndex);
+        }
+    }
+
     if (hoveredCellIndex != InvalidCellIndex && ((flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
         DrawCellBackground(renderer, GridCellStatus::Hovered, hoveredCellIndex);
@@ -887,14 +907,6 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
         for (const auto& cellIndex : selectedCellsIndexes)
         {
             DrawCellBackground(renderer, GridCellStatus::Selected, cellIndex);
-        }
-    }
-
-    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
-    {
-        for (const auto& cellIndex : duplicatedCellsIndexes)
-        {
-            DrawCellBackground(renderer, GridCellStatus::Duplicate, cellIndex);
         }
     }
 }
@@ -948,9 +960,26 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 
     const auto& data = cells[cellIndex];
 
+    auto color = Cfg->Grid.Text.Normal;
+    if (cellIndex == hoveredCellIndex)
+    {
+        color = Cfg->Grid.Text.Hovered;
+    }
+    else if (
+          std::find(selectedCellsIndexes.begin(), selectedCellsIndexes.end(), cellIndex) != selectedCellsIndexes.end())
+    {
+        color = Cfg->Grid.Text.Selected;
+    }
+    else if (
+          std::find(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), cellIndex) !=
+          duplicatedCellsIndexes.end())
+    {
+        color = Cfg->Grid.Text.Duplicate;
+    }
+
     WriteTextParams wtp;
     wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
-    wtp.Color = Cfg->Grid.Text.Normal;
+    wtp.Color = color;
     wtp.X     = x;
     wtp.Y     = y;
     wtp.Width = cWidth - 1;
@@ -1088,6 +1117,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
             return false;
         };
     } sortingComparator{ this };
+
     std::sort(selectedCellsIndexes.begin(), selectedCellsIndexes.end(), sortingComparator);
     selectedCellsIndexes.erase(
           std::unique(selectedCellsIndexes.begin(), selectedCellsIndexes.end()), selectedCellsIndexes.end());
@@ -1590,5 +1620,36 @@ void GridControlContext::FindDuplicates()
             duplicatedCellsIndexes.emplace_back(key);
         }
     }
+
+    // sort duplicate cells for better drawing
+    struct
+    {
+        const GridControlContext* gcc;
+        bool operator()(uint32 a, uint32 b)
+        {
+            const auto aci = a % gcc->columnsNo;
+            const auto ari = a / gcc->columnsNo;
+
+            const auto bci = b % gcc->columnsNo;
+            const auto bri = b / gcc->columnsNo;
+
+            if (ari < bri)
+            {
+                return true;
+            }
+            if (ari == bri)
+            {
+                if (aci < bci)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    } sortingComparator{ this };
+    std::sort(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), sortingComparator);
+    duplicatedCellsIndexes.erase(
+          std::unique(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end()), duplicatedCellsIndexes.end());
 }
 } // namespace AppCUI

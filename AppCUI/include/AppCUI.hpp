@@ -4768,7 +4768,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Normal, Selected, Hovered;
+                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
             } Lines;
             struct
             {
@@ -4780,7 +4780,7 @@ namespace Application
             } Background;
             struct
             {
-                Graphics::ColorPair Normal;
+                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
             } Text;
             Graphics::ColorPair Header;
         } Grid;
