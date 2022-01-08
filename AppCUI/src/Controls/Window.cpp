@@ -1146,7 +1146,7 @@ bool Window::Exit(int dialogResult)
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->DialogResult                     = dialogResult;
-    Application::GetApplication()->LoopStatus = LOOP_STATUS_STOP_CURRENT;
+    Application::GetApplication()->loopStatus = Internal::LoopStatus::StopCurrent;
     return true;
 }
 bool Window::Exit(Dialogs::Result dialogResult)

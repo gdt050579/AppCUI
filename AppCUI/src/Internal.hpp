@@ -8,20 +8,12 @@
 #endif
 #include <memory>
 
-#define REPAINT_STATUS_COMPUTE_POSITION 1
-#define REPAINT_STATUS_DRAW             2
-#define REPAINT_STATUS_ALL              (REPAINT_STATUS_COMPUTE_POSITION | REPAINT_STATUS_DRAW)
-#define REPAINT_STATUS_NONE             0
 
-#define MOUSE_LOCKED_OBJECT_NONE        0
-#define MOUSE_LOCKED_OBJECT_ACCELERATOR 1
-#define MOUSE_LOCKED_OBJECT_CONTROL     2
 
-#define MAX_MODAL_CONTROLS_STACK 16
+//#define MouseLockedObject::None        0
+//#define MouseLockedObject::CommandBar 1
+//#define MouseLockedObject::Control     2
 
-#define LOOP_STATUS_NORMAL       0
-#define LOOP_STATUS_STOP_CURRENT 1
-#define LOOP_STATUS_STOP_APP     2
 
 #define MAX_COMMANDBAR_SHIFTSTATES 8
 
@@ -29,8 +21,27 @@
 
 namespace AppCUI
 {
+constexpr uint32 REPAINT_STATUS_COMPUTE_POSITION = 1;
+constexpr uint32 REPAINT_STATUS_DRAW             = 2;
+constexpr uint32 REPAINT_STATUS_ALL              = (REPAINT_STATUS_COMPUTE_POSITION | REPAINT_STATUS_DRAW);
+constexpr uint32 REPAINT_STATUS_NONE             = 0;
+
+constexpr uint32 MAX_MODAL_CONTROLS_STACK = 16;
+
 namespace Internal
 {
+    enum class LoopStatus: uint32
+    {
+        Normal = 0,
+        StopCurrent,
+        StopApp
+    };
+    enum class MouseLockedObject : uint32
+    {
+        None = 0,
+        CommandBar,
+        Control
+    };
     enum class SystemEventType : uint32
     {
         None = 0,
@@ -236,9 +247,9 @@ namespace Internal
         Controls::Control* ExpandedControl;
         Controls::Menu* VisibleMenu;
         uint32 ModalControlsCount;
-        int LoopStatus;
+        LoopStatus loopStatus;
         uint32 RepaintStatus;
-        int MouseLockedObject;
+        MouseLockedObject mouseLockedObject;
 
         Application::InitializationFlags InitFlags;
         uint32 LastWindowID;

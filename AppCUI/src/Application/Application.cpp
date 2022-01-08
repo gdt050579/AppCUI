@@ -521,9 +521,9 @@ ApplicationImpl::ApplicationImpl()
     this->VisibleMenu        = nullptr;
     this->ModalControlsCount = 0;
     this->LastWindowID       = 0;
-    this->LoopStatus         = LOOP_STATUS_NORMAL;
+    this->loopStatus         = LoopStatus::Normal;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
-    this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    this->mouseLockedObject  = MouseLockedObject::None;
     this->InitFlags          = Application::InitializationFlags::None;
     this->LastMouseX         = -1;
     this->LastMouseY         = -1;
@@ -539,9 +539,9 @@ void ApplicationImpl::Destroy()
     this->MouseOverControl   = nullptr;
     this->VisibleMenu        = nullptr;
     this->ModalControlsCount = 0;
-    this->LoopStatus         = LOOP_STATUS_NORMAL;
+    this->loopStatus         = LoopStatus::Normal;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
-    this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    this->mouseLockedObject  = MouseLockedObject::None;
 }
 void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData)
 {
@@ -676,9 +676,9 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
-    LoopStatus         = LOOP_STATUS_NORMAL;
+    loopStatus         = LoopStatus::Normal;
     RepaintStatus      = REPAINT_STATUS_ALL;
-    MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    mouseLockedObject  = MouseLockedObject::None;
     MouseLockedControl = nullptr;
     MouseOverControl   = nullptr;
     ModalControlsCount = 0;
@@ -893,7 +893,7 @@ void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
     if ((this->cmdBar) && (this->cmdBar->OnMouseDown()))
     {
         RepaintStatus |= REPAINT_STATUS_DRAW;
-        MouseLockedObject = MOUSE_LOCKED_OBJECT_ACCELERATOR;
+        mouseLockedObject = MouseLockedObject::CommandBar;
         return;
     }
     // check controls
@@ -915,21 +915,21 @@ void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
         {
-            MouseLockedObject = MOUSE_LOCKED_OBJECT_CONTROL;
+            mouseLockedObject = MouseLockedObject::Control;
             RepaintStatus |= REPAINT_STATUS_DRAW;
         }
         return;
     }
 
     // else no object locked
-    MouseLockedObject = MOUSE_LOCKED_OBJECT_NONE;
+    mouseLockedObject = MouseLockedObject::None;
 }
 void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
 {
     int commandID;
-    switch (MouseLockedObject)
+    switch (mouseLockedObject)
     {
-    case MOUSE_LOCKED_OBJECT_ACCELERATOR:
+    case MouseLockedObject::CommandBar:
         if (this->cmdBar)
         {
             if (this->cmdBar->OnMouseUp(commandID))
@@ -938,7 +938,7 @@ void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
                 SendCommand(commandID);
         }
         break;
-    case MOUSE_LOCKED_OBJECT_CONTROL:
+    case MouseLockedObject::Control:
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
         MouseLockedControl->OnMouseReleased(
               x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
@@ -946,18 +946,18 @@ void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
         break;
     }
     MouseLockedControl = nullptr;
-    MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    mouseLockedObject  = MouseLockedObject::None;
 }
 void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
 {
     Controls::Control* ctrl;
     LastMouseX = x;
     LastMouseY = y;
-    switch (MouseLockedObject)
+    switch (mouseLockedObject)
     {
-    case MOUSE_LOCKED_OBJECT_ACCELERATOR:
+    case MouseLockedObject::CommandBar:
         break;
-    case MOUSE_LOCKED_OBJECT_CONTROL:
+    case MouseLockedObject::Control:
         this->ToolTip.Hide();
         if (MouseLockedControl->OnMouseDrag(
                   x - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.X,
@@ -965,7 +965,7 @@ void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
                   button))
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
-    case MOUSE_LOCKED_OBJECT_NONE:
+    case MouseLockedObject::None:
         if (ProcessMenuAndCmdBarMouseMove(x, y))
             break;
 
@@ -1020,7 +1020,7 @@ void ApplicationImpl::OnMouseWheel(int x, int y, Input::MouseWheel direction)
             RepaintStatus |= REPAINT_STATUS_DRAW;
         return;
     }
-    if (MouseLockedObject != MOUSE_LOCKED_OBJECT_NONE)
+    if (mouseLockedObject != MouseLockedObject::None)
         return;
     Controls::Control* ctrl;
     if (ModalControlsCount == 0)
@@ -1088,9 +1088,9 @@ void ApplicationImpl::ProcessShiftState(Input::Key ShiftState)
 bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
 {
     Internal::SystemEvent evnt;
-    RepaintStatus            = REPAINT_STATUS_ALL;
+    this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
-    this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+    this->mouseLockedObject  = MouseLockedObject::None;
     // hide current hovered control when new dialog is opened.
     if (this->MouseOverControl)
     {
@@ -1108,7 +1108,7 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
     // update command bar
     UpdateCommandBar();
 
-    while (LoopStatus == LOOP_STATUS_NORMAL)
+    while (loopStatus == LoopStatus::Normal)
     {
         if (!toDelete.empty())
         {
@@ -1161,7 +1161,7 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
         switch (evnt.eventType)
         {
         case SystemEventType::AppClosed:
-            LoopStatus = LOOP_STATUS_STOP_APP;
+            loopStatus = LoopStatus::StopApp;
             break;
         case SystemEventType::AppResized:
             if (((evnt.newWidth != this->terminal->ScreenCanvas.GetWidth()) ||
@@ -1214,13 +1214,13 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
             this->MouseOverControl                                       = nullptr;
         }
         this->MouseLockedControl = nullptr;
-        this->MouseLockedObject  = MOUSE_LOCKED_OBJECT_NONE;
+        this->mouseLockedObject  = MouseLockedObject::None;
         RepaintStatus            = REPAINT_STATUS_ALL;
     }
     // daca vreau sa opresc doar bucla curenta
-    if (LoopStatus == LOOP_STATUS_STOP_CURRENT)
+    if (loopStatus == LoopStatus::StopCurrent)
     {
-        LoopStatus    = LOOP_STATUS_NORMAL;
+        loopStatus    = LoopStatus::Normal;
         RepaintStatus = REPAINT_STATUS_ALL;
     }
     // pack extended control
@@ -1337,7 +1337,7 @@ bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& 
 }
 void ApplicationImpl::Terminate()
 {
-    LoopStatus = LOOP_STATUS_STOP_APP;
+    loopStatus = LoopStatus::StopApp;
 }
 bool ApplicationImpl::Uninit()
 {

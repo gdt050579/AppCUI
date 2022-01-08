@@ -124,7 +124,6 @@ void ProgressStatus_ComputeTime(uint64 time)
     }
     char temp[128];
     char* p = temp;
-    uint32 sz;
     if (days > 0)
     {
         *p++ = '0' + days;
