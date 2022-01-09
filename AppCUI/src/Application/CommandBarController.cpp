@@ -10,7 +10,7 @@ CommandBarController::CommandBarController(
     this->Cfg = cfg;
     SetDesktopSize(desktopWidth, desktopHeight);
     ClearCommandUniqueID = 0;
-    for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
+    for (uint32 tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
     {
         CommandBarField* b = &Fields[tr][0];
         CommandBarField* e = b + (uint32) Key::Count;
@@ -42,7 +42,7 @@ void CommandBarController::Clear()
     ClearCommandUniqueID++;
 
     // Clear shift keys for fast process
-    for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
+    for (uint32 tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++)
     {
         HasKeys[tr]      = false;
         IndexesCount[tr] = 0;
@@ -119,7 +119,7 @@ void CommandBarController::ComputeScreenPos()
 
     // creez lista secundara de pointeri
     bool* hasKeys = &HasKeys[0];
-    for (int tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++, hasKeys++)
+    for (uint32 tr = 0; tr < MAX_COMMANDBAR_SHIFTSTATES; tr++, hasKeys++)
     {
         if ((*hasKeys) == false)
             continue;
