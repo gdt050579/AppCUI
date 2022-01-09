@@ -633,21 +633,15 @@ class TreeControlContext : public ControlContext
 
 enum class GridCellStatus
 {
-    Normal   = 0,
-    Selected = 1,
-    Hovered  = 2
+    Normal    = 0,
+    Selected  = 1,
+    Hovered   = 2,
+    Duplicate = 3
 };
 
 struct GridCellData
 {
-    TextAlignament ta = TextAlignament::Left;
-    Grid::CellType ct = Grid::CellType::String;
-    variant<bool, std::u16string> content;
-};
-
-struct GridHeaderCellData
-{
-    TextAlignament ta = TextAlignament::Left;
+    TextAlignament ta{ TextAlignament::Left };
     std::u16string content;
 };
 
@@ -660,21 +654,22 @@ class GridControlContext : public ControlContext
     uint32 hoveredCellIndex = 0xFFFFFFFF;
     uint32 anchorCellIndex  = 0xFFFFFFFF;
     std::vector<uint32> selectedCellsIndexes;
+    std::vector<uint32> duplicatedCellsIndexes;
 
     uint32 cWidth  = 0U;
     uint32 cHeight = 0U;
     int32 offsetX  = 0;
     int32 offsetY  = 0;
 
-    Menu rightClickMenu;
-
     std::map<uint32, GridCellData> cells;
     std::u16string separator{ u"," };
-    std::vector<GridHeaderCellData> headers;
+    std::vector<GridCellData> headers;
 
     bool startedMoving = false;
 
-    Point lastLocationDraggedRightClicked{ 0,0 };
+    Point lastLocationDraggedRightClicked{ 0, 0 };
+
+    std::vector<bool> columnsSort;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);
@@ -696,13 +691,17 @@ class GridControlContext : public ControlContext
     bool DrawHeader(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
-    void CenterMatrix();
+    void ResetMatrixPosition();
     void UpdatePositions(int32 offsetX, int32 offsetY);
     bool MoveSelectedCellByKeys(AppCUI::Input::Key keyCode);
     bool SelectCellsByKeys(AppCUI::Input::Key keyCode);
-    bool ToggleBooleanCell();
     bool CopySelectedCellsContent() const;
     bool PasteContentToSelectedCells();
+    void SetDefaultHeaderValues();
+    void ReserveMap();
+    void ToggleSorting(int x, int y);
+    void SortColumn(int index);
+    void FindDuplicates();
 };
 
 enum class MenuItemType : uint32
@@ -840,7 +839,7 @@ enum class PropertySeparatorStatus : uint8
     Over,
     Drag
 };
-enum class PropertyItemLocation: uint8
+enum class PropertyItemLocation : uint8
 {
     None,
     CollapseExpandButton

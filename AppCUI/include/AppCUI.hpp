@@ -1829,16 +1829,15 @@ namespace OS
         bool Read(uint64 offset, void* buffer, uint32 bufferSize, uint32& bytesRead);
         bool Read(Utils::Buffer& buf, uint32 size);
         bool Read(uint64 offset, Utils::Buffer& buf, uint32 size);
-        
+
         template <typename T>
         bool Read(T& obj)
         {
-            return Read((void*) &obj, (uint32)sizeof(T));
+            return Read((void*) &obj, (uint32) sizeof(T));
         }
 
-
         // write methods
-        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);        
+        bool Write(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(const void* buffer, uint32 bufferSize);
         bool Write(uint64 offset, const void* buffer, uint32 bufferSize, uint32& bytesWritten);
         bool Write(string_view text);
@@ -3834,20 +3833,14 @@ namespace Controls
         HideHoveredCell       = 0x000800,
         HideSelectedCell      = 0x001000,
         TransparentBackground = 0x002000,
-        HideHeader            = 0x004000,
-        DisableZoom           = 0x008000,
-        DisableMove           = 0x010000
+        DisableZoom           = 0x004000,
+        DisableMove           = 0x008000,
+        Sort                  = 0x010000,
+        DisableDuplicates     = 0x020000
     };
 
     class EXPORT Grid : public Control
     {
-      public:
-        enum class CellType
-        {
-            Boolean = 0,
-            String  = 1
-        };
-
       protected:
         Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
 
@@ -3867,25 +3860,27 @@ namespace Controls
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,
-              CellType cellType,
-              const variant<bool, ConstString>& content,
-              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+              ConstString content,
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
+              bool                                   = false);
         bool UpdateCell(
               uint32 x,
               uint32 y,
-              CellType cellType,
-              const variant<bool, ConstString>& content,
-              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
+              ConstString content,
+              Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left,
+              bool                                   = false);
         const ConstString GetSeparator() const;
         void SetSeparator(ConstString separator);
         bool UpdateHeaderValues(
               const vector<ConstString>& headerValues,
               Graphics::TextAlignament textAlignment = Graphics::TextAlignament::Left);
-        void ShowHeader(bool show);
-        bool IsHeaderVisible() const;
         AppCUI::Graphics::Point GetHoveredLocation() const;
         AppCUI::Graphics::Point GetSelectionLocationsStart() const;
         AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
+        void ResetHeaderValues();
+        void ToggleHorizontalLines();
+        void ToggleVerticalLines();
+        void Sort();
 
       private:
         friend Factory::Grid;
@@ -4773,30 +4768,19 @@ namespace Application
         {
             struct
             {
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Horizontal;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Vertical;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered;
-                } Box;
+                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
             } Lines;
             struct
             {
                 Graphics::ColorPair Grid;
                 struct
                 {
-                    Graphics::ColorPair Normal, Selected, Hovered;
+                    Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
                 } Cell;
             } Background;
             struct
             {
-                Graphics::ColorPair Normal;
+                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
             } Text;
             Graphics::ColorPair Header;
         } Grid;

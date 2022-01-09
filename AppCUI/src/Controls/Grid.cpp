@@ -7,8 +7,6 @@ using namespace Graphics;
 
 constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
 
-constexpr auto MenuCommandMergeCells = 0x01U;
-
 constexpr auto minCellWidth  = 0x03U;
 constexpr auto minCellHeight = 0x02U;
 
@@ -24,11 +22,16 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->rowsNo    = rowsNo;
     context->flags     = flags;
 
-    context->CenterMatrix();
+    context->columnsSort.insert(context->columnsSort.end(), columnsNo, true);
+
+    context->ResetMatrixPosition();
     context->UpdateGridParameters();
 
-    context->rightClickMenu.AddCommandItem("&Merge Cells", MenuCommandMergeCells, Key::F2);
     context->headers.reserve(context->columnsNo);
+    context->SetDefaultHeaderValues();
+
+    context->ReserveMap();
+    Sort();
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -38,10 +41,7 @@ void Grid::Paint(Renderer& renderer)
 
     renderer.Clear(' ', context->Cfg->Grid.Background.Grid);
 
-    if ((context->flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        context->DrawHeader(renderer);
-    }
+    context->DrawHeader(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
     {
@@ -71,12 +71,6 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 
     switch (keyCode)
     {
-    case Input::Key::Space:
-        if (context->ToggleBooleanCell())
-        {
-            return true;
-        }
-        break;
     case Input::Key::Left:
     case Input::Key::Right:
     case Input::Key::Up:
@@ -99,6 +93,7 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
         if (context->selectedCellsIndexes.size() > 0)
         {
             context->selectedCellsIndexes.clear();
+            context->duplicatedCellsIndexes.clear();
             return true;
         }
         break;
@@ -211,42 +206,25 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
             context->anchorCellIndex = index;
             context->selectedCellsIndexes.emplace_back(index);
         }
+
+        if ((context->flags & GridFlags::Sort) != GridFlags::None)
+        {
+            context->ToggleSorting(x, y);
+        }
+
+        if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+        {
+            context->FindDuplicates();
+        }
     }
     break;
     case MouseButton::Center:
         break;
     case MouseButton::Right:
-        if (context->selectedCellsIndexes.size() > 1)
-        {
-            context->rightClickMenu.Show(x, y);
-        }
         context->lastLocationDraggedRightClicked = { x, y };
         break;
     case MouseButton::Left | MouseButton::DoubleClicked:
-    {
-        const auto index = context->ComputeCellNumber(x, y);
-        if (index == InvalidCellIndex)
-        {
-            break;
-        }
-
-        auto& cellData      = context->cells[index];
-        const auto cellType = cellData.ct;
-        if (cellType != Grid::CellType::Boolean)
-        {
-            break;
-        }
-
-        auto& content = cellData.content;
-        if (std::holds_alternative<bool>(content) == false)
-        {
-            break;
-        }
-
-        const auto value = std::get<bool>(content);
-        content          = !value;
-    }
-    break;
+        break;
     case MouseButton::Center | MouseButton::DoubleClicked:
         break;
     case MouseButton::Right | MouseButton::DoubleClicked:
@@ -321,6 +299,10 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
             }
         }
 
+        if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+        {
+            context->FindDuplicates();
+        }
         return true;
     }
     break;
@@ -429,16 +411,17 @@ void Grid::OnLoseFocus()
 
 bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
 {
-    if (eventType == Event::Command)
+    switch (eventType)
     {
-        switch (controlID)
-        {
-        case MenuCommandMergeCells:
-            // TODO:
-            break;
-        default:
-            break;
-        }
+    case Event::Command:
+        // switch (controlID)
+        //{
+        // default:
+        //    break;
+        //}
+        break;
+    default:
+        break;
     }
 
     return false;
@@ -456,40 +439,44 @@ Size Grid::GetGridDimensions() const
     return { context->columnsNo, context->rowsNo };
 }
 
-bool Grid::UpdateCell(
-      uint32 index, CellType cellType, const std::variant<bool, ConstString>& content, TextAlignament textAlignment)
+bool Grid::UpdateCell(uint32 index, ConstString content, TextAlignament textAlignment, bool sort)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
-    std::variant<bool, std::u16string> cellData;
-    if (std::holds_alternative<bool>(content))
+    Utils::UnicodeStringBuilder usb{ content };
+    std::u16string u16s(usb);
+    context->cells[index] = { textAlignment, u16s };
+
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
-        cellData = std::get<bool>(content);
-    }
-    else if (std::holds_alternative<ConstString>(content))
-    {
-        const auto& cs = std::get<ConstString>(content);
-        Utils::UnicodeStringBuilder usb{ cs };
-        std::u16string u16s(usb);
-        cellData = u16s;
+        if (sort)
+        {
+            context->SortColumn(index % context->rowsNo);
+        }
     }
 
-    context->cells[index] = { textAlignment, cellType, cellData };
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
+    }
 
     return true;
 }
 
-bool Grid::UpdateCell(
-      uint32 x,
-      uint32 y,
-      CellType cellType,
-      const std::variant<bool, ConstString>& content,
-      Graphics::TextAlignament textAlignment)
+bool Grid::UpdateCell(uint32 x, uint32 y, ConstString content, Graphics::TextAlignament textAlignment, bool sort)
 {
     const auto context   = reinterpret_cast<GridControlContext*>(Context);
     const auto cellIndex = context->columnsNo * y + x;
-    CHECK(UpdateCell(cellIndex, cellType, content, textAlignment), false, "");
+    CHECK(UpdateCell(cellIndex, content, textAlignment), false, "");
+
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        if (sort)
+        {
+            context->SortColumn(x);
+        }
+    }
 
     return true;
 }
@@ -518,28 +505,20 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
         context->headers.push_back({ textAlignment, lusb });
     }
 
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < context->columnsNo; i++)
+        {
+            context->SortColumn(i);
+        }
+    }
+
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
+    }
+
     return true;
-}
-
-void Controls::Grid::ShowHeader(bool show)
-{
-    auto context = reinterpret_cast<GridControlContext*>(Context);
-    if (show)
-    {
-        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideHeader));
-    }
-    else
-    {
-        context->flags |= GridFlags::HideHeader;
-    }
-
-    Application::Repaint();
-}
-
-bool Controls::Grid::IsHeaderVisible() const
-{
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-    return ((context->flags & GridFlags::HideHeader) == GridFlags::HideHeader) == false;
 }
 
 Point Controls::Grid::GetHoveredLocation() const
@@ -591,16 +570,86 @@ AppCUI::Graphics::Point Controls::Grid::GetSelectionLocationsEnd() const
     return { static_cast<int32>(cell / context->columnsNo), static_cast<int32>(cell % context->columnsNo) };
 }
 
+void Controls::Grid::ResetHeaderValues()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    context->SetDefaultHeaderValues();
+}
+
+void Controls::Grid::ToggleHorizontalLines()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::HideHorizontalLines) == GridFlags::None)
+    {
+        context->flags |= GridFlags::HideHorizontalLines;
+    }
+    else
+    {
+        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideHorizontalLines));
+    }
+
+    context->UpdateGridParameters();
+    Application::Repaint();
+}
+
+void Controls::Grid::ToggleVerticalLines()
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::HideVerticalLines) == GridFlags::None)
+    {
+        context->flags |= GridFlags::HideVerticalLines;
+    }
+    else
+    {
+        context->flags = context->flags & (~static_cast<uint32>(GridFlags::HideVerticalLines));
+    }
+
+    context->UpdateGridParameters();
+    Application::Repaint();
+}
+
+void Controls::Grid::Sort()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < context->columnsNo; i++)
+        {
+            context->SortColumn(i);
+        }
+    }
+
+    if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
+    {
+        context->FindDuplicates();
+    }
+}
+
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
-    for (auto i = 0U; i <= columnsNo; i++)
+    if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
+        (flags & GridFlags::HideVerticalLines) == GridFlags::None)
     {
-        const auto x = offsetX + i * cWidth;
-        for (auto j = 0U; j <= rowsNo; j++)
+        for (auto i = 0U; i <= columnsNo; i++)
         {
-            const auto y  = offsetY + j * cHeight;
-            const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
-            renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Normal);
+            const auto x = offsetX + i * cWidth;
+            for (auto j = 0U; j <= rowsNo; j++)
+            {
+                const auto y = offsetY + j * cHeight;
+
+                const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Normal);
+            }
+        }
+    }
+    else if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
+    {
+        const auto y1 = offsetY + 1;
+        const auto y2 = offsetY + rowsNo * cHeight - 1;
+        for (auto i = 0U; i <= columnsNo; i++)
+        {
+            const auto x = offsetX + i * cWidth;
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Normal);
         }
     }
 
@@ -615,12 +664,15 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto yTop    = offsetY + rowIndex * cHeight;
         const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
 
-        const auto& color = Cfg->Grid.Lines.Box.Hovered;
+        const auto& color = Cfg->Grid.Lines.Hovered;
 
         renderer.WriteSpecialCharacter(xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xLeft, yBottom, SpecialChars::BoxBottomLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yBottom, SpecialChars::BoxBottomRightCornerSingleLine, color);
+
+        renderer.DrawVerticalLine(xLeft, yTop + 1, yBottom - 1, color);
+        renderer.DrawVerticalLine(xRight, yTop + 1, yBottom - 1, color);
     }
 
     if (selectedCellsIndexes.size() > 0 && ((flags & GridFlags::HideSelectedCell) == GridFlags::None))
@@ -635,6 +687,14 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto eci = endCellIndex % columnsNo + 1U;
         const auto eri = endCellIndex / columnsNo + 1U;
 
+        const auto y1 = offsetY + sri * cHeight;
+        const auto y2 = y1 + (eri - sri) * cHeight - 1;
+        for (auto i = sci; i <= eci; i++)
+        {
+            const auto x = offsetX + i * cWidth;
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
+        }
+
         for (auto i = sci; i <= eci; i++)
         {
             const auto x = offsetX + i * cWidth;
@@ -642,7 +702,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
             {
                 const auto y  = offsetY + j * cHeight;
                 const auto sc = ComputeBoxType(i, j, sci, sri, eci, eri);
-                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Box.Selected);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Selected);
             }
         }
     }
@@ -662,7 +722,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (i < columnsNo)
                 {
                     const auto endX = offsetX + (i + 1) * cWidth;
-                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Grid.Lines.Horizontal.Normal, true);
+                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Grid.Lines.Normal, true);
                 }
             }
 
@@ -671,7 +731,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (j < rowsNo)
                 {
                     const auto endY = offsetY + (j + 1) * cHeight;
-                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Grid.Lines.Vertical.Normal, true);
+                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Grid.Lines.Normal, true);
                 }
             }
         }
@@ -679,26 +739,30 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
     const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
-        ColorPair vertical   = Cfg->Grid.Lines.Vertical.Normal;
-        ColorPair horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+        ColorPair vertical   = Cfg->Grid.Lines.Normal;
+        ColorPair horizontal = Cfg->Grid.Lines.Normal;
 
         switch (cellType)
         {
         case GridCellStatus::Normal:
-            vertical   = Cfg->Grid.Lines.Vertical.Normal;
-            horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+            vertical   = Cfg->Grid.Lines.Normal;
+            horizontal = Cfg->Grid.Lines.Normal;
             break;
         case GridCellStatus::Selected:
-            vertical   = Cfg->Grid.Lines.Vertical.Selected;
-            horizontal = Cfg->Grid.Lines.Horizontal.Selected;
+            vertical   = Cfg->Grid.Lines.Selected;
+            horizontal = Cfg->Grid.Lines.Selected;
             break;
         case GridCellStatus::Hovered:
-            vertical   = Cfg->Grid.Lines.Vertical.Hovered;
-            horizontal = Cfg->Grid.Lines.Horizontal.Hovered;
+            vertical   = Cfg->Grid.Lines.Hovered;
+            horizontal = Cfg->Grid.Lines.Hovered;
+            break;
+        case GridCellStatus::Duplicate:
+            vertical   = Cfg->Grid.Lines.Duplicate;
+            horizontal = Cfg->Grid.Lines.Duplicate;
             break;
         default:
-            vertical   = Cfg->Grid.Lines.Vertical.Normal;
-            horizontal = Cfg->Grid.Lines.Horizontal.Normal;
+            vertical   = Cfg->Grid.Lines.Normal;
+            horizontal = Cfg->Grid.Lines.Normal;
             break;
         }
 
@@ -721,6 +785,14 @@ void GridControlContext::DrawLines(Renderer& renderer)
     if (hoveredCellIndex != InvalidCellIndex && ((flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
         drawLines(hoveredCellIndex, GridCellStatus::Hovered);
+    }
+
+    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
+    {
+        for (const auto& cellIndex : duplicatedCellsIndexes)
+        {
+            drawLines(cellIndex, GridCellStatus::Duplicate);
+        }
     }
 
     if (selectedCellsIndexes.size() > 0 && ((flags & GridFlags::HideSelectedCell) == GridFlags::None))
@@ -766,10 +838,6 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxMidleLeft;
-            }
             return SpecialChars::BoxTopLeftCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
@@ -785,10 +853,6 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxMidleRight;
-            }
             return SpecialChars::BoxTopRightCornerSingleLine;
         }
         else if (rowIndex == endRowsIndex)
@@ -804,10 +868,6 @@ SpecialChars GridControlContext::ComputeBoxType(
     {
         if (rowIndex == startRowsIndex)
         {
-            if ((flags & GridFlags::HideHeader) == GridFlags::None)
-            {
-                return SpecialChars::BoxCrossSingleLine;
-            }
             return SpecialChars::BoxMidleTop;
         }
         else if (rowIndex == endRowsIndex)
@@ -826,6 +886,14 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
         for (auto j = 0U; j < rowsNo; j++)
         {
             DrawCellBackground(renderer, GridCellStatus::Normal, i, j);
+        }
+    }
+
+    if (duplicatedCellsIndexes.size() > 0 && ((flags & GridFlags::DisableDuplicates) == GridFlags::None))
+    {
+        for (const auto& cellIndex : duplicatedCellsIndexes)
+        {
+            DrawCellBackground(renderer, GridCellStatus::Duplicate, cellIndex);
         }
     }
 
@@ -863,6 +931,9 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
     case GridCellStatus::Hovered:
         color = Cfg->Grid.Background.Cell.Hovered;
         break;
+    case GridCellStatus::Duplicate:
+        color = Cfg->Grid.Background.Cell.Duplicate;
+        break;
     default:
         color = Cfg->Grid.Background.Cell.Normal;
         break;
@@ -889,42 +960,32 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 
     const auto& data = cells[cellIndex];
 
+    auto color = Cfg->Grid.Text.Normal;
+    if (cellIndex == hoveredCellIndex)
+    {
+        color = Cfg->Grid.Text.Hovered;
+    }
+    else if (
+          std::find(selectedCellsIndexes.begin(), selectedCellsIndexes.end(), cellIndex) != selectedCellsIndexes.end())
+    {
+        color = Cfg->Grid.Text.Selected;
+    }
+    else if (
+          std::find(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), cellIndex) !=
+          duplicatedCellsIndexes.end())
+    {
+        color = Cfg->Grid.Text.Duplicate;
+    }
+
     WriteTextParams wtp;
     wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
-    wtp.Color = Cfg->Grid.Text.Normal;
+    wtp.Color = color;
     wtp.X     = x;
     wtp.Y     = y;
     wtp.Width = cWidth - 1;
     wtp.Align = data.ta;
 
-    switch (data.ct)
-    {
-    case Grid::CellType::Boolean:
-        if (std::holds_alternative<bool>(data.content))
-        {
-            const auto value = std::get<bool>(data.content);
-            if (value)
-            {
-                renderer.WriteText("True", wtp);
-            }
-            else
-            {
-                renderer.WriteText("False", wtp);
-            }
-            return true;
-        }
-        return false;
-    case Grid::CellType::String:
-        if (std::holds_alternative<std::u16string>(data.content))
-        {
-            const auto& value = std::get<std::u16string>(data.content);
-            renderer.WriteText(value, wtp);
-            return true;
-        }
-        return false;
-    default:
-        break;
-    }
+    renderer.WriteText(data.content, wtp);
 
     return false;
 }
@@ -936,48 +997,51 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
     for (auto i = 0U; i <= columnsNo; i++)
     {
-        const auto x = offsetX + i * cWidth;
-        const auto y = offsetY - cHeight;
+        const auto x    = offsetX + i * cWidth;
+        const auto y    = offsetY - cHeight + 1;
+        const auto endY = offsetY + cHeight;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            const auto endY = offsetY + cHeight;
-            renderer.DrawVerticalLine(x, y, endY - 1, Cfg->Grid.Lines.Vertical.Normal, true);
+            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Normal, true);
         }
     }
 
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
         renderer.DrawHorizontalLine(
-              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Vertical.Normal, true);
+              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Normal, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
     {
-        for (auto i = 0U; i <= columnsNo; i++)
+        if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
         {
-            const auto x = offsetX + i * cWidth;
-            const auto y = offsetY - cHeight;
+            for (auto i = 0U; i <= columnsNo; i++)
+            {
+                const auto x = offsetX + i * cWidth;
+                const auto y = offsetY - cHeight;
 
-            if (i == 0)
-            {
-                renderer.WriteSpecialCharacter(
-                      x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
-            }
-            else if (i == columnsNo)
-            {
-                renderer.WriteSpecialCharacter(
-                      x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Vertical.Normal);
-            }
-            else
-            {
-                renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Vertical.Normal);
+                if (i == 0)
+                {
+                    renderer.WriteSpecialCharacter(
+                          x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Normal);
+                }
+                else if (i == columnsNo)
+                {
+                    renderer.WriteSpecialCharacter(
+                          x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Normal);
+                }
+                else
+                {
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Normal);
+                }
             }
         }
     }
 
     WriteTextParams wtp;
-    wtp.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
+    wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
     wtp.Color = Cfg->Grid.Text.Normal;
 
     auto it = headers.begin();
@@ -989,6 +1053,16 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         wtp.Align = it->ta;
 
         renderer.WriteText(it->content, wtp);
+
+        if ((flags & GridFlags::Sort) != GridFlags::None)
+        {
+            const auto endX = wtp.X + cWidth - 1;
+            renderer.WriteSpecialCharacter(
+                  endX - 1,
+                  wtp.Y,
+                  columnsSort[i] ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  { Color::Black, Color::Transparent });
+        }
 
         std::advance(it, 1);
     }
@@ -1005,14 +1079,15 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
         cHeight = static_cast<uint32>(Layout.Height / rowsNo);
         if (Layout.Width != 0 || Layout.Height != 0)
         {
-            cWidth  = std::max<>(cWidth, minCellWidth);
-            cHeight = std::max<>(cHeight, minCellHeight);
+            cWidth  = std::max<>(cWidth + 1, minCellWidth);
+            cHeight = std::max<>(
+                  cHeight + 1 - ((flags & GridFlags::HideHorizontalLines) != GridFlags::None), minCellHeight);
         }
     }
 
     if (((flags & GridFlags::DisableMove) != GridFlags::DisableMove) && startedMoving == false)
     {
-        CenterMatrix();
+        ResetMatrixPosition();
     }
 
     // sort selected cells for better drawing
@@ -1042,6 +1117,7 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
             return false;
         };
     } sortingComparator{ this };
+
     std::sort(selectedCellsIndexes.begin(), selectedCellsIndexes.end(), sortingComparator);
     selectedCellsIndexes.erase(
           std::unique(selectedCellsIndexes.begin(), selectedCellsIndexes.end()), selectedCellsIndexes.end());
@@ -1058,40 +1134,10 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
     UpdateGridParameters(true);
 }
 
-void GridControlContext::CenterMatrix()
+void GridControlContext::ResetMatrixPosition()
 {
-    // center matrix
-    offsetX = (Layout.Width - static_cast<int32>(cWidth * columnsNo)) / 2;
-
-    auto deltaHeight = Layout.Height - static_cast<int32>(cHeight * rowsNo);
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        if (deltaHeight > static_cast<int32>(cHeight))
-        {
-            deltaHeight -= cHeight;
-        }
-        else
-        {
-            deltaHeight = 0;
-        }
-    }
-
-    offsetY = static_cast<int32>(deltaHeight / 2);
-
-    if ((flags & GridFlags::HideHeader) == GridFlags::None)
-    {
-        offsetY += cHeight;
-    }
-
-    if (offsetX < 0)
-    {
-        offsetX = 0;
-    }
-
-    if (offsetY < 0)
-    {
-        offsetY = 0;
-    }
+    offsetX = -1;
+    offsetY = cHeight - 1; /* header */
 }
 
 void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
@@ -1140,6 +1186,47 @@ bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
         {
             anchorCellIndex         = newCellIndex;
             selectedCellsIndexes[0] = newCellIndex;
+
+            const int xLeft  = offsetX + columnIndex * cWidth;
+            const int xRight = offsetX + (columnIndex + 1) * cWidth;
+
+            const int yTop    = offsetY + rowIndex * cHeight;
+            const int yBottom = offsetY + (rowIndex + 1) * cHeight;
+
+            if (xLeft < 0)
+            {
+                const auto partial = std::abs(offsetX) % cWidth;
+                offsetX += (partial != 0 ? partial : cWidth);
+                startedMoving = true;
+            }
+
+            if (xRight > Layout.Width)
+            {
+                offsetX -= xRight - Layout.Width + 1;
+                startedMoving = true;
+            }
+
+            if (yTop < 0)
+            {
+                const auto partial = std::abs(offsetY) % cHeight;
+                offsetY += (partial != 0 ? partial : cHeight);
+                startedMoving = true;
+            }
+
+            if (yBottom > Layout.Height)
+            {
+                offsetY -= yBottom - Layout.Height + 1;
+                startedMoving = true;
+            }
+
+            if ((flags & GridFlags::DisableDuplicates) == GridFlags::None)
+            {
+                if (selectedCellsIndexes.size() == 1)
+                {
+                    FindDuplicates();
+                }
+            }
+
             return true;
         }
     }
@@ -1313,32 +1400,13 @@ bool GridControlContext::SelectCellsByKeys(Input::Key keyCode)
         }
     }
 
-    return true;
-}
-
-bool GridControlContext::ToggleBooleanCell()
-{
-    if (selectedCellsIndexes.size() != 1)
+    if ((flags & GridFlags::DisableDuplicates) == GridFlags::None)
     {
-        return false;
+        if (selectedCellsIndexes.size() == 1)
+        {
+            FindDuplicates();
+        }
     }
-
-    const auto index    = selectedCellsIndexes[0];
-    auto& cellData      = cells[index];
-    const auto cellType = cellData.ct;
-    if (cellType != Grid::CellType::Boolean)
-    {
-        return false;
-    }
-
-    auto& content = cellData.content;
-    if (std::holds_alternative<bool>(content) == false)
-    {
-        return false;
-    }
-
-    const auto value = std::get<bool>(content);
-    content          = !value;
 
     return true;
 }
@@ -1374,32 +1442,7 @@ bool GridControlContext::CopySelectedCellsContent() const
             if (it != cells.end())
             {
                 const auto& data = it->second;
-                switch (data.ct)
-                {
-                case Grid::CellType::Boolean:
-                    if (std::holds_alternative<bool>(data.content))
-                    {
-                        const auto value = std::get<bool>(data.content);
-                        if (value)
-                        {
-                            cs = "True";
-                        }
-                        else
-                        {
-                            cs = "False";
-                        }
-                    }
-                    break;
-                case Grid::CellType::String:
-                    if (std::holds_alternative<std::u16string>(data.content))
-                    {
-                        const auto& value = std::get<std::u16string>(data.content);
-                        cs                = value;
-                    }
-                    break;
-                default:
-                    break;
-                }
+                cs               = data.content;
             }
 
             lusb.Add(cs);
@@ -1478,29 +1521,135 @@ bool GridControlContext::PasteContentToSelectedCells()
     auto index = selectedCellsIndexes.begin();
     for (const auto& token : tokens)
     {
-        auto& data = cells.at(*index);
-
-        switch (data.ct)
-        {
-        case Grid::CellType::Boolean:
-            if (std::holds_alternative<bool>(data.content))
-            {
-                data.content = (token.compare(u"True") == 0);
-            }
-            break;
-        case Grid::CellType::String:
-            if (std::holds_alternative<std::u16string>(data.content))
-            {
-                data.content = token;
-            }
-            break;
-        default:
-            break;
-        }
+        auto& data   = cells.at(*index);
+        data.content = token;
 
         std::advance(index, 1);
     }
 
+    if ((flags & GridFlags::Sort) != GridFlags::None)
+    {
+        for (auto i = 0U; i < columnsNo; i++)
+        {
+            SortColumn(i);
+        }
+    }
+
     return true;
+}
+
+void GridControlContext::SetDefaultHeaderValues()
+{
+    headers.clear();
+    LocalUnicodeStringBuilder<256> lusb;
+    LocalString<256> ls;
+    for (auto i = 0ULL; i < columnsNo; i++)
+    {
+        ls.SetFormat("Column_%llu", i);
+        lusb.Set(ls);
+        headers.push_back({ TextAlignament::Left, lusb });
+    }
+}
+
+void GridControlContext::ReserveMap()
+{
+    for (auto i = 0U; i < columnsNo * rowsNo; i++)
+    {
+        cells[i] = { Graphics::TextAlignament::Left, u"" };
+    }
+}
+
+void GridControlContext::ToggleSorting(int x, int y)
+{
+    auto it = headers.begin();
+    for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
+    {
+        const auto xHeader    = offsetX + i * cWidth + 1; // 1 -> line
+        const auto yHeader    = offsetY - cHeight / 2;
+        const auto endXHeader = xHeader + cWidth - 2;
+
+        if (x == endXHeader && y == yHeader)
+        {
+            columnsSort[i] = !columnsSort[i];
+            SortColumn(i);
+            break;
+        }
+
+        std::advance(it, 1);
+    }
+}
+
+void GridControlContext::SortColumn(int colIndex)
+{
+    // this is not that efficient - you could replace it with indexes, sort and then swap
+    std::vector<GridCellData> column;
+    column.reserve(rowsNo);
+    for (auto j = 0U; j < rowsNo; j++)
+    {
+        const auto cell = colIndex + j * columnsNo;
+        column.emplace_back(cells.at(cell));
+    }
+
+    std::sort(
+          column.begin(),
+          column.end(),
+          [](const GridCellData& a, const GridCellData& b) -> bool { return a.content.compare(b.content) < 0; });
+
+    if (columnsSort[colIndex] == false)
+    {
+        std::reverse(column.begin(), column.end());
+    }
+
+    for (auto j = 0U; j < rowsNo; j++)
+    {
+        const auto cell = colIndex + j * columnsNo;
+        cells[cell]     = column[j];
+    }
+}
+
+void GridControlContext::FindDuplicates()
+{
+    duplicatedCellsIndexes.clear();
+    CHECKRET(selectedCellsIndexes.size() == 1, "");
+
+    const auto& content = cells[selectedCellsIndexes[0]].content;
+    for (const auto& [key, value] : cells)
+    {
+        if (content.compare(value.content) == 0)
+        {
+            duplicatedCellsIndexes.emplace_back(key);
+        }
+    }
+
+    // sort duplicate cells for better drawing
+    struct
+    {
+        const GridControlContext* gcc;
+        bool operator()(uint32 a, uint32 b)
+        {
+            const auto aci = a % gcc->columnsNo;
+            const auto ari = a / gcc->columnsNo;
+
+            const auto bci = b % gcc->columnsNo;
+            const auto bri = b / gcc->columnsNo;
+
+            if (ari < bri)
+            {
+                return true;
+            }
+            if (ari == bri)
+            {
+                if (aci < bci)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    } sortingComparator{ this };
+    std::sort(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), sortingComparator);
+    duplicatedCellsIndexes.erase(
+          std::unique(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end()), duplicatedCellsIndexes.end());
 }
 } // namespace AppCUI
