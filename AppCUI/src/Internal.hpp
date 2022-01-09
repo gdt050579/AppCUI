@@ -8,15 +8,6 @@
 #endif
 #include <memory>
 
-
-
-//#define MouseLockedObject::None        0
-//#define MouseLockedObject::CommandBar 1
-//#define MouseLockedObject::Control     2
-
-
-#define MAX_COMMANDBAR_SHIFTSTATES 8
-
 #define NEW_LINE_CODE 10
 
 namespace AppCUI
@@ -26,11 +17,12 @@ constexpr uint32 REPAINT_STATUS_DRAW             = 2;
 constexpr uint32 REPAINT_STATUS_ALL              = (REPAINT_STATUS_COMPUTE_POSITION | REPAINT_STATUS_DRAW);
 constexpr uint32 REPAINT_STATUS_NONE             = 0;
 
-constexpr uint32 MAX_MODAL_CONTROLS_STACK = 16;
+constexpr uint32 MAX_MODAL_CONTROLS_STACK   = 16;
+constexpr uint32 MAX_COMMANDBAR_SHIFTSTATES = 8;
 
 namespace Internal
 {
-    enum class LoopStatus: uint32
+    enum class LoopStatus : uint32
     {
         Normal = 0,
         StopCurrent,

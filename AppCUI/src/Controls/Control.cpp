@@ -1703,9 +1703,9 @@ bool Controls::Control::SetFocus()
         obj = p;
         p   = ((ControlContext*) (p->Context))->Parent;
     }
-    Application::Repaint();
-    // acceleratorii
-    // UpdateCommandBar(this);
+    auto app = Application::GetApplication();
+    app->RepaintStatus |= REPAINT_STATUS_DRAW;
+    app->cmdBarUpdate = true;
     return true;
 }
 bool Controls::Control::ShowToolTip(const ConstString& caption)
