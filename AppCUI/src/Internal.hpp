@@ -8,7 +8,7 @@
 #endif
 #include <memory>
 
-#define NEW_LINE_CODE 10
+
 
 namespace AppCUI
 {
@@ -19,6 +19,8 @@ constexpr uint32 REPAINT_STATUS_NONE             = 0;
 
 constexpr uint32 MAX_MODAL_CONTROLS_STACK   = 16;
 constexpr uint32 MAX_COMMANDBAR_SHIFTSTATES = 8;
+
+constexpr char NEW_LINE_CODE = 10;
 
 namespace Internal
 {
