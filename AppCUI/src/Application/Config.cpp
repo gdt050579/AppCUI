@@ -231,7 +231,6 @@ void Config::SetDarkTheme()
     this->ListView.FocusColor            = ColorPair{ Color::Black, Color::White };
     this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
     this->ListView.SelectionColor        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.FilterText            = ColorPair{ Color::White, Color::DarkRed };
     this->ListView.StatusColor           = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
@@ -367,8 +366,6 @@ void Config::SetDarkTheme()
     this->PropertyList.Item.Checked       = ColorPair{ Color::Aqua, Color::Transparent };
     this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::Transparent };
     this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::Transparent };
-    this->PropertyList.Filter.Text        = ColorPair{ Color::Silver, Color::DarkRed };
-    this->PropertyList.Filter.Focused     = ColorPair{ Color::Yellow, Color::DarkRed };
 
     this->CharacterTable.Focus.Border    = ColorPair{ Color::White, Color::Transparent };
     this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
@@ -386,7 +383,11 @@ void Config::SetDarkTheme()
     this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
-    this->CharacterTable.NormalValue     = ColorPair{ Color::Gray, Color::DarkRed };
-    this->CharacterTable.ActiveValue     = ColorPair{ Color::Yellow, Color::DarkRed };
+
+    //=========================================[NEW FORMAT]=================================
+    this->SearchBar.Focused  = ColorPair{ Color::White, Color::DarkRed };
+    this->SearchBar.Normal   = ColorPair{ Color::Silver, Color::DarkRed };
+    this->SearchBar.Hovered  = ColorPair{ Color::Yellow, Color::DarkRed };
+    this->SearchBar.Inactive = ColorPair{ Color::Gray, Color::DarkRed };
 }
 } // namespace AppCUI::Application

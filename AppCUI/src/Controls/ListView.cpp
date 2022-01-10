@@ -402,11 +402,11 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         // search bar
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
-            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->ListView.FilterText);
+            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
             const auto search_text = this->Filter.SearchText.ToStringView();
             if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
             {
-                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->ListView.FilterText);
+                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->SearchBar.Focused);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor((int) (3 + search_text.length()), yPoz);
             }
@@ -416,7 +416,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
                       3,
                       yPoz,
                       search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
-                      Cfg->ListView.FilterText);
+                      Cfg->SearchBar.Focused);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor(3 + LISTVIEW_SEARCH_BAR_WIDTH, yPoz);
             }

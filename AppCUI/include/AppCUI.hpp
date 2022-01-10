@@ -4564,6 +4564,13 @@ namespace Application
 
     struct Config
     {
+        // NEW structures
+        struct
+        {
+            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
+        } SearchBar;
+
+        // OLD structures
         struct
         {
             char16 DesktopFillCharacterCode;
@@ -4689,7 +4696,6 @@ namespace Application
             Graphics::ColorPair FocusColor;
             Graphics::ColorPair SelectionColor;
             Graphics::ColorPair FocusAndSelectedColor;
-            Graphics::ColorPair FilterText;
             Graphics::ColorPair StatusColor;
 
         } ListView;
@@ -4789,10 +4795,7 @@ namespace Application
             Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor, CursorReadOnly;
             Graphics::ColorPair Border;
-            struct
-            {
-                Graphics::ColorPair Text, Focused;
-            } Filter;
+
             struct
             {
                 Graphics::ColorPair Text, Stats, Arrow;
@@ -4808,7 +4811,6 @@ namespace Application
             {
                 Graphics::ColorPair Border, Text, Offset, Cursor;
             } Focus, Normal, Inactive, Hover;
-            Graphics::ColorPair NormalValue, ActiveValue;
         } CharacterTable;
         void SetDarkTheme();
     };

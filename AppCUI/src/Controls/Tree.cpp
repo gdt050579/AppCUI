@@ -537,7 +537,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
                 if (const auto searchText = cc->filter.searchText.ToStringView();
                     searchText.length() < TreeSearchBarWidth - 2)
                 {
-                    renderer.WriteSingleLineText(2, cc->Layout.Height - 1, searchText, cc->Cfg->ListView.FilterText);
+                    renderer.WriteSingleLineText(2, cc->Layout.Height - 1, searchText, cc->Cfg->SearchBar.Focused);
                     renderer.SetCursor((int) (2 + searchText.length()), cc->Layout.Height - 1);
                 }
                 else
@@ -546,7 +546,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
                           2,
                           cc->Layout.Height - 1,
                           searchText.substr(searchText.length() - TreeSearchBarWidth + 2, TreeSearchBarWidth - 2),
-                          cc->Cfg->ListView.FilterText);
+                          cc->Cfg->SearchBar.Focused);
                     renderer.SetCursor(TreeSearchBarWidth, cc->Layout.Height - 1);
                 }
             }
