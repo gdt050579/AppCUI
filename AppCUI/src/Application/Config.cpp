@@ -190,23 +190,15 @@ void Config::SetDarkTheme()
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 
-    this->ListView.Normal.LineSparators   = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Inactive.LineSparators = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Hover.LineSparators    = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Focused.LineSparators  = ColorPair{ Color::Silver, Color::Transparent };
-
     this->ListView.ColumnNormal.Text        = ColorPair{ Color::Silver, Color::Magenta };
     this->ListView.ColumnNormal.HotKey      = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.ColumnNormal.Separator   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.ColumnInactive.Text      = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.ColumnInactive.HotKey    = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.ColumnInactive.Separator = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.ColumnHover.Text         = ColorPair{ Color::Yellow, Color::Magenta };
     this->ListView.ColumnHover.HotKey       = ColorPair{ Color::Yellow, Color::Magenta };
-    this->ListView.ColumnHover.Separator    = ColorPair{ Color::Yellow, Color::Magenta };
     this->ListView.ColumnSort.Text          = ColorPair{ Color::White, Color::Pink };
     this->ListView.ColumnSort.HotKey        = ColorPair{ Color::Black, Color::Pink };
-    this->ListView.ColumnSort.Separator     = ColorPair{ Color::Gray, Color::Pink };
+
 
     this->ListView.Item.Regular      = ColorPair{ Color::Silver, Color::Transparent };
     this->ListView.Item.Highligheted = ColorPair{ Color::White, Color::Transparent };
@@ -381,5 +373,10 @@ void Config::SetDarkTheme()
     this->Border.Normal   = ColorPair{ Color::Silver, Color::Transparent };
     this->Border.Hovered  = ColorPair{ Color::Yellow, Color::Transparent };
     this->Border.Inactive = ColorPair{ Color::Gray, Color::Transparent };
+
+    this->Lines.Focused  = ColorPair{ Color::DarkGreen, Color::Transparent };
+    this->Lines.Normal   = ColorPair{ Color::DarkGreen, Color::Transparent };
+    this->Lines.Hovered  = ColorPair{ Color::Yellow, Color::Magenta };
+    this->Lines.Inactive = ColorPair{ Color::Gray, Color::Transparent };
 }
 } // namespace AppCUI::Application

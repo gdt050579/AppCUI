@@ -4568,11 +4568,8 @@ namespace Application
         struct
         {
             Graphics::ColorPair Focused, Normal, Hovered, Inactive;
-        } SearchBar;
-        struct
-        {
-            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
-        } Border;
+        } SearchBar,Border,Lines;
+
 
         // OLD structures
         struct
@@ -4681,11 +4678,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair LineSparators;
-            } Normal, Focused, Inactive, Hover;
-            struct
-            {
-                Graphics::ColorPair Text, HotKey, Separator;
+                Graphics::ColorPair Text, HotKey ;
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
