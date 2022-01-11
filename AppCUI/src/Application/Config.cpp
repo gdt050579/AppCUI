@@ -176,16 +176,12 @@ void Config::SetDarkTheme()
     this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
     this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
 
-    this->View.Normal.Border       = ColorPair{ Color::Silver, Color::Transparent };
     this->View.Normal.Hotkey       = ColorPair{ Color::Yellow, Color::Transparent };
     this->View.Normal.Text         = ColorPair{ Color::Silver, Color::Transparent };
-    this->View.Focused.Border      = ColorPair{ Color::White, Color::Transparent };
     this->View.Focused.Hotkey      = ColorPair{ Color::Yellow, Color::Transparent };
     this->View.Focused.Text        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Hover.Border        = ColorPair{ Color::Yellow, Color::Transparent };
     this->View.Hover.Hotkey        = ColorPair{ Color::Red, Color::Transparent };
     this->View.Hover.Text          = ColorPair{ Color::White, Color::Transparent };
-    this->View.Inactive.Border     = ColorPair{ Color::Gray, Color::Transparent };
     this->View.Inactive.Hotkey     = ColorPair{ Color::Gray, Color::Transparent };
     this->View.Inactive.Text       = ColorPair{ Color::Gray, Color::Transparent };
     this->View.InactiveCanvasColor = ColorPair{ Color::Black, Color::Transparent };
@@ -194,13 +190,9 @@ void Config::SetDarkTheme()
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 
-    this->ListView.Normal.Border          = ColorPair{ Color::Silver, Color::Transparent };
     this->ListView.Normal.LineSparators   = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Inactive.Border        = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Inactive.LineSparators = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Hover.Border           = ColorPair{ Color::Yellow, Color::Transparent };
     this->ListView.Hover.LineSparators    = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Focused.Border         = ColorPair{ Color::White, Color::Transparent };
     this->ListView.Focused.LineSparators  = ColorPair{ Color::Silver, Color::Transparent };
 
     this->ListView.ColumnNormal.Text        = ColorPair{ Color::Silver, Color::Magenta };
@@ -331,7 +323,6 @@ void Config::SetDarkTheme()
     this->Tree.Symbol.Collapsed     = ColorPair{ Color::Green, Color::Transparent };
     this->Tree.Symbol.Expanded      = ColorPair{ Color::Red, Color::Transparent };
     this->Tree.Symbol.SingleElement = ColorPair{ Color::Black, Color::Transparent };
-    this->Tree.Border               = ColorPair{ Color::White, Color::Transparent };
     this->Tree.Column.Text          = ColorPair{ Color::Gray, Color::Transparent };
     this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
     this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
@@ -367,19 +358,15 @@ void Config::SetDarkTheme()
     this->PropertyList.Item.Unchecked     = ColorPair{ Color::Red, Color::Transparent };
     this->PropertyList.Item.Error         = ColorPair{ Color::Red, Color::Transparent };
 
-    this->CharacterTable.Focus.Border    = ColorPair{ Color::White, Color::Transparent };
     this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
     this->CharacterTable.Focus.Offset    = ColorPair{ Color::Black, Color::Teal };
     this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Normal.Border   = ColorPair{ Color::Silver, Color::Transparent };
     this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
     this->CharacterTable.Normal.Offset   = ColorPair{ Color::Yellow, Color::Transparent };
     this->CharacterTable.Normal.Text     = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Hover.Border    = ColorPair{ Color::Yellow, Color::Transparent };
     this->CharacterTable.Hover.Cursor    = ColorPair{ Color::Yellow, Color::Transparent };
     this->CharacterTable.Hover.Offset    = ColorPair{ Color::Yellow, Color::Transparent };
     this->CharacterTable.Hover.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Inactive.Border = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
     this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
@@ -389,5 +376,10 @@ void Config::SetDarkTheme()
     this->SearchBar.Normal   = ColorPair{ Color::Silver, Color::DarkRed };
     this->SearchBar.Hovered  = ColorPair{ Color::Yellow, Color::DarkRed };
     this->SearchBar.Inactive = ColorPair{ Color::Gray, Color::DarkRed };
+
+    this->Border.Focused  = ColorPair{ Color::White, Color::Transparent };
+    this->Border.Normal   = ColorPair{ Color::Silver, Color::Transparent };
+    this->Border.Hovered  = ColorPair{ Color::Yellow, Color::Transparent };
+    this->Border.Inactive = ColorPair{ Color::Gray, Color::Transparent };
 }
 } // namespace AppCUI::Application

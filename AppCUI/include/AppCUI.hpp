@@ -4569,6 +4569,10 @@ namespace Application
         {
             Graphics::ColorPair Focused, Normal, Hovered, Inactive;
         } SearchBar;
+        struct
+        {
+            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
+        } Border;
 
         // OLD structures
         struct
@@ -4665,7 +4669,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, Text, Hotkey;
+                Graphics::ColorPair Text, Hotkey;
             } Normal, Focused, Inactive, Hover;
             Graphics::ColorPair InactiveCanvasColor;
         } View;
@@ -4677,7 +4681,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, LineSparators;
+                Graphics::ColorPair LineSparators;
             } Normal, Focused, Inactive, Hover;
             struct
             {
@@ -4751,7 +4755,6 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border;
                 struct
                 {
                     Graphics::ColorPair Normal, Focused;
@@ -4809,7 +4812,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, Text, Offset, Cursor;
+                Graphics::ColorPair Text, Offset, Cursor;
             } Focus, Normal, Inactive, Hover;
         } CharacterTable;
         void SetDarkTheme();

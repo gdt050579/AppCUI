@@ -494,7 +494,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
 
     if ((cc->treeFlags & TreeFlags::HideBorder) == TreeFlags::None)
     {
-        renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->Cfg->Tree.Border, LineType::Single);
+        renderer.DrawRectSize(0, 0, cc->Layout.Width, cc->Layout.Height, cc->Cfg->Border.Normal, LineType::Single);
     }
 
     PaintColumnHeaders(renderer);
