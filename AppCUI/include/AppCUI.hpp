@@ -3857,6 +3857,7 @@ namespace Controls
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
         uint32 GetCellsCount() const;
+        void SetGridDimensions(const Graphics::Size& dimensions);
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,

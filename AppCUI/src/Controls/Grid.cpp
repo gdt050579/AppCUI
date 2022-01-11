@@ -433,6 +433,18 @@ uint32 Grid::GetCellsCount() const
     return context->columnsNo * context->rowsNo;
 }
 
+void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    context->columnsNo = dimensions.Width;
+    context->rowsNo    = dimensions.Height;
+
+    context->UpdateGridParameters();
+
+    context->columnsSort.insert(context->columnsSort.end(), context->columnsNo, true);
+    context->cells.clear();
+}
+
 Size Grid::GetGridDimensions() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
@@ -1075,8 +1087,8 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
     // define cell dimensions
     if (dontRecomputeDimensions == false || cWidth == 0 || cHeight == 0)
     {
-        cWidth  = static_cast<uint32>(Layout.Width / columnsNo);
-        cHeight = static_cast<uint32>(Layout.Height / rowsNo);
+        cWidth  = columnsNo == 0 ? 0 : static_cast<uint32>(Layout.Width / columnsNo);
+        cHeight = rowsNo == 0 ? 0 : static_cast<uint32>(Layout.Height / rowsNo);
         if (Layout.Width != 0 || Layout.Height != 0)
         {
             cWidth  = std::max<>(cWidth + 1, minCellWidth);
@@ -1581,6 +1593,8 @@ void GridControlContext::ToggleSorting(int x, int y)
 
 void GridControlContext::SortColumn(int colIndex)
 {
+    CHECKRET(cells.size() > 0, "");
+
     // this is not that efficient - you could replace it with indexes, sort and then swap
     std::vector<GridCellData> column;
     column.reserve(rowsNo);
