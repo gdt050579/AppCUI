@@ -4630,7 +4630,6 @@ namespace Application
         } StateControl;
         struct
         {
-            Graphics::ColorPair NormalColor, ClickColor, HoverColor;
             struct
             {
                 Graphics::ColorPair Normal, Hover, Clicked;
