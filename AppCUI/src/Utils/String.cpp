@@ -21,13 +21,11 @@ const uint8 string_lowercase_table[256] = {
     220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
     242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
 };
-#define STRING_FLAG_STACK_BUFFER 0x80000000
+constexpr uint32 STRING_FLAG_STACK_BUFFER = 0x80000000;
 
-#define SNPRINTF _snprintf
-
-#define STRING_FLAG_STATIC_BUFFER    1
-#define STRING_FLAG_CONSTANT         2
-#define STRING_FLAG_STATIC_WITH_GROW 4
+constexpr uint32 STRING_FLAG_STATIC_BUFFER    = 1;
+constexpr uint32 STRING_FLAG_CONSTANT         = 2;
+constexpr uint32 STRING_FLAG_STATIC_WITH_GROW = 4;
 
 #define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
     if (textSize == 0xFFFFFFFF)                                                                                        \
@@ -57,8 +55,6 @@ const uint8 string_lowercase_table[256] = {
     {                                                                                                                  \
         CHECK(Grow(requiredSpace), returnValue, "Fail to allocate space for %d bytes", (requiredSpace));               \
     }
-
-#define MEMCOPY memcpy
 
 char tempCharForReferenceReturn;
 
@@ -94,7 +90,7 @@ bool String::Add(
 
     if (sourceSize > 0)
     {
-        MEMCOPY(destination + destinationSize, source, sourceSize);
+        memcpy(destination + destinationSize, source, sourceSize);
     }
     destination[sourceSize + destinationSize] = 0;
     if (resultedDestinationSize)
@@ -112,7 +108,7 @@ bool String::Set(
 
     if (sourceSize > 0)
     {
-        MEMCOPY(destination, source, sourceSize);
+        memcpy(destination, source, sourceSize);
     }
     destination[sourceSize] = 0;
     if (resultedDestinationSize)
@@ -318,7 +314,7 @@ String::String(const String& s)
     {
         if (s.Text)
         {
-            MEMCOPY(this->Text, s.Text, s.Size + 1);
+            memcpy(this->Text, s.Text, s.Size + 1);
             this->Size = s.Size;
         }
     }
@@ -361,7 +357,7 @@ bool String::Create(const char* text)
     CHECK(text, false, "Expecting a non-null string !");
     uint32 len = String::Len(text);
     CHECK(Create(len + 1), false, "Fail to create string buffer with len: %d", len);
-    MEMCOPY(this->Text, text, len + 1);
+    memcpy(this->Text, text, len + 1);
     Size            = len + 1;
     this->Text[len] = 0;
     return true;
@@ -417,7 +413,7 @@ bool String::Grow(uint32 newSize)
     CHECK(temp, false, "Failed to allocate: %d bytes", newSize);
     if (Text)
     {
-        MEMCOPY(temp, Text, Size + 1);
+        memcpy(temp, Text, Size + 1);
         if ((Allocated & STRING_FLAG_STACK_BUFFER) == 0)
             delete Text;
     }
@@ -432,7 +428,7 @@ bool String::Add(const char* text, uint32 txSize)
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
     VALIDATE_ALLOCATED_SPACE(this->Size + txSize + 1, false);
-    MEMCOPY(this->Text + this->Size, text, txSize);
+    memcpy(this->Text + this->Size, text, txSize);
     this->Size += txSize;
     this->Text[this->Size] = 0;
     return true;
@@ -483,7 +479,7 @@ bool String::Set(const char* text, uint32 txSize)
     CHECK(text, false, "Expecting a non-null parameter !");
     COMPUTE_TEXT_SIZE(text, txSize);
     VALIDATE_ALLOCATED_SPACE(txSize + 1, false);
-    MEMCOPY(this->Text, text, txSize);
+    memcpy(this->Text, text, txSize);
     this->Size             = txSize;
     this->Text[this->Size] = 0;
     return true;
