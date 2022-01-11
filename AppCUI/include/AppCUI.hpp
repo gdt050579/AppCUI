@@ -4790,7 +4790,6 @@ namespace Application
         {
             Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor, CursorReadOnly;
-            Graphics::ColorPair Border;
 
             struct
             {
@@ -4798,7 +4797,7 @@ namespace Application
             } Category;
             struct
             {
-                Graphics::ColorPair Text, LineSeparator, Value, ReadOnly, Checked, Unchecked, Error;
+                Graphics::ColorPair Text, Value, ReadOnly, Checked, Unchecked, Error;
             } Item;
         } PropertyList;
         struct

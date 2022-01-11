@@ -1028,8 +1028,18 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         params.Color = Colors.Item.Text;
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
-        auto col = (this->separatorStatus == PropertySeparatorStatus::None) ? Colors.Item.LineSeparator
-                                                                            : Colors.Item.Checked;
+
+        ColorPair col;
+        if (this->separatorStatus == PropertySeparatorStatus::None)
+        {
+            col = Focused ? Cfg->Lines.Focused : Cfg->Lines.Normal;
+            if ((Flags & GATTR_ENABLE) == 0)
+                col = Cfg->Lines.Inactive;
+        }
+        else
+        {
+            col = Cfg->Lines.Hovered;
+        }
         renderer.WriteSpecialCharacter(
               x + extraSpace + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, col);
     }
@@ -1262,7 +1272,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     uint32 value;
     int32 y             = 0;
     int32 max_y         = this->Layout.Height;
-    auto c              = this->Cfg->PropertyList.Border;
+    //auto c              = this->Cfg->PropertyList.Border;
     bool readOnlyStatus = false;
 
     if (this->propertyNameWidth == 0)
@@ -1270,27 +1280,33 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
 
     if ((this->Flags & GATTR_ENABLE) == 0)
     {
-        c                               = this->Cfg->PropertyList.Inactive;
-        this->Colors.Category.Arrow     = c;
-        this->Colors.Category.Stats     = c;
-        this->Colors.Category.Text      = c;
-        this->Colors.Item.LineSeparator = c;
-        this->Colors.Item.ReadOnly      = c;
-        this->Colors.Item.Text          = c;
-        this->Colors.Item.Value         = c;
-        this->Colors.Item.Checked       = c;
-        this->Colors.Item.Unchecked     = c;
-        this->Colors.Item.Error         = c;
+        this->Colors.Category.Arrow     = this->Cfg->PropertyList.Inactive;
+        this->Colors.Category.Stats     = this->Cfg->PropertyList.Inactive;
+        this->Colors.Category.Text      = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.ReadOnly      = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.Text          = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.Value         = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.Checked       = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.Unchecked     = this->Cfg->PropertyList.Inactive;
+        this->Colors.Item.Error         = this->Cfg->PropertyList.Inactive;
     }
     else
     {
         this->Colors.Category = this->Cfg->PropertyList.Category;
         this->Colors.Item     = this->Cfg->PropertyList.Item;
     }
-    renderer.Clear(' ', c);
+    renderer.Clear(' ', NoColorPair);
     if (this->hasBorder)
     {
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, c, LineType::Single);
+        auto colB = this->Cfg->Border.Normal;
+
+        if (!(this->Flags & GATTR_ENABLE))
+            colB = this->Cfg->Border.Inactive;
+        else if (this->Focused)
+            colB = this->Cfg->Border.Focused;
+        else if (this->MouseIsOver)
+            colB = this->Cfg->Border.Hovered;
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
         if ((this->Focused) && (this->Layout.Width > 9))
             DrawFilterBar(renderer);
         y++;
