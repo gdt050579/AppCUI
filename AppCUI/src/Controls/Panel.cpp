@@ -25,7 +25,7 @@ void Panel::Paint(Graphics::Renderer& renderer)
     if (Members->Flags & PANEL_ATTR_BORDER)
     {
         renderer.DrawRectSize(
-              0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Panel.NormalColor, LineType::Single);
+              0, 0, Members->Layout.Width, Members->Layout.Height, Members->Cfg->Border.Normal, LineType::Single);
         if (Members->Layout.Width > 6)
         {
             WriteTextParams params(

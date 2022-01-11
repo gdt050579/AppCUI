@@ -4565,6 +4565,17 @@ namespace Application
 
     struct Config
     {
+        // NEW structures
+        struct
+        {
+            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
+        } SearchBar;
+        struct
+        {
+            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
+        } Border;
+
+        // OLD structures
         struct
         {
             char16 DesktopFillCharacterCode;
@@ -4659,7 +4670,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, Text, Hotkey;
+                Graphics::ColorPair Text, Hotkey;
             } Normal, Focused, Inactive, Hover;
             Graphics::ColorPair InactiveCanvasColor;
         } View;
@@ -4671,7 +4682,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, LineSparators;
+                Graphics::ColorPair LineSparators;
             } Normal, Focused, Inactive, Hover;
             struct
             {
@@ -4690,7 +4701,6 @@ namespace Application
             Graphics::ColorPair FocusColor;
             Graphics::ColorPair SelectionColor;
             Graphics::ColorPair FocusAndSelectedColor;
-            Graphics::ColorPair FilterText;
             Graphics::ColorPair StatusColor;
 
         } ListView;
@@ -4746,7 +4756,6 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border;
                 struct
                 {
                     Graphics::ColorPair Normal, Focused;
@@ -4790,10 +4799,7 @@ namespace Application
             Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor, CursorReadOnly;
             Graphics::ColorPair Border;
-            struct
-            {
-                Graphics::ColorPair Text, Focused;
-            } Filter;
+
             struct
             {
                 Graphics::ColorPair Text, Stats, Arrow;
@@ -4807,9 +4813,8 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Border, Text, Offset, Cursor;
+                Graphics::ColorPair Text, Offset, Cursor;
             } Focus, Normal, Inactive, Hover;
-            Graphics::ColorPair NormalValue, ActiveValue;
         } CharacterTable;
         void SetDarkTheme();
     };

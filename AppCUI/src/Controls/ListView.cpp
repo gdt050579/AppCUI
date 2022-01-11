@@ -252,9 +252,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     if (item->Type == ListViewItemType::Category)
     {
         if (Focused)
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->ListView.Focused.Border, true);
+            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Focused, true);
         else
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->ListView.Normal.Border, true);
+            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Normal, true);
         params.Align = TextAlignament::Center;
         params.Width = this->Layout.Width - 2;
         params.X     = 1;
@@ -359,16 +359,27 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y       = 1;
     auto* lvCol = &this->Cfg->ListView.Normal;
+    auto colB   = this->Cfg->Border.Normal;
+
     if (!(this->Flags & GATTR_ENABLE))
+    {
         lvCol = &this->Cfg->ListView.Inactive;
+        colB  = this->Cfg->Border.Inactive;
+    }
     else if (this->Focused)
+    {
         lvCol = &this->Cfg->ListView.Focused;
+        colB  = this->Cfg->Border.Focused;
+    }
     else if (this->MouseIsOver)
+    {
         lvCol = &this->Cfg->ListView.Hover;
+        colB  = this->Cfg->Border.Hovered;
+    }
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, lvCol->Border, LineType::Single);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
     }
     renderer.SetClipMargins(1, 1, 1, 1);
 
@@ -402,11 +413,11 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         // search bar
         if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
         {
-            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->ListView.FilterText);
+            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
             const auto search_text = this->Filter.SearchText.ToStringView();
             if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
             {
-                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->ListView.FilterText);
+                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->SearchBar.Focused);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor((int) (3 + search_text.length()), yPoz);
             }
@@ -416,7 +427,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
                       3,
                       yPoz,
                       search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
-                      Cfg->ListView.FilterText);
+                      Cfg->SearchBar.Focused);
                 if (Filter.FilterModeEnabled)
                     renderer.SetCursor(3 + LISTVIEW_SEARCH_BAR_WIDTH, yPoz);
             }

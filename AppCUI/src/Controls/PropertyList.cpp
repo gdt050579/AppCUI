@@ -1237,8 +1237,8 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
 void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 {
     auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
-    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', Cfg->PropertyList.Filter.Text);
-    auto col = this->filteredMode ? Cfg->PropertyList.Filter.Focused : Cfg->PropertyList.Filter.Text;
+    auto col         = this->filteredMode ? Cfg->SearchBar.Focused : Cfg->SearchBar.Normal;
+    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', col);
 
     if (this->filterText.Len() <= filterWidth)
     {

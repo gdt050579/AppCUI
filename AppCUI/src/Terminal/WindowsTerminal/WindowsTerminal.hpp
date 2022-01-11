@@ -6,6 +6,7 @@ namespace AppCUI
 {
 namespace Internal
 {
+    constexpr uint32 KEYTRANSLATION_MATRIX_SIZE = 256;
     class WindowsTerminal : public AbstractTerminal
     {
         HANDLE hstdOut;

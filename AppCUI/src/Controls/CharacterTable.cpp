@@ -196,31 +196,40 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
 {
     NumericFormatter n;
     auto* col = &this->Cfg->CharacterTable.Normal;
+    auto colB = this->Cfg->Border.Normal;
 
     if (!(this->Flags & GATTR_ENABLE))
-        col = &this->Cfg->CharacterTable.Inactive;
+    {
+        col  = &this->Cfg->CharacterTable.Inactive;
+        colB = this->Cfg->Border.Inactive;
+    }
     else if (this->Focused)
-        col = &this->Cfg->CharacterTable.Focus;
+    {
+        col  = &this->Cfg->CharacterTable.Focus;
+        colB = this->Cfg->Border.Focused;
+    }
     else if (this->MouseIsOver)
-        col = &this->Cfg->CharacterTable.Hover;
+    {
+        col  = &this->Cfg->CharacterTable.Hover;
+        colB = this->Cfg->Border.Hovered;
+    }
 
-    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, LineType::Single);
-    renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, col->Border, false);
+    renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
+    renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, colB, false);
     renderer.FillRect(1, 1, OFFSET_X_RIGHT_MARGIN - 1, this->Layout.Height - 2, ' ', col->Offset);
     if (Focused)
     {
-        renderer.WriteSingleLineText(1, this->Layout.Height - 1, " 0x     ", Cfg->CharacterTable.NormalValue);
+        renderer.WriteSingleLineText(1, this->Layout.Height - 1, " 0x     ", Cfg->SearchBar.Inactive);
         auto v = n.ToHex(this->character);
         if (editMode)
         {
             renderer.WriteSingleLineText(
-                  CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->CharacterTable.ActiveValue);
+                  CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->SearchBar.Focused);
             renderer.SetCursor(CHARACTER_HEX_VALUE_OFFSET + (int32) v.length(), this->Layout.Height - 1);
         }
         else
         {
-            renderer.WriteSingleLineText(
-                  CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->CharacterTable.NormalValue);
+            renderer.WriteSingleLineText(CHARACTER_HEX_VALUE_OFFSET, this->Layout.Height - 1, v, Cfg->SearchBar.Normal);
         }
     }
     renderer.SetClipMargins(1, 1, 1, 1);

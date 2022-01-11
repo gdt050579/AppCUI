@@ -2,13 +2,22 @@
 
 #include "AppCUI.hpp"
 #ifdef _WIN32
-#    include "OS/Windows/OSDefinitions.hpp"
+#    include <windows.h>
+#    include <Shlobj.h>
 #else
-#    include "OS/Unix/OSDefinitions.hpp"
+#    include <iostream>
+#    include <string.h>
+#    include <unistd.h>
+#    include <sys/ioctl.h>
+#    include <stdlib.h>
+#    include <cstdlib>
+#    include <stdio.h>
+#    include <fcntl.h>
+#    include <errno.h>
+#    include <sys/stat.h>
+
 #endif
 #include <memory>
-
-#define NEW_LINE_CODE 10
 
 namespace AppCUI
 {
@@ -19,6 +28,8 @@ constexpr uint32 REPAINT_STATUS_NONE             = 0;
 
 constexpr uint32 MAX_MODAL_CONTROLS_STACK   = 16;
 constexpr uint32 MAX_COMMANDBAR_SHIFTSTATES = 8;
+
+constexpr char NEW_LINE_CODE = 10;
 
 namespace Internal
 {
