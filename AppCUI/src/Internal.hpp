@@ -2,13 +2,22 @@
 
 #include "AppCUI.hpp"
 #ifdef _WIN32
-#    include "OS/Windows/OSDefinitions.hpp"
+#    include <windows.h>
+#    include <Shlobj.h>
 #else
-#    include "OS/Unix/OSDefinitions.hpp"
+#    include <iostream>
+#    include <string.h>
+#    include <unistd.h>
+#    include <sys/ioctl.h>
+#    include <stdlib.h>
+#    include <cstdlib>
+#    include <stdio.h>
+#    include <fcntl.h>
+#    include <errno.h>
+#    include <sys/stat.h>
+
 #endif
 #include <memory>
-
-
 
 namespace AppCUI
 {
