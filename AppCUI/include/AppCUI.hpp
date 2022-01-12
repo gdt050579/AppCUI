@@ -3857,6 +3857,7 @@ namespace Controls
         bool OnEvent(Controls::Reference<Control>, Event eventType, int controlID) override;
 
         uint32 GetCellsCount() const;
+        void SetGridDimensions(const Graphics::Size& dimensions);
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,
@@ -3877,7 +3878,7 @@ namespace Controls
         AppCUI::Graphics::Point GetHoveredLocation() const;
         AppCUI::Graphics::Point GetSelectionLocationsStart() const;
         AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
-        void ResetHeaderValues();
+        void SetDefaultHeaderValues();
         void ToggleHorizontalLines();
         void ToggleVerticalLines();
         void Sort();
