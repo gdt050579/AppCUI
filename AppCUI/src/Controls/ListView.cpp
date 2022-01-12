@@ -114,7 +114,7 @@ void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Rendere
         x += column->Width;
         if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) ||
             (tr == Columns.HoverSeparatorColumnIndex))
-            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->ListView.ColumnHover.Separator);
+            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->Lines.Hovered);
         x++;
     }
 }
@@ -124,6 +124,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
     if (!(this->Flags & GATTR_ENABLE))
         defaultCol = &this->Cfg->ListView.ColumnInactive;
     auto* lvCol = defaultCol;
+    
 
     renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
 
@@ -178,7 +179,12 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            renderer.DrawVerticalLine(x, 1, Layout.Height, defaultCol->Separator);
+            auto lineCol = Cfg->Lines.Normal;
+            if ((Flags & GATTR_ENABLE) == 0)
+                lineCol = Cfg->Lines.Inactive;
+            else if (Focused)
+                lineCol = Cfg->Lines.Focused;
+            renderer.DrawVerticalLine(x, 1, Layout.Height, lineCol);
         }
         x++;
     }
@@ -336,9 +342,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
     {
         y++;
-        ColorPair col = this->Cfg->ListView.ColumnNormal.Separator;
+        ColorPair col = this->Cfg->Lines.Normal;
         if (!(this->Flags & GATTR_ENABLE))
-            col = this->Cfg->ListView.ColumnInactive.Separator;
+            col = this->Cfg->Lines.Inactive;
+        else if (Focused)
+            col = this->Cfg->Lines.Focused;
         renderer.DrawHorizontalLine(1, y, Layout.Width - 2, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
@@ -358,22 +366,18 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y       = 1;
-    auto* lvCol = &this->Cfg->ListView.Normal;
     auto colB   = this->Cfg->Border.Normal;
 
     if (!(this->Flags & GATTR_ENABLE))
     {
-        lvCol = &this->Cfg->ListView.Inactive;
         colB  = this->Cfg->Border.Inactive;
     }
     else if (this->Focused)
     {
-        lvCol = &this->Cfg->ListView.Focused;
         colB  = this->Cfg->Border.Focused;
     }
     else if (this->MouseIsOver)
     {
-        lvCol = &this->Cfg->ListView.Hover;
         colB  = this->Cfg->Border.Hovered;
     }
 

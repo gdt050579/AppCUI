@@ -152,7 +152,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
 
     ColorPair c1  = Members->Cfg->Splitter.Buttons.Normal;
     ColorPair c2  = Members->Cfg->Splitter.Buttons.Normal;
-    ColorPair col = Members->Cfg->Splitter.NormalColor;
+    ColorPair col = Members->Cfg->Lines.Normal;
     uint32 poz;
 
     switch (Members->mouseStatus)
@@ -170,12 +170,13 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         c2 = Members->Cfg->Splitter.Buttons.Hover;
         break;
     case SplitterMouseStatus::OnBar:
-        col = Members->Cfg->Splitter.HoverColor;
-        break;
     case SplitterMouseStatus::Drag:
-        col = Members->Cfg->Splitter.ClickColor;
+        col = Members->Cfg->Lines.Hovered;
         break;
     }
+
+    if (!(Members->Flags & GATTR_ENABLE))
+        col = Members->Cfg->Lines.Inactive;
 
     if ((Members->Flags & GATTR_VERTICAL) != 0)
     {
