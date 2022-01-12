@@ -582,7 +582,7 @@ AppCUI::Graphics::Point Controls::Grid::GetSelectionLocationsEnd() const
     return { static_cast<int32>(cell / context->columnsNo), static_cast<int32>(cell % context->columnsNo) };
 }
 
-void Controls::Grid::ResetHeaderValues()
+void Controls::Grid::SetDefaultHeaderValues()
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
     context->SetDefaultHeaderValues();

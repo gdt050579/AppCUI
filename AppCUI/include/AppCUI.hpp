@@ -3878,7 +3878,7 @@ namespace Controls
         AppCUI::Graphics::Point GetHoveredLocation() const;
         AppCUI::Graphics::Point GetSelectionLocationsStart() const;
         AppCUI::Graphics::Point GetSelectionLocationsEnd() const;
-        void ResetHeaderValues();
+        void SetDefaultHeaderValues();
         void ToggleHorizontalLines();
         void ToggleVerticalLines();
         void Sort();
