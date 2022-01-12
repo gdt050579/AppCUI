@@ -1,8 +1,6 @@
 #include "ControlContext.hpp"
 #include "Internal.hpp"
 
-
-
 #define CLEAR_SELECTION                                                                                                \
     if ((!selected) && (Selection.Start != INVALID_SELECTION))                                                         \
     {                                                                                                                  \
@@ -22,7 +20,7 @@
 namespace AppCUI
 {
 using namespace OS;
-constexpr uint32 INVALID_SELECTION = 0xFFFFFFFFU;
+constexpr uint32 INVALID_SELECTION  = 0xFFFFFFFFU;
 constexpr uint32 LINE_NUMBERS_WIDTH = 4U;
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
@@ -358,20 +356,31 @@ void TextAreaControlContext::DrawLineNumber(
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
-    auto col = &this->Cfg->Text.Normal;
+    auto col  = &this->Cfg->Text.Normal;
+    auto colB = this->Cfg->Border.Normal;
+
     if ((this->Flags & GATTR_ENABLE) == 0)
+    {
         col = &this->Cfg->Text.Inactive;
+        colB = this->Cfg->Border.Inactive;
+    }
     else if (this->Focused)
+    {
         col = &this->Cfg->Text.Focus;
+        colB = this->Cfg->Border.Focused;
+    }
     else if (this->MouseIsOver)
+    {
         col = &this->Cfg->Text.Hover;
+        colB = this->Cfg->Border.Hovered;
+    }
 
     renderer.Clear(' ', col->Text);
     int lm, tm, rm, bm;
     lm = tm = rm = bm = 0;
     if (Flags & (uint32) TextAreaFlags::Border)
     {
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, col->Border, LineType::Single);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
         lm = tm = rm = bm = 1;
         renderer.SetClipMargins(1, 1, 1, 1);
     }
@@ -394,7 +403,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
             renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', col->LineNumbers);
         }
         lm += LINE_NUMBERS_WIDTH;
-        renderer.DrawVerticalLine(lm - 1, 0, View.VisibleRowsCount, col->Border);
+        renderer.DrawVerticalLine(lm - 1, 0, View.VisibleRowsCount, colB);
     }
     renderer.SetClipMargins(lm, tm, rm, bm);
     for (uint32 tr = 0; tr < View.VisibleLinesCount; tr++)
@@ -573,8 +582,8 @@ void TextAreaControlContext::MoveToPreviousWord(bool selected)
         return;
     if (View.CurrentPosition <= start)
         return;
-    auto startPoz              = View.CurrentPosition - 1;
-    auto currentChar           = this->Text.GetBuffer()[startPoz];
+    auto startPoz        = View.CurrentPosition - 1;
+    auto currentChar     = this->Text.GetBuffer()[startPoz];
     optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
@@ -611,7 +620,7 @@ void TextAreaControlContext::MoveToNextWord(bool selected)
     CLEAR_SELECTION;
     if ((this->Text.Len() == 0) || (View.CurrentPosition >= this->Text.Len()))
         return;
-    auto currentChar           = this->Text.GetBuffer()[View.CurrentPosition];
+    auto currentChar     = this->Text.GetBuffer()[View.CurrentPosition];
     optional<uint32> res = std::nullopt;
     if ((currentChar == ' ') || (currentChar == '\t'))
     {

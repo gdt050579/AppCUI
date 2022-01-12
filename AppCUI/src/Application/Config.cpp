@@ -139,19 +139,15 @@ void Config::SetDarkTheme()
 
     this->Text.SelectionColor             = ColorPair{ Color::Yellow, Color::Magenta };
     this->Text.Normal.Text                = ColorPair{ Color::Silver, Color::Black };
-    this->Text.Normal.Border              = ColorPair{ Color::Silver, Color::Transparent };
     this->Text.Normal.LineNumbers         = ColorPair{ Color::Gray, Color::Black };
     this->Text.Normal.CurrentLineNumber   = ColorPair{ Color::Silver, Color::Black };
     this->Text.Hover.Text                 = ColorPair{ Color::Yellow, Color::Black };
-    this->Text.Hover.Border               = ColorPair{ Color::Yellow, Color::Transparent };
     this->Text.Hover.LineNumbers          = ColorPair{ Color::Gray, Color::Black };
     this->Text.Hover.CurrentLineNumber    = ColorPair{ Color::Silver, Color::Black };
     this->Text.Inactive.Text              = ColorPair{ Color::Gray, Color::Transparent };
-    this->Text.Inactive.Border            = ColorPair{ Color::Gray, Color::Transparent };
     this->Text.Inactive.LineNumbers       = ColorPair{ Color::Gray, Color::Transparent };
     this->Text.Inactive.CurrentLineNumber = ColorPair{ Color::Gray, Color::Transparent };
     this->Text.Focus.Text                 = ColorPair{ Color::White, Color::Black };
-    this->Text.Focus.Border               = ColorPair{ Color::Gray, Color::Transparent };
     this->Text.Focus.LineNumbers          = ColorPair{ Color::Silver, Color::Teal };
     this->Text.Focus.CurrentLineNumber    = ColorPair{ Color::Yellow, Color::Magenta };
 

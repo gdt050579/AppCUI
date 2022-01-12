@@ -4645,7 +4645,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Text, Border, LineNumbers, CurrentLineNumber;
+                Graphics::ColorPair Text, LineNumbers, CurrentLineNumber;
             } Normal, Focus, Inactive, Hover;
             Graphics::ColorPair SelectionColor;
         } Text;
