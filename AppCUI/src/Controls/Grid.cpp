@@ -1593,7 +1593,10 @@ void GridControlContext::ToggleSorting(int x, int y)
 
 void GridControlContext::SortColumn(int colIndex)
 {
-    CHECKRET(cells.size() > 0, "");
+    if (cells.size() == 0)
+    {
+        return;
+    }
 
     // this is not that efficient - you could replace it with indexes, sort and then swap
     std::vector<GridCellData> column;
