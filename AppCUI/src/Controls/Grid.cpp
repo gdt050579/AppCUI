@@ -1593,7 +1593,7 @@ void GridControlContext::ToggleSorting(int x, int y)
 
 void GridControlContext::SortColumn(int colIndex)
 {
-    if (cells.size() == 0)
+    if (cells.empty())
     {
         return;
     }
