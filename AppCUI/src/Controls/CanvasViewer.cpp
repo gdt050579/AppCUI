@@ -50,26 +50,23 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     auto* col = &Members->Cfg->View.Normal;
-    auto colB = Members->Cfg->Border.Normal;
     if (!this->IsEnabled())
     {
         col  = &Members->Cfg->View.Inactive;
-        colB = Members->Cfg->Border.Inactive;
     }
     else if (Members->Focused)
     {
         col  = &Members->Cfg->View.Focused;
-        colB = Members->Cfg->Border.Focused;
     }
     else if (Members->MouseIsOver)
     {
         col  = &Members->Cfg->View.Hover;
-        colB = Members->Cfg->Border.Hovered;
     }
 
     if (Members->Flags & ((uint32) ViewerFlags::Border))
     {
-        renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colB, LineType::Single);
+        renderer.DrawRectSize(
+              0, 0, Members->Layout.Width, Members->Layout.Height, Members->GetStateColor(Members->Cfg->Border), LineType::Single);
         if (Members->Layout.Width > 6)
         {
             WriteTextParams params(
