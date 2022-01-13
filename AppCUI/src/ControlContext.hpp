@@ -133,7 +133,7 @@ struct ControlContext
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState) const
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState) 
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
@@ -144,7 +144,7 @@ struct ControlContext
         else
             return colorState.Normal;        
     }
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered) const
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered) 
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
@@ -155,7 +155,7 @@ struct ControlContext
         else
             return colorState.Normal;
     }
-    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState) const
+    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState) 
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
