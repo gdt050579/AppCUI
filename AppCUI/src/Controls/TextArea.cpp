@@ -356,23 +356,20 @@ void TextAreaControlContext::DrawLineNumber(
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
-    auto col  = &this->Cfg->Text.Normal;
-    auto colB = this->Cfg->Border.Normal;
+    auto col        = &this->Cfg->Text.Normal;
+    const auto colB = this->GetStateColor(Cfg->Border);
 
     if ((this->Flags & GATTR_ENABLE) == 0)
     {
         col = &this->Cfg->Text.Inactive;
-        colB = this->Cfg->Border.Inactive;
     }
     else if (this->Focused)
     {
         col = &this->Cfg->Text.Focus;
-        colB = this->Cfg->Border.Focused;
     }
     else if (this->MouseIsOver)
     {
         col = &this->Cfg->Text.Hover;
-        colB = this->Cfg->Border.Hovered;
     }
 
     renderer.Clear(' ', col->Text);
