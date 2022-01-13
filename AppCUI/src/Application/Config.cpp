@@ -137,29 +137,6 @@ void Config::SetDarkTheme()
     this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Panel.Text        = ColorPair{ Color::White, Color::Transparent };
 
-    this->Text.SelectionColor             = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Text.Normal.Text                = ColorPair{ Color::Silver, Color::Black };
-    this->Text.Normal.LineNumbers         = ColorPair{ Color::Gray, Color::Black };
-    this->Text.Normal.CurrentLineNumber   = ColorPair{ Color::Silver, Color::Black };
-    this->Text.Hover.Text                 = ColorPair{ Color::Yellow, Color::Black };
-    this->Text.Hover.LineNumbers          = ColorPair{ Color::Gray, Color::Black };
-    this->Text.Hover.CurrentLineNumber    = ColorPair{ Color::Silver, Color::Black };
-    this->Text.Inactive.Text              = ColorPair{ Color::Gray, Color::Transparent };
-    this->Text.Inactive.LineNumbers       = ColorPair{ Color::Gray, Color::Transparent };
-    this->Text.Inactive.CurrentLineNumber = ColorPair{ Color::Gray, Color::Transparent };
-    this->Text.Focus.Text                 = ColorPair{ Color::White, Color::Black };
-    this->Text.Focus.LineNumbers          = ColorPair{ Color::Silver, Color::Teal };
-    this->Text.Focus.CurrentLineNumber    = ColorPair{ Color::Yellow, Color::Magenta };
-
-    this->Password.Normal.Text          = ColorPair{ Color::Silver, Color::Black };
-    this->Password.Normal.VisibleSign   = ColorPair{ Color::Silver, Color::Black };
-    this->Password.Hover.Text           = ColorPair{ Color::Yellow, Color::Black };
-    this->Password.Hover.VisibleSign    = ColorPair{ Color::Yellow, Color::Black };
-    this->Password.Inactive.Text        = ColorPair{ Color::Gray, Color::Transparent };
-    this->Password.Inactive.VisibleSign = ColorPair{ Color::Gray, Color::Transparent };
-    this->Password.Focus.Text           = ColorPair{ Color::White, Color::Black };
-    this->Password.Focus.VisibleSign    = ColorPair{ Color::Green, Color::Black };
-
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
     this->Tab.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
@@ -362,9 +339,30 @@ void Config::SetDarkTheme()
     this->Border.Set(Color::White, Color::Silver, Color::Gray, Color::Yellow, Color::Transparent);
 
     this->Lines.Set(
-          ColorPair{ Color::DarkGreen, Color::Transparent },
-          ColorPair{ Color::DarkGreen, Color::Transparent },
-          ColorPair{ Color::Gray, Color::Transparent },
-          ColorPair{ Color::Yellow, Color::Magenta });
+          { Color::DarkGreen, Color::Transparent },
+          { Color::DarkGreen, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Magenta });
+
+    this->Text.Set(
+          { Color::White, Color::Black },
+          { Color::Silver, Color::Black },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Black });
+
+    this->LineMarker.Set(
+          { Color::White, Color::DarkRed },
+          { Color::Silver, Color::Black },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Black });
+
+    this->TextSelectionColor     = { Color::Yellow, Color::Magenta };
+    this->TextSelectedLineMarker = { Color::Yellow, Color::Magenta };
+
+    this->PasswordMarker.Set(
+          { Color::Aqua, Color::Black },
+          { Color::Silver, Color::Black },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Black });
 }
 } // namespace AppCUI::Application

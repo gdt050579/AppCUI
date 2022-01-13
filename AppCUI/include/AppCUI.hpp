@@ -4620,7 +4620,8 @@ namespace Application
     struct Config
     {
         // NEW structures
-        Graphics::ObjectColorState SearchBar, Border, Lines;
+        Graphics::ObjectColorState SearchBar, Border, Lines, Text, LineMarker, PasswordMarker;
+        Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
 
         // OLD structures
         struct
@@ -4691,21 +4692,8 @@ namespace Application
         {
             Graphics::ColorPair NormalColor, Text;
         } Panel;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, LineNumbers, CurrentLineNumber;
-            } Normal, Focus, Inactive, Hover;
-            Graphics::ColorPair SelectionColor;
-        } Text;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, VisibleSign;
-            } Normal, Focus, Inactive, Hover;
-        } Password;
+
+
         struct
         {
             Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,

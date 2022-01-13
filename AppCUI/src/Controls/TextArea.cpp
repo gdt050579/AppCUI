@@ -300,7 +300,7 @@ void TextAreaControlContext::DrawLine(
             if (poz == View.CurrentPosition)
                 cursorPoz = pozX;
             if ((poz >= Selection.Start) && (poz < Selection.End))
-                col = Cfg->Text.SelectionColor;
+                col = Cfg->TextSelectionColor;
             else if (useHighlighing)
                 col = ch->Color;
             else
@@ -356,23 +356,11 @@ void TextAreaControlContext::DrawLineNumber(
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
-    auto col        = &this->Cfg->Text.Normal;
-    const auto colB = this->GetStateColor(Cfg->Border);
+    const auto colTxt = this->GetStateColor(Cfg->Text);
+    const auto colB   = this->GetStateColor(Cfg->Border);
+    const auto colLn  = this->GetStateColor(Cfg->LineMarker);
 
-    if ((this->Flags & GATTR_ENABLE) == 0)
-    {
-        col = &this->Cfg->Text.Inactive;
-    }
-    else if (this->Focused)
-    {
-        col = &this->Cfg->Text.Focus;
-    }
-    else if (this->MouseIsOver)
-    {
-        col = &this->Cfg->Text.Hover;
-    }
-
-    renderer.Clear(' ', col->Text);
+    renderer.Clear(' ', colTxt);
     int lm, tm, rm, bm;
     lm = tm = rm = bm = 0;
     if (Flags & (uint32) TextAreaFlags::Border)
@@ -389,15 +377,15 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
         while ((lnIndex < lnCount) && (tr < View.VisibleLinesCount))
         {
             if (lnIndex == View.CurrentLine)
-                DrawLineNumber(renderer, lnIndex, tr, col->CurrentLineNumber);
+                DrawLineNumber(renderer, lnIndex, tr, Cfg->TextSelectionColor);
             else
-                DrawLineNumber(renderer, lnIndex, tr, col->LineNumbers);
+                DrawLineNumber(renderer, lnIndex, tr, colLn);
             lnIndex++;
             tr++;
         }
         if (tr < View.VisibleLinesCount)
         {
-            renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', col->LineNumbers);
+            renderer.FillRectSize(0, tr, LINE_NUMBERS_WIDTH - 1, View.VisibleLinesCount - tr, ' ', colLn);
         }
         lm += LINE_NUMBERS_WIDTH;
         renderer.DrawVerticalLine(lm - 1, 0, View.VisibleRowsCount, colB);
@@ -405,7 +393,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
     renderer.SetClipMargins(lm, tm, rm, bm);
     for (uint32 tr = 0; tr < View.VisibleLinesCount; tr++)
     {
-        DrawLine(renderer, tr + View.TopLine, lm, tr + tm, col->Text);
+        DrawLine(renderer, tr + View.TopLine, lm, tr + tm, colTxt);
     }
 }
 void TextAreaControlContext::MoveLeft(bool selected)
