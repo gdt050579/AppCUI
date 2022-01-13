@@ -4734,10 +4734,7 @@ namespace Application
             Graphics::ColorPair Title, TerminateMessage, Text, Time, Percentage;
             Graphics::ColorPair EmptyProgressBar, FullProgressBar;
         } ProgressStatus;
-        struct
-        {
-            Graphics::ColorPair Selection, HoverOveItem;
-        } ComboBox;
+
         struct
         {
             struct

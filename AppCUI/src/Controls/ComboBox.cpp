@@ -573,10 +573,10 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                 // cursor or selection
                 if (i.Index == Members->CurentItemIndex)
                     renderer.FillHorizontalLine(
-                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.Selection);
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Activ.Selected.HotKey); // a different color
                 else if (i.Index == Members->HoveredIndexItem)
                     renderer.FillHorizontalLine(
-                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->ComboBox.HoverOveItem);
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Activ.Selected.Text);
             }
         }
     }

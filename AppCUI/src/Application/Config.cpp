@@ -188,9 +188,6 @@ void Config::SetDarkTheme()
     this->ProgressStatus.Time             = ColorPair{ Color::Aqua, Color::DarkBlue };
     this->ProgressStatus.Percentage       = ColorPair{ Color::Yellow, Color::DarkBlue };
 
-    this->ComboBox.Selection       = ColorPair{ Color::White, Color::DarkBlue };
-    this->ComboBox.HoverOveItem    = ColorPair{ Color::DarkRed, Color::Silver };
-
     this->Menu.Activ.Background = ColorPair{ Color::Black, Color::White };
 
     this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
