@@ -108,15 +108,6 @@ void Config::SetDarkTheme()
     this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
     this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };
 
-    this->Button.Normal.TextColor     = ColorPair{ Color::White, Color::Gray };
-    this->Button.Normal.HotKeyColor   = ColorPair{ Color::Yellow, Color::Gray };
-    this->Button.Focused.TextColor    = ColorPair{ Color::Black, Color::White };
-    this->Button.Focused.HotKeyColor  = ColorPair{ Color::Magenta, Color::White };
-    this->Button.Inactive.TextColor   = ColorPair{ Color::Gray, Color::Black };
-    this->Button.Inactive.HotKeyColor = ColorPair{ Color::Gray, Color::Black };
-    this->Button.Hover.TextColor      = ColorPair{ Color::Black, Color::Yellow };
-    this->Button.Hover.HotKeyColor    = ColorPair{ Color::Magenta, Color::Yellow };
-
     this->StateControl.Normal.TextColor          = ColorPair{ Color::Silver, Color::Transparent };
     this->StateControl.Normal.HotKeyColor        = ColorPair{ Color::Aqua, Color::Transparent };
     this->StateControl.Normal.StateSymbolColor   = ColorPair{ Color::Green, Color::Transparent };
@@ -364,5 +355,16 @@ void Config::SetDarkTheme()
           { Color::Silver, Color::Black },
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Black });
+
+    this->Button.Set(
+          { Color::Black, Color::White },
+          { Color::White, Color::Gray },
+          { Color::Gray, Color::Black },
+          { Color::Black, Color::Yellow });
+    this->ButtonHotKey.Set(
+          { Color::Magenta, Color::White },
+          { Color::Yellow, Color::Gray },
+          { Color::Gray, Color::Black },
+          { Color::Magenta, Color::Yellow });
 }
 } // namespace AppCUI::Application

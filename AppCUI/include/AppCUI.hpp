@@ -4622,6 +4622,7 @@ namespace Application
         // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Text, LineMarker, PasswordMarker;
         Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
+        Graphics::ObjectColorState Button, ButtonHotKey;
 
         // OLD structures
         struct
@@ -4666,13 +4667,7 @@ namespace Application
             Graphics::ColorPair NormalColor;
             Graphics::ColorPair HotKeyColor;
         } Label;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair TextColor, HotKeyColor;
-            } Normal, Focused, Inactive, Hover;
-        } Button;
+
         struct
         {
             struct
