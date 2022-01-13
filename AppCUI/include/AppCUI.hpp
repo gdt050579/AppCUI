@@ -3836,7 +3836,8 @@ namespace Controls
         DisableZoom           = 0x004000,
         DisableMove           = 0x008000,
         Sort                  = 0x010000,
-        DisableDuplicates     = 0x020000
+        DisableDuplicates     = 0x020000,
+        Filter                = 0x040000
     };
 
     class EXPORT Grid : public Control
@@ -3882,6 +3883,7 @@ namespace Controls
         void ToggleHorizontalLines();
         void ToggleVerticalLines();
         void Sort();
+        void Filter();
 
       private:
         friend Factory::Grid;
@@ -4569,8 +4571,7 @@ namespace Application
         struct
         {
             Graphics::ColorPair Focused, Normal, Hovered, Inactive;
-        } SearchBar,Border,Lines;
-
+        } SearchBar, Border, Lines;
 
         // OLD structures
         struct
@@ -4678,7 +4679,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Text, HotKey ;
+                Graphics::ColorPair Text, HotKey;
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {

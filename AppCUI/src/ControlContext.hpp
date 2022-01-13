@@ -662,6 +662,7 @@ class GridControlContext : public ControlContext
     int32 offsetY  = 0;
 
     std::map<uint32, GridCellData> cells;
+    std::map<uint32, GridCellData> cellsFiltered;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
@@ -670,6 +671,7 @@ class GridControlContext : public ControlContext
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
     std::vector<bool> columnsSort;
+    std::vector<std::u16string> columnsFilter;
 
   public:
     void DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j);

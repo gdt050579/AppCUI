@@ -23,6 +23,7 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->flags     = flags;
 
     context->columnsSort.insert(context->columnsSort.end(), columnsNo, true);
+    context->columnsFilter.insert(context->columnsFilter.end(), columnsNo, u"");
 
     context->ResetMatrixPosition();
     context->UpdateGridParameters();
@@ -32,6 +33,7 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
 
     context->ReserveMap();
     Sort();
+    Filter();
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -634,6 +636,15 @@ void Controls::Grid::Sort()
     if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
     {
         context->FindDuplicates();
+    }
+}
+
+void Controls::Grid::Filter()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::Filter) != GridFlags::None)
+    {
+        // TODO:
     }
 }
 
