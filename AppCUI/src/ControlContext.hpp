@@ -132,6 +132,38 @@ struct ControlContext
 
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
+
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState) const
+    {
+        if (!(Flags & GATTR_ENABLE))
+            return colorState.Inactive;
+        else if (Focused)
+            return colorState.Focused;
+        else if (MouseIsOver)
+            return colorState.Hovered;
+        else
+            return colorState.Normal;        
+    }
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered) const
+    {
+        if (!(Flags & GATTR_ENABLE))
+            return colorState.Inactive;
+        else if (Focused)
+            return colorState.Focused;
+        else if (isHovered)
+            return colorState.Hovered;
+        else
+            return colorState.Normal;
+    }
+    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState) const
+    {
+        if (!(Flags & GATTR_ENABLE))
+            return colorState.Inactive;
+        else if (Focused)
+            return colorState.Focused;
+        else 
+            return colorState.Normal;
+    }
 };
 
 constexpr uint32 WINDOW_DRAG_STATUS_NONE = 0;
