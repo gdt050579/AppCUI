@@ -148,10 +148,10 @@ struct ControlContext
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
+        else if (isHovered) // this takes precedence agains Focused
+            return colorState.Hovered;
         else if (Focused)
             return colorState.Focused;
-        else if (isHovered)
-            return colorState.Hovered;
         else
             return colorState.Normal;
     }
