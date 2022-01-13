@@ -3,7 +3,7 @@
 namespace AppCUI
 {
 #define CHECK_INDEX(idx, returnValue)                                                                                  \
-    CHECK(idx < (uint32) Members->Indexes.Len(),                                                                 \
+    CHECK(idx < (uint32) Members->Indexes.Len(),                                                                       \
           returnValue,                                                                                                 \
           "Invalid index (%d) , should be smaller than %d",                                                            \
           (int) idx,                                                                                                   \
@@ -145,7 +145,7 @@ uint32 ComputeItemsCount(const T* start, size_t len, char separator)
 {
     if (start == nullptr)
         return 0;
-    const T* end       = start + len;
+    const T* end = start + len;
     uint32 count = 1; // assume at least one element (if not item separator is found)
     while (start < end)
     {
@@ -187,11 +187,11 @@ ComboBox::~ComboBox()
 ComboBox::ComboBox(string_view layout, const ConstString& text, char itemsSeparator)
     : Control(new ComboBoxControlContext(), "", layout, false)
 {
-    auto Members                          = reinterpret_cast<ComboBoxControlContext*>(this->Context);
-    Members->Layout.MinWidth              = 7;
-    Members->Layout.MinHeight             = 1;
-    Members->Layout.MaxHeight             = 1;
-    Members->Flags                        = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    auto Members                    = reinterpret_cast<ComboBoxControlContext*>(this->Context);
+    Members->Layout.MinWidth        = 7;
+    Members->Layout.MinHeight       = 1;
+    Members->Layout.MaxHeight       = 1;
+    Members->Flags                  = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     uint32 initialAllocatedElements = 16;
     uint32 count                    = 0;
 
@@ -516,42 +516,36 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
 
     paramsSeparator.Width = Members->Layout.Width - 7;
     paramsSeparator.X     = 3;
-    paramsSeparator.Color = Members->Cfg->ComboBox.Inactive.Text;
-    auto* cbc             = &Members->Cfg->ComboBox.Normal;
-    if (!this->IsEnabled())
-        cbc = &Members->Cfg->ComboBox.Inactive;
-    if (Members->Focused)
-        cbc = &Members->Cfg->ComboBox.Focus;
-    else if (Members->MouseIsOver)
-        cbc = &Members->Cfg->ComboBox.Hover;
+    paramsSeparator.Color = Members->Cfg->Menu.Activ.Inactive.Text;
+    auto cbc              = Members->GetStateColor(Members->Cfg->Button);
 
     auto itemsCount = Members->Items.size();
-    renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc->Text);
+    renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc);
     if (Members->CurentItemIndex < Members->Indexes.Len())
     {
         params.X     = 1;
         params.Y     = 0;
         params.Width = Members->Layout.Width - 6;
-        params.Color = cbc->Text;
+        params.Color = cbc;
         renderer.WriteText(Members->Items[Members->Indexes.GetUInt32Array()[Members->CurentItemIndex]].Text, params);
     }
-    renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc->Button);
-    renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc->Button);
+    renderer.WriteSingleLineText(Members->Layout.Width - 3, 0, "   ", cbc);
+    renderer.WriteSpecialCharacter(Members->Layout.Width - 2, 0, SpecialChars::TriangleDown, cbc);
 
     if (Members->Flags & GATTR_EXPANDED)
     {
         renderer.FillRect(
-              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->ComboBox.Focus.Text);
+              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->Menu.Activ.Background);
         renderer.DrawRect(
               0,
               1,
               Members->Layout.Width - 1,
               Members->ExpandedHeight,
-              Members->Cfg->ComboBox.Focus.Text,
+              Members->Cfg->Menu.Activ.Background,
               LineType::Single);
         params.X     = 1;
         params.Width = Members->Layout.Width - 2;
-        params.Color = Members->Cfg->ComboBox.Focus.Text;
+        params.Color = Members->Cfg->Menu.Activ.Normal.Text;
         for (uint32 tr = 0; tr < Members->VisibleItemsCount; tr++)
         {
             if ((tr + Members->FirstVisibleItem) >= itemsCount)
@@ -565,7 +559,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                       tr + 2,
                       Members->Layout.Width - 2,
                       SpecialChars::BoxHorizontalSingleLine,
-                      Members->Cfg->ComboBox.Inactive.Text);
+                      Members->Cfg->Menu.Activ.Inactive.Text);
                 if (i.Text.Len() > 0)
                 {
                     paramsSeparator.Y = tr + 2;

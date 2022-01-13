@@ -4736,10 +4736,6 @@ namespace Application
         } ProgressStatus;
         struct
         {
-            struct
-            {
-                Graphics::ColorPair Text, Button;
-            } Focus, Normal, Inactive, Hover;
             Graphics::ColorPair Selection, HoverOveItem;
         } ComboBox;
         struct

@@ -39,35 +39,29 @@ void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
 }
 void ColorPickerContext::PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer)
 {
-    auto* cbc = &this->Cfg->ComboBox.Normal;
-    if ((this->Flags & GATTR_ENABLE) == 0)
-        cbc = &this->Cfg->ComboBox.Inactive;
-    if (this->Focused)
-        cbc = &this->Cfg->ComboBox.Focus;
-    else if (this->MouseIsOver)
-        cbc = &this->Cfg->ComboBox.Hover;
+    auto cbc = this->GetStateColor(this->Cfg->Button);
 
     if (width > MINSPACE_FOR_COLOR_DRAWING)
     {
-        renderer.FillHorizontalLine(x, y, x + (int) width - (int) (MINSPACE_FOR_COLOR_DRAWING + 1), ' ', cbc->Text);
+        renderer.FillHorizontalLine(x, y, x + (int) width - (int) (MINSPACE_FOR_COLOR_DRAWING), ' ', cbc);
         renderer.WriteSingleLineText(
               x + COLOR_NAME_OFFSET,
               y,
               width - (int) (MINSPACE_FOR_COLOR_DRAWING - 1),
               ColorUtils::GetColorName(this->color),
-              cbc->Text);
+              cbc);
         renderer.WriteSpecialCharacter(
               x + 1, y, SpecialChars::BlockCentered, ColorPair{ this->color, Color::Transparent });
     }
     if (width >= MINSPACE_FOR_DROPBUTTON_DRAWING)
     {
-        renderer.WriteSingleLineText(x + (int) width - (int32) MINSPACE_FOR_DROPBUTTON_DRAWING, y, "   ", cbc->Button);
-        renderer.WriteSpecialCharacter(x + (int) width - 2, y, SpecialChars::TriangleDown, cbc->Button);
+        renderer.WriteSingleLineText(x + (int) width - (int32) MINSPACE_FOR_DROPBUTTON_DRAWING, y, "   ", cbc);
+        renderer.WriteSpecialCharacter(x + (int) width - 2, y, SpecialChars::TriangleDown, cbc);
     }
 }
 void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
 {
-    const auto col = Cfg->ComboBox.Focus.Text;
+    const auto col = Cfg->Menu.Activ.Normal.Text;
     renderer.FillRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, ' ', col);
     // draw colors (4x4 matrix)
     for (auto y = 0U; y < COLOR_MATRIX_HEIGHT; y++)
@@ -103,7 +97,7 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
     if (colorObject == (uint32) Color::Transparent)
     {
         renderer.WriteSingleLineText(
-              TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", Cfg->ComboBox.Focus.Button);
+              TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", Cfg->Menu.Activ.Normal.Text);
         renderer.SetCursor(TRANSPARENT_CHECKBOX_X_OFFSET + 1, 1 + this->yOffset);
     }
     else
@@ -116,7 +110,7 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
               TRANSPARENT_CHECKBOX_X_OFFSET + 1,
               1 + this->yOffset,
               SpecialChars::CheckMark,
-              Cfg->ComboBox.Focus.Button);
+              Cfg->Menu.Activ.Normal.Check);
     renderer.DrawVerticalLine(
           SPACES_PER_COLOR * COLOR_MATRIX_WIDTH + 1, 1 + this->yOffset, COLOR_MATRIX_HEIGHT + this->yOffset, col, true);
     renderer.DrawRect(
