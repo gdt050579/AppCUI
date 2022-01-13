@@ -371,6 +371,60 @@ namespace Graphics
     };
     constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };
     constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
+    struct ObjectColorState
+    {
+        ColorPair Focused, Normal, Hovered, Inactive;
+        ObjectColorState()
+        {
+        }
+        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
+            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(hovered)
+        {
+        }
+        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive)
+            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(normal)
+        {
+        }
+        ObjectColorState(Color focused, Color normal, Color inactive, Color hovered)
+            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
+              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ hovered, Color::Transparent })
+        {
+        }
+        ObjectColorState(Color focused, Color normal, Color inactive)
+            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
+              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ normal, Color::Transparent })
+        {
+        }
+        inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
+        {
+            Focused  = focused;
+            Normal   = normal;
+            Inactive = inactive;
+            Hovered  = hovered;
+        }
+        inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive)
+        {
+            Focused  = focused;
+            Normal   = normal;
+            Inactive = inactive;
+            Hovered  = normal;
+        }
+        inline void Set(Color focused, Color normal, Color inactive, Color hovered, Color backgroud)
+        {
+            Focused  = ColorPair{ focused, backgroud };
+            Normal   = ColorPair{ normal, backgroud };
+            Inactive = ColorPair{ inactive, backgroud };
+            Hovered  = ColorPair{ hovered, backgroud };
+        }
+        inline void Set(Color focused, Color normal, Color inactive, Color backgroud)
+        {
+            Focused  = ColorPair{ focused, backgroud };
+            Normal   = ColorPair{ normal, backgroud };
+            Inactive = ColorPair{ inactive, backgroud };
+            Hovered  = ColorPair{ normal, backgroud };
+        }
+    };
+
     struct Character
     {
         union
@@ -4566,11 +4620,7 @@ namespace Application
     struct Config
     {
         // NEW structures
-        struct
-        {
-            Graphics::ColorPair Focused, Normal, Hovered, Inactive;
-        } SearchBar,Border,Lines;
-
+        Graphics::ObjectColorState SearchBar, Border, Lines;
 
         // OLD structures
         struct
@@ -4678,7 +4728,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Text, HotKey ;
+                Graphics::ColorPair Text, HotKey;
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
