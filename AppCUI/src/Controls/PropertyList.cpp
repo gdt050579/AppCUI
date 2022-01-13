@@ -1029,19 +1029,11 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
 
-        ColorPair col;
-        if (this->separatorStatus == PropertySeparatorStatus::None)
-        {
-            col = Focused ? Cfg->Lines.Focused : Cfg->Lines.Normal;
-            if ((Flags & GATTR_ENABLE) == 0)
-                col = Cfg->Lines.Inactive;
-        }
-        else
-        {
-            col = Cfg->Lines.Hovered;
-        }
         renderer.WriteSpecialCharacter(
-              x + extraSpace + this->propertyNameWidth, y, SpecialChars::BoxVerticalSingleLine, col);
+              x + extraSpace + this->propertyNameWidth,
+              y,
+              SpecialChars::BoxVerticalSingleLine,
+              this->GetStateColor(Cfg->Lines, this->separatorStatus != PropertySeparatorStatus::None));
     }
     bool readOnly  = IsPropertyReadOnly(prop);
     auto w         = this->hasBorder ? ((int32) this->Layout.Width - (x + extraSpace + 2 + this->propertyNameWidth))
@@ -1298,15 +1290,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
     renderer.Clear(' ', NoColorPair);
     if (this->hasBorder)
     {
-        auto colB = this->Cfg->Border.Normal;
-
-        if (!(this->Flags & GATTR_ENABLE))
-            colB = this->Cfg->Border.Inactive;
-        else if (this->Focused)
-            colB = this->Cfg->Border.Focused;
-        else if (this->MouseIsOver)
-            colB = this->Cfg->Border.Hovered;
-        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, this->GetStateColor(Cfg->Border), LineType::Single);
         if ((this->Focused) && (this->Layout.Width > 9))
             DrawFilterBar(renderer);
         y++;

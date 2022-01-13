@@ -34,40 +34,20 @@ void Button::Paint(Graphics::Renderer& renderer)
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
-    const auto* bc        = &Members->Cfg->Button.Normal;
-    bool pressed          = false;
+    const auto bc         = Members->GetStateColor(Members->Cfg->Button);
+    const auto bhkc       = Members->GetStateColor(Members->Cfg->ButtonHotKey);
+    bool pressed          = IsChecked();
     params.Y              = 0;
     params.HotKeyPosition = Members->HotKeyOffset;
     params.Align          = TextAlignament::Center;
 
-    // daca e disable
-    if (!IsEnabled())
-    {
-        bc = &Members->Cfg->Button.Inactive;
-    }
-    else
-    {
-        if (IsChecked())
-            pressed = true;
-        else
-        {
-            if (this->HasFocus())
-                bc = &Members->Cfg->Button.Focused;
-            else
-            {
-                if (IsMouseOver())
-                    bc = &Members->Cfg->Button.Hover;
-            }
-        }
-    }
-
     if (Members->Flags && ButtonFlags::Flat)
-    {
-        renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', bc->TextColor);
-        params.Color       = bc->TextColor;
-        params.HotKeyColor = bc->HotKeyColor;
+    {        
+        params.Color       = pressed ? Members->Cfg->Button.Hovered : bc;
+        params.HotKeyColor = pressed ? Members->Cfg->ButtonHotKey.Hovered : bhkc;      
         params.X           = 0;
         params.Width       = Members->Layout.Width;
+        renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', params.Color);
         renderer.WriteText(Members->Text, params);
     }
     else
@@ -75,18 +55,18 @@ void Button::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 1;
         if (pressed)
         {
-            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused.TextColor);
-            params.Color       = Members->Cfg->Button.Focused.TextColor;
-            params.HotKeyColor = Members->Cfg->Button.Focused.HotKeyColor;
+            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused);
+            params.Color       = Members->Cfg->Button.Focused;
+            params.HotKeyColor = Members->Cfg->ButtonHotKey.Focused;
             params.X           = 1;
             renderer.WriteText(Members->Text, params);
         }
         else
         {
-            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc->TextColor);
+            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc);
 
-            params.Color       = bc->TextColor;
-            params.HotKeyColor = bc->HotKeyColor;
+            params.Color       = bc;
+            params.HotKeyColor = bhkc;
             params.X           = 0;
             renderer.WriteText(Members->Text, params);
 

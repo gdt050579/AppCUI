@@ -20,24 +20,17 @@ void KeySelector::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, );
 
-    auto col = &Members->Cfg->Text.Normal;
-
-    if (!this->IsEnabled())
-        col = &Members->Cfg->Text.Inactive;
-    else if (Members->Focused)
-        col = &Members->Cfg->Text.Focus;
-    else if (Members->MouseIsOver)
-        col = &Members->Cfg->Text.Hover;
+    auto col = Members->GetStateColor(Members->Cfg->Text);
 
     int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
         sz = Members->Layout.Width - 3;
 
-    renderer.FillHorizontalLineSize(0, 0, Members->Layout.Width, ' ', col->Text);
+    renderer.FillHorizontalLineSize(0, 0, Members->Layout.Width, ' ', col);
     LocalString<64> temp;
     if (KeyUtils::ToString(Members->key, temp))
     {
-        renderer.WriteSingleLineText(1, 0, Members->Layout.Width - 1, temp, col->Text);
+        renderer.WriteSingleLineText(1, 0, Members->Layout.Width - 1, temp, col);
     }
     if (Members->Focused)
         renderer.SetCursor(1, 0);

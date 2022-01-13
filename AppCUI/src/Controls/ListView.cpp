@@ -124,7 +124,6 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
     if (!(this->Flags & GATTR_ENABLE))
         defaultCol = &this->Cfg->ListView.ColumnInactive;
     auto* lvCol = defaultCol;
-    
 
     renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
 
@@ -179,12 +178,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            auto lineCol = Cfg->Lines.Normal;
-            if ((Flags & GATTR_ENABLE) == 0)
-                lineCol = Cfg->Lines.Inactive;
-            else if (Focused)
-                lineCol = Cfg->Lines.Focused;
-            renderer.DrawVerticalLine(x, 1, Layout.Height, lineCol);
+            renderer.DrawVerticalLine(x, 1, Layout.Height, this->GetStateColorWithoutHovered(Cfg->Lines));
         }
         x++;
     }
@@ -365,21 +359,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
 
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
-    int y       = 1;
-    auto colB   = this->Cfg->Border.Normal;
-
-    if (!(this->Flags & GATTR_ENABLE))
-    {
-        colB  = this->Cfg->Border.Inactive;
-    }
-    else if (this->Focused)
-    {
-        colB  = this->Cfg->Border.Focused;
-    }
-    else if (this->MouseIsOver)
-    {
-        colB  = this->Cfg->Border.Hovered;
-    }
+    int y     = 1;
+    auto colB = this->GetStateColor(this->Cfg->Border);
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
