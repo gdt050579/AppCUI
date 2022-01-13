@@ -213,7 +213,6 @@ void Config::SetDarkTheme()
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 
-    this->ProgressStatus.Border           = ColorPair{ Color::White, Color::DarkBlue };
     this->ProgressStatus.Title            = ColorPair{ Color::Yellow, Color::DarkBlue };
     this->ProgressStatus.Text             = ColorPair{ Color::Silver, Color::DarkBlue };
     this->ProgressStatus.TerminateMessage = ColorPair{ Color::Gray, Color::DarkBlue };

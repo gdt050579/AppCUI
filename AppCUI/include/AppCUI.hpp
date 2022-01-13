@@ -4698,7 +4698,7 @@ namespace Application
         } ListView;
         struct
         {
-            Graphics::ColorPair Border, Title, TerminateMessage, Text, Time, Percentage;
+            Graphics::ColorPair Title, TerminateMessage, Text, Time, Percentage;
             Graphics::ColorPair EmptyProgressBar, FullProgressBar;
         } ProgressStatus;
         struct

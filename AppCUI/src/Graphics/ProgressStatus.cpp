@@ -45,13 +45,13 @@ void ProgressStatus_Paint_Panel()
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
 
-    canvas->Clear(' ', PSData.App->config.ProgressStatus.Border);
+    canvas->Clear(' ', PSData.App->config.Window.ActiveColor);
     canvas->DrawRectSize(
           0,
           0,
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT,
-          PSData.App->config.ProgressStatus.Border,
+          PSData.App->config.Border.Focused,
           LineType::Single);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
