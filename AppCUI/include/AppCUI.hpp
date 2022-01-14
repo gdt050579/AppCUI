@@ -4676,14 +4676,6 @@ namespace Application
             } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
 
-
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair StateSymbolColor;
-            } Normal, Focused, Inactive, Hover;
-        } StateControl;
         struct
         {
             struct

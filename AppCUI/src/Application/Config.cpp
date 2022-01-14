@@ -106,11 +106,6 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
 
-    this->StateControl.Normal.StateSymbolColor   = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Focused.StateSymbolColor  = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Hover.StateSymbolColor    = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Inactive.StateSymbolColor = ColorPair{ Color::Gray, Color::Transparent };
-
     this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
