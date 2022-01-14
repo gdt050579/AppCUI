@@ -133,7 +133,7 @@ struct ControlContext
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState) 
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState)
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
@@ -142,9 +142,9 @@ struct ControlContext
         else if (MouseIsOver)
             return colorState.Hovered;
         else
-            return colorState.Normal;        
+            return colorState.Normal;
     }
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered) 
+    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered)
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
@@ -155,13 +155,13 @@ struct ControlContext
         else
             return colorState.Normal;
     }
-    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState) 
+    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState)
     {
         if (!(Flags & GATTR_ENABLE))
             return colorState.Inactive;
         else if (Focused)
             return colorState.Focused;
-        else 
+        else
             return colorState.Normal;
     }
 };
@@ -693,8 +693,9 @@ class GridControlContext : public ControlContext
     int32 offsetX  = 0;
     int32 offsetY  = 0;
 
-    std::map<uint32, GridCellData> cells;
+    std::map<uint32, GridCellData> cellsNormal;
     std::map<uint32, GridCellData> cellsFiltered;
+    std::map<uint32, GridCellData>* cells = &cellsNormal;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 

@@ -61,7 +61,7 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
-    for (auto const& [key, val] : context->cells)
+    for (auto const& [key, val] : *context->cells)
     {
         context->DrawCellContent(renderer, key);
     }
@@ -444,7 +444,7 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
     context->UpdateGridParameters();
 
     context->columnsSort.insert(context->columnsSort.end(), context->columnsNo, true);
-    context->cells.clear();
+    (*context->cells).clear();
 }
 
 Size Grid::GetGridDimensions() const
@@ -460,7 +460,7 @@ bool Grid::UpdateCell(uint32 index, ConstString content, TextAlignament textAlig
 
     Utils::UnicodeStringBuilder usb{ content };
     std::u16string u16s(usb);
-    context->cells[index] = { textAlignment, u16s };
+    (*context->cells)[index] = { textAlignment, u16s };
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
@@ -981,7 +981,7 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     const auto x = offsetX + cellColumn * cWidth + 1; // + 1 -> line
     const auto y = offsetY + cellRow * cHeight + 1;   // + 1 -> line
 
-    const auto& data = cells[cellIndex];
+    const auto& data = (*cells)[cellIndex];
 
     auto color = Cfg->Grid.Text.Normal;
     if (cellIndex == hoveredCellIndex)
@@ -1461,8 +1461,8 @@ bool GridControlContext::CopySelectedCellsContent() const
         {
             ConstString cs;
             const auto current = columnsNo * j + i;
-            const auto& it     = cells.find(current);
-            if (it != cells.end())
+            const auto& it     = cells->find(current);
+            if (it != cells->end())
             {
                 const auto& data = it->second;
                 cs               = data.content;
@@ -1544,7 +1544,7 @@ bool GridControlContext::PasteContentToSelectedCells()
     auto index = selectedCellsIndexes.begin();
     for (const auto& token : tokens)
     {
-        auto& data   = cells.at(*index);
+        auto& data   = cells->at(*index);
         data.content = token;
 
         std::advance(index, 1);
@@ -1578,7 +1578,7 @@ void GridControlContext::ReserveMap()
 {
     for (auto i = 0U; i < columnsNo * rowsNo; i++)
     {
-        cells[i] = { Graphics::TextAlignament::Left, u"" };
+        (*cells)[i] = { Graphics::TextAlignament::Left, u"" };
     }
 }
 
@@ -1604,7 +1604,7 @@ void GridControlContext::ToggleSorting(int x, int y)
 
 void GridControlContext::SortColumn(int colIndex)
 {
-    if (cells.empty())
+    if (cells->empty())
     {
         return;
     }
@@ -1615,7 +1615,7 @@ void GridControlContext::SortColumn(int colIndex)
     for (auto j = 0U; j < rowsNo; j++)
     {
         const auto cell = colIndex + j * columnsNo;
-        column.emplace_back(cells.at(cell));
+        column.emplace_back(cells->at(cell));
     }
 
     std::sort(
@@ -1631,7 +1631,7 @@ void GridControlContext::SortColumn(int colIndex)
     for (auto j = 0U; j < rowsNo; j++)
     {
         const auto cell = colIndex + j * columnsNo;
-        cells[cell]     = column[j];
+        (*cells)[cell]  = column[j];
     }
 }
 
@@ -1640,8 +1640,8 @@ void GridControlContext::FindDuplicates()
     duplicatedCellsIndexes.clear();
     CHECKRET(selectedCellsIndexes.size() == 1, "");
 
-    const auto& content = cells[selectedCellsIndexes[0]].content;
-    for (const auto& [key, value] : cells)
+    const auto& content = (*cells)[selectedCellsIndexes[0]].content;
+    for (const auto& [key, value] : *cells)
     {
         if (content.compare(value.content) == 0)
         {
