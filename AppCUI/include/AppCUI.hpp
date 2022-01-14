@@ -4699,14 +4699,7 @@ namespace Application
                   HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } Tab;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, Hotkey;
-            } Normal, Focused, Inactive, Hover;
-            Graphics::ColorPair InactiveCanvasColor;
-        } View;
+
         struct
         {
             Graphics::ColorPair Bar, Arrows, Position;

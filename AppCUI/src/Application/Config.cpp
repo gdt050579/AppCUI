@@ -132,16 +132,6 @@ void Config::SetDarkTheme()
     this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
     this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
 
-    this->View.Normal.Hotkey       = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Normal.Text         = ColorPair{ Color::Silver, Color::Transparent };
-    this->View.Focused.Hotkey      = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Focused.Text        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Hover.Hotkey        = ColorPair{ Color::Red, Color::Transparent };
-    this->View.Hover.Text          = ColorPair{ Color::White, Color::Transparent };
-    this->View.Inactive.Hotkey     = ColorPair{ Color::Gray, Color::Transparent };
-    this->View.Inactive.Text       = ColorPair{ Color::Gray, Color::Transparent };
-    this->View.InactiveCanvasColor = ColorPair{ Color::Black, Color::Transparent };
-
     this->ScrollBar.Arrows   = ColorPair{ Color::White, Color::Teal };
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };

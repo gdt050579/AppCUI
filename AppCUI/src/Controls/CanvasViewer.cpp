@@ -49,33 +49,26 @@ CanvasViewer::~CanvasViewer()
 void CanvasViewer::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
-    auto* col = &Members->Cfg->View.Normal;
-    if (!this->IsEnabled())
-    {
-        col  = &Members->Cfg->View.Inactive;
-    }
-    else if (Members->Focused)
-    {
-        col  = &Members->Cfg->View.Focused;
-    }
-    else if (Members->MouseIsOver)
-    {
-        col  = &Members->Cfg->View.Hover;
-    }
 
     if (Members->Flags & ((uint32) ViewerFlags::Border))
     {
         renderer.DrawRectSize(
-              0, 0, Members->Layout.Width, Members->Layout.Height, Members->GetStateColor(Members->Cfg->Border), LineType::Single);
+              0,
+              0,
+              Members->Layout.Width,
+              Members->Layout.Height,
+              Members->GetStateColor(Members->Cfg->Border),
+              LineType::Single);
         if (Members->Layout.Width > 6)
         {
             WriteTextParams params(
                   WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey | WriteTextFlags::ClipToWidth |
                   WriteTextFlags::OverwriteColors | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin);
+            const auto enabled    = (Members->Flags & GATTR_ENABLE) != 0;
             params.X              = 3;
             params.Y              = 0;
-            params.Color          = col->Text;
-            params.HotKeyColor    = col->Hotkey;
+            params.Color          = enabled ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
+            params.HotKeyColor    = enabled ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
             params.HotKeyPosition = Members->HotKeyOffset;
             params.Width          = Members->Layout.Width - 6;
             params.Align          = TextAlignament::Left;
@@ -86,7 +79,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
     }
     if (!this->IsEnabled())
         renderer.DrawCanvas(
-              Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas, Members->Cfg->View.InactiveCanvasColor);
+              Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas, Members->Cfg->Text.Inactive);
     else
         renderer.DrawCanvas(Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas);
 }
