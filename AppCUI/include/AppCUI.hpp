@@ -4620,7 +4620,7 @@ namespace Application
     struct Config
     {
         // NEW structures
-        Graphics::ObjectColorState SearchBar, Border, Lines, Text, LineMarker, PasswordMarker;
+        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
         Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
         Graphics::ObjectColorState Button, ButtonHotKey;
 

@@ -508,7 +508,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
     params.Width = Members->Layout.Width - 2;
     params.X     = 1;
     params.Y     = 0;
-    params.Color = Members->GetStateColor(Members->Cfg->Text);
+    params.Color = Members->GetStateColor(Members->Cfg->Editor);
 
     if (Members->Layout.Height == 1)
         params.Flags |= WriteTextFlags::SingleLine;

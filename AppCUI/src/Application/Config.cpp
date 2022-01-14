@@ -324,7 +324,7 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Magenta });
 
-    this->Text.Set(
+    this->Editor.Set(
           { Color::White, Color::Black },
           { Color::Silver, Color::Black },
           { Color::Gray, Color::Transparent },

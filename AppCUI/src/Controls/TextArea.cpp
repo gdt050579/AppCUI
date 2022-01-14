@@ -356,7 +356,7 @@ void TextAreaControlContext::DrawLineNumber(
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
-    const auto colTxt = this->GetStateColor(Cfg->Text);
+    const auto colTxt = this->GetStateColor(Cfg->Editor);
     const auto colB   = this->GetStateColor(Cfg->Border);
     const auto colLn  = this->GetStateColor(Cfg->LineMarker);
 

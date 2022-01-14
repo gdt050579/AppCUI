@@ -20,7 +20,7 @@ void KeySelector::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(KeySelectorContext, Members, );
 
-    auto col = Members->GetStateColor(Members->Cfg->Text);
+    auto col = Members->GetStateColor(Members->Cfg->Editor);
 
     int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
