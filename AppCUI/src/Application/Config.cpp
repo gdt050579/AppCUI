@@ -302,10 +302,10 @@ void Config::SetDarkTheme()
           { Color::Yellow, Color::Black });
 
     this->LineMarker.Set(
-          { Color::White, Color::DarkRed },
-          { Color::Silver, Color::Black },
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Blue },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Black });
+          { Color::Yellow, Color::Blue });
 
     this->TextSelectionColor     = { Color::Yellow, Color::Magenta };
     this->TextSelectedLineMarker = { Color::Yellow, Color::Magenta };
