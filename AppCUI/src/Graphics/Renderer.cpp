@@ -1233,12 +1233,12 @@ bool Renderer::WriteSingleLineText(
     params.Width          = width;
     return WriteText(text, params);
 }
-bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, Graphics::CharacterBuffer& charBuffer, bool noTransparency)
+bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, CharacterView charView, bool noTransparency)
 {
     CHECK_VISIBLE;
     // check size
-    auto buf = charBuffer.GetBuffer();
-    auto sz  = charBuffer.Len();
+    auto buf = charView.data();
+    auto sz  = charView.size();
     auto end = buf + sz;
     if (sz == 0)
         return false; // empty text, nothing to draw

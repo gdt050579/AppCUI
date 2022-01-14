@@ -188,17 +188,6 @@ void Config::SetDarkTheme()
     this->ProgressStatus.Time             = ColorPair{ Color::Aqua, Color::DarkBlue };
     this->ProgressStatus.Percentage       = ColorPair{ Color::Yellow, Color::DarkBlue };
 
-    this->ComboBox.Focus.Text      = ColorPair{ Color::Black, Color::White };
-    this->ComboBox.Focus.Button    = ColorPair{ Color::DarkRed, Color::White };
-    this->ComboBox.Normal.Text     = ColorPair{ Color::Black, Color::Silver };
-    this->ComboBox.Normal.Button   = ColorPair{ Color::DarkRed, Color::Silver };
-    this->ComboBox.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
-    this->ComboBox.Inactive.Button = ColorPair{ Color::Gray, Color::Transparent };
-    this->ComboBox.Hover.Text      = ColorPair{ Color::Black, Color::Yellow };
-    this->ComboBox.Hover.Button    = ColorPair{ Color::DarkRed, Color::Yellow };
-    this->ComboBox.Selection       = ColorPair{ Color::White, Color::DarkBlue };
-    this->ComboBox.HoverOveItem    = ColorPair{ Color::DarkRed, Color::Silver };
-
     this->Menu.Activ.Background = ColorPair{ Color::Black, Color::White };
 
     this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
@@ -358,12 +347,12 @@ void Config::SetDarkTheme()
 
     this->Button.Set(
           { Color::Black, Color::White },
-          { Color::White, Color::Gray },
+          { Color::Black, Color::Gray },
           { Color::Gray, Color::Black },
           { Color::Black, Color::Yellow });
     this->ButtonHotKey.Set(
           { Color::Magenta, Color::White },
-          { Color::Yellow, Color::Gray },
+          { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },
           { Color::Magenta, Color::Yellow });
 }

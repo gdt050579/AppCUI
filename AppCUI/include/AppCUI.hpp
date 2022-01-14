@@ -2505,7 +2505,7 @@ namespace Graphics
 
         // Single line wrappers
         bool WriteSingleLineCharacterBuffer(
-              int x, int y, Graphics::CharacterBuffer& charBuffer, bool noTransparency = true);
+              int x, int y, Utils::CharacterView charView, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
@@ -4736,14 +4736,7 @@ namespace Application
             Graphics::ColorPair Title, TerminateMessage, Text, Time, Percentage;
             Graphics::ColorPair EmptyProgressBar, FullProgressBar;
         } ProgressStatus;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, Button;
-            } Focus, Normal, Inactive, Hover;
-            Graphics::ColorPair Selection, HoverOveItem;
-        } ComboBox;
+
         struct
         {
             struct
