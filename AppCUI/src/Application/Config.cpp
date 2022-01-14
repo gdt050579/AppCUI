@@ -122,7 +122,6 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
     this->Tab.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
@@ -281,19 +280,6 @@ void Config::SetDarkTheme()
     this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
     this->PropertyList.Item.Error     = ColorPair{ Color::Red, Color::Transparent };
 
-    this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
-    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Black, Color::Teal };
-    this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Normal.Offset   = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Normal.Text     = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Hover.Cursor    = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Hover.Offset    = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Hover.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
-    this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
-    this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
-
     //=========================================[NEW FORMAT]=================================
     this->SearchBar.Set(
           { Color::White, Color::DarkRed },
@@ -349,5 +335,6 @@ void Config::SetDarkTheme()
     this->Text.HotKey      = { Color::Aqua, Color::Transparent };
     this->Text.Hovered     = { Color::Yellow, Color::Transparent };
     this->Text.Highlighted = { Color::Yellow, Color::Transparent };
+    this->Text.Cursor      = { Color::Black, Color::White };
 }
 } // namespace AppCUI::Application

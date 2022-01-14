@@ -4634,7 +4634,7 @@ namespace Application
 
         struct
         {
-            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted;
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor;
         } Text;
 
         // OLD structures
@@ -4823,13 +4823,7 @@ namespace Application
                 Graphics::ColorPair Text, Value, ReadOnly, Checked, Unchecked, Error;
             } Item;
         } PropertyList;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, Offset, Cursor;
-            } Focus, Normal, Inactive, Hover;
-        } CharacterTable;
+
         void SetDarkTheme();
     };
 
