@@ -4681,7 +4681,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair TextColor, HotKeyColor, StateSymbolColor;
+                Graphics::ColorPair StateSymbolColor;
             } Normal, Focused, Inactive, Hover;
         } StateControl;
         struct

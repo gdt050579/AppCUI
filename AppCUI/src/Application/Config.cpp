@@ -105,17 +105,10 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
-    this->StateControl.Normal.TextColor          = ColorPair{ Color::Silver, Color::Transparent };
-    this->StateControl.Normal.HotKeyColor        = ColorPair{ Color::Aqua, Color::Transparent };
+
     this->StateControl.Normal.StateSymbolColor   = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Focused.TextColor         = ColorPair{ Color::White, Color::Transparent };
-    this->StateControl.Focused.HotKeyColor       = ColorPair{ Color::Aqua, Color::Transparent };
     this->StateControl.Focused.StateSymbolColor  = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Hover.TextColor           = ColorPair{ Color::Yellow, Color::Transparent };
-    this->StateControl.Hover.HotKeyColor         = ColorPair{ Color::Aqua, Color::Transparent };
     this->StateControl.Hover.StateSymbolColor    = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Inactive.TextColor        = ColorPair{ Color::Gray, Color::Transparent };
-    this->StateControl.Inactive.HotKeyColor      = ColorPair{ Color::Gray, Color::Transparent };
     this->StateControl.Inactive.StateSymbolColor = ColorPair{ Color::Gray, Color::Transparent };
 
     this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
