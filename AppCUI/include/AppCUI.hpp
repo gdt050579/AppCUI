@@ -4634,7 +4634,8 @@ namespace Application
 
         struct
         {
-            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor;
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor,
+                  Emphasized1, Emphasized2;
         } Text;
 
         // OLD structures
@@ -4704,7 +4705,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
+                Graphics::ColorPair Regular, Category;
             } Item;
             struct
             {

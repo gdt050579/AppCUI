@@ -105,7 +105,6 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
-
     this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
@@ -132,14 +131,8 @@ void Config::SetDarkTheme()
     this->ListView.ColumnSort.Text       = ColorPair{ Color::White, Color::Pink };
     this->ListView.ColumnSort.HotKey     = ColorPair{ Color::Black, Color::Pink };
 
-    this->ListView.Item.Regular      = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Item.Highligheted = ColorPair{ Color::White, Color::Transparent };
-    this->ListView.Item.Inactive     = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Item.Error        = ColorPair{ Color::Red, Color::Transparent };
-    this->ListView.Item.Warning      = ColorPair{ Color::Olive, Color::Transparent };
-    this->ListView.Item.Emphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
-    this->ListView.Item.Emphasized2  = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.Item.Category     = ColorPair{ Color::Yellow, Color::Transparent };
+    this->ListView.Item.Regular  = ColorPair{ Color::Silver, Color::Transparent };
+    this->ListView.Item.Category = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
@@ -324,5 +317,7 @@ void Config::SetDarkTheme()
     this->Text.Hovered     = { Color::Yellow, Color::Transparent };
     this->Text.Highlighted = { Color::Yellow, Color::Transparent };
     this->Text.Cursor      = { Color::Black, Color::White };
+    this->Text.Emphasized1 = { Color::Aqua, Color::Transparent };
+    this->Text.Emphasized2 = { Color::Green, Color::Transparent };
 }
 } // namespace AppCUI::Application
