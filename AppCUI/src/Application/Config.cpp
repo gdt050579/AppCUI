@@ -105,9 +105,6 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
-    this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };
-
     this->StateControl.Normal.TextColor          = ColorPair{ Color::Silver, Color::Transparent };
     this->StateControl.Normal.HotKeyColor        = ColorPair{ Color::Aqua, Color::Transparent };
     this->StateControl.Normal.StateSymbolColor   = ColorPair{ Color::Green, Color::Transparent };
@@ -125,8 +122,6 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Panel.Text        = ColorPair{ Color::White, Color::Transparent };
 
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
@@ -355,5 +350,14 @@ void Config::SetDarkTheme()
           { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },
           { Color::Magenta, Color::Yellow });
+
+    this->Text.Error       = { Color::Red, Color::Transparent };
+    this->Text.Warning     = { Color::Olive, Color::Transparent };
+    this->Text.Normal      = { Color::Silver, Color::Transparent };
+    this->Text.Focused     = { Color::White, Color::Transparent };
+    this->Text.Inactive    = { Color::Gray, Color::Transparent };
+    this->Text.HotKey      = { Color::Aqua, Color::Transparent };
+    this->Text.Hovered     = { Color::Yellow, Color::Transparent };
+    this->Text.Highlighted = { Color::Yellow, Color::Transparent };
 }
 } // namespace AppCUI::Application

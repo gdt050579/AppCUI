@@ -21,7 +21,7 @@ Panel::Panel(const ConstString& caption, string_view layout) : Control(new Contr
 void Panel::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
-    renderer.Clear(' ', Members->Cfg->Panel.NormalColor);
+    renderer.Clear();
     if (Members->Flags & PANEL_ATTR_BORDER)
     {
         renderer.DrawRectSize(
@@ -34,7 +34,7 @@ void Panel::Paint(Graphics::Renderer& renderer)
                   TextAlignament::Left);
             params.X     = 3;
             params.Y     = 0;
-            params.Color = Members->Cfg->Panel.NormalColor;
+            params.Color = Members->Flags & GATTR_ENABLE ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
             params.Width = Members->Layout.Width - 6;
             renderer.WriteText(Members->Text, params);
         }

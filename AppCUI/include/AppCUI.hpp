@@ -2545,6 +2545,14 @@ namespace Graphics
         // Clear
         bool ClearWithSpecialChar(SpecialChars charID, ColorPair color);
         bool Clear(int charCode, ColorPair color);
+        inline bool Clear(int charCode)
+        {
+            return Clear(charCode, NoColorPair);
+        }
+        inline bool Clear()
+        {
+            return Clear(' ', NoColorPair);
+        }
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
@@ -4624,6 +4632,11 @@ namespace Application
         Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
         Graphics::ObjectColorState Button, ButtonHotKey;
 
+        struct
+        {
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted;
+        } Text;
+
         // OLD structures
         struct
         {
@@ -4662,11 +4675,7 @@ namespace Application
                 Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
             } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
-        struct
-        {
-            Graphics::ColorPair NormalColor;
-            Graphics::ColorPair HotKeyColor;
-        } Label;
+
 
         struct
         {
@@ -4683,11 +4692,6 @@ namespace Application
             } Buttons;
 
         } Splitter;
-        struct
-        {
-            Graphics::ColorPair NormalColor, Text;
-        } Panel;
-
 
         struct
         {
