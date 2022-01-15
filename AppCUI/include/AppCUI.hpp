@@ -4817,7 +4817,7 @@ namespace Application
             } Category;
             struct
             {
-                Graphics::ColorPair Text, Value, ReadOnly, Checked, Unchecked, Error;
+                Graphics::ColorPair Checked, Unchecked;
             } Item;
         } PropertyList;
 

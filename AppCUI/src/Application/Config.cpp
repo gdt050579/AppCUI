@@ -245,12 +245,8 @@ void Config::SetDarkTheme()
     this->PropertyList.Category.Text  = ColorPair{ Color::White, Color::Magenta };
     this->PropertyList.Category.Arrow = ColorPair{ Color::Green, Color::Magenta };
     this->PropertyList.Category.Stats = ColorPair{ Color::Gray, Color::Magenta };
-    this->PropertyList.Item.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->PropertyList.Item.Value     = ColorPair{ Color::Yellow, Color::Transparent };
-    this->PropertyList.Item.ReadOnly  = ColorPair{ Color::Gray, Color::Transparent };
     this->PropertyList.Item.Checked   = ColorPair{ Color::Aqua, Color::Transparent };
     this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
-    this->PropertyList.Item.Error     = ColorPair{ Color::Red, Color::Transparent };
 
     //=========================================[NEW FORMAT]=================================
     this->SearchBar.Set(

@@ -910,20 +910,20 @@ void PropertyListContext::DrawListProperty(
         }
         else
         {
-            params.Color = Colors.Item.Error;
+            params.Color = Cfg->Text.Error;
             renderer.WriteText(errText.Format("Value %llu is not among list accepted values", result), params);
         }
         if (!readOnly)
         {
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
-            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Inactive);
             renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::TriangleDown, Colors.Item.Checked);
         }
     }
     else
     {
-        params.Color = Colors.Item.Error;
+        params.Color = Cfg->Text.Error;
         renderer.WriteText(
               "Invalid value type for list (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
               params);
@@ -961,13 +961,13 @@ void PropertyListContext::DrawFlagsProperty(
         {
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
-            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Normal);
             renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
         }
     }
     else
     {
-        params.Color = Colors.Item.Error;
+        params.Color = Cfg->Text.Error;
         renderer.WriteText(
               "Invalid value type for flags (expected a pozitive int value - uint8/16/32/64 or int8/16/32/64>0)",
               params);
@@ -1002,13 +1002,13 @@ void PropertyListContext::DrawCustomProperty(
         {
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
-            renderer.WriteCharacter(X++, params.Y, ' ', Colors.Item.Text);
+            renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Normal);
             renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
         }
     }
     else
     {
-        params.Color = Colors.Item.Error;
+        params.Color = Cfg->Text.Error;
         renderer.WriteText("Invalid value type for list (expecting a string (ascii/unicode/UTF-8)", params);
     }
 }
@@ -1025,7 +1025,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     {
         params.X     = x + extraSpace;
         params.Y     = y;
-        params.Color = Colors.Item.Text;
+        params.Color = Cfg->Text.Normal;
         params.Width = this->propertyNameWidth;
         renderer.WriteText(prop.name, params);
 
@@ -1041,7 +1041,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
     readOnlyStatus = readOnly;
     params.X       = x + extraSpace + 1 + this->propertyNameWidth;
     params.Y       = y;
-    params.Color   = readOnly ? Colors.Item.ReadOnly : Colors.Item.Value;
+    params.Color   = readOnly ? Cfg->Text.Inactive : Cfg->Text.Highlighted;
     params.Flags   = WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::FitTextToWidth;
 
     if (this->object->GetPropertyValue(prop.id, tempPropValue))
@@ -1231,7 +1231,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         if (w > 0)
         {
             params.Width = (uint32) w;
-            params.Color = Colors.Item.Error;
+            params.Color = Cfg->Text.Error;
             renderer.WriteText("<Unable to read item value>", params);
         }
     }
@@ -1275,12 +1275,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Category.Arrow     = this->Cfg->PropertyList.Inactive;
         this->Colors.Category.Stats     = this->Cfg->PropertyList.Inactive;
         this->Colors.Category.Text      = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.ReadOnly      = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.Text          = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.Value         = this->Cfg->PropertyList.Inactive;
         this->Colors.Item.Checked       = this->Cfg->PropertyList.Inactive;
         this->Colors.Item.Unchecked     = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.Error         = this->Cfg->PropertyList.Inactive;
     }
     else
     {
