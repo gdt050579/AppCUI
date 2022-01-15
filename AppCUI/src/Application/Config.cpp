@@ -144,14 +144,6 @@ void Config::SetDarkTheme()
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 
-    this->ProgressStatus.Title            = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->ProgressStatus.Text             = ColorPair{ Color::Silver, Color::DarkBlue };
-    this->ProgressStatus.TerminateMessage = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->ProgressStatus.EmptyProgressBar = ColorPair{ Color::White, Color::Black };
-    this->ProgressStatus.FullProgressBar  = ColorPair{ Color::White, Color::Teal };
-    this->ProgressStatus.Time             = ColorPair{ Color::Aqua, Color::DarkBlue };
-    this->ProgressStatus.Percentage       = ColorPair{ Color::Yellow, Color::DarkBlue };
-
     this->Menu.Activ.Background = ColorPair{ Color::Black, Color::White };
 
     this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
@@ -318,5 +310,15 @@ void Config::SetDarkTheme()
     this->Text.Cursor      = { Color::Black, Color::White };
     this->Text.Emphasized1 = { Color::Aqua, Color::Transparent };
     this->Text.Emphasized2 = { Color::Green, Color::Transparent };
+
+    this->Bakcground.Focused = Color::DarkBlue;
+    this->Bakcground.Regular = Color::Black;
+    this->Bakcground.Error   = Color::DarkRed;
+    this->Bakcground.Warning = Color::Olive;
+    this->Bakcground.Notify  = Color::DarkGreen;
+    this->Bakcground.Tab     = Color::Blue;
+
+    this->ProgressStatus.Empty = { Color::White, Color::Black };
+    this->ProgressStatus.Full  = { Color::White, Color::Teal };
 }
 } // namespace AppCUI::Application

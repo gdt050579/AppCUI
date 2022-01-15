@@ -4637,6 +4637,14 @@ namespace Application
             Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor,
                   Emphasized1, Emphasized2;
         } Text;
+        struct
+        {
+            Graphics::Color Focused, Regular, Error, Notify, Warning, Tab;
+        } Bakcground;
+        struct
+        {
+            Graphics::ColorPair Empty, Full;
+        } ProgressStatus;
 
         // OLD structures
         struct
@@ -4719,11 +4727,7 @@ namespace Application
             Graphics::ColorPair StatusColor;
 
         } ListView;
-        struct
-        {
-            Graphics::ColorPair Title, TerminateMessage, Text, Time, Percentage;
-            Graphics::ColorPair EmptyProgressBar, FullProgressBar;
-        } ProgressStatus;
+
 
         struct
         {
