@@ -8,15 +8,6 @@ void Config::SetDarkTheme()
     this->Desktop.Color                    = ColorPair{ Color::Gray, Color::Black };
     this->Desktop.DesktopFillCharacterCode = 186;
 
-    this->CommandBar.BackgroundColor   = ColorPair{ Color::Black, Color::White };
-    this->CommandBar.ShiftKeysColor    = ColorPair{ Color::Gray, Color::White };
-    this->CommandBar.Normal.KeyColor   = ColorPair{ Color::DarkRed, Color::White };
-    this->CommandBar.Normal.NameColor  = ColorPair{ Color::Black, Color::White };
-    this->CommandBar.Hover.KeyColor    = ColorPair{ Color::DarkRed, Color::Silver };
-    this->CommandBar.Hover.NameColor   = ColorPair{ Color::Black, Color::Silver };
-    this->CommandBar.Pressed.KeyColor  = ColorPair{ Color::White, Color::Magenta };
-    this->CommandBar.Pressed.NameColor = ColorPair{ Color::Yellow, Color::Magenta };
-
     this->Window.ActiveColor        = ColorPair{ Color::White, Color::DarkBlue };
     this->Window.InactiveColor      = ColorPair{ Color::Silver, Color::Black };
     this->Window.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkBlue };
@@ -105,28 +96,9 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
-    this->Label.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Label.HotKeyColor = ColorPair{ Color::Yellow, Color::Transparent };
-
-    this->StateControl.Normal.TextColor          = ColorPair{ Color::Silver, Color::Transparent };
-    this->StateControl.Normal.HotKeyColor        = ColorPair{ Color::Aqua, Color::Transparent };
-    this->StateControl.Normal.StateSymbolColor   = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Focused.TextColor         = ColorPair{ Color::White, Color::Transparent };
-    this->StateControl.Focused.HotKeyColor       = ColorPair{ Color::Aqua, Color::Transparent };
-    this->StateControl.Focused.StateSymbolColor  = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Hover.TextColor           = ColorPair{ Color::Yellow, Color::Transparent };
-    this->StateControl.Hover.HotKeyColor         = ColorPair{ Color::Aqua, Color::Transparent };
-    this->StateControl.Hover.StateSymbolColor    = ColorPair{ Color::Green, Color::Transparent };
-    this->StateControl.Inactive.TextColor        = ColorPair{ Color::Gray, Color::Transparent };
-    this->StateControl.Inactive.HotKeyColor      = ColorPair{ Color::Gray, Color::Transparent };
-    this->StateControl.Inactive.StateSymbolColor = ColorPair{ Color::Gray, Color::Transparent };
-
     this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
-
-    this->Panel.NormalColor = ColorPair{ Color::Silver, Color::Transparent };
-    this->Panel.Text        = ColorPair{ Color::White, Color::Transparent };
 
     this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
     this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
@@ -136,16 +108,6 @@ void Config::SetDarkTheme()
     this->Tab.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
     this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
     this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
-
-    this->View.Normal.Hotkey       = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Normal.Text         = ColorPair{ Color::Silver, Color::Transparent };
-    this->View.Focused.Hotkey      = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Focused.Text        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->View.Hover.Hotkey        = ColorPair{ Color::Red, Color::Transparent };
-    this->View.Hover.Text          = ColorPair{ Color::White, Color::Transparent };
-    this->View.Inactive.Hotkey     = ColorPair{ Color::Gray, Color::Transparent };
-    this->View.Inactive.Text       = ColorPair{ Color::Gray, Color::Transparent };
-    this->View.InactiveCanvasColor = ColorPair{ Color::Black, Color::Transparent };
 
     this->ScrollBar.Arrows   = ColorPair{ Color::White, Color::Teal };
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
@@ -160,14 +122,7 @@ void Config::SetDarkTheme()
     this->ListView.ColumnSort.Text       = ColorPair{ Color::White, Color::Pink };
     this->ListView.ColumnSort.HotKey     = ColorPair{ Color::Black, Color::Pink };
 
-    this->ListView.Item.Regular      = ColorPair{ Color::Silver, Color::Transparent };
-    this->ListView.Item.Highligheted = ColorPair{ Color::White, Color::Transparent };
-    this->ListView.Item.Inactive     = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.Item.Error        = ColorPair{ Color::Red, Color::Transparent };
-    this->ListView.Item.Warning      = ColorPair{ Color::Olive, Color::Transparent };
-    this->ListView.Item.Emphasized1  = ColorPair{ Color::Aqua, Color::Transparent };
-    this->ListView.Item.Emphasized2  = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.Item.Category     = ColorPair{ Color::Yellow, Color::Transparent };
+    this->ListView.Item.Category = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
@@ -180,71 +135,55 @@ void Config::SetDarkTheme()
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 
-    this->ProgressStatus.Title            = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->ProgressStatus.Text             = ColorPair{ Color::Silver, Color::DarkBlue };
-    this->ProgressStatus.TerminateMessage = ColorPair{ Color::Gray, Color::DarkBlue };
-    this->ProgressStatus.EmptyProgressBar = ColorPair{ Color::White, Color::Black };
-    this->ProgressStatus.FullProgressBar  = ColorPair{ Color::White, Color::Teal };
-    this->ProgressStatus.Time             = ColorPair{ Color::Aqua, Color::DarkBlue };
-    this->ProgressStatus.Percentage       = ColorPair{ Color::Yellow, Color::DarkBlue };
+    this->MenuOld.Activ.Background = ColorPair{ Color::Black, Color::White };
 
-    this->Menu.Activ.Background = ColorPair{ Color::Black, Color::White };
+    this->MenuOld.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
+    this->MenuOld.Activ.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::White };
+    this->MenuOld.Activ.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::White };
+    this->MenuOld.Activ.Normal.Check    = ColorPair{ Color::DarkGreen, Color::White };
+    this->MenuOld.Activ.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::White };
 
-    this->Menu.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
-    this->Menu.Activ.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::White };
-    this->Menu.Activ.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::White };
-    this->Menu.Activ.Normal.Check    = ColorPair{ Color::DarkGreen, Color::White };
-    this->Menu.Activ.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::White };
+    this->MenuOld.Activ.Selected.Text     = ColorPair{ Color::White, Color::Magenta };
+    this->MenuOld.Activ.Selected.HotKey   = ColorPair{ Color::Yellow, Color::Magenta };
+    this->MenuOld.Activ.Selected.ShortCut = ColorPair{ Color::Yellow, Color::Magenta };
+    this->MenuOld.Activ.Selected.Check    = ColorPair{ Color::Aqua, Color::Magenta };
+    this->MenuOld.Activ.Selected.Uncheck  = ColorPair{ Color::Silver, Color::Magenta };
 
-    this->Menu.Activ.Selected.Text     = ColorPair{ Color::White, Color::Magenta };
-    this->Menu.Activ.Selected.HotKey   = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Menu.Activ.Selected.ShortCut = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Menu.Activ.Selected.Check    = ColorPair{ Color::Aqua, Color::Magenta };
-    this->Menu.Activ.Selected.Uncheck  = ColorPair{ Color::Silver, Color::Magenta };
+    this->MenuOld.Activ.Inactive.Text     = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Activ.Inactive.HotKey   = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Activ.Inactive.ShortCut = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Activ.Inactive.Check    = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Activ.Inactive.Uncheck  = ColorPair{ Color::Silver, Color::White };
 
-    this->Menu.Activ.Inactive.Text     = ColorPair{ Color::Silver, Color::White };
-    this->Menu.Activ.Inactive.HotKey   = ColorPair{ Color::Silver, Color::White };
-    this->Menu.Activ.Inactive.ShortCut = ColorPair{ Color::Silver, Color::White };
-    this->Menu.Activ.Inactive.Check    = ColorPair{ Color::Silver, Color::White };
-    this->Menu.Activ.Inactive.Uncheck  = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Parent.Background = ColorPair{ Color::Gray, Color::Silver };
 
-    this->Menu.Parent.Background = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Normal.Text     = ColorPair{ Color::Black, Color::Silver };
+    this->MenuOld.Parent.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::Silver };
+    this->MenuOld.Parent.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::Silver };
+    this->MenuOld.Parent.Normal.Check    = ColorPair{ Color::DarkGreen, Color::Silver };
+    this->MenuOld.Parent.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::Silver };
 
-    this->Menu.Parent.Normal.Text     = ColorPair{ Color::Black, Color::Silver };
-    this->Menu.Parent.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::Silver };
-    this->Menu.Parent.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::Silver };
-    this->Menu.Parent.Normal.Check    = ColorPair{ Color::DarkGreen, Color::Silver };
-    this->Menu.Parent.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::Silver };
+    this->MenuOld.Parent.Selected.Text     = ColorPair{ Color::White, Color::Gray };
+    this->MenuOld.Parent.Selected.HotKey   = ColorPair{ Color::White, Color::Gray };
+    this->MenuOld.Parent.Selected.ShortCut = ColorPair{ Color::White, Color::Gray };
+    this->MenuOld.Parent.Selected.Check    = ColorPair{ Color::White, Color::Gray };
+    this->MenuOld.Parent.Selected.Uncheck  = ColorPair{ Color::White, Color::Gray };
 
-    this->Menu.Parent.Selected.Text     = ColorPair{ Color::White, Color::Gray };
-    this->Menu.Parent.Selected.HotKey   = ColorPair{ Color::White, Color::Gray };
-    this->Menu.Parent.Selected.ShortCut = ColorPair{ Color::White, Color::Gray };
-    this->Menu.Parent.Selected.Check    = ColorPair{ Color::White, Color::Gray };
-    this->Menu.Parent.Selected.Uncheck  = ColorPair{ Color::White, Color::Gray };
+    this->MenuOld.Parent.Inactive.Text     = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Inactive.HotKey   = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Inactive.ShortCut = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Inactive.Check    = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Inactive.Uncheck  = ColorPair{ Color::Gray, Color::Silver };
 
-    this->Menu.Parent.Inactive.Text     = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Inactive.HotKey   = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Inactive.ShortCut = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Inactive.Check    = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Inactive.Uncheck  = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Activ.Button.Normal   = ColorPair{ Color::Blue, Color::White };
+    this->MenuOld.Activ.Button.Inactive = ColorPair{ Color::Silver, Color::White };
+    this->MenuOld.Activ.Button.Hover    = ColorPair{ Color::Black, Color::Aqua };
+    this->MenuOld.Activ.Button.Pressed  = ColorPair{ Color::Red, Color::White };
 
-    this->Menu.Activ.Button.Normal   = ColorPair{ Color::Blue, Color::White };
-    this->Menu.Activ.Button.Inactive = ColorPair{ Color::Silver, Color::White };
-    this->Menu.Activ.Button.Hover    = ColorPair{ Color::Black, Color::Aqua };
-    this->Menu.Activ.Button.Pressed  = ColorPair{ Color::Red, Color::White };
-
-    this->Menu.Parent.Button.Normal   = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Button.Inactive = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
-    this->Menu.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
-
-    this->MenuBar.BackgroundColor     = ColorPair{ Color::Black, Color::White };
-    this->MenuBar.Normal.HotKeyColor  = ColorPair{ Color::DarkRed, Color::White };
-    this->MenuBar.Normal.NameColor    = ColorPair{ Color::Black, Color::White };
-    this->MenuBar.Hover.HotKeyColor   = ColorPair{ Color::DarkRed, Color::Silver };
-    this->MenuBar.Hover.NameColor     = ColorPair{ Color::Black, Color::Silver };
-    this->MenuBar.Pressed.HotKeyColor = ColorPair{ Color::White, Color::Magenta };
-    this->MenuBar.Pressed.NameColor   = ColorPair{ Color::Yellow, Color::Magenta };
+    this->MenuOld.Parent.Button.Normal   = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Button.Inactive = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
+    this->MenuOld.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
 
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
@@ -289,25 +228,8 @@ void Config::SetDarkTheme()
     this->PropertyList.Category.Text  = ColorPair{ Color::White, Color::Magenta };
     this->PropertyList.Category.Arrow = ColorPair{ Color::Green, Color::Magenta };
     this->PropertyList.Category.Stats = ColorPair{ Color::Gray, Color::Magenta };
-    this->PropertyList.Item.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->PropertyList.Item.Value     = ColorPair{ Color::Yellow, Color::Transparent };
-    this->PropertyList.Item.ReadOnly  = ColorPair{ Color::Gray, Color::Transparent };
     this->PropertyList.Item.Checked   = ColorPair{ Color::Aqua, Color::Transparent };
     this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
-    this->PropertyList.Item.Error     = ColorPair{ Color::Red, Color::Transparent };
-
-    this->CharacterTable.Focus.Cursor    = ColorPair{ Color::Black, Color::White };
-    this->CharacterTable.Focus.Offset    = ColorPair{ Color::Black, Color::Teal };
-    this->CharacterTable.Focus.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Normal.Cursor   = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Normal.Offset   = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Normal.Text     = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Hover.Cursor    = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Hover.Offset    = ColorPair{ Color::Yellow, Color::Transparent };
-    this->CharacterTable.Hover.Text      = ColorPair{ Color::Silver, Color::Transparent };
-    this->CharacterTable.Inactive.Cursor = ColorPair{ Color::Gray, Color::Transparent };
-    this->CharacterTable.Inactive.Offset = ColorPair{ Color::Gray, Color::Transparent };
-    this->CharacterTable.Inactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
 
     //=========================================[NEW FORMAT]=================================
     this->SearchBar.Set(
@@ -324,17 +246,17 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Magenta });
 
-    this->Text.Set(
+    this->Editor.Set(
           { Color::White, Color::Black },
           { Color::Silver, Color::Black },
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Black });
 
     this->LineMarker.Set(
-          { Color::White, Color::DarkRed },
-          { Color::Silver, Color::Black },
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Blue },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Black });
+          { Color::Yellow, Color::Blue });
 
     this->TextSelectionColor     = { Color::Yellow, Color::Magenta };
     this->TextSelectedLineMarker = { Color::Yellow, Color::Magenta };
@@ -349,11 +271,48 @@ void Config::SetDarkTheme()
           { Color::Black, Color::White },
           { Color::Black, Color::Gray },
           { Color::Gray, Color::Black },
-          { Color::Black, Color::Yellow });
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::Olive });
     this->ButtonHotKey.Set(
           { Color::Magenta, Color::White },
           { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },
-          { Color::Magenta, Color::Yellow });
+          { Color::Magenta, Color::Yellow },
+          { Color::DarkRed, Color::Olive });
+
+    this->Text.Error       = { Color::Red, Color::Transparent };
+    this->Text.Warning     = { Color::Olive, Color::Transparent };
+    this->Text.Normal      = { Color::Silver, Color::Transparent };
+    this->Text.Focused     = { Color::White, Color::Transparent };
+    this->Text.Inactive    = { Color::Gray, Color::Transparent };
+    this->Text.HotKey      = { Color::Aqua, Color::Transparent };
+    this->Text.Hovered     = { Color::Yellow, Color::Transparent };
+    this->Text.Highlighted = { Color::Yellow, Color::Transparent };
+    this->Text.Cursor      = { Color::Black, Color::White };
+    this->Text.Emphasized1 = { Color::Aqua, Color::Transparent };
+    this->Text.Emphasized2 = { Color::Green, Color::Transparent };
+
+    this->Bakcground.Focused = Color::DarkBlue;
+    this->Bakcground.Regular = Color::Black;
+    this->Bakcground.Error   = Color::DarkRed;
+    this->Bakcground.Warning = Color::Olive;
+    this->Bakcground.Notify  = Color::DarkGreen;
+    this->Bakcground.Tab     = Color::Blue;
+
+    this->ProgressStatus.Empty = { Color::White, Color::Black };
+    this->ProgressStatus.Full  = { Color::White, Color::Teal };
+
+    this->Menu.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Black, Color::Silver },
+          { Color::Yellow, Color::Magenta });
+    this->Menu.HotKey.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::White },
+          { Color::Gray, Color::White },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Magenta });
 }
 } // namespace AppCUI::Application

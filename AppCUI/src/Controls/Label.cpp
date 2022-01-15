@@ -15,10 +15,11 @@ void Label::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
+    const bool enabled    = (Members->Flags & GATTR_ENABLE) != 0;
     params.X              = 0;
     params.Y              = 0;
-    params.Color          = Members->Cfg->Label.NormalColor;
-    params.HotKeyColor    = Members->Cfg->Label.HotKeyColor;
+    params.Color          = enabled ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
+    params.HotKeyColor    = enabled ? Members->Cfg->Text.HotKey : Members->Cfg->Text.Inactive;
     params.HotKeyPosition = Members->HotKeyOffset;
     if (Members->Layout.Height == 1)
     {

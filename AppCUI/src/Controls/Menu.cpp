@@ -90,9 +90,9 @@ ItemHandle MenuContext::AddItem(unique_ptr<MenuItem> itm)
 }
 void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
 {
-    auto* col = &this->Cfg->Menu.Activ;
+    auto* col = &this->Cfg->MenuOld.Activ;
     if (!activ)
-        col = &this->Cfg->Menu.Parent;
+        col = &this->Cfg->MenuOld.Parent;
 
     auto* itemCol = &col->Normal;
     WriteTextParams textParams(

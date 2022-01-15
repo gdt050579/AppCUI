@@ -373,41 +373,35 @@ namespace Graphics
     constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
     struct ObjectColorState
     {
-        ColorPair Focused, Normal, Hovered, Inactive;
+        ColorPair Focused, Normal, Hovered, Inactive, PressedOrSelected;
         ObjectColorState()
         {
         }
-        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
-            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(hovered)
+
+        inline void Set(
+              ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered, ColorPair pressedOrSelected)
         {
-        }
-        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive)
-            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(normal)
-        {
-        }
-        ObjectColorState(Color focused, Color normal, Color inactive, Color hovered)
-            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
-              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ hovered, Color::Transparent })
-        {
-        }
-        ObjectColorState(Color focused, Color normal, Color inactive)
-            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
-              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ normal, Color::Transparent })
-        {
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = hovered;
+            PressedOrSelected = pressedOrSelected;
         }
         inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
         {
-            Focused  = focused;
-            Normal   = normal;
-            Inactive = inactive;
-            Hovered  = hovered;
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = hovered;
+            PressedOrSelected = focused;
         }
         inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive)
         {
-            Focused  = focused;
-            Normal   = normal;
-            Inactive = inactive;
-            Hovered  = normal;
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = normal;
+            PressedOrSelected = focused;
         }
         inline void Set(Color focused, Color normal, Color inactive, Color hovered, Color backgroud)
         {
@@ -2504,8 +2498,7 @@ namespace Graphics
         bool WriteText(const ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
-        bool WriteSingleLineCharacterBuffer(
-              int x, int y, Utils::CharacterView charView, bool noTransparency = true);
+        bool WriteSingleLineCharacterBuffer(int x, int y, Utils::CharacterView charView, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
@@ -2545,6 +2538,14 @@ namespace Graphics
         // Clear
         bool ClearWithSpecialChar(SpecialChars charID, ColorPair color);
         bool Clear(int charCode, ColorPair color);
+        inline bool Clear(int charCode)
+        {
+            return Clear(charCode, NoColorPair);
+        }
+        inline bool Clear()
+        {
+            return Clear(' ', NoColorPair);
+        }
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
@@ -4622,9 +4623,27 @@ namespace Application
     struct Config
     {
         // NEW structures
-        Graphics::ObjectColorState SearchBar, Border, Lines, Text, LineMarker, PasswordMarker;
-        Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
+        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
+        Graphics::ColorPair TextSelectionColor, TextSelectedLineMarker;
         Graphics::ObjectColorState Button, ButtonHotKey;
+
+        struct
+        {
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor,
+                  Emphasized1, Emphasized2;
+        } Text;
+        struct
+        {
+            Graphics::Color Focused, Regular, Error, Notify, Warning, Tab;
+        } Bakcground;
+        struct
+        {
+            Graphics::ColorPair Empty, Full;
+        } ProgressStatus;
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey;
+        } Menu, ParentMenu;
 
         // OLD structures
         struct
@@ -4632,16 +4651,7 @@ namespace Application
             char16 DesktopFillCharacterCode;
             Graphics::ColorPair Color;
         } Desktop;
-        struct
-        {
-            Graphics::ColorPair BackgroundColor;
-            Graphics::ColorPair ShiftKeysColor;
-            struct
-            {
-                Graphics::ColorPair KeyColor;
-                Graphics::ColorPair NameColor;
-            } Normal, Hover, Pressed;
-        } CommandBar;
+
         struct
         {
             Graphics::ColorPair ActiveColor;
@@ -4664,19 +4674,7 @@ namespace Application
                 Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
             } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
-        struct
-        {
-            Graphics::ColorPair NormalColor;
-            Graphics::ColorPair HotKeyColor;
-        } Label;
 
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair TextColor, HotKeyColor, StateSymbolColor;
-            } Normal, Focused, Inactive, Hover;
-        } StateControl;
         struct
         {
             struct
@@ -4685,11 +4683,6 @@ namespace Application
             } Buttons;
 
         } Splitter;
-        struct
-        {
-            Graphics::ColorPair NormalColor, Text;
-        } Panel;
-
 
         struct
         {
@@ -4697,14 +4690,7 @@ namespace Application
                   HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } Tab;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, Hotkey;
-            } Normal, Focused, Inactive, Hover;
-            Graphics::ColorPair InactiveCanvasColor;
-        } View;
+
         struct
         {
             Graphics::ColorPair Bar, Arrows, Position;
@@ -4717,7 +4703,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Highligheted, Inactive, Error, Warning, Emphasized1, Emphasized2, Category;
+                Graphics::ColorPair Category;
             } Item;
             struct
             {
@@ -4731,11 +4717,6 @@ namespace Application
             Graphics::ColorPair StatusColor;
 
         } ListView;
-        struct
-        {
-            Graphics::ColorPair Title, TerminateMessage, Text, Time, Percentage;
-            Graphics::ColorPair EmptyProgressBar, FullProgressBar;
-        } ProgressStatus;
 
         struct
         {
@@ -4751,16 +4732,8 @@ namespace Application
                     Graphics::ColorPair Normal, Hover, Inactive, Pressed;
                 } Button;
             } Activ, Parent;
-        } Menu;
-        struct
-        {
-            Graphics::ColorPair BackgroundColor;
-            struct
-            {
-                Graphics::ColorPair HotKeyColor;
-                Graphics::ColorPair NameColor;
-            } Normal, Hover, Pressed;
-        } MenuBar;
+        } MenuOld;
+
         struct
         {
             struct
@@ -4825,16 +4798,10 @@ namespace Application
             } Category;
             struct
             {
-                Graphics::ColorPair Text, Value, ReadOnly, Checked, Unchecked, Error;
+                Graphics::ColorPair Checked, Unchecked;
             } Item;
         } PropertyList;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Text, Offset, Cursor;
-            } Focus, Normal, Inactive, Hover;
-        } CharacterTable;
+
         void SetDarkTheme();
     };
 

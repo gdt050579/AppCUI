@@ -195,28 +195,13 @@ bool CharacterTableContext::OnMouseOver(int x, int y, uint32& code, int& toolTip
 void CharacterTableContext::Paint(Graphics::Renderer& renderer)
 {
     NumericFormatter n;
-    auto* col = &this->Cfg->CharacterTable.Normal;
-    auto colB = this->Cfg->Border.Normal;
-
-    if (!(this->Flags & GATTR_ENABLE))
-    {
-        col  = &this->Cfg->CharacterTable.Inactive;
-        colB = this->Cfg->Border.Inactive;
-    }
-    else if (this->Focused)
-    {
-        col  = &this->Cfg->CharacterTable.Focus;
-        colB = this->Cfg->Border.Focused;
-    }
-    else if (this->MouseIsOver)
-    {
-        col  = &this->Cfg->CharacterTable.Hover;
-        colB = this->Cfg->Border.Hovered;
-    }
+    auto col      = this->Flags & GATTR_ENABLE ? this->Cfg->Text.Normal : this->Cfg->Text.Inactive;
+    auto colB     = this->GetStateColor(this->Cfg->Border);
+    auto lnNumber = this->GetStateColorWithoutHovered(this->Cfg->LineMarker);
 
     renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
     renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, colB, false);
-    renderer.FillRect(1, 1, OFFSET_X_RIGHT_MARGIN - 1, this->Layout.Height - 2, ' ', col->Offset);
+    renderer.FillRect(1, 1, OFFSET_X_RIGHT_MARGIN - 1, this->Layout.Height - 2, ' ', lnNumber);
     if (Focused)
     {
         renderer.WriteSingleLineText(1, this->Layout.Height - 1, " 0x     ", Cfg->SearchBar.Inactive);
@@ -241,15 +226,15 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
     {
         // write the offset
         renderer.WriteSingleLineText(
-              OFFSET_X_RIGHT_MARGIN - 1, y + 1, n.ToHex(charCode), col->Offset, TextAlignament::Right);
+              OFFSET_X_RIGHT_MARGIN - 1, y + 1, n.ToHex(charCode), lnNumber, TextAlignament::Right);
         for (auto x = 0; (x < w) && (charCode < 0x10000); x++, charCode++)
         {
-            renderer.WriteCharacter(x * 2 + CHARACTER_X_OFFSET, y + 1, charCode, col->Text);
-            if (charCode == character)
+            renderer.WriteCharacter(x * 2 + CHARACTER_X_OFFSET, y + 1, charCode, col);
+            if ((charCode == character) && (this->Focused))
             {
                 renderer.FillHorizontalLine(
-                      x * 2 + CHARACTER_X_OFFSET - 1, y + 1, x * 2 + CHARACTER_X_OFFSET + 1, -1, col->Cursor);
-                if ((this->Focused) && (!editMode))
+                      x * 2 + CHARACTER_X_OFFSET - 1, y + 1, x * 2 + CHARACTER_X_OFFSET + 1, -1, Cfg->Text.Cursor);
+                if (!editMode)
                     renderer.SetCursor(x * 2 + CHARACTER_X_OFFSET, y + 1);
             }
         }

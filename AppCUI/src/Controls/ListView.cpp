@@ -189,7 +189,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     int itemStarts;
     ListViewColumn* column   = this->Columns.List;
     CharacterBuffer* subitem = item->SubItem;
-    ColorPair itemCol        = Cfg->ListView.Item.Regular;
+    ColorPair itemCol        = Cfg->Text.Normal;
     ColorPair checkCol, uncheckCol;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.Y = y;
@@ -210,22 +210,22 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         itemCol = item->ItemColor;
         break;
     case ListViewItemType::Highlighted:
-        itemCol = Cfg->ListView.Item.Highligheted;
+        itemCol = Cfg->Text.Highlighted;
         break;
     case ListViewItemType::ErrorInformation:
-        itemCol = Cfg->ListView.Item.Error;
+        itemCol = Cfg->Text.Error;
         break;
     case ListViewItemType::WarningInformation:
-        itemCol = Cfg->ListView.Item.Warning;
+        itemCol = Cfg->Text.Warning;
         break;
     case ListViewItemType::GrayedOut:
-        itemCol = Cfg->ListView.Item.Inactive;
+        itemCol = Cfg->Text.Inactive;
         break;
     case ListViewItemType::Emphasized_1:
-        itemCol = Cfg->ListView.Item.Emphasized1;
+        itemCol = Cfg->Text.Emphasized1;
         break;
     case ListViewItemType::Emphasized_2:
-        itemCol = Cfg->ListView.Item.Emphasized2;
+        itemCol = Cfg->Text.Emphasized2;
         break;
     case ListViewItemType::Category:
         itemCol = Cfg->ListView.Item.Category;
@@ -235,7 +235,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     }
     // disable is not active
     if (!(Flags & GATTR_ENABLE))
-        itemCol = Cfg->ListView.Item.Inactive;
+        itemCol = Cfg->Text.Inactive;
     else
     {
         // if activ and filtered
@@ -469,7 +469,7 @@ int ListViewControlContext::GetNrColumns()
 ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (uint32) Items.List.size();
-    Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
+    Items.List.push_back(ListViewItem(Cfg->Text.Normal));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
     return idx;

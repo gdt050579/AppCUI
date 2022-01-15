@@ -73,12 +73,12 @@ bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, i
 }
 void CommandBarController::Paint(Graphics::Renderer& renderer)
 {
-    renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->CommandBar.BackgroundColor);
+    renderer.FillHorizontalLineSize(0, BarLayout.Y, BarLayout.Width, ' ', Cfg->Menu.Text.Normal);
     if (RecomputeScreenPos)
         ComputeScreenPos();
 
     if (ShiftStatus.length() > 0)
-        renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->CommandBar.ShiftKeysColor);
+        renderer.WriteSingleLineText(0, BarLayout.Y, ShiftStatus, Cfg->Menu.Text.Inactive);
 
     uint32 shift = ((uint32) CurrentShiftKey) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     if (shift >= MAX_COMMANDBAR_SHIFTSTATES)
@@ -89,21 +89,31 @@ void CommandBarController::Paint(Graphics::Renderer& renderer)
     CommandBarFieldIndex* bi = &VisibleFields[shift][0];
     CommandBarFieldIndex* ei = bi + IndexesCount[shift];
     CommandBarField* cmd;
-    auto* colCfg = &this->Cfg->CommandBar.Normal;
+
+    Graphics::ColorPair colText, colHotKey;
 
     while (bi < ei)
     {
         cmd = bi->Field;
         if (cmd == this->PressedField)
-            colCfg = &this->Cfg->CommandBar.Pressed;
+        {
+            colText = Cfg->Menu.Text.PressedOrSelected;
+            colHotKey = Cfg->Menu.HotKey.PressedOrSelected;
+        }
         else if (cmd == this->HoveredField)
-            colCfg = &this->Cfg->CommandBar.Hover;
+        {
+            colText   = Cfg->Menu.Text.Hovered;
+            colHotKey = Cfg->Menu.HotKey.Hovered;
+        }
         else
-            colCfg = &this->Cfg->CommandBar.Normal;
+        {
+            colText   = Cfg->Menu.Text.Normal;
+            colHotKey = Cfg->Menu.HotKey.Normal;
+        }
 
-        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colCfg->KeyColor);
+        renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colHotKey);
         renderer.WriteSingleLineText(
-              cmd->StartScreenPos + (int) cmd->KeyName.length(), BarLayout.Y, cmd->Name, colCfg->NameColor);
+              cmd->StartScreenPos + (int) cmd->KeyName.length(), BarLayout.Y, cmd->Name, colText);
 
         bi++;
     }

@@ -516,7 +516,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
 
     paramsSeparator.Width = Members->Layout.Width - 7;
     paramsSeparator.X     = 3;
-    paramsSeparator.Color = Members->Cfg->Menu.Activ.Inactive.Text;
+    paramsSeparator.Color = Members->Cfg->MenuOld.Activ.Inactive.Text;
     auto cbc              = Members->GetStateColor(Members->Cfg->Button);
 
     auto itemsCount = Members->Items.size();
@@ -535,17 +535,17 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
     if (Members->Flags & GATTR_EXPANDED)
     {
         renderer.FillRect(
-              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->Menu.Activ.Background);
+              0, 1, Members->Layout.Width - 1, Members->ExpandedHeight, ' ', Members->Cfg->MenuOld.Activ.Background);
         renderer.DrawRect(
               0,
               1,
               Members->Layout.Width - 1,
               Members->ExpandedHeight,
-              Members->Cfg->Menu.Activ.Background,
+              Members->Cfg->MenuOld.Activ.Background,
               LineType::Single);
         params.X     = 1;
         params.Width = Members->Layout.Width - 2;
-        params.Color = Members->Cfg->Menu.Activ.Normal.Text;
+        params.Color = Members->Cfg->MenuOld.Activ.Normal.Text;
         for (uint32 tr = 0; tr < Members->VisibleItemsCount; tr++)
         {
             if ((tr + Members->FirstVisibleItem) >= itemsCount)
@@ -559,7 +559,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                       tr + 2,
                       Members->Layout.Width - 2,
                       SpecialChars::BoxHorizontalSingleLine,
-                      Members->Cfg->Menu.Activ.Inactive.Text);
+                      Members->Cfg->MenuOld.Activ.Inactive.Text);
                 if (i.Text.Len() > 0)
                 {
                     paramsSeparator.Y = tr + 2;
@@ -573,10 +573,10 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                 // cursor or selection
                 if (i.Index == Members->CurentItemIndex)
                     renderer.FillHorizontalLine(
-                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Activ.Selected.HotKey); // a different color
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->MenuOld.Activ.Selected.HotKey); // a different color
                 else if (i.Index == Members->HoveredIndexItem)
                     renderer.FillHorizontalLine(
-                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Activ.Selected.Text);
+                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->MenuOld.Activ.Selected.Text);
             }
         }
     }

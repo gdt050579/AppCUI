@@ -16,15 +16,19 @@ void CheckBox::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    auto* cbc = &Members->Cfg->StateControl.Normal;
+    const ColorPair colHK = Members->Flags & GATTR_ENABLE ? Members->Cfg->Text.HotKey : Members->Cfg->Text.Inactive;
+    ColorPair colTxt;
     if (!this->IsEnabled())
-        cbc = &Members->Cfg->StateControl.Inactive;
-    if (Members->Focused)
-        cbc = &Members->Cfg->StateControl.Focused;
+        colTxt = Members->Cfg->Text.Inactive;
+    else if (Members->Focused)
+        colTxt = Members->Cfg->Text.Focused;
     else if (Members->MouseIsOver)
-        cbc = &Members->Cfg->StateControl.Hover;
+        colTxt = Members->Cfg->Text.Hovered;
+    else
+        colTxt = Members->Cfg->Text.Normal;
 
-    renderer.WriteSingleLineText(0, 0, "[ ] ", cbc->TextColor);
+
+    renderer.WriteSingleLineText(0, 0, "[ ] ", colTxt);
 
     WriteTextParams params(WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey);
     params.HotKeyPosition = Members->HotKeyOffset;
@@ -32,14 +36,14 @@ void CheckBox::Paint(Graphics::Renderer& renderer)
     params.Y              = 0;
     if (Members->Layout.Height == 1)
     {
-        params.Color       = cbc->TextColor;
-        params.HotKeyColor = cbc->HotKeyColor;
+        params.Color       = colTxt;
+        params.HotKeyColor = colHK;
         params.Flags |= WriteTextFlags::SingleLine;
     }
     else
     {
-        params.Color       = cbc->TextColor;
-        params.HotKeyColor = cbc->HotKeyColor;
+        params.Color       = colTxt;
+        params.HotKeyColor = colHK;
         params.Flags |= WriteTextFlags::MultipleLines | WriteTextFlags::WrapToWidth;
         params.Width = Members->Layout.Width - 4; // without the '[ ] ' characters
     }
@@ -47,7 +51,7 @@ void CheckBox::Paint(Graphics::Renderer& renderer)
 
     if (IsChecked())
     {
-        renderer.WriteCharacter(1, 0, 'X', cbc->StateSymbolColor);
+        renderer.WriteCharacter(1, 0, 'X', Members->Cfg->PropertyList.Item.Checked);
     }
     if (Members->Focused)
         renderer.SetCursor(1, 0);

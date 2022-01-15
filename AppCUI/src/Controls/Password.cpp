@@ -17,7 +17,7 @@ void Password::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    auto col     = Members->GetStateColor(Members->Cfg->Text);
+    auto col     = Members->GetStateColor(Members->Cfg->Editor);
     auto colPass = Members->GetStateColor(Members->Cfg->PasswordMarker);
 
     int sz = Members->Text.Len();

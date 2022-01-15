@@ -33,7 +33,7 @@ struct ProgressStatusData
 };
 
 static ProgressStatusData PSData = {};
-bool progress_inited             = false;
+static bool progress_inited      = false;
 
 void ProgressStatus_Paint_Panel()
 {
@@ -59,7 +59,7 @@ void ProgressStatus_Paint_Panel()
           TextAlignament::Center);
     params.X     = 5;
     params.Y     = 0;
-    params.Color = PSData.App->config.ProgressStatus.Title;
+    params.Color = PSData.App->config.Text.Highlighted;
     params.Width = PROGRESS_STATUS_PANEL_WIDTH - 10;
     canvas->WriteText(PSData.Title, params);
 
@@ -73,9 +73,8 @@ void ProgressStatus_Paint_Status()
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
 
-    canvas->FillHorizontalLine(
-          2, 3, PROGRESS_STATUS_PANEL_WIDTH - 3, ' ', PSData.App->config.ProgressStatus.EmptyProgressBar);
-    canvas->WriteSingleLineText(2, 2, PSData.Text, PSData.App->config.ProgressStatus.Text);
+    canvas->FillHorizontalLine(2, 3, PROGRESS_STATUS_PANEL_WIDTH - 3, ' ', PSData.App->config.ProgressStatus.Empty);
+    canvas->WriteSingleLineText(2, 2, PSData.Text, PSData.App->config.Text.Normal);
 
     if (PSData.MaxValue > 0)
     {
@@ -83,24 +82,24 @@ void ProgressStatus_Paint_Status()
               PROGRESS_STATUS_PANEL_WIDTH - 6,
               2,
               string_view(PSData.progressString, 4),
-              PSData.App->config.ProgressStatus.Percentage);
+              PSData.App->config.Text.Highlighted);
         canvas->FillHorizontalLine(
               2,
               3,
               ((PSData.Progress * (PROGRESS_STATUS_PANEL_WIDTH - 4)) / 100) + 1,
               ' ',
-              PSData.App->config.ProgressStatus.FullProgressBar);
-        canvas->WriteSingleLineText(2, 4, "ETA:", PSData.App->config.ProgressStatus.Text);
+              PSData.App->config.ProgressStatus.Full);
+        canvas->WriteSingleLineText(2, 4, "ETA:", PSData.App->config.Text.Normal);
     }
     else
     {
-        canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.ProgressStatus.Text);
+        canvas->WriteSingleLineText(2, 4, "Ellapsed:", PSData.App->config.Text.Normal);
     }
     canvas->WriteSingleLineText(
           (PROGRESS_STATUS_PANEL_WIDTH - 2) - (uint32) PSData.timeStr.Len(),
           4,
           PSData.timeStr,
-          PSData.App->config.ProgressStatus.Time);
+          PSData.App->config.Text.Highlighted);
 
     PSData.App->terminal->Update();
 }
@@ -130,15 +129,15 @@ void ProgressStatus_ComputeTime(uint64 time)
         *p++ = 'd';
         *p++ = ' ';
     }
-    *p++          = '0' + hours / 10;
-    *p++          = '0' + hours % 10;
-    *p++          = ':';
-    *p++          = '0' + min / 10;
-    *p++          = '0' + min % 10;
-    *p++          = ':';
-    *p++          = '0' + sec / 10;
-    *p++          = '0' + sec % 10;
-    PSData.timeStr = { (const char*) temp, (size_t) (p-temp) };
+    *p++           = '0' + hours / 10;
+    *p++           = '0' + hours % 10;
+    *p++           = ':';
+    *p++           = '0' + min / 10;
+    *p++           = '0' + min % 10;
+    *p++           = ':';
+    *p++           = '0' + sec / 10;
+    *p++           = '0' + sec % 10;
+    PSData.timeStr = { (const char*) temp, (size_t) (p - temp) };
 }
 void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
 {
