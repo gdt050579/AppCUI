@@ -4650,7 +4650,7 @@ namespace Application
         } ProgressStatus;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons;
+            Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons, Symbol;
         } Menu, ParentMenu;
 
         // OLD structures
@@ -4732,7 +4732,7 @@ namespace Application
             {
                 struct
                 {
-                    Graphics::ColorPair Text, HotKey, ShortCut, Check, Uncheck;
+                    Graphics::ColorPair Text, HotKey, ShortCut;
                 } Normal, Inactive, Selected;
             } Activ;
         } MenuOld_;

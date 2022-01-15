@@ -98,19 +98,26 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
     {
         renderer.WriteSingleLineText(
               TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", Cfg->Menu.Text.PressedOrSelected);
+        if (color == Color::Transparent)
+            renderer.WriteSpecialCharacter(
+                  TRANSPARENT_CHECKBOX_X_OFFSET + 1,
+                  1 + this->yOffset,
+                  SpecialChars::CheckMark,
+                  Cfg->Menu.Symbol.PressedOrSelected);
         renderer.SetCursor(TRANSPARENT_CHECKBOX_X_OFFSET + 1, 1 + this->yOffset);
     }
     else
     {
         renderer.WriteSingleLineText(TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", col);
+        if (color == Color::Transparent)
+            renderer.WriteSpecialCharacter(
+                  TRANSPARENT_CHECKBOX_X_OFFSET + 1,
+                  1 + this->yOffset,
+                  SpecialChars::CheckMark,
+                  Cfg->Menu.Symbol.Normal);
     }
 
-    if (color == Color::Transparent)
-        renderer.WriteSpecialCharacter(
-              TRANSPARENT_CHECKBOX_X_OFFSET + 1,
-              1 + this->yOffset,
-              SpecialChars::CheckMark,
-              Cfg->MenuOld_.Activ.Normal.Check);
+
     renderer.DrawVerticalLine(
           SPACES_PER_COLOR * COLOR_MATRIX_WIDTH + 1, 1 + this->yOffset, COLOR_MATRIX_HEIGHT + this->yOffset, col, true);
     renderer.DrawRect(

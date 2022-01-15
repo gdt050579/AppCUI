@@ -156,12 +156,13 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         if (actualIndex >= ItemsCount)
             break;
         MenuItem* item = this->Items[actualIndex].get();
-        ColorPair shortCutCol;
+        ColorPair shortCutCol,checkColor;
         if (item->Enabled == false)
         {
             textParams.Color       = col->Text.Inactive;
             textParams.HotKeyColor = col->HotKey.Inactive;
             shortCutCol            = col->ShortCut.Inactive;
+            checkColor             = col->Symbol.Inactive;
         }
         else
         {
@@ -170,6 +171,7 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
                 textParams.Color       = col->Text.PressedOrSelected;
                 textParams.HotKeyColor = col->HotKey.PressedOrSelected;
                 shortCutCol            = col->ShortCut.PressedOrSelected;
+                checkColor             = col->Symbol.PressedOrSelected;
                 renderer.FillHorizontalLine(1, tr, Width, ' ', col->Text.PressedOrSelected);
             }
             else
@@ -177,6 +179,7 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
                 textParams.Color       = col->Text.Normal;
                 textParams.HotKeyColor = col->HotKey.Normal;
                 shortCutCol            = col->ShortCut.Normal;
+                checkColor             = col->Symbol.Normal;
             }
         }
 
@@ -197,15 +200,15 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
             textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CheckMark, Cfg->MenuOld_.Activ.Normal.Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CheckMark, checkColor);
             break;
         case MenuItemType::Radio:
             textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleFilled, Cfg->MenuOld_.Activ.Normal.Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleFilled, checkColor);
             else
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleEmpty, Cfg->MenuOld_.Activ.Normal.Uncheck);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleEmpty, checkColor);
             break;
         case MenuItemType::SubMenu:
             textParams.X = 2;

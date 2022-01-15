@@ -273,6 +273,13 @@ void Config::SetDarkTheme()
           { Color::Magenta, Color::White },
           { Color::White, Color::Magenta });
 
+    this->Menu.Symbol.Set( 
+          { Color::DarkGreen, Color::White },
+          { Color::DarkGreen, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Magenta, Color::Silver },
+          { Color::White, Color::Magenta });
+
     this->Menu.ShortCut = this->Menu.HotKey;
 
     this->ParentMenu.Text.Set(
