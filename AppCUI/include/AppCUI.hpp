@@ -4638,6 +4638,10 @@ namespace Application
         {
             Graphics::ColorPair Empty, Full;
         } ProgressStatus;
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey;
+        } Menu, ParentMenu;
 
         // OLD structures
         struct
@@ -4645,16 +4649,7 @@ namespace Application
             char16 DesktopFillCharacterCode;
             Graphics::ColorPair Color;
         } Desktop;
-        struct
-        {
-            Graphics::ColorPair BackgroundColor;
-            Graphics::ColorPair ShiftKeysColor;
-            struct
-            {
-                Graphics::ColorPair KeyColor;
-                Graphics::ColorPair NameColor;
-            } Normal, Hover, Pressed;
-        } CommandBar;
+
         struct
         {
             Graphics::ColorPair ActiveColor;

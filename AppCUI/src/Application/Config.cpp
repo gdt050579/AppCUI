@@ -8,15 +8,6 @@ void Config::SetDarkTheme()
     this->Desktop.Color                    = ColorPair{ Color::Gray, Color::Black };
     this->Desktop.DesktopFillCharacterCode = 186;
 
-    this->CommandBar.BackgroundColor   = ColorPair{ Color::Black, Color::White };
-    this->CommandBar.ShiftKeysColor    = ColorPair{ Color::Gray, Color::White };
-    this->CommandBar.Normal.KeyColor   = ColorPair{ Color::DarkRed, Color::White };
-    this->CommandBar.Normal.NameColor  = ColorPair{ Color::Black, Color::White };
-    this->CommandBar.Hover.KeyColor    = ColorPair{ Color::DarkRed, Color::Silver };
-    this->CommandBar.Hover.NameColor   = ColorPair{ Color::Black, Color::Silver };
-    this->CommandBar.Pressed.KeyColor  = ColorPair{ Color::White, Color::Magenta };
-    this->CommandBar.Pressed.NameColor = ColorPair{ Color::Yellow, Color::Magenta };
-
     this->Window.ActiveColor        = ColorPair{ Color::White, Color::DarkBlue };
     this->Window.InactiveColor      = ColorPair{ Color::Silver, Color::Black };
     this->Window.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkBlue };
@@ -318,5 +309,18 @@ void Config::SetDarkTheme()
 
     this->ProgressStatus.Empty = { Color::White, Color::Black };
     this->ProgressStatus.Full  = { Color::White, Color::Teal };
+
+    this->Menu.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Black, Color::Silver },
+          { Color::Yellow, Color::Magenta });
+    this->Menu.HotKey.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::White },
+          { Color::Gray, Color::White },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Magenta });
 }
 } // namespace AppCUI::Application
