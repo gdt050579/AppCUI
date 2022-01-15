@@ -289,6 +289,8 @@ void Config::SetDarkTheme()
           { Color::DarkRed, Color::Gray },
           { Color::White, Color::Gray });
 
+    this->ParentMenu.ScrollButtons.Set({ Color::Gray, Color::Silver });
+
     this->ParentMenu.ShortCut = this->ParentMenu.HotKey;
 }
 } // namespace AppCUI::Application

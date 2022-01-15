@@ -403,6 +403,14 @@ namespace Graphics
             Hovered           = normal;
             PressedOrSelected = focused;
         }
+        inline void Set(ColorPair col)
+        {
+            Focused           = col;
+            Normal            = col;
+            Inactive          = col;
+            Hovered           = col;
+            PressedOrSelected = col;
+        }
         inline void Set(Color focused, Color normal, Color inactive, Color hovered, Color backgroud)
         {
             Focused  = ColorPair{ focused, backgroud };
