@@ -90,39 +90,36 @@ ItemHandle MenuContext::AddItem(unique_ptr<MenuItem> itm)
 }
 void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
 {
-    auto* col = &this->Cfg->MenuOld.Activ;
-    if (!activ)
-        col = &this->Cfg->MenuOld.Parent;
+    const auto* col = activ ? (&Cfg->Menu) : (&Cfg->ParentMenu);
 
-    auto* itemCol = &col->Normal;
     WriteTextParams textParams(
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
                 WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth,
           TextAlignament::Left);
     textParams.Width = this->TextWidth;
 
-    renderer.Clear(' ', col->Background);
+    renderer.Clear(' ', col->Text.Normal);
     renderer.DrawRectSize(
-          0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Background, LineType::Single);
+          0, 0, ScreenClip.ClipRect.Width, ScreenClip.ClipRect.Height, col->Text.Normal, LineType::Single);
     // draw scroll buttons if case
     if (this->VisibleItemsCount < this->ItemsCount)
     {
         ColorPair c;
         // top button
         if (this->FirstVisibleItem == 0)
-            c = col->Button.Inactive;
+            c = Cfg->MenuOld_.Activ.Button.Inactive;
         else
         {
             switch (this->ButtonUp)
             {
             case MenuButtonState::Normal:
-                c = col->Button.Normal;
+                c = Cfg->MenuOld_.Activ.Button.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = col->Button.Hover;
+                c = Cfg->MenuOld_.Activ.Button.Hover;
                 break;
             case MenuButtonState::Pressed:
-                c = col->Button.Pressed;
+                c = Cfg->MenuOld_.Activ.Button.Pressed;
                 break;
             }
         }
@@ -131,19 +128,19 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
 
         // bottom button
         if (this->FirstVisibleItem + this->VisibleItemsCount >= this->ItemsCount)
-            c = col->Button.Inactive;
+            c = Cfg->MenuOld_.Activ.Button.Inactive;
         else
         {
             switch (this->ButtonDown)
             {
             case MenuButtonState::Normal:
-                c = col->Button.Normal;
+                c = Cfg->MenuOld_.Activ.Button.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = col->Button.Hover;
+                c = Cfg->MenuOld_.Activ.Button.Hover;
                 break;
             case MenuButtonState::Pressed:
-                c = col->Button.Pressed;
+                c = Cfg->MenuOld_.Activ.Button.Pressed;
                 break;
             }
         }
@@ -159,28 +156,38 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         if (actualIndex >= ItemsCount)
             break;
         MenuItem* item = this->Items[actualIndex].get();
+        ColorPair shortCutCol;
         if (item->Enabled == false)
-            itemCol = &col->Inactive;
+        {
+            textParams.Color       = col->Text.Inactive;
+            textParams.HotKeyColor = col->HotKey.Inactive;
+            shortCutCol            = col->ShortCut.Inactive;
+        }
         else
         {
             if (actualIndex == this->CurrentItem)
             {
-                itemCol = &col->Selected;
-                renderer.FillHorizontalLine(1, tr, Width, ' ', col->Selected.Text);
+                textParams.Color       = col->Text.PressedOrSelected;
+                textParams.HotKeyColor = col->HotKey.PressedOrSelected;
+                shortCutCol            = col->ShortCut.PressedOrSelected;
+                renderer.FillHorizontalLine(1, tr, Width, ' ', col->Text.PressedOrSelected);
             }
             else
-                itemCol = &col->Normal;
+            {
+                textParams.Color       = col->Text.Normal;
+                textParams.HotKeyColor = col->HotKey.Normal;
+                shortCutCol            = col->ShortCut.Normal;
+            }
         }
 
-        textParams.Color          = itemCol->Text;
-        textParams.HotKeyColor    = itemCol->HotKey;
+
         textParams.HotKeyPosition = item->HotKeyOffset;
         textParams.Y              = tr;
 
         switch (item->Type)
         {
         case MenuItemType::Line:
-            renderer.DrawHorizontalLine(1, tr, this->Width, col->Background);
+            renderer.DrawHorizontalLine(1, tr, this->Width, col->Text.Normal);
             break;
         case MenuItemType::Command:
             textParams.X = 2;
@@ -190,28 +197,28 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
             textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CheckMark, itemCol->Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CheckMark, Cfg->MenuOld_.Activ.Normal.Check);
             break;
         case MenuItemType::Radio:
             textParams.X = 4;
             renderer.WriteText(item->Name, textParams);
             if (item->Checked)
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleFilled, itemCol->Check);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleFilled, Cfg->MenuOld_.Activ.Normal.Check);
             else
-                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleEmpty, itemCol->Uncheck);
+                renderer.WriteSpecialCharacter(2, tr, SpecialChars::CircleEmpty, Cfg->MenuOld_.Activ.Normal.Uncheck);
             break;
         case MenuItemType::SubMenu:
             textParams.X = 2;
             renderer.WriteText(item->Name, textParams);
-            renderer.WriteSpecialCharacter(this->Width - 1, tr, SpecialChars::TriangleRight, itemCol->Text);
+            renderer.WriteSpecialCharacter(this->Width - 1, tr, SpecialChars::TriangleRight, textParams.Color);
             break;
         }
         if (item->ShortcutKey != Key::None)
         {
             auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
             auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
-            renderer.WriteSingleLineText(this->Width - (uint32) k_n.size(), tr, k_n, itemCol->ShortCut);
-            renderer.WriteSingleLineText(this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, itemCol->ShortCut);
+            renderer.WriteSingleLineText(this->Width - (uint32) k_n.size(), tr, k_n, shortCutCol);
+            renderer.WriteSingleLineText(this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, shortCutCol);
         }
     }
 }

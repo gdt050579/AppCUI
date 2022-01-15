@@ -98,17 +98,17 @@ void CommandBarController::Paint(Graphics::Renderer& renderer)
         if (cmd == this->PressedField)
         {
             colText = Cfg->Menu.Text.PressedOrSelected;
-            colHotKey = Cfg->Menu.HotKey.PressedOrSelected;
+            colHotKey = Cfg->Menu.ShortCut.PressedOrSelected;
         }
         else if (cmd == this->HoveredField)
         {
             colText   = Cfg->Menu.Text.Hovered;
-            colHotKey = Cfg->Menu.HotKey.Hovered;
+            colHotKey = Cfg->Menu.ShortCut.Hovered;
         }
         else
         {
             colText   = Cfg->Menu.Text.Normal;
-            colHotKey = Cfg->Menu.HotKey.Normal;
+            colHotKey = Cfg->Menu.ShortCut.Normal;
         }
 
         renderer.WriteSingleLineText(cmd->StartScreenPos, BarLayout.Y, cmd->KeyName, colHotKey);

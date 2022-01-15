@@ -135,56 +135,6 @@ void Config::SetDarkTheme()
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 
-    this->MenuOld.Activ.Background = ColorPair{ Color::Black, Color::White };
-
-    this->MenuOld.Activ.Normal.Text     = ColorPair{ Color::Black, Color::White };
-    this->MenuOld.Activ.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::White };
-    this->MenuOld.Activ.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::White };
-    this->MenuOld.Activ.Normal.Check    = ColorPair{ Color::DarkGreen, Color::White };
-    this->MenuOld.Activ.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::White };
-
-    this->MenuOld.Activ.Selected.Text     = ColorPair{ Color::White, Color::Magenta };
-    this->MenuOld.Activ.Selected.HotKey   = ColorPair{ Color::Yellow, Color::Magenta };
-    this->MenuOld.Activ.Selected.ShortCut = ColorPair{ Color::Yellow, Color::Magenta };
-    this->MenuOld.Activ.Selected.Check    = ColorPair{ Color::Aqua, Color::Magenta };
-    this->MenuOld.Activ.Selected.Uncheck  = ColorPair{ Color::Silver, Color::Magenta };
-
-    this->MenuOld.Activ.Inactive.Text     = ColorPair{ Color::Silver, Color::White };
-    this->MenuOld.Activ.Inactive.HotKey   = ColorPair{ Color::Silver, Color::White };
-    this->MenuOld.Activ.Inactive.ShortCut = ColorPair{ Color::Silver, Color::White };
-    this->MenuOld.Activ.Inactive.Check    = ColorPair{ Color::Silver, Color::White };
-    this->MenuOld.Activ.Inactive.Uncheck  = ColorPair{ Color::Silver, Color::White };
-
-    this->MenuOld.Parent.Background = ColorPair{ Color::Gray, Color::Silver };
-
-    this->MenuOld.Parent.Normal.Text     = ColorPair{ Color::Black, Color::Silver };
-    this->MenuOld.Parent.Normal.HotKey   = ColorPair{ Color::DarkRed, Color::Silver };
-    this->MenuOld.Parent.Normal.ShortCut = ColorPair{ Color::DarkRed, Color::Silver };
-    this->MenuOld.Parent.Normal.Check    = ColorPair{ Color::DarkGreen, Color::Silver };
-    this->MenuOld.Parent.Normal.Uncheck  = ColorPair{ Color::DarkBlue, Color::Silver };
-
-    this->MenuOld.Parent.Selected.Text     = ColorPair{ Color::White, Color::Gray };
-    this->MenuOld.Parent.Selected.HotKey   = ColorPair{ Color::White, Color::Gray };
-    this->MenuOld.Parent.Selected.ShortCut = ColorPair{ Color::White, Color::Gray };
-    this->MenuOld.Parent.Selected.Check    = ColorPair{ Color::White, Color::Gray };
-    this->MenuOld.Parent.Selected.Uncheck  = ColorPair{ Color::White, Color::Gray };
-
-    this->MenuOld.Parent.Inactive.Text     = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Inactive.HotKey   = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Inactive.ShortCut = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Inactive.Check    = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Inactive.Uncheck  = ColorPair{ Color::Gray, Color::Silver };
-
-    this->MenuOld.Activ.Button.Normal   = ColorPair{ Color::Blue, Color::White };
-    this->MenuOld.Activ.Button.Inactive = ColorPair{ Color::Silver, Color::White };
-    this->MenuOld.Activ.Button.Hover    = ColorPair{ Color::Black, Color::Aqua };
-    this->MenuOld.Activ.Button.Pressed  = ColorPair{ Color::Red, Color::White };
-
-    this->MenuOld.Parent.Button.Normal   = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Button.Inactive = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
-    this->MenuOld.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
-
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
     this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
@@ -308,11 +258,30 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::White },
           { Color::Black, Color::Silver },
           { Color::Yellow, Color::Magenta });
+
     this->Menu.HotKey.Set(
           { Color::DarkRed, Color::White },
           { Color::DarkRed, Color::White },
           { Color::Gray, Color::White },
           { Color::DarkRed, Color::Silver },
           { Color::White, Color::Magenta });
+
+    this->Menu.ShortCut = this->Menu.HotKey;
+
+    this->ParentMenu.Text.Set(
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::Black, Color::Gray },
+          { Color::Yellow, Color::Gray });
+
+    this->ParentMenu.HotKey.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::White, Color::Gray });
+
+    this->ParentMenu.ShortCut = this->ParentMenu.HotKey;
 }
 } // namespace AppCUI::Application
