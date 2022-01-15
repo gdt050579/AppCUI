@@ -185,14 +185,6 @@ void Config::SetDarkTheme()
     this->MenuOld.Parent.Button.Hover    = ColorPair{ Color::Gray, Color::Silver };
     this->MenuOld.Parent.Button.Pressed  = ColorPair{ Color::Gray, Color::Silver };
 
-    this->MenuBarOld.BackgroundColor     = ColorPair{ Color::Black, Color::White };
-    this->MenuBarOld.Normal.HotKeyColor  = ColorPair{ Color::DarkRed, Color::White };
-    this->MenuBarOld.Normal.NameColor    = ColorPair{ Color::Black, Color::White };
-    this->MenuBarOld.Hover.HotKeyColor   = ColorPair{ Color::DarkRed, Color::Silver };
-    this->MenuBarOld.Hover.NameColor     = ColorPair{ Color::Black, Color::Silver };
-    this->MenuBarOld.Pressed.HotKeyColor = ColorPair{ Color::White, Color::Magenta };
-    this->MenuBarOld.Pressed.NameColor   = ColorPair{ Color::Yellow, Color::Magenta };
-
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
     this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };

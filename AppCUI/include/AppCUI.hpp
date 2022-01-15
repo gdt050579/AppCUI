@@ -4731,15 +4731,7 @@ namespace Application
                 } Button;
             } Activ, Parent;
         } MenuOld;
-        struct
-        {
-            Graphics::ColorPair BackgroundColor;
-            struct
-            {
-                Graphics::ColorPair HotKeyColor;
-                Graphics::ColorPair NameColor;
-            } Normal, Hover, Pressed;
-        } MenuBarOld;
+
         struct
         {
             struct
