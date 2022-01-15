@@ -4735,7 +4735,7 @@ namespace Application
                     Graphics::ColorPair Normal, Hover, Inactive, Pressed;
                 } Button;
             } Activ, Parent;
-        } Menu;
+        } MenuOld;
         struct
         {
             Graphics::ColorPair BackgroundColor;
@@ -4744,7 +4744,7 @@ namespace Application
                 Graphics::ColorPair HotKeyColor;
                 Graphics::ColorPair NameColor;
             } Normal, Hover, Pressed;
-        } MenuBar;
+        } MenuBarOld;
         struct
         {
             struct

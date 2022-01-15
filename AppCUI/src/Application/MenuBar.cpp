@@ -161,7 +161,7 @@ bool MenuBar::OnKeyEvent(Input::Key keyCode)
 }
 void MenuBar::Paint(Graphics::Renderer& renderer)
 {
-    renderer.FillHorizontalLine(this->X, this->Y, this->X + Width - 1, ' ', Cfg->MenuBar.BackgroundColor);
+    renderer.FillHorizontalLine(this->X, this->Y, this->X + Width - 1, ' ', Cfg->MenuBarOld.BackgroundColor);
     WriteTextParams params(
           WriteTextFlags::SingleLine | WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin |
                 WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey,
@@ -175,18 +175,18 @@ void MenuBar::Paint(Graphics::Renderer& renderer)
 
         if (tr == this->OpenedItem)
         {
-            params.Color       = Cfg->MenuBar.Pressed.NameColor;
-            params.HotKeyColor = Cfg->MenuBar.Pressed.HotKeyColor;
+            params.Color       = Cfg->MenuBarOld.Pressed.NameColor;
+            params.HotKeyColor = Cfg->MenuBarOld.Pressed.HotKeyColor;
         }
         else if (tr == this->HoveredItem)
         {
-            params.Color       = Cfg->MenuBar.Hover.NameColor;
-            params.HotKeyColor = Cfg->MenuBar.Hover.HotKeyColor;
+            params.Color       = Cfg->MenuBarOld.Hover.NameColor;
+            params.HotKeyColor = Cfg->MenuBarOld.Hover.HotKeyColor;
         }
         else
         {
-            params.Color       = Cfg->MenuBar.Normal.NameColor;
-            params.HotKeyColor = Cfg->MenuBar.Normal.HotKeyColor;
+            params.Color       = Cfg->MenuBarOld.Normal.NameColor;
+            params.HotKeyColor = Cfg->MenuBarOld.Normal.HotKeyColor;
         }
 
         renderer.WriteText(Items[tr]->Name, params);
