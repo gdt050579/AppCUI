@@ -266,6 +266,13 @@ void Config::SetDarkTheme()
           { Color::DarkRed, Color::Silver },
           { Color::White, Color::Magenta });
 
+    this->Menu.ScrollButtons.Set(
+          { Color::DarkBlue, Color::White },
+          { Color::DarkBlue, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Magenta, Color::White },
+          { Color::White, Color::Magenta });
+
     this->Menu.ShortCut = this->Menu.HotKey;
 
     this->ParentMenu.Text.Set(

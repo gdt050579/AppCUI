@@ -107,19 +107,19 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         ColorPair c;
         // top button
         if (this->FirstVisibleItem == 0)
-            c = Cfg->MenuOld_.Activ.Button.Inactive;
+            c = col->ScrollButtons.Inactive;
         else
         {
             switch (this->ButtonUp)
             {
             case MenuButtonState::Normal:
-                c = Cfg->MenuOld_.Activ.Button.Normal;
+                c = col->ScrollButtons.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = Cfg->MenuOld_.Activ.Button.Hover;
+                c = col->ScrollButtons.Hovered;
                 break;
             case MenuButtonState::Pressed:
-                c = Cfg->MenuOld_.Activ.Button.Pressed;
+                c = col->ScrollButtons.PressedOrSelected;
                 break;
             }
         }
@@ -128,19 +128,19 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
 
         // bottom button
         if (this->FirstVisibleItem + this->VisibleItemsCount >= this->ItemsCount)
-            c = Cfg->MenuOld_.Activ.Button.Inactive;
+            c = col->ScrollButtons.Inactive;
         else
         {
             switch (this->ButtonDown)
             {
             case MenuButtonState::Normal:
-                c = Cfg->MenuOld_.Activ.Button.Normal;
+                c = col->ScrollButtons.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = Cfg->MenuOld_.Activ.Button.Hover;
+                c = col->ScrollButtons.Hovered;
                 break;
             case MenuButtonState::Pressed:
-                c = Cfg->MenuOld_.Activ.Button.Pressed;
+                c = col->ScrollButtons.PressedOrSelected;
                 break;
             }
         }
