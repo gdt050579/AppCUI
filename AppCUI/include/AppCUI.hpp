@@ -3006,6 +3006,8 @@ namespace Controls
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
 
+        Reference<AppCUI::Application::Config> GetConfig();
+
         // Events
         void RaiseEvent(Event eventType);
         void RaiseEvent(Event eventType, int ID);

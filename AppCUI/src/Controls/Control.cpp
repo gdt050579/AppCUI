@@ -1470,6 +1470,12 @@ bool Controls::Control::GetChildIndex(Reference<Control> control, uint32& index)
     return false;
 }
 
+
+Reference<AppCUI::Application::Config> Controls::Control::GetConfig() 
+{
+    return reinterpret_cast<ControlContext*>(this->Context)->Cfg;
+}
+
 void Controls::Control::MoveTo(int newX, int newY)
 {
     Application::Config* cfg = Application::GetAppConfig();
