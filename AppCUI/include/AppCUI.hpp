@@ -4730,17 +4730,6 @@ namespace Application
         {
             struct
             {
-                struct
-                {
-                    Graphics::ColorPair Text, HotKey, ShortCut;
-                } Normal, Inactive, Selected;
-            } Activ;
-        } MenuOld_;
-
-        struct
-        {
-            struct
-            {
                 Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
             } Text;
         } NumericSelector;
