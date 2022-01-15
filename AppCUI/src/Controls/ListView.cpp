@@ -189,7 +189,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     int itemStarts;
     ListViewColumn* column   = this->Columns.List;
     CharacterBuffer* subitem = item->SubItem;
-    ColorPair itemCol        = Cfg->ListView.Item.Regular;
+    ColorPair itemCol        = Cfg->Text.Normal;
     ColorPair checkCol, uncheckCol;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.Y = y;
@@ -469,7 +469,7 @@ int ListViewControlContext::GetNrColumns()
 ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (uint32) Items.List.size();
-    Items.List.push_back(ListViewItem(Cfg->ListView.Item.Regular));
+    Items.List.push_back(ListViewItem(Cfg->Text.Normal));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
     return idx;

@@ -131,7 +131,6 @@ void Config::SetDarkTheme()
     this->ListView.ColumnSort.Text       = ColorPair{ Color::White, Color::Pink };
     this->ListView.ColumnSort.HotKey     = ColorPair{ Color::Black, Color::Pink };
 
-    this->ListView.Item.Regular  = ColorPair{ Color::Silver, Color::Transparent };
     this->ListView.Item.Category = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };

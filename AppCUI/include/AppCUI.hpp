@@ -4705,7 +4705,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair Regular, Category;
+                Graphics::ColorPair  Category;
             } Item;
             struct
             {
