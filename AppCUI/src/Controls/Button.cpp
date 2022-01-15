@@ -43,8 +43,8 @@ void Button::Paint(Graphics::Renderer& renderer)
 
     if (Members->Flags && ButtonFlags::Flat)
     {        
-        params.Color       = pressed ? Members->Cfg->Button.Hovered : bc;
-        params.HotKeyColor = pressed ? Members->Cfg->ButtonHotKey.Hovered : bhkc;      
+        params.Color       = pressed ? Members->Cfg->Button.PressedOrSelected : bc;
+        params.HotKeyColor = pressed ? Members->Cfg->ButtonHotKey.PressedOrSelected : bhkc;      
         params.X           = 0;
         params.Width       = Members->Layout.Width;
         renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', params.Color);
@@ -55,9 +55,9 @@ void Button::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 1;
         if (pressed)
         {
-            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Focused);
-            params.Color       = Members->Cfg->Button.Focused;
-            params.HotKeyColor = Members->Cfg->ButtonHotKey.Focused;
+            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.PressedOrSelected);
+            params.Color       = Members->Cfg->Button.PressedOrSelected;
+            params.HotKeyColor = Members->Cfg->ButtonHotKey.PressedOrSelected;
             params.X           = 1;
             renderer.WriteText(Members->Text, params);
         }

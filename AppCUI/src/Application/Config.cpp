@@ -288,12 +288,14 @@ void Config::SetDarkTheme()
           { Color::Black, Color::White },
           { Color::Black, Color::Gray },
           { Color::Gray, Color::Black },
-          { Color::Black, Color::Yellow });
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::Olive });
     this->ButtonHotKey.Set(
           { Color::Magenta, Color::White },
           { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },
-          { Color::Magenta, Color::Yellow });
+          { Color::Magenta, Color::Yellow },
+          { Color::DarkRed, Color::Olive });
 
     this->Text.Error       = { Color::Red, Color::Transparent };
     this->Text.Warning     = { Color::Olive, Color::Transparent };

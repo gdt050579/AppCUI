@@ -373,41 +373,35 @@ namespace Graphics
     constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
     struct ObjectColorState
     {
-        ColorPair Focused, Normal, Hovered, Inactive;
+        ColorPair Focused, Normal, Hovered, Inactive, PressedOrSelected;
         ObjectColorState()
         {
         }
-        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
-            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(hovered)
+
+        inline void Set(
+              ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered, ColorPair pressedOrSelected)
         {
-        }
-        ObjectColorState(ColorPair focused, ColorPair normal, ColorPair inactive)
-            : Focused(focused), Normal(normal), Inactive(inactive), Hovered(normal)
-        {
-        }
-        ObjectColorState(Color focused, Color normal, Color inactive, Color hovered)
-            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
-              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ hovered, Color::Transparent })
-        {
-        }
-        ObjectColorState(Color focused, Color normal, Color inactive)
-            : Focused(ColorPair{ focused, Color::Transparent }), Normal(ColorPair{ normal, Color::Transparent }),
-              Inactive(ColorPair{ inactive, Color::Transparent }), Hovered(ColorPair{ normal, Color::Transparent })
-        {
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = hovered;
+            PressedOrSelected = pressedOrSelected;
         }
         inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive, ColorPair hovered)
         {
-            Focused  = focused;
-            Normal   = normal;
-            Inactive = inactive;
-            Hovered  = hovered;
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = hovered;
+            PressedOrSelected = focused;
         }
         inline void Set(ColorPair focused, ColorPair normal, ColorPair inactive)
         {
-            Focused  = focused;
-            Normal   = normal;
-            Inactive = inactive;
-            Hovered  = normal;
+            Focused           = focused;
+            Normal            = normal;
+            Inactive          = inactive;
+            Hovered           = normal;
+            PressedOrSelected = focused;
         }
         inline void Set(Color focused, Color normal, Color inactive, Color hovered, Color backgroud)
         {
@@ -2504,8 +2498,7 @@ namespace Graphics
         bool WriteText(const ConstString& text, const WriteTextParams& params);
 
         // Single line wrappers
-        bool WriteSingleLineCharacterBuffer(
-              int x, int y, Utils::CharacterView charView, bool noTransparency = true);
+        bool WriteSingleLineCharacterBuffer(int x, int y, Utils::CharacterView charView, bool noTransparency = true);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color);
         bool WriteSingleLineText(int x, int y, const ConstString& text, ColorPair color, TextAlignament align);
         bool WriteSingleLineText(
@@ -4629,7 +4622,7 @@ namespace Application
     {
         // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
-        Graphics::ColorPair TextSelectionColor,TextSelectedLineMarker;
+        Graphics::ColorPair TextSelectionColor, TextSelectedLineMarker;
         Graphics::ObjectColorState Button, ButtonHotKey;
 
         struct
@@ -4713,7 +4706,7 @@ namespace Application
             } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
-                Graphics::ColorPair  Category;
+                Graphics::ColorPair Category;
             } Item;
             struct
             {
@@ -4727,7 +4720,6 @@ namespace Application
             Graphics::ColorPair StatusColor;
 
         } ListView;
-
 
         struct
         {
