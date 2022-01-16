@@ -4711,10 +4711,6 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Category;
-            } Item;
-            struct
-            {
                 Graphics::ColorPair Selected, Normal;
             } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;

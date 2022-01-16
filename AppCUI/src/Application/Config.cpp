@@ -113,14 +113,12 @@ void Config::SetDarkTheme()
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 
-    this->ListView.Item.Category = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
     this->ListView.FocusColor            = ColorPair{ Color::Black, Color::White };
     this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
     this->ListView.SelectionColor        = ColorPair{ Color::Yellow, Color::Transparent };
-
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 

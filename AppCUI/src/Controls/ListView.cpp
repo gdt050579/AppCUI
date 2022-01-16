@@ -242,7 +242,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         itemCol = Cfg->Text.Emphasized2;
         break;
     case ListViewItemType::Category:
-        itemCol = Cfg->ListView.Item.Category;
+        itemCol = Cfg->Text.Highlighted;
         break;
     default:
         break;
