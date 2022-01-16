@@ -3073,12 +3073,13 @@ const char* english_words[] = { "a",
 #define SHOW_DEFAULT_EXAMPLE 1000
 #define MY_GROUP             123
 
-class MyListViewExample : public Window
+class MyListViewExample : public Window, Handlers::OnCheckInterface
 {
+    Reference<ListView> lv;
   public:
-    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:20", WindowFlags::None)
+    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:22", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:16", flags);
+        lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:16", flags);
         lv->AddColumn("&State", TextAlignament::Left, 15);
         lv->AddColumn("&Abrv", TextAlignament::Center, 4);
         lv->AddColumn("&Capital", TextAlignament::Left, 10);
@@ -3101,6 +3102,14 @@ class MyListViewExample : public Window
         }
         // sort them after the name (first column)
         lv->Sort(0, true);
+        // Add a checkbox for Enable/Disable feature
+        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30");
+        cb->SetChecked(true);
+        cb->Handlers()->OnCheck = this;
+    }
+    void OnCheck(Reference<Controls::Control> control, bool value) override
+    {
+        lv->SetEnabled(value);
     }
 };
 
