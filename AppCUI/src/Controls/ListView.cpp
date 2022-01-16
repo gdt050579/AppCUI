@@ -1333,7 +1333,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
         // clear all colors
         for (uint32 gr = 0; gr < Columns.Count; gr++)
         {
-            lvi.SubItem[gr].SetColor(this->Cfg->ListView.Highlight.Normal);
+            lvi.SubItem[gr].SetColor(this->Cfg->Text.Inactive);
         }
     }
     if (index >= 0)

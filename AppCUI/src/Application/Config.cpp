@@ -119,7 +119,6 @@ void Config::SetDarkTheme()
     this->ListView.FocusColor            = ColorPair{ Color::Black, Color::White };
     this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
     this->ListView.SelectionColor        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
 
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };

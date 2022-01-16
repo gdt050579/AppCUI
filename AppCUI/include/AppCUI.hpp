@@ -4711,7 +4711,7 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Selected, Normal;
+                Graphics::ColorPair Selected;
             } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
             Graphics::ColorPair FocusColor;
