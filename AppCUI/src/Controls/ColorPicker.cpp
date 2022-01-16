@@ -61,7 +61,7 @@ void ColorPickerContext::PaintHeader(int x, int y, uint32 width, Graphics::Rende
 }
 void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
 {
-    const auto col = Cfg->MenuOld.Activ.Normal.Text;
+    const auto col = Cfg->Menu.Text.Normal;
     renderer.FillRect(0, this->yOffset, this->Layout.Width - 1, this->yOffset + COLORPICEKR_HEIGHT - 2, ' ', col);
     // draw colors (4x4 matrix)
     for (auto y = 0U; y < COLOR_MATRIX_HEIGHT; y++)
@@ -97,20 +97,27 @@ void ColorPickerContext::PaintColorBox(Graphics::Renderer& renderer)
     if (colorObject == (uint32) Color::Transparent)
     {
         renderer.WriteSingleLineText(
-              TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", Cfg->MenuOld.Activ.Normal.Text);
+              TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", Cfg->Menu.Text.PressedOrSelected);
+        if (color == Color::Transparent)
+            renderer.WriteSpecialCharacter(
+                  TRANSPARENT_CHECKBOX_X_OFFSET + 1,
+                  1 + this->yOffset,
+                  SpecialChars::CheckMark,
+                  Cfg->Menu.Symbol.PressedOrSelected);
         renderer.SetCursor(TRANSPARENT_CHECKBOX_X_OFFSET + 1, 1 + this->yOffset);
     }
     else
     {
         renderer.WriteSingleLineText(TRANSPARENT_CHECKBOX_X_OFFSET, 1 + this->yOffset, "[ ] Transparent", col);
+        if (color == Color::Transparent)
+            renderer.WriteSpecialCharacter(
+                  TRANSPARENT_CHECKBOX_X_OFFSET + 1,
+                  1 + this->yOffset,
+                  SpecialChars::CheckMark,
+                  Cfg->Menu.Symbol.Normal);
     }
 
-    if (color == Color::Transparent)
-        renderer.WriteSpecialCharacter(
-              TRANSPARENT_CHECKBOX_X_OFFSET + 1,
-              1 + this->yOffset,
-              SpecialChars::CheckMark,
-              Cfg->MenuOld.Activ.Normal.Check);
+
     renderer.DrawVerticalLine(
           SPACES_PER_COLOR * COLOR_MATRIX_WIDTH + 1, 1 + this->yOffset, COLOR_MATRIX_HEIGHT + this->yOffset, col, true);
     renderer.DrawRect(

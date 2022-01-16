@@ -403,6 +403,14 @@ namespace Graphics
             Hovered           = normal;
             PressedOrSelected = focused;
         }
+        inline void Set(ColorPair col)
+        {
+            Focused           = col;
+            Normal            = col;
+            Inactive          = col;
+            Hovered           = col;
+            PressedOrSelected = col;
+        }
         inline void Set(Color focused, Color normal, Color inactive, Color hovered, Color backgroud)
         {
             Focused  = ColorPair{ focused, backgroud };
@@ -3006,6 +3014,8 @@ namespace Controls
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
 
+        Reference<AppCUI::Application::Config> GetConfig();
+
         // Events
         void RaiseEvent(Event eventType);
         void RaiseEvent(Event eventType, int ID);
@@ -4642,8 +4652,12 @@ namespace Application
         } ProgressStatus;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey;
+            Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons, Symbol;
         } Menu, ParentMenu;
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey, Symbol;
+        } Header;
 
         // OLD structures
         struct
@@ -4699,40 +4713,13 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Text, HotKey;
-            } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
-            struct
-            {
-                Graphics::ColorPair Category;
-            } Item;
-            struct
-            {
-                Graphics::ColorPair Selected, Normal;
+                Graphics::ColorPair Selected;
             } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
-            Graphics::ColorPair InactiveColor;
             Graphics::ColorPair FocusColor;
             Graphics::ColorPair SelectionColor;
             Graphics::ColorPair FocusAndSelectedColor;
-            Graphics::ColorPair StatusColor;
-
         } ListView;
-
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Background;
-                struct
-                {
-                    Graphics::ColorPair Text, HotKey, ShortCut, Check, Uncheck;
-                } Normal, Inactive, Selected;
-                struct
-                {
-                    Graphics::ColorPair Normal, Hover, Inactive, Pressed;
-                } Button;
-            } Activ, Parent;
-        } MenuOld;
 
         struct
         {
@@ -4789,13 +4776,8 @@ namespace Application
         } Grid;
         struct
         {
-            Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor, CursorReadOnly;
 
-            struct
-            {
-                Graphics::ColorPair Text, Stats, Arrow;
-            } Category;
             struct
             {
                 Graphics::ColorPair Checked, Unchecked;

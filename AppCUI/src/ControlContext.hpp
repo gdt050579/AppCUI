@@ -883,7 +883,10 @@ struct PropertyListContext : public ControlContext
 {
     struct
     {
-        decltype(AppCUI::Application::Config::PropertyList.Category) Category;
+        struct
+        {
+            ColorPair Text, Stats, Arrow;
+        } Category;
         decltype(AppCUI::Application::Config::PropertyList.Item) Item;
     } Colors;
     PropertyValue tempPropValue;

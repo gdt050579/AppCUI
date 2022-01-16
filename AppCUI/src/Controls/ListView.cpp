@@ -120,18 +120,20 @@ void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Rendere
 }
 void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 {
-    auto* defaultCol = &this->Cfg->ListView.ColumnNormal;
-    if (!(this->Flags & GATTR_ENABLE))
-        defaultCol = &this->Cfg->ListView.ColumnInactive;
-    auto* lvCol = defaultCol;
+    const auto not_sortable = (Flags & ListViewFlags::Sortable) == ListViewFlags::None;
+    const auto enabled      = (this->Flags & GATTR_ENABLE) != 0;
+    const auto defaultCol   = GetStateColorWithoutHovered(Cfg->Header.Text);
+    const auto defaultHK    = GetStateColorWithoutHovered(Cfg->Header.HotKey);
 
-    renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol->Text);
+    renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol);
 
     int x = 1 - Columns.XOffset;
 
     ListViewColumn* column = this->Columns.List;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y = 1;
+    params.Y           = 1;
+    params.Color       = defaultCol;
+    params.HotKeyColor = defaultHK;
 
     for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
@@ -139,23 +141,21 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         {
             if (tr == SortParams.ColumnIndex)
             {
-                lvCol = &this->Cfg->ListView.ColumnSort;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
+                params.Color = enabled ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Inactive;
+                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
             }
             else if (tr == Columns.HoverColumnIndex)
             {
-                lvCol = &this->Cfg->ListView.ColumnHover;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', lvCol->Text); // highlight the column
+                params.Color = enabled ? Cfg->Header.Text.Hovered : Cfg->Header.Text.Inactive;
+                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
             }
             else
-                lvCol = defaultCol;
+                params.Color = defaultCol;
         }
         params.X     = x + 1;
         params.Width = column->Width - 2;
-        params.Color = lvCol->Text;
         params.Align = column->Align;
-        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) ||
-            ((Flags & ListViewFlags::Sortable) == ListViewFlags::None))
+        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || (not_sortable))
         {
             params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
             renderer.WriteText(column->Name, params);
@@ -164,17 +164,31 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         {
             params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
                            WriteTextFlags::HighlightHotKey;
-            params.HotKeyColor    = lvCol->HotKey;
+            if (this->Focused)
+            {
+                if (tr == SortParams.ColumnIndex)
+                {
+                    params.HotKeyColor = enabled ? Cfg->Header.HotKey.PressedOrSelected : Cfg->Header.HotKey.Inactive;
+                }
+                else if (tr == Columns.HoverColumnIndex)
+                {
+                    params.HotKeyColor = enabled ? Cfg->Header.HotKey.Hovered : Cfg->Header.HotKey.Inactive;
+                }
+                else
+                    params.HotKeyColor = defaultHK;
+            }
             params.HotKeyPosition = column->HotKeyOffset;
             renderer.WriteText(column->Name, params);
         }
         x += column->Width;
         if ((this->Focused) && (tr == SortParams.ColumnIndex))
+        {
             renderer.WriteSpecialCharacter(
                   x - 1,
                   1,
                   this->SortParams.Ascendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
-                  lvCol->HotKey);
+                  Cfg->Header.HotKey.PressedOrSelected);
+        }
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
@@ -201,7 +215,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     }
     else
     {
-        checkCol = uncheckCol = Cfg->ListView.InactiveColor;
+        checkCol = uncheckCol = Cfg->Text.Inactive;
     }
     // select color based on item type
     switch (item->Type)
@@ -228,7 +242,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         itemCol = Cfg->Text.Emphasized2;
         break;
     case ListViewItemType::Category:
-        itemCol = Cfg->ListView.Item.Category;
+        itemCol = Cfg->Text.Highlighted;
         break;
     default:
         break;
@@ -425,7 +439,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
                   x_ofs,
                   yPoz,
                   string_view(this->Selection.Status, this->Selection.StatusLength),
-                  Cfg->ListView.StatusColor);
+                  Cfg->Text.Highlighted);
         }
     }
 }
@@ -1319,7 +1333,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
         // clear all colors
         for (uint32 gr = 0; gr < Columns.Count; gr++)
         {
-            lvi.SubItem[gr].SetColor(this->Cfg->ListView.Highlight.Normal);
+            lvi.SubItem[gr].SetColor(this->Cfg->Text.Inactive);
         }
     }
     if (index >= 0)
