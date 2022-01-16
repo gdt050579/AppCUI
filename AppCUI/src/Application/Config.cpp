@@ -165,10 +165,6 @@ void Config::SetDarkTheme()
 
     this->PropertyList.Cursor         = ColorPair{ Color::Black, Color::White };
     this->PropertyList.CursorReadOnly = ColorPair{ Color::Gray, Color::White };
-    this->PropertyList.Inactive       = ColorPair{ Color::Gray, Color::Transparent };
-    this->PropertyList.Category.Text  = ColorPair{ Color::White, Color::Magenta };
-    this->PropertyList.Category.Arrow = ColorPair{ Color::Green, Color::Magenta };
-    this->PropertyList.Category.Stats = ColorPair{ Color::Gray, Color::Magenta };
     this->PropertyList.Item.Checked   = ColorPair{ Color::Aqua, Color::Transparent };
     this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
 

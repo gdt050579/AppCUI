@@ -1272,15 +1272,17 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
 
     if ((this->Flags & GATTR_ENABLE) == 0)
     {
-        this->Colors.Category.Arrow     = this->Cfg->PropertyList.Inactive;
-        this->Colors.Category.Stats     = this->Cfg->PropertyList.Inactive;
-        this->Colors.Category.Text      = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.Checked       = this->Cfg->PropertyList.Inactive;
-        this->Colors.Item.Unchecked     = this->Cfg->PropertyList.Inactive;
+        this->Colors.Category.Arrow     = this->Cfg->Header.Symbol.Inactive;
+        this->Colors.Category.Stats     = this->Cfg->Header.Text.Inactive;
+        this->Colors.Category.Text      = this->Cfg->Header.Text.Inactive;
+        this->Colors.Item.Checked       = this->Cfg->Text.Inactive;
+        this->Colors.Item.Unchecked     = this->Cfg->Text.Inactive;
     }
     else
     {
-        this->Colors.Category = this->Cfg->PropertyList.Category;
+        this->Colors.Category.Arrow = GetStateColorWithoutHovered(Cfg->Header.Symbol);
+        this->Colors.Category.Stats = GetStateColorWithoutHovered(Cfg->Header.HotKey);
+        this->Colors.Category.Text  = GetStateColorWithoutHovered(Cfg->Header.Text);
         this->Colors.Item     = this->Cfg->PropertyList.Item;
     }
     renderer.Clear(' ', NoColorPair);

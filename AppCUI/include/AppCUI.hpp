@@ -4781,13 +4781,8 @@ namespace Application
         } Grid;
         struct
         {
-            Graphics::ColorPair Inactive;
             Graphics::ColorPair Cursor, CursorReadOnly;
 
-            struct
-            {
-                Graphics::ColorPair Text, Stats, Arrow;
-            } Category;
             struct
             {
                 Graphics::ColorPair Checked, Unchecked;
