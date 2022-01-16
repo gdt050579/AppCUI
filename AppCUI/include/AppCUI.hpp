@@ -4652,6 +4652,10 @@ namespace Application
         {
             Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons, Symbol;
         } Menu, ParentMenu;
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey, Symbol;
+        } Header;
 
         // OLD structures
         struct
@@ -4705,10 +4709,6 @@ namespace Application
         } ScrollBar;
         struct
         {
-            struct
-            {
-                Graphics::ColorPair Text, HotKey;
-            } ColumnNormal, ColumnHover, ColumnInactive, ColumnSort;
             struct
             {
                 Graphics::ColorPair Category;

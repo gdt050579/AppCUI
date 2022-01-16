@@ -113,15 +113,6 @@ void Config::SetDarkTheme()
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 
-    this->ListView.ColumnNormal.Text     = ColorPair{ Color::Silver, Color::Magenta };
-    this->ListView.ColumnNormal.HotKey   = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.ColumnInactive.Text   = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.ColumnInactive.HotKey = ColorPair{ Color::Gray, Color::Transparent };
-    this->ListView.ColumnHover.Text      = ColorPair{ Color::Yellow, Color::Magenta };
-    this->ListView.ColumnHover.HotKey    = ColorPair{ Color::Yellow, Color::Magenta };
-    this->ListView.ColumnSort.Text       = ColorPair{ Color::White, Color::Pink };
-    this->ListView.ColumnSort.HotKey     = ColorPair{ Color::Black, Color::Pink };
-
     this->ListView.Item.Category = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
@@ -299,5 +290,19 @@ void Config::SetDarkTheme()
     this->ParentMenu.ScrollButtons.Set({ Color::Gray, Color::Silver });
 
     this->ParentMenu.ShortCut = this->ParentMenu.HotKey;
+
+    this->Header.Text.Set(
+          { Color::White, Color::Magenta },
+          { Color::Silver, Color::Magenta },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Pink });
+    this->Header.HotKey.Set(
+          { Color::Yellow, Color::Magenta },
+          { Color::Yellow, Color::Magenta },
+          { Color::Gray, Color::Transparent },
+          { Color::Red, Color::Silver },
+          { Color::Yellow, Color::Pink });
+    this->Header.Symbol = this->Header.Text;
 }
 } // namespace AppCUI::Application
