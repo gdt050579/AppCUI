@@ -117,11 +117,9 @@ void Config::SetDarkTheme()
 
     this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
-    this->ListView.InactiveColor         = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.FocusColor            = ColorPair{ Color::Black, Color::White };
     this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
     this->ListView.SelectionColor        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.StatusColor           = ColorPair{ Color::Yellow, Color::Transparent };
 
     this->ListView.Highlight.Normal   = ColorPair{ Color::Gray, Color::Transparent };
     this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };

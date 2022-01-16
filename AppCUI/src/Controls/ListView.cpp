@@ -215,7 +215,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     }
     else
     {
-        checkCol = uncheckCol = Cfg->ListView.InactiveColor;
+        checkCol = uncheckCol = Cfg->Text.Inactive;
     }
     // select color based on item type
     switch (item->Type)
@@ -439,7 +439,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
                   x_ofs,
                   yPoz,
                   string_view(this->Selection.Status, this->Selection.StatusLength),
-                  Cfg->ListView.StatusColor);
+                  Cfg->Text.Highlighted);
         }
     }
 }

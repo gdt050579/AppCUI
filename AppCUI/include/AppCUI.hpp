@@ -4718,12 +4718,9 @@ namespace Application
                 Graphics::ColorPair Selected, Normal;
             } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
-            Graphics::ColorPair InactiveColor;
             Graphics::ColorPair FocusColor;
             Graphics::ColorPair SelectionColor;
             Graphics::ColorPair FocusAndSelectedColor;
-            Graphics::ColorPair StatusColor;
-
         } ListView;
 
         struct
