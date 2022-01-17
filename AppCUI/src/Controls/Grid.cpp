@@ -1016,13 +1016,18 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 {
     renderer.FillRect(
-          offsetX + 1, offsetY - cHeight + 1, cWidth * columnsNo + offsetX - 1, offsetY - 1, ' ', Cfg->Grid.Header);
+          offsetX + 1,
+          offsetY - GetHeaderHeight() + 1,
+          cWidth * columnsNo + offsetX - 1,
+          offsetY - 1,
+          ' ',
+          Cfg->Grid.Header);
 
     for (auto i = 0U; i <= columnsNo; i++)
     {
         const auto x    = offsetX + i * cWidth;
-        const auto y    = offsetY - cHeight + 1;
-        const auto endY = offsetY + cHeight;
+        const auto y    = offsetY - GetHeaderHeight();
+        const auto endY = offsetY + GetHeaderHeight();
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
@@ -1033,7 +1038,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
         renderer.DrawHorizontalLine(
-              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Normal, true);
+              offsetX, offsetY - GetHeaderHeight(), cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Normal, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
@@ -1043,7 +1048,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
             for (auto i = 0U; i <= columnsNo; i++)
             {
                 const auto x = offsetX + i * cWidth;
-                const auto y = offsetY - cHeight;
+                const auto y = offsetY - GetHeaderHeight();
 
                 if (i == 0)
                 {
@@ -1071,7 +1076,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         wtp.X     = offsetX + i * cWidth + 1; // 1 -> line
-        wtp.Y     = offsetY - cHeight / 2;
+        wtp.Y     = offsetY - GetHeaderHeight() / 2;
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
@@ -1160,7 +1165,7 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
 void GridControlContext::ResetMatrixPosition()
 {
     offsetX = -1;
-    offsetY = cHeight - 1; /* header */
+    offsetY = GetHeaderHeight() - 1; /* header */
 }
 
 void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
@@ -1680,4 +1685,16 @@ void GridControlContext::FindDuplicates()
     duplicatedCellsIndexes.erase(
           std::unique(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end()), duplicatedCellsIndexes.end());
 }
+
+uint32 GridControlContext::GetHeaderHeight() const
+{
+    return cHeight * (1 + ((flags & GridFlags::Filter) != GridFlags::None));
+}
+
+uint32 GridControlContext::GetColumnSelected() const
+{
+    CHECK(selectedCellsIndexes.size() == 1, -1, "");
+    return static_cast<int32>(selectedCellsIndexes[0] / columnsNo);
+}
+
 } // namespace AppCUI

@@ -737,6 +737,8 @@ class GridControlContext : public ControlContext
     void ToggleSorting(int x, int y);
     void SortColumn(int index);
     void FindDuplicates();
+    uint32 GetHeaderHeight() const;
+    uint32 GetColumnSelected() const;
 };
 
 enum class MenuItemType : uint32
