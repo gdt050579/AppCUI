@@ -4632,8 +4632,11 @@ namespace Application
     {
         // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
-        Graphics::ObjectColorState Button, ButtonHotKey;
-
+        
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey;
+        } Button;
         struct
         {
             Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted,

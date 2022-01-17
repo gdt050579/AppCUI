@@ -34,8 +34,8 @@ void Button::Paint(Graphics::Renderer& renderer)
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
-    const auto bc         = Members->GetStateColor(Members->Cfg->Button);
-    const auto bhkc       = Members->GetStateColor(Members->Cfg->ButtonHotKey);
+    const auto bc         = Members->GetStateColor(Members->Cfg->Button.Text);
+    const auto bhkc       = Members->GetStateColor(Members->Cfg->Button.HotKey);
     bool pressed          = IsChecked();
     params.Y              = 0;
     params.HotKeyPosition = Members->HotKeyOffset;
@@ -43,8 +43,8 @@ void Button::Paint(Graphics::Renderer& renderer)
 
     if (Members->Flags && ButtonFlags::Flat)
     {        
-        params.Color       = pressed ? Members->Cfg->Button.PressedOrSelected : bc;
-        params.HotKeyColor = pressed ? Members->Cfg->ButtonHotKey.PressedOrSelected : bhkc;      
+        params.Color       = pressed ? Members->Cfg->Button.Text.PressedOrSelected : bc;
+        params.HotKeyColor = pressed ? Members->Cfg->Button.HotKey.PressedOrSelected : bhkc;      
         params.X           = 0;
         params.Width       = Members->Layout.Width;
         renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', params.Color);
@@ -55,9 +55,9 @@ void Button::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 1;
         if (pressed)
         {
-            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.PressedOrSelected);
-            params.Color       = Members->Cfg->Button.PressedOrSelected;
-            params.HotKeyColor = Members->Cfg->ButtonHotKey.PressedOrSelected;
+            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.Text.PressedOrSelected);
+            params.Color       = Members->Cfg->Button.Text.PressedOrSelected;
+            params.HotKeyColor = Members->Cfg->Button.HotKey.PressedOrSelected;
             params.X           = 1;
             renderer.WriteText(Members->Text, params);
         }

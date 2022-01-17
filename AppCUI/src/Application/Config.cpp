@@ -189,13 +189,13 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Black });
 
-    this->Button.Set(
+    this->Button.Text.Set(
           { Color::Black, Color::White },
           { Color::Black, Color::Gray },
           { Color::Gray, Color::Black },
           { Color::Black, Color::Yellow },
           { Color::Black, Color::Olive });
-    this->ButtonHotKey.Set(
+    this->Button.HotKey.Set(
           { Color::Magenta, Color::White },
           { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },

@@ -517,7 +517,7 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
     paramsSeparator.Width = Members->Layout.Width - 7;
     paramsSeparator.X     = 3;
     paramsSeparator.Color = Members->Cfg->Menu.Text.Inactive;
-    auto cbc              = Members->GetStateColor(Members->Cfg->Button);
+    auto cbc              = Members->GetStateColor(Members->Cfg->Button.Text);
 
     auto itemsCount = Members->Items.size();
     renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc);
