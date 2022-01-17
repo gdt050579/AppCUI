@@ -300,7 +300,7 @@ void TextAreaControlContext::DrawLine(
             if (poz == View.CurrentPosition)
                 cursorPoz = pozX;
             if ((poz >= Selection.Start) && (poz < Selection.End))
-                col = Cfg->TextSelectionColor;
+                col = Cfg->Selection.Editor;
             else if (useHighlighing)
                 col = ch->Color;
             else
@@ -377,7 +377,7 @@ void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
         while ((lnIndex < lnCount) && (tr < View.VisibleLinesCount))
         {
             if (lnIndex == View.CurrentLine)
-                DrawLineNumber(renderer, lnIndex, tr, Cfg->TextSelectionColor);
+                DrawLineNumber(renderer, lnIndex, tr, Cfg->Selection.Editor);
             else
                 DrawLineNumber(renderer, lnIndex, tr, colLn);
             lnIndex++;

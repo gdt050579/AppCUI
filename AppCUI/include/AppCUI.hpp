@@ -4632,14 +4632,21 @@ namespace Application
     {
         // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
-        Graphics::ColorPair TextSelectionColor, TextSelectedLineMarker;
         Graphics::ObjectColorState Button, ButtonHotKey;
 
         struct
         {
-            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Cursor,
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted,
                   Emphasized1, Emphasized2;
         } Text;
+        struct
+        {
+            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelectection;
+        } Cursor;
+        struct
+        {
+            Graphics::ColorPair Editor, LineMarker, Text, SearchMarker;
+        } Selection;
         struct
         {
             Graphics::Color Focused, Regular, Error, Notify, Warning, Tab;
@@ -4709,14 +4716,7 @@ namespace Application
         } ScrollBar;
         struct
         {
-            struct
-            {
-                Graphics::ColorPair Selected;
-            } Highlight;
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
-            Graphics::ColorPair FocusColor;
-            Graphics::ColorPair SelectionColor;
-            Graphics::ColorPair FocusAndSelectedColor;
         } ListView;
 
         struct
@@ -4774,8 +4774,6 @@ namespace Application
         } Grid;
         struct
         {
-            Graphics::ColorPair Cursor, CursorReadOnly;
-
             struct
             {
                 Graphics::ColorPair Checked, Unchecked;

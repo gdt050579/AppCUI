@@ -113,13 +113,8 @@ void Config::SetDarkTheme()
     this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
     this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
 
-
-    this->ListView.CheckedSymbol         = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.UncheckedSymbol       = ColorPair{ Color::DarkRed, Color::Transparent };
-    this->ListView.FocusColor            = ColorPair{ Color::Black, Color::White };
-    this->ListView.FocusAndSelectedColor = ColorPair{ Color::Red, Color::White };
-    this->ListView.SelectionColor        = ColorPair{ Color::Yellow, Color::Transparent };
-    this->ListView.Highlight.Selected = ColorPair{ Color::Yellow, Color::DarkRed };
+    this->ListView.CheckedSymbol      = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.UncheckedSymbol    = ColorPair{ Color::DarkRed, Color::Transparent };
 
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
@@ -158,8 +153,6 @@ void Config::SetDarkTheme()
     this->Grid.Text.Duplicate            = ColorPair{ Color::Black, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 
-    this->PropertyList.Cursor         = ColorPair{ Color::Black, Color::White };
-    this->PropertyList.CursorReadOnly = ColorPair{ Color::Gray, Color::White };
     this->PropertyList.Item.Checked   = ColorPair{ Color::Aqua, Color::Transparent };
     this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
 
@@ -190,9 +183,6 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Blue });
 
-    this->TextSelectionColor     = { Color::Yellow, Color::Magenta };
-    this->TextSelectedLineMarker = { Color::Yellow, Color::Magenta };
-
     this->PasswordMarker.Set(
           { Color::Aqua, Color::Black },
           { Color::Silver, Color::Black },
@@ -220,9 +210,18 @@ void Config::SetDarkTheme()
     this->Text.HotKey      = { Color::Aqua, Color::Transparent };
     this->Text.Hovered     = { Color::Yellow, Color::Transparent };
     this->Text.Highlighted = { Color::Yellow, Color::Transparent };
-    this->Text.Cursor      = { Color::Black, Color::White };
     this->Text.Emphasized1 = { Color::Aqua, Color::Transparent };
     this->Text.Emphasized2 = { Color::Green, Color::Transparent };
+
+    this->Cursor.Normal           = { Color::Black, Color::White };
+    this->Cursor.OverInactiveItem = { Color::Gray, Color::White };
+    this->Cursor.OverSelectection = { Color::Red, Color::Yellow };
+    this->Cursor.Inactive         = { Color::Yellow, Color::Transparent };
+
+    this->Selection.Editor       = { Color::Yellow, Color::Magenta };
+    this->Selection.LineMarker   = { Color::Yellow, Color::Magenta };
+    this->Selection.Text         = { Color::Yellow, Color::Black };
+    this->Selection.SearchMarker = { Color::Yellow, Color::DarkRed };
 
     this->Bakcground.Focused = Color::DarkBlue;
     this->Bakcground.Regular = Color::Black;
@@ -255,7 +254,7 @@ void Config::SetDarkTheme()
           { Color::Magenta, Color::White },
           { Color::White, Color::Magenta });
 
-    this->Menu.Symbol.Set( 
+    this->Menu.Symbol.Set(
           { Color::DarkGreen, Color::White },
           { Color::DarkGreen, Color::White },
           { Color::Gray, Color::White },

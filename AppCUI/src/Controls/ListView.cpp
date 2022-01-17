@@ -274,7 +274,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         params.X     = 1;
         params.Flags |= WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin;
         if (currentItem)
-            params.Color = Cfg->ListView.FocusColor;
+            params.Color = Cfg->Cursor.Normal;
         renderer.WriteText(*subitem, params);
         return;
     }
@@ -323,9 +323,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusAndSelectedColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.OverSelectection);
             else
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.FocusColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Normal);
             if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         }
@@ -333,7 +333,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Selection.Text);
         }
     }
     else
@@ -341,10 +341,10 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         if (Flags & GATTR_ENABLE)
         {
             if (((Flags & ListViewFlags::HideCurrentItemWhenNotFocused) == ListViewFlags::None) && (currentItem))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->ListView.SelectionColor);
+                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
         }
     }
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -1340,7 +1340,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
     {
         // set color for
         lvi.SubItem[columnID].SetColor(
-              index, index + this->Filter.SearchText.Len(), this->Cfg->ListView.Highlight.Selected);
+              index, index + this->Filter.SearchText.Len(), this->Cfg->Selection.SearchMarker);
         return true;
     }
 

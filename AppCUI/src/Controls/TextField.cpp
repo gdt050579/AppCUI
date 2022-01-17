@@ -545,7 +545,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
             if ((Members->Selection.Start >= 0) && (Members->Selection.End >= 0) &&
                 (Members->Selection.End >= Members->Selection.Start))
                 Members->Text.SetColor(
-                      Members->Selection.Start, Members->Selection.End + 1, Members->Cfg->TextSelectionColor);
+                      Members->Selection.Start, Members->Selection.End + 1, Members->Cfg->Selection.Editor);
             Members->Modified = false;
         }
         else

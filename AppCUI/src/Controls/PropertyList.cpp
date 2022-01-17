@@ -1307,7 +1307,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
             DrawProperty(value, y, renderer, readOnlyStatus);
         if ((this->Focused) && (idx == this->currentPos))
         {
-            const auto col = readOnlyStatus ? Cfg->PropertyList.CursorReadOnly : Cfg->PropertyList.Cursor;
+            const auto col = readOnlyStatus ? Cfg->Cursor.OverInactiveItem : Cfg->Cursor.Normal;
             if (this->hasBorder)
                 renderer.FillHorizontalLine(1, y, this->Layout.Width - 2, -1, col);
             else

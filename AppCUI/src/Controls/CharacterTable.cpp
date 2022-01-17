@@ -233,7 +233,7 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
             if ((charCode == character) && (this->Focused))
             {
                 renderer.FillHorizontalLine(
-                      x * 2 + CHARACTER_X_OFFSET - 1, y + 1, x * 2 + CHARACTER_X_OFFSET + 1, -1, Cfg->Text.Cursor);
+                      x * 2 + CHARACTER_X_OFFSET - 1, y + 1, x * 2 + CHARACTER_X_OFFSET + 1, -1, Cfg->Cursor.Normal);
                 if (!editMode)
                     renderer.SetCursor(x * 2 + CHARACTER_X_OFFSET, y + 1);
             }
