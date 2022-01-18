@@ -110,13 +110,13 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
     {
         if (onTop)
-            renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+            renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->TabOld.PageColor);
         else
-            renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->Tab.PageColor);
+            renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->TabOld.PageColor);
     }
 
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->Cfg->Tab.TabBarColor);
+        renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->Cfg->TabOld.TabBarColor);
 
     for (unsigned tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
@@ -128,18 +128,18 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
 
         if (tr == this->CurrentControlIndex)
         {
-            params.Color       = this->Cfg->Tab.PageColor;
-            params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
+            params.Color       = this->Cfg->TabOld.PageColor;
+            params.HotKeyColor = this->Cfg->TabOld.PageHotKeyColor;
         }
         else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
-            params.Color       = this->Cfg->Tab.HoverColor;
-            params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
+            params.Color       = this->Cfg->TabOld.HoverColor;
+            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
         }
         else
         {
-            params.Color       = this->Cfg->Tab.TabBarColor;
-            params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
+            params.Color       = this->Cfg->TabOld.TabBarColor;
+            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
         }
 
         renderer.FillHorizontalLineSize(poz, params.Y, this->TabTitleSize, ' ', params.Color);
@@ -157,9 +157,9 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
               this->Layout.Width - this->TabTitleSize,
               this->Layout.Height,
               ' ',
-              this->Cfg->Tab.PageColor);
+              this->Cfg->TabOld.PageColor);
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->Tab.TabBarColor);
+        renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->TabOld.TabBarColor);
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
@@ -176,18 +176,18 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
             continue;
         if (tr == this->CurrentControlIndex)
         {
-            params.Color       = this->Cfg->Tab.PageColor;
-            params.HotKeyColor = this->Cfg->Tab.PageHotKeyColor;
+            params.Color       = this->Cfg->TabOld.PageColor;
+            params.HotKeyColor = this->Cfg->TabOld.PageHotKeyColor;
         }
         else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
-            params.Color       = this->Cfg->Tab.HoverColor;
-            params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
+            params.Color       = this->Cfg->TabOld.HoverColor;
+            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
         }
         else
         {
-            params.Color       = this->Cfg->Tab.TabBarColor;
-            params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
+            params.Color       = this->Cfg->TabOld.TabBarColor;
+            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
         }
 
         renderer.FillHorizontalLineSize(0, tr + 1, this->TabTitleSize, ' ', params.Color);
@@ -199,7 +199,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.Clear(' ', this->Cfg->Tab.PageColor);
+        renderer.Clear(' ', this->Cfg->TabOld.PageColor);
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
@@ -217,18 +217,18 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 
         if (tr == this->CurrentControlIndex)
         {
-            params.Color       = this->Cfg->Tab.ListSelectedPageColor;
-            params.HotKeyColor = this->Cfg->Tab.ListSelectedPageHotKey;
+            params.Color       = this->Cfg->TabOld.ListSelectedPageColor;
+            params.HotKeyColor = this->Cfg->TabOld.ListSelectedPageHotKey;
         }
         else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
         {
-            params.Color       = this->Cfg->Tab.HoverColor;
-            params.HotKeyColor = this->Cfg->Tab.HoverHotKeyColor;
+            params.Color       = this->Cfg->TabOld.HoverColor;
+            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
         }
         else
         {
-            params.Color       = this->Cfg->Tab.TabBarColor;
-            params.HotKeyColor = this->Cfg->Tab.TabBarHotKeyColor;
+            params.Color       = this->Cfg->TabOld.TabBarColor;
+            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
         }
         if (tr <= this->CurrentControlIndex)
             ypoz = tr;
@@ -243,7 +243,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 void TabControlContext::PaintNoTabsPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.Clear(' ', this->Cfg->Tab.PageColor);
+        renderer.Clear(' ', this->Cfg->TabOld.PageColor);
 }
 bool NextTab(Tab* t)
 {

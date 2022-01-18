@@ -517,9 +517,10 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
     paramsSeparator.Width = Members->Layout.Width - 7;
     paramsSeparator.X     = 3;
     paramsSeparator.Color = Members->Cfg->Menu.Text.Inactive;
-    auto cbc              = Members->GetStateColor(Members->Cfg->Button);
+    auto state            = Members->GetControlState(ControlStateFlags::ProcessHoverStatus);
+    auto cbc              = Members->Cfg->Button.Text.GetColor(state);
+    auto itemsCount       = Members->Items.size();
 
-    auto itemsCount = Members->Items.size();
     renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 5, ' ', cbc);
     if (Members->CurentItemIndex < Members->Indexes.Len())
     {
@@ -573,7 +574,11 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
                 // cursor or selection
                 if (i.Index == Members->CurentItemIndex)
                     renderer.FillHorizontalLine(
-                          1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Text.PressedOrSelected); // a different color
+                          1,
+                          tr + 2,
+                          Members->Layout.Width - 2,
+                          -1,
+                          Members->Cfg->Menu.Text.PressedOrSelected); // a different color
                 else if (i.Index == Members->HoveredIndexItem)
                     renderer.FillHorizontalLine(
                           1, tr + 2, Members->Layout.Width - 2, -1, Members->Cfg->Menu.Text.Hovered);

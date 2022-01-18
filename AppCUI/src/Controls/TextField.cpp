@@ -118,7 +118,7 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Cursor.Pos >= (int) Members->Text.Len())
         return;
-    auto currentChar           = Members->Text.GetBuffer()[Members->Cursor.Pos];
+    auto currentChar     = Members->Text.GetBuffer()[Members->Cursor.Pos];
     optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
@@ -138,8 +138,7 @@ void TextField_MoveToNextWord(TextField* control, bool selected, bool skipSpaces
     if (skipSpacesAfterWord)
     {
         if (res.has_value())
-            res = Members->Text.FindNext(
-                  res.value(), [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
+            res = Members->Text.FindNext(res.value(), [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
     }
     if (res.has_value())
         TextField_MoveTo(control, res.value(), selected);
@@ -149,14 +148,13 @@ void TextField_MoveToPreviousWord(TextField* control, bool selected)
     CREATE_TYPE_CONTEXT(TextFieldControlContext, control, Members, );
     if (Members->Cursor.Pos == 0)
         return;
-    auto startPoz              = Members->Cursor.Pos - 1;
-    auto currentChar           = Members->Text.GetBuffer()[startPoz];
+    auto startPoz        = Members->Cursor.Pos - 1;
+    auto currentChar     = Members->Text.GetBuffer()[startPoz];
     optional<uint32> res = std::nullopt;
 
     if ((currentChar == ' ') || (currentChar == '\t'))
     {
-        res = Members->Text.FindPrevious(
-              startPoz, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
+        res = Members->Text.FindPrevious(startPoz, [](uint32, Character ch) { return (ch == ' ') || (ch == '\t'); });
         if (res.has_value())
             startPoz = res.value();
     }
@@ -508,7 +506,7 @@ void TextField::Paint(Graphics::Renderer& renderer)
     params.Width = Members->Layout.Width - 2;
     params.X     = 1;
     params.Y     = 0;
-    params.Color = Members->GetStateColor(Members->Cfg->Editor);
+    params.Color = Members->Cfg->Editor.GetColor(Members->GetControlState(ControlStateFlags::ProcessHoverStatus));
 
     if (Members->Layout.Height == 1)
         params.Flags |= WriteTextFlags::SingleLine;

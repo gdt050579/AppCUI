@@ -100,21 +100,17 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
-    this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
-    this->Tab.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
-    this->Tab.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
-    this->Tab.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Tab.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
-    this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
-    this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
+    this->TabOld.PageColor              = ColorPair{ Color::White, Color::Blue };
+    this->TabOld.PageHotKeyColor     = ColorPair{ Color::Yellow, Color::Blue };
+    this->TabOld.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
+    this->TabOld.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
+    this->TabOld.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
+    this->TabOld.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
+    this->TabOld.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
+    this->TabOld.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
 
-    this->ScrollBar.Arrows   = ColorPair{ Color::White, Color::Teal };
-    this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
-    this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
-
-    this->ListView.CheckedSymbol      = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.UncheckedSymbol    = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->ListView.CheckedSymbol   = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };
 
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
@@ -122,8 +118,7 @@ void Config::SetDarkTheme()
     this->NumericSelector.Text.Hover      = ColorPair{ Color::Black, Color::Yellow };
     this->NumericSelector.Text.WrongValue = ColorPair{ Color::Black, Color::Red };
 
-    this->ToolTip.Arrow = ColorPair{ Color::Green, Color::Black };
-    this->ToolTip.Text  = ColorPair{ Color::Black, Color::Aqua };
+
 
     this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
     this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
@@ -189,13 +184,13 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Black });
 
-    this->Button.Set(
+    this->Button.Text.Set(
           { Color::Black, Color::White },
           { Color::Black, Color::Gray },
           { Color::Gray, Color::Black },
           { Color::Black, Color::Yellow },
           { Color::Black, Color::Olive });
-    this->ButtonHotKey.Set(
+    this->Button.HotKey.Set(
           { Color::Magenta, Color::White },
           { Color::DarkRed, Color::Gray },
           { Color::Gray, Color::Black },
@@ -294,5 +289,20 @@ void Config::SetDarkTheme()
           { Color::Red, Color::Silver },
           { Color::Yellow, Color::Pink });
     this->Header.Symbol = this->Header.Text;
+
+    this->ScrollBar.Bar.Set(
+          { Color::White, Color::Teal },
+          { Color::White, Color::Teal },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Silver });
+    this->ScrollBar.Arrows   = this->ScrollBar.Bar;
+    this->ScrollBar.Position.Set(
+          { Color::Green, Color::Teal },
+          { Color::Green, Color::Teal },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Silver });
+
+    this->ToolTip.Arrow = { Color::Green, Color::Black };
+    this->ToolTip.Text  = { Color::Black, Color::Aqua };
 }
 } // namespace AppCUI::Application

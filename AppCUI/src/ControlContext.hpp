@@ -133,36 +133,52 @@ struct ControlContext
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState)
+    constexpr inline ControlState GetControlState(ControlStateFlags stateFlags)
     {
         if (!(Flags & GATTR_ENABLE))
-            return colorState.Inactive;
-        else if (Focused)
-            return colorState.Focused;
-        else if (MouseIsOver)
-            return colorState.Hovered;
+            return ControlState::Inactive;
+        if (Focused)
+        {
+            if (((static_cast<uint32>(stateFlags)) &
+                 (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))) &&
+                (Flags & GATTR_CHECKED))
+                return ControlState::PressedOrSelected;
+            else
+                return ControlState::Focused;
+        }
         else
-            return colorState.Normal;
+        {
+            if ((MouseIsOver) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
+                return ControlState::Hovered;
+            else
+                return ControlState::Normal;
+        }
     }
-    inline ColorPair GetStateColor(const AppCUI::Graphics::ObjectColorState& colorState, bool isHovered)
+    constexpr inline ControlState GetComponentState(
+          ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked)
     {
         if (!(Flags & GATTR_ENABLE))
-            return colorState.Inactive;
-        else if (isHovered) // this takes precedence agains Focused
-            return colorState.Hovered;
-        else if (Focused)
-            return colorState.Focused;
+            return ControlState::Inactive;
+        if (Focused)
+        {
+            if ((isPressedOrChecked) && ((static_cast<uint32>(stateFlags)) &
+                                         (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))))
+                return ControlState::PressedOrSelected;
+            if ((isHovered) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
+                return ControlState::Hovered;
+            else
+                return ControlState::Focused;
+        }
         else
-            return colorState.Normal;
-    }
-    inline ColorPair GetStateColorWithoutHovered(const AppCUI::Graphics::ObjectColorState& colorState)
-    {
-        if (!(Flags & GATTR_ENABLE))
-            return colorState.Inactive;
-        else if (Focused)
-            return colorState.Focused;
-        else
-            return colorState.Normal;
+        {
+            if ((isHovered) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
+                return ControlState::Hovered;
+            else
+                return ControlState::Normal;
+        }
     }
 };
 

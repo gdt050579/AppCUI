@@ -122,8 +122,9 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 {
     const auto not_sortable = (Flags & ListViewFlags::Sortable) == ListViewFlags::None;
     const auto enabled      = (this->Flags & GATTR_ENABLE) != 0;
-    const auto defaultCol   = GetStateColorWithoutHovered(Cfg->Header.Text);
-    const auto defaultHK    = GetStateColorWithoutHovered(Cfg->Header.HotKey);
+    const auto state        = GetControlState(ControlStateFlags::None);
+    const auto defaultCol   = Cfg->Header.Text.GetColor(state);
+    const auto defaultHK    = Cfg->Header.HotKey.GetColor(state);
 
     renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol);
 
@@ -192,7 +193,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            renderer.DrawVerticalLine(x, 1, Layout.Height, this->GetStateColorWithoutHovered(Cfg->Lines));
+            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->Lines.GetColor(state));
         }
         x++;
     }
@@ -374,7 +375,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y     = 1;
-    auto colB = this->GetStateColor(this->Cfg->Border);
+    auto colB = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {

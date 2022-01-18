@@ -356,9 +356,10 @@ void TextAreaControlContext::DrawLineNumber(
 }
 void TextAreaControlContext::Paint(Graphics::Renderer& renderer)
 {
-    const auto colTxt = this->GetStateColor(Cfg->Editor);
-    const auto colB   = this->GetStateColor(Cfg->Border);
-    const auto colLn  = this->GetStateColor(Cfg->LineMarker);
+    const auto state  = this->GetControlState(ControlStateFlags::ProcessHoverStatus);
+    const auto colTxt = Cfg->Editor.GetColor(state);
+    const auto colB   = Cfg->Border.GetColor(state);
+    const auto colLn  = Cfg->LineMarker.GetColor(state);
 
     renderer.Clear(' ', colTxt);
     int lm, tm, rm, bm;

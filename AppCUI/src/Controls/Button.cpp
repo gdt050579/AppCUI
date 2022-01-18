@@ -34,17 +34,16 @@ void Button::Paint(Graphics::Renderer& renderer)
           WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey |
           WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth);
 
-    const auto bc         = Members->GetStateColor(Members->Cfg->Button);
-    const auto bhkc       = Members->GetStateColor(Members->Cfg->ButtonHotKey);
+    const auto btnState   = Members->GetControlState(ControlStateFlags::All);
+    params.Color          = Members->Cfg->Button.Text.GetColor(btnState);
+    params.HotKeyColor    = Members->Cfg->Button.HotKey.GetColor(btnState);
     bool pressed          = IsChecked();
     params.Y              = 0;
     params.HotKeyPosition = Members->HotKeyOffset;
     params.Align          = TextAlignament::Center;
 
     if (Members->Flags && ButtonFlags::Flat)
-    {        
-        params.Color       = pressed ? Members->Cfg->Button.PressedOrSelected : bc;
-        params.HotKeyColor = pressed ? Members->Cfg->ButtonHotKey.PressedOrSelected : bhkc;      
+    {
         params.X           = 0;
         params.Width       = Members->Layout.Width;
         renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', params.Color);
@@ -55,18 +54,13 @@ void Button::Paint(Graphics::Renderer& renderer)
         params.Width = Members->Layout.Width - 1;
         if (pressed)
         {
-            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', Members->Cfg->Button.PressedOrSelected);
-            params.Color       = Members->Cfg->Button.PressedOrSelected;
-            params.HotKeyColor = Members->Cfg->ButtonHotKey.PressedOrSelected;
+            renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', params.Color);
             params.X           = 1;
             renderer.WriteText(Members->Text, params);
         }
         else
         {
-            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', bc);
-
-            params.Color       = bc;
-            params.HotKeyColor = bhkc;
+            renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', params.Color);
             params.X           = 0;
             renderer.WriteText(Members->Text, params);
 

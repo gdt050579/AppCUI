@@ -17,8 +17,9 @@ void Password::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    auto col     = Members->GetStateColor(Members->Cfg->Editor);
-    auto colPass = Members->GetStateColor(Members->Cfg->PasswordMarker);
+    const auto state   = Members->GetControlState(ControlStateFlags::ProcessHoverStatus);
+    const auto col     = Members->Cfg->Editor.GetColor(state);
+    const auto colPass = Members->Cfg->PasswordMarker.GetColor(state);
 
     int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
