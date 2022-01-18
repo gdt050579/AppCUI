@@ -100,14 +100,14 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->Tab.PageColor              = ColorPair{ Color::White, Color::Blue };
-    this->Tab.PageHotKeyColor        = ColorPair{ Color::Yellow, Color::Blue };
-    this->Tab.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
-    this->Tab.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
-    this->Tab.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
-    this->Tab.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
-    this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
-    this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
+    this->TabOld.PageColor              = ColorPair{ Color::White, Color::Blue };
+    this->TabOld.PageHotKeyColor     = ColorPair{ Color::Yellow, Color::Blue };
+    this->TabOld.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
+    this->TabOld.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
+    this->TabOld.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
+    this->TabOld.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
+    this->TabOld.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
+    this->TabOld.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
 
     this->ListView.CheckedSymbol   = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };

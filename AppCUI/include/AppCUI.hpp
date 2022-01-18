@@ -4719,7 +4719,7 @@ namespace Application
             Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,
                   HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
-        } Tab;
+        } TabOld;
 
 
         struct
