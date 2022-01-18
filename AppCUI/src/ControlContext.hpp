@@ -133,51 +133,49 @@ struct ControlContext
     bool RecomputeLayout(Control* parent);
     void PaintScrollbars(Graphics::Renderer& renderer);
 
-    constexpr inline Controls::ControlState GetControlState(Controls::ControlStateFlags stateFlags)
+    constexpr inline ControlState GetControlState(ControlStateFlags stateFlags)
     {
         if (!(Flags & GATTR_ENABLE))
-            return Controls::ControlState::Inactive;
+            return ControlState::Inactive;
         if (Focused)
         {
             if (((static_cast<uint32>(stateFlags)) &
-                 (static_cast<uint32>(Controls::ControlStateFlags::ProcessCheckOrPressedStatus))) &&
+                 (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))) &&
                 (Flags & GATTR_CHECKED))
-                return Controls::ControlState::PressedOrSelected;
+                return ControlState::PressedOrSelected;
             else
-                Controls::ControlState::Focused;
+                return ControlState::Focused;
         }
         else
         {
-            if (((static_cast<uint32>(stateFlags)) &
-                 (static_cast<uint32>(Controls::ControlStateFlags::ProcessHoverStatus))) &&
+            if (((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))) &&
                 (MouseIsOver))
-                return Controls::ControlState::Hovered;
+                return ControlState::Hovered;
             else
-                return Controls::ControlState::Normal;
+                return ControlState::Normal;
         }
     }
-    constexpr inline Controls::ControlState GetComponentState(
-          Controls::ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked)
+    constexpr inline ControlState GetComponentState(
+          ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked)
     {
         if (!(Flags & GATTR_ENABLE))
-            return Controls::ControlState::Inactive;
+            return ControlState::Inactive;
         if (Focused)
         {
             if (((static_cast<uint32>(stateFlags)) &
-                 (static_cast<uint32>(Controls::ControlStateFlags::ProcessCheckOrPressedStatus))) &&
+                 (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))) &&
                 (isPressedOrChecked))
-                return Controls::ControlState::PressedOrSelected;
+                return ControlState::PressedOrSelected;
             else
-                Controls::ControlState::Focused;
+                return ControlState::Focused;
         }
         else
         {
-            if (((static_cast<uint32>(stateFlags)) &
-                 (static_cast<uint32>(Controls::ControlStateFlags::ProcessHoverStatus))) &&
+            if (((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))) &&
                 (isHovered))
-                return Controls::ControlState::Hovered;
+                return ControlState::Hovered;
             else
-                return Controls::ControlState::Normal;
+                return ControlState::Normal;
         }
     }
 
