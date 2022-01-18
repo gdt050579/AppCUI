@@ -305,6 +305,24 @@ namespace Input
         Right
     };
 }; // namespace Input
+namespace Controls
+{
+    enum class ControlStateFlags: uint32
+    {
+        None = 0,
+        ProcessHoverStatus = 1,
+        ProcessCheckOrPressedStatus = 2,
+        All                         = 3 /* Hover & CheckOrPressed */
+    };
+    enum class ControlState : uint32
+    {
+        Focused           = 0,
+        Normal            = 1,
+        Hovered           = 2,
+        Inactive          = 3,
+        PressedOrSelected = 4
+    };
+};
 namespace Graphics
 {
     enum class Color : uint8
@@ -371,9 +389,17 @@ namespace Graphics
     };
     constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };
     constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
+
     struct ObjectColorState
     {
-        ColorPair Focused, Normal, Hovered, Inactive, PressedOrSelected;
+        union
+        {
+            ColorPair StatesList[5];
+            struct
+            {
+                ColorPair Focused, Normal, Hovered, Inactive, PressedOrSelected;
+            };
+        };
         ObjectColorState()
         {
         }
@@ -424,6 +450,10 @@ namespace Graphics
             Normal   = ColorPair{ normal, backgroud };
             Inactive = ColorPair{ inactive, backgroud };
             Hovered  = ColorPair{ normal, backgroud };
+        }
+        constexpr inline ColorPair GetColor(Controls::ControlState state) const
+        {
+            return this->StatesList[static_cast<uint32>(state)];
         }
     };
 
@@ -4632,15 +4662,15 @@ namespace Application
     {
         // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
-        
+
         struct
         {
             Graphics::ObjectColorState Text, HotKey;
         } Button;
         struct
         {
-            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted,
-                  Emphasized1, Emphasized2;
+            Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Emphasized1,
+                  Emphasized2;
         } Text;
         struct
         {
@@ -4720,7 +4750,6 @@ namespace Application
                   HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } TabOld;
-
 
         struct
         {
