@@ -118,8 +118,7 @@ void Config::SetDarkTheme()
     this->NumericSelector.Text.Hover      = ColorPair{ Color::Black, Color::Yellow };
     this->NumericSelector.Text.WrongValue = ColorPair{ Color::Black, Color::Red };
 
-    this->ToolTip.Arrow = ColorPair{ Color::Green, Color::Black };
-    this->ToolTip.Text  = ColorPair{ Color::Black, Color::Aqua };
+
 
     this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
     this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
@@ -302,5 +301,8 @@ void Config::SetDarkTheme()
           { Color::Green, Color::Teal },
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Silver });
+
+    this->ToolTip.Arrow = { Color::Green, Color::Black };
+    this->ToolTip.Text  = { Color::Black, Color::Aqua };
 }
 } // namespace AppCUI::Application

@@ -4670,6 +4670,10 @@ namespace Application
         {
             Graphics::ObjectColorState Bar, Arrows, Position;
         } ScrollBar;
+        struct
+        {
+            Graphics::ColorPair Text, Arrow;
+        } ToolTip;
 
         // OLD structures
         struct
@@ -4730,10 +4734,7 @@ namespace Application
                 Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
             } Text;
         } NumericSelector;
-        struct
-        {
-            Graphics::ColorPair Text, Arrow;
-        } ToolTip;
+
         struct
         {
             struct
