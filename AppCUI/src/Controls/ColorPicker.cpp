@@ -39,7 +39,7 @@ void ColorPickerContext::OnExpandView(Graphics::Clip& expandedClip)
 }
 void ColorPickerContext::PaintHeader(int x, int y, uint32 width, Graphics::Renderer& renderer)
 {
-    auto cbc = this->GetStateColor(this->Cfg->Button.Text);
+    auto cbc = this->Cfg->Button.Text.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
 
     if (width > MINSPACE_FOR_COLOR_DRAWING)
     {
