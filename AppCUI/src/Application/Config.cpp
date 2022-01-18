@@ -100,8 +100,6 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->TabOld.PageColor              = ColorPair{ Color::White, Color::Blue };
-    this->TabOld.PageHotKeyColor     = ColorPair{ Color::Yellow, Color::Blue };
     this->TabOld.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
     this->TabOld.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
     this->TabOld.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
@@ -117,8 +115,6 @@ void Config::SetDarkTheme()
     this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
     this->NumericSelector.Text.Hover      = ColorPair{ Color::Black, Color::Yellow };
     this->NumericSelector.Text.WrongValue = ColorPair{ Color::Black, Color::Red };
-
-
 
     this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
     this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
@@ -295,7 +291,7 @@ void Config::SetDarkTheme()
           { Color::White, Color::Teal },
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Silver });
-    this->ScrollBar.Arrows   = this->ScrollBar.Bar;
+    this->ScrollBar.Arrows = this->ScrollBar.Bar;
     this->ScrollBar.Position.Set(
           { Color::Green, Color::Teal },
           { Color::Green, Color::Teal },
@@ -304,5 +300,19 @@ void Config::SetDarkTheme()
 
     this->ToolTip.Arrow = { Color::Green, Color::Black };
     this->ToolTip.Text  = { Color::Black, Color::Aqua };
+
+    this->Tab.Text.Set(
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Silver },
+          { Color::White, Color::Blue });
+
+    this->Tab.HotKey.Set(
+          { Color::DarkRed, Color::Gray },
+          { Color::Yellow, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::Yellow, Color::Blue });
 }
 } // namespace AppCUI::Application
