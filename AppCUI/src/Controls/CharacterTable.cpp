@@ -196,8 +196,8 @@ void CharacterTableContext::Paint(Graphics::Renderer& renderer)
 {
     NumericFormatter n;
     auto col      = this->Flags & GATTR_ENABLE ? this->Cfg->Text.Normal : this->Cfg->Text.Inactive;
-    auto colB     = this->GetStateColor(this->Cfg->Border);
-    auto lnNumber = this->GetStateColorWithoutHovered(this->Cfg->LineMarker);
+    auto colB     = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
+    auto lnNumber = this->Cfg->LineMarker.GetColor(this->GetControlState(ControlStateFlags::None));
 
     renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
     renderer.DrawVerticalLine(OFFSET_X_RIGHT_MARGIN, 1, this->Layout.Height - 2, colB, false);
