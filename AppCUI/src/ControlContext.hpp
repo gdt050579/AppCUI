@@ -148,8 +148,8 @@ struct ControlContext
         }
         else
         {
-            if (((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))) &&
-                (MouseIsOver))
+            if ((MouseIsOver) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
                 return ControlState::Hovered;
             else
                 return ControlState::Normal;
@@ -162,17 +162,19 @@ struct ControlContext
             return ControlState::Inactive;
         if (Focused)
         {
-            if (((static_cast<uint32>(stateFlags)) &
-                 (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))) &&
-                (isPressedOrChecked))
+            if ((isPressedOrChecked) && ((static_cast<uint32>(stateFlags)) &
+                                         (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))))
                 return ControlState::PressedOrSelected;
+            if ((isHovered) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
+                return ControlState::Hovered;
             else
                 return ControlState::Focused;
         }
         else
         {
-            if (((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))) &&
-                (isHovered))
+            if ((isHovered) &&
+                ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
                 return ControlState::Hovered;
             else
                 return ControlState::Normal;
