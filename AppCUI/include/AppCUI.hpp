@@ -4666,6 +4666,10 @@ namespace Application
         {
             Graphics::ObjectColorState Text, HotKey, Symbol;
         } Header;
+        struct
+        {
+            Graphics::ObjectColorState Bar, Arrows, Position;
+        } ScrollBar;
 
         // OLD structures
         struct
@@ -4713,10 +4717,7 @@ namespace Application
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } Tab;
 
-        struct
-        {
-            Graphics::ColorPair Bar, Arrows, Position;
-        } ScrollBar;
+
         struct
         {
             Graphics::ColorPair CheckedSymbol, UncheckedSymbol;

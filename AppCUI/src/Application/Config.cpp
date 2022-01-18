@@ -109,12 +109,8 @@ void Config::SetDarkTheme()
     this->Tab.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
     this->Tab.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
 
-    this->ScrollBar.Arrows   = ColorPair{ Color::White, Color::Teal };
-    this->ScrollBar.Bar      = ColorPair{ Color::Black, Color::Teal };
-    this->ScrollBar.Position = ColorPair{ Color::Green, Color::Teal };
-
-    this->ListView.CheckedSymbol      = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.UncheckedSymbol    = ColorPair{ Color::DarkRed, Color::Transparent };
+    this->ListView.CheckedSymbol   = ColorPair{ Color::Green, Color::Transparent };
+    this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };
 
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
@@ -294,5 +290,17 @@ void Config::SetDarkTheme()
           { Color::Red, Color::Silver },
           { Color::Yellow, Color::Pink });
     this->Header.Symbol = this->Header.Text;
+
+    this->ScrollBar.Bar.Set(
+          { Color::White, Color::Teal },
+          { Color::White, Color::Teal },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Silver });
+    this->ScrollBar.Arrows   = this->ScrollBar.Bar;
+    this->ScrollBar.Position.Set(
+          { Color::Green, Color::Teal },
+          { Color::Green, Color::Teal },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Silver });
 }
 } // namespace AppCUI::Application
