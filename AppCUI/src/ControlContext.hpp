@@ -176,6 +176,9 @@ struct ControlContext
             if ((isHovered) &&
                 ((static_cast<uint32>(stateFlags)) & (static_cast<uint32>(ControlStateFlags::ProcessHoverStatus))))
                 return ControlState::Hovered;
+            if ((isPressedOrChecked) && ((static_cast<uint32>(stateFlags)) &
+                                         (static_cast<uint32>(ControlStateFlags::ProcessCheckOrPressedStatus))))
+                return ControlState::PressedOrSelected;
             else
                 return ControlState::Normal;
         }
@@ -386,6 +389,14 @@ struct TabControlContext : public ControlContext
     void PaintLeftPanelTab(Graphics::Renderer& renderer);
     void PaintListPanelTab(Graphics::Renderer& renderer);
     void PaintNoTabsPanelTab(Graphics::Renderer& renderer);
+    inline ColorPair GetTabBarColor()
+    {
+        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.Normal : Cfg->Tab.Text.Inactive; 
+    }
+    inline ColorPair GetPageColor()
+    {
+        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.PressedOrSelected : Cfg->Tab.Text.Inactive;
+    }
 };
 struct CanvasControlContext : public ControlContext
 {

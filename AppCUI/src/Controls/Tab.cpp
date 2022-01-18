@@ -1,7 +1,5 @@
 #include "ControlContext.hpp"
 
-
-
 #define TAB_DISPLAY_MODE(flags) (((flags) >> 8) & 0xF)
 
 namespace AppCUI
@@ -100,25 +98,16 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
 
     params.Width = this->TabTitleSize - 2;
     params.Align = TextAlignament::Center;
+    params.Y     = onTop ? 0 : this->Layout.Height - 1;
     int poz      = 1;
 
-    if (onTop)
-        params.Y = 0;
-    else
-        params.Y = this->Layout.Height - 1;
-
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-    {
-        if (onTop)
-            renderer.FillRectSize(0, 1, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->TabOld.PageColor);
-        else
-            renderer.FillRectSize(0, 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->Cfg->TabOld.PageColor);
-    }
-
+        renderer.FillRectSize(0, onTop ? 1 : 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->GetPageColor());
+ 
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->Cfg->TabOld.TabBarColor);
+        renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->GetTabBarColor());
 
-    for (unsigned tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
+    for (uint32 tr = 0; tr < this->ControlsCount; tr++, poz += (this->TabTitleSize + 1))
     {
         if (this->Controls[tr] == nullptr)
             continue;
@@ -126,21 +115,12 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
         if (cc == nullptr)
             continue;
 
-        if (tr == this->CurrentControlIndex)
-        {
-            params.Color       = this->Cfg->TabOld.PageColor;
-            params.HotKeyColor = this->Cfg->TabOld.PageHotKeyColor;
-        }
-        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
-        {
-            params.Color       = this->Cfg->TabOld.HoverColor;
-            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
-        }
-        else
-        {
-            params.Color       = this->Cfg->TabOld.TabBarColor;
-            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
-        }
+        const auto state = this->GetComponentState(
+              ControlStateFlags::All,
+              tr == static_cast<uint32>(this->HoveredTabIndex),
+              tr == this->CurrentControlIndex);
+        params.Color       = this->Cfg->Tab.Text.GetColor(state);
+        params.HotKeyColor = this->Cfg->Tab.HotKey.GetColor(state);
 
         renderer.FillHorizontalLineSize(poz, params.Y, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
@@ -157,9 +137,9 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
               this->Layout.Width - this->TabTitleSize,
               this->Layout.Height,
               ' ',
-              this->Cfg->TabOld.PageColor);
+              this->GetPageColor());
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
-        renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->Cfg->TabOld.TabBarColor);
+        renderer.FillRectSize(0, 0, this->TabTitleSize, this->Layout.Height, ' ', this->GetTabBarColor());
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
@@ -174,21 +154,12 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
         ControlContext* cc = (ControlContext*) this->Controls[tr]->Context;
         if (cc == nullptr)
             continue;
-        if (tr == this->CurrentControlIndex)
-        {
-            params.Color       = this->Cfg->TabOld.PageColor;
-            params.HotKeyColor = this->Cfg->TabOld.PageHotKeyColor;
-        }
-        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
-        {
-            params.Color       = this->Cfg->TabOld.HoverColor;
-            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
-        }
-        else
-        {
-            params.Color       = this->Cfg->TabOld.TabBarColor;
-            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
-        }
+        const auto state = this->GetComponentState(
+              ControlStateFlags::All,
+              tr == static_cast<uint32>(this->HoveredTabIndex),
+              tr == this->CurrentControlIndex);
+        params.Color       = this->Cfg->Tab.Text.GetColor(state);
+        params.HotKeyColor = this->Cfg->Tab.HotKey.GetColor(state);
 
         renderer.FillHorizontalLineSize(0, tr + 1, this->TabTitleSize, ' ', params.Color);
         params.HotKeyPosition = cc->HotKeyOffset;
@@ -199,7 +170,7 @@ void TabControlContext::PaintLeftPanelTab(Graphics::Renderer& renderer)
 void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.Clear(' ', this->Cfg->TabOld.PageColor);
+        renderer.Clear(' ', this->GetPageColor());
 
     WriteTextParams params(
           WriteTextFlags::OverwriteColors | WriteTextFlags::SingleLine | WriteTextFlags::HighlightHotKey |
@@ -243,7 +214,7 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
 void TabControlContext::PaintNoTabsPanelTab(Graphics::Renderer& renderer)
 {
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
-        renderer.Clear(' ', this->Cfg->TabOld.PageColor);
+        renderer.Clear(' ', this->GetPageColor());
 }
 bool NextTab(Tab* t)
 {

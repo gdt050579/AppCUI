@@ -307,10 +307,10 @@ namespace Input
 }; // namespace Input
 namespace Controls
 {
-    enum class ControlStateFlags: uint32
+    enum class ControlStateFlags : uint32
     {
-        None = 0,
-        ProcessHoverStatus = 1,
+        None                        = 0,
+        ProcessHoverStatus          = 1,
         ProcessCheckOrPressedStatus = 2,
         All                         = 3 /* Hover & CheckOrPressed */
     };
@@ -322,7 +322,7 @@ namespace Controls
         Inactive          = 3,
         PressedOrSelected = 4
     };
-};
+}; // namespace Controls
 namespace Graphics
 {
     enum class Color : uint8
@@ -4706,6 +4706,10 @@ namespace Application
         {
             Graphics::ColorPair Text, Arrow;
         } ToolTip;
+        struct
+        {
+            Graphics::ObjectColorState Text, HotKey;
+        } Tab;
 
         // OLD structures
         struct
@@ -4748,8 +4752,7 @@ namespace Application
 
         struct
         {
-            Graphics::ColorPair PageColor, TabBarColor, HoverColor, PageHotKeyColor, TabBarHotKeyColor,
-                  HoverHotKeyColor;
+            Graphics::ColorPair TabBarColor, HoverColor, TabBarHotKeyColor, HoverHotKeyColor;
             Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
         } TabOld;
 
