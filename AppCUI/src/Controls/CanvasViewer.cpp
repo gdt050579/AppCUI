@@ -57,7 +57,7 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
               0,
               Members->Layout.Width,
               Members->Layout.Height,
-              Members->GetStateColor(Members->Cfg->Border),
+              Members->Cfg->Border.GetColor(Members->GetControlState(ControlStateFlags::ProcessHoverStatus)),
               LineType::Single);
         if (Members->Layout.Width > 6)
         {
