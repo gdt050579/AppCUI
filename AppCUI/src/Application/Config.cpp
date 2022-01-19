@@ -100,13 +100,6 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->TabOld.TabBarColor            = ColorPair{ Color::Black, Color::Gray };
-    this->TabOld.TabBarHotKeyColor      = ColorPair{ Color::DarkRed, Color::Gray };
-    this->TabOld.HoverColor             = ColorPair{ Color::Yellow, Color::Magenta };
-    this->TabOld.HoverHotKeyColor       = ColorPair{ Color::White, Color::Magenta };
-    this->TabOld.ListSelectedPageColor  = ColorPair{ Color::Black, Color::White };
-    this->TabOld.ListSelectedPageHotKey = ColorPair{ Color::DarkRed, Color::White };
-
     this->ListView.CheckedSymbol   = ColorPair{ Color::Green, Color::Transparent };
     this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };
 
@@ -314,5 +307,10 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::DarkRed, Color::Silver },
           { Color::Yellow, Color::Blue });
+
+    this->Tab.ListText                     = this->Tab.Text;
+    this->Tab.ListText.PressedOrSelected   = { Color::Black, Color::White };
+    this->Tab.ListHotKey                   = this->Tab.HotKey;
+    this->Tab.ListHotKey.PressedOrSelected = { Color::DarkRed, Color::White };
 }
 } // namespace AppCUI::Application

@@ -4706,7 +4706,7 @@ namespace Application
         } ToolTip;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey;
+            Graphics::ObjectColorState Text, HotKey, ListText, ListHotKey;
         } Tab;
 
         // OLD structures
@@ -4747,12 +4747,6 @@ namespace Application
             } Buttons;
 
         } Splitter;
-
-        struct
-        {
-            Graphics::ColorPair TabBarColor, HoverColor, TabBarHotKeyColor, HoverHotKeyColor;
-            Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
-        } TabOld;
 
         struct
         {

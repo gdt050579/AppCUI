@@ -186,21 +186,13 @@ void TabControlContext::PaintListPanelTab(Graphics::Renderer& renderer)
         if (cc == nullptr)
             continue;
 
-        if (tr == this->CurrentControlIndex)
-        {
-            params.Color       = this->Cfg->TabOld.ListSelectedPageColor;
-            params.HotKeyColor = this->Cfg->TabOld.ListSelectedPageHotKey;
-        }
-        else if (tr == static_cast<unsigned>(this->HoveredTabIndex))
-        {
-            params.Color       = this->Cfg->TabOld.HoverColor;
-            params.HotKeyColor = this->Cfg->TabOld.HoverHotKeyColor;
-        }
-        else
-        {
-            params.Color       = this->Cfg->TabOld.TabBarColor;
-            params.HotKeyColor = this->Cfg->TabOld.TabBarHotKeyColor;
-        }
+        const auto state = this->GetComponentState(
+              ControlStateFlags::All,
+              tr == static_cast<uint32>(this->HoveredTabIndex),
+              tr == this->CurrentControlIndex);
+        params.Color       = this->Cfg->Tab.ListText.GetColor(state);
+        params.HotKeyColor = this->Cfg->Tab.ListHotKey.GetColor(state);
+
         if (tr <= this->CurrentControlIndex)
             ypoz = tr;
         else
