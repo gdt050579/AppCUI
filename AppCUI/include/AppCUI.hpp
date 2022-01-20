@@ -4677,6 +4677,10 @@ namespace Application
         } Text;
         struct
         {
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon;
+        } Symbol;
+        struct
+        {
             Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelectection;
         } Cursor;
         struct
@@ -4750,11 +4754,6 @@ namespace Application
             } Buttons;
 
         } Splitter;
-
-        struct
-        {
-            Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
-        } ListView;
 
         struct
         {

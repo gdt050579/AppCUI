@@ -211,12 +211,12 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
 
     if (Flags & GATTR_ENABLE)
     {
-        checkCol   = Cfg->ListView.CheckedSymbol;
-        uncheckCol = Cfg->ListView.UncheckedSymbol;
+        checkCol   = Cfg->Symbol.Checked;
+        uncheckCol = Cfg->Symbol.Uncheked;
     }
     else
     {
-        checkCol = uncheckCol = Cfg->Text.Inactive;
+        checkCol = uncheckCol = Cfg->Symbol.Inactive;
     }
     // select color based on item type
     switch (item->Type)

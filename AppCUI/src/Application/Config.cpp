@@ -100,9 +100,6 @@ void Config::SetDarkTheme()
     this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
     this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
 
-    this->ListView.CheckedSymbol   = ColorPair{ Color::Green, Color::Transparent };
-    this->ListView.UncheckedSymbol = ColorPair{ Color::DarkRed, Color::Transparent };
-
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
     this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
@@ -206,6 +203,13 @@ void Config::SetDarkTheme()
     this->Selection.LineMarker   = { Color::Yellow, Color::Magenta };
     this->Selection.Text         = { Color::Yellow, Color::Black };
     this->Selection.SearchMarker = { Color::Yellow, Color::DarkRed };
+
+    this->Symbol.Inactive = { Color::Gray, Color::Transparent };
+    this->Symbol.Hovered  = { Color::Black, Color::Aqua };
+    this->Symbol.Pressed  = { Color::Aqua, Color::Yellow };
+    this->Symbol.Checked  = { Color::Green, Color::Transparent };
+    this->Symbol.Uncheked = { Color::Red, Color::Transparent };
+    this->Symbol.Unknwon  = { Color::Olive, Color::Transparent };
 
     this->Bakcground.Focused = Color::DarkBlue;
     this->Bakcground.Regular = Color::Black;
