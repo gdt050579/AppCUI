@@ -45,7 +45,7 @@ void ProgressStatus_Paint_Panel()
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
 
-    canvas->Clear(' ', PSData.App->config.Window.ActiveColor);
+    canvas->Clear(' ', PSData.App->config.WindowOld.ActiveColor);
     canvas->DrawRectSize(
           0,
           0,
