@@ -918,7 +918,7 @@ void PropertyListContext::DrawListProperty(
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
             renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Inactive);
-            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::TriangleDown, Colors.Item.Checked);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::TriangleDown, Colors.Checked);
         }
     }
     else
@@ -962,7 +962,7 @@ void PropertyListContext::DrawFlagsProperty(
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
             renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Normal);
-            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Checked);
         }
     }
     else
@@ -1003,7 +1003,7 @@ void PropertyListContext::DrawCustomProperty(
             // draw the expand arrow
             auto X = params.X + params.Width - 2;
             renderer.WriteCharacter(X++, params.Y, ' ', Cfg->Text.Normal);
-            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Item.Checked);
+            renderer.WriteSpecialCharacter(X, params.Y, SpecialChars::ThreePointsHorizontal, Colors.Checked);
         }
     }
     else
@@ -1153,9 +1153,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 else
                 {
                     if (std::get<bool>(tempPropValue))
-                        renderer.WriteSpecialCharacter(params.X, y, SpecialChars::CheckMark, Colors.Item.Checked);
+                        renderer.WriteSpecialCharacter(params.X, y, SpecialChars::CheckMark, Colors.Checked);
                     else
-                        renderer.WriteCharacter(params.X, y, 'x', Colors.Item.Unchecked);
+                        renderer.WriteCharacter(params.X, y, 'x', Colors.Unchecked);
                     params.X += 2;
                     if (w > 2)
                     {
@@ -1277,8 +1277,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Category.Arrow = this->Cfg->Header.Symbol.Inactive;
         this->Colors.Category.Stats = this->Cfg->Header.Text.Inactive;
         this->Colors.Category.Text  = this->Cfg->Header.Text.Inactive;
-        this->Colors.Item.Checked   = this->Cfg->Text.Inactive;
-        this->Colors.Item.Unchecked = this->Cfg->Text.Inactive;
+        this->Colors.Checked        = this->Cfg->Symbol.Inactive;
+        this->Colors.Unchecked      = this->Cfg->Symbol.Inactive;
     }
     else
     {
@@ -1286,7 +1286,8 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Category.Arrow = Cfg->Header.Symbol.GetColor(state);
         this->Colors.Category.Stats = Cfg->Header.HotKey.GetColor(state);
         this->Colors.Category.Text  = Cfg->Header.Text.GetColor(state);
-        this->Colors.Item           = this->Cfg->PropertyList.Item;
+        this->Colors.Checked        = this->Cfg->Symbol.Checked;
+        this->Colors.Unchecked      = this->Cfg->Symbol.Uncheked;
     }
     renderer.Clear(' ', NoColorPair);
     if (this->hasBorder)

@@ -911,7 +911,7 @@ struct PropertyListContext : public ControlContext
         {
             ColorPair Text, Stats, Arrow;
         } Category;
-        //decltype(AppCUI::Application::Config::PropertyList.Item) Item;
+        ColorPair Checked, Unchecked;
     } Colors;
     PropertyValue tempPropValue;
     Reference<PropertiesInterface> object;
