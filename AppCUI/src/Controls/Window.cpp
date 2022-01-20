@@ -614,7 +614,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
 void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    auto* wcfg = &Members->Cfg->Window;
+    auto* wcfg = &Members->Cfg->WindowOld;
     ColorPair colorTitle, colorWindow, c1, c2;
     LineType lineType;
 

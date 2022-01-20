@@ -4739,7 +4739,7 @@ namespace Application
                 } Separators;
                 Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
             } ControlBar;
-        } Window, DialogError, DialogNotify, DialogWarning;
+        } WindowOld, DialogError, DialogNotify, DialogWarning;
 
         struct
         {
