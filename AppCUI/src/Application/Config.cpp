@@ -203,12 +203,11 @@ void Config::SetDarkTheme()
     this->Symbol.Desktop  = { Color::Gray, Color::Black };
     this->Symbol.Arrows   = { Color::Aqua, Color::Transparent };
 
-    this->Bakcground.Focused = Color::DarkBlue;
-    this->Bakcground.Regular = Color::Black;
-    this->Bakcground.Error   = Color::DarkRed;
-    this->Bakcground.Warning = Color::Olive;
-    this->Bakcground.Notify  = Color::DarkGreen;
-    this->Bakcground.Tab     = Color::Blue;
+    this->Background.Focused = Color::DarkBlue;
+    this->Background.Regular = Color::Black;
+    this->Background.Error   = Color::DarkRed;
+    this->Background.Warning = Color::Olive;
+    this->Background.Notify  = Color::DarkGreen;
 
     this->ProgressStatus.Empty = { Color::White, Color::Black };
     this->ProgressStatus.Full  = { Color::White, Color::Teal };
