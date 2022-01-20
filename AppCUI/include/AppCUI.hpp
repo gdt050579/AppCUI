@@ -4805,13 +4805,7 @@ namespace Application
             } Text;
             Graphics::ColorPair Header;
         } Grid;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Checked, Unchecked;
-            } Item;
-        } PropertyList;
+
 
         void SetDarkTheme();
     };

@@ -53,7 +53,10 @@ void RadioBox::Paint(Graphics::Renderer& renderer)
     renderer.WriteText(Members->Text, params);
 
     if (IsChecked())
-        renderer.WriteSpecialCharacter(1, 0, SpecialChars::CircleFilled, Members->Cfg->PropertyList.Item.Checked);
+    {
+        const auto col = (Members->Flags & GATTR_ENABLE) ? Members->Cfg->Symbol.Checked : Members->Cfg->Symbol.Inactive;
+        renderer.WriteSpecialCharacter(1, 0, SpecialChars::CircleFilled, col);
+    }
     if (Members->Focused)
         renderer.SetCursor(1, 0);
 }

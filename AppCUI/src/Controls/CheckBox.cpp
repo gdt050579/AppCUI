@@ -51,7 +51,8 @@ void CheckBox::Paint(Graphics::Renderer& renderer)
 
     if (IsChecked())
     {
-        renderer.WriteCharacter(1, 0, 'X', Members->Cfg->PropertyList.Item.Checked);
+        const auto col = (Members->Flags & GATTR_ENABLE) ? Members->Cfg->Symbol.Checked : Members->Cfg->Symbol.Inactive;
+        renderer.WriteSpecialCharacter(1, 0, SpecialChars::CheckMark, col);
     }
     if (Members->Focused)
         renderer.SetCursor(1, 0);

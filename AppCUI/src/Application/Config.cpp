@@ -134,9 +134,6 @@ void Config::SetDarkTheme()
     this->Grid.Text.Duplicate            = ColorPair{ Color::Black, Color::Transparent };
     this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
 
-    this->PropertyList.Item.Checked   = ColorPair{ Color::Aqua, Color::Transparent };
-    this->PropertyList.Item.Unchecked = ColorPair{ Color::Red, Color::Transparent };
-
     //=========================================[NEW FORMAT]=================================
     this->SearchBar.Set(
           { Color::White, Color::DarkRed },
