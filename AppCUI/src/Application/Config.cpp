@@ -93,10 +93,6 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 
-    this->Splitter.Buttons.Normal  = ColorPair{ Color::Green, Color::Transparent };
-    this->Splitter.Buttons.Hover   = ColorPair{ Color::Black, Color::Aqua };
-    this->Splitter.Buttons.Clicked = ColorPair{ Color::Red, Color::Transparent };
-
     this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
     this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
     this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
@@ -200,11 +196,12 @@ void Config::SetDarkTheme()
 
     this->Symbol.Inactive = { Color::Gray, Color::Transparent };
     this->Symbol.Hovered  = { Color::Black, Color::Aqua };
-    this->Symbol.Pressed  = { Color::Aqua, Color::Yellow };
+    this->Symbol.Pressed  = { Color::Black, Color::Yellow };
     this->Symbol.Checked  = { Color::Green, Color::Transparent };
     this->Symbol.Uncheked = { Color::Red, Color::Transparent };
     this->Symbol.Unknwon  = { Color::Olive, Color::Transparent };
     this->Symbol.Desktop  = { Color::Gray, Color::Black };
+    this->Symbol.Arrows   = { Color::Aqua, Color::Transparent };
 
     this->Bakcground.Focused = Color::DarkBlue;
     this->Bakcground.Regular = Color::Black;

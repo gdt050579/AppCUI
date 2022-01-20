@@ -4677,7 +4677,7 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop;
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop, Arrows;
         } Symbol;
         struct
         {
@@ -4740,15 +4740,6 @@ namespace Application
                 Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
             } ControlBar;
         } Window, DialogError, DialogNotify, DialogWarning;
-
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Hover, Clicked;
-            } Buttons;
-
-        } Splitter;
 
         struct
         {
