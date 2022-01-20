@@ -4677,7 +4677,7 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon;
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop;
         } Symbol;
         struct
         {
@@ -4717,11 +4717,6 @@ namespace Application
         } Tab;
 
         // OLD structures
-        struct
-        {
-            char16 DesktopFillCharacterCode;
-            Graphics::ColorPair Color;
-        } Desktop;
 
         struct
         {

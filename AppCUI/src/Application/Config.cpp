@@ -5,9 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-    this->Desktop.Color                    = ColorPair{ Color::Gray, Color::Black };
-    this->Desktop.DesktopFillCharacterCode = 186;
-
     this->Window.ActiveColor        = ColorPair{ Color::White, Color::DarkBlue };
     this->Window.InactiveColor      = ColorPair{ Color::Silver, Color::Black };
     this->Window.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkBlue };
@@ -207,6 +204,7 @@ void Config::SetDarkTheme()
     this->Symbol.Checked  = { Color::Green, Color::Transparent };
     this->Symbol.Uncheked = { Color::Red, Color::Transparent };
     this->Symbol.Unknwon  = { Color::Olive, Color::Transparent };
+    this->Symbol.Desktop  = { Color::Gray, Color::Black };
 
     this->Bakcground.Focused = Color::DarkBlue;
     this->Bakcground.Regular = Color::Black;
