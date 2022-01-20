@@ -1750,6 +1750,14 @@ bool Controls::Control::IsInitialized()
     CHECK(this->Context, false, "Control context was not initialized !");
     return CTRLC->Inited;
 }
+ControlState Controls::Control::GetComponentState(ControlStateFlags flags, bool isHovered, bool isPressedOrSelected)
+{
+    return CTRLC->GetComponentState(flags, isHovered, isPressedOrSelected);
+}
+ControlState Controls::Control::GetState(ControlStateFlags flags) const
+{
+    return CTRLC->GetControlState(flags);
+}
 // Evenimente
 void Controls::Control::OnStart()
 {

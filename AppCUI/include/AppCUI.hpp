@@ -2973,6 +2973,7 @@ namespace Controls
         bool ShowToolTip(const ConstString& caption);
         bool ShowToolTip(const ConstString& caption, int x, int y);
         void HideToolTip();
+        ControlState GetComponentState(ControlStateFlags flags, bool isHovered, bool isPressedOrSelected);
 
         Reference<Control> AddChildControl(unique_ptr<Control> control);
 
@@ -3036,6 +3037,8 @@ namespace Controls
         bool IsChecked() const;
         bool HasFocus() const;
         bool IsMouseOver() const;
+        ControlState GetState(ControlStateFlags flags) const;
+
 
         // childern and parent
         Reference<Control> GetParent();
