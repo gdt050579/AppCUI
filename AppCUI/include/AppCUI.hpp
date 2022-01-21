@@ -3039,7 +3039,6 @@ namespace Controls
         bool IsMouseOver() const;
         ControlState GetState(ControlStateFlags flags) const;
 
-
         // childern and parent
         Reference<Control> GetParent();
         Control** GetChildrenList();
@@ -4715,15 +4714,18 @@ namespace Application
         {
             Graphics::ObjectColorState Text, HotKey, ListText, ListHotKey;
         } Tab;
+        struct
+        {
+            struct
+            {
+                Graphics::Color Normal, Inactive, Error, Warning, Info;
+            } Background;
+        } Window;
 
         // OLD structures
 
         struct
         {
-            Graphics::ColorPair ActiveColor;
-            Graphics::ColorPair InactiveColor;
-            Graphics::ColorPair TitleActiveColor;
-            Graphics::ColorPair TitleInactiveColor;
             struct
             {
                 struct
@@ -4791,7 +4793,6 @@ namespace Application
             } Text;
             Graphics::ColorPair Header;
         } Grid;
-
 
         void SetDarkTheme();
     };

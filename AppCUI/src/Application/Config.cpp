@@ -5,10 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-    this->WindowOld.ActiveColor        = ColorPair{ Color::White, Color::DarkBlue };
-    this->WindowOld.InactiveColor      = ColorPair{ Color::Silver, Color::Black };
-    this->WindowOld.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkBlue };
-    this->WindowOld.TitleInactiveColor = ColorPair{ Color::Silver, Color::Black };
 
     this->WindowOld.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkBlue };
     this->WindowOld.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::Black };
@@ -27,11 +23,6 @@ void Config::SetDarkTheme()
     this->WindowOld.ControlBar.CheckMark           = ColorPair{ Color::White, Color::DarkBlue };
     this->WindowOld.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkBlue };
 
-    this->DialogError.ActiveColor        = ColorPair{ Color::White, Color::DarkRed };
-    this->DialogError.InactiveColor      = ColorPair{ Color::Silver, Color::DarkRed };
-    this->DialogError.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkRed };
-    this->DialogError.TitleInactiveColor = ColorPair{ Color::Silver, Color::DarkRed };
-
     this->DialogError.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkRed };
     this->DialogError.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::DarkRed };
     this->DialogError.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::DarkRed };
@@ -49,11 +40,6 @@ void Config::SetDarkTheme()
     this->DialogError.ControlBar.CheckMark           = ColorPair{ Color::Green, Color::DarkRed };
     this->DialogError.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkRed };
 
-    this->DialogNotify.ActiveColor        = ColorPair{ Color::White, Color::DarkGreen };
-    this->DialogNotify.InactiveColor      = ColorPair{ Color::Silver, Color::DarkGreen };
-    this->DialogNotify.TitleActiveColor   = ColorPair{ Color::Yellow, Color::DarkGreen };
-    this->DialogNotify.TitleInactiveColor = ColorPair{ Color::Silver, Color::DarkGreen };
-
     this->DialogNotify.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkGreen };
     this->DialogNotify.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::DarkGreen };
     this->DialogNotify.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::DarkGreen };
@@ -70,11 +56,6 @@ void Config::SetDarkTheme()
     this->DialogNotify.ControlBar.Tag                 = ColorPair{ Color::Yellow, Color::DarkGreen };
     this->DialogNotify.ControlBar.CheckMark           = ColorPair{ Color::Silver, Color::DarkGreen };
     this->DialogNotify.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkGreen };
-
-    this->DialogWarning.ActiveColor        = ColorPair{ Color::White, Color::Olive };
-    this->DialogWarning.InactiveColor      = ColorPair{ Color::Silver, Color::Olive };
-    this->DialogWarning.TitleActiveColor   = ColorPair{ Color::Yellow, Color::Olive };
-    this->DialogWarning.TitleInactiveColor = ColorPair{ Color::Silver, Color::Olive };
 
     this->DialogWarning.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::Olive };
     this->DialogWarning.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::Olive };
@@ -307,5 +288,11 @@ void Config::SetDarkTheme()
     this->Tab.ListText.PressedOrSelected   = { Color::Black, Color::White };
     this->Tab.ListHotKey                   = this->Tab.HotKey;
     this->Tab.ListHotKey.PressedOrSelected = { Color::DarkRed, Color::White };
+
+    this->Window.Background.Inactive = Color::Black;
+    this->Window.Background.Normal   = Color::DarkBlue;
+    this->Window.Background.Error    = Color::DarkRed;
+    this->Window.Background.Warning  = Color::Olive;
+    this->Window.Background.Info     = Color::DarkGreen;
 }
 } // namespace AppCUI::Application

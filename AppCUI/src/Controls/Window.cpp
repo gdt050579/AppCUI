@@ -3,8 +3,8 @@
 
 namespace AppCUI
 {
-constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
-constexpr uint32 MAX_TAG_CHARS = 8U;
+constexpr uint8 NO_CONTROLBAR_ITEM = 0xFF;
+constexpr uint32 MAX_TAG_CHARS     = 8U;
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -615,15 +615,17 @@ void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->WindowOld;
-    ColorPair colorTitle, colorWindow, c1, c2;
+    ColorPair colorTitle, colorWindow, colorBorder, c1, c2;
     LineType lineType;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
-        wcfg = &Members->Cfg->DialogWarning;
+        colorWindow = { Color::Black, Members->Cfg->Window.Background.Warning };
     else if ((Members->Flags & WindowFlags::ErrorWindow) != WindowFlags::None)
-        wcfg = &Members->Cfg->DialogError;
+        colorWindow = { Color::Black, Members->Cfg->Window.Background.Error };
     else if ((Members->Flags & WindowFlags::NotifyWindow) != WindowFlags::None)
-        wcfg = &Members->Cfg->DialogNotify;
+        colorWindow = { Color::Black, Members->Cfg->Window.Background.Info };
+    else
+        colorWindow = { Color::Black, Members->Cfg->Window.Background.Normal };
 
     auto* c_i     = &wcfg->ControlBar.Item.Normal;
     auto sepColor = wcfg->ControlBar.Separators.Normal;
@@ -631,18 +633,19 @@ void Window::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
     {
         sepColor    = wcfg->ControlBar.Separators.Focused;
-        colorTitle  = wcfg->TitleActiveColor;
-        colorWindow = wcfg->ActiveColor;
+        colorTitle  = Members->Cfg->Text.Focused;
+        colorBorder = Members->Cfg->Border.Focused;
         lineType    = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE ? LineType::Double : LineType::Single;
     }
     else
     {
-        colorTitle  = wcfg->TitleInactiveColor;
-        colorWindow = wcfg->InactiveColor;
-        lineType    = LineType::Single;
+        colorTitle             = Members->Cfg->Text.Normal;
+        colorWindow.Background = Members->Cfg->Window.Background.Error;
+        colorBorder            = Members->Cfg->Border.Normal;
+        lineType               = LineType::Single;
     }
     renderer.Clear(' ', colorWindow);
-    renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorWindow, lineType);
+    renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorBorder, lineType);
 
     auto* btn = Members->ControlBar.Items;
     for (uint32 tr = 0; tr < Members->ControlBar.Count; tr++, btn++)
