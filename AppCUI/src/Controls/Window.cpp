@@ -677,7 +677,7 @@ void Window::Paint(Graphics::Renderer& renderer)
                 state       = ControlState::Focused;
             }
             else
-                state = ControlState::Focused;
+                state = ControlState::Inactive;
         }
         bool hoverOrPressed = (state == ControlState::Hovered) || (state == ControlState::PressedOrSelected);
         bool drawSeparators = false;
@@ -690,18 +690,21 @@ void Window::Paint(Graphics::Renderer& renderer)
                   btn->X + 1, btn->Y, 'x', Members->GetSymbolColor(state, Members->Cfg->Symbol.Close));
             break;
         case WindowBarItemType::MaximizeRestoreButton:
-            if (hoverOrPressed)
-                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c_i->Text);
-            else
-                renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", sepColor);
-            if (Members->Maximized)
-                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUpDown, c_i->Text);
-            else
-                renderer.WriteSpecialCharacter(btn->X + 1, btn->Y, SpecialChars::ArrowUp, c_i->Text);
+            renderer.WriteSingleLineText(
+                  btn->X, btn->Y, "[ ]", Members->GetSymbolColor(state, colorStartEndSeparators));
+            renderer.WriteSpecialCharacter(
+                  btn->X + 1,
+                  btn->Y,
+                  Members->Maximized ? SpecialChars::ArrowUpDown : SpecialChars::ArrowUp,
+                  Members->GetSymbolColor(state, Members->Cfg->Symbol.Maximized));
             break;
         case WindowBarItemType::WindowResize:
             if (Members->Focused)
-                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::BoxBottomRightCornerSingleLine, c_i->Text);
+                renderer.WriteSpecialCharacter(
+                      btn->X,
+                      btn->Y,
+                      SpecialChars::BoxBottomRightCornerSingleLine,
+                      Members->GetSymbolColor(state, Members->Cfg->Symbol.Resize));
             break;
         case WindowBarItemType::HotKeY:
             renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
