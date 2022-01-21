@@ -614,8 +614,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
 void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    auto* wcfg = &Members->Cfg->WindowOld;
-    ColorPair colorTitle, colorWindow, colorBorder, colorStartEndSeparators, c1, c2;
+    ColorPair colorTitle, colorWindow, colorBorder, colorStartEndSeparators, tmpCol, tmpHK;
     LineType lineType;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
@@ -627,12 +626,10 @@ void Window::Paint(Graphics::Renderer& renderer)
     else
         colorWindow = { Color::Black, Members->Cfg->Window.Background.Normal };
 
-    auto* c_i     = &wcfg->ControlBar.Item.Normal;
-    auto sepColor = wcfg->ControlBar.Separators.Normal;
+    const auto sepColor = Members->Focused ? Members->Cfg->Lines.Normal : Members->Cfg->Lines.Inactive;
 
     if (Members->Focused)
     {
-        sepColor    = wcfg->ControlBar.Separators.Focused;
         colorTitle  = Members->Cfg->Text.Focused;
         colorBorder = Members->Cfg->Border.Focused;
         lineType    = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE ? LineType::Double : LineType::Single;
@@ -708,44 +705,89 @@ void Window::Paint(Graphics::Renderer& renderer)
             break;
         case WindowBarItemType::HotKeY:
             renderer.WriteCharacter(btn->X, btn->Y, '[', colorStartEndSeparators);
-            c1 = Members->Focused ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
-            renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), c1);
+            tmpCol = Members->Focused ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), tmpCol);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorStartEndSeparators);
             break;
         case WindowBarItemType::Tag:
             renderer.WriteCharacter(btn->X, btn->Y, '[', colorStartEndSeparators);
-            c1 = Members->Focused ? Members->Cfg->Text.Emphasized2 : Members->Cfg->Text.Inactive;
-            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, c1);
+            tmpCol = Members->Focused ? Members->Cfg->Text.Emphasized2 : Members->Cfg->Text.Inactive;
+            renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, tmpCol);
             renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorStartEndSeparators);
             break;
 
         case WindowBarItemType::Button:
         case WindowBarItemType::SingleChoice:
+            switch (state)
+            {
+            case ControlState::Hovered:
+                tmpCol = Members->Cfg->Button.Text.Hovered;
+                tmpHK  = Members->Cfg->Button.Text.Hovered;
+                break;
+            case ControlState::Normal:
+                tmpCol = Members->Cfg->Text.Normal;
+                tmpHK  = Members->Cfg->Text.HotKey;
+                break;
+            case ControlState::Focused:
+                tmpCol = Members->Cfg->Text.Normal;
+                tmpHK  = Members->Cfg->Text.HotKey;
+                break;
+            case ControlState::PressedOrSelected:
+                tmpCol = Members->Cfg->Button.Text.PressedOrSelected;
+                tmpHK  = Members->Cfg->Button.Text.PressedOrSelected;
+                break;
+            default:
+                tmpHK = tmpCol = Members->Cfg->Text.Inactive;
+                break;
+            }
             if (showChecked)
                 renderer.WriteSingleLineText(
                       btn->X,
                       btn->Y,
                       btn->Text,
-                      wcfg->ControlBar.Item.Checked.Text,
-                      wcfg->ControlBar.Item.Checked.HotKey,
+                      Members->Cfg->Button.Text.PressedOrSelected,
+                      Members->Cfg->Button.HotKey.PressedOrSelected,
                       btn->HotKeyOffset);
             else
-                renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
+                renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, tmpCol, tmpHK, btn->HotKeyOffset);
             drawSeparators = true;
             break;
         case WindowBarItemType::CheckBox:
-            renderer.FillHorizontalLine(btn->X, btn->Y, btn->X + 1, ' ', c_i->HotKey);
-            renderer.WriteSingleLineText(btn->X + 2, btn->Y, btn->Text, c_i->Text, c_i->HotKey, btn->HotKeyOffset);
+            switch (state)
+            {
+            case ControlState::Hovered:
+                tmpCol = Members->Cfg->Button.Text.Hovered;
+                tmpHK  = Members->Cfg->Button.Text.Hovered;
+                break;
+            case ControlState::Normal:
+                tmpCol = Members->Cfg->Text.Normal;
+                tmpHK  = Members->Cfg->Text.HotKey;
+                break;
+            case ControlState::Focused:
+                tmpCol = Members->Cfg->Text.Normal;
+                tmpHK  = Members->Cfg->Text.HotKey;
+                break;
+            case ControlState::PressedOrSelected:
+                tmpCol = Members->Cfg->Button.Text.PressedOrSelected;
+                tmpHK  = Members->Cfg->Button.Text.PressedOrSelected;
+                break;
+            default:
+                tmpHK = tmpCol = Members->Cfg->Text.Inactive;
+                break;
+            }
+            renderer.FillHorizontalLine(btn->X, btn->Y, btn->X + 1, ' ', tmpCol);
+            renderer.WriteSingleLineText(btn->X + 2, btn->Y, btn->Text, tmpCol, tmpHK, btn->HotKeyOffset);
             if (btn->IsChecked())
             {
-                c1 = (Members->Focused && (!hoverOrPressed)) ? wcfg->ControlBar.CheckMark : c_i->Text;
-                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, c1);
+                // tmpCol = (Members->Focused && (!hoverOrPressed)) ? wcfg->ControlBar.CheckMark : c_i->Text;
+                tmpCol = Members->GetSymbolColor(state, Members->Cfg->Symbol.Checked);
+                renderer.WriteSpecialCharacter(btn->X, btn->Y, SpecialChars::CheckMark, tmpCol);
             }
             drawSeparators = true;
             break;
         case WindowBarItemType::Text:
-            c1 = Members->Focused ? wcfg->ControlBar.Text : wcfg->ControlBar.Item.Normal.Text;
-            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, c1);
+            tmpCol = Members->Focused ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
+            renderer.WriteSingleLineText(btn->X, btn->Y, btn->Text, tmpCol);
             drawSeparators = true;
             break;
         }
@@ -753,11 +795,11 @@ void Window::Paint(Graphics::Renderer& renderer)
         if (drawSeparators)
         {
             if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::LeftGroupMarker)
-                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', sepColor);
+                renderer.WriteCharacter(btn->X - 1, btn->Y, '[', colorStartEndSeparators);
             else if (fromLeft)
                 renderer.WriteCharacter(btn->X - 1, btn->Y, '|', sepColor);
             if ((uint8) btn->Flags & (uint8) WindowBarItemFlags::RightGroupMarker)
-                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', sepColor);
+                renderer.WriteCharacter(btn->X + btn->Size, btn->Y, ']', colorStartEndSeparators);
             else if (!fromLeft)
                 renderer.WriteCharacter(btn->X + btn->Size, btn->Y, '|', sepColor);
         }

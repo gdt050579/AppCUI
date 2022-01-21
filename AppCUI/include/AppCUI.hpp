@@ -4720,26 +4720,6 @@ namespace Application
         } Window;
 
         // OLD structures
-
-        struct
-        {
-            struct
-            {
-                struct
-                {
-                    struct
-                    {
-                        Graphics::ColorPair Text, HotKey;
-                    } Normal, Pressed, Hover, Checked, Focused;
-                } Item;
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused;
-                } Separators;
-                Graphics::ColorPair CheckMark, Text;
-            } ControlBar;
-        } WindowOld, DialogError, DialogNotify, DialogWarning;
-
         struct
         {
             struct
