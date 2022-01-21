@@ -615,7 +615,7 @@ void Window::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     auto* wcfg = &Members->Cfg->WindowOld;
-    ColorPair colorTitle, colorWindow, colorBorder, c1, c2;
+    ColorPair colorTitle, colorWindow, colorBorder, colorStartEndSeparators, c1, c2;
     LineType lineType;
 
     if ((Members->Flags & WindowFlags::WarningWindow) != WindowFlags::None)
@@ -640,7 +640,7 @@ void Window::Paint(Graphics::Renderer& renderer)
     else
     {
         colorTitle             = Members->Cfg->Text.Normal;
-        colorWindow.Background = Members->Cfg->Window.Background.Error;
+        colorWindow.Background = Members->Cfg->Window.Background.Inactive;
         colorBorder            = Members->Cfg->Border.Normal;
         lineType               = LineType::Single;
     }
@@ -654,7 +654,8 @@ void Window::Paint(Graphics::Renderer& renderer)
             continue;
         bool fromLeft = (btn->Layout == WindowControlsBarLayout::TopBarFromLeft) ||
                         (btn->Layout == WindowControlsBarLayout::BottomBarFromLeft);
-        bool showChecked = false;
+        bool showChecked        = false;
+        colorStartEndSeparators = colorBorder;
         if (Members->ControlBar.Current == tr)
         {
             // hover or pressed
@@ -683,15 +684,14 @@ void Window::Paint(Graphics::Renderer& renderer)
         case WindowBarItemType::CloseButton:
             if (hoverOrPressed)
             {
-                c1 = c2 = c_i->Text;
+                c1 = colorStartEndSeparators = Members->Cfg->Symbol.Hovered;
             }
             else
             {
-                c1 = sepColor;
-                c2 = Members->Focused ? wcfg->ControlBar.CloseButton : c_i->Text;
+                c1 = Members->Focused ? Members->Cfg->Symbol.Close : Members->Cfg->Symbol.Inactive;
             }
-            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", c1);
-            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c2);
+            renderer.WriteSingleLineText(btn->X, btn->Y, "[ ]", colorStartEndSeparators);
+            renderer.WriteCharacter(btn->X + 1, btn->Y, 'x', c1);
             break;
         case WindowBarItemType::MaximizeRestoreButton:
             if (hoverOrPressed)

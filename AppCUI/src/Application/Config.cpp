@@ -5,7 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-
     this->WindowOld.ControlBar.Separators.Focused  = ColorPair{ Color::Yellow, Color::DarkBlue };
     this->WindowOld.ControlBar.Separators.Normal   = ColorPair{ Color::Silver, Color::Black };
     this->WindowOld.ControlBar.Item.Normal.Text    = ColorPair{ Color::Gray, Color::Black };
@@ -175,14 +174,17 @@ void Config::SetDarkTheme()
     this->Selection.Text         = { Color::Yellow, Color::Black };
     this->Selection.SearchMarker = { Color::Yellow, Color::DarkRed };
 
-    this->Symbol.Inactive = { Color::Gray, Color::Transparent };
-    this->Symbol.Hovered  = { Color::Black, Color::Aqua };
-    this->Symbol.Pressed  = { Color::Black, Color::Yellow };
-    this->Symbol.Checked  = { Color::Green, Color::Transparent };
-    this->Symbol.Uncheked = { Color::Red, Color::Transparent };
-    this->Symbol.Unknwon  = { Color::Olive, Color::Transparent };
-    this->Symbol.Desktop  = { Color::Gray, Color::Black };
-    this->Symbol.Arrows   = { Color::Aqua, Color::Transparent };
+    this->Symbol.Inactive  = { Color::Gray, Color::Transparent };
+    this->Symbol.Hovered   = { Color::Black, Color::Aqua };
+    this->Symbol.Pressed   = { Color::Black, Color::Yellow };
+    this->Symbol.Checked   = { Color::Green, Color::Transparent };
+    this->Symbol.Uncheked  = { Color::Red, Color::Transparent };
+    this->Symbol.Unknwon   = { Color::Olive, Color::Transparent };
+    this->Symbol.Desktop   = { Color::Gray, Color::Black };
+    this->Symbol.Arrows    = { Color::Aqua, Color::Transparent };
+    this->Symbol.Close     = { Color::Red, Color::Transparent };
+    this->Symbol.Maximized = { Color::Aqua, Color::Transparent };
+    this->Symbol.Resize    = { Color::Aqua, Color::Transparent };
 
     this->ProgressStatus.Empty = { Color::White, Color::Black };
     this->ProgressStatus.Full  = { Color::White, Color::Teal };

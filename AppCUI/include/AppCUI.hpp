@@ -4676,7 +4676,7 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop, Arrows;
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop, Arrows, Close, Maximized, Resize;
         } Symbol;
         struct
         {
