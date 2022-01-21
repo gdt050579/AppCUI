@@ -274,6 +274,21 @@ struct WindowControlContext : public ControlContext
         bool IsCurrentItemPressed;
     } ControlBar;
     bool Maximized;
+
+    ColorPair GetSymbolColor(Controls::ControlState state, ColorPair col)
+    {
+        switch (state)
+        {
+        case ControlState::Hovered:
+            return Cfg->Symbol.Hovered;
+        case ControlState::PressedOrSelected:
+            return Cfg->Symbol.Pressed;
+        case ControlState::Inactive:
+            return Cfg->Symbol.Inactive;
+        default:
+            return col;
+        }
+    }
 };
 
 enum class SplitterMouseStatus : unsigned char

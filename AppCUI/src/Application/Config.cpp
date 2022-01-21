@@ -175,8 +175,8 @@ void Config::SetDarkTheme()
     this->Selection.SearchMarker = { Color::Yellow, Color::DarkRed };
 
     this->Symbol.Inactive  = { Color::Gray, Color::Transparent };
-    this->Symbol.Hovered   = { Color::Black, Color::Aqua };
-    this->Symbol.Pressed   = { Color::Black, Color::Yellow };
+    this->Symbol.Hovered   = { Color::Black, Color::Yellow };
+    this->Symbol.Pressed   = { Color::Black, Color::Silver };
     this->Symbol.Checked   = { Color::Green, Color::Transparent };
     this->Symbol.Uncheked  = { Color::Red, Color::Transparent };
     this->Symbol.Unknwon   = { Color::Olive, Color::Transparent };
