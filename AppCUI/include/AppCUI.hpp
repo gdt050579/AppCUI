@@ -4736,7 +4736,7 @@ namespace Application
                 {
                     Graphics::ColorPair Normal, Focused;
                 } Separators;
-                Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
+                Graphics::ColorPair CheckMark, Text;
             } ControlBar;
         } WindowOld, DialogError, DialogNotify, DialogWarning;
 

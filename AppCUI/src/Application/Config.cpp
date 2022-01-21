@@ -17,8 +17,7 @@ void Config::SetDarkTheme()
     this->WindowOld.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
     this->WindowOld.ControlBar.Item.Checked.Text   = ColorPair{ Color::Black, Color::Gray };
     this->WindowOld.ControlBar.Item.Checked.HotKey = ColorPair{ Color::White, Color::Gray };
-    this->WindowOld.ControlBar.CloseButton         = ColorPair{ Color::Red, Color::DarkBlue };
-    this->WindowOld.ControlBar.Tag                 = ColorPair{ Color::Green, Color::DarkBlue };
+
     this->WindowOld.ControlBar.CheckMark           = ColorPair{ Color::White, Color::DarkBlue };
     this->WindowOld.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkBlue };
 
@@ -34,8 +33,7 @@ void Config::SetDarkTheme()
     this->DialogError.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
     this->DialogError.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
     this->DialogError.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
-    this->DialogError.ControlBar.CloseButton         = ColorPair{ Color::Yellow, Color::DarkRed };
-    this->DialogError.ControlBar.Tag                 = ColorPair{ Color::Silver, Color::DarkRed };
+
     this->DialogError.ControlBar.CheckMark           = ColorPair{ Color::Green, Color::DarkRed };
     this->DialogError.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkRed };
 
@@ -51,8 +49,7 @@ void Config::SetDarkTheme()
     this->DialogNotify.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
     this->DialogNotify.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
     this->DialogNotify.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
-    this->DialogNotify.ControlBar.CloseButton         = ColorPair{ Color::White, Color::DarkGreen };
-    this->DialogNotify.ControlBar.Tag                 = ColorPair{ Color::Yellow, Color::DarkGreen };
+
     this->DialogNotify.ControlBar.CheckMark           = ColorPair{ Color::Silver, Color::DarkGreen };
     this->DialogNotify.ControlBar.Text                = ColorPair{ Color::Silver, Color::DarkGreen };
 
@@ -68,8 +65,7 @@ void Config::SetDarkTheme()
     this->DialogWarning.ControlBar.Item.Pressed.HotKey = ColorPair{ Color::Black, Color::Yellow };
     this->DialogWarning.ControlBar.Item.Checked.Text   = ColorPair{ Color::White, Color::Gray };
     this->DialogWarning.ControlBar.Item.Checked.HotKey = ColorPair{ Color::Silver, Color::Gray };
-    this->DialogWarning.ControlBar.CloseButton         = ColorPair{ Color::Red, Color::Olive };
-    this->DialogWarning.ControlBar.Tag                 = ColorPair{ Color::Green, Color::Olive };
+
     this->DialogWarning.ControlBar.CheckMark           = ColorPair{ Color::White, Color::Olive };
     this->DialogWarning.ControlBar.Text                = ColorPair{ Color::Silver, Color::Olive };
 

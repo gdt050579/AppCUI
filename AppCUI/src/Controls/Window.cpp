@@ -707,16 +707,16 @@ void Window::Paint(Graphics::Renderer& renderer)
                       Members->GetSymbolColor(state, Members->Cfg->Symbol.Resize));
             break;
         case WindowBarItemType::HotKeY:
-            renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
-            c1 = Members->Focused ? wcfg->ControlBar.Item.Focused.Text : wcfg->ControlBar.Item.Normal.Text;
+            renderer.WriteCharacter(btn->X, btn->Y, '[', colorStartEndSeparators);
+            c1 = Members->Focused ? Members->Cfg->Text.Normal : Members->Cfg->Text.Inactive;
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, KeyUtils::GetKeyName(Members->HotKey), c1);
-            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorStartEndSeparators);
             break;
         case WindowBarItemType::Tag:
-            renderer.WriteCharacter(btn->X, btn->Y, '[', sepColor);
-            c1 = Members->Focused ? wcfg->ControlBar.Tag : wcfg->ControlBar.Item.Normal.Text;
+            renderer.WriteCharacter(btn->X, btn->Y, '[', colorStartEndSeparators);
+            c1 = Members->Focused ? Members->Cfg->Text.Emphasized2 : Members->Cfg->Text.Inactive;
             renderer.WriteSingleLineText(btn->X + 1, btn->Y, btn->Text, c1);
-            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', sepColor);
+            renderer.WriteCharacter(btn->X + btn->Size - 1, btn->Y, ']', colorStartEndSeparators);
             break;
 
         case WindowBarItemType::Button:
