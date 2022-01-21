@@ -4688,10 +4688,6 @@ namespace Application
         } Selection;
         struct
         {
-            Graphics::Color Focused, Regular, Error, Notify, Warning;
-        } Background;
-        struct
-        {
             Graphics::ColorPair Empty, Full;
         } ProgressStatus;
         struct
