@@ -4685,7 +4685,7 @@ namespace Application
         } Cursor;
         struct
         {
-            Graphics::ColorPair Editor, LineMarker, Text, SearchMarker;
+            Graphics::ColorPair Editor, LineMarker, Text, SearchMarker, SimilarText;
         } Selection;
         struct
         {

@@ -106,6 +106,7 @@ void Config::SetDarkTheme()
     this->Selection.LineMarker   = { Color::Yellow, Color::Magenta };
     this->Selection.Text         = { Color::Yellow, Color::Black };
     this->Selection.SearchMarker = { Color::Yellow, Color::DarkRed };
+    this->Selection.SimilarText  = { Color::Black, Color::Green };
 
     this->Symbol.Inactive  = { Color::Gray, Color::Transparent };
     this->Symbol.Hovered   = { Color::Black, Color::Yellow };
