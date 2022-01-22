@@ -4803,6 +4803,7 @@ namespace Application
           Utils::Reference<Controls::Control> sourceControl,
           Controls::Event eventType,
           int controlID);
+    EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
 }; // namespace Application
 

@@ -229,7 +229,10 @@ void Application::RaiseEvent(
 {
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
-
+Utils::Reference<Controls::Desktop> Application::GetDesktop()
+{
+    return app->AppDesktop;
+}
 ApplicationImpl* Application::GetApplication()
 {
     return app;
