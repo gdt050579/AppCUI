@@ -1487,8 +1487,7 @@ void Controls::Control::MoveTo(int newX, int newY)
         return;
     CTRLC->Layout.X = newX;
     CTRLC->Layout.Y = newY;
-    Application::RecomputeControlsLayout();
-    Application::Repaint();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_ALL;
 }
 bool Controls::Control::Resize(int newWidth, int newHeight)
 {
@@ -1528,8 +1527,7 @@ void Controls::Control::RecomputeLayout()
         CTRLC->Controls[tr]->RecomputeLayout();
     }
     OnAfterResize(CTRLC->Layout.Width, CTRLC->Layout.Height);
-
-    Application::RecomputeControlsLayout();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_COMPUTE_POSITION;
 }
 bool Controls::Control::SetText(const ConstString& caption, bool updateHotKey)
 {

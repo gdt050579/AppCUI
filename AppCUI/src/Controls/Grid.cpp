@@ -601,7 +601,7 @@ void Controls::Grid::ToggleHorizontalLines()
     }
 
     context->UpdateGridParameters();
-    Application::Repaint();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_DRAW;
 }
 
 void Controls::Grid::ToggleVerticalLines()
@@ -617,7 +617,7 @@ void Controls::Grid::ToggleVerticalLines()
     }
 
     context->UpdateGridParameters();
-    Application::Repaint();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_DRAW;
 }
 
 void Controls::Grid::Sort()

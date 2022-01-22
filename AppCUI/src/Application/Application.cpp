@@ -213,14 +213,6 @@ bool Application::UpdateAppCUISettings(bool clearExistingSettings)
     UpdateAppCUISettings(app->settings, clearExistingSettings);
     return true;
 }
-void Application::RecomputeControlsLayout()
-{
-    app->ComputePositions();
-}
-void Application::Repaint()
-{
-    app->Paint();
-}
 void Application::RaiseEvent(
       Utils::Reference<Controls::Control> control,
       Utils::Reference<Controls::Control> sourceControl,

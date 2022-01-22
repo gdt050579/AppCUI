@@ -4810,8 +4810,6 @@ namespace Application
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
-    EXPORT void Repaint();
-    EXPORT void RecomputeControlsLayout();
     EXPORT void ArrangeWindows(ArrangeWindowsMethod method);
     EXPORT void RaiseEvent(
           Utils::Reference<Controls::Control> control,

@@ -844,7 +844,7 @@ bool Window::MaximizeRestore()
         Members->Maximized = false;
     }
     UpdateWindowsButtonsPoz(Members);
-    Application::RecomputeControlsLayout();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_COMPUTE_POSITION;
     return true;
 }
 bool Window::CenterScreen()

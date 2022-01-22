@@ -245,7 +245,7 @@ bool Tab_SetCurrentTabPageByIndex(Tab* t, uint32 index, bool forceFocus)
     if (Members->Flags && TabFlags::ListView)
     {
         Members->UpdateMargins();
-        Application::RecomputeControlsLayout();
+        AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_COMPUTE_POSITION;
     }
     t->RaiseEvent(Event::TabChanged);
     return res;
@@ -328,7 +328,7 @@ void Tab::OnFocus()
     OnAfterResize(0, 0);
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     Members->UpdateMargins();
-    Application::RecomputeControlsLayout();
+    AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_COMPUTE_POSITION;
 }
 bool Tab::OnMouseLeave()
 {
