@@ -39,19 +39,19 @@ class MyWin : public Window
             switch (controlID)
             {
             case COMMAND_ID_MAXIMIZE_ALL:
-                Application::ArrangeWindows(ArangeWindowsMethod::MaximizedAll);
+                Application::ArrangeWindows(ArrangeWindowsMethod::MaximizedAll);
                 break;
             case COMMAND_ID_CASCADE:
-                Application::ArrangeWindows(ArangeWindowsMethod::Cascade);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Cascade);
                 break;
             case COMMAND_ID_VERTICAL:
-                Application::ArrangeWindows(ArangeWindowsMethod::Vertical);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Vertical);
                 break;
             case COMMAND_ID_HORIZONTAL:
-                Application::ArrangeWindows(ArangeWindowsMethod::Horizontal);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Horizontal);
                 break;
             case COMMAND_ID_GRID:
-                Application::ArrangeWindows(ArangeWindowsMethod::Grid);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Grid);
                 break;
             }
         }

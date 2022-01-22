@@ -4641,7 +4641,7 @@ namespace Application
         }
     };
 
-    enum class ArangeWindowsMethod
+    enum class ArrangeWindowsMethod
     {
         MaximizedAll,
         Cascade,
@@ -4797,7 +4797,7 @@ namespace Application
     EXPORT bool GetDesktopSize(Graphics::Size& size);
     EXPORT void Repaint();
     EXPORT void RecomputeControlsLayout();
-    EXPORT void ArrangeWindows(ArangeWindowsMethod method);
+    EXPORT void ArrangeWindows(ArrangeWindowsMethod method);
     EXPORT void RaiseEvent(
           Utils::Reference<Controls::Control> control,
           Utils::Reference<Controls::Control> sourceControl,

@@ -102,7 +102,7 @@ int main()
         return 1;
     Application::AddWindow(std::make_unique<WindowControlsBarExample>('1'));
     Application::AddWindow(std::make_unique<WindowControlsBarExample>('2'));
-    Application::ArrangeWindows(ArangeWindowsMethod::Grid);
+    Application::ArrangeWindows(ArrangeWindowsMethod::Grid);
     Application::Run();
     return 0;
 }
