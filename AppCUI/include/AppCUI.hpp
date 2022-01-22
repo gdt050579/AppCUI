@@ -2733,6 +2733,7 @@ namespace Controls
         using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
+        using OnStartHandler     = void (*)(Reference<Controls::Control> control);
         using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
@@ -2826,6 +2827,19 @@ namespace Controls
         {
             OnLoseFocusHandler callback;
             virtual void OnLoseFocus(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
+        struct OnStartInterface
+        {
+            virtual void OnStart(Reference<Controls::Control> control) = 0;
+        };
+        struct OnStartCallback : public OnStartInterface
+        {
+            OnStartHandler callback;
+            virtual void OnStart(Reference<Controls::Control> control) override
             {
                 callback(control);
             };
@@ -2926,6 +2940,7 @@ namespace Controls
             Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
+            Wrapper<OnStartInterface, OnStartCallback, OnStartHandler> OnStart;
             Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
             Wrapper<OnAfterSetTextInterface, OnAfterSetTextCallback, OnAfterSetTextHandler> OnAfterSetText;
             virtual ~Control()

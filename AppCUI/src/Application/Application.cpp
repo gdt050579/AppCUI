@@ -272,7 +272,10 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     if (!Members->Started)
     {
         Members->Started = true;
-        ctrl->OnStart();
+        if ((Members->handlers) && (Members->handlers->OnStart.obj))
+            Members->handlers->OnStart.obj->OnStart(ctrl);
+        else
+            ctrl->OnStart();
     }
 
     // set clip
