@@ -52,6 +52,7 @@ static const char16 CodePage_PrintableAscii[] = {
     32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,
     32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,  32,
 };
+static string_view CodePages_names[] = { "DOS/OEM (437)", "Latin-1", "Printable Chars" };
 const char16* CodePageIDToTable(CodePageID id)
 {
     switch (id)
@@ -138,5 +139,16 @@ string_view CodePage::GetListValue()
     // it is very important that these methods contain the same values as the ones described in the CodePageID enum
     // (except for Custom value)
     return "DOS/OEM(437),Latin,PrintableAscii";
+}
+string_view CodePage::GetCodePageName(CodePageID id)
+{
+    if (id == CodePageID::Custom)
+        return "Custom";
+    else
+        return CodePages_names[static_cast<uint32>(id)];
+}
+uint32 CodePage::GetSupportedCodePagesCount()
+{
+    return ARRAY_LEN(CodePages_names);
 }
 } // namespace AppCUI::Graphics
