@@ -531,7 +531,7 @@ namespace Graphics
 
         Custom = 0xFFFF
     };
-    class CodePage
+    class EXPORT CodePage
     {
         const char16* table;
         CodePageID id;
