@@ -523,13 +523,17 @@ namespace Graphics
     };
     class EXPORT CharacterBuffer;
 
-    enum class CodePageID: uint32
+    enum class CodePageID : uint32
     {
-        Custom
+        DOS_437        = 0,
+        Latin_1        = 1,
+        PrintableAscii = 2,
+
+        Custom = 0xFFFF
     };
     class CodePage
     {
-        char16* table;
+        const char16* table;
         CodePageID id;
 
       public:
@@ -545,7 +549,7 @@ namespace Graphics
         {
             return id;
         }
-        void operator=(const CodePageID id);
+        bool operator=(const CodePageID id);
         bool SetCustomTranslation(char16 translationTable[256]);
     };
 }; // namespace Graphics
