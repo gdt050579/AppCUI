@@ -551,6 +551,8 @@ namespace Graphics
         }
         bool operator=(const CodePageID id);
         bool SetCustomTranslation(char16 translationTable[256]);
+        static string_view GetPropertyListValues();
+        static string_view GetListValue();
     };
 }; // namespace Graphics
 namespace Utils
