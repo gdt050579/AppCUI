@@ -522,6 +522,32 @@ namespace Graphics
         }
     };
     class EXPORT CharacterBuffer;
+
+    enum class CodePageID: uint32
+    {
+        Custom
+    };
+    class CodePage
+    {
+        char16* table;
+        CodePageID id;
+
+      public:
+        CodePage();
+        CodePage(CodePageID id);
+        ~CodePage();
+
+        inline char16 operator[](uint8 index) const
+        {
+            return *(table + index);
+        }
+        inline operator CodePageID() const
+        {
+            return id;
+        }
+        void operator=(const CodePageID id);
+        bool SetCustomTranslation(char16 translationTable[256]);
+    };
 }; // namespace Graphics
 namespace Utils
 {
