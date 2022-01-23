@@ -41,6 +41,7 @@ class ExampleWin : public Window
         if (eventType == Event::ComboBoxSelectedItemChanged)
         {
             mc->cp = static_cast<CodePageID>(cb->GetCurrentItemIndex());
+            return true;
         }
         return false;
     }
