@@ -265,20 +265,25 @@ class PropertyColorEditDialog : public PropertyEditDialog
 };
 class PropertyColorPairEditDialog : public PropertyEditDialog
 {
-    Reference<ColorPicker> col;
+    Reference<ColorPicker> colFore;
+    Reference<ColorPicker> colBack;
 
   public:
     PropertyColorPairEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : PropertyEditDialog("d:c,w:40,h:8", _prop, _object, readOnly)
+        : PropertyEditDialog("d:c,w:40,h:12", _prop, _object, readOnly)
     {
     }
     void OnInitPropertyDialog() override
     {
-        Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
-        col = Factory::ColorPicker::Create(this, "t:2,l:1,r:1", Color::Black);
-        col->SetEnabled(!isReadOnly);
+        Factory::Label::Create(this, "Forenground", "x:2,y:1,w:36");
+        colFore = Factory::ColorPicker::Create(this, "t:2,l:1,r:1", Color::Black);
+        colFore->SetEnabled(!isReadOnly);
+        Factory::Label::Create(this, "Background", "x:2,y:4,w:36");
+        colBack = Factory::ColorPicker::Create(this, "t:5,l:1,r:1", Color::Black);
+        colBack->SetEnabled(!isReadOnly);
+
         if (!isReadOnly)
-            col->SetFocus();
+            colFore->SetFocus();
     }
     void Refresh() override
     {
@@ -287,7 +292,8 @@ class PropertyColorPairEditDialog : public PropertyEditDialog
 
         if (this->object->GetPropertyValue(prop.id, tempPropValue))
         {
-            col->SetColor(std::get<Color>(tempPropValue));
+            colFore->SetColor(std::get<ColorPair>(tempPropValue).Foreground);
+            colBack->SetColor(std::get<ColorPair>(tempPropValue).Background);
         }
         else
         {
@@ -295,20 +301,20 @@ class PropertyColorPairEditDialog : public PropertyEditDialog
                   "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
         }
         if (!isReadOnly)
-            col->SetFocus();
+            colFore->SetFocus();
     }
     void Validate() override
     {
         LocalString<256> error;
 
-        if (object->SetPropertyValue(prop.id, col->GetColor(), error))
+        if (object->SetPropertyValue(prop.id, ColorPair{ colFore->GetColor(), colBack->GetColor() }, error))
         {
             this->Exit(0);
             return;
         }
         // error
         Dialogs::MessageBox::ShowError("Error", error);
-        col->SetFocus();
+        colFore->SetFocus();
     }
 };
 class PropertyKeyEditDialog : public PropertyEditDialog
