@@ -984,6 +984,7 @@ struct PropertyListContext : public ControlContext
     void EditAndUpdateFlags(const PropertyInfo& prop);
     void EditAndUpdateKey(const PropertyInfo& prop);
     void EditAndUpdateColor(const PropertyInfo& prop);
+    void EditAndUpdateColorPair(const PropertyInfo& prop);
     void EditAndUpdateChar(const PropertyInfo& prop, bool isChar8);
 
     inline constexpr int32 GetSeparatorXPos() const

@@ -263,6 +263,54 @@ class PropertyColorEditDialog : public PropertyEditDialog
         col->SetFocus();
     }
 };
+class PropertyColorPairEditDialog : public PropertyEditDialog
+{
+    Reference<ColorPicker> col;
+
+  public:
+    PropertyColorPairEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : PropertyEditDialog("d:c,w:40,h:8", _prop, _object, readOnly)
+    {
+    }
+    void OnInitPropertyDialog() override
+    {
+        Factory::Label::Create(this, prop.name, "x:2,y:1,w:36");
+        col = Factory::ColorPicker::Create(this, "t:2,l:1,r:1", Color::Black);
+        col->SetEnabled(!isReadOnly);
+        if (!isReadOnly)
+            col->SetFocus();
+    }
+    void Refresh() override
+    {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            col->SetColor(std::get<Color>(tempPropValue));
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        if (!isReadOnly)
+            col->SetFocus();
+    }
+    void Validate() override
+    {
+        LocalString<256> error;
+
+        if (object->SetPropertyValue(prop.id, col->GetColor(), error))
+        {
+            this->Exit(0);
+            return;
+        }
+        // error
+        Dialogs::MessageBox::ShowError("Error", error);
+        col->SetFocus();
+    }
+};
 class PropertyKeyEditDialog : public PropertyEditDialog
 {
     Reference<KeySelector> key;
@@ -1444,6 +1492,11 @@ void PropertyListContext::EditAndUpdateKey(const PropertyInfo& prop)
 void PropertyListContext::EditAndUpdateColor(const PropertyInfo& prop)
 {
     PropertyColorEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
+    dlg.ShowDialog();
+}
+void PropertyListContext::EditAndUpdateColorPair(const PropertyInfo& prop)
+{
+    PropertyColorPairEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.ShowDialog();
 }
 void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isChar8)
