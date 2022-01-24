@@ -4773,14 +4773,6 @@ namespace Application
         {
             struct
             {
-                Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
-            } Text;
-        } NumericSelector;
-
-        struct
-        {
-            struct
-            {
                 struct
                 {
                     Graphics::ColorPair Normal, Focused;

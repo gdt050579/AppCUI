@@ -5,13 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-
-    this->NumericSelector.Text.Normal     = ColorPair{ Color::Black, Color::Gray };
-    this->NumericSelector.Text.Focused    = ColorPair{ Color::Black, Color::White };
-    this->NumericSelector.Text.Inactive   = ColorPair{ Color::Gray, Color::Black };
-    this->NumericSelector.Text.Hover      = ColorPair{ Color::Black, Color::Yellow };
-    this->NumericSelector.Text.WrongValue = ColorPair{ Color::Black, Color::Red };
-
     this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
     this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
     this->Tree.Text.Inactive        = ColorPair{ Color::Gray, Color::Black };

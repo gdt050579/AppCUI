@@ -626,13 +626,15 @@ class NumericSelectorControlContext : public ControlContext
 
     bool IsValidValue(int64 value) const;
     bool IsValueInsertedWrong() const;
-    bool GetRenderColor(Graphics::ColorPair& color) const;
+    bool GetTextRenderColor(Graphics::ColorPair& color) const;
     bool FormatTextField();
     bool IsOnPlusButton(int32 x, int32 y) const;
     bool IsOnMinusButton(int32 x, int32 y) const;
     bool IsOnTextField(int32 x, int32 y) const;
     bool MinValueReached() const;
     bool MaxValueReached() const;
+    bool PaintButtons(Renderer& renderer);
+    bool PaintValue(Renderer& renderer);
 };
 
 struct TreeColumnData

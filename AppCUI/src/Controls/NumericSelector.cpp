@@ -70,65 +70,11 @@ void NumericSelector::Paint(Renderer& renderer)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
+    cc->PaintButtons(renderer);
+    cc->PaintValue(renderer);
 
-    ColorPair color{};
-    CHECKRET(cc->GetRenderColor(color), "");
-
-    WriteTextParams params(
-          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
-                WriteTextFlags::FitTextToWidth,
-          TextAlignament::Center);
-    params.X     = cc->buttonPadding + 1;
-    params.Y     = 0;
-    params.Width = cc->Layout.Width - (cc->buttonPadding * 2) - 2;
-    params.Color = color;
-
-    CHECKRET(cc->FormatTextField(), "");
-
-    if (cc->MinValueReached() && cc->intoInsertionMode == false)
+    if (cc->isMouseOn == NumericSelectorControlContext::IsMouseOn::TextField)
     {
-        renderer.WriteSingleLineText(0, 0, " - ", cc->Cfg->NumericSelector.Text.Inactive);
-    }
-    else
-    {
-        renderer.WriteSingleLineText(0, 0, " - ", color);
-    }
-
-    renderer.FillHorizontalLine(cc->buttonPadding, 0, cc->Layout.Width - cc->buttonPadding - 1, ' ', color);
-    renderer.WriteText(cc->stringValue.GetText(), params);
-
-    if (cc->isMouseLeftClickPressed)
-    {
-        renderer.WriteCharacter(
-              static_cast<int32>(cc->sliderPosition + cc->buttonPadding), 0, -1, cc->Cfg->NumericSelector.Text.Hover);
-    }
-
-    if (cc->MaxValueReached() && cc->intoInsertionMode == false)
-    {
-        renderer.WriteSingleLineText(
-              cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", cc->Cfg->NumericSelector.Text.Inactive);
-    }
-    else
-    {
-        renderer.WriteSingleLineText(cc->Layout.Width + 1 - cc->buttonPadding, 0, " + ", color);
-    }
-
-    switch (cc->isMouseOn)
-    {
-    case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        if (cc->MinValueReached() == false)
-        {
-            renderer.FillHorizontalLine(0, 0, cc->buttonPadding - 2, -1, cc->Cfg->NumericSelector.Text.Hover);
-        }
-        break;
-    case NumericSelectorControlContext::IsMouseOn::PlusButton:
-        if (cc->MaxValueReached() == false)
-        {
-            renderer.FillHorizontalLine(
-                  GetWidth() - cc->buttonPadding + 1, 0, GetWidth(), -1, cc->Cfg->NumericSelector.Text.Hover);
-        }
-        break;
-    case NumericSelectorControlContext::IsMouseOn::TextField:
         if (static_cast<int32>(cc->stringValue.Len()) > cc->Layout.Width - cc->buttonPadding * 2 - 2)
         {
             ShowToolTip(cc->stringValue.GetText());
@@ -137,10 +83,6 @@ void NumericSelector::Paint(Renderer& renderer)
         {
             HideToolTip();
         }
-        break;
-    case NumericSelectorControlContext::IsMouseOn::None:
-    default:
-        break;
     }
 }
 
@@ -499,9 +441,9 @@ bool NumericSelector::OnMouseOver(int x, int y)
     return true;
 }
 
-bool NumericSelectorControlContext::IsValidValue(int64) const
+bool NumericSelectorControlContext::IsValidValue(int64 value) const
 {
-    return minValue <= insertionModevalue && insertionModevalue <= maxValue;
+    return minValue <= value && value <= maxValue;
 }
 
 bool NumericSelectorControlContext::IsValueInsertedWrong() const
@@ -509,25 +451,31 @@ bool NumericSelectorControlContext::IsValueInsertedWrong() const
     return IsValidValue(insertionModevalue) == false;
 }
 
-bool NumericSelectorControlContext::GetRenderColor(Graphics::ColorPair& color) const
+bool NumericSelectorControlContext::GetTextRenderColor(Graphics::ColorPair& color) const
 {
-    const auto& nsCfg = Cfg->NumericSelector;
+    const auto state = instance->GetState(ControlStateFlags::All);
+    color            = Cfg->Button.Text.GetColor(state);
 
-    if (instance->IsEnabled() == false)
+    if (instance->IsEnabled())
     {
-        color = nsCfg.Text.Inactive;
-    }
-    else if (intoInsertionMode && IsValueInsertedWrong())
-    {
-        color = nsCfg.Text.WrongValue;
-    }
-    else if (Focused)
-    {
-        color = nsCfg.Text.Focused;
+        if (intoInsertionMode)
+        {
+            if (IsValueInsertedWrong())
+            {
+                color.Foreground = Cfg->Text.Error.Foreground;
+            }
+        }
+        else if (IsValidValue(value) == false)
+        {
+            color.Foreground = Cfg->Text.Error.Foreground;
+        }
     }
     else
     {
-        color = nsCfg.Text.Normal;
+        if (IsValidValue(value) == false)
+        {
+            color.Foreground = Cfg->Text.Error.Foreground;
+        }
     }
 
     return true;
@@ -573,5 +521,80 @@ bool NumericSelectorControlContext::MinValueReached() const
 bool NumericSelectorControlContext::MaxValueReached() const
 {
     return value == maxValue;
+}
+
+bool NumericSelectorControlContext::PaintButtons(Renderer& renderer)
+{
+    ColorPair colorMinus{};
+    ColorPair colorPlus{};
+    if (instance->IsEnabled() == false)
+    {
+        colorMinus = Cfg->Button.Text.Inactive;
+        colorPlus  = Cfg->Button.Text.Inactive;
+    }
+    else if (Focused)
+    {
+        colorMinus = Cfg->Button.Text.Focused;
+        colorPlus  = Cfg->Button.Text.Focused;
+    }
+    else
+    {
+        colorMinus = Cfg->Button.Text.Normal;
+        colorPlus  = Cfg->Button.Text.Normal;
+    }
+
+    if (MinValueReached() && intoInsertionMode == false)
+    {
+        colorMinus = Cfg->Button.Text.Inactive;
+    }
+
+    if (MaxValueReached() && intoInsertionMode == false)
+    {
+        colorPlus = Cfg->Button.Text.Inactive;
+    }
+
+    switch (isMouseOn)
+    {
+    case NumericSelectorControlContext::IsMouseOn::MinusButton:
+        if (MinValueReached() == false)
+        {
+            colorMinus = Cfg->Button.Text.Hovered;
+        }
+        break;
+    case NumericSelectorControlContext::IsMouseOn::PlusButton:
+        if (MaxValueReached() == false)
+        {
+            colorPlus = Cfg->Button.Text.Hovered;
+        }
+        break;
+    default:
+        break;
+    }
+
+    renderer.WriteSingleLineText(0, 0, " - ", colorMinus);
+    renderer.WriteSingleLineText(Layout.Width + 1 - buttonPadding, 0, " + ", colorPlus);
+
+    return true;
+}
+
+bool NumericSelectorControlContext::PaintValue(Renderer& renderer)
+{
+    ColorPair textColor{};
+    CHECK(GetTextRenderColor(textColor), false, "");
+
+    WriteTextParams params(
+          WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth |
+                WriteTextFlags::FitTextToWidth,
+          TextAlignament::Center);
+    params.X     = buttonPadding + 1;
+    params.Y     = 0;
+    params.Width = Layout.Width - (buttonPadding * 2) - 2;
+    params.Color = textColor;
+
+    CHECK(FormatTextField(), false, "");
+    renderer.FillHorizontalLine(params.X, 0, params.X + params.Width, ' ', textColor); // background
+    renderer.WriteText(stringValue.GetText(), params);                                 // handle actual text
+
+    return true;
 }
 } // namespace AppCUI
