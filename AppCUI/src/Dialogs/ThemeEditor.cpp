@@ -91,6 +91,21 @@ class ThemeEditorDialog : public Window
         pc->SetConfig(&cfg);
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
     }
+    bool OnEvent(Reference<Control> control, Event eventType, int ID) override
+    {
+        if (Window::OnEvent(control, eventType, ID))
+            return true;
+        if (eventType == Event::ButtonClicked)
+        {
+            switch (ID)
+            {
+            case BUTTON_CMD_CLOSE:
+                this->Exit(0);
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 void ThemeEditor::Show()
