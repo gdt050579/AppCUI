@@ -212,7 +212,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     if (Flags & GATTR_ENABLE)
     {
         checkCol   = Cfg->Symbol.Checked;
-        uncheckCol = Cfg->Symbol.Uncheked;
+        uncheckCol = Cfg->Symbol.Unchecked;
     }
     else
     {

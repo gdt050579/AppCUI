@@ -4725,7 +4725,7 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop, Arrows, Close,
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Unchecked, Unknown, Desktop, Arrows, Close,
                   Maximized, Resize;
         } Symbol;
         struct
@@ -4769,28 +4769,6 @@ namespace Application
         } Window;
 
         // OLD structures
-        struct
-        {
-            struct
-            {
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused;
-                } Separator;
-                struct
-                {
-                    Graphics::ColorPair Text, Header;
-                } Column;
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchActive;
-                } Text;
-                struct
-                {
-                    Graphics::ColorPair Expanded, Collapsed, SingleElement;
-                } Symbol;
-            };
-        } Tree;
         struct
         {
             struct

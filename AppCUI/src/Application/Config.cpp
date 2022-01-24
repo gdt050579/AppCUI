@@ -5,19 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-    this->Tree.Text.Normal          = ColorPair{ Color::White, Color::Transparent };
-    this->Tree.Text.Focused         = ColorPair{ Color::Black, Color::White };
-    this->Tree.Text.Inactive        = ColorPair{ Color::Gray, Color::Black };
-    this->Tree.Text.Filter          = ColorPair{ Color::White, Color::DarkRed };
-    this->Tree.Text.SearchActive    = ColorPair{ Color::Silver, Color::Transparent };
-    this->Tree.Symbol.Collapsed     = ColorPair{ Color::Green, Color::Transparent };
-    this->Tree.Symbol.Expanded      = ColorPair{ Color::Red, Color::Transparent };
-    this->Tree.Symbol.SingleElement = ColorPair{ Color::Black, Color::Transparent };
-    this->Tree.Column.Text          = ColorPair{ Color::Gray, Color::Transparent };
-    this->Tree.Column.Header        = ColorPair{ Color::Transparent, Color::Pink };
-    this->Tree.Separator.Normal     = ColorPair{ Color::Gray, Color::Transparent };
-    this->Tree.Separator.Focused    = ColorPair{ Color::Gray, Color::Pink };
-
     this->Grid.Lines.Normal              = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Lines.Selected            = ColorPair{ Color::White, Color::Transparent };
     this->Grid.Lines.Hovered             = ColorPair{ Color::Yellow, Color::Transparent };
@@ -105,8 +92,8 @@ void Config::SetDarkTheme()
     this->Symbol.Hovered   = { Color::Black, Color::Yellow };
     this->Symbol.Pressed   = { Color::Black, Color::Silver };
     this->Symbol.Checked   = { Color::Green, Color::Transparent };
-    this->Symbol.Uncheked  = { Color::Red, Color::Transparent };
-    this->Symbol.Unknwon   = { Color::Olive, Color::Transparent };
+    this->Symbol.Unchecked = { Color::Red, Color::Transparent };
+    this->Symbol.Unknown   = { Color::Olive, Color::Transparent };
     this->Symbol.Desktop   = { Color::Gray, Color::Black };
     this->Symbol.Arrows    = { Color::Aqua, Color::Transparent };
     this->Symbol.Close     = { Color::Red, Color::Transparent };

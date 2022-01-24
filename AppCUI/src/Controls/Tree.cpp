@@ -69,7 +69,7 @@ Tree::Tree(string_view layout, const TreeFlags flags, const uint32 noOfColumns)
 
     cc->separatorIndexSelected = InvalidIndex;
 
-    SetColorForItems(cc->Cfg->Tree.Text.Normal);
+    SetColorForItems(cc->Cfg->Text.Normal);
 
     cc->itemsToDrew.reserve(100);
     cc->orderedItems.reserve(100);
@@ -103,19 +103,19 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) 
                     {
                         if (item.expanded)
                         {
-                            wtp.Color = cc->Cfg->Tree.Symbol.Expanded;
-                            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleDown, wtp.Color);
+                            renderer.WriteSpecialCharacter(
+                                  wtp.X, wtp.Y, SpecialChars::TriangleDown, cc->Cfg->Symbol.Checked);
                         }
                         else
                         {
-                            wtp.Color = cc->Cfg->Tree.Symbol.Collapsed;
-                            renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::TriangleRight, wtp.Color);
+                            renderer.WriteSpecialCharacter(
+                                  wtp.X, wtp.Y, SpecialChars::TriangleRight, cc->Cfg->Symbol.Unchecked);
                         }
                     }
                     else
                     {
-                        wtp.Color = cc->Cfg->Tree.Symbol.SingleElement;
-                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, wtp.Color);
+                        renderer.WriteSpecialCharacter(
+                              wtp.X, wtp.Y, SpecialChars::CircleFilled, cc->Cfg->Symbol.Inactive);
                     }
                 }
 
@@ -134,17 +134,19 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) 
                 }
             }
 
-            if (j == item.values.size() - 1 && item.handle == cc->currentSelectedItemHandle)
-            {
-                wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth;
-                wtp.Color = cc->Cfg->Tree.Text.Focused;
-
-                renderer.FillHorizontalLine(
-                      1, wtp.Y, std::min<>(col.x + col.width, cc->Layout.Width - 2U), -1, wtp.Color);
-            }
-
             if (j < item.values.size())
             {
+                if (item.handle == cc->currentSelectedItemHandle)
+                {
+                    wtp.Color = cc->Cfg->Text.Focused;
+                    item.values[j].SetColor(wtp.Color);
+                }
+                else if (item.markedAsFound == false)
+                {
+                    wtp.Color = cc->Cfg->Text.Normal;
+                    item.values[j].SetColor(wtp.Color);
+                }
+
                 if (wtp.X < static_cast<int>(col.x + col.width))
                 {
                     renderer.WriteText(item.values[j], wtp);
@@ -168,13 +170,13 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
 
     WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
     wtp.Y     = 1; // 0  is for border
-    wtp.Color = cc->Cfg->Tree.Column.Text;
+    wtp.Color = cc->Cfg->Text.Normal;
 
     {
         const auto& firstColumn = cc->columns[0];
         const auto& lastColumn  = cc->columns[cc->columns.size() - 1];
         const auto rightX       = std::min<>(lastColumn.x + lastColumn.width, cc->Layout.Width - 2U);
-        renderer.FillHorizontalLine(firstColumn.x, 1, rightX, ' ', cc->Cfg->Tree.Column.Header);
+        renderer.FillHorizontalLine(firstColumn.x, 1, rightX, ' ', cc->Cfg->Header.Text.Normal);
     }
 
     uint32 i = 0;
@@ -217,11 +219,11 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
         const auto& firstColumn = cc->columns[0];
         if (cc->separatorIndexSelected == 0)
         {
-            renderer.DrawVerticalLine(firstColumn.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Focused);
+            renderer.DrawVerticalLine(firstColumn.x, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Hovered);
         }
         else
         {
-            renderer.DrawVerticalLine(firstColumn.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Normal);
+            renderer.DrawVerticalLine(firstColumn.x, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Normal);
         }
     }
 
@@ -230,11 +232,11 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
         const auto& col = cc->columns[i];
         if (cc->separatorIndexSelected == i)
         {
-            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Focused);
+            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Hovered);
         }
         else
         {
-            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Normal);
+            renderer.DrawVerticalLine(col.x, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Normal);
         }
     }
 
@@ -243,11 +245,11 @@ bool Tree::PaintColumnSeparators(Graphics::Renderer& renderer)
         const auto rightX      = std::min<>(lastColumn.x + lastColumn.width, cc->Layout.Width - 2U);
         if (cc->separatorIndexSelected == cc->columns.size())
         {
-            renderer.DrawVerticalLine(rightX, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Focused);
+            renderer.DrawVerticalLine(rightX, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Hovered);
         }
         else
         {
-            renderer.DrawVerticalLine(rightX, 1, cc->Layout.Height - 2, cc->Cfg->Tree.Separator.Normal);
+            renderer.DrawVerticalLine(rightX, 1, cc->Layout.Height - 2, cc->Cfg->Lines.Normal);
         }
     }
 
@@ -297,10 +299,9 @@ bool Tree::MoveDown()
 
     if (cc->itemsToDrew.size() > 0)
     {
-        const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-        const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin());
-        const auto newIndex =
-              std::min<uint32>(index + 1, (index + 1 > cc->itemsToDrew.size() - 1 ? 0 : index + 1));
+        const auto it       = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
+        const auto index    = static_cast<uint32>(it - cc->itemsToDrew.begin());
+        const auto newIndex = std::min<uint32>(index + 1, (index + 1 > cc->itemsToDrew.size() - 1 ? 0 : index + 1));
         cc->currentSelectedItemHandle = cc->itemsToDrew[newIndex];
 
         if (newIndex == 0)
@@ -502,7 +503,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
 
     if (cc->notProcessed)
     {
-        ProcessItemsToBeDrawn(InvalidItemHandle);
+        ProcessItemsToBeDrawn(InvalidItemHandle, true);
         cc->notProcessed = false;
     }
 
@@ -530,14 +531,14 @@ void Tree::Paint(Graphics::Renderer& renderer)
     {
         if (cc->Layout.Width > TreeSearchBarWidth && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
-            renderer.FillHorizontalLine(1, cc->Layout.Height - 1, TreeSearchBarWidth, ' ', cc->Cfg->Tree.Text.Filter);
+            renderer.FillHorizontalLine(1, cc->Layout.Height - 1, TreeSearchBarWidth, ' ', cc->Cfg->SearchBar.Normal);
 
             if (const auto searchTextLen = cc->filter.searchText.Len(); searchTextLen > 0)
             {
                 if (const auto searchText = cc->filter.searchText.ToStringView();
-                    searchText.length() < TreeSearchBarWidth - 2)
+                    searchText.length() < TreeSearchBarWidth - 2ULL)
                 {
-                    renderer.WriteSingleLineText(2, cc->Layout.Height - 1, searchText, cc->Cfg->SearchBar.Focused);
+                    renderer.WriteSingleLineText(2, cc->Layout.Height - 1, searchText, cc->Cfg->Text.Normal);
                     renderer.SetCursor((int) (2 + searchText.length()), cc->Layout.Height - 1);
                 }
                 else
@@ -546,7 +547,7 @@ void Tree::Paint(Graphics::Renderer& renderer)
                           2,
                           cc->Layout.Height - 1,
                           searchText.substr(searchText.length() - TreeSearchBarWidth + 2, TreeSearchBarWidth - 2),
-                          cc->Cfg->SearchBar.Focused);
+                          cc->Cfg->Text.Normal);
                     renderer.SetCursor(TreeSearchBarWidth, cc->Layout.Height - 1);
                 }
             }
@@ -742,7 +743,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Clear();
-                SetColorForItems(cc->Cfg->Tree.Text.Normal);
+                SetColorForItems(cc->Cfg->Text.Normal);
                 return true;
             }
         }
@@ -751,7 +752,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Clear();
-                SetColorForItems(cc->Cfg->Tree.Text.Normal);
+                SetColorForItems(cc->Cfg->Text.Normal);
                 ProcessItemsToBeDrawn(InvalidItemHandle);
                 return true;
             }
@@ -803,15 +804,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
-
-                if (cc->filter.searchText.Len() > 0)
-                {
-                    SearchItems();
-                }
-                else
-                {
-                    SetColorForItems(cc->Cfg->Tree.Text.Normal);
-                }
+                SearchItems();
                 return true;
             }
         }
@@ -902,7 +895,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         if (character > 0)
         {
             cc->filter.searchText.AddChar(character);
-            SetColorForItems(cc->Cfg->Tree.Text.Normal);
+            SetColorForItems(cc->Cfg->Text.Normal);
             if (SearchItems() == false)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
@@ -912,7 +905,8 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
                 }
                 else
                 {
-                    SetColorForItems(cc->Cfg->Tree.Text.Normal);
+                    cc->notProcessed = true;
+                    SetColorForItems(cc->Cfg->Text.Normal);
                 }
             }
             return true;
@@ -952,9 +946,9 @@ void Tree::OnMousePressed(int x, int y, Input::MouseButton button)
             break;
         case TreeControlContext::IsMouseOn::ToggleSymbol:
         {
-            const uint32 index = y - 2;
-            const auto itemHandle    = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
-            const auto it            = cc->items.find(itemHandle);
+            const uint32 index    = y - 2;
+            const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
+            const auto it         = cc->items.find(itemHandle);
             ToggleItem(it->second.handle);
             if (it->second.expanded == false)
             {
@@ -1063,7 +1057,7 @@ void Tree::OnUpdateScrollBars()
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    const auto it         = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
+    const auto it     = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
     const int64 index = it - cc->itemsToDrew.begin();
     UpdateVScrollBar(index, std::max<size_t>(cc->itemsToDrew.size() - 1, 0));
 }
@@ -1262,6 +1256,7 @@ bool Tree::SetItemDataAsPointer(ItemHandle item, GenericRef value)
     it->second.data = value;
     return true;
 }
+
 bool Tree::SetItemData(ItemHandle item, uint64 value)
 {
     CHECK(Context != nullptr, false, "");
@@ -1273,6 +1268,7 @@ bool Tree::SetItemData(ItemHandle item, uint64 value)
     it->second.data = value;
     return true;
 }
+
 uint32 Tree::GetItemsCount() const
 {
     CHECK(Context != nullptr, 0, "");
@@ -1415,7 +1411,7 @@ bool Tree::IsMouseOnToggleSymbol(int x, int y) const
 bool Tree::IsMouseOnItem(int x, int y) const
 {
     CHECK(Context != nullptr, false, "");
-    const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
+    const auto cc      = reinterpret_cast<TreeControlContext*>(Context);
     const uint32 index = y - 2;
     if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
     {
@@ -1473,8 +1469,8 @@ bool Tree::AdjustElementsOnResize(const int /*newWidth*/, const int /*newHeight*
 
     CHECK(AdjustItemsBoundsOnResize(), false, "");
 
-    const uint32 width = (static_cast<uint32>(cc->Layout.Width)) /
-                               static_cast<uint32>(std::max<>(cc->columns.size(), size_t(1U)));
+    const uint32 width =
+          (static_cast<uint32>(cc->Layout.Width)) / static_cast<uint32>(std::max<>(cc->columns.size(), size_t(1U)));
 
     uint32 xPreviousColumn       = 0;
     uint32 widthOfPreviousColumn = 0;
@@ -1551,7 +1547,7 @@ bool Tree::AddToColumnWidth(const uint32 columnIndex, const int value)
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    auto& column          = cc->columns[columnIndex];
+    auto& column    = cc->columns[columnIndex];
     uint32 currentX = column.x + column.width;
     if (currentX == column.x)
     {
@@ -1631,10 +1627,10 @@ bool Tree::SearchItems()
                     if (found == false)
                     {
                         cc->currentSelectedItemHandle = item.second.handle;
-                        SetColorForItems(cc->Cfg->Tree.Text.SearchActive);
+                        SetColorForItems(cc->Cfg->Text.Normal);
                     }
                     found = true;
-                    value.SetColor(index, index + cc->filter.searchText.Len(), cc->Cfg->Tree.Text.Filter);
+                    value.SetColor(index, index + cc->filter.searchText.Len(), cc->Cfg->Text.Highlighted);
 
                     ItemHandle ancestorHandle = item.second.parent;
                     do
