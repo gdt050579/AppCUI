@@ -1621,7 +1621,7 @@ bool Tree::SearchItems()
         {
             for (auto& value : item.second.values)
             {
-                if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true) >= 0)
+                if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true); index >= 0)
                 {
                     item.second.markedAsFound = true;
                     if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
