@@ -1181,7 +1181,9 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         case PropertyType::ColorPair:
             cp       = std::get<Graphics::ColorPair>(tempPropValue);
             tmpAscii = tmpString.Format(
-                  "%s,%s", ColorUtils::GetColorName(cp.Foreground), ColorUtils::GetColorName(cp.Background));
+                  "%s,%s",
+                  ColorUtils::GetColorName(cp.Foreground).data(),
+                  ColorUtils::GetColorName(cp.Background).data());
             break;
         case PropertyType::Key:
             if (KeyUtils::ToString(std::get<Input::Key>(tempPropValue), tmpString))

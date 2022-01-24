@@ -8,7 +8,8 @@ namespace AppCUI::Dialogs
 constexpr int BUTTON_CMD_CLOSE = 1;
 enum class PropID : uint32
 {
-    DesktopChar
+    DesktopChar,
+    DesktopColor
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -42,11 +43,27 @@ class ConfigProperty : public PropertiesInterface
     }
     bool GetPropertyValue(uint32 propertyID, PropertyValue& value) override
     {
-        NOT_IMPLEMENTED(false);
+        switch (static_cast<PropID>(propertyID))
+        {
+        case PropID::DesktopChar:
+            value = (char16)186;
+            return true;
+        case PropID::DesktopColor:
+            value = obj.Symbol.Desktop;
+            return true;
+        }
+        return false;
     }
     bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) override
     {
-        NOT_IMPLEMENTED(false);
+        switch (static_cast<PropID>(propertyID))
+        {
+        case PropID::DesktopColor:
+            obj.Symbol.Desktop = std::get<ColorPair>(value);
+            return true;       
+        }
+        error.SetFormat("Invalid property id (%d)", propertyID);
+        return false;
     }
     void SetCustomPropertyValue(uint32 propertyID) override
     {
@@ -58,7 +75,8 @@ class ConfigProperty : public PropertiesInterface
     const vector<Property> GetPropertiesList() override
     {
 #define PT(t) static_cast<uint32>(t)
-        return { { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 } };
+        return { { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 },
+                 { PT(PropID::DesktopColor), "Desktop", "Color", PropertyType::ColorPair } };
 #undef PT
     };
 };
@@ -93,10 +111,10 @@ class ThemeEditorDialog : public Window
         : Window("Theme editor", "d:c,w:80,h:24", WindowFlags::Sizeable), cfg(configObject)
     {
         auto sp = Factory::Splitter::Create(this, "l:0,t:0,b:3,r:0", true);
-        sp->SetSecondPanelSize(50);
-        prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
+        sp->SetSecondPanelSize(30);        
         pc   = sp->CreateChildControl<PreviewControl>();
         pc->SetConfig(&cfg);
+        prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
