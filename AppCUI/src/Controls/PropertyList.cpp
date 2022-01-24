@@ -1056,6 +1056,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         LocalString<32> tmpString;
         Size tmpSize;
         char16 tmpCh16;
+        ColorPair cp;
         switch (prop.type)
         {
         case PropertyType::Boolean:
@@ -1122,6 +1123,11 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             break;
         case PropertyType::Color:
             tmpAscii = ColorUtils::GetColorName(std::get<Graphics::Color>(tempPropValue));
+            break;
+        case PropertyType::ColorPair:
+            cp       = std::get<Graphics::ColorPair>(tempPropValue);
+            tmpAscii = tmpString.Format(
+                  "%s,%s", ColorUtils::GetColorName(cp.Foreground), ColorUtils::GetColorName(cp.Background));
             break;
         case PropertyType::Key:
             if (KeyUtils::ToString(std::get<Input::Key>(tempPropValue), tmpString))
@@ -1199,6 +1205,15 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 if (w > 2)
                 {
                     params.Width -= 2;
+                    renderer.WriteText(tmpAscii, params);
+                }
+                break;
+            case PropertyType::ColorPair:
+                renderer.WriteSingleLineText(params.X, y, "Abc", std::get<Graphics::ColorPair>(tempPropValue));
+                params.X += 5;
+                if (w > 5)
+                {
+                    params.Width -= 5;
                     renderer.WriteText(tmpAscii, params);
                 }
                 break;
@@ -1494,6 +1509,9 @@ void PropertyListContext::ExecuteItemAction()
                 break;
             case PropertyType::Color:
                 EditAndUpdateColor(this->properties[idx]);
+                break;
+            case PropertyType::ColorPair:
+                EditAndUpdateColorPair(this->properties[idx]);
                 break;
             case PropertyType::Key:
                 EditAndUpdateKey(this->properties[idx]);

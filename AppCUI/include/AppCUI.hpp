@@ -679,7 +679,8 @@ namespace Utils
           CharacterView,
           Input::Key,
           Graphics::Size,
-          Graphics::Color>;
+          Graphics::Color,
+          Graphics::ColorPair>;
     enum class PropertyType : uint8
     {
         Boolean = 0,
@@ -702,6 +703,7 @@ namespace Utils
         Key,
         Size,
         Color,
+        ColorPair,
         List,
         Flags,
         Custom
