@@ -4598,9 +4598,18 @@ namespace Dialogs
         static optional<std::filesystem::path> ShowOpenFileWindow(
               const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
     };
+
     class EXPORT WindowManager
     {
         WindowManager() = delete;
+
+      public:
+        static void Show();
+    };
+
+    class EXPORT ThemeEditor
+    {
+        ThemeEditor() = delete;
 
       public:
         static void Show();
