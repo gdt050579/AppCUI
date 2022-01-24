@@ -6,6 +6,10 @@ using namespace AppCUI::Graphics;
 namespace AppCUI::Dialogs
 {
 constexpr int BUTTON_CMD_CLOSE = 1;
+enum class PropID : uint32
+{
+    DesktopChar
+};
 class ConfigProperty : public PropertiesInterface
 {
     AppCUI::Application::Config obj;
@@ -16,7 +20,7 @@ class ConfigProperty : public PropertiesInterface
     }
     void PaintMenusAndCommandBar(Graphics::Renderer& r, Size sz)
     {
-        r.FillHorizontalLine(0, 0, (int)sz.Width, ' ', obj.Menu.Text.Normal);
+        r.FillHorizontalLine(0, 0, (int) sz.Width, ' ', obj.Menu.Text.Normal);
         r.WriteSingleLineText(1, 0, " File ", obj.Menu.Text.PressedOrSelected, obj.Menu.HotKey.PressedOrSelected, 1);
         r.WriteSingleLineText(7, 0, " View ", obj.Menu.Text.Normal, obj.Menu.HotKey.Normal, 8);
         r.WriteSingleLineText(14, 0, " Help ", obj.Menu.Text.Hovered, obj.Menu.HotKey.Hovered, 15);
@@ -34,7 +38,7 @@ class ConfigProperty : public PropertiesInterface
     void Paint(Graphics::Renderer& r, Size sz)
     {
         r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
-        PaintMenusAndCommandBar(r, sz);    
+        PaintMenusAndCommandBar(r, sz);
     }
     bool GetPropertyValue(uint32 propertyID, PropertyValue& value) override
     {
@@ -53,17 +57,20 @@ class ConfigProperty : public PropertiesInterface
     }
     const vector<Property> GetPropertiesList() override
     {
-        return {};
-    }
+#define PT(t) static_cast<uint32>(t)
+        return { { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 } };
+#undef PT
+    };
 };
-class PreviewControl: public UserControl
+class PreviewControl : public UserControl
 {
     Reference<ConfigProperty> config;
+
   public:
     PreviewControl() : UserControl("d:c")
     {
     }
-    void Paint(Graphics::Renderer &r) override
+    void Paint(Graphics::Renderer& r) override
     {
         Size sz;
         GetSize(sz);
@@ -80,6 +87,7 @@ class ThemeEditorDialog : public Window
     Reference<PropertyList> prop;
     ConfigProperty cfg;
     Reference<PreviewControl> pc;
+
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
         : Window("Theme editor", "d:c,w:80,h:24", WindowFlags::Sizeable), cfg(configObject)
