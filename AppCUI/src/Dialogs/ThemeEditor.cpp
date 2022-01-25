@@ -9,7 +9,21 @@ constexpr int BUTTON_CMD_CLOSE = 1;
 enum class PropID : uint32
 {
     DesktopChar,
-    DesktopColor
+    DesktopColor,
+
+    // menus
+    MenuBackground,
+    MenuTextNormal,
+    MenuTextHovered,
+    MenuTextSelected,
+    MenuHotKeyNormal,
+    MenuHotKeyHovered,
+    MenuHotKeySelected,
+    MenuShortCutNormal,
+    MenuShortCutHovered,
+    MenuShortCutSelected,
+    MenuInactive
+
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -69,10 +83,26 @@ class ConfigProperty : public PropertiesInterface
         switch (static_cast<PropID>(propertyID))
         {
         case PropID::DesktopChar:
-            value = (char16)186;
+            value = (char16) 186;
             return true;
         case PropID::DesktopColor:
             value = obj.Symbol.Desktop;
+            return true;
+        // Menus
+        case PropID::MenuBackground:
+            value = obj.Menu.Text.Normal.Background;
+            return true;
+        case PropID::MenuTextNormal:
+            value = obj.Menu.Text.Normal.Foreground;
+            return true;
+        case PropID::MenuHotKeyNormal:
+            value = obj.Menu.HotKey.Normal.Foreground;
+            return true;
+        case PropID::MenuShortCutNormal:
+            value = obj.Menu.ShortCut.Normal.Foreground;
+            return true;
+        case PropID::MenuInactive:
+            value = obj.Menu.Text.Inactive.Foreground;
             return true;
         }
         return false;
@@ -83,7 +113,40 @@ class ConfigProperty : public PropertiesInterface
         {
         case PropID::DesktopColor:
             obj.Symbol.Desktop = std::get<ColorPair>(value);
-            return true;       
+            return true;
+        case PropID::MenuBackground:
+            obj.Menu.Text.Normal.Background            = std::get<Color>(value);
+            obj.Menu.Text.Focused.Background           = std::get<Color>(value);
+            obj.Menu.Text.Inactive.Background          = std::get<Color>(value);
+            obj.Menu.HotKey.Normal.Background          = std::get<Color>(value);
+            obj.Menu.HotKey.Focused.Background         = std::get<Color>(value);
+            obj.Menu.HotKey.Inactive.Background        = std::get<Color>(value);
+            obj.Menu.ShortCut.Normal.Background        = std::get<Color>(value);
+            obj.Menu.ShortCut.Focused.Background       = std::get<Color>(value);
+            obj.Menu.ShortCut.Inactive.Background      = std::get<Color>(value);
+            obj.Menu.ScrollButtons.Normal.Background   = std::get<Color>(value);
+            obj.Menu.ScrollButtons.Focused.Background  = std::get<Color>(value);
+            obj.Menu.ScrollButtons.Inactive.Background = std::get<Color>(value);
+            obj.Menu.Symbol.Normal.Background          = std::get<Color>(value);
+            obj.Menu.Symbol.Focused.Background         = std::get<Color>(value);
+            obj.Menu.Symbol.Inactive.Background        = std::get<Color>(value);
+            return true;
+        case PropID::MenuTextNormal:
+            obj.Menu.Text.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuHotKeyNormal:
+            obj.Menu.HotKey.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuShortCutNormal:
+            obj.Menu.ShortCut.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuInactive:
+            obj.Menu.Symbol.Inactive.Foreground        = std::get<Color>(value);
+            obj.Menu.ScrollButtons.Inactive.Foreground = std::get<Color>(value);
+            obj.Menu.Text.Inactive.Foreground          = std::get<Color>(value);
+            obj.Menu.HotKey.Inactive.Foreground        = std::get<Color>(value);
+            obj.Menu.ShortCut.Inactive.Foreground      = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -98,8 +161,16 @@ class ConfigProperty : public PropertiesInterface
     const vector<Property> GetPropertiesList() override
     {
 #define PT(t) static_cast<uint32>(t)
-        return { { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 },
-                 { PT(PropID::DesktopColor), "Desktop", "Color", PropertyType::ColorPair } };
+        return {
+            { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 },
+            { PT(PropID::DesktopColor), "Desktop", "Color", PropertyType::ColorPair },
+            // Menus
+            { PT(PropID::MenuBackground), "Menu", "Backgroud", PropertyType::Color },
+            { PT(PropID::MenuTextNormal), "Menu", "Text", PropertyType::Color },
+            { PT(PropID::MenuHotKeyNormal), "Menu", "HotKey", PropertyType::Color },
+            { PT(PropID::MenuShortCutNormal), "Menu", "ShortCut", PropertyType::Color },
+            { PT(PropID::MenuInactive), "Menu", "Inactive", PropertyType::Color },
+        };
 #undef PT
     };
 };
@@ -134,8 +205,8 @@ class ThemeEditorDialog : public Window
         : Window("Theme editor", "d:c,w:80,h:24", WindowFlags::Sizeable), cfg(configObject)
     {
         auto sp = Factory::Splitter::Create(this, "l:0,t:0,b:3,r:0", true);
-        sp->SetSecondPanelSize(30);        
-        pc   = sp->CreateChildControl<PreviewControl>();
+        sp->SetSecondPanelSize(30);
+        pc = sp->CreateChildControl<PreviewControl>();
         pc->SetConfig(&cfg);
         prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
