@@ -155,6 +155,7 @@ struct ControlContext
                 return ControlState::Normal;
         }
     }
+
     constexpr inline ControlState GetComponentState(
           ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked)
     {
@@ -182,6 +183,12 @@ struct ControlContext
             else
                 return ControlState::Normal;
         }
+    }
+
+    constexpr inline ControlState GetComponentState(
+          ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked, bool isEnabled)
+    {
+        return isEnabled ? GetComponentState(stateFlags, isHovered, isPressedOrChecked) : ControlState::Inactive;
     }
 };
 
@@ -406,7 +413,7 @@ struct TabControlContext : public ControlContext
     void PaintNoTabsPanelTab(Graphics::Renderer& renderer);
     inline ColorPair GetTabBarColor()
     {
-        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.Normal : Cfg->Tab.Text.Inactive; 
+        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.Normal : Cfg->Tab.Text.Inactive;
     }
     inline ColorPair GetPageColor()
     {

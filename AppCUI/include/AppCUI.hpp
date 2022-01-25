@@ -4711,7 +4711,6 @@ namespace Application
 
     struct Config
     {
-        // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
 
         struct
@@ -4730,7 +4729,7 @@ namespace Application
         } Symbol;
         struct
         {
-            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelectection;
+            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelection;
         } Cursor;
         struct
         {
@@ -4767,28 +4766,6 @@ namespace Application
                 Graphics::Color Normal, Inactive, Error, Warning, Info;
             } Background;
         } Window;
-
-        // OLD structures
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Lines;
-            struct
-            {
-                Graphics::ColorPair Grid;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-                } Cell;
-            } Background;
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Text;
-            Graphics::ColorPair Header;
-        } Grid;
 
         void SetDarkTheme();
     };

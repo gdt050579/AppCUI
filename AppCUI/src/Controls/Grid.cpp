@@ -39,7 +39,7 @@ void Grid::Paint(Renderer& renderer)
     auto context = reinterpret_cast<GridControlContext*>(Context);
     context->UpdateGridParameters(true);
 
-    renderer.Clear(' ', context->Cfg->Grid.Background.Grid);
+    renderer.Clear(' ');
 
     context->DrawHeader(renderer);
 
@@ -650,7 +650,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
                 const auto y = offsetY + j * cHeight;
 
                 const auto sc = ComputeBoxType(i, j, 0U, 0U, columnsNo, rowsNo);
-                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Normal);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Lines.Normal);
             }
         }
     }
@@ -661,7 +661,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         for (auto i = 0U; i <= columnsNo; i++)
         {
             const auto x = offsetX + i * cWidth;
-            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Normal);
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Lines.Normal);
         }
     }
 
@@ -676,7 +676,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto yTop    = offsetY + rowIndex * cHeight;
         const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
 
-        const auto& color = Cfg->Grid.Lines.Hovered;
+        const auto& color = Cfg->Lines.Hovered;
 
         renderer.WriteSpecialCharacter(xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
@@ -704,7 +704,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         for (auto i = sci; i <= eci; i++)
         {
             const auto x = offsetX + i * cWidth;
-            renderer.DrawVerticalLine(x, y1, y2, Cfg->Grid.Lines.Selected);
+            renderer.DrawVerticalLine(x, y1, y2, Cfg->Lines.PressedOrSelected);
         }
 
         for (auto i = sci; i <= eci; i++)
@@ -714,7 +714,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
             {
                 const auto y  = offsetY + j * cHeight;
                 const auto sc = ComputeBoxType(i, j, sci, sri, eci, eri);
-                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Grid.Lines.Selected);
+                renderer.WriteSpecialCharacter(x, y, sc, Cfg->Lines.PressedOrSelected);
             }
         }
     }
@@ -734,7 +734,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (i < columnsNo)
                 {
                     const auto endX = offsetX + (i + 1) * cWidth;
-                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Grid.Lines.Normal, true);
+                    renderer.DrawHorizontalLine(x + 1, y, endX - 1, Cfg->Lines.Normal, true);
                 }
             }
 
@@ -743,7 +743,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
                 if (j < rowsNo)
                 {
                     const auto endY = offsetY + (j + 1) * cHeight;
-                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Grid.Lines.Normal, true);
+                    renderer.DrawVerticalLine(x, y + 1, endY - 1, Cfg->Lines.Normal, true);
                 }
             }
         }
@@ -751,30 +751,25 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
     const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
-        ColorPair vertical   = Cfg->Grid.Lines.Normal;
-        ColorPair horizontal = Cfg->Grid.Lines.Normal;
+        ColorPair vertical{};
+        ColorPair horizontal{};
 
         switch (cellType)
         {
         case GridCellStatus::Normal:
-            vertical   = Cfg->Grid.Lines.Normal;
-            horizontal = Cfg->Grid.Lines.Normal;
+            vertical = horizontal = Cfg->Lines.Normal;
             break;
         case GridCellStatus::Selected:
-            vertical   = Cfg->Grid.Lines.Selected;
-            horizontal = Cfg->Grid.Lines.Selected;
+            vertical = horizontal = Cfg->Lines.PressedOrSelected;
             break;
         case GridCellStatus::Hovered:
-            vertical   = Cfg->Grid.Lines.Hovered;
-            horizontal = Cfg->Grid.Lines.Hovered;
+            vertical = horizontal = Cfg->Lines.Hovered;
             break;
         case GridCellStatus::Duplicate:
-            vertical   = Cfg->Grid.Lines.Duplicate;
-            horizontal = Cfg->Grid.Lines.Duplicate;
+            vertical = horizontal = Cfg->Selection.SimilarText;
             break;
         default:
-            vertical   = Cfg->Grid.Lines.Normal;
-            horizontal = Cfg->Grid.Lines.Normal;
+            vertical = horizontal = Cfg->Lines.Normal;
             break;
         }
 
@@ -931,23 +926,23 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
     const auto yTop    = offsetY + j * cHeight;
     const auto yBottom = offsetY + (j + 1) * cHeight;
 
-    ColorPair color = Cfg->Grid.Background.Cell.Normal;
+    ColorPair color{};
     switch (cellType)
     {
     case GridCellStatus::Normal:
-        color = Cfg->Grid.Background.Cell.Normal;
+        color = { Color::Transparent, Cfg->Window.Background.Normal };
         break;
     case GridCellStatus::Selected:
-        color = Cfg->Grid.Background.Cell.Selected;
+        color = Cfg->Text.Highlighted;
         break;
     case GridCellStatus::Hovered:
-        color = Cfg->Grid.Background.Cell.Hovered;
+        color = Cfg->Text.Hovered;
         break;
     case GridCellStatus::Duplicate:
-        color = Cfg->Grid.Background.Cell.Duplicate;
+        color = Cfg->Text.Emphasized1;
         break;
     default:
-        color = Cfg->Grid.Background.Cell.Normal;
+        color = { Color::Transparent, Cfg->Window.Background.Normal };
         break;
     }
 
@@ -972,21 +967,21 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 
     const auto& data = cells[cellIndex];
 
-    auto color = Cfg->Grid.Text.Normal;
+    auto color = Cfg->Text.Normal;
     if (cellIndex == hoveredCellIndex)
     {
-        color = Cfg->Grid.Text.Hovered;
+        color = Cfg->Text.Hovered;
     }
     else if (
           std::find(selectedCellsIndexes.begin(), selectedCellsIndexes.end(), cellIndex) != selectedCellsIndexes.end())
     {
-        color = Cfg->Grid.Text.Selected;
+        color = Cfg->Text.Highlighted;
     }
     else if (
           std::find(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), cellIndex) !=
           duplicatedCellsIndexes.end())
     {
-        color = Cfg->Grid.Text.Duplicate;
+        color = Cfg->Text.Emphasized1;
     }
 
     WriteTextParams wtp;
@@ -1005,7 +1000,12 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 {
     renderer.FillRect(
-          offsetX + 1, offsetY - cHeight + 1, cWidth * columnsNo + offsetX - 1, offsetY - 1, ' ', Cfg->Grid.Header);
+          offsetX + 1,
+          offsetY - cHeight + 1,
+          cWidth * columnsNo + offsetX - 1,
+          offsetY - 1,
+          ' ',
+          Cfg->Header.Text.Normal);
 
     for (auto i = 0U; i <= columnsNo; i++)
     {
@@ -1015,14 +1015,13 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Grid.Lines.Normal, true);
+            renderer.DrawVerticalLine(x, y, endY + 10, Cfg->Lines.Normal, true);
         }
     }
 
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
-        renderer.DrawHorizontalLine(
-              offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Grid.Lines.Normal, true);
+        renderer.DrawHorizontalLine(offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, Cfg->Lines.Normal, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
@@ -1036,17 +1035,15 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
                 if (i == 0)
                 {
-                    renderer.WriteSpecialCharacter(
-                          x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Grid.Lines.Normal);
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxTopLeftCornerSingleLine, Cfg->Lines.Normal);
                 }
                 else if (i == columnsNo)
                 {
-                    renderer.WriteSpecialCharacter(
-                          x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Grid.Lines.Normal);
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxTopRightCornerSingleLine, Cfg->Lines.Normal);
                 }
                 else
                 {
-                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Grid.Lines.Normal);
+                    renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleTop, Cfg->Lines.Normal);
                 }
             }
         }
@@ -1054,7 +1051,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
     WriteTextParams wtp;
     wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
-    wtp.Color = Cfg->Grid.Text.Normal;
+    wtp.Color = Cfg->Text.Normal;
 
     auto it = headers.begin();
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)

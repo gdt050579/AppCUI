@@ -5,22 +5,6 @@ using namespace Graphics;
 
 void Config::SetDarkTheme()
 {
-    this->Grid.Lines.Normal              = ColorPair{ Color::White, Color::Transparent };
-    this->Grid.Lines.Selected            = ColorPair{ Color::White, Color::Transparent };
-    this->Grid.Lines.Hovered             = ColorPair{ Color::Yellow, Color::Transparent };
-    this->Grid.Lines.Duplicate           = ColorPair{ Color::Green, Color::Transparent };
-    this->Grid.Background.Grid           = ColorPair{ Color::Transparent, Color::DarkBlue };
-    this->Grid.Background.Cell.Normal    = ColorPair{ Color::Transparent, Color::DarkBlue };
-    this->Grid.Background.Cell.Selected  = ColorPair{ Color::Transparent, Color::White };
-    this->Grid.Background.Cell.Hovered   = ColorPair{ Color::Transparent, Color::Yellow };
-    this->Grid.Background.Cell.Duplicate = ColorPair{ Color::Transparent, Color::Green };
-    this->Grid.Text.Normal               = ColorPair{ Color::White, Color::Transparent };
-    this->Grid.Text.Selected             = ColorPair{ Color::Gray, Color::Transparent };
-    this->Grid.Text.Hovered              = ColorPair{ Color::Black, Color::Transparent };
-    this->Grid.Text.Duplicate            = ColorPair{ Color::Black, Color::Transparent };
-    this->Grid.Header                    = ColorPair{ Color::Black, Color::Magenta };
-
-    //=========================================[NEW FORMAT]=================================
     this->SearchBar.Set(
           { Color::White, Color::DarkRed },
           { Color::Silver, Color::DarkRed },
@@ -33,7 +17,8 @@ void Config::SetDarkTheme()
           { Color::DarkGreen, Color::Transparent },
           { Color::DarkGreen, Color::Transparent },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Magenta });
+          { Color::Yellow, Color::Magenta },
+          { Color::Black, Color::White });
 
     this->Editor.Set(
           { Color::White, Color::Black },
@@ -79,7 +64,7 @@ void Config::SetDarkTheme()
 
     this->Cursor.Normal           = { Color::Black, Color::White };
     this->Cursor.OverInactiveItem = { Color::Gray, Color::White };
-    this->Cursor.OverSelectection = { Color::Red, Color::Yellow };
+    this->Cursor.OverSelection    = { Color::Red, Color::Yellow };
     this->Cursor.Inactive         = { Color::Yellow, Color::Transparent };
 
     this->Selection.Editor       = { Color::Yellow, Color::Magenta };

@@ -525,42 +525,17 @@ bool NumericSelectorControlContext::MaxValueReached() const
 
 bool NumericSelectorControlContext::PaintButtons(Renderer& renderer)
 {
-    ColorPair colorMinus{};
-    ColorPair colorPlus{};
+    const ColorPair colorMinus = Cfg->Button.Text.GetColor(GetComponentState(
+          ControlStateFlags::ProcessHoverStatus,
+          !intoInsertionMode && isMouseOn == NumericSelectorControlContext::IsMouseOn::MinusButton,
+          false,
+          !MinValueReached()));
 
-    const auto state = instance->GetState(ControlStateFlags::All);
-    colorMinus = colorPlus = Cfg->Button.Text.GetColor(state);
-
-    if (intoInsertionMode == false)
-    {
-        if (MinValueReached())
-        {
-            colorMinus = Cfg->Button.Text.Inactive;
-        }
-
-        if (MaxValueReached())
-        {
-            colorPlus = Cfg->Button.Text.Inactive;
-        }
-    }
-
-    switch (isMouseOn)
-    {
-    case NumericSelectorControlContext::IsMouseOn::MinusButton:
-        if (MinValueReached() == false)
-        {
-            colorMinus = Cfg->Button.Text.Hovered;
-        }
-        break;
-    case NumericSelectorControlContext::IsMouseOn::PlusButton:
-        if (MaxValueReached() == false)
-        {
-            colorPlus = Cfg->Button.Text.Hovered;
-        }
-        break;
-    default:
-        break;
-    }
+    const ColorPair colorPlus = Cfg->Button.Text.GetColor(GetComponentState(
+          ControlStateFlags::ProcessHoverStatus,
+          !intoInsertionMode && isMouseOn == NumericSelectorControlContext::IsMouseOn::PlusButton,
+          false,
+          !MaxValueReached()));
 
     renderer.WriteSingleLineText(0, 0, " - ", colorMinus);
     renderer.WriteSingleLineText(Layout.Width + 1 - buttonPadding, 0, " + ", colorPlus);
