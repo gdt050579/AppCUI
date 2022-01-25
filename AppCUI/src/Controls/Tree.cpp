@@ -104,12 +104,12 @@ bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) 
                         if (item.expanded)
                         {
                             renderer.WriteSpecialCharacter(
-                                  wtp.X, wtp.Y, SpecialChars::TriangleDown, cc->Cfg->Symbol.Checked);
+                                  wtp.X, wtp.Y, SpecialChars::TriangleDown, cc->Cfg->Symbol.Arrows);
                         }
                         else
                         {
                             renderer.WriteSpecialCharacter(
-                                  wtp.X, wtp.Y, SpecialChars::TriangleRight, cc->Cfg->Symbol.Unchecked);
+                                  wtp.X, wtp.Y, SpecialChars::TriangleRight, cc->Cfg->Symbol.Arrows);
                         }
                     }
                     else
