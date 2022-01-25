@@ -527,30 +527,21 @@ bool NumericSelectorControlContext::PaintButtons(Renderer& renderer)
 {
     ColorPair colorMinus{};
     ColorPair colorPlus{};
-    if (instance->IsEnabled() == false)
-    {
-        colorMinus = Cfg->Button.Text.Inactive;
-        colorPlus  = Cfg->Button.Text.Inactive;
-    }
-    else if (Focused)
-    {
-        colorMinus = Cfg->Button.Text.Focused;
-        colorPlus  = Cfg->Button.Text.Focused;
-    }
-    else
-    {
-        colorMinus = Cfg->Button.Text.Normal;
-        colorPlus  = Cfg->Button.Text.Normal;
-    }
 
-    if (MinValueReached() && intoInsertionMode == false)
-    {
-        colorMinus = Cfg->Button.Text.Inactive;
-    }
+    const auto state = instance->GetState(ControlStateFlags::All);
+    colorMinus = colorPlus = Cfg->Button.Text.GetColor(state);
 
-    if (MaxValueReached() && intoInsertionMode == false)
+    if (intoInsertionMode == false)
     {
-        colorPlus = Cfg->Button.Text.Inactive;
+        if (MinValueReached())
+        {
+            colorMinus = Cfg->Button.Text.Inactive;
+        }
+
+        if (MaxValueReached())
+        {
+            colorPlus = Cfg->Button.Text.Inactive;
+        }
     }
 
     switch (isMouseOn)
