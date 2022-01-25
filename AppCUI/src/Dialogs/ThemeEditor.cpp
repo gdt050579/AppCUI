@@ -35,6 +35,29 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(19, y, "Quit ", obj.Menu.Text.Normal);
         r.WriteSingleLineText(24, y, " F3 ", obj.Menu.ShortCut.Hovered);
         r.WriteSingleLineText(28, y, "Reload ", obj.Menu.Text.Hovered);
+
+        r.FillRect(0, 1, 20, 9, ' ', obj.Menu.Text.Normal);
+        r.DrawRect(0, 1, 20, 9, obj.Menu.Text.Normal, LineType::Single);
+        // item Save
+        r.WriteSingleLineText(2, 2, "Save", obj.Menu.Text.Normal);
+        r.WriteCharacter(2, 2, 'S', obj.Menu.HotKey.Normal);
+        r.WriteSingleLineText(18, 2, "Ctrl+S", obj.Menu.ShortCut.Normal, TextAlignament::Right);
+        // item Open
+        r.WriteSingleLineText(2, 3, "Open", obj.Menu.Text.Inactive);
+        r.WriteCharacter(2, 3, 'O', obj.Menu.HotKey.Inactive);
+        r.WriteSingleLineText(18, 3, "Ctrl+O", obj.Menu.ShortCut.Inactive, TextAlignament::Right);
+        // line
+        r.DrawHorizontalLine(1, 4, 19, obj.Menu.Text.Normal, true);
+        // options
+        r.WriteSingleLineText(2, 5, "  Option 1", obj.Menu.Text.Normal);
+        r.WriteSingleLineText(2, 6, "  Option 2", obj.Menu.Text.Normal);
+        r.WriteSpecialCharacter(2, 5, SpecialChars::CheckMark, obj.Menu.Symbol.Normal);
+        // line
+        r.DrawHorizontalLine(1, 7, 19, obj.Menu.Text.Normal, true);
+        // item close all
+        r.WriteSingleLineText(1, 8, " Close         ", obj.Menu.Text.Hovered);
+        r.WriteCharacter(2, 8, 'C', obj.Menu.HotKey.Hovered);
+        r.WriteSingleLineText(19, 8, "F10 ", obj.Menu.ShortCut.Hovered, TextAlignament::Right);
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
