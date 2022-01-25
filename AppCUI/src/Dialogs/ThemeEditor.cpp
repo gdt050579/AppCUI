@@ -104,6 +104,15 @@ class ConfigProperty : public PropertiesInterface
         case PropID::MenuInactive:
             value = obj.Menu.Text.Inactive.Foreground;
             return true;
+        case PropID::MenuTextHovered:
+            value = obj.Menu.Text.Hovered;
+            return true;
+        case PropID::MenuHotKeyHovered:
+            value = obj.Menu.HotKey.Hovered.Foreground;
+            return true;
+        case PropID::MenuShortCutHovered:
+            value = obj.Menu.ShortCut.Hovered.Foreground;
+            return true;
         }
         return false;
     }
@@ -147,6 +156,17 @@ class ConfigProperty : public PropertiesInterface
             obj.Menu.HotKey.Inactive.Foreground        = std::get<Color>(value);
             obj.Menu.ShortCut.Inactive.Foreground      = std::get<Color>(value);
             return true;
+        case PropID::MenuTextHovered:
+            obj.Menu.Text.Hovered                = std::get<ColorPair>(value);
+            obj.Menu.HotKey.Hovered.Background   = obj.Menu.Text.Hovered.Background;
+            obj.Menu.ShortCut.Hovered.Background = obj.Menu.Text.Hovered.Background;
+            return true;
+        case PropID::MenuHotKeyHovered:
+            obj.Menu.HotKey.Hovered.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuShortCutHovered:
+            obj.Menu.ShortCut.Hovered.Foreground = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -170,6 +190,9 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::MenuHotKeyNormal), "Menu", "HotKey", PropertyType::Color },
             { PT(PropID::MenuShortCutNormal), "Menu", "ShortCut", PropertyType::Color },
             { PT(PropID::MenuInactive), "Menu", "Inactive", PropertyType::Color },
+            { PT(PropID::MenuTextHovered), "Menu", "Hovered Text", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeyHovered), "Menu", "Hovered HotKey", PropertyType::Color },
+            { PT(PropID::MenuShortCutHovered), "Menu", "Hovered ShortCut", PropertyType::Color },
         };
 #undef PT
     };
