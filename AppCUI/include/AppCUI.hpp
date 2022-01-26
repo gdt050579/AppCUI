@@ -4065,6 +4065,10 @@ namespace Controls
 
         void SetObject(Reference<PropertiesInterface> object);
 
+        std::optional<uint32> GetCurrentItemID();
+        string_view GetCurrentItemName();
+        string_view GetCurrentItemCategory();
+
         virtual ~PropertyList();
 
       private:

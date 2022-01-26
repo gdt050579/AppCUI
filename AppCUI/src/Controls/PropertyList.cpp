@@ -2047,4 +2047,65 @@ void PropertyList::OnUpdateScrollBars()
     UpdateVScrollBar(Members->currentPos, count);
 }
 
+std::optional<uint32> PropertyList::GetCurrentItemID()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if ((Members->items.Get(Members->currentPos, value) == false) || (value & CATEGORY_FLAG) ||
+        (value >= Members->properties.size()))
+        return std::nullopt;
+    const auto& prop = Members->properties[value];
+    return prop.id;
+}
+string_view PropertyList::GetCurrentItemName()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if (Members->items.Get(Members->currentPos, value) == false)
+        return string_view{};
+    if (value & CATEGORY_FLAG)
+    {
+        value = value & CATEGORY_INDEX_MASK;
+        if (value >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[value];
+        return cat.name;
+    }
+    else
+    {
+        if (value >= Members->properties.size())
+            return string_view{};
+        const auto& prop = Members->properties[value];
+        return prop.name;
+    }
+}
+string_view PropertyList::GetCurrentItemCategory()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if (Members->items.Get(Members->currentPos, value) == false)
+        return string_view{};
+    if (value & CATEGORY_FLAG)
+    {
+        value = value & CATEGORY_INDEX_MASK;
+        if (value >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[value];
+        return cat.name;
+    }
+    else
+    {
+        if (value >= Members->properties.size())
+            return string_view{};
+        const auto& prop = Members->properties[value];
+        if (prop.category >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[prop.category];
+        return cat.name;
+    }
+}
+
 } // namespace AppCUI
