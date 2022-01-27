@@ -271,53 +271,65 @@ class MyUserControl : public UserControl, public PropertiesInterface
     const vector<Property> GetPropertiesList() override
     {
         return {
-              { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::Int32 },
-              { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::Int32 },
-              { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
-              { (uint32) MyControlProperty::ForeColor, "Look & Feel", "Fore color", PropertyType::Color },
-              { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
-              { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Char16 },
-              { (uint32) MyControlProperty::Border, "Look & Feel", "Draw border", PropertyType::Boolean },
-              { (uint32) MyControlProperty::BorderType,
-                "Look & Feel",
-                "Border Type",
-                PropertyType::List,
-                "Single=1,Double=2,Thick=3" },
-              { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
-              { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
-              { (uint32) MyControlProperty::AnimationStarted, "Animation", "Started", PropertyType::Boolean, "Stopped,Running" },
-              { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
-              { (uint32) MyControlProperty::AnimationSpeed,
-                "Animation",
-                "Speed",
-                PropertyType::List,
-                "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
-              { (uint32) MyControlProperty::Flags,
-                "General",
-                "File flags",
-                PropertyType::Flags,
-                "Read=1,Write=2,Execute=4,Shared=8" },
-              { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
+            { (uint32) MyControlProperty::X, "Layout", "X", PropertyType::Int32 },
+            { (uint32) MyControlProperty::Y, "Layout", "Y", PropertyType::Int32 },
+            { (uint32) MyControlProperty::Size, "Layout", "Size", PropertyType::Size },
+            { (uint32) MyControlProperty::ForeColor, "Look & Feel", "Fore color", PropertyType::Color },
+            { (uint32) MyControlProperty::BackColor, "Look & Feel", "Back color", PropertyType::Color },
+            { (uint32) MyControlProperty::Character, "Look & Feel", "Character", PropertyType::Char16 },
+            { (uint32) MyControlProperty::Border, "Look & Feel", "Draw border", PropertyType::Boolean },
+            { (uint32) MyControlProperty::BorderType,
+              "Look & Feel",
+              "Border Type",
+              PropertyType::List,
+              "Single=1,Double=2,Thick=3" },
+            { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
+            { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
+            { (uint32) MyControlProperty::AnimationStarted,
+              "Animation",
+              "Started",
+              PropertyType::Boolean,
+              "Stopped,Running" },
+            { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
+            { (uint32) MyControlProperty::AnimationSpeed,
+              "Animation",
+              "Speed",
+              PropertyType::List,
+              "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
+            { (uint32) MyControlProperty::Flags,
+              "General",
+              "File flags",
+              PropertyType::Flags,
+              "Read=1,Write=2,Execute=4,Shared=8" },
+            { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         };
     };
 };
 class PropertyWindowExmaple : public Window
 {
     Reference<MyUserControl> ct;
+    Reference<PropertyList> pl;
 
   public:
     PropertyWindowExmaple() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto sp = Factory::Splitter::Create(this, "d:c", true);
         ct      = sp->CreateChildControl<MyUserControl>();
-        auto pl =
-              sp->CreateChildControl<PropertyList>("d:c", ct.ToBase<PropertiesInterface>(), PropertyListFlags::Border);
+        pl = sp->CreateChildControl<PropertyList>("d:c", ct.ToBase<PropertiesInterface>(), PropertyListFlags::Border);
         sp->SetSecondPanelSize(30);
+        this->SetTag("?", "");
     }
-    //void Paint(Graphics::Renderer & renderer) override
-    //{
-    //    renderer.Clear(' ', ColorPair{ Color::White, Color::Blue });
-    //}
+    bool OnEvent(Reference<Control> control, Event evnt, int32 ID)
+    {
+        if (Window::OnEvent(control, evnt, ID))
+            return true;
+        if (evnt == Event::PropertyItemChanged)
+        {
+            this->SetTag(pl->GetCurrentItemCategory(), "");
+            return true;
+        }
+        return false;
+    }
 };
 int main()
 {
