@@ -6,6 +6,17 @@ using namespace AppCUI::Graphics;
 namespace AppCUI::Dialogs
 {
 constexpr int BUTTON_CMD_CLOSE = 1;
+
+enum class CatID : uint32
+{
+    None = 0,
+    Desktop,
+    Menu,
+
+    Count // must be the last one
+};
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", " Menu" };
+
 enum class PropID : uint32
 {
     DesktopChar,
@@ -28,10 +39,23 @@ enum class PropID : uint32
 class ConfigProperty : public PropertiesInterface
 {
     AppCUI::Application::Config obj;
+    CatID catID;
 
   public:
-    ConfigProperty(const AppCUI::Application::Config& config) : obj(config)
+    ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None)
     {
+    }
+    void SetCategory(string_view name)
+    {
+        for (auto i = 0U; i < static_cast<uint32>(CatID::Count); i++)
+        {
+            if (catNames[i] == name)
+            {
+                catID = static_cast<CatID>(i);
+                return;
+            }
+        }
+        catID = CatID::None;
     }
     void PaintMenusAndCommandBar(Graphics::Renderer& r, Size sz)
     {
@@ -75,8 +99,20 @@ class ConfigProperty : public PropertiesInterface
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
-        r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
-        PaintMenusAndCommandBar(r, sz);
+        
+        switch (catID)
+        {
+        case CatID::None:
+            r.Clear();
+            break;
+        case CatID::Desktop:
+            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            break;
+        case CatID::Menu:
+            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            PaintMenusAndCommandBar(r, sz);
+            break;
+        }        
     }
     bool GetPropertyValue(uint32 propertyID, PropertyValue& value) override
     {
@@ -200,24 +236,26 @@ class ConfigProperty : public PropertiesInterface
     }
     const vector<Property> GetPropertiesList() override
     {
-#define PT(t) static_cast<uint32>(t)
+#define PT(t)  static_cast<uint32>(t)
+#define CAT(t) catNames[static_cast<uint32>(t)]
         return {
-            { PT(PropID::DesktopChar), "Desktop", "Symbol", PropertyType::Char16 },
-            { PT(PropID::DesktopColor), "Desktop", "Color", PropertyType::ColorPair },
+            { PT(PropID::DesktopChar), CAT(CatID::Desktop), "Symbol", PropertyType::Char16 },
+            { PT(PropID::DesktopColor), CAT(CatID::Desktop), "Color", PropertyType::ColorPair },
             // Menus
-            { PT(PropID::MenuBackground), "Menu", "Backgroud", PropertyType::Color },
-            { PT(PropID::MenuTextNormal), "Menu", "Text", PropertyType::Color },
-            { PT(PropID::MenuHotKeyNormal), "Menu", "HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutNormal), "Menu", "ShortCut", PropertyType::Color },
-            { PT(PropID::MenuInactive), "Menu", "Inactive", PropertyType::Color },
-            { PT(PropID::MenuTextHovered), "Menu", "Hovered Text", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeyHovered), "Menu", "Hovered HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutHovered), "Menu", "Hovered ShortCut", PropertyType::Color },
-            { PT(PropID::MenuTextSelected), "Menu", "Selected Text", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeySelected), "Menu", "Selected HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutSelected), "Menu", "Selected ShortCut", PropertyType::Color },
+            { PT(PropID::MenuBackground), CAT(CatID::Menu), "Backgroud", PropertyType::Color },
+            { PT(PropID::MenuTextNormal), CAT(CatID::Menu), "Text", PropertyType::Color },
+            { PT(PropID::MenuHotKeyNormal), CAT(CatID::Menu), "HotKey", PropertyType::Color },
+            { PT(PropID::MenuShortCutNormal), CAT(CatID::Menu), "ShortCut", PropertyType::Color },
+            { PT(PropID::MenuInactive), CAT(CatID::Menu), "Inactive", PropertyType::Color },
+            { PT(PropID::MenuTextHovered), CAT(CatID::Menu), "Hovered Text", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeyHovered), CAT(CatID::Menu), "Hovered HotKey", PropertyType::Color },
+            { PT(PropID::MenuShortCutHovered), CAT(CatID::Menu), "Hovered ShortCut", PropertyType::Color },
+            { PT(PropID::MenuTextSelected), CAT(CatID::Menu), "Selected Text", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeySelected), CAT(CatID::Menu), "Selected HotKey", PropertyType::Color },
+            { PT(PropID::MenuShortCutSelected), CAT(CatID::Menu), "Selected ShortCut", PropertyType::Color },
         };
 #undef PT
+#undef CAT
     };
 };
 class PreviewControl : public UserControl
@@ -255,6 +293,7 @@ class ThemeEditorDialog : public Window
         pc = sp->CreateChildControl<PreviewControl>();
         pc->SetConfig(&cfg);
         prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
+        cfg.SetCategory(prop->GetCurrentItemCategory());
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
@@ -269,6 +308,11 @@ class ThemeEditorDialog : public Window
                 this->Exit(0);
                 return true;
             }
+        }
+        if (eventType == Event::PropertyItemChanged)
+        {
+            cfg.SetCategory(prop->GetCurrentItemCategory());
+            return true;
         }
         return false;
     }

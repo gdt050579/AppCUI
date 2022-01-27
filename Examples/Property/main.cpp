@@ -319,7 +319,7 @@ class PropertyWindowExmaple : public Window
         sp->SetSecondPanelSize(30);
         this->SetTag("?", "");
     }
-    bool OnEvent(Reference<Control> control, Event evnt, int32 ID)
+    bool OnEvent(Reference<Control> control, Event evnt, int32 ID) override
     {
         if (Window::OnEvent(control, evnt, ID))
             return true;
