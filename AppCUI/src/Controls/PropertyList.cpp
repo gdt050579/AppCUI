@@ -1402,12 +1402,21 @@ void PropertyListContext::SetPropertyNameWidth(int32 value, bool adjustPercentag
     if (adjustPercentage)
         this->propetyNamePercentage = (float) this->propertyNameWidth / (float) (this->Layout.Width);
 }
+void PropertyListContext::SetCurrentPosAndRaiseEvent(uint32 newPos)
+{
+    if (newPos != this->currentPos)
+    {
+        this->currentPos = newPos;
+        // Raise event
+        host->RaiseEvent(Event::PropertyItemChanged);
+    }
+}
 void PropertyListContext::MoveTo(uint32 newPos)
 {
     if (this->items.Len() == 0)
     {
-        this->currentPos = 0;
         this->startView  = 0;
+        SetCurrentPosAndRaiseEvent(0);
         return;
     }
     if (newPos >= this->items.Len())
@@ -1418,22 +1427,22 @@ void PropertyListContext::MoveTo(uint32 newPos)
     uint32 height = (uint32) h;
     if ((startView <= newPos) && ((startView + height) > newPos))
     {
-        this->currentPos = newPos;
+        SetCurrentPosAndRaiseEvent(newPos);
         return;
     }
     // adjust start view --> if before scroll up
     if (newPos < startView)
     {
-        this->currentPos = newPos;
         this->startView  = newPos;
+        SetCurrentPosAndRaiseEvent(newPos);
         return;
     }
     // otherwise scroll down
-    this->currentPos = newPos;
     if (newPos >= startView + height - 1)
         this->startView = newPos - (height - 1);
     else
         this->startView = 0;
+    SetCurrentPosAndRaiseEvent(newPos);
 }
 void PropertyListContext::MoveScrollTo(uint32 newPos)
 {
@@ -1917,6 +1926,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->hoveredItemStatus         = PropertyItemLocation::None;
     Members->hoveredItemIDX            = INVALID_ITEM;
     Members->ScrollBars.OutsideControl = !Members->hasBorder;
+    Members->host                      = this;
 
     SetObject(obj);
 }

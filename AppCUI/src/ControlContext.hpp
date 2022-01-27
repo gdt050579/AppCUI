@@ -944,10 +944,12 @@ struct PropertyListContext : public ControlContext
     PropertySeparatorStatus separatorStatus;
     PropertyItemLocation hoveredItemStatus;
     uint32 hoveredItemIDX;
+    Reference<PropertyList> host;
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveToPropetyIndex(uint32 idx);
+    void SetCurrentPosAndRaiseEvent(uint32 newPos);
     void MoveTo(uint32 newPos);
     void MoveScrollTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);

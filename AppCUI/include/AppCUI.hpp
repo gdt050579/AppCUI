@@ -2740,6 +2740,7 @@ namespace Controls
         Command,
         NumericSelectorValueChanged,
         SplitterPositionChanged,
+        PropertyItemChanged,
         Custom,
     };
     using ItemHandle                       = uint32;
