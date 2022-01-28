@@ -4757,7 +4757,7 @@ namespace Application
         } ProgressStatus;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons, Symbol;
+            Graphics::ObjectColorState Text, HotKey, ShortCut, Symbol;
         } Menu, ParentMenu;
         struct
         {
