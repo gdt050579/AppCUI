@@ -4727,7 +4727,6 @@ namespace Application
 
     struct Config
     {
-        // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
 
         struct
@@ -4741,12 +4740,12 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Uncheked, Unknwon, Desktop, Arrows, Close,
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Unchecked, Unknown, Desktop, Arrows, Close,
                   Maximized, Resize;
         } Symbol;
         struct
         {
-            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelectection;
+            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelection;
         } Cursor;
         struct
         {
@@ -4783,58 +4782,6 @@ namespace Application
                 Graphics::Color Normal, Inactive, Error, Warning, Info;
             } Background;
         } Window;
-
-        // OLD structures
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
-            } Text;
-        } NumericSelector;
-
-        struct
-        {
-            struct
-            {
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused;
-                } Separator;
-                struct
-                {
-                    Graphics::ColorPair Text, Header;
-                } Column;
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchActive;
-                } Text;
-                struct
-                {
-                    Graphics::ColorPair Expanded, Collapsed, SingleElement;
-                } Symbol;
-            };
-        } Tree;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Lines;
-            struct
-            {
-                Graphics::ColorPair Grid;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-                } Cell;
-            } Background;
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Text;
-            Graphics::ColorPair Header;
-        } Grid;
 
         void SetDarkTheme();
     };

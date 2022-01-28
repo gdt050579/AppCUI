@@ -37,8 +37,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
         tree = AppCUI::Controls::Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren |
-               AppCUI::Controls::TreeFlags::FilterSearch),
+              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren | AppCUI::Controls::TreeFlags::FilterSearch),
               3);
 
         tree->Handlers()->OnTreeItemToggle = this;
@@ -55,7 +54,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
         CharacterBuffer filename;
         filename.Set(std::filesystem::current_path().filename().u16string());
         const auto pathLastWriteTime = GetLastFileWriteText(std::filesystem::current_path());
-        uint64 pathSize  = 0;
+        uint64 pathSize              = 0;
         CharacterBuffer pathSizeText;
         try
         {
@@ -153,7 +152,7 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
                 CharacterBuffer filename;
                 filename.Set(p.path().filename().u16string());
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
-                uint64 pathSize  = p.file_size();
+                uint64 pathSize              = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
 

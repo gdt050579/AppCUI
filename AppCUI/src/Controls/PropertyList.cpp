@@ -1358,7 +1358,7 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Category.Stats = Cfg->Header.HotKey.GetColor(state);
         this->Colors.Category.Text  = Cfg->Header.Text.GetColor(state);
         this->Colors.Checked        = this->Cfg->Symbol.Checked;
-        this->Colors.Unchecked      = this->Cfg->Symbol.Uncheked;
+        this->Colors.Unchecked      = this->Cfg->Symbol.Unchecked;
     }
     renderer.Clear(' ', NoColorPair);
     if (this->hasBorder)
