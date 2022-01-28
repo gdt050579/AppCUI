@@ -107,44 +107,46 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         ColorPair c;
         // top button
         if (this->FirstVisibleItem == 0)
-            c = col->ScrollButtons.Inactive;
+            c = col->Text.Inactive;
         else
         {
             switch (this->ButtonUp)
             {
             case MenuButtonState::Normal:
-                c = col->ScrollButtons.Normal;
+                c = col->Text.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = col->ScrollButtons.Hovered;
+                c = col->Text.Hovered;
                 break;
             case MenuButtonState::Pressed:
-                c = col->ScrollButtons.PressedOrSelected;
+                c = col->Text.PressedOrSelected;
                 break;
             }
         }
 
+        renderer.FillHorizontalLineSize(this->Width / 2, 0, 3, ' ', c);
         renderer.WriteSpecialCharacter(1 + this->Width / 2, 0, SpecialChars::TriangleUp, c);
 
         // bottom button
         if (this->FirstVisibleItem + this->VisibleItemsCount >= this->ItemsCount)
-            c = col->ScrollButtons.Inactive;
+            c = col->Text.Inactive;
         else
         {
             switch (this->ButtonDown)
             {
             case MenuButtonState::Normal:
-                c = col->ScrollButtons.Normal;
+                c = col->Text.Normal;
                 break;
             case MenuButtonState::Hovered:
-                c = col->ScrollButtons.Hovered;
+                c = col->Text.Hovered;
                 break;
             case MenuButtonState::Pressed:
-                c = col->ScrollButtons.PressedOrSelected;
+                c = col->Text.PressedOrSelected;
                 break;
             }
         }
 
+        renderer.FillHorizontalLineSize(this->Width / 2, ScreenClip.ClipRect.Height - 1, 3, ' ', c);
         renderer.WriteSpecialCharacter(
               1 + this->Width / 2, ScreenClip.ClipRect.Height - 1, SpecialChars::TriangleDown, c);
     }
@@ -156,7 +158,7 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         if (actualIndex >= ItemsCount)
             break;
         MenuItem* item = this->Items[actualIndex].get();
-        ColorPair shortCutCol,checkColor;
+        ColorPair shortCutCol, checkColor;
         if (item->Enabled == false)
         {
             textParams.Color       = col->Text.Inactive;
@@ -182,7 +184,6 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
                 checkColor             = col->Symbol.Normal;
             }
         }
-
 
         textParams.HotKeyPosition = item->HotKeyOffset;
         textParams.Y              = tr;
