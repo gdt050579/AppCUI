@@ -882,6 +882,7 @@ struct MenuContext
     // mouse events
     void ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi);
     bool OnMouseMove(int x, int y, bool& repaint);
+    bool OnMouseReleased(int x, int y);
     MousePressedResult OnMousePressed(int x, int y);
     bool IsOnMenu(int x, int y);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);

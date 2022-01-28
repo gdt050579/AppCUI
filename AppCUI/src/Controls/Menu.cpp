@@ -276,8 +276,10 @@ void MenuContext::ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& 
         mpi.ItemIndex = NO_MENUITEM_SELECTED;
     }
     mpi.IsOnMenu       = (x >= 0) && (y >= 0) && (x < (int) this->Width + 2) && (y < (int) this->VisibleItemsCount + 2);
-    mpi.IsOnUpButton   = (y == 0) && (static_cast<unsigned>(x) == (1 + this->Width / 2));
-    mpi.IsOnDownButton = (y == ScreenClip.ClipRect.Height - 1) && (static_cast<unsigned>(x) == (1 + this->Width / 2));
+    const auto middle   = this->Width >> 1;
+    mpi.IsOnUpButton   = (y == 0) && (static_cast<uint32>(x) >= middle) && (static_cast<uint32>(x) <= middle + 2);
+    mpi.IsOnDownButton  = (y == ScreenClip.ClipRect.Height - 1) && (static_cast<uint32>(x) >= middle) &&
+                         (static_cast<uint32>(x) <= middle + 2);
 }
 bool MenuContext::OnMouseMove(int x, int y, bool& repaint)
 {
@@ -335,6 +337,26 @@ MousePressedResult MenuContext::OnMousePressed(int x, int y)
         return MousePressedResult::None;
     // if it's outsize, check if mouse is on one of its parens
     return MousePressedResult::CheckParent;
+}
+bool MenuContext::OnMouseReleased(int x, int y)
+{
+    MenuMousePositionInfo mpi;
+    ComputeMousePositionInfo(x, y, mpi);
+    // check buttons
+    if (this->VisibleItemsCount < this->ItemsCount)
+    {
+        if ((mpi.IsOnUpButton) && (this->FirstVisibleItem > 0))
+        {
+            this->ButtonUp = MenuButtonState::Hovered;
+            return true;
+        }
+        if ((mpi.IsOnDownButton) && (this->FirstVisibleItem + this->VisibleItemsCount < this->ItemsCount))
+        {
+            this->ButtonDown = MenuButtonState::Hovered;
+            return true;
+        }
+    }
+    return false;
 }
 bool MenuContext::IsOnMenu(int x, int y)
 {

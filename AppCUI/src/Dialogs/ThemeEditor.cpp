@@ -178,9 +178,6 @@ class ConfigProperty : public PropertiesInterface
             obj.Menu.ShortCut.Normal.Background        = std::get<Color>(value);
             obj.Menu.ShortCut.Focused.Background       = std::get<Color>(value);
             obj.Menu.ShortCut.Inactive.Background      = std::get<Color>(value);
-            obj.Menu.ScrollButtons.Normal.Background   = std::get<Color>(value);
-            obj.Menu.ScrollButtons.Focused.Background  = std::get<Color>(value);
-            obj.Menu.ScrollButtons.Inactive.Background = std::get<Color>(value);
             obj.Menu.Symbol.Normal.Background          = std::get<Color>(value);
             obj.Menu.Symbol.Focused.Background         = std::get<Color>(value);
             obj.Menu.Symbol.Inactive.Background        = std::get<Color>(value);
@@ -196,7 +193,6 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::MenuInactive:
             obj.Menu.Symbol.Inactive.Foreground        = std::get<Color>(value);
-            obj.Menu.ScrollButtons.Inactive.Foreground = std::get<Color>(value);
             obj.Menu.Text.Inactive.Foreground          = std::get<Color>(value);
             obj.Menu.HotKey.Inactive.Foreground        = std::get<Color>(value);
             obj.Menu.ShortCut.Inactive.Foreground      = std::get<Color>(value);

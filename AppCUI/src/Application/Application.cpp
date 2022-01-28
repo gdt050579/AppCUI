@@ -835,6 +835,13 @@ void ApplicationImpl::ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y)
         break;
     }
 }
+void ApplicationImpl::ProcessMenuMouseReleased(Controls::Menu* mnu, int x, int y)
+{
+    auto* mcx   = reinterpret_cast<MenuContext*>(mnu->Context);
+    bool result = mcx->OnMouseReleased(x - mcx->ScreenClip.ScreenPosition.X, y - mcx->ScreenClip.ScreenPosition.Y);
+    if (result)
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+}
 bool ApplicationImpl::ProcessMenuAndCmdBarMouseMove(int x, int y)
 {
     bool processed = false;
@@ -925,6 +932,11 @@ void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
 void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
 {
     int commandID;
+    // check contextual menus
+    if (this->VisibleMenu)
+    {
+        ProcessMenuMouseReleased(this->VisibleMenu, x, y);
+    }
     switch (mouseLockedObject)
     {
     case MouseLockedObject::CommandBar:
