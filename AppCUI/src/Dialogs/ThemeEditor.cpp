@@ -15,7 +15,7 @@ enum class CatID : uint32
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", " Menu" };
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", "Menu" };
 
 enum class PropID : uint32
 {
@@ -33,6 +33,9 @@ enum class PropID : uint32
     MenuShortCutNormal,
     MenuShortCutHovered,
     MenuShortCutSelected,
+    MenuSymbolNormal,
+    MenuSymbolHovered,
+    MenuSymbolSelected,
     MenuInactive
 
 };
@@ -158,6 +161,15 @@ class ConfigProperty : public PropertiesInterface
         case PropID::MenuShortCutSelected:
             value = obj.Menu.ShortCut.PressedOrSelected.Foreground;
             return true;
+        case PropID::MenuSymbolNormal:
+            value = obj.Menu.Symbol.Normal.Foreground;
+            return true;
+        case PropID::MenuSymbolHovered:
+            value = obj.Menu.Symbol.Hovered.Foreground;
+            return true;
+        case PropID::MenuSymbolSelected:
+            value = obj.Menu.Symbol.PressedOrSelected.Foreground;
+            return true;
         }
         return false;
     }
@@ -219,6 +231,15 @@ class ConfigProperty : public PropertiesInterface
         case PropID::MenuShortCutSelected:
             obj.Menu.ShortCut.PressedOrSelected.Foreground = std::get<Color>(value);
             return true;
+        case PropID::MenuSymbolNormal:
+            obj.Menu.Symbol.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuSymbolHovered:
+            obj.Menu.Symbol.Hovered.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuSymbolSelected:
+            obj.Menu.Symbol.PressedOrSelected.Foreground = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -249,6 +270,9 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::MenuTextSelected), CAT(CatID::Menu), "Selected Text", PropertyType::ColorPair },
             { PT(PropID::MenuHotKeySelected), CAT(CatID::Menu), "Selected HotKey", PropertyType::Color },
             { PT(PropID::MenuShortCutSelected), CAT(CatID::Menu), "Selected ShortCut", PropertyType::Color },
+            { PT(PropID::MenuSymbolNormal), CAT(CatID::Menu), "Checkmark", PropertyType::Color },
+            { PT(PropID::MenuSymbolSelected), CAT(CatID::Menu), "Checkmark selected", PropertyType::Color },
+            { PT(PropID::MenuSymbolHovered), CAT(CatID::Menu), "Checkmark hovered", PropertyType::Color },
         };
 #undef PT
 #undef CAT
