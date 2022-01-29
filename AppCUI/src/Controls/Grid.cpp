@@ -1011,6 +1011,8 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
           ' ',
           Cfg->Header.Text.Normal);
 
+    const auto lineColor = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
+
     for (auto i = 0U; i <= columnsNo; i++)
     {
         const auto x    = offsetX + i * cWidth;
