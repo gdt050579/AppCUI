@@ -115,6 +115,42 @@ class ConfigProperty : public PropertiesInterface
         r.WriteCharacter(2, 8, 'C', obj.Menu.HotKey.Hovered);
         r.WriteSingleLineText(19, 8, "F10 ", obj.Menu.ShortCut.Hovered, TextAlignament::Right);
     }
+    void PaintParentMenusAndCommandBar(Graphics::Renderer& r, Size sz)
+    {
+        r.FillRect(2, 1, 22, 9, ' ', obj.ParentMenu.Text.Normal);
+        r.DrawRect(2, 1, 22, 9, obj.ParentMenu.Text.Normal, LineType::Single);
+        // item Save
+        r.WriteSingleLineText(4, 2, "Save", obj.ParentMenu.Text.Normal);
+        r.WriteCharacter(4, 2, 'S', obj.ParentMenu.HotKey.Normal);
+        r.WriteSingleLineText(20, 2, "Ctrl+S", obj.ParentMenu.ShortCut.Normal, TextAlignament::Right);
+        // item Open
+        r.WriteSingleLineText(4, 3, "Open", obj.ParentMenu.Text.Inactive);
+        r.WriteCharacter(4, 3, 'O', obj.ParentMenu.HotKey.Inactive);
+        r.WriteSingleLineText(20, 3, "Ctrl+O", obj.ParentMenu.ShortCut.Inactive, TextAlignament::Right);
+        // line
+        r.DrawHorizontalLine(3, 4, 19, obj.ParentMenu.Text.Normal, true);
+        // options
+        r.WriteSingleLineText(4, 5, "  Option 1", obj.ParentMenu.Text.Normal);
+        r.WriteSingleLineText(4, 6, "  Option 2", obj.ParentMenu.Text.Normal);
+        r.WriteSpecialCharacter(4, 5, SpecialChars::CheckMark, obj.ParentMenu.Symbol.Normal);
+        // line
+        r.DrawHorizontalLine(3, 7, 19, obj.ParentMenu.Text.Normal, true);
+        // item close all
+        r.WriteSingleLineText(3, 8, " Copy              ", obj.ParentMenu.Text.Hovered);
+        r.WriteCharacter(4, 8, 'C', obj.ParentMenu.HotKey.Hovered);
+        r.WriteSpecialCharacter(20, 8, SpecialChars::TriangleRight, obj.ParentMenu.Text.Hovered);
+        // draw a child menu
+        r.FillRect(21, 7, 35, 12, ' ', obj.Menu.Text.Normal);
+        r.DrawRect(21, 7, 35, 12, obj.Menu.Text.Normal, LineType::Single);
+        r.WriteSingleLineText(22, 8, " Slot 1", obj.Menu.Text.Normal);
+        r.WriteSingleLineText(22, 9, " Slot 2", obj.Menu.Text.Normal);
+        r.WriteSingleLineText(22, 10, " Slot 3      ", obj.Menu.Text.Hovered);
+        r.WriteSingleLineText(22, 11, " Slot 4", obj.Menu.Text.Inactive);
+        r.FillHorizontalLineSize(27, 7, 3, ' ', obj.Menu.Text.Normal);
+        r.WriteSpecialCharacter(28, 7, SpecialChars::TriangleUp, obj.Menu.Text.Inactive);
+        r.FillHorizontalLineSize(27, 12, 3, ' ', obj.Menu.Text.Normal);
+        r.WriteSpecialCharacter(28, 12, SpecialChars::TriangleDown, obj.Menu.Text.Normal);
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -128,6 +164,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Menu:
             r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
             PaintMenusAndCommandBar(r, sz);
+            break;
+        case CatID::ParentMenu:
+            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            PaintParentMenusAndCommandBar(r, sz);
             break;
         }
     }
