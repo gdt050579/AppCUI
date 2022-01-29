@@ -284,6 +284,58 @@ class ConfigProperty : public PropertiesInterface
             obj.Menu.ShortCut.Inactive.Foreground = std::get<Color>(value);
             obj.Menu.Symbol.Inactive.Foreground   = std::get<Color>(value);
             return true;
+
+        case PropID::ParentMenuTextNormal:
+            obj.ParentMenu.Text.Normal              = std::get<ColorPair>(value);
+            obj.ParentMenu.Symbol.Normal.Background = obj.ParentMenu.Text.Normal.Background;
+            obj.ParentMenu.Text.Inactive.Background = obj.ParentMenu.Text.Normal.Background;
+            return true;
+        case PropID::ParentMenuTextHovered:
+            obj.ParentMenu.Text.Hovered              = std::get<ColorPair>(value);
+            obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
+            obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
+            return true;
+        case PropID::ParentMenuTextSelected:
+            obj.ParentMenu.Text.PressedOrSelected              = std::get<ColorPair>(value);
+            obj.ParentMenu.Symbol.PressedOrSelected.Background = obj.ParentMenu.Text.PressedOrSelected.Background;
+            obj.ParentMenu.Symbol.PressedOrSelected.Background = obj.ParentMenu.Text.PressedOrSelected.Background;
+            return true;
+        case PropID::ParentMenuHotKeyNormal:
+            obj.ParentMenu.HotKey.Normal              = std::get<ColorPair>(value);
+            obj.ParentMenu.HotKey.Inactive.Background = obj.ParentMenu.HotKey.Normal.Background;
+            return true;
+        case PropID::ParentMenuHotKeyHovered:
+            obj.ParentMenu.HotKey.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ParentMenuHotKeySelected:
+            obj.ParentMenu.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ParentMenuShortCutNormal:
+            obj.ParentMenu.ShortCut.Normal              = std::get<ColorPair>(value);
+            obj.ParentMenu.ShortCut.Inactive.Background = obj.ParentMenu.ShortCut.Normal.Background;
+            return true;
+        case PropID::ParentMenuShortCutHovered:
+            obj.ParentMenu.ShortCut.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ParentMenuShortCutSelected:
+            obj.ParentMenu.ShortCut.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ParentMenuSymbolNormal:
+            obj.ParentMenu.Symbol.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::ParentMenuSymbolHovered:
+            obj.ParentMenu.Symbol.Hovered.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::ParentMenuSymbolSelected:
+            obj.ParentMenu.Symbol.PressedOrSelected.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::ParentMenuInactive:
+            obj.ParentMenu.Text.Inactive.Foreground     = std::get<Color>(value);
+            obj.ParentMenu.HotKey.Inactive.Foreground   = std::get<Color>(value);
+            obj.ParentMenu.ShortCut.Inactive.Foreground = std::get<Color>(value);
+            obj.ParentMenu.Symbol.Inactive.Foreground   = std::get<Color>(value);
+            return true;
+
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
