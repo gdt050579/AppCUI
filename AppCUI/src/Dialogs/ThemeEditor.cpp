@@ -71,6 +71,10 @@ class ConfigProperty : public PropertiesInterface
         }
         catID = CatID::None;
     }
+    void PaintDesktop(Graphics::Renderer& r)
+    {
+        r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+    }
     void PaintMenusAndCommandBar(Graphics::Renderer& r, Size sz)
     {
         r.FillHorizontalLine(0, 0, (int) sz.Width, ' ', obj.Menu.Text.Normal);
@@ -155,14 +159,14 @@ class ConfigProperty : public PropertiesInterface
             r.Clear();
             break;
         case CatID::Desktop:
-            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            PaintDesktop(r);
             break;
         case CatID::Menu:
-            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            PaintDesktop(r);
             PaintMenusAndCommandBar(r, sz);
             break;
         case CatID::ParentMenu:
-            r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
+            PaintDesktop(r);
             PaintParentMenusAndCommandBar(r, sz);
             break;
         }
