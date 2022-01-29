@@ -85,7 +85,7 @@ bool Application::GetDesktopSize(Graphics::Size& size)
     app->AppDesktop->GetClientSize(size);
     return true;
 }
-void Application::ArrangeWindows(ArangeWindowsMethod method)
+void Application::ArrangeWindows(ArrangeWindowsMethod method)
 {
     if (app)
         app->ArrangeWindows(method);
@@ -213,14 +213,6 @@ bool Application::UpdateAppCUISettings(bool clearExistingSettings)
     UpdateAppCUISettings(app->settings, clearExistingSettings);
     return true;
 }
-void Application::RecomputeControlsLayout()
-{
-    app->ComputePositions();
-}
-void Application::Repaint()
-{
-    app->Paint();
-}
 void Application::RaiseEvent(
       Utils::Reference<Controls::Control> control,
       Utils::Reference<Controls::Control> sourceControl,
@@ -229,7 +221,10 @@ void Application::RaiseEvent(
 {
     app->RaiseEvent(control, sourceControl, eventType, controlID);
 }
-
+Utils::Reference<Controls::Desktop> Application::GetDesktop()
+{
+    return app->AppDesktop;
+}
 ApplicationImpl* Application::GetApplication()
 {
     return app;
@@ -269,7 +264,10 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     if (!Members->Started)
     {
         Members->Started = true;
-        ctrl->OnStart();
+        if ((Members->handlers) && (Members->handlers->OnStart.obj))
+            Members->handlers->OnStart.obj->OnStart(ctrl);
+        else
+            ctrl->OnStart();
     }
 
     // set clip
@@ -1346,7 +1344,7 @@ bool ApplicationImpl::Uninit()
     this->Inited = false;
     return true;
 }
-void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
+void ApplicationImpl::ArrangeWindows(Application::ArrangeWindowsMethod method)
 {
     auto winList      = this->AppDesktop->GetChildrenList();
     auto winListCount = this->AppDesktop->GetChildrenCount();
@@ -1375,7 +1373,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
     // do the actual arrangement
     switch (method)
     {
-    case Application::ArangeWindowsMethod::MaximizedAll:
+    case Application::ArrangeWindowsMethod::MaximizedAll:
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
@@ -1384,7 +1382,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
             winListCount--;
         }
         break;
-    case Application::ArangeWindowsMethod::Cascade:
+    case Application::ArrangeWindowsMethod::Cascade:
         while (winListCount > 0)
         {
             (*winList)->MoveTo(x, y);
@@ -1397,7 +1395,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
             winListCount--;
         }
         break;
-    case Application::ArangeWindowsMethod::Vertical:
+    case Application::ArrangeWindowsMethod::Vertical:
         tempSz = sz.Width / winListCount;
         while (winListCount > 0)
         {
@@ -1410,7 +1408,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
             winList++;
         }
         break;
-    case Application::ArangeWindowsMethod::Horizontal:
+    case Application::ArrangeWindowsMethod::Horizontal:
         tempSz = sz.Height / winListCount;
         while (winListCount > 0)
         {
@@ -1423,7 +1421,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArangeWindowsMethod method)
             winList++;
         }
         break;
-    case Application::ArangeWindowsMethod::Grid:
+    case Application::ArrangeWindowsMethod::Grid:
         tempSz = (int) sqrt(winListCount);
         tempSz = std::max<>(tempSz, 1);
         gridX  = tempSz;

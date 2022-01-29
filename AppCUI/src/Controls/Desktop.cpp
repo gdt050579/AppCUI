@@ -35,7 +35,7 @@ Desktop::Desktop() : Control(new ControlContext(), "", "x:0,y:0,w:1,h:1", false)
 void Desktop::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(ControlContext, Members, );
-    renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Desktop.Color);
+    renderer.ClearWithSpecialChar(SpecialChars::Block50, Members->Cfg->Symbol.Desktop);
 }
 bool Desktop::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
 {

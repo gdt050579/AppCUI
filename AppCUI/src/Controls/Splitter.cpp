@@ -150,24 +150,24 @@ void Splitter::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
 
-    ColorPair c1  = Members->Cfg->Splitter.Buttons.Normal;
-    ColorPair c2  = Members->Cfg->Splitter.Buttons.Normal;
+    ColorPair c1  = Members->Cfg->Symbol.Arrows;
+    ColorPair c2  = Members->Cfg->Symbol.Arrows;
     ColorPair col = Members->Cfg->Lines.Normal;
     uint32 poz;
 
     switch (Members->mouseStatus)
     {
     case SplitterMouseStatus::ClickOnButton1:
-        c1 = Members->Cfg->Splitter.Buttons.Clicked;
+        c1 = Members->Cfg->Symbol.Pressed;
         break;
     case SplitterMouseStatus::OnButton1:
-        c1 = Members->Cfg->Splitter.Buttons.Hover;
+        c1 = Members->Cfg->Symbol.Hovered;
         break;
     case SplitterMouseStatus::ClickOnButton2:
-        c2 = Members->Cfg->Splitter.Buttons.Clicked;
+        c2 = Members->Cfg->Symbol.Pressed;
         break;
     case SplitterMouseStatus::OnButton2:
-        c2 = Members->Cfg->Splitter.Buttons.Hover;
+        c2 = Members->Cfg->Symbol.Hovered;
         break;
     case SplitterMouseStatus::OnBar:
     case SplitterMouseStatus::Drag:

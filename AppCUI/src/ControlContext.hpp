@@ -155,6 +155,7 @@ struct ControlContext
                 return ControlState::Normal;
         }
     }
+
     constexpr inline ControlState GetComponentState(
           ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked)
     {
@@ -182,6 +183,12 @@ struct ControlContext
             else
                 return ControlState::Normal;
         }
+    }
+
+    constexpr inline ControlState GetComponentState(
+          ControlStateFlags stateFlags, bool isHovered, bool isPressedOrChecked, bool isEnabled)
+    {
+        return isEnabled ? GetComponentState(stateFlags, isHovered, isPressedOrChecked) : ControlState::Inactive;
     }
 };
 
@@ -274,6 +281,21 @@ struct WindowControlContext : public ControlContext
         bool IsCurrentItemPressed;
     } ControlBar;
     bool Maximized;
+
+    ColorPair GetSymbolColor(Controls::ControlState state, ColorPair col)
+    {
+        switch (state)
+        {
+        case ControlState::Hovered:
+            return Cfg->Symbol.Hovered;
+        case ControlState::PressedOrSelected:
+            return Cfg->Symbol.Pressed;
+        case ControlState::Inactive:
+            return Cfg->Symbol.Inactive;
+        default:
+            return col;
+        }
+    }
 };
 
 enum class SplitterMouseStatus : unsigned char
@@ -391,7 +413,7 @@ struct TabControlContext : public ControlContext
     void PaintNoTabsPanelTab(Graphics::Renderer& renderer);
     inline ColorPair GetTabBarColor()
     {
-        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.Normal : Cfg->Tab.Text.Inactive; 
+        return (this->Flags & GATTR_ENABLE) ? Cfg->Tab.Text.Normal : Cfg->Tab.Text.Inactive;
     }
     inline ColorPair GetPageColor()
     {
@@ -611,13 +633,15 @@ class NumericSelectorControlContext : public ControlContext
 
     bool IsValidValue(int64 value) const;
     bool IsValueInsertedWrong() const;
-    bool GetRenderColor(Graphics::ColorPair& color) const;
+    bool GetTextRenderColor(Graphics::ColorPair& color) const;
     bool FormatTextField();
     bool IsOnPlusButton(int32 x, int32 y) const;
     bool IsOnMinusButton(int32 x, int32 y) const;
     bool IsOnTextField(int32 x, int32 y) const;
     bool MinValueReached() const;
     bool MaxValueReached() const;
+    bool PaintButtons(Renderer& renderer);
+    bool PaintValue(Renderer& renderer);
 };
 
 struct TreeColumnData
@@ -916,7 +940,7 @@ struct PropertyListContext : public ControlContext
         {
             ColorPair Text, Stats, Arrow;
         } Category;
-        decltype(AppCUI::Application::Config::PropertyList.Item) Item;
+        ColorPair Checked, Unchecked;
     } Colors;
     PropertyValue tempPropValue;
     Reference<PropertiesInterface> object;

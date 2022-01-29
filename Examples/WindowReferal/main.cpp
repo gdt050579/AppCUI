@@ -53,16 +53,16 @@ class MyDesktop : public Desktop
                 Application::AddWindow(std::make_unique<WindowExample>(tmp.GetText()));
                 return true;
             case 12346:
-                Application::ArrangeWindows(ArangeWindowsMethod::Horizontal);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Horizontal);
                 return true;
             case 12347:
-                Application::ArrangeWindows(ArangeWindowsMethod::Vertical);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Vertical);
                 return true;
             case 12348:
-                Application::ArrangeWindows(ArangeWindowsMethod::Cascade);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Cascade);
                 return true;
             case 12349:
-                Application::ArrangeWindows(ArangeWindowsMethod::Grid);
+                Application::ArrangeWindows(ArrangeWindowsMethod::Grid);
                 return true;
             case 12350:
                 Application::Close();

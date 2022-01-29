@@ -3,6 +3,7 @@ target_sources(AppCUI PRIVATE
 	Canvas.cpp 
 	CharacterBuffer.cpp 
 	Clip.cpp 
+	CodePage.cpp
 	Image.cpp 
 	ProgressStatus.cpp 
 	PNGLoader.cpp

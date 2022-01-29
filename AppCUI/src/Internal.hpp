@@ -298,7 +298,7 @@ namespace Internal
         bool SetToolTip(Controls::Control* control, const ConstString& text);
         bool SetToolTip(Controls::Control* control, const ConstString& text, int x, int y);
 
-        void ArrangeWindows(Application::ArangeWindowsMethod method);
+        void ArrangeWindows(Application::ArrangeWindowsMethod method);
     };
 } // namespace Internal
 namespace Application

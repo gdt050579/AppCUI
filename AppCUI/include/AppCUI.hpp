@@ -522,6 +522,40 @@ namespace Graphics
         }
     };
     class EXPORT CharacterBuffer;
+
+    enum class CodePageID : uint32
+    {
+        DOS_437        = 0,
+        Latin_1        = 1,
+        PrintableAscii = 2,
+
+        Custom = 0xFFFF
+    };
+    class EXPORT CodePage
+    {
+        const char16* table;
+        CodePageID id;
+
+      public:
+        CodePage();
+        CodePage(CodePageID id);
+        ~CodePage();
+
+        inline char16 operator[](uint8 index) const
+        {
+            return *(table + index);
+        }
+        inline operator CodePageID() const
+        {
+            return id;
+        }
+        bool operator=(const CodePageID id);
+        bool SetCustomTranslation(char16 translationTable[256]);
+        static string_view GetPropertyListValues();
+        static string_view GetListValue();
+        static string_view GetCodePageName(CodePageID id);
+        static uint32 GetSupportedCodePagesCount();
+    };
 }; // namespace Graphics
 namespace Utils
 {
@@ -2733,6 +2767,7 @@ namespace Controls
         using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
+        using OnStartHandler     = void (*)(Reference<Controls::Control> control);
         using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
@@ -2826,6 +2861,19 @@ namespace Controls
         {
             OnLoseFocusHandler callback;
             virtual void OnLoseFocus(Reference<Controls::Control> control) override
+            {
+                callback(control);
+            };
+        };
+
+        struct OnStartInterface
+        {
+            virtual void OnStart(Reference<Controls::Control> control) = 0;
+        };
+        struct OnStartCallback : public OnStartInterface
+        {
+            OnStartHandler callback;
+            virtual void OnStart(Reference<Controls::Control> control) override
             {
                 callback(control);
             };
@@ -2926,6 +2974,7 @@ namespace Controls
             Wrapper<OnEventInterface, OnEventCallback, OnEventHandler> OnEvent;
             Wrapper<OnKeyEventInterface, OnKeyEventCallback, OnKeyEventHandler> OnKeyEvent;
             Wrapper<OnFocusInterface, OnFocusCallback, OnFocusHandler> OnFocus;
+            Wrapper<OnStartInterface, OnStartCallback, OnStartHandler> OnStart;
             Wrapper<OnLoseFocusInterface, OnLoseFocusCallback, OnLoseFocusHandler> OnLoseFocus;
             Wrapper<OnAfterSetTextInterface, OnAfterSetTextCallback, OnAfterSetTextHandler> OnAfterSetText;
             virtual ~Control()
@@ -2973,6 +3022,7 @@ namespace Controls
         bool ShowToolTip(const ConstString& caption);
         bool ShowToolTip(const ConstString& caption, int x, int y);
         void HideToolTip();
+        ControlState GetComponentState(ControlStateFlags flags, bool isHovered, bool isPressedOrSelected);
 
         Reference<Control> AddChildControl(unique_ptr<Control> control);
 
@@ -3036,6 +3086,7 @@ namespace Controls
         bool IsChecked() const;
         bool HasFocus() const;
         bool IsMouseOver() const;
+        ControlState GetState(ControlStateFlags flags) const;
 
         // childern and parent
         Reference<Control> GetParent();
@@ -4641,7 +4692,7 @@ namespace Application
         }
     };
 
-    enum class ArangeWindowsMethod
+    enum class ArrangeWindowsMethod
     {
         MaximizedAll,
         Cascade,
@@ -4662,7 +4713,6 @@ namespace Application
 
     struct Config
     {
-        // NEW structures
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
 
         struct
@@ -4676,16 +4726,17 @@ namespace Application
         } Text;
         struct
         {
-            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelectection;
+            Graphics::ColorPair Inactive, Hovered, Pressed, Checked, Unchecked, Unknown, Desktop, Arrows, Close,
+                  Maximized, Resize;
+        } Symbol;
+        struct
+        {
+            Graphics::ColorPair Normal, Inactive, OverInactiveItem, OverSelection;
         } Cursor;
         struct
         {
-            Graphics::ColorPair Editor, LineMarker, Text, SearchMarker;
+            Graphics::ColorPair Editor, LineMarker, Text, SearchMarker, SimilarText;
         } Selection;
-        struct
-        {
-            Graphics::Color Focused, Regular, Error, Notify, Warning, Tab;
-        } Bakcground;
         struct
         {
             Graphics::ColorPair Empty, Full;
@@ -4708,116 +4759,15 @@ namespace Application
         } ToolTip;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey;
+            Graphics::ObjectColorState Text, HotKey, ListText, ListHotKey;
         } Tab;
-
-        // OLD structures
-        struct
-        {
-            char16 DesktopFillCharacterCode;
-            Graphics::ColorPair Color;
-        } Desktop;
-
-        struct
-        {
-            Graphics::ColorPair ActiveColor;
-            Graphics::ColorPair InactiveColor;
-            Graphics::ColorPair TitleActiveColor;
-            Graphics::ColorPair TitleInactiveColor;
-            struct
-            {
-                struct
-                {
-                    struct
-                    {
-                        Graphics::ColorPair Text, HotKey;
-                    } Normal, Pressed, Hover, Checked, Focused;
-                } Item;
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused;
-                } Separators;
-                Graphics::ColorPair CloseButton, Tag, CheckMark, Text;
-            } ControlBar;
-        } Window, DialogError, DialogNotify, DialogWarning;
-
         struct
         {
             struct
             {
-                Graphics::ColorPair Normal, Hover, Clicked;
-            } Buttons;
-
-        } Splitter;
-
-        struct
-        {
-            Graphics::ColorPair TabBarColor, HoverColor, TabBarHotKeyColor, HoverHotKeyColor;
-            Graphics::ColorPair ListSelectedPageColor, ListSelectedPageHotKey;
-        } TabOld;
-
-        struct
-        {
-            Graphics::ColorPair CheckedSymbol, UncheckedSymbol;
-        } ListView;
-
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Focused, Inactive, Hover, WrongValue;
-            } Text;
-        } NumericSelector;
-
-        struct
-        {
-            struct
-            {
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused;
-                } Separator;
-                struct
-                {
-                    Graphics::ColorPair Text, Header;
-                } Column;
-                struct
-                {
-                    Graphics::ColorPair Normal, Focused, Inactive, Filter, SearchActive;
-                } Text;
-                struct
-                {
-                    Graphics::ColorPair Expanded, Collapsed, SingleElement;
-                } Symbol;
-            };
-        } Tree;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Lines;
-            struct
-            {
-                Graphics::ColorPair Grid;
-                struct
-                {
-                    Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-                } Cell;
+                Graphics::Color Normal, Inactive, Error, Warning, Info;
             } Background;
-            struct
-            {
-                Graphics::ColorPair Normal, Selected, Hovered, Duplicate;
-            } Text;
-            Graphics::ColorPair Header;
-        } Grid;
-        struct
-        {
-            struct
-            {
-                Graphics::ColorPair Checked, Unchecked;
-            } Item;
-        } PropertyList;
+        } Window;
 
         void SetDarkTheme();
     };
@@ -4843,14 +4793,13 @@ namespace Application
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
-    EXPORT void Repaint();
-    EXPORT void RecomputeControlsLayout();
-    EXPORT void ArrangeWindows(ArangeWindowsMethod method);
+    EXPORT void ArrangeWindows(ArrangeWindowsMethod method);
     EXPORT void RaiseEvent(
           Utils::Reference<Controls::Control> control,
           Utils::Reference<Controls::Control> sourceControl,
           Controls::Event eventType,
           int controlID);
+    EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
 }; // namespace Application
 
