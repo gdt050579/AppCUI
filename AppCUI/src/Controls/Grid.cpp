@@ -1581,7 +1581,7 @@ void GridControlContext::ToggleSorting(int x, int y)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         const auto xHeader    = offsetX + i * cWidth + 1; // 1 -> line
-        const auto yHeader    = offsetY - cHeight / 2;
+        const auto yHeader    = offsetY - GetHeaderHeight() / 2;
         const auto endXHeader = xHeader + cWidth - 2;
 
         if (x == endXHeader && y == yHeader)
