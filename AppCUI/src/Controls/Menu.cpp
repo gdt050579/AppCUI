@@ -170,11 +170,11 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         {
             if (actualIndex == this->CurrentItem)
             {
-                textParams.Color       = col->Text.PressedOrSelected;
-                textParams.HotKeyColor = col->HotKey.PressedOrSelected;
-                shortCutCol            = col->ShortCut.PressedOrSelected;
-                checkColor             = col->Symbol.PressedOrSelected;
-                renderer.FillHorizontalLine(1, tr, Width, ' ', col->Text.PressedOrSelected);
+                textParams.Color       = col->Text.Hovered;
+                textParams.HotKeyColor = col->HotKey.Hovered;
+                shortCutCol            = col->ShortCut.Hovered;
+                checkColor             = col->Symbol.Hovered;
+                renderer.FillHorizontalLine(1, tr, Width, ' ', col->Text.Hovered);
             }
             else
             {
