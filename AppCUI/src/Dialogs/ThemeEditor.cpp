@@ -23,7 +23,6 @@ enum class PropID : uint32
     DesktopColor,
 
     // menus
-    MenuBackground,
     MenuTextNormal,
     MenuTextHovered,
     MenuTextSelected,
@@ -36,7 +35,7 @@ enum class PropID : uint32
     MenuSymbolNormal,
     MenuSymbolHovered,
     MenuSymbolSelected,
-    MenuInactive
+    MenuInactive,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -102,7 +101,6 @@ class ConfigProperty : public PropertiesInterface
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
-        
         switch (catID)
         {
         case CatID::None:
@@ -115,7 +113,7 @@ class ConfigProperty : public PropertiesInterface
             r.ClearWithSpecialChar(SpecialChars::Block50, obj.Symbol.Desktop);
             PaintMenusAndCommandBar(r, sz);
             break;
-        }        
+        }
     }
     bool GetPropertyValue(uint32 propertyID, PropertyValue& value) override
     {
@@ -127,39 +125,37 @@ class ConfigProperty : public PropertiesInterface
         case PropID::DesktopColor:
             value = obj.Symbol.Desktop;
             return true;
+
         // Menus
-        case PropID::MenuBackground:
-            value = obj.Menu.Text.Normal.Background;
-            return true;
         case PropID::MenuTextNormal:
-            value = obj.Menu.Text.Normal.Foreground;
-            return true;
-        case PropID::MenuHotKeyNormal:
-            value = obj.Menu.HotKey.Normal.Foreground;
-            return true;
-        case PropID::MenuShortCutNormal:
-            value = obj.Menu.ShortCut.Normal.Foreground;
-            return true;
-        case PropID::MenuInactive:
-            value = obj.Menu.Text.Inactive.Foreground;
+            value = obj.Menu.Text.Normal;
             return true;
         case PropID::MenuTextHovered:
             value = obj.Menu.Text.Hovered;
             return true;
-        case PropID::MenuHotKeyHovered:
-            value = obj.Menu.HotKey.Hovered.Foreground;
-            return true;
-        case PropID::MenuShortCutHovered:
-            value = obj.Menu.ShortCut.Hovered.Foreground;
-            return true;
         case PropID::MenuTextSelected:
             value = obj.Menu.Text.PressedOrSelected;
             return true;
+        case PropID::MenuHotKeyNormal:
+            value = obj.Menu.HotKey.Normal;
+            return true;
+        case PropID::MenuHotKeyHovered:
+            value = obj.Menu.HotKey.Hovered;
+            return true;
         case PropID::MenuHotKeySelected:
-            value = obj.Menu.HotKey.PressedOrSelected.Foreground;
+            value = obj.Menu.HotKey.PressedOrSelected;
+            return true;
+        case PropID::MenuShortCutNormal:
+            value = obj.Menu.ShortCut.Normal;
+            return true;
+        case PropID::MenuShortCutHovered:
+            value = obj.Menu.ShortCut.Hovered;
             return true;
         case PropID::MenuShortCutSelected:
-            value = obj.Menu.ShortCut.PressedOrSelected.Foreground;
+            value = obj.Menu.ShortCut.PressedOrSelected;
+            return true;
+        case PropID::MenuInactive:
+            value = obj.Menu.Text.Inactive.Foreground;
             return true;
         case PropID::MenuSymbolNormal:
             value = obj.Menu.Symbol.Normal.Foreground;
@@ -180,56 +176,41 @@ class ConfigProperty : public PropertiesInterface
         case PropID::DesktopColor:
             obj.Symbol.Desktop = std::get<ColorPair>(value);
             return true;
-        case PropID::MenuBackground:
-            obj.Menu.Text.Normal.Background            = std::get<Color>(value);
-            obj.Menu.Text.Focused.Background           = std::get<Color>(value);
-            obj.Menu.Text.Inactive.Background          = std::get<Color>(value);
-            obj.Menu.HotKey.Normal.Background          = std::get<Color>(value);
-            obj.Menu.HotKey.Focused.Background         = std::get<Color>(value);
-            obj.Menu.HotKey.Inactive.Background        = std::get<Color>(value);
-            obj.Menu.ShortCut.Normal.Background        = std::get<Color>(value);
-            obj.Menu.ShortCut.Focused.Background       = std::get<Color>(value);
-            obj.Menu.ShortCut.Inactive.Background      = std::get<Color>(value);
-            obj.Menu.Symbol.Normal.Background          = std::get<Color>(value);
-            obj.Menu.Symbol.Focused.Background         = std::get<Color>(value);
-            obj.Menu.Symbol.Inactive.Background        = std::get<Color>(value);
-            return true;
+
         case PropID::MenuTextNormal:
-            obj.Menu.Text.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuHotKeyNormal:
-            obj.Menu.HotKey.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuShortCutNormal:
-            obj.Menu.ShortCut.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuInactive:
-            obj.Menu.Symbol.Inactive.Foreground        = std::get<Color>(value);
-            obj.Menu.Text.Inactive.Foreground          = std::get<Color>(value);
-            obj.Menu.HotKey.Inactive.Foreground        = std::get<Color>(value);
-            obj.Menu.ShortCut.Inactive.Foreground      = std::get<Color>(value);
+            obj.Menu.Text.Normal              = std::get<ColorPair>(value);
+            obj.Menu.Symbol.Normal.Background = obj.Menu.Text.Normal.Background;
+            obj.Menu.Text.Inactive.Background = obj.Menu.Text.Normal.Background;
             return true;
         case PropID::MenuTextHovered:
-            obj.Menu.Text.Hovered                = std::get<ColorPair>(value);
-            obj.Menu.HotKey.Hovered.Background   = obj.Menu.Text.Hovered.Background;
-            obj.Menu.ShortCut.Hovered.Background = obj.Menu.Text.Hovered.Background;
-            return true;
-        case PropID::MenuHotKeyHovered:
-            obj.Menu.HotKey.Hovered.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuShortCutHovered:
-            obj.Menu.ShortCut.Hovered.Foreground = std::get<Color>(value);
+            obj.Menu.Text.Hovered              = std::get<ColorPair>(value);
+            obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
+            obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
             return true;
         case PropID::MenuTextSelected:
-            obj.Menu.Text.PressedOrSelected                = std::get<ColorPair>(value);
-            obj.Menu.HotKey.PressedOrSelected.Background   = obj.Menu.Text.PressedOrSelected.Background;
-            obj.Menu.ShortCut.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
+            obj.Menu.Text.PressedOrSelected              = std::get<ColorPair>(value);
+            obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
+            obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
+            return true;
+        case PropID::MenuHotKeyNormal:
+            obj.Menu.HotKey.Normal              = std::get<ColorPair>(value);
+            obj.Menu.HotKey.Inactive.Background = obj.Menu.HotKey.Normal.Background;
+            return true;
+        case PropID::MenuHotKeyHovered:
+            obj.Menu.HotKey.Hovered = std::get<ColorPair>(value);
             return true;
         case PropID::MenuHotKeySelected:
-            obj.Menu.HotKey.PressedOrSelected.Foreground = std::get<Color>(value);
+            obj.Menu.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::MenuShortCutNormal:
+            obj.Menu.ShortCut.Normal              = std::get<ColorPair>(value);
+            obj.Menu.ShortCut.Inactive.Background = obj.Menu.ShortCut.Normal.Background;
+            return true;
+        case PropID::MenuShortCutHovered:
+            obj.Menu.ShortCut.Hovered = std::get<ColorPair>(value);
             return true;
         case PropID::MenuShortCutSelected:
-            obj.Menu.ShortCut.PressedOrSelected.Foreground = std::get<Color>(value);
+            obj.Menu.ShortCut.PressedOrSelected = std::get<ColorPair>(value);
             return true;
         case PropID::MenuSymbolNormal:
             obj.Menu.Symbol.Normal.Foreground = std::get<Color>(value);
@@ -239,6 +220,12 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::MenuSymbolSelected:
             obj.Menu.Symbol.PressedOrSelected.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::MenuInactive:
+            obj.Menu.Text.Inactive.Foreground     = std::get<Color>(value);
+            obj.Menu.HotKey.Inactive.Foreground   = std::get<Color>(value);
+            obj.Menu.ShortCut.Inactive.Foreground = std::get<Color>(value);
+            obj.Menu.Symbol.Inactive.Foreground   = std::get<Color>(value);
             return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
@@ -259,20 +246,19 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::DesktopChar), CAT(CatID::Desktop), "Symbol", PropertyType::Char16 },
             { PT(PropID::DesktopColor), CAT(CatID::Desktop), "Color", PropertyType::ColorPair },
             // Menus
-            { PT(PropID::MenuBackground), CAT(CatID::Menu), "Backgroud", PropertyType::Color },
-            { PT(PropID::MenuTextNormal), CAT(CatID::Menu), "Text", PropertyType::Color },
-            { PT(PropID::MenuHotKeyNormal), CAT(CatID::Menu), "HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutNormal), CAT(CatID::Menu), "ShortCut", PropertyType::Color },
+            { PT(PropID::MenuTextNormal), CAT(CatID::Menu), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropID::MenuTextHovered), CAT(CatID::Menu), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::MenuTextSelected), CAT(CatID::Menu), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeyNormal), CAT(CatID::Menu), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeyHovered), CAT(CatID::Menu), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::MenuHotKeySelected), CAT(CatID::Menu), "HotKey (selected)", PropertyType::ColorPair },
+            { PT(PropID::MenuShortCutNormal), CAT(CatID::Menu), "ShortCut (normal)", PropertyType::ColorPair },
+            { PT(PropID::MenuShortCutHovered), CAT(CatID::Menu), "ShortCut (hovered)", PropertyType::ColorPair },
+            { PT(PropID::MenuShortCutSelected), CAT(CatID::Menu), "ShortCut (selected)", PropertyType::ColorPair },
             { PT(PropID::MenuInactive), CAT(CatID::Menu), "Inactive", PropertyType::Color },
-            { PT(PropID::MenuTextHovered), CAT(CatID::Menu), "Hovered Text", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeyHovered), CAT(CatID::Menu), "Hovered HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutHovered), CAT(CatID::Menu), "Hovered ShortCut", PropertyType::Color },
-            { PT(PropID::MenuTextSelected), CAT(CatID::Menu), "Selected Text", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeySelected), CAT(CatID::Menu), "Selected HotKey", PropertyType::Color },
-            { PT(PropID::MenuShortCutSelected), CAT(CatID::Menu), "Selected ShortCut", PropertyType::Color },
-            { PT(PropID::MenuSymbolNormal), CAT(CatID::Menu), "Checkmark", PropertyType::Color },
-            { PT(PropID::MenuSymbolSelected), CAT(CatID::Menu), "Checkmark selected", PropertyType::Color },
-            { PT(PropID::MenuSymbolHovered), CAT(CatID::Menu), "Checkmark hovered", PropertyType::Color },
+            { PT(PropID::MenuSymbolNormal), CAT(CatID::Menu), "Symbols (normal)", PropertyType::Color },
+            { PT(PropID::MenuSymbolSelected), CAT(CatID::Menu), "Symbols (selected)", PropertyType::Color },
+            { PT(PropID::MenuSymbolHovered), CAT(CatID::Menu), "Symbols (hovered)", PropertyType::Color },
         };
 #undef PT
 #undef CAT
