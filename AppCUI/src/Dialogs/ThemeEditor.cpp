@@ -59,6 +59,8 @@ enum class PropID : uint32
     WindowNormal,
     WindowInactive,
     WindowError,
+    WindowInfo,
+    WindowWarning,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -199,6 +201,12 @@ class ConfigProperty : public PropertiesInterface
         case PropID::WindowError:
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Error ", obj.Window.Background.Error);
             break;
+        case PropID::WindowInfo:
+            DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Info ", obj.Window.Background.Info);
+            break;
+        case PropID::WindowWarning:
+            DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Warning ", obj.Window.Background.Warning);
+            break;
         case PropID::WindowInactive:
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Inactive, false);
             break;
@@ -322,6 +330,12 @@ class ConfigProperty : public PropertiesInterface
         case PropID::WindowError:
             value = obj.Window.Background.Error;
             return true;
+        case PropID::WindowInfo:
+            value = obj.Window.Background.Info;
+            return true;
+        case PropID::WindowWarning:
+            value = obj.Window.Background.Warning;
+            return true;
         }
         return false;
     }
@@ -430,6 +444,12 @@ class ConfigProperty : public PropertiesInterface
         case PropID::WindowError:
             obj.Window.Background.Error = std::get<Color>(value);
             return true;
+        case PropID::WindowWarning:
+            obj.Window.Background.Warning = std::get<Color>(value);
+            return true;
+        case PropID::WindowInfo:
+            obj.Window.Background.Info = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -485,6 +505,8 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::WindowNormal), CAT(CatID::Window), "Regular", PropertyType::Color },
             { PT(PropID::WindowInactive), CAT(CatID::Window), "Inactive", PropertyType::Color },
             { PT(PropID::WindowError), CAT(CatID::Window), "Error", PropertyType::Color },
+            { PT(PropID::WindowInfo), CAT(CatID::Window), "Notification", PropertyType::Color },
+            { PT(PropID::WindowWarning), CAT(CatID::Window), "Warning", PropertyType::Color },
 
         };
 #undef PT
