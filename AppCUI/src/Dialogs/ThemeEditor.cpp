@@ -82,16 +82,32 @@ class ConfigProperty : public PropertiesInterface
                 return;
             }
         }
-        catID  = CatID::None;        
+        catID = CatID::None;
     }
-    void DrawFocusedWindow(
-          Graphics::Renderer& r, int left, int top, int right, int bottom, string_view title, Color backColor)
+    void DrawWindow(
+          Graphics::Renderer& r,
+          int left,
+          int top,
+          int right,
+          int bottom,
+          string_view title,
+          Color backColor,
+          bool focused = true)
     {
         r.FillRect(left, top, right, bottom, ' ', { Color::Black, backColor });
-        r.DrawRect(left, top, right, bottom, obj.Border.Focused, LineType::Double);
+        if (focused)
+            r.DrawRect(left, top, right, bottom, obj.Border.Focused, LineType::Double);
+        else
+            r.DrawRect(left, top, right, bottom, obj.Border.Normal, LineType::Single);
+
         if ((int) title.size() < ((right - left) - 4))
         {
-            r.WriteSingleLineText((left + right) >> 1, top, title, obj.Text.Focused, TextAlignament::Center);
+            r.WriteSingleLineText(
+                  (left + right) >> 1,
+                  top,
+                  title,
+                  focused ? obj.Text.Focused : obj.Text.Normal,
+                  TextAlignament::Center);
         }
     }
     void PaintDesktop(Graphics::Renderer& r)
@@ -181,15 +197,15 @@ class ConfigProperty : public PropertiesInterface
         switch (propID)
         {
         case PropID::WindowError:
-            DrawFocusedWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Error ", obj.Window.Background.Error);
+            DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Error ", obj.Window.Background.Error);
             break;
         case PropID::WindowInactive:
+            DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Inactive, false);
             break;
         default:
-            DrawFocusedWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Normal);
+            DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Normal);
             break;
         }
-        
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
