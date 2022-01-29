@@ -12,10 +12,11 @@ enum class CatID : uint32
     None = 0,
     Desktop,
     Menu,
+    ParentMenu,
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", "Menu" };
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", "Menu", "Menu (parent)" };
 
 enum class PropID : uint32
 {
@@ -36,6 +37,21 @@ enum class PropID : uint32
     MenuSymbolHovered,
     MenuSymbolSelected,
     MenuInactive,
+
+    // parent menu
+    ParentMenuTextNormal,
+    ParentMenuTextHovered,
+    ParentMenuTextSelected,
+    ParentMenuHotKeyNormal,
+    ParentMenuHotKeyHovered,
+    ParentMenuHotKeySelected,
+    ParentMenuShortCutNormal,
+    ParentMenuShortCutHovered,
+    ParentMenuShortCutSelected,
+    ParentMenuSymbolNormal,
+    ParentMenuSymbolHovered,
+    ParentMenuSymbolSelected,
+    ParentMenuInactive,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -166,6 +182,47 @@ class ConfigProperty : public PropertiesInterface
         case PropID::MenuSymbolSelected:
             value = obj.Menu.Symbol.PressedOrSelected.Foreground;
             return true;
+
+        // Parent Menus
+        case PropID::ParentMenuTextNormal:
+            value = obj.ParentMenu.Text.Normal;
+            return true;
+        case PropID::ParentMenuTextHovered:
+            value = obj.ParentMenu.Text.Hovered;
+            return true;
+        case PropID::ParentMenuTextSelected:
+            value = obj.ParentMenu.Text.PressedOrSelected;
+            return true;
+        case PropID::ParentMenuHotKeyNormal:
+            value = obj.ParentMenu.HotKey.Normal;
+            return true;
+        case PropID::ParentMenuHotKeyHovered:
+            value = obj.ParentMenu.HotKey.Hovered;
+            return true;
+        case PropID::ParentMenuHotKeySelected:
+            value = obj.ParentMenu.HotKey.PressedOrSelected;
+            return true;
+        case PropID::ParentMenuShortCutNormal:
+            value = obj.ParentMenu.ShortCut.Normal;
+            return true;
+        case PropID::ParentMenuShortCutHovered:
+            value = obj.ParentMenu.ShortCut.Hovered;
+            return true;
+        case PropID::ParentMenuShortCutSelected:
+            value = obj.ParentMenu.ShortCut.PressedOrSelected;
+            return true;
+        case PropID::ParentMenuInactive:
+            value = obj.ParentMenu.Text.Inactive.Foreground;
+            return true;
+        case PropID::ParentMenuSymbolNormal:
+            value = obj.ParentMenu.Symbol.Normal.Foreground;
+            return true;
+        case PropID::ParentMenuSymbolHovered:
+            value = obj.ParentMenu.Symbol.Hovered.Foreground;
+            return true;
+        case PropID::ParentMenuSymbolSelected:
+            value = obj.ParentMenu.Symbol.PressedOrSelected.Foreground;
+            return true;
         }
         return false;
     }
@@ -259,6 +316,21 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::MenuSymbolNormal), CAT(CatID::Menu), "Symbols (normal)", PropertyType::Color },
             { PT(PropID::MenuSymbolSelected), CAT(CatID::Menu), "Symbols (selected)", PropertyType::Color },
             { PT(PropID::MenuSymbolHovered), CAT(CatID::Menu), "Symbols (hovered)", PropertyType::Color },
+            // parent menu
+            { PT(PropID::ParentMenuTextNormal), CAT(CatID::ParentMenu), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuTextHovered), CAT(CatID::ParentMenu), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuTextSelected), CAT(CatID::ParentMenu), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuHotKeyNormal), CAT(CatID::ParentMenu), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuHotKeyHovered), CAT(CatID::ParentMenu), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuHotKeySelected), CAT(CatID::ParentMenu), "HotKey (selected)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuShortCutNormal), CAT(CatID::ParentMenu), "ShortCut (normal)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuShortCutHovered), CAT(CatID::ParentMenu), "ShortCut (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuShortCutSelected), CAT(CatID::ParentMenu), "ShortCut (selected)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuInactive), CAT(CatID::ParentMenu), "Inactive", PropertyType::Color },
+            { PT(PropID::ParentMenuSymbolNormal), CAT(CatID::ParentMenu), "Symbols (normal)", PropertyType::Color },
+            { PT(PropID::ParentMenuSymbolSelected), CAT(CatID::ParentMenu), "Symbols (selected)", PropertyType::Color },
+            { PT(PropID::ParentMenuSymbolHovered), CAT(CatID::ParentMenu), "Symbols (hovered)", PropertyType::Color },
+
         };
 #undef PT
 #undef CAT
