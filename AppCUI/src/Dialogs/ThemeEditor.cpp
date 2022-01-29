@@ -13,13 +13,19 @@ enum class CatID : uint32
     Desktop,
     Menu,
     ParentMenu,
+    Window,
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "", "Desktop", "Menu", "Menu (parent)" };
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
+    "", "Desktop", "Menu", "Menu (parent)", "Window"
+};
 
 enum class PropID : uint32
 {
+    None,
+
+    // Desktop
     DesktopChar,
     DesktopColor,
 
@@ -49,18 +55,25 @@ enum class PropID : uint32
     ParentMenuSymbolHovered,
     ParentMenuInactive,
 
+    // Windows
+    WindowNormal,
+    WindowInactive,
+    WindowError,
+
 };
 class ConfigProperty : public PropertiesInterface
 {
     AppCUI::Application::Config obj;
     CatID catID;
+    PropID propID;
 
   public:
-    ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None)
+    ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None), propID(PropID::None)
     {
     }
-    void SetCategory(string_view name)
+    void SetCategoryAndProperty(string_view name, PropID pID)
     {
+        propID = pID;
         for (auto i = 0U; i < static_cast<uint32>(CatID::Count); i++)
         {
             if (catNames[i] == name)
@@ -69,7 +82,17 @@ class ConfigProperty : public PropertiesInterface
                 return;
             }
         }
-        catID = CatID::None;
+        catID  = CatID::None;        
+    }
+    void DrawFocusedWindow(
+          Graphics::Renderer& r, int left, int top, int right, int bottom, string_view title, Color backColor)
+    {
+        r.FillRect(left, top, right, bottom, ' ', { Color::Black, backColor });
+        r.DrawRect(left, top, right, bottom, obj.Border.Focused, LineType::Double);
+        if ((int) title.size() < ((right - left) - 4))
+        {
+            r.WriteSingleLineText((left + right) >> 1, top, title, obj.Text.Focused, TextAlignament::Center);
+        }
     }
     void PaintDesktop(Graphics::Renderer& r)
     {
@@ -151,6 +174,23 @@ class ConfigProperty : public PropertiesInterface
         r.FillHorizontalLineSize(27, 12, 3, ' ', obj.Menu.Text.Normal);
         r.WriteSpecialCharacter(28, 12, SpecialChars::TriangleDown, obj.Menu.Text.Normal);
     }
+    void PaintWindow(Graphics::Renderer& r, Size sz)
+    {
+        if ((sz.Width < 4) || (sz.Height < 4))
+            return;
+        switch (propID)
+        {
+        case PropID::WindowError:
+            DrawFocusedWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Error ", obj.Window.Background.Error);
+            break;
+        case PropID::WindowInactive:
+            break;
+        default:
+            DrawFocusedWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Normal);
+            break;
+        }
+        
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -168,6 +208,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::ParentMenu:
             PaintDesktop(r);
             PaintParentMenusAndCommandBar(r, sz);
+            break;
+        case CatID::Window:
+            PaintDesktop(r);
+            PaintWindow(r, sz);
             break;
         }
     }
@@ -250,6 +294,17 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::ParentMenuSymbolHovered:
             value = obj.ParentMenu.Symbol.Hovered.Foreground;
+            return true;
+
+        // Window
+        case PropID::WindowNormal:
+            value = obj.Window.Background.Normal;
+            return true;
+        case PropID::WindowInactive:
+            value = obj.Window.Background.Inactive;
+            return true;
+        case PropID::WindowError:
+            value = obj.Window.Background.Error;
             return true;
         }
         return false;
@@ -350,6 +405,15 @@ class ConfigProperty : public PropertiesInterface
             obj.ParentMenu.Symbol.Inactive.Foreground   = std::get<Color>(value);
             return true;
 
+        case PropID::WindowNormal:
+            obj.Window.Background.Normal = std::get<Color>(value);
+            return true;
+        case PropID::WindowInactive:
+            obj.Window.Background.Inactive = std::get<Color>(value);
+            return true;
+        case PropID::WindowError:
+            obj.Window.Background.Error = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -386,12 +450,25 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::ParentMenuTextNormal), CAT(CatID::ParentMenu), "Text (normal)", PropertyType::ColorPair },
             { PT(PropID::ParentMenuTextHovered), CAT(CatID::ParentMenu), "Text (hovered)", PropertyType::ColorPair },
             { PT(PropID::ParentMenuHotKeyNormal), CAT(CatID::ParentMenu), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuHotKeyHovered), CAT(CatID::ParentMenu), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuShortCutNormal), CAT(CatID::ParentMenu), "ShortCut (normal)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuShortCutHovered), CAT(CatID::ParentMenu), "ShortCut (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ParentMenuHotKeyHovered),
+              CAT(CatID::ParentMenu),
+              "HotKey (hovered)",
+              PropertyType::ColorPair },
+            { PT(PropID::ParentMenuShortCutNormal),
+              CAT(CatID::ParentMenu),
+              "ShortCut (normal)",
+              PropertyType::ColorPair },
+            { PT(PropID::ParentMenuShortCutHovered),
+              CAT(CatID::ParentMenu),
+              "ShortCut (hovered)",
+              PropertyType::ColorPair },
             { PT(PropID::ParentMenuInactive), CAT(CatID::ParentMenu), "Inactive", PropertyType::Color },
             { PT(PropID::ParentMenuSymbolNormal), CAT(CatID::ParentMenu), "Symbols (normal)", PropertyType::Color },
             { PT(PropID::ParentMenuSymbolHovered), CAT(CatID::ParentMenu), "Symbols (hovered)", PropertyType::Color },
+            // Window
+            { PT(PropID::WindowNormal), CAT(CatID::Window), "Regular", PropertyType::Color },
+            { PT(PropID::WindowInactive), CAT(CatID::Window), "Inactive", PropertyType::Color },
+            { PT(PropID::WindowError), CAT(CatID::Window), "Error", PropertyType::Color },
 
         };
 #undef PT
@@ -433,8 +510,20 @@ class ThemeEditorDialog : public Window
         pc = sp->CreateChildControl<PreviewControl>();
         pc->SetConfig(&cfg);
         prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
-        cfg.SetCategory(prop->GetCurrentItemCategory());
+        UpdateCategoryAndProperty();
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
+    }
+    void UpdateCategoryAndProperty()
+    {
+        auto propID = prop->GetCurrentItemID();
+        if (propID.has_value())
+        {
+            cfg.SetCategoryAndProperty(prop->GetCurrentItemCategory(), static_cast<PropID>(propID.value()));
+        }
+        else
+        {
+            cfg.SetCategoryAndProperty(prop->GetCurrentItemCategory(), PropID::None);
+        }
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
@@ -451,7 +540,7 @@ class ThemeEditorDialog : public Window
         }
         if (eventType == Event::PropertyItemChanged)
         {
-            cfg.SetCategory(prop->GetCurrentItemCategory());
+            UpdateCategoryAndProperty();
             return true;
         }
         return false;
