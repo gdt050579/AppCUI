@@ -14,12 +14,12 @@ enum class CatID : uint32
     Menu,
     ParentMenu,
     Window,
+    ToolTip,
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "", "Desktop", "Menu", "Menu (parent)", "Window"
-};
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "",       "Desktop", "Menu", "Menu (parent)",
+                                                                      "Window", "ToolTip" };
 
 enum class PropID : uint32
 {
@@ -61,6 +61,10 @@ enum class PropID : uint32
     WindowError,
     WindowInfo,
     WindowWarning,
+
+    // ToolTip
+    ToolTipText,
+    TOolTipArrow
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -215,6 +219,12 @@ class ConfigProperty : public PropertiesInterface
             break;
         }
     }
+    void PaintToolTip(Graphics::Renderer& r, Size sz)
+    {
+        DrawWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Title ", obj.Window.Background.Normal);
+        r.WriteSingleLineText(sz.Width / 2, 1, " Tool tip text ", obj.ToolTip.Text, TextAlignament::Center);
+        r.WriteSpecialCharacter(sz.Width / 2, 2, SpecialChars::ArrowDown, obj.ToolTip.Arrow);
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -236,6 +246,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Window:
             PaintDesktop(r);
             PaintWindow(r, sz);
+            break;
+        case CatID::ToolTip:
+            PaintDesktop(r);
+            PaintToolTip(r, sz);
             break;
         }
     }
@@ -335,6 +349,14 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::WindowWarning:
             value = obj.Window.Background.Warning;
+            return true;
+
+        // Tooltip
+        case PropID::ToolTipText:
+            value = obj.ToolTip.Text;
+            return true;
+        case PropID::TOolTipArrow:
+            value = obj.ToolTip.Arrow;
             return true;
         }
         return false;
@@ -450,6 +472,13 @@ class ConfigProperty : public PropertiesInterface
         case PropID::WindowInfo:
             obj.Window.Background.Info = std::get<Color>(value);
             return true;
+
+        case PropID::ToolTipText:
+            obj.ToolTip.Text = std::get<ColorPair>(value);
+            return true;
+        case PropID::TOolTipArrow:
+            obj.ToolTip.Arrow = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -507,6 +536,9 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::WindowError), CAT(CatID::Window), "Error", PropertyType::Color },
             { PT(PropID::WindowInfo), CAT(CatID::Window), "Notification", PropertyType::Color },
             { PT(PropID::WindowWarning), CAT(CatID::Window), "Warning", PropertyType::Color },
+            // ToolTip
+            { PT(PropID::ToolTipText), CAT(CatID::ToolTip), "Text", PropertyType::ColorPair },
+            { PT(PropID::TOolTipArrow), CAT(CatID::ToolTip), "Arrow", PropertyType::ColorPair },
 
         };
 #undef PT
