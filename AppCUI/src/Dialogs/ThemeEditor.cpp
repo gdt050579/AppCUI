@@ -15,11 +15,12 @@ enum class CatID : uint32
     ParentMenu,
     Window,
     ToolTip,
+    ProgressBar,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "",       "Desktop", "Menu", "Menu (parent)",
-                                                                      "Window", "ToolTip" };
+                                                                      "Window", "ToolTip", "Progress Bar" };
 
 enum class PropID : uint32
 {
@@ -64,7 +65,11 @@ enum class PropID : uint32
 
     // ToolTip
     ToolTipText,
-    TOolTipArrow
+    ToolTipArrow,
+
+    // Progress BAr
+    ProgressBarEmpty,
+    ProgressBarFull,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -225,6 +230,12 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(sz.Width / 2, 1, " Tool tip text ", obj.ToolTip.Text, TextAlignament::Center);
         r.WriteSpecialCharacter(sz.Width / 2, 2, SpecialChars::ArrowDown, obj.ToolTip.Arrow);
     }
+    void PaintProgressBar(Graphics::Renderer& r, Size sz)
+    {
+        DrawWindow(r, 2, sz.Height / 2 - 2, sz.Width - 3, sz.Height / 2 + 2, " Status ", obj.Window.Background.Normal);
+        r.FillHorizontalLine(4, sz.Height / 2, sz.Width - 5, ' ', obj.ProgressStatus.Empty);
+        r.FillHorizontalLine(4, sz.Height / 2, sz.Width/2, ' ', obj.ProgressStatus.Full);
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -250,6 +261,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::ToolTip:
             PaintDesktop(r);
             PaintToolTip(r, sz);
+            break;
+        case CatID::ProgressBar:
+            PaintDesktop(r);
+            PaintProgressBar(r, sz);
             break;
         }
     }
@@ -355,8 +370,16 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ToolTipText:
             value = obj.ToolTip.Text;
             return true;
-        case PropID::TOolTipArrow:
+        case PropID::ToolTipArrow:
             value = obj.ToolTip.Arrow;
+            return true;
+
+        // ProgressBar
+        case PropID::ProgressBarEmpty:
+            value = obj.ProgressStatus.Empty.Background;
+            return true;
+        case PropID::ProgressBarFull:
+            value = obj.ProgressStatus.Full.Background;
             return true;
         }
         return false;
@@ -476,8 +499,15 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ToolTipText:
             obj.ToolTip.Text = std::get<ColorPair>(value);
             return true;
-        case PropID::TOolTipArrow:
+        case PropID::ToolTipArrow:
             obj.ToolTip.Arrow = std::get<ColorPair>(value);
+            return true;
+
+        case PropID::ProgressBarEmpty:
+            obj.ProgressStatus.Empty.Background = std::get<Color>(value);
+            return true;
+        case PropID::ProgressBarFull:
+            obj.ProgressStatus.Full.Background = std::get<Color>(value);
             return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
@@ -538,7 +568,10 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::WindowWarning), CAT(CatID::Window), "Warning", PropertyType::Color },
             // ToolTip
             { PT(PropID::ToolTipText), CAT(CatID::ToolTip), "Text", PropertyType::ColorPair },
-            { PT(PropID::TOolTipArrow), CAT(CatID::ToolTip), "Arrow", PropertyType::ColorPair },
+            { PT(PropID::ToolTipArrow), CAT(CatID::ToolTip), "Arrow", PropertyType::ColorPair },
+            // Progress Bar
+            { PT(PropID::ProgressBarEmpty), CAT(CatID::ProgressBar), "Empty", PropertyType::Color },
+            { PT(PropID::ProgressBarFull), CAT(CatID::ProgressBar), "Full", PropertyType::Color },
 
         };
 #undef PT
