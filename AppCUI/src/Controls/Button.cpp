@@ -44,8 +44,8 @@ void Button::Paint(Graphics::Renderer& renderer)
 
     if (Members->Flags && ButtonFlags::Flat)
     {
-        params.X           = 0;
-        params.Width       = Members->Layout.Width;
+        params.X     = 0;
+        params.Width = Members->Layout.Width;
         renderer.FillHorizontalLine(0, 0, Members->Layout.Width, ' ', params.Color);
         renderer.WriteText(Members->Text, params);
     }
@@ -55,26 +55,19 @@ void Button::Paint(Graphics::Renderer& renderer)
         if (pressed)
         {
             renderer.FillHorizontalLine(1, 0, Members->Layout.Width, ' ', params.Color);
-            params.X           = 1;
+            params.X = 1;
             renderer.WriteText(Members->Text, params);
         }
         else
         {
             renderer.FillHorizontalLine(0, 0, Members->Layout.Width - 2, ' ', params.Color);
-            params.X           = 0;
+            params.X = 0;
             renderer.WriteText(Members->Text, params);
 
             renderer.FillHorizontalLineWithSpecialChar(
-                  1,
-                  1,
-                  Members->Layout.Width,
-                  SpecialChars::BlockUpperHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
+                  1, 1, Members->Layout.Width, SpecialChars::BlockUpperHalf, Members->Cfg->Button.ShadowColor);
             renderer.WriteSpecialCharacter(
-                  Members->Layout.Width - 1,
-                  0,
-                  SpecialChars::BlockLowerHalf,
-                  ColorPair{ Color::Black, Color::Transparent });
+                  Members->Layout.Width - 1, 0, SpecialChars::BlockLowerHalf, Members->Cfg->Button.ShadowColor);
         }
     }
 }

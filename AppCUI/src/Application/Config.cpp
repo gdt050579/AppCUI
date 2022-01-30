@@ -50,6 +50,7 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Black },
           { Color::Magenta, Color::Yellow },
           { Color::DarkRed, Color::Olive });
+    this->Button.ShadowColor = { Color::Black, Color::Transparent };
 
     this->Text.Error       = { Color::Red, Color::Transparent };
     this->Text.Warning     = { Color::Olive, Color::Transparent };

@@ -4732,6 +4732,7 @@ namespace Application
         struct
         {
             Graphics::ObjectColorState Text, HotKey;
+            Graphics::ColorPair ShadowColor;
         } Button;
         struct
         {
