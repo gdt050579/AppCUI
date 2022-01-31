@@ -249,6 +249,30 @@ class ConfigProperty : public PropertiesInterface
         r.FillHorizontalLine(4, sz.Height / 2, sz.Width - 5, ' ', obj.ProgressStatus.Empty);
         r.FillHorizontalLine(4, sz.Height / 2, sz.Width / 2, ' ', obj.ProgressStatus.Full);
     }
+    void PaintOneButton(Graphics::Renderer& r, int x, int y, string_view text, ControlState state, bool hasShadow)
+    {
+        auto txCol = obj.Button.Text.GetColor(state);
+        auto hkCol = obj.Button.HotKey.GetColor(state);
+        r.WriteSingleLineText(x, y, text, txCol, hkCol, 2, TextAlignament::Left);
+        if (hasShadow)
+        {
+            r.FillHorizontalLineWithSpecialChar(
+                  x + 1, y + 1, x + (int) text.length(), SpecialChars::BlockUpperHalf, obj.Button.ShadowColor);
+            r.WriteSpecialCharacter(x + (int) text.length(), y, SpecialChars::BlockLowerHalf, obj.Button.ShadowColor);
+        }
+    }
+    void PaintButtons(Graphics::Renderer& r, Size sz)
+    {
+        int x, y;
+        
+        x = (int)(sz.Width/2) - 14;
+        y = (int) (sz.Height / 2) - 3;
+        DrawWindow(r, x-2, y-1, x+27, y + 4, " Buttons ", obj.Window.Background.Normal);
+        PaintOneButton(r, x, y, "  Regular  ",  ControlState::Normal, true);
+        PaintOneButton(r, x, y+2, "  Hovered  ",  ControlState::Hovered, true);
+        PaintOneButton(r, x + 14, y, "  Inactiv  ",  ControlState::Inactive, true);
+        PaintOneButton(r, x + 14, y+2, "  Pressed  ",  ControlState::PressedOrSelected, false);
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -278,6 +302,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::ProgressBar:
             PaintDesktop(r);
             PaintProgressBar(r, sz);
+            break;
+        case CatID::Button:
+            PaintDesktop(r);
+            PaintButtons(r, sz);
             break;
         }
     }
