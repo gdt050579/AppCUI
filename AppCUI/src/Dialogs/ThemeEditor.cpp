@@ -16,11 +16,13 @@ enum class CatID : uint32
     Window,
     ToolTip,
     ProgressBar,
+    Button,
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = { "",       "Desktop", "Menu", "Menu (parent)",
-                                                                      "Window", "ToolTip", "Progress Bar" };
+constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
+    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons"
+};
 
 enum class PropID : uint32
 {
@@ -70,6 +72,17 @@ enum class PropID : uint32
     // Progress BAr
     ProgressBarEmpty,
     ProgressBarFull,
+
+    // Button
+    ButtonTextNormal,
+    ButtonTextHovered,
+    ButtonTextSelected,
+    ButtonTextInactive,
+    ButtonHotKeyNormal,
+    ButtonHotKeyHovered,
+    ButtonHotKeySelected,
+    ButtonHotKeyInactive,
+    ButtonShadow
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -234,7 +247,7 @@ class ConfigProperty : public PropertiesInterface
     {
         DrawWindow(r, 2, sz.Height / 2 - 2, sz.Width - 3, sz.Height / 2 + 2, " Status ", obj.Window.Background.Normal);
         r.FillHorizontalLine(4, sz.Height / 2, sz.Width - 5, ' ', obj.ProgressStatus.Empty);
-        r.FillHorizontalLine(4, sz.Height / 2, sz.Width/2, ' ', obj.ProgressStatus.Full);
+        r.FillHorizontalLine(4, sz.Height / 2, sz.Width / 2, ' ', obj.ProgressStatus.Full);
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
@@ -381,7 +394,38 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ProgressBarFull:
             value = obj.ProgressStatus.Full.Background;
             return true;
+
+        // Buttons
+        case PropID::ButtonTextNormal:
+            value = obj.Button.Text.Normal;
+            return true;
+        case PropID::ButtonTextHovered:
+            value = obj.Button.Text.Hovered;
+            return true;
+        case PropID::ButtonTextInactive:
+            value = obj.Button.Text.Inactive;
+            return true;
+        case PropID::ButtonTextSelected:
+            value = obj.Button.Text.PressedOrSelected;
+            return true;
+        case PropID::ButtonHotKeyNormal:
+            value = obj.Button.HotKey.Normal;
+            return true;
+        case PropID::ButtonHotKeyHovered:
+            value = obj.Button.HotKey.Hovered;
+            return true;
+        case PropID::ButtonHotKeyInactive:
+            value = obj.Button.HotKey.Inactive;
+            return true;
+        case PropID::ButtonHotKeySelected:
+            value = obj.Button.HotKey.PressedOrSelected;
+            return true;
+        case PropID::ButtonShadow:
+            value = obj.Button.ShadowColor.Foreground;
+            return true;
         }
+
+
         return false;
     }
     bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) override
@@ -509,6 +553,34 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ProgressBarFull:
             obj.ProgressStatus.Full.Background = std::get<Color>(value);
             return true;
+
+        case PropID::ButtonTextNormal:
+            obj.Button.Text.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonTextHovered:
+            obj.Button.Text.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonTextInactive:
+            obj.Button.Text.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonTextSelected:
+            obj.Button.Text.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonHotKeyNormal:
+            obj.Button.HotKey.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonHotKeyHovered:
+            obj.Button.HotKey.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonHotKeyInactive:
+            obj.Button.HotKey.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonHotKeySelected:
+            obj.Button.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonShadow:
+            obj.Button.ShadowColor.Foreground = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -572,7 +644,16 @@ class ConfigProperty : public PropertiesInterface
             // Progress Bar
             { PT(PropID::ProgressBarEmpty), CAT(CatID::ProgressBar), "Empty", PropertyType::Color },
             { PT(PropID::ProgressBarFull), CAT(CatID::ProgressBar), "Full", PropertyType::Color },
-
+            // Buttons
+            { PT(PropID::ButtonTextNormal), CAT(CatID::Button), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropID::ButtonTextHovered), CAT(CatID::Button), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ButtonTextSelected), CAT(CatID::Button), "Text (pressed)", PropertyType::ColorPair },
+            { PT(PropID::ButtonTextInactive), CAT(CatID::Button), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropID::ButtonHotKeyNormal), CAT(CatID::Button), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropID::ButtonHotKeyHovered), CAT(CatID::Button), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ButtonHotKeySelected), CAT(CatID::Button), "HotKey (pressed)", PropertyType::ColorPair },
+            { PT(PropID::ButtonHotKeyInactive), CAT(CatID::Button), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropID::ButtonShadow), CAT(CatID::Button), "Shaddow", PropertyType::Color },
         };
 #undef PT
 #undef CAT
