@@ -17,11 +17,12 @@ enum class CatID : uint32
     ToolTip,
     ProgressBar,
     Button,
+    Text,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons"
+    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons", "Text"
 };
 
 enum class PropID : uint32
@@ -82,7 +83,19 @@ enum class PropID : uint32
     ButtonHotKeyHovered,
     ButtonHotKeySelected,
     ButtonHotKeyInactive,
-    ButtonShadow
+    ButtonShadow,
+
+    // Text
+    TextNormal,
+    TextHotKey,
+    TextInactive,
+    TextError,
+    TextWarning,
+    TextFocused,
+    TextHovered,
+    TextHighlighted,
+    TextEmphasized1,
+    TextEmphasized2,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -451,6 +464,38 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ButtonShadow:
             value = obj.Button.ShadowColor.Foreground;
             return true;
+
+        // Text
+        case PropID::TextNormal:
+            value = obj.Text.Normal.Foreground;
+            return true;
+        case PropID::TextHotKey:
+            value = obj.Text.HotKey.Foreground;
+            return true;
+        case PropID::TextInactive:
+            value = obj.Text.Inactive.Foreground;
+            return true;
+        case PropID::TextError:
+            value = obj.Text.Error.Foreground;
+            return true;
+        case PropID::TextWarning:
+            value = obj.Text.Warning.Foreground;
+            return true;
+        case PropID::TextFocused:
+            value = obj.Text.Focused.Foreground;
+            return true;
+        case PropID::TextHovered:
+            value = obj.Text.Hovered.Foreground;
+            return true;
+        case PropID::TextHighlighted:
+            value = obj.Text.Highlighted.Foreground;
+            return true;
+        case PropID::TextEmphasized1:
+            value = obj.Text.Emphasized1.Foreground;
+            return true;
+        case PropID::TextEmphasized2:
+            value = obj.Text.Emphasized2.Foreground;
+            return true;
         }
 
 
@@ -609,6 +654,39 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ButtonShadow:
             obj.Button.ShadowColor.Foreground = std::get<Color>(value);
             return true;
+
+        // Text
+        case PropID::TextNormal:
+            obj.Text.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextHotKey:
+            obj.Text.HotKey.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextInactive:
+            obj.Text.Inactive.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextError:
+            obj.Text.Error.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextWarning:
+           obj.Text.Warning.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextFocused:
+            obj.Text.Focused.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextHovered:
+            obj.Text.Hovered.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextHighlighted:
+            obj.Text.Highlighted.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextEmphasized1:
+            obj.Text.Emphasized1.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::TextEmphasized2:
+            obj.Text.Emphasized2.Foreground = std::get<Color>(value);
+            return true;
+
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -682,6 +760,18 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::ButtonHotKeySelected), CAT(CatID::Button), "HotKey (pressed)", PropertyType::ColorPair },
             { PT(PropID::ButtonHotKeyInactive), CAT(CatID::Button), "HotKey (inactive)", PropertyType::ColorPair },
             { PT(PropID::ButtonShadow), CAT(CatID::Button), "Shaddow", PropertyType::Color },
+            // TExt
+            { PT(PropID::TextNormal), CAT(CatID::Text), "Regular", PropertyType::Color },
+            { PT(PropID::TextHotKey), CAT(CatID::Text), "Hot Key", PropertyType::Color },
+            { PT(PropID::TextInactive), CAT(CatID::Text), "Inactive", PropertyType::Color },
+            { PT(PropID::TextError), CAT(CatID::Text), "Error", PropertyType::Color },
+            { PT(PropID::TextWarning), CAT(CatID::Text), "Warning", PropertyType::Color },
+            { PT(PropID::TextFocused), CAT(CatID::Text), "Focused", PropertyType::Color },
+            { PT(PropID::TextHovered), CAT(CatID::Text), "HOvered", PropertyType::Color },
+            { PT(PropID::TextHighlighted), CAT(CatID::Text), "Highlighted", PropertyType::Color },
+            { PT(PropID::TextEmphasized1), CAT(CatID::Text), "Emphasized (1)", PropertyType::Color },
+            { PT(PropID::TextEmphasized2), CAT(CatID::Text), "Emphasized (2)", PropertyType::Color },
+
         };
 #undef PT
 #undef CAT
