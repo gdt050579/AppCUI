@@ -286,6 +286,22 @@ class ConfigProperty : public PropertiesInterface
         PaintOneButton(r, x + 14, y, "  Inactiv  ",  ControlState::Inactive, true);
         PaintOneButton(r, x + 14, y+2, "  Pressed  ",  ControlState::PressedOrSelected, false);
     }
+    void PaintTexts(Graphics::Renderer& r, Size sz)
+    {
+        DrawWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Texts ", obj.Window.Background.Normal);
+        r.WriteSingleLineText(4, 4, "Regular text", obj.Text.Normal, obj.Text.HotKey, 0);
+        r.WriteSingleLineText(4, 5, "Inactive text", obj.Text.Inactive);
+        r.WriteSingleLineText(4, 6, "Hovered text", obj.Text.Hovered);
+        r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Hovered);
+
+
+        r.WriteSingleLineText(20, 4, "Error messages", obj.Text.Error);
+        r.WriteSingleLineText(20, 5, "Warning messages", obj.Text.Warning);
+        r.WriteSingleLineText(20, 6, "Error messages", obj.Text.Error);
+        r.WriteSingleLineText(20, 7, "Highlighted text", obj.Text.Highlighted);
+        r.WriteSingleLineText(20, 8, "Emphasized text (1)", obj.Text.Emphasized1);
+        r.WriteSingleLineText(20, 9, "Emphasized text (12)", obj.Text.Emphasized2);
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -319,6 +335,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Button:
             PaintDesktop(r);
             PaintButtons(r, sz);
+            break;
+        case CatID::Text:
+            PaintDesktop(r);
+            PaintTexts(r, sz);
             break;
         }
     }
