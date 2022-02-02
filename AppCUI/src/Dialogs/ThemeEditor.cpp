@@ -7,6 +7,14 @@ namespace AppCUI::Dialogs
 {
 constexpr int BUTTON_CMD_CLOSE = 1;
 
+enum class PreviewWindowID : uint32
+{
+    Normal = 0,
+    Inactive,
+    Error,
+    Warning,
+    Notification
+};
 enum class CatID : uint32
 {
     None = 0,
@@ -103,6 +111,7 @@ class ConfigProperty : public PropertiesInterface
     AppCUI::Application::Config obj;
     CatID catID;
     PropID propID;
+    PreviewWindowID windowID;
 
   public:
     ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None), propID(PropID::None)
@@ -120,6 +129,10 @@ class ConfigProperty : public PropertiesInterface
             }
         }
         catID = CatID::None;
+    }
+    void SetPreviewWindowID(PreviewWindowID id)
+    {
+        windowID = id;
     }
     void DrawWindow(
           Graphics::Renderer& r,
@@ -145,6 +158,27 @@ class ConfigProperty : public PropertiesInterface
                   title,
                   focused ? obj.Text.Focused : obj.Text.Normal,
                   TextAlignament::Center);
+        }
+    }
+    void DrawPreviewWindow(Graphics::Renderer& r, int left, int top, int right, int bottom, string_view title)
+    {
+        switch (this->windowID)
+        {
+        case PreviewWindowID::Normal:
+            DrawWindow(r, left, top, right, bottom, title, obj.Window.Background.Normal);
+            break;
+        case PreviewWindowID::Error:
+            DrawWindow(r, left, top, right, bottom, title, obj.Window.Background.Error);
+            break;
+        case PreviewWindowID::Notification:
+            DrawWindow(r, left, top, right, bottom, title, obj.Window.Background.Info);
+            break;
+        case PreviewWindowID::Warning:
+            DrawWindow(r, left, top, right, bottom, title, obj.Window.Background.Warning);
+            break;
+        case PreviewWindowID::Inactive:
+            DrawWindow(r, left, top, right, bottom, title, obj.Window.Background.Inactive, false);
+            break;
         }
     }
     void PaintDesktop(Graphics::Renderer& r)
@@ -252,7 +286,7 @@ class ConfigProperty : public PropertiesInterface
     }
     void PaintToolTip(Graphics::Renderer& r, Size sz)
     {
-        DrawWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Title ", obj.Window.Background.Normal);
+        DrawPreviewWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Title ");
         r.WriteSingleLineText(sz.Width / 2, 1, " Tool tip text ", obj.ToolTip.Text, TextAlignament::Center);
         r.WriteSpecialCharacter(sz.Width / 2, 2, SpecialChars::ArrowDown, obj.ToolTip.Arrow);
     }
@@ -277,23 +311,22 @@ class ConfigProperty : public PropertiesInterface
     void PaintButtons(Graphics::Renderer& r, Size sz)
     {
         int x, y;
-        
-        x = (int)(sz.Width/2) - 14;
+
+        x = (int) (sz.Width / 2) - 14;
         y = (int) (sz.Height / 2) - 3;
-        DrawWindow(r, x-2, y-1, x+27, y + 4, " Buttons ", obj.Window.Background.Normal);
-        PaintOneButton(r, x, y, "  Regular  ",  ControlState::Normal, true);
-        PaintOneButton(r, x, y+2, "  Hovered  ",  ControlState::Hovered, true);
-        PaintOneButton(r, x + 14, y, "  Inactiv  ",  ControlState::Inactive, true);
-        PaintOneButton(r, x + 14, y+2, "  Pressed  ",  ControlState::PressedOrSelected, false);
+        DrawPreviewWindow(r, x - 2, y - 2, x + 27, y + 4, " Buttons ");
+        PaintOneButton(r, x, y, "  Regular  ", ControlState::Normal, true);
+        PaintOneButton(r, x, y + 2, "  Hovered  ", ControlState::Hovered, true);
+        PaintOneButton(r, x + 14, y, "  Inactiv  ", ControlState::Inactive, true);
+        PaintOneButton(r, x + 14, y + 2, "  Pressed  ", ControlState::PressedOrSelected, false);
     }
     void PaintTexts(Graphics::Renderer& r, Size sz)
     {
-        DrawWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Texts ", obj.Window.Background.Normal);
+        DrawPreviewWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Texts ");
         r.WriteSingleLineText(4, 4, "Regular text", obj.Text.Normal, obj.Text.HotKey, 0);
         r.WriteSingleLineText(4, 5, "Inactive text", obj.Text.Inactive);
         r.WriteSingleLineText(4, 6, "Hovered text", obj.Text.Hovered);
         r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Hovered);
-
 
         r.WriteSingleLineText(20, 4, "Error messages", obj.Text.Error);
         r.WriteSingleLineText(20, 5, "Warning messages", obj.Text.Warning);
@@ -518,7 +551,6 @@ class ConfigProperty : public PropertiesInterface
             return true;
         }
 
-
         return false;
     }
     bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) override
@@ -689,7 +721,7 @@ class ConfigProperty : public PropertiesInterface
             obj.Text.Error.Foreground = std::get<Color>(value);
             return true;
         case PropID::TextWarning:
-           obj.Text.Warning.Foreground = std::get<Color>(value);
+            obj.Text.Warning.Foreground = std::get<Color>(value);
             return true;
         case PropID::TextFocused:
             obj.Text.Focused.Foreground = std::get<Color>(value);
@@ -706,7 +738,6 @@ class ConfigProperty : public PropertiesInterface
         case PropID::TextEmphasized2:
             obj.Text.Emphasized2.Foreground = std::get<Color>(value);
             return true;
-
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -822,18 +853,23 @@ class ThemeEditorDialog : public Window
     Reference<PropertyList> prop;
     ConfigProperty cfg;
     Reference<PreviewControl> pc;
+    Reference<ComboBox> previewWindow;
 
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
         : Window("Theme editor", "d:c,w:80,h:24", WindowFlags::Sizeable), cfg(configObject)
     {
-        auto sp = Factory::Splitter::Create(this, "l:0,t:0,b:3,r:0", true);
+        auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", true);
         sp->SetSecondPanelSize(30);
         pc = sp->CreateChildControl<PreviewControl>();
         pc->SetConfig(&cfg);
         prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
         UpdateCategoryAndProperty();
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
+        Factory::Label::Create(this, "Preview &Window", "x:1,y:1,w:15");
+        previewWindow = Factory::ComboBox::Create(this, "x:17,y:1,w:18", "Normal,Inactive,Error,Warning,Notification");
+        previewWindow->SetCurentItemIndex(0);
+        cfg.SetPreviewWindowID(PreviewWindowID::Normal);
     }
     void UpdateCategoryAndProperty()
     {
@@ -864,6 +900,14 @@ class ThemeEditorDialog : public Window
         {
             UpdateCategoryAndProperty();
             return true;
+        }
+        if (eventType == Event::ComboBoxSelectedItemChanged)
+        {
+            if (control == previewWindow)
+            {
+                cfg.SetPreviewWindowID(static_cast<PreviewWindowID>(previewWindow->GetCurrentItemIndex()));
+                return true;
+            }
         }
         return false;
     }
