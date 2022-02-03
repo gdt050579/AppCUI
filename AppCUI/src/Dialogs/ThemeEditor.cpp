@@ -26,11 +26,12 @@ enum class CatID : uint32
     ProgressBar,
     Button,
     Text,
+    ScrollBars,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons", "Text"
+    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons", "Text", "Scroll bars"
 };
 
 enum class PropID : uint32
@@ -104,6 +105,19 @@ enum class PropID : uint32
     TextHighlighted,
     TextEmphasized1,
     TextEmphasized2,
+
+    // ScrollBars
+    ScrollBarButtonNormal,
+    ScrollBarButtonHovered,
+    ScrollBarButtonPressed,
+    ScrollBarButtonInactive,
+    ScrollBarNormal,
+    ScrollBarHovered,
+    ScrollBarPressed,
+    ScrollBarInactive,
+    ScrollBarPositionNormal,
+    ScrollBarPositionHovered,
+    ScrollBarPositionPressed,
 
 };
 class ConfigProperty : public PropertiesInterface
@@ -549,7 +563,45 @@ class ConfigProperty : public PropertiesInterface
         case PropID::TextEmphasized2:
             value = obj.Text.Emphasized2.Foreground;
             return true;
+
+        // Scroll bars
+        case PropID::ScrollBarButtonNormal:
+            value = obj.ScrollBar.Arrows.Normal;
+            return true;
+        case PropID::ScrollBarButtonHovered:
+            value = obj.ScrollBar.Arrows.Hovered;
+            return true;
+        case PropID::ScrollBarButtonPressed:
+            value = obj.ScrollBar.Arrows.PressedOrSelected;
+            return true;
+        case PropID::ScrollBarButtonInactive:
+            value = obj.ScrollBar.Arrows.Inactive;
+            return true;
+        case PropID::ScrollBarNormal:
+            value = obj.ScrollBar.Bar.Normal;
+            return true;
+        case PropID::ScrollBarHovered:
+            value = obj.ScrollBar.Bar.Hovered;
+            return true;
+        case PropID::ScrollBarPressed:
+            value = obj.ScrollBar.Bar.PressedOrSelected;
+            return true;
+        case PropID::ScrollBarInactive:
+            value = obj.ScrollBar.Bar.Inactive;
+            return true;
+        case PropID::ScrollBarPositionNormal:
+            value = obj.ScrollBar.Position.Normal;
+            return true;
+        case PropID::ScrollBarPositionHovered:
+            value = obj.ScrollBar.Position.Hovered;
+            return true;
+        case PropID::ScrollBarPositionPressed:
+            value = obj.ScrollBar.Position.PressedOrSelected;
+            return true;
+
         }
+
+
 
         return false;
     }
@@ -738,6 +790,40 @@ class ConfigProperty : public PropertiesInterface
         case PropID::TextEmphasized2:
             obj.Text.Emphasized2.Foreground = std::get<Color>(value);
             return true;
+
+        case PropID::ScrollBarButtonNormal:
+            obj.ScrollBar.Arrows.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarButtonHovered:
+            obj.ScrollBar.Arrows.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarButtonPressed:
+            obj.ScrollBar.Arrows.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarButtonInactive:
+            obj.ScrollBar.Arrows.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarNormal:
+            obj.ScrollBar.Bar.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarHovered:
+            obj.ScrollBar.Bar.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarPressed:
+            obj.ScrollBar.Bar.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarInactive:
+            obj.ScrollBar.Bar.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarPositionNormal:
+            obj.ScrollBar.Position.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarPositionHovered:
+            obj.ScrollBar.Position.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::ScrollBarPositionPressed:
+            obj.ScrollBar.Position.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -811,7 +897,7 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::ButtonHotKeySelected), CAT(CatID::Button), "HotKey (pressed)", PropertyType::ColorPair },
             { PT(PropID::ButtonHotKeyInactive), CAT(CatID::Button), "HotKey (inactive)", PropertyType::ColorPair },
             { PT(PropID::ButtonShadow), CAT(CatID::Button), "Shaddow", PropertyType::Color },
-            // TExt
+            // Text
             { PT(PropID::TextNormal), CAT(CatID::Text), "Regular", PropertyType::Color },
             { PT(PropID::TextHotKey), CAT(CatID::Text), "Hot Key", PropertyType::Color },
             { PT(PropID::TextInactive), CAT(CatID::Text), "Inactive", PropertyType::Color },
@@ -822,7 +908,18 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::TextHighlighted), CAT(CatID::Text), "Highlighted", PropertyType::Color },
             { PT(PropID::TextEmphasized1), CAT(CatID::Text), "Emphasized (1)", PropertyType::Color },
             { PT(PropID::TextEmphasized2), CAT(CatID::Text), "Emphasized (2)", PropertyType::Color },
-
+            // Scroll Bar
+            { PT(PropID::ScrollBarButtonNormal), CAT(CatID::ScrollBars), "Buttons (normal)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonHovered), CAT(CatID::ScrollBars), "Buttons (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonPressed), CAT(CatID::ScrollBars), "Buttons (pressed)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonInactive), CAT(CatID::ScrollBars), "Buttons (Inactive)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarNormal), CAT(CatID::ScrollBars), "Bar (normal)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarHovered), CAT(CatID::ScrollBars), "Bar (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPressed), CAT(CatID::ScrollBars), "Bar (pressed)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarInactive), CAT(CatID::ScrollBars), "Bar (Inactive)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionNormal), CAT(CatID::ScrollBars), "Position (normal)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionHovered), CAT(CatID::ScrollBars), "Position (hovered)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionPressed), CAT(CatID::ScrollBars), "Position (pressed)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
