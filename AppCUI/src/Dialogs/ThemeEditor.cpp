@@ -349,6 +349,29 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(20, 8, "Emphasized text (1)", obj.Text.Emphasized1);
         r.WriteSingleLineText(20, 9, "Emphasized text (12)", obj.Text.Emphasized2);
     }
+    void PaintScrollBars(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 3, 16, 10, " Scroll ");
+        r.FillHorizontalLineWithSpecialChar(4, 10, 14, SpecialChars::Block25, obj.ScrollBar.Bar.Normal);
+        r.WriteSpecialCharacter(4, 10, SpecialChars::TriangleLeft, obj.ScrollBar.Arrows.Normal);
+        r.WriteSpecialCharacter(14, 10, SpecialChars::TriangleRight, obj.ScrollBar.Arrows.Normal);
+        r.WriteSpecialCharacter(10, 10, SpecialChars::BlockCentered, obj.ScrollBar.Position.Normal);
+        
+        r.FillVerticalLineWithSpecialChar(16, 4, 9, SpecialChars::Block25, obj.ScrollBar.Bar.Normal);
+        r.WriteSpecialCharacter(16, 4, SpecialChars::TriangleUp, obj.ScrollBar.Arrows.Inactive);
+        r.WriteSpecialCharacter(16, 9, SpecialChars::TriangleDown, obj.ScrollBar.Arrows.Hovered);
+        r.WriteSpecialCharacter(16, 5, SpecialChars::BlockCentered, obj.ScrollBar.Position.Normal);
+
+        DrawPreviewWindow(r, 18, 3, 32, 10, " Scroll ");
+        r.FillHorizontalLineWithSpecialChar(20, 10, 30, SpecialChars::Block25, obj.ScrollBar.Bar.Normal);
+        r.WriteSpecialCharacter(20, 10, SpecialChars::TriangleLeft, obj.ScrollBar.Arrows.Normal);
+        r.WriteSpecialCharacter(30, 10, SpecialChars::TriangleRight, obj.ScrollBar.Arrows.Normal);
+        r.WriteSpecialCharacter(24, 10, SpecialChars::BlockCentered, obj.ScrollBar.Position.Hovered);
+        r.FillVerticalLineWithSpecialChar(32, 4, 9, SpecialChars::Block25, obj.ScrollBar.Bar.Inactive);
+        r.WriteSpecialCharacter(32, 4, SpecialChars::TriangleUp, obj.ScrollBar.Arrows.Inactive);
+        r.WriteSpecialCharacter(32, 9, SpecialChars::TriangleDown, obj.ScrollBar.Arrows.Inactive);
+
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -386,6 +409,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Text:
             PaintDesktop(r);
             PaintTexts(r, sz);
+            break;
+        case CatID::ScrollBars:
+            PaintDesktop(r);
+            PaintScrollBars(r, sz);
             break;
         }
     }
