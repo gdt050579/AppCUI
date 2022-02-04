@@ -123,15 +123,15 @@ enum class PropID : uint32
 
     // Symbols
     SymbolInactive,
-    SymbolHovered, 
-    SymbolPressed, 
-    SymbolChecked, 
-    SymbolUnchecked, 
-    SymbolUnknown, 
-    SymbolArrows, 
-    SymbolClose, 
-    SymbolMaximized, 
-    SymbolResize,   
+    SymbolHovered,
+    SymbolPressed,
+    SymbolChecked,
+    SymbolUnchecked,
+    SymbolUnknown,
+    SymbolArrows,
+    SymbolClose,
+    SymbolMaximized,
+    SymbolResize,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -362,6 +362,31 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(20, 8, "Emphasized text (1)", obj.Text.Emphasized1);
         r.WriteSingleLineText(20, 9, "Emphasized text (12)", obj.Text.Emphasized2);
     }
+    void PaintSymbols(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 3, sz.Width - 3, sz.Height - 3, " Symbols ");
+        r.WriteSingleLineText(3, 3, "[ ]", obj.Border.Focused);
+        r.WriteSpecialCharacter(4, 3, SpecialChars::ArrowUp, obj.Symbol.Maximized);
+        r.WriteSingleLineText(sz.Width - 6, 3, "[ ]", obj.Border.Focused);
+        r.WriteCharacter(sz.Width - 5, 3, 'x', obj.Symbol.Close);
+        r.WriteSpecialCharacter(
+              sz.Width - 3, sz.Height - 3, SpecialChars::BoxBottomRightCornerSingleLine, obj.Symbol.Resize);
+
+        r.WriteSingleLineText(6, 5, "Check symbol", obj.Text.Normal);
+        r.WriteSpecialCharacter(4, 5, SpecialChars::CheckMark, obj.Symbol.Checked);
+        r.WriteSingleLineText(6, 6, "Un-Check symbol", obj.Text.Normal);
+        r.WriteCharacter(4, 6, 'x', obj.Symbol.Unchecked);
+        r.WriteSingleLineText(6, 7, "Unknown symbol", obj.Text.Normal);
+        r.WriteCharacter(4, 7, '?', obj.Symbol.Unknown);
+        r.WriteSingleLineText(6, 8, "Inactive", obj.Text.Inactive);
+        r.WriteSpecialCharacter(4, 8, SpecialChars::CheckMark, obj.Symbol.Inactive);
+
+        const auto cy = sz.Height -5;
+        r.DrawHorizontalLine(3, cy, sz.Width - 4, obj.Lines.Normal);
+        r.WriteSpecialCharacter(5, cy, SpecialChars::TriangleUp, obj.Symbol.Arrows);
+        r.WriteSpecialCharacter(7, cy, SpecialChars::TriangleUp, obj.Symbol.Hovered);
+        r.WriteSpecialCharacter(9, cy, SpecialChars::TriangleDown, obj.Symbol.Pressed);
+    }
     void PaintScrollBars(Graphics::Renderer& r, Size sz)
     {
         DrawPreviewWindow(r, 2, 3, 16, 10, " Scroll ");
@@ -425,6 +450,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::ScrollBars:
             PaintDesktop(r);
             PaintScrollBars(r, sz);
+            break;
+        case CatID::Symbols:
+            PaintDesktop(r);
+            PaintSymbols(r, sz);
             break;
         }
     }
