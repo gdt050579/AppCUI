@@ -1072,6 +1072,7 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::SymbolPressed), CAT(CatID::Symbols), "Pressed", PropertyType::ColorPair },
             { PT(PropID::SymbolChecked), CAT(CatID::Symbols), "Check", PropertyType::Color },
             { PT(PropID::SymbolUnchecked), CAT(CatID::Symbols), "Uncheck", PropertyType::Color },
+            { PT(PropID::SymbolUnknown), CAT(CatID::Symbols), "Unknown", PropertyType::Color },
             { PT(PropID::SymbolArrows), CAT(CatID::Symbols), "Arrows", PropertyType::Color },
             { PT(PropID::SymbolClose), CAT(CatID::Symbols), "Windows close", PropertyType::Color },
             { PT(PropID::SymbolMaximized), CAT(CatID::Symbols), "Window maximize", PropertyType::Color },
