@@ -27,11 +27,13 @@ enum class CatID : uint32
     Button,
     Text,
     ScrollBars,
+    Symbols,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "", "Desktop", "Menu", "Menu (parent)", "Window", "ToolTip", "Progress Bar", "Buttons", "Text", "Scroll bars"
+    "",        "Desktop", "Menu",        "Menu (parent)", "Window", "ToolTip", "Progress Bar",
+    "Buttons", "Text",    "Scroll bars", "Symbols"
 };
 
 enum class PropID : uint32
@@ -119,6 +121,17 @@ enum class PropID : uint32
     ScrollBarPositionHovered,
     ScrollBarPositionPressed,
 
+    // Symbols
+    SymbolInactive,
+    SymbolHovered, 
+    SymbolPressed, 
+    SymbolChecked, 
+    SymbolUnchecked, 
+    SymbolUnknown, 
+    SymbolArrows, 
+    SymbolClose, 
+    SymbolMaximized, 
+    SymbolResize,   
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -356,7 +369,7 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSpecialCharacter(4, 10, SpecialChars::TriangleLeft, obj.ScrollBar.Arrows.Normal);
         r.WriteSpecialCharacter(14, 10, SpecialChars::TriangleRight, obj.ScrollBar.Arrows.Normal);
         r.WriteSpecialCharacter(10, 10, SpecialChars::BlockCentered, obj.ScrollBar.Position.Normal);
-        
+
         r.FillVerticalLineWithSpecialChar(16, 4, 9, SpecialChars::Block25, obj.ScrollBar.Bar.Normal);
         r.WriteSpecialCharacter(16, 4, SpecialChars::TriangleUp, obj.ScrollBar.Arrows.Inactive);
         r.WriteSpecialCharacter(16, 9, SpecialChars::TriangleDown, obj.ScrollBar.Arrows.Hovered);
@@ -370,7 +383,6 @@ class ConfigProperty : public PropertiesInterface
         r.FillVerticalLineWithSpecialChar(32, 4, 9, SpecialChars::Block25, obj.ScrollBar.Bar.Inactive);
         r.WriteSpecialCharacter(32, 4, SpecialChars::TriangleUp, obj.ScrollBar.Arrows.Inactive);
         r.WriteSpecialCharacter(32, 9, SpecialChars::TriangleDown, obj.ScrollBar.Arrows.Inactive);
-
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
@@ -626,9 +638,38 @@ class ConfigProperty : public PropertiesInterface
             value = obj.ScrollBar.Position.PressedOrSelected;
             return true;
 
+        // Symbols
+        case PropID::SymbolInactive:
+            value = obj.Symbol.Inactive.Foreground;
+            return true;
+        case PropID::SymbolHovered:
+            value = obj.Symbol.Hovered;
+            return true;
+        case PropID::SymbolPressed:
+            value = obj.Symbol.Hovered;
+            return true;
+        case PropID::SymbolChecked:
+            value = obj.Symbol.Checked.Foreground;
+            return true;
+        case PropID::SymbolUnchecked:
+            value = obj.Symbol.Unchecked.Foreground;
+            return true;
+        case PropID::SymbolUnknown:
+            value = obj.Symbol.Unknown.Foreground;
+            return true;
+        case PropID::SymbolArrows:
+            value = obj.Symbol.Arrows.Foreground;
+            return true;
+        case PropID::SymbolClose:
+            value = obj.Symbol.Close.Foreground;
+            return true;
+        case PropID::SymbolMaximized:
+            value = obj.Symbol.Maximized.Foreground;
+            return true;
+        case PropID::SymbolResize:
+            value = obj.Symbol.Resize.Foreground;
+            return true;
         }
-
-
 
         return false;
     }
@@ -851,6 +892,37 @@ class ConfigProperty : public PropertiesInterface
         case PropID::ScrollBarPositionPressed:
             obj.ScrollBar.Position.PressedOrSelected = std::get<ColorPair>(value);
             return true;
+
+        case PropID::SymbolInactive:
+            obj.Symbol.Inactive.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolHovered:
+            obj.Symbol.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::SymbolPressed:
+            obj.Symbol.Pressed = std::get<ColorPair>(value);
+            return true;
+        case PropID::SymbolChecked:
+            obj.Symbol.Checked.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolUnchecked:
+            obj.Symbol.Unchecked.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolUnknown:
+            obj.Symbol.Unknown.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolArrows:
+            obj.Symbol.Arrows.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolClose:
+            obj.Symbol.Close.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolMaximized:
+            obj.Symbol.Maximized.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::SymbolResize:
+            obj.Symbol.Resize.Foreground = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -937,16 +1009,45 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::TextEmphasized2), CAT(CatID::Text), "Emphasized (2)", PropertyType::Color },
             // Scroll Bar
             { PT(PropID::ScrollBarButtonNormal), CAT(CatID::ScrollBars), "Buttons (normal)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonHovered), CAT(CatID::ScrollBars), "Buttons (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonPressed), CAT(CatID::ScrollBars), "Buttons (pressed)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonInactive), CAT(CatID::ScrollBars), "Buttons (Inactive)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonHovered),
+              CAT(CatID::ScrollBars),
+              "Buttons (hovered)",
+              PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonPressed),
+              CAT(CatID::ScrollBars),
+              "Buttons (pressed)",
+              PropertyType::ColorPair },
+            { PT(PropID::ScrollBarButtonInactive),
+              CAT(CatID::ScrollBars),
+              "Buttons (Inactive)",
+              PropertyType::ColorPair },
             { PT(PropID::ScrollBarNormal), CAT(CatID::ScrollBars), "Bar (normal)", PropertyType::ColorPair },
             { PT(PropID::ScrollBarHovered), CAT(CatID::ScrollBars), "Bar (hovered)", PropertyType::ColorPair },
             { PT(PropID::ScrollBarPressed), CAT(CatID::ScrollBars), "Bar (pressed)", PropertyType::ColorPair },
             { PT(PropID::ScrollBarInactive), CAT(CatID::ScrollBars), "Bar (Inactive)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionNormal), CAT(CatID::ScrollBars), "Position (normal)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionHovered), CAT(CatID::ScrollBars), "Position (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionPressed), CAT(CatID::ScrollBars), "Position (pressed)", PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionNormal),
+              CAT(CatID::ScrollBars),
+              "Position (normal)",
+              PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionHovered),
+              CAT(CatID::ScrollBars),
+              "Position (hovered)",
+              PropertyType::ColorPair },
+            { PT(PropID::ScrollBarPositionPressed),
+              CAT(CatID::ScrollBars),
+              "Position (pressed)",
+              PropertyType::ColorPair },
+            // symbols
+            { PT(PropID::SymbolInactive), CAT(CatID::Symbols), "Inactive", PropertyType::Color },
+            { PT(PropID::SymbolHovered), CAT(CatID::Symbols), "Hovered", PropertyType::ColorPair },
+            { PT(PropID::SymbolPressed), CAT(CatID::Symbols), "Pressed", PropertyType::ColorPair },
+            { PT(PropID::SymbolChecked), CAT(CatID::Symbols), "Check", PropertyType::Color },
+            { PT(PropID::SymbolUnchecked), CAT(CatID::Symbols), "Uncheck", PropertyType::Color },
+            { PT(PropID::SymbolArrows), CAT(CatID::Symbols), "Arrows", PropertyType::Color },
+            { PT(PropID::SymbolClose), CAT(CatID::Symbols), "Windows close", PropertyType::Color },
+            { PT(PropID::SymbolMaximized), CAT(CatID::Symbols), "Window maximize", PropertyType::Color },
+            { PT(PropID::SymbolResize), CAT(CatID::Symbols), "Window resize", PropertyType::Color },
+
         };
 #undef PT
 #undef CAT
