@@ -28,12 +28,13 @@ enum class CatID : uint32
     Text,
     ScrollBars,
     Symbols,
+    SearchBar,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
     "",        "Desktop", "Menu",        "Menu (parent)", "Window", "ToolTip", "Progress Bar",
-    "Buttons", "Text",    "Scroll bars", "Symbols"
+    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar"
 };
 
 enum class PropID : uint32
@@ -132,6 +133,12 @@ enum class PropID : uint32
     SymbolClose,
     SymbolMaximized,
     SymbolResize,
+
+    // SearchBar
+    SearchBarNormal,
+    SearchBarHovered,
+    SearchBarFocused,
+    SearchBarInactive,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -698,6 +705,20 @@ class ConfigProperty : public PropertiesInterface
         case PropID::SymbolResize:
             value = obj.Symbol.Resize.Foreground;
             return true;
+
+        // SearchBar
+        case PropID::SearchBarNormal:
+            value = obj.SearchBar.Normal;
+            return true;
+        case PropID::SearchBarFocused:
+            value = obj.SearchBar.Focused;
+            return true;
+        case PropID::SearchBarHovered:
+            value = obj.SearchBar.Hovered;
+            return true;
+        case PropID::SearchBarInactive:
+            value = obj.SearchBar.Inactive;
+            return true;
         }
 
         return false;
@@ -952,6 +973,19 @@ class ConfigProperty : public PropertiesInterface
         case PropID::SymbolResize:
             obj.Symbol.Resize.Foreground = std::get<Color>(value);
             return true;
+
+        case PropID::SearchBarNormal:
+            obj.SearchBar.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::SearchBarFocused:
+            obj.SearchBar.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::SearchBarHovered:
+            obj.SearchBar.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::SearchBarInactive:
+            obj.SearchBar.Inactive = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1077,6 +1111,13 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::SymbolClose), CAT(CatID::Symbols), "Windows close", PropertyType::Color },
             { PT(PropID::SymbolMaximized), CAT(CatID::Symbols), "Window maximize", PropertyType::Color },
             { PT(PropID::SymbolResize), CAT(CatID::Symbols), "Window resize", PropertyType::Color },
+
+            // search bar
+            { PT(PropID::SearchBarNormal), CAT(CatID::SearchBar), "Regular", PropertyType::ColorPair },
+            { PT(PropID::SearchBarFocused), CAT(CatID::SearchBar), "Focused", PropertyType::ColorPair },
+            { PT(PropID::SearchBarHovered), CAT(CatID::SearchBar), "Hovered", PropertyType::ColorPair },
+            { PT(PropID::SearchBarInactive), CAT(CatID::SearchBar), "Inactive", PropertyType::ColorPair },
+
 
         };
 #undef PT
