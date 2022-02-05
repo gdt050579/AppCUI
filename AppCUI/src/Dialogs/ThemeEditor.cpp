@@ -33,7 +33,7 @@ enum class CatID : uint32
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "",        "Desktop", "Menu",        "Menu (parent)", "Window", "ToolTip", "Progress Bar",
+    "",        "Desktop", "Menu",        "Menu (parent)", "Window",   "ToolTip", "Progress Bar",
     "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar"
 };
 
@@ -388,7 +388,7 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(6, 8, "Inactive", obj.Text.Inactive);
         r.WriteSpecialCharacter(4, 8, SpecialChars::CheckMark, obj.Symbol.Inactive);
 
-        const auto cy = sz.Height -5;
+        const auto cy = sz.Height - 5;
         r.DrawHorizontalLine(3, cy, sz.Width - 4, obj.Lines.Normal);
         r.WriteSpecialCharacter(5, cy, SpecialChars::TriangleUp, obj.Symbol.Arrows);
         r.WriteSpecialCharacter(7, cy, SpecialChars::TriangleUp, obj.Symbol.Hovered);
@@ -415,6 +415,30 @@ class ConfigProperty : public PropertiesInterface
         r.FillVerticalLineWithSpecialChar(32, 4, 9, SpecialChars::Block25, obj.ScrollBar.Bar.Inactive);
         r.WriteSpecialCharacter(32, 4, SpecialChars::TriangleUp, obj.ScrollBar.Arrows.Inactive);
         r.WriteSpecialCharacter(32, 9, SpecialChars::TriangleDown, obj.ScrollBar.Arrows.Inactive);
+    }
+
+    void PaintSearchBar(Graphics::Renderer& r, Size sz)
+    {
+        if (sz.Width < 6)
+            return;
+        const auto cx = sz.Width / 2;
+        const auto cy = sz.Height / 2;
+        const auto w  = cx > 10 ? cx - 10 : 0;
+        DrawPreviewWindow(r, 2, 1, cx - 1, cy - 1, " Search ");
+        r.FillHorizontalLine(4, cy - 1, cx - 3, ' ', obj.SearchBar.Focused);
+        r.WriteSingleLineText(5, cy - 1, w, "Focused", obj.SearchBar.Focused);
+
+        DrawPreviewWindow(r, cx + 2, 1, sz.Width - 3, cy - 1, " Search ");
+        r.FillHorizontalLine(cx + 4, cy - 1, sz.Width - 5, ' ', obj.SearchBar.Normal);
+        r.WriteSingleLineText(cx + 6, cy - 1, w, "Regular", obj.SearchBar.Normal);
+
+        DrawPreviewWindow(r, 2, cy + 1, cx - 1, sz.Height - 2, " Search ");
+        r.FillHorizontalLine(4, sz.Height - 2, cx - 3, ' ', obj.SearchBar.Hovered);
+        r.WriteSingleLineText(5, sz.Height - 2, w, "Hovered", obj.SearchBar.Hovered);
+
+        DrawPreviewWindow(r, cx + 2, cy + 1, sz.Width - 3, sz.Height - 2, " Search ");
+        r.FillHorizontalLine(cx + 4, sz.Height - 2, sz.Width - 5, ' ', obj.SearchBar.Inactive);
+        r.WriteSingleLineText(cx + 6, sz.Height - 2, w, "Inactive", obj.SearchBar.Inactive);
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
@@ -461,6 +485,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Symbols:
             PaintDesktop(r);
             PaintSymbols(r, sz);
+            break;
+        case CatID::SearchBar:
+            PaintDesktop(r);
+            PaintSearchBar(r, sz);
             break;
         }
     }
@@ -1117,7 +1145,6 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::SearchBarFocused), CAT(CatID::SearchBar), "Focused", PropertyType::ColorPair },
             { PT(PropID::SearchBarHovered), CAT(CatID::SearchBar), "Hovered", PropertyType::ColorPair },
             { PT(PropID::SearchBarInactive), CAT(CatID::SearchBar), "Inactive", PropertyType::ColorPair },
-
 
         };
 #undef PT
