@@ -29,12 +29,13 @@ enum class CatID : uint32
     ScrollBars,
     Symbols,
     SearchBar,
+    Headers,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "",        "Desktop", "Menu",        "Menu (parent)", "Window",   "ToolTip", "Progress Bar",
-    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar"
+    "",        "Desktop", "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
+    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar", "Headers",
 };
 
 enum class PropID : uint32
@@ -139,6 +140,23 @@ enum class PropID : uint32
     SearchBarHovered,
     SearchBarFocused,
     SearchBarInactive,
+
+    // Header
+    HeaderTextNormal,
+    HeaderTextFocused,
+    HeaderTextHovered,
+    HeaderTextSelected,
+    HeaderTextInactive,
+    HeaderHotKeyNormal,
+    HeaderHotKeyFocused,
+    HeaderHotKeyHovered,
+    HeaderHotKeySelected,
+    HeaderHotKeyInactive,
+    HeaderSymbolNormal,
+    HeaderSymbolFocused,
+    HeaderSymbolHovered,
+    HeaderSymbolSelected,
+    HeaderSymbolInactive,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -747,6 +765,53 @@ class ConfigProperty : public PropertiesInterface
         case PropID::SearchBarInactive:
             value = obj.SearchBar.Inactive;
             return true;
+
+        // Headers
+        case PropID::HeaderTextNormal:
+            value = obj.Header.Text.Normal;
+            return true;
+        case PropID::HeaderTextFocused:
+            value = obj.Header.Text.Focused;
+            return true;
+        case PropID::HeaderTextInactive:
+            value = obj.Header.Text.Inactive;
+            return true;
+        case PropID::HeaderTextHovered:
+            value = obj.Header.Text.Hovered;
+            return true;
+        case PropID::HeaderTextSelected:
+            value = obj.Header.Text.PressedOrSelected;
+            return true;
+        case PropID::HeaderHotKeyNormal:
+            value = obj.Header.HotKey.Normal;
+            return true;
+        case PropID::HeaderHotKeyFocused:
+            value = obj.Header.HotKey.Focused;
+            return true;
+        case PropID::HeaderHotKeyInactive:
+            value = obj.Header.HotKey.Inactive;
+            return true;
+        case PropID::HeaderHotKeyHovered:
+            value = obj.Header.HotKey.Hovered;
+            return true;
+        case PropID::HeaderHotKeySelected:
+            value = obj.Header.HotKey.PressedOrSelected;
+            return true;
+        case PropID::HeaderSymbolNormal:
+            value = obj.Header.Symbol.Normal;
+            return true;
+        case PropID::HeaderSymbolFocused:
+            value = obj.Header.Symbol.Focused;
+            return true;
+        case PropID::HeaderSymbolInactive:
+            value = obj.Header.Symbol.Inactive;
+            return true;
+        case PropID::HeaderSymbolHovered:
+            value = obj.Header.Symbol.Hovered;
+            return true;
+        case PropID::HeaderSymbolSelected:
+            value = obj.Header.Symbol.PressedOrSelected;
+            return true;
         }
 
         return false;
@@ -1014,6 +1079,52 @@ class ConfigProperty : public PropertiesInterface
         case PropID::SearchBarInactive:
             obj.SearchBar.Inactive = std::get<ColorPair>(value);
             return true;
+
+        case PropID::HeaderTextNormal:
+            obj.Header.Text.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderTextFocused:
+            obj.Header.Text.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderTextInactive:
+            obj.Header.Text.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderTextHovered:
+            obj.Header.Text.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderTextSelected:
+            obj.Header.Text.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderHotKeyNormal:
+            obj.Header.HotKey.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderHotKeyFocused:
+            obj.Header.HotKey.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderHotKeyInactive:
+            obj.Header.HotKey.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderHotKeyHovered:
+            obj.Header.HotKey.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderHotKeySelected:
+            obj.Header.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderSymbolNormal:
+            obj.Header.Symbol.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderSymbolFocused:
+            obj.Header.Symbol.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderSymbolInactive:
+            obj.Header.Symbol.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderSymbolHovered:
+            obj.Header.Symbol.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::HeaderSymbolSelected:
+            obj.Header.Symbol.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1146,6 +1257,22 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::SearchBarHovered), CAT(CatID::SearchBar), "Hovered", PropertyType::ColorPair },
             { PT(PropID::SearchBarInactive), CAT(CatID::SearchBar), "Inactive", PropertyType::ColorPair },
 
+            // Header
+            { PT(PropID::HeaderTextNormal), CAT(CatID::Headers), "Text (regular)", PropertyType::ColorPair },
+            { PT(PropID::HeaderTextFocused), CAT(CatID::Headers), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropID::HeaderTextInactive), CAT(CatID::Headers), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropID::HeaderTextHovered), CAT(CatID::Headers), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::HeaderTextSelected), CAT(CatID::Headers), "Text (pressed)", PropertyType::ColorPair },
+            { PT(PropID::HeaderHotKeyNormal), CAT(CatID::Headers), "HotKey (regular)", PropertyType::ColorPair },
+            { PT(PropID::HeaderHotKeyFocused), CAT(CatID::Headers), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropID::HeaderHotKeyInactive), CAT(CatID::Headers), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropID::HeaderHotKeyHovered), CAT(CatID::Headers), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::HeaderHotKeySelected), CAT(CatID::Headers), "HotKey (pressed)", PropertyType::ColorPair },
+            { PT(PropID::HeaderSymbolNormal), CAT(CatID::Headers), "Symbol (regular)", PropertyType::ColorPair },
+            { PT(PropID::HeaderSymbolFocused), CAT(CatID::Headers), "Symbol (focused)", PropertyType::ColorPair },
+            { PT(PropID::HeaderSymbolInactive), CAT(CatID::Headers), "Symbol (inactive)", PropertyType::ColorPair },
+            { PT(PropID::HeaderSymbolHovered), CAT(CatID::Headers), "Symbol (hovered)", PropertyType::ColorPair },
+            { PT(PropID::HeaderSymbolSelected), CAT(CatID::Headers), "Symbol (pressed)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
