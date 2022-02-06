@@ -9,10 +9,10 @@ namespace AppCUI::Log
 using namespace Utils;
 
 constexpr uint32 CRITICAL_ERROR_STACK_BUFFER_SIZE = 0x10000;
-void (*fnMessageLogCallbak)(const Message& msg)   = nullptr;
-OS::File* logFile                                 = nullptr;
-const char* _severity_type_names_[5]              = {
-    "[Information] ", "[  Warning  ] ", "[   Eror    ] ", "[InternalErr] ", "[   Fatal   ] "
+static void (*fnMessageLogCallbak)(const Message& msg)   = nullptr;
+static  OS::File* logFile                                = nullptr;
+static const char* _severity_type_names_[5]              = {
+    "[Information] ", "[  Warning  ] ", "[   Error   ] ", "[InternalErr] ", "[   Fatal   ] "
 };
 
 #define EXIT_IF_ERROR(condition)                                                                                       \

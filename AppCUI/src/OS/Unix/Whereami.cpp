@@ -585,8 +585,8 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
 #    include <limits.h>
 #    include <stdlib.h>
 #    include <string.h>
-#    include <sys/sysctl.h>
 #    include <sys/types.h>
+#    include <sys/sysctl.h>
 
 #    if defined(__OpenBSD__)
 
