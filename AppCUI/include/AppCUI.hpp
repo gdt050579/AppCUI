@@ -41,7 +41,7 @@
 #    define EXPORT
 #endif
 
-#if _DEBUG
+#ifndef NDEBUG
 #    define ENABLE_LOGGING
 #endif
 
