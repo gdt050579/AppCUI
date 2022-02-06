@@ -458,6 +458,42 @@ class ConfigProperty : public PropertiesInterface
         r.FillHorizontalLine(cx + 4, sz.Height - 2, sz.Width - 5, ' ', obj.SearchBar.Inactive);
         r.WriteSingleLineText(cx + 6, sz.Height - 2, w, "Inactive", obj.SearchBar.Inactive);
     }
+
+    void PaintHeaders(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Headers ");
+        r.SetClipMargins(3, 2, 3, 2);
+        r.FillHorizontalLine(3, 2, sz.Width - 4, ' ', obj.Header.Text.Focused);
+        r.WriteSingleLineText(
+              3, 2, " Selected  ", obj.Header.Text.PressedOrSelected, obj.Header.HotKey.PressedOrSelected, 1);
+        r.WriteSpecialCharacter(13, 2, SpecialChars::TriangleDown, obj.Header.Symbol.PressedOrSelected);
+        r.DrawVerticalLine(14, 2, 5, obj.Lines.Focused);
+        r.WriteSingleLineText(15, 2, " Column  ", obj.Header.Text.Focused, obj.Header.HotKey.Focused, 1);
+        r.WriteSpecialCharacter(23, 2, SpecialChars::TriangleDown, obj.Header.Symbol.Focused);
+        r.DrawVerticalLine(24, 2, 5, obj.Lines.Focused);
+        r.WriteSingleLineText(25, 2, " Hovered  ", obj.Header.Text.Hovered, obj.Header.HotKey.Hovered, 1);
+        r.WriteSpecialCharacter(35, 2, SpecialChars::TriangleDown, obj.Header.Symbol.Hovered);
+        r.DrawVerticalLine(36, 2, 5, obj.Lines.Focused);
+
+        r.FillHorizontalLine(3, 7, sz.Width - 4, ' ', obj.Header.Text.Normal);
+        r.WriteSingleLineText(3, 7, " Column  ", obj.Header.Text.Normal, obj.Header.HotKey.Normal, 1);
+        r.WriteSpecialCharacter(13, 7, SpecialChars::TriangleDown, obj.Header.Symbol.Normal);
+        r.DrawVerticalLine(14, 7, 9, obj.Lines.Normal);
+        r.WriteSingleLineText(15, 7, " Column  ", obj.Header.Text.Normal, obj.Header.HotKey.Normal, 1);
+        r.WriteSpecialCharacter(23, 7, SpecialChars::TriangleDown, obj.Header.Symbol.Normal);
+        r.DrawVerticalLine(24, 7, 9, obj.Lines.Normal);       
+
+        r.FillHorizontalLine(3, 11, sz.Width - 4, ' ', obj.Header.Text.Inactive);
+        r.WriteSingleLineText(3, 11, " Column  ", obj.Header.Text.Inactive, obj.Header.HotKey.Inactive, 1);
+        r.WriteSpecialCharacter(13, 11, SpecialChars::TriangleDown, obj.Header.Symbol.Inactive);
+        r.DrawVerticalLine(14, 11, 13, obj.Lines.Inactive);
+        r.WriteSingleLineText(15, 11, " Column  ", obj.Header.Text.Inactive, obj.Header.HotKey.Inactive, 1);
+        r.WriteSpecialCharacter(23, 11, SpecialChars::TriangleDown, obj.Header.Symbol.Inactive);
+        r.DrawVerticalLine(24, 11, 13, obj.Lines.Inactive);   
+
+
+        r.ResetClip();
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -507,6 +543,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::SearchBar:
             PaintDesktop(r);
             PaintSearchBar(r, sz);
+            break;
+        case CatID::Headers:
+            PaintDesktop(r);
+            PaintHeaders(r, sz);
             break;
         }
     }
