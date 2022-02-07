@@ -30,12 +30,13 @@ enum class CatID : uint32
     Symbols,
     SearchBar,
     Headers,
+    Cursor,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
     "",        "Desktop", "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
-    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar", "Headers",
+    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar", "Headers", "Cursor",
 };
 
 enum class PropID : uint32
@@ -157,6 +158,12 @@ enum class PropID : uint32
     HeaderSymbolHovered,
     HeaderSymbolSelected,
     HeaderSymbolInactive,
+
+    // Cursor
+    CursorNormal,
+    CursorInactive,
+    CursorOverInactiveItem,
+    CursorOverSelection
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -852,6 +859,20 @@ class ConfigProperty : public PropertiesInterface
         case PropID::HeaderSymbolSelected:
             value = obj.Header.Symbol.PressedOrSelected;
             return true;
+
+        // Cursor
+        case PropID::CursorNormal:
+            value = obj.Cursor.Normal;
+            return true;
+        case PropID::CursorInactive:
+            value = obj.Cursor.Inactive;
+            return true;
+        case PropID::CursorOverInactiveItem:
+            value = obj.Cursor.OverInactiveItem;
+            return true;
+        case PropID::CursorOverSelection:
+            value = obj.Cursor.OverSelection;
+            return true;
         }
 
         return false;
@@ -1165,6 +1186,20 @@ class ConfigProperty : public PropertiesInterface
         case PropID::HeaderSymbolSelected:
             obj.Header.Symbol.PressedOrSelected = std::get<ColorPair>(value);
             return true;
+
+        // Cursor
+        case PropID::CursorNormal:
+            obj.Cursor.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::CursorInactive:
+            obj.Cursor.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::CursorOverInactiveItem:
+            obj.Cursor.OverInactiveItem = std::get<ColorPair>(value);
+            return true;
+        case PropID::CursorOverSelection:
+            obj.Cursor.OverSelection = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1313,6 +1348,13 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::HeaderSymbolInactive), CAT(CatID::Headers), "Symbol (inactive)", PropertyType::ColorPair },
             { PT(PropID::HeaderSymbolHovered), CAT(CatID::Headers), "Symbol (hovered)", PropertyType::ColorPair },
             { PT(PropID::HeaderSymbolSelected), CAT(CatID::Headers), "Symbol (pressed)", PropertyType::ColorPair },
+
+            // Cursor
+            { PT(PropID::CursorNormal), CAT(CatID::Cursor), "Normal", PropertyType::ColorPair },
+            { PT(PropID::CursorInactive), CAT(CatID::Cursor), "Inactive", PropertyType::ColorPair },
+            { PT(PropID::CursorOverInactiveItem), CAT(CatID::Cursor), "Over inactive item", PropertyType::ColorPair },
+            { PT(PropID::CursorOverSelection), CAT(CatID::Cursor), "Over selection", PropertyType::ColorPair },
+
         };
 #undef PT
 #undef CAT
