@@ -501,6 +501,29 @@ class ConfigProperty : public PropertiesInterface
 
         r.ResetClip();
     }
+    
+    void PaintCursors(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Headers ");
+        r.SetClipMargins(3, 2, 3, 2);
+        r.FillHorizontalLine(3, 2, sz.Width - 4, ' ', obj.Header.Text.Focused);
+        r.WriteSingleLineText(3, 2, " Column               Column         Column   ", obj.Header.Text.Focused);
+        r.WriteSingleLineText(3, 3, " Regular cursor         30             Red ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 4, " Normal item            20            Blue ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 5, " Inactive cursor        15           Green ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 6, " Normal item            20            Blue ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 7, " Over Inactive item     25            Blue ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 8, " Over selection         10           Black ", obj.Text.Normal);
+        r.WriteSingleLineText(3, 9, " Normal item            20            Blue ", obj.Text.Normal);
+        r.DrawVerticalLine(23, 2, sz.Height - 3, obj.Lines.Focused);
+        r.DrawVerticalLine(38, 2, sz.Height - 3, obj.Lines.Focused);
+        r.DrawVerticalLine(50, 2, sz.Height - 3, obj.Lines.Focused);
+        r.FillHorizontalLine(3, 3, sz.Width - 4, -1, obj.Cursor.Normal);
+        r.FillHorizontalLine(3, 5, sz.Width - 4, -1, obj.Cursor.Inactive);
+        r.FillHorizontalLine(3, 7, sz.Width - 4, -1, obj.Cursor.OverInactiveItem);
+        r.FillHorizontalLine(3, 8, sz.Width - 4, -1, obj.Cursor.OverSelection);
+        r.ResetClip();
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -554,6 +577,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Headers:
             PaintDesktop(r);
             PaintHeaders(r, sz);
+            break;
+        case CatID::Cursor:
+            PaintDesktop(r);
+            PaintCursors(r, sz);
             break;
         }
     }
