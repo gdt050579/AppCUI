@@ -31,12 +31,13 @@ enum class CatID : uint32
     SearchBar,
     Headers,
     Cursor,
+    Editor,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "",        "Desktop", "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
-    "Buttons", "Text",    "Scroll bars", "Symbols",       "SearchBar", "Headers", "Cursor",
+    "",     "Desktop",     "Menu",    "Menu (parent)", "Window",  "ToolTip", "Progress Bar", "Buttons",
+    "Text", "Scroll bars", "Symbols", "SearchBar",     "Headers", "Cursor",  "Editor",
 };
 
 enum class PropID : uint32
@@ -163,7 +164,15 @@ enum class PropID : uint32
     CursorNormal,
     CursorInactive,
     CursorOverInactiveItem,
-    CursorOverSelection
+    CursorOverSelection,
+
+    // Editor
+    EditorBackground,
+    EditorNormal,
+    EditorInactive,
+    EditorFocus,
+    EditorHovered,
+    EditorSelection,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -488,7 +497,7 @@ class ConfigProperty : public PropertiesInterface
         r.DrawVerticalLine(14, 7, 9, obj.Lines.Normal);
         r.WriteSingleLineText(15, 7, " Column  ", obj.Header.Text.Normal, obj.Header.HotKey.Normal, 1);
         r.WriteSpecialCharacter(23, 7, SpecialChars::TriangleDown, obj.Header.Symbol.Normal);
-        r.DrawVerticalLine(24, 7, 9, obj.Lines.Normal);       
+        r.DrawVerticalLine(24, 7, 9, obj.Lines.Normal);
 
         r.FillHorizontalLine(3, 11, sz.Width - 4, ' ', obj.Header.Text.Inactive);
         r.WriteSingleLineText(3, 11, " Column  ", obj.Header.Text.Inactive, obj.Header.HotKey.Inactive, 1);
@@ -496,12 +505,11 @@ class ConfigProperty : public PropertiesInterface
         r.DrawVerticalLine(14, 11, 13, obj.Lines.Inactive);
         r.WriteSingleLineText(15, 11, " Column  ", obj.Header.Text.Inactive, obj.Header.HotKey.Inactive, 1);
         r.WriteSpecialCharacter(23, 11, SpecialChars::TriangleDown, obj.Header.Symbol.Inactive);
-        r.DrawVerticalLine(24, 11, 13, obj.Lines.Inactive);   
-
+        r.DrawVerticalLine(24, 11, 13, obj.Lines.Inactive);
 
         r.ResetClip();
     }
-    
+
     void PaintCursors(Graphics::Renderer& r, Size sz)
     {
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Headers ");
@@ -900,6 +908,23 @@ class ConfigProperty : public PropertiesInterface
         case PropID::CursorOverSelection:
             value = obj.Cursor.OverSelection;
             return true;
+
+        // Editor
+        case PropID::EditorBackground:
+            value = obj.Editor.Normal.Background;
+            return true;
+        case PropID::EditorNormal:
+            value = obj.Editor.Normal.Foreground;
+            return true;
+        case PropID::EditorFocus:
+            value = obj.Editor.Focused.Foreground;
+            return true;
+        case PropID::EditorInactive:
+            value = obj.Editor.Inactive.Foreground;
+            return true;
+        case PropID::EditorHovered:
+            value = obj.Editor.Hovered.Foreground;
+            return true;
         }
 
         return false;
@@ -1227,6 +1252,26 @@ class ConfigProperty : public PropertiesInterface
         case PropID::CursorOverSelection:
             obj.Cursor.OverSelection = std::get<ColorPair>(value);
             return true;
+
+        // Editor
+        case PropID::EditorBackground:
+            obj.Editor.Normal.Background  = std::get<Color>(value);
+            obj.Editor.Focused.Background = std::get<Color>(value);
+            obj.Editor.Hovered.Background = std::get<Color>(value);
+            return true;
+        case PropID::EditorNormal:
+            obj.Editor.Normal.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::EditorFocus:
+            obj.Editor.Focused.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::EditorInactive:
+            obj.Editor.Inactive.Foreground = std::get<Color>(value);
+            obj.Editor.Inactive.Background = Color::Transparent;
+            return true;
+        case PropID::EditorHovered:
+            obj.Editor.Hovered.Foreground = std::get<Color>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1381,6 +1426,14 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::CursorInactive), CAT(CatID::Cursor), "Inactive", PropertyType::ColorPair },
             { PT(PropID::CursorOverInactiveItem), CAT(CatID::Cursor), "Over inactive item", PropertyType::ColorPair },
             { PT(PropID::CursorOverSelection), CAT(CatID::Cursor), "Over selection", PropertyType::ColorPair },
+
+            // Editor
+            { PT(PropID::EditorBackground), CAT(CatID::Editor), "Background", PropertyType::Color },
+            { PT(PropID::EditorNormal), CAT(CatID::Editor), "Text (normal)", PropertyType::Color },
+            { PT(PropID::EditorInactive), CAT(CatID::Editor), "Text (inactive)", PropertyType::Color },
+            { PT(PropID::EditorFocus), CAT(CatID::Editor), "Text (focused)", PropertyType::Color },
+            { PT(PropID::EditorHovered), CAT(CatID::Editor), "Text (selected)", PropertyType::Color },
+            { PT(PropID::EditorSelection), CAT(CatID::Editor), "Selection", PropertyType::ColorPair },
 
         };
 #undef PT
