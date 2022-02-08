@@ -173,6 +173,10 @@ enum class PropID : uint32
     EditorFocus,
     EditorHovered,
     EditorSelection,
+    EditorLineMarkerNormal,
+    EditorLineMarkerFocused,
+    EditorLineMarkerInactive,
+    EditorLineMarkerHovered,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -959,6 +963,18 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorSelection:
             value = obj.Selection.Editor;
             return true;
+        case PropID::EditorLineMarkerNormal:
+            value = obj.LineMarker.Normal;
+            return true;
+        case PropID::EditorLineMarkerFocused:
+            value = obj.LineMarker.Focused;
+            return true;
+        case PropID::EditorLineMarkerInactive:
+            value = obj.LineMarker.Inactive;
+            return true;
+        case PropID::EditorLineMarkerHovered:
+            value = obj.LineMarker.Hovered;
+            return true;
         }
 
         return false;
@@ -1309,6 +1325,18 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorSelection:
             obj.Selection.Editor = std::get<ColorPair>(value);
             return true;
+        case PropID::EditorLineMarkerNormal:
+            obj.LineMarker.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::EditorLineMarkerFocused:
+            obj.LineMarker.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::EditorLineMarkerInactive:
+            obj.LineMarker.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::EditorLineMarkerHovered:
+            obj.LineMarker.Hovered = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1471,7 +1499,10 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::EditorFocus), CAT(CatID::Editor), "Text (focused)", PropertyType::Color },
             { PT(PropID::EditorHovered), CAT(CatID::Editor), "Text (selected)", PropertyType::Color },
             { PT(PropID::EditorSelection), CAT(CatID::Editor), "Selection", PropertyType::ColorPair },
-
+            { PT(PropID::EditorLineMarkerNormal), CAT(CatID::Editor), "Line (normal)", PropertyType::ColorPair },
+            { PT(PropID::EditorLineMarkerFocused), CAT(CatID::Editor), "Line (focused)", PropertyType::ColorPair },
+            { PT(PropID::EditorLineMarkerInactive), CAT(CatID::Editor), "Line (inactive)", PropertyType::ColorPair },
+            { PT(PropID::EditorLineMarkerHovered), CAT(CatID::Editor), "Line (hovered)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
