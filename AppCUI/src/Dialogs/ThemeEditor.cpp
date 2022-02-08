@@ -538,19 +538,24 @@ class ConfigProperty : public PropertiesInterface
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Headers ");
         r.SetClipMargins(3, 2, 3, 2);
         r.FillHorizontalLine(4, 3, sz.Width - 5, ' ', obj.Editor.Normal);
-        r.WriteSingleLineText(5, 3, "Normal/regular text", obj.Editor.Normal);
+        r.WriteSingleLineText(8, 3, "Normal/regular text", obj.Editor.Normal);
+        r.WriteSingleLineText(4, 3, "  7", obj.LineMarker.Normal);
         r.FillHorizontalLine(4, 5, sz.Width - 5, ' ', obj.Editor.Focused);
         r.WriteSingleLineText(5, 5, "Focused text", obj.Editor.Focused);
         r.FillHorizontalLine(4, 7, sz.Width - 5, ' ', obj.Editor.Hovered);
-        r.WriteSingleLineText(5, 7, "Hovered text", obj.Editor.Hovered);
+        r.WriteSingleLineText(8, 7, "Hovered text", obj.Editor.Hovered);
+        r.WriteSingleLineText(4, 7, "  5", obj.LineMarker.Hovered);
         r.FillHorizontalLine(4, 9, sz.Width - 5, ' ', obj.Editor.Inactive);
-        r.WriteSingleLineText(5, 9, "Inactive text", obj.Editor.Inactive);
+        r.WriteSingleLineText(8, 9, "Inactive text", obj.Editor.Inactive);
+        r.WriteSingleLineText(4, 9, "  4", obj.LineMarker.Inactive);
         r.FillRect(4, 11, sz.Width - 5, 13, ' ', obj.Editor.Focused);
-        r.WriteSingleLineText(10, 11, "Some text", obj.Editor.Focused);
-        r.WriteSingleLineText(10, 12, "in multiline", obj.Editor.Focused);
-        r.WriteSingleLineText(10, 13, "mode", obj.Editor.Focused);
-        r.WriteSingleLineText(13, 12, "multi", obj.Selection.Editor);
-
+        r.WriteSingleLineText(8, 11, "Some text", obj.Editor.Focused);
+        r.WriteSingleLineText(8, 12, "in multiline", obj.Editor.Focused);
+        r.WriteSingleLineText(8, 13, "mode", obj.Editor.Focused);
+        r.WriteSingleLineText(11, 12, "multi", obj.Selection.Editor);
+        r.WriteSingleLineText(4, 11, "  1", obj.LineMarker.Focused);
+        r.WriteSingleLineText(4, 12, "  2", obj.LineMarker.Focused);
+        r.WriteSingleLineText(4, 13, "  3", obj.LineMarker.Focused);
         r.ResetClip();
     }
 
