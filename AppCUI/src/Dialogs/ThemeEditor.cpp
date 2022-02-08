@@ -551,7 +551,6 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(10, 13, "mode", obj.Editor.Focused);
         r.WriteSingleLineText(13, 12, "multi", obj.Selection.Editor);
 
-
         r.ResetClip();
     }
 
@@ -952,6 +951,9 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorHovered:
             value = obj.Editor.Hovered.Foreground;
             return true;
+        case PropID::EditorSelection:
+            value = obj.Selection.Editor;
+            return true;
         }
 
         return false;
@@ -1298,6 +1300,9 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::EditorHovered:
             obj.Editor.Hovered.Foreground = std::get<Color>(value);
+            return true;
+        case PropID::EditorSelection:
+            obj.Selection.Editor = std::get<ColorPair>(value);
             return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
