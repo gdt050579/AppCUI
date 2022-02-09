@@ -631,8 +631,9 @@ void Window::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
     {
         colorTitle  = Members->Cfg->Text.Focused;
-        colorBorder = Members->Cfg->Border.Focused;
-        lineType    = Members->dragStatus != WINDOW_DRAG_STATUS_SIZE ? LineType::Double : LineType::Single;
+        colorBorder = Members->dragStatus == WINDOW_DRAG_STATUS_NONE ? Members->Cfg->Border.Focused
+                                                                     : Members->Cfg->Border.PressedOrSelected;
+        lineType    = Members->dragStatus == WINDOW_DRAG_STATUS_NONE ? LineType::Double : LineType::Single;
     }
     else
     {

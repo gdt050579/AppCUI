@@ -11,7 +11,13 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::DarkRed },
           { Color::Yellow, Color::DarkRed });
 
-    this->Border.Set(Color::White, Color::Silver, Color::Gray, Color::Yellow, Color::Transparent);
+    this->Border.Set(
+          { Color::White, Color::Transparent },
+          { Color::Silver, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Transparent },
+          { Color::Yellow, Color::Magenta });      
+        
 
     this->Lines.Set(
           { Color::DarkGreen, Color::Transparent },
