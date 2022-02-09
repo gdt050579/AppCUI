@@ -593,6 +593,18 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(5 + (wx + 1) * 0, 7, "Hovered", obj.Text.Normal);
         r.WriteSingleLineText(5 + (wx + 1) * 1, 7, "Pressed", obj.Text.Normal);
 
+        r.DrawRectSize(4 + (wx + 1) * 0, 9, wx, 3, obj.Border.Normal, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 1, 9, wx, 3, obj.Border.Focused, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 2, 9, wx, 3, obj.Border.Inactive, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 0, 12, wx, 3, obj.Border.Hovered, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 1, 12, wx, 3, obj.Border.PressedOrSelected, LineType::Single);
+
+        r.DrawHorizontalLine(5 + (wx + 1) * 0, 10, 2 + wx + (wx + 1) * 0,  obj.Lines.Normal);
+        r.DrawHorizontalLine(5 + (wx + 1) * 1, 10, 2 + wx + (wx + 1) * 1, obj.Lines.Focused);
+        r.DrawHorizontalLine(5 + (wx + 1) * 2, 10, 2 + wx + (wx + 1) * 2, obj.Lines.Inactive);
+        r.DrawHorizontalLine(5 + (wx + 1) * 0, 13, 2 + wx + (wx + 1) * 0, obj.Lines.Hovered);
+        r.DrawHorizontalLine(5 + (wx + 1) * 1, 13, 2 + wx + (wx + 1) * 1, obj.Lines.PressedOrSelected);
+
         r.ResetClip();
     }
     void Paint(Graphics::Renderer& r, Size sz)
@@ -1648,7 +1660,7 @@ class ThemeEditorDialog : public Window
 
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
-        : Window("Theme editor", "d:c,w:80,h:24", WindowFlags::Sizeable), cfg(configObject)
+        : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject)
     {
         auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", true);
         sp->SetSecondPanelSize(30);
