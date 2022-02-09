@@ -32,12 +32,13 @@ enum class CatID : uint32
     Headers,
     Cursor,
     Editor,
+    BorderAndLines,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
     "",     "Desktop",     "Menu",    "Menu (parent)", "Window",  "ToolTip", "Progress Bar", "Buttons",
-    "Text", "Scroll bars", "Symbols", "SearchBar",     "Headers", "Cursor",  "Editor",
+    "Text", "Scroll bars", "Symbols", "SearchBar",     "Headers", "Cursor",  "Editor",       "Border & Lines",
 };
 
 enum class PropID : uint32
@@ -177,6 +178,18 @@ enum class PropID : uint32
     EditorLineMarkerFocused,
     EditorLineMarkerInactive,
     EditorLineMarkerHovered,
+
+    // Border & Lines
+    BorderNormal,
+    BorderFocused,
+    BorderInactive,
+    BorderHovered,
+    BorderPressed,
+    LineNormal,
+    LineFocused,
+    LineInactive,
+    LineHovered,
+    LinePressed,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -975,6 +988,21 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorLineMarkerHovered:
             value = obj.LineMarker.Hovered;
             return true;
+        
+        // Border & Lines
+        case PropID::BorderNormal:
+            value = obj.Border.Normal.Foreground;
+            return true;
+        case PropID::BorderFocused:
+            value = obj.Border.Focused.Foreground;
+            return true;
+        case PropID::BorderInactive:
+            value = obj.Border.Inactive.Foreground;
+            return true;
+        case PropID::BorderHovered:
+            value = obj.Border.Hovered.Foreground;
+            return true;
+
         }
 
         return false;
@@ -1337,6 +1365,22 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorLineMarkerHovered:
             obj.LineMarker.Hovered = std::get<ColorPair>(value);
             return true;
+
+        case PropID::BorderNormal:
+            obj.Border.Normal = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::BorderFocused:
+            obj.Border.Focused = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::BorderInactive:
+            obj.Border.Inactive = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::BorderHovered:
+            obj.Border.Hovered = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::BorderPressed:
+            obj.Border.PressedOrSelected = { std::get<Color>(value), Color::Transparent };
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1503,6 +1547,13 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::EditorLineMarkerFocused), CAT(CatID::Editor), "Line (focused)", PropertyType::ColorPair },
             { PT(PropID::EditorLineMarkerInactive), CAT(CatID::Editor), "Line (inactive)", PropertyType::ColorPair },
             { PT(PropID::EditorLineMarkerHovered), CAT(CatID::Editor), "Line (hovered)", PropertyType::ColorPair },
+
+            // Border & Lines
+            { PT(PropID::BorderNormal), CAT(CatID::BorderAndLines), "Border (normal)", PropertyType::Color },
+            { PT(PropID::BorderFocused), CAT(CatID::BorderAndLines), "Border (focused)", PropertyType::Color },
+            { PT(PropID::BorderInactive), CAT(CatID::BorderAndLines), "Border (inactive)", PropertyType::Color },
+            { PT(PropID::BorderHovered), CAT(CatID::BorderAndLines), "Border (hovered)", PropertyType::Color },
+            { PT(PropID::BorderPressed), CAT(CatID::BorderAndLines), "Border (pressed)", PropertyType::Color },
         };
 #undef PT
 #undef CAT
