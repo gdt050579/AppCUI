@@ -575,7 +575,26 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(4, 13, "  3", obj.LineMarker.Focused);
         r.ResetClip();
     }
+    void PaintBordersAndLines(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Borders & Lines ");
+        r.SetClipMargins(3, 2, 3, 2);
 
+        const auto wx = std::max(9U, (sz.Width - 10) / 3);
+        r.DrawRectSize(4 + (wx + 1) * 0, 3, wx, 3, obj.Border.Normal, LineType::Single);       
+        r.DrawRectSize(4 + (wx + 1) * 1, 3, wx, 3, obj.Border.Focused, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 2, 3, wx, 3, obj.Border.Inactive, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 0, 6, wx, 3, obj.Border.Hovered, LineType::Single);
+        r.DrawRectSize(4 + (wx + 1) * 1, 6, wx, 3, obj.Border.PressedOrSelected, LineType::Single);
+
+        r.WriteSingleLineText(5 + (wx + 1) * 0, 4, "Normal", obj.Text.Normal);
+        r.WriteSingleLineText(5 + (wx + 1) * 1, 4, "Focused", obj.Text.Normal);
+        r.WriteSingleLineText(5 + (wx + 1) * 2, 4, "Inactive", obj.Text.Normal);
+        r.WriteSingleLineText(5 + (wx + 1) * 0, 7, "Hovered", obj.Text.Normal);
+        r.WriteSingleLineText(5 + (wx + 1) * 1, 7, "Pressed", obj.Text.Normal);
+
+        r.ResetClip();
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -637,6 +656,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::Editor:
             PaintDesktop(r);
             PaintEditors(r, sz);
+            break;
+        case CatID::BorderAndLines:
+            PaintDesktop(r);
+            PaintBordersAndLines(r, sz);
             break;
         }
     }
@@ -988,7 +1011,7 @@ class ConfigProperty : public PropertiesInterface
         case PropID::EditorLineMarkerHovered:
             value = obj.LineMarker.Hovered;
             return true;
-        
+
         // Border & Lines
         case PropID::BorderNormal:
             value = obj.Border.Normal.Foreground;
