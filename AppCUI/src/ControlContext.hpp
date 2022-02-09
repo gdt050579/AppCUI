@@ -192,12 +192,14 @@ struct ControlContext
     }
 };
 
-constexpr uint32 WINDOW_DRAG_STATUS_NONE = 0;
-constexpr uint32 WINDOW_DRAG_STATUS_MOVE = 1;
-constexpr uint32 WINDOW_DRAG_STATUS_SIZE = 2;
-
 constexpr uint32 MAX_WINDOWBAR_ITEMS = 32;
 
+enum class WindowDragStatus : uint8
+{
+    None,
+    Move,
+    Resize
+};
 enum class WindowBarItemType : unsigned char
 {
     None = 0,
@@ -270,7 +272,8 @@ struct WindowControlContext : public ControlContext
     Controls::ItemHandle referalItemHandle;
     Controls::ItemHandle windowItemHandle;
     int oldPosX, oldPosY, oldW, oldH;
-    int dragStatus, dragOffsetX, dragOffsetY;
+    WindowDragStatus dragStatus;
+    int dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
     int DialogResult;
     struct

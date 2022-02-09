@@ -550,7 +550,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) Flags;
 
     Members->Maximized                       = false;
-    Members->dragStatus                      = WINDOW_DRAG_STATUS_NONE;
+    Members->dragStatus                      = WindowDragStatus::None;
     Members->DialogResult                    = -1;
     Members->ControlBar.Current              = NO_CONTROLBAR_ITEM;
     Members->ControlBar.IsCurrentItemPressed = false;
@@ -631,9 +631,9 @@ void Window::Paint(Graphics::Renderer& renderer)
     if (Members->Focused)
     {
         colorTitle  = Members->Cfg->Text.Focused;
-        colorBorder = Members->dragStatus == WINDOW_DRAG_STATUS_NONE ? Members->Cfg->Border.Focused
-                                                                     : Members->Cfg->Border.PressedOrSelected;
-        lineType    = Members->dragStatus == WINDOW_DRAG_STATUS_NONE ? LineType::Double : LineType::Single;
+        colorBorder = Members->dragStatus == WindowDragStatus::None ? Members->Cfg->Border.Focused
+                                                                    : Members->Cfg->Border.PressedOrSelected;
+        lineType    = Members->dragStatus == WindowDragStatus::None ? LineType::Double : LineType::Single;
     }
     else
     {
@@ -860,7 +860,7 @@ bool Window::CenterScreen()
 void Window::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
-    Members->dragStatus                      = WINDOW_DRAG_STATUS_NONE;
+    Members->dragStatus                      = WindowDragStatus::None;
     Members->ControlBar.IsCurrentItemPressed = false;
 
     if (Members->menu)
@@ -878,7 +878,7 @@ void Window::OnMousePressed(int x, int y, Input::MouseButton button)
             Members->ControlBar.Current              = tr; // set current button
             Members->ControlBar.IsCurrentItemPressed = true;
             if (Members->ControlBar.Items[tr].Type == WindowBarItemType::WindowResize)
-                Members->dragStatus = WINDOW_DRAG_STATUS_SIZE;
+                Members->dragStatus = WindowDragStatus::Resize;
             return;
         }
     }
@@ -887,7 +887,7 @@ void Window::OnMousePressed(int x, int y, Input::MouseButton button)
 
     if ((Members->Flags & WindowFlags::FixedPosition) == WindowFlags::None)
     {
-        Members->dragStatus  = WINDOW_DRAG_STATUS_MOVE;
+        Members->dragStatus  = WindowDragStatus::Move;
         Members->dragOffsetX = x;
         Members->dragOffsetY = y;
     }
@@ -929,9 +929,9 @@ void Window::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->ControlBar.IsCurrentItemPressed = false;
-    if (Members->dragStatus != WINDOW_DRAG_STATUS_NONE)
+    if (Members->dragStatus != WindowDragStatus::None)
     {
-        Members->dragStatus = WINDOW_DRAG_STATUS_NONE;
+        Members->dragStatus = WindowDragStatus::None;
         return;
     }
     if (Members->ControlBar.Current != NO_CONTROLBAR_ITEM)
@@ -950,13 +950,13 @@ void Window::OnMouseReleased(int, int, Input::MouseButton)
 bool Window::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    if (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE)
+    if (Members->dragStatus == WindowDragStatus::Resize)
     {
         bool res = Resize(x + 1, y + 1);
         UpdateWindowsButtonsPoz(Members);
         return res;
     }
-    if (Members->dragStatus == WINDOW_DRAG_STATUS_MOVE)
+    if (Members->dragStatus == WindowDragStatus::Move)
     {
         this->MoveTo(
               x + Members->ScreenClip.ScreenPosition.X - Members->dragOffsetX,
@@ -1216,7 +1216,7 @@ int Window::GetDialogResult()
 bool Window::IsWindowInResizeMode()
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
-    return (Members->dragStatus == WINDOW_DRAG_STATUS_SIZE);
+    return (Members->dragStatus == WindowDragStatus::Resize);
 }
 
 Reference<Menu> Window::AddMenu(const ConstString& name)
