@@ -1002,7 +1002,9 @@ class ConfigProperty : public PropertiesInterface
         case PropID::BorderHovered:
             value = obj.Border.Hovered.Foreground;
             return true;
-
+        case PropID::BorderPressed:
+            value = obj.Border.PressedOrSelected;
+            return true;
         }
 
         return false;
@@ -1379,7 +1381,7 @@ class ConfigProperty : public PropertiesInterface
             obj.Border.Hovered = { std::get<Color>(value), Color::Transparent };
             return true;
         case PropID::BorderPressed:
-            obj.Border.PressedOrSelected = { std::get<Color>(value), Color::Transparent };
+            obj.Border.PressedOrSelected = std::get<ColorPair>(value);
             return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
@@ -1553,7 +1555,7 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::BorderFocused), CAT(CatID::BorderAndLines), "Border (focused)", PropertyType::Color },
             { PT(PropID::BorderInactive), CAT(CatID::BorderAndLines), "Border (inactive)", PropertyType::Color },
             { PT(PropID::BorderHovered), CAT(CatID::BorderAndLines), "Border (hovered)", PropertyType::Color },
-            { PT(PropID::BorderPressed), CAT(CatID::BorderAndLines), "Border (pressed)", PropertyType::Color },
+            { PT(PropID::BorderPressed), CAT(CatID::BorderAndLines), "Border (pressed)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
