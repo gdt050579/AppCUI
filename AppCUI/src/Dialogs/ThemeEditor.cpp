@@ -1028,6 +1028,21 @@ class ConfigProperty : public PropertiesInterface
         case PropID::BorderPressed:
             value = obj.Border.PressedOrSelected;
             return true;
+        case PropID::LineNormal:
+            value = obj.Lines.Normal.Foreground;
+            return true;
+        case PropID::LineFocused:
+            value = obj.Lines.Focused.Foreground;
+            return true;
+        case PropID::LineInactive:
+            value = obj.Lines.Inactive.Foreground;
+            return true;
+        case PropID::LineHovered:
+            value = obj.Lines.Hovered;
+            return true;
+        case PropID::LinePressed:
+            value = obj.Lines.PressedOrSelected;
+            return true;
         }
 
         return false;
@@ -1406,6 +1421,21 @@ class ConfigProperty : public PropertiesInterface
         case PropID::BorderPressed:
             obj.Border.PressedOrSelected = std::get<ColorPair>(value);
             return true;
+        case PropID::LineNormal:
+            obj.Lines.Normal = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::LineFocused:
+            obj.Lines.Focused = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::LineInactive:
+            obj.Lines.Inactive = { std::get<Color>(value), Color::Transparent };
+            return true;
+        case PropID::LineHovered:
+            obj.Lines.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::LinePressed:
+            obj.Lines.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1579,6 +1609,11 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::BorderInactive), CAT(CatID::BorderAndLines), "Border (inactive)", PropertyType::Color },
             { PT(PropID::BorderHovered), CAT(CatID::BorderAndLines), "Border (hovered)", PropertyType::Color },
             { PT(PropID::BorderPressed), CAT(CatID::BorderAndLines), "Border (pressed)", PropertyType::ColorPair },
+            { PT(PropID::LineNormal), CAT(CatID::BorderAndLines), "Line (normal)", PropertyType::Color },
+            { PT(PropID::LineFocused), CAT(CatID::BorderAndLines), "Line (focused)", PropertyType::Color },
+            { PT(PropID::LineInactive), CAT(CatID::BorderAndLines), "Line (inactive)", PropertyType::Color },
+            { PT(PropID::LineHovered), CAT(CatID::BorderAndLines), "Line (hovered)", PropertyType::ColorPair },
+            { PT(PropID::LinePressed), CAT(CatID::BorderAndLines), "Line (pressed)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
