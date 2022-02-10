@@ -4727,7 +4727,7 @@ namespace Application
 
     struct Config
     {
-        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
+        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker;
 
         struct
         {

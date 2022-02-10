@@ -38,12 +38,6 @@ void Config::SetDarkTheme()
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Blue });
 
-    this->PasswordMarker.Set(
-          { Color::Aqua, Color::Black },
-          { Color::Silver, Color::Black },
-          { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Black });
-
     this->Button.Text.Set(
           { Color::Black, Color::White },
           { Color::Black, Color::Gray },
