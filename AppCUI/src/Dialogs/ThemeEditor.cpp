@@ -1069,6 +1069,38 @@ class ConfigProperty : public PropertiesInterface
         case PropID::LinePressed:
             value = obj.Lines.PressedOrSelected;
             return true;
+
+        // Tabs
+        case PropID::TabsTextNormal:
+            value = obj.Tab.Text.Normal;
+            return true;
+        case PropID::TabsTextFocused:
+            value = obj.Tab.Text.Focused;
+            return true;
+        case PropID::TabsTextInactive:
+            value = obj.Tab.Text.Inactive;
+            return true;
+        case PropID::TabsTextHovered:
+            value = obj.Tab.Text.Hovered;
+            return true;
+        case PropID::TabsTextSelected:
+            value = obj.Tab.Text.PressedOrSelected;
+            return true;
+        case PropID::TabsHotKeyNormal:
+            value = obj.Tab.HotKey.Normal;
+            return true;
+        case PropID::TabsHotKeyFocused:
+            value = obj.Tab.HotKey.Focused;
+            return true;
+        case PropID::TabsHotKeyInactive:
+            value = obj.Tab.HotKey.Inactive;
+            return true;
+        case PropID::TabsHotKeyHovered:
+            value = obj.Tab.HotKey.Hovered;
+            return true;
+        case PropID::TabsHotKeySelected:
+            value = obj.Tab.HotKey.PressedOrSelected;
+            return true;
         }
 
         return false;
@@ -1461,6 +1493,37 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::LinePressed:
             obj.Lines.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+
+        case PropID::TabsTextNormal:
+            obj.Tab.Text.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsTextFocused:
+            obj.Tab.Text.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsTextInactive:
+            obj.Tab.Text.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsTextHovered:
+            obj.Tab.Text.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsTextSelected:
+            obj.Tab.Text.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsHotKeyNormal:
+            obj.Tab.HotKey.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsHotKeyFocused:
+            obj.Tab.HotKey.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsHotKeyInactive:
+            obj.Tab.HotKey.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsHotKeyHovered:
+            obj.Tab.HotKey.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsHotKeySelected:
+            obj.Tab.HotKey.PressedOrSelected = std::get<ColorPair>(value);
             return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
