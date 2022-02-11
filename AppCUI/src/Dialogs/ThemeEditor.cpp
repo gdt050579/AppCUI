@@ -621,6 +621,13 @@ class ConfigProperty : public PropertiesInterface
 
         r.ResetClip();
     }
+    void PaintTabs(Graphics::Renderer& r, Size sz)
+    {
+        DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Tabs ");
+        r.SetClipMargins(3, 2, 3, 2);
+
+        r.ResetClip();
+    }
     void Paint(Graphics::Renderer& r, Size sz)
     {
         switch (catID)
@@ -686,6 +693,10 @@ class ConfigProperty : public PropertiesInterface
         case CatID::BorderAndLines:
             PaintDesktop(r);
             PaintBordersAndLines(r, sz);
+            break;
+        case CatID::Tabs:
+            PaintDesktop(r);
+            PaintTabs(r, sz);
             break;
         }
     }
