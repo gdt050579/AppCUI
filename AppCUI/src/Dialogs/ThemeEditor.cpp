@@ -623,8 +623,30 @@ class ConfigProperty : public PropertiesInterface
     }
     void PaintTabs(Graphics::Renderer& r, Size sz)
     {
+        const auto w = sz.Width - 8;
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Tabs ");
         r.SetClipMargins(3, 2, 3, 2);
+
+        r.FillRectSize(4, 4, w, 2, ' ', obj.Tab.Text.PressedOrSelected);
+        r.WriteSingleLineText(5, 3, " Tab 1 ", obj.Tab.Text.PressedOrSelected, obj.Tab.HotKey.PressedOrSelected, 1);
+        r.WriteSingleLineText(13, 3, " Tab 2 ", obj.Tab.Text.Focused, obj.Tab.HotKey.Focused, 5);
+        r.WriteSingleLineText(21, 3, " Tab 3 ", obj.Tab.Text.Hovered, obj.Tab.HotKey.Hovered, 5);
+        r.WriteSingleLineText(29, 3, " Tab 4 ", obj.Tab.Text.Focused, obj.Tab.HotKey.Focused, 5);
+        r.WriteSingleLineText(5, 5, "Focused", obj.Text.Normal);
+
+        r.FillRectSize(4, 8, w, 2, ' ', obj.Tab.Text.PressedOrSelected);
+        r.WriteSingleLineText(5, 7, " Tab 1 ", obj.Tab.Text.PressedOrSelected, obj.Tab.HotKey.PressedOrSelected, 1);
+        r.WriteSingleLineText(13, 7, " Tab 2 ", obj.Tab.Text.Normal, obj.Tab.HotKey.Normal, 5);
+        r.WriteSingleLineText(21, 7, " Tab 3 ", obj.Tab.Text.Normal, obj.Tab.HotKey.Normal, 5);
+        r.WriteSingleLineText(29, 7, " Tab 4 ", obj.Tab.Text.Normal, obj.Tab.HotKey.Normal, 5);
+        r.WriteSingleLineText(5, 9, "Normal (not focused)", obj.Text.Normal);
+
+        r.FillRectSize(4, 12, w, 2, ' ', obj.Tab.Text.Inactive);
+        r.WriteSingleLineText(5, 11, " Tab 1 ", obj.Tab.Text.Inactive, obj.Tab.HotKey.Inactive, 1);
+        r.WriteSingleLineText(13, 11, " Tab 2 ", obj.Tab.Text.Inactive, obj.Tab.HotKey.Inactive, 5);
+        r.WriteSingleLineText(21, 11, " Tab 3 ", obj.Tab.Text.Inactive, obj.Tab.HotKey.Inactive, 5);
+        r.WriteSingleLineText(29, 11, " Tab 4 ", obj.Tab.Text.Inactive, obj.Tab.HotKey.Inactive, 5);
+        r.WriteSingleLineText(5, 13, "Inactive", obj.Text.Inactive);
 
         r.ResetClip();
     }
