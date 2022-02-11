@@ -33,12 +33,14 @@ enum class CatID : uint32
     Cursor,
     Editor,
     BorderAndLines,
+    Tabs,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
-    "",     "Desktop",     "Menu",    "Menu (parent)", "Window",  "ToolTip", "Progress Bar", "Buttons",
-    "Text", "Scroll bars", "Symbols", "SearchBar",     "Headers", "Cursor",  "Editor",       "Border & Lines",
+    "",        "Desktop",        "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
+    "Buttons", "Text",           "Scroll bars", "Symbols",       "SearchBar", "Headers", "Cursor",
+    "Editor",  "Border & Lines", "Tabs"
 };
 
 enum class PropID : uint32
@@ -190,6 +192,18 @@ enum class PropID : uint32
     LineInactive,
     LineHovered,
     LinePressed,
+
+    // Tabs
+    TabsTextFocused,
+    TabsTextNormal,
+    TabsTextHovered,
+    TabsTextInactive,
+    TabsTextSelected,
+    TabsHotKeyFocused,
+    TabsHotKeyNormal,
+    TabsHotKeyHovered,
+    TabsHotKeyInactive,
+    TabsHotKeySelected,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -581,7 +595,7 @@ class ConfigProperty : public PropertiesInterface
         r.SetClipMargins(3, 2, 3, 2);
 
         const auto wx = std::max(9U, (sz.Width - 10) / 3);
-        r.DrawRectSize(4 + (wx + 1) * 0, 3, wx, 3, obj.Border.Normal, LineType::Single);       
+        r.DrawRectSize(4 + (wx + 1) * 0, 3, wx, 3, obj.Border.Normal, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 1, 3, wx, 3, obj.Border.Focused, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 2, 3, wx, 3, obj.Border.Inactive, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 0, 6, wx, 3, obj.Border.Hovered, LineType::Single);
@@ -599,7 +613,7 @@ class ConfigProperty : public PropertiesInterface
         r.DrawRectSize(4 + (wx + 1) * 0, 12, wx, 3, obj.Border.Hovered, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 1, 12, wx, 3, obj.Border.PressedOrSelected, LineType::Single);
 
-        r.DrawHorizontalLine(5 + (wx + 1) * 0, 10, 2 + wx + (wx + 1) * 0,  obj.Lines.Normal);
+        r.DrawHorizontalLine(5 + (wx + 1) * 0, 10, 2 + wx + (wx + 1) * 0, obj.Lines.Normal);
         r.DrawHorizontalLine(5 + (wx + 1) * 1, 10, 2 + wx + (wx + 1) * 1, obj.Lines.Focused);
         r.DrawHorizontalLine(5 + (wx + 1) * 2, 10, 2 + wx + (wx + 1) * 2, obj.Lines.Inactive);
         r.DrawHorizontalLine(5 + (wx + 1) * 0, 13, 2 + wx + (wx + 1) * 0, obj.Lines.Hovered);
@@ -1626,6 +1640,18 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::LineInactive), CAT(CatID::BorderAndLines), "Line (inactive)", PropertyType::Color },
             { PT(PropID::LineHovered), CAT(CatID::BorderAndLines), "Line (hovered)", PropertyType::ColorPair },
             { PT(PropID::LinePressed), CAT(CatID::BorderAndLines), "Line (pressed)", PropertyType::ColorPair },
+
+            // Tabs
+            { PT(PropID::TabsTextNormal), CAT(CatID::Tabs), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropID::TabsTextFocused), CAT(CatID::Tabs), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropID::TabsTextInactive), CAT(CatID::Tabs), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropID::TabsTextHovered), CAT(CatID::Tabs), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::TabsTextSelected), CAT(CatID::Tabs), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropID::TabsHotKeyNormal), CAT(CatID::Tabs), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropID::TabsHotKeyFocused), CAT(CatID::Tabs), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropID::TabsHotKeyInactive), CAT(CatID::Tabs), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropID::TabsHotKeyHovered), CAT(CatID::Tabs), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::TabsHotKeySelected), CAT(CatID::Tabs), "HotKey (selected)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
