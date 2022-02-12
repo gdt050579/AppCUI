@@ -34,13 +34,14 @@ enum class CatID : uint32
     Editor,
     BorderAndLines,
     Tabs,
+    TabsList,
 
     Count // must be the last one
 };
 constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
     "",        "Desktop",        "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
     "Buttons", "Text",           "Scroll bars", "Symbols",       "SearchBar", "Headers", "Cursor",
-    "Editor",  "Border & Lines", "Tabs"
+    "Editor",  "Border & Lines", "Tabs",        "Tabs (lists)"
 };
 
 enum class PropID : uint32
@@ -204,6 +205,18 @@ enum class PropID : uint32
     TabsHotKeyHovered,
     TabsHotKeyInactive,
     TabsHotKeySelected,
+
+    // TabsList
+    TabsListTextFocused,
+    TabsListTextNormal,
+    TabsListTextHovered,
+    TabsListTextInactive,
+    TabsListTextSelected,
+    TabsListHotKeyFocused,
+    TabsListHotKeyNormal,
+    TabsListHotKeyHovered,
+    TabsListHotKeyInactive,
+    TabsListHotKeySelected,
 };
 class ConfigProperty : public PropertiesInterface
 {
@@ -1134,6 +1147,38 @@ class ConfigProperty : public PropertiesInterface
         case PropID::TabsHotKeySelected:
             value = obj.Tab.HotKey.PressedOrSelected;
             return true;
+
+        // Tabs list
+        case PropID::TabsListTextNormal:
+            value = obj.Tab.ListText.Normal;
+            return true;
+        case PropID::TabsListTextFocused:
+            value = obj.Tab.ListText.Focused;
+            return true;
+        case PropID::TabsListTextInactive:
+            value = obj.Tab.ListText.Inactive;
+            return true;
+        case PropID::TabsListTextHovered:
+            value = obj.Tab.ListText.Hovered;
+            return true;
+        case PropID::TabsListTextSelected:
+            value = obj.Tab.Text.PressedOrSelected;
+            return true;
+        case PropID::TabsListHotKeyNormal:
+            value = obj.Tab.ListHotKey.Normal;
+            return true;
+        case PropID::TabsListHotKeyFocused:
+            value = obj.Tab.ListHotKey.Focused;
+            return true;
+        case PropID::TabsListHotKeyInactive:
+            value = obj.Tab.ListHotKey.Inactive;
+            return true;
+        case PropID::TabsListHotKeyHovered:
+            value = obj.Tab.ListHotKey.Hovered;
+            return true;
+        case PropID::TabsListHotKeySelected:
+            value = obj.Tab.ListHotKey.PressedOrSelected;
+            return true;
         }
 
         return false;
@@ -1558,6 +1603,37 @@ class ConfigProperty : public PropertiesInterface
         case PropID::TabsHotKeySelected:
             obj.Tab.HotKey.PressedOrSelected = std::get<ColorPair>(value);
             return true;
+
+        case PropID::TabsListTextNormal:
+            obj.Tab.ListText.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListTextFocused:
+            obj.Tab.ListText.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListTextInactive:
+            obj.Tab.ListText.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListTextHovered:
+            obj.Tab.ListText.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListTextSelected:
+            obj.Tab.ListText.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListHotKeyNormal:
+            obj.Tab.ListHotKey.Normal = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListHotKeyFocused:
+            obj.Tab.ListHotKey.Focused = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListHotKeyInactive:
+            obj.Tab.ListHotKey.Inactive = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListHotKeyHovered:
+            obj.Tab.ListHotKey.Hovered = std::get<ColorPair>(value);
+            return true;
+        case PropID::TabsListHotKeySelected:
+            obj.Tab.ListHotKey.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
         }
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
@@ -1748,6 +1824,18 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::TabsHotKeyInactive), CAT(CatID::Tabs), "HotKey (inactive)", PropertyType::ColorPair },
             { PT(PropID::TabsHotKeyHovered), CAT(CatID::Tabs), "HotKey (hovered)", PropertyType::ColorPair },
             { PT(PropID::TabsHotKeySelected), CAT(CatID::Tabs), "HotKey (selected)", PropertyType::ColorPair },
+
+            // Tabs (lists)
+            { PT(PropID::TabsListTextNormal), CAT(CatID::TabsList), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropID::TabsListTextFocused), CAT(CatID::TabsList), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropID::TabsListTextInactive), CAT(CatID::TabsList), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropID::TabsListTextHovered), CAT(CatID::TabsList), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropID::TabsListTextSelected), CAT(CatID::TabsList), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropID::TabsListHotKeyNormal), CAT(CatID::TabsList), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropID::TabsListHotKeyFocused), CAT(CatID::TabsList), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropID::TabsListHotKeyInactive), CAT(CatID::TabsList), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropID::TabsListHotKeyHovered), CAT(CatID::TabsList), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropID::TabsListHotKeySelected), CAT(CatID::TabsList), "HotKey (selected)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
