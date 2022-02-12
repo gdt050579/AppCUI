@@ -665,9 +665,19 @@ class ConfigProperty : public PropertiesInterface
     }
     void PaintTabsList(Graphics::Renderer& r, Size sz)
     {
-        const auto w = sz.Width - 8;
+        const auto w = (sz.Width - 10) / 3;
+        const auto h = sz.Height - 6;
+        const auto y = sz.Height - 7;
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Tabs ");
         r.SetClipMargins(3, 2, 3, 2);
+
+        r.FillRectSize(4, 4, w, h, ' ', obj.Tab.ListText.PressedOrSelected);
+        r.WriteSingleLineText(
+              4, 3, " Tab 1        ", obj.Tab.ListText.PressedOrSelected, obj.Tab.ListHotKey.PressedOrSelected, 1);
+        r.WriteSingleLineText(4, y + 0, " Tab 2        ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
+        r.WriteSingleLineText(4, y + 1, " Tab 3        ", obj.Tab.ListText.Hovered, obj.Tab.ListHotKey.Hovered, 5);
+        r.WriteSingleLineText(4, y + 2, " Tab 4        ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
+        r.WriteSingleLineText(5, 5, "Focused", obj.Text.Normal);
 
         r.ResetClip();
     }
@@ -1174,7 +1184,7 @@ class ConfigProperty : public PropertiesInterface
             value = obj.Tab.ListText.Hovered;
             return true;
         case PropID::TabsListTextSelected:
-            value = obj.Tab.Text.PressedOrSelected;
+            value = obj.Tab.ListText.PressedOrSelected;
             return true;
         case PropID::TabsListHotKeyNormal:
             value = obj.Tab.ListHotKey.Normal;
