@@ -665,19 +665,50 @@ class ConfigProperty : public PropertiesInterface
     }
     void PaintTabsList(Graphics::Renderer& r, Size sz)
     {
-        const auto w = (sz.Width - 10) / 3;
+        const auto w = 12;
         const auto h = sz.Height - 6;
-        const auto y = sz.Height - 7;
+        const auto y = sz.Height - 5;
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Tabs ");
         r.SetClipMargins(3, 2, 3, 2);
 
-        r.FillRectSize(4, 4, w, h, ' ', obj.Tab.ListText.PressedOrSelected);
+        r.FillRectSize(4, 4, w, h, ' ', obj.Tab.Text.PressedOrSelected);
         r.WriteSingleLineText(
-              4, 3, " Tab 1        ", obj.Tab.ListText.PressedOrSelected, obj.Tab.ListHotKey.PressedOrSelected, 1);
-        r.WriteSingleLineText(4, y + 0, " Tab 2        ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
-        r.WriteSingleLineText(4, y + 1, " Tab 3        ", obj.Tab.ListText.Hovered, obj.Tab.ListHotKey.Hovered, 5);
-        r.WriteSingleLineText(4, y + 2, " Tab 4        ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
+              4, 3, " Tab 1      ", obj.Tab.ListText.PressedOrSelected, obj.Tab.ListHotKey.PressedOrSelected, 1);
+        r.WriteSingleLineText(4, y + 0, " Tab 2      ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
+        r.WriteSingleLineText(4, y + 1, " Tab 3      ", obj.Tab.ListText.Hovered, obj.Tab.ListHotKey.Hovered, 5);
+        r.WriteSingleLineText(4, y + 2, " Tab 4      ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
         r.WriteSingleLineText(5, 5, "Focused", obj.Text.Normal);
+
+        r.FillRectSize(5 + (w*1), 4, w, h, ' ', obj.Tab.Text.PressedOrSelected);
+        r.WriteSingleLineText(
+              5 + (w * 1),
+              3,
+              " Tab 1      ",
+              obj.Tab.ListText.PressedOrSelected,
+              obj.Tab.ListHotKey.PressedOrSelected,
+              1);
+        r.WriteSingleLineText(
+              5 + (w * 1), y + 0, " Tab 2      ", obj.Tab.ListText.Normal, obj.Tab.ListHotKey.Normal, 5);
+        r.WriteSingleLineText(
+              5 + (w * 1), y + 1, " Tab 3      ", obj.Tab.ListText.Normal, obj.Tab.ListHotKey.Normal, 5);
+        r.WriteSingleLineText(
+              5 + (w * 1), y + 2, " Tab 4      ", obj.Tab.ListText.Normal, obj.Tab.ListHotKey.Normal, 5);
+        r.WriteSingleLineText(6 + (w * 1), 5, "Normal", obj.Text.Normal);
+
+        r.FillRectSize(5 + (w * 2), 4, w, h, ' ', obj.Tab.Text.Inactive);
+        r.WriteSingleLineText(
+              5 + (w * 2),
+              3,
+              " Tab 1        ",
+              obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive,
+              1);
+        r.WriteSingleLineText(
+              5 + (w * 2), y + 0, " Tab 2      ", obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive, 5);
+        r.WriteSingleLineText(
+              5 + (w * 2), y + 1, " Tab 3      ", obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive, 5);
+        r.WriteSingleLineText(
+              5 + (w * 2), y + 2, " Tab 4      ", obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive, 5);
+        r.WriteSingleLineText(6 + (w * 2), 5, "Inactive", obj.Text.Inactive);
 
         r.ResetClip();
     }
