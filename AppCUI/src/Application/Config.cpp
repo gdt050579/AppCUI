@@ -212,10 +212,10 @@ void Config::SetDarkTheme()
           { Color::Yellow, Color::Transparent },
           { Color::Aqua, Color::Transparent });
     this->Editor.Set(
-          { Color::White, Color::Black },
-          { Color::Silver, Color::Black },
+          { Color::White, Color::DarkBlue },
+          { Color::Silver, Color::DarkBlue },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Black },
+          { Color::Yellow, Color::DarkBlue },
           { Color::White, Color::Black });
     this->LineMarker.Set(
           { Color::Black, Color::Gray },
@@ -225,17 +225,158 @@ void Config::SetDarkTheme()
           { Color::Black, Color::Gray });
     this->Button.Text.Set(
           { Color::Black, Color::White },
-          { Color::Black, Color::Gray },
-          { Color::Gray, Color::Black },
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::DarkBlue },
           { Color::Black, Color::Yellow },
           { Color::Black, Color::Olive });
     this->Button.HotKey.Set(
           { Color::Magenta, Color::White },
-          { Color::DarkRed, Color::Gray },
-          { Color::Gray, Color::Black },
+          { Color::DarkRed, Color::Silver },
+          { Color::Black, Color::DarkBlue },
           { Color::Magenta, Color::Yellow },
           { Color::DarkRed, Color::Olive });
-    this->Button.ShadowColor         = { Color::DarkBlue, Color::Transparent };
+    this->Text.Normal             = { Color::Silver, Color::Transparent };
+    this->Text.HotKey             = { Color::Aqua, Color::Transparent };
+    this->Text.Inactive           = { Color::DarkBlue, Color::Transparent };
+    this->Text.Error              = { Color::Red, Color::Transparent };
+    this->Text.Warning            = { Color::Olive, Color::Transparent };
+    this->Text.Hovered            = { Color::Yellow, Color::Transparent };
+    this->Text.Focused            = { Color::White, Color::Transparent };
+    this->Text.Highlighted        = { Color::Yellow, Color::Transparent };
+    this->Text.Emphasized1        = { Color::Aqua, Color::Transparent };
+    this->Text.Emphasized2        = { Color::Green, Color::Transparent };
+    this->Symbol.Inactive         = { Color::DarkBlue, Color::Transparent };
+    this->Symbol.Hovered          = { Color::Yellow, Color::Black };
+    this->Symbol.Pressed          = { Color::Black, Color::Yellow };
+    this->Symbol.Checked          = { Color::Green, Color::Transparent };
+    this->Symbol.Unchecked        = { Color::Red, Color::Transparent };
+    this->Symbol.Unknown          = { Color::Olive, Color::Transparent };
+    this->Symbol.Desktop          = { Color::DarkBlue, Color::Black };
+    this->Symbol.Arrows           = { Color::Aqua, Color::Transparent };
+    this->Symbol.Close            = { Color::Red, Color::Transparent };
+    this->Symbol.Maximized        = { Color::Aqua, Color::Transparent };
+    this->Symbol.Resize           = { Color::Aqua, Color::Transparent };
+    this->Cursor.Normal           = { Color::Black, Color::White };
+    this->Cursor.Inactive         = { Color::Yellow, Color::Transparent };
+    this->Cursor.OverInactiveItem = { Color::Gray, Color::White };
+    this->Cursor.OverSelection    = { Color::Red, Color::Yellow };
+    this->Selection.Editor        = { Color::Yellow, Color::Magenta };
+    this->Selection.LineMarker    = { Color::Yellow, Color::Magenta };
+    this->Selection.Text          = { Color::Yellow, Color::Black };
+    this->Selection.SearchMarker  = { Color::Yellow, Color::DarkRed };
+    this->Selection.SimilarText   = { Color::Black, Color::Green };
+    this->ProgressStatus.Empty    = { Color::White, Color::DarkBlue };
+    this->ProgressStatus.Full     = { Color::White, Color::Gray };
+    this->Menu.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::Black, Color::Silver },
+          { Color::Yellow, Color::DarkBlue });
+    this->Menu.HotKey.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::DarkRed, Color::Silver },
+          { Color::Olive, Color::DarkBlue });
+    this->Menu.ShortCut.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::DarkBlue });
+    this->Menu.Symbol.Set(
+          { Color::DarkGreen, Color::White },
+          { Color::DarkBlue, Color::Gray },
+          { Color::Silver, Color::White },
+          { Color::Yellow, Color::Silver },
+          { Color::White, Color::DarkBlue });
+    this->ParentMenu.Text.Set(
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::Black, Color::Silver },
+          { Color::Yellow, Color::Gray });
+    this->ParentMenu.HotKey.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Gray });
+    this->ParentMenu.ShortCut.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::Silver, Color::Gray },
+          { Color::DarkRed, Color::Gray },
+          { Color::White, Color::Gray });
+    this->ParentMenu.Symbol.Set(
+          { Color::DarkGreen, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::Silver, Color::Silver },
+          { Color::Magenta, Color::Silver },
+          { Color::White, Color::Gray });
+    this->Header.Text.Set(
+          { Color::White, Color::DarkBlue },
+          { Color::Silver, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Blue });
+    this->Header.HotKey.Set(
+          { Color::Yellow, Color::DarkBlue },
+          { Color::Yellow, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::Red, Color::Silver },
+          { Color::Yellow, Color::Blue });
+    this->Header.Symbol.Set(
+          { Color::White, Color::DarkBlue },
+          { Color::Silver, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::Blue });
+    this->ScrollBar.Bar.Set(
+          { Color::White, Color::Teal },
+          { Color::White, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::DarkBlue },
+          { Color::White, Color::Teal });
+    this->ScrollBar.Arrows.Set(
+          { Color::White, Color::Teal },
+          { Color::White, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::DarkBlue },
+          { Color::White, Color::Teal });
+    this->ScrollBar.Position.Set(
+          { Color::Green, Color::Teal },
+          { Color::Silver, Color::DarkBlue },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::DarkBlue },
+          { Color::Green, Color::Teal });
+    this->ToolTip.Text  = { Color::Black, Color::Aqua };
+    this->ToolTip.Arrow = { Color::Green, Color::Black };
+    this->Tab.Text.Set(
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Silver },
+          { Color::White, Color::DarkBlue });
+    this->Tab.HotKey.Set(
+          { Color::DarkRed, Color::Gray },
+          { Color::Yellow, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::Yellow, Color::DarkBlue });
+    this->Tab.ListText.Set(
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::White });
+    this->Tab.ListHotKey.Set(
+          { Color::DarkRed, Color::Gray },
+          { Color::Yellow, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::White });
     this->Window.Background.Normal   = Color::Black;
     this->Window.Background.Inactive = Color::Black;
     this->Window.Background.Error    = Color::DarkRed;
