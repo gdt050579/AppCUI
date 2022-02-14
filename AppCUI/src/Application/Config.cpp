@@ -3,7 +3,7 @@ namespace AppCUI::Application
 {
 using namespace Graphics;
 
-void Config::SetDarkTheme()
+void Config::SetDefaultTheme()
 {
     this->SearchBar.Set(
           { Color::White, Color::DarkRed },

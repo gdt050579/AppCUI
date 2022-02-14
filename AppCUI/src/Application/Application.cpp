@@ -659,7 +659,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
     }
 
-    this->config.SetDarkTheme();
+    this->config.SetDefaultTheme();
 
     if (initData.CustomDesktopConstructor)
         this->AppDesktop = initData.CustomDesktopConstructor();

@@ -4784,7 +4784,7 @@ namespace Application
             } Background;
         } Window;
 
-        void SetDarkTheme();
+        void SetDefaultTheme();
     };
 
     EXPORT Config* GetAppConfig();
