@@ -5,6 +5,68 @@ using namespace AppCUI::Graphics;
 
 namespace AppCUI::Dialogs
 {
+#define SETUP_TO_CPP_MODE
+
+#ifdef SETUP_TO_CPP_MODE
+void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& output)
+{
+    output.Add("this->");
+    output.Add(name);
+    output.Add(" = {Color::");
+    output.Add(ColorUtils::GetColorName(c.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.Background));
+    output.Add("};\n");
+}
+void PrintColorToString(ObjectColorState& c, string_view name, AppCUI::Utils::String& output)
+{
+    output.Add("this->");
+    output.Add(name);
+    output.Add(".Set(");
+    output.Add("{Color::");
+    output.Add(ColorUtils::GetColorName(c.Focused.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.Focused.Background));
+    output.Add("}, ");
+
+    output.Add("{Color::");
+    output.Add(ColorUtils::GetColorName(c.Normal.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.Normal.Background));
+    output.Add("}, ");
+
+    output.Add("{Color::");
+    output.Add(ColorUtils::GetColorName(c.Inactive.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.Inactive.Background));
+    output.Add("}, ");
+
+    output.Add("{Color::");
+    output.Add(ColorUtils::GetColorName(c.Hovered.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.Hovered.Background));
+    output.Add("}, ");
+
+    output.Add("{Color::");
+    output.Add(ColorUtils::GetColorName(c.PressedOrSelected.Foreground));
+    output.Add(" , Color::");
+    output.Add(ColorUtils::GetColorName(c.PressedOrSelected.Background));
+    output.Add("}};\n");
+}
+#    define OUTPUT_CPP(name) PrintColorToString(cfg.name, #    name, output);
+void CreateCPPCode(AppCUI::Application::Config& cfg, AppCUI::Utils::String& output)
+{
+    OUTPUT_CPP(SearchBar);
+    OUTPUT_CPP(Border);
+    OUTPUT_CPP(Lines);
+    OUTPUT_CPP(Editor);
+    OUTPUT_CPP(LineMarker);
+    OUTPUT_CPP(Button.Text);
+    OUTPUT_CPP(Button.HotKey);
+    OUTPUT_CPP(Button.ShadowColor);
+}
+#endif
+
 constexpr int BUTTON_CMD_CLOSE = 1;
 
 enum class PreviewWindowID : uint32
@@ -228,6 +290,10 @@ class ConfigProperty : public PropertiesInterface
   public:
     ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None), propID(PropID::None)
     {
+    }
+    inline AppCUI::Application::Config& GetConfig()
+    {
+        return obj;
     }
     void SetCategoryAndProperty(string_view name, PropID pID)
     {
@@ -679,7 +745,7 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(4, y + 2, " Tab 4      ", obj.Tab.ListText.Focused, obj.Tab.ListHotKey.Focused, 5);
         r.WriteSingleLineText(5, 5, "Focused", obj.Text.Normal);
 
-        r.FillRectSize(5 + (w*1), 4, w, h, ' ', obj.Tab.Text.PressedOrSelected);
+        r.FillRectSize(5 + (w * 1), 4, w, h, ' ', obj.Tab.Text.PressedOrSelected);
         r.WriteSingleLineText(
               5 + (w * 1),
               3,
@@ -697,11 +763,7 @@ class ConfigProperty : public PropertiesInterface
 
         r.FillRectSize(5 + (w * 2), 4, w, h, ' ', obj.Tab.Text.Inactive);
         r.WriteSingleLineText(
-              5 + (w * 2),
-              3,
-              " Tab 1        ",
-              obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive,
-              1);
+              5 + (w * 2), 3, " Tab 1        ", obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive, 1);
         r.WriteSingleLineText(
               5 + (w * 2), y + 0, " Tab 2      ", obj.Tab.ListText.Inactive, obj.Tab.ListHotKey.Inactive, 5);
         r.WriteSingleLineText(
@@ -1981,6 +2043,22 @@ class ThemeEditorDialog : public Window
                 return true;
             }
         }
+        return false;
+    }
+    bool OnKeyEvent(Input::Key keyCode, char16 charCode) override
+    {
+        if (Window::OnKeyEvent(keyCode, charCode))
+            return true;
+#ifdef SETUP_TO_CPP_MODE
+        if (keyCode == Input::Key::F1)
+        {
+            AppCUI::Utils::String temp;
+            temp.Create(8192);
+            CreateCPPCode(cfg.GetConfig(), temp);
+            AppCUI::OS::Clipboard::SetText(temp);
+            return true;
+        }
+#endif
         return false;
     }
 };
