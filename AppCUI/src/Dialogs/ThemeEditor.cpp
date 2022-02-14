@@ -1920,6 +1920,7 @@ class ThemeEditorDialog : public Window
     ConfigProperty cfg;
     Reference<PreviewControl> pc;
     Reference<ComboBox> previewWindow;
+    Reference<ComboBox> themeMode;
 
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
@@ -1935,6 +1936,11 @@ class ThemeEditorDialog : public Window
         Factory::Label::Create(this, "Preview &Window", "x:1,y:1,w:15");
         previewWindow = Factory::ComboBox::Create(this, "x:17,y:1,w:18", "Normal,Inactive,Error,Warning,Notification");
         previewWindow->SetCurentItemIndex(0);
+        previewWindow->SetHotKey('W');
+        Factory::Label::Create(this, "&Theme mode", "x:40,y:1,w:11");
+        themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1", "Default");
+        themeMode->SetCurentItemIndex(0);
+        themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);
     }
     void UpdateCategoryAndProperty()
