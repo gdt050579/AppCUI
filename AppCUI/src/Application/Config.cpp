@@ -193,6 +193,53 @@ void Config::SetDefaultTheme()
 }
 void Config::SetDarkTheme()
 {
-    
+    this->SearchBar.Set(
+          { Color::White, Color::DarkRed },
+          { Color::Silver, Color::DarkRed },
+          { Color::Gray, Color::DarkRed },
+          { Color::Yellow, Color::DarkRed },
+          { Color::White, Color::DarkRed });
+    this->Border.Set(
+          { Color::White, Color::Transparent },
+          { Color::Silver, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Transparent },
+          { Color::Aqua, Color::Transparent });
+    this->Lines.Set(
+          { Color::White, Color::Transparent },
+          { Color::Silver, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Transparent },
+          { Color::Aqua, Color::Transparent });
+    this->Editor.Set(
+          { Color::White, Color::Black },
+          { Color::Silver, Color::Black },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Black },
+          { Color::White, Color::Black });
+    this->LineMarker.Set(
+          { Color::Black, Color::Gray },
+          { Color::White, Color::Blue },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Blue },
+          { Color::Black, Color::Gray });
+    this->Button.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Black },
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::Olive });
+    this->Button.HotKey.Set(
+          { Color::Magenta, Color::White },
+          { Color::DarkRed, Color::Gray },
+          { Color::Gray, Color::Black },
+          { Color::Magenta, Color::Yellow },
+          { Color::DarkRed, Color::Olive });
+    this->Button.ShadowColor         = { Color::DarkBlue, Color::Transparent };
+    this->Window.Background.Normal   = Color::Black;
+    this->Window.Background.Inactive = Color::Black;
+    this->Window.Background.Error    = Color::DarkRed;
+    this->Window.Background.Warning  = Color::Black;
+    this->Window.Background.Info     = Color::Black;
 }
 } // namespace AppCUI::Application

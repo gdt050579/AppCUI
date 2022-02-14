@@ -8,6 +8,14 @@ namespace AppCUI::Dialogs
 #define SETUP_TO_CPP_MODE
 
 #ifdef SETUP_TO_CPP_MODE
+void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& output)
+{
+    output.Add("this->");
+    output.Add(name);
+    output.Add(" = Color::");
+    output.Add(ColorUtils::GetColorName(c));
+    output.Add(";\n");
+}
 void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& output)
 {
     output.Add("this->");
@@ -64,6 +72,12 @@ void CreateCPPCode(AppCUI::Application::Config& cfg, AppCUI::Utils::String& outp
     OUTPUT_CPP(Button.Text);
     OUTPUT_CPP(Button.HotKey);
     OUTPUT_CPP(Button.ShadowColor);
+
+    OUTPUT_CPP(Window.Background.Normal);
+    OUTPUT_CPP(Window.Background.Inactive);
+    OUTPUT_CPP(Window.Background.Error);
+    OUTPUT_CPP(Window.Background.Warning);
+    OUTPUT_CPP(Window.Background.Info);
 }
 #endif
 
