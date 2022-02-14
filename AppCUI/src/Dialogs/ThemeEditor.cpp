@@ -51,7 +51,7 @@ void PrintColorToString(ObjectColorState& c, string_view name, AppCUI::Utils::St
     output.Add(ColorUtils::GetColorName(c.PressedOrSelected.Foreground));
     output.Add(" , Color::");
     output.Add(ColorUtils::GetColorName(c.PressedOrSelected.Background));
-    output.Add("}};\n");
+    output.Add("});\n");
 }
 #    define OUTPUT_CPP(name) PrintColorToString(cfg.name, #    name, output);
 void CreateCPPCode(AppCUI::Application::Config& cfg, AppCUI::Utils::String& output)

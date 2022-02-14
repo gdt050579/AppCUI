@@ -193,6 +193,6 @@ void Config::SetDefaultTheme()
 }
 void Config::SetDarkTheme()
 {
-
+    
 }
 } // namespace AppCUI::Application
