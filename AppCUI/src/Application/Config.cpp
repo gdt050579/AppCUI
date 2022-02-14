@@ -189,5 +189,10 @@ void Config::SetDefaultTheme()
     this->Window.Background.Error    = Color::DarkRed;
     this->Window.Background.Warning  = Color::Olive;
     this->Window.Background.Info     = Color::DarkGreen;
+
+}
+void Config::SetDarkTheme()
+{
+
 }
 } // namespace AppCUI::Application
