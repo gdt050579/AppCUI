@@ -69,9 +69,71 @@ void CreateCPPCode(AppCUI::Application::Config& cfg, AppCUI::Utils::String& outp
     OUTPUT_CPP(Lines);
     OUTPUT_CPP(Editor);
     OUTPUT_CPP(LineMarker);
+
     OUTPUT_CPP(Button.Text);
     OUTPUT_CPP(Button.HotKey);
-    OUTPUT_CPP(Button.ShadowColor);
+
+    OUTPUT_CPP(Text.Normal);
+    OUTPUT_CPP(Text.HotKey);
+    OUTPUT_CPP(Text.Inactive);
+    OUTPUT_CPP(Text.Error);
+    OUTPUT_CPP(Text.Warning);
+    OUTPUT_CPP(Text.Hovered);
+    OUTPUT_CPP(Text.Focused);
+    OUTPUT_CPP(Text.Highlighted);
+    OUTPUT_CPP(Text.Emphasized1);
+    OUTPUT_CPP(Text.Emphasized2);
+
+    OUTPUT_CPP(Symbol.Inactive);
+    OUTPUT_CPP(Symbol.Hovered);
+    OUTPUT_CPP(Symbol.Pressed);
+    OUTPUT_CPP(Symbol.Checked);
+    OUTPUT_CPP(Symbol.Unchecked);
+    OUTPUT_CPP(Symbol.Unknown);
+    OUTPUT_CPP(Symbol.Desktop);
+    OUTPUT_CPP(Symbol.Arrows);
+    OUTPUT_CPP(Symbol.Close);
+    OUTPUT_CPP(Symbol.Maximized);
+    OUTPUT_CPP(Symbol.Resize);
+
+    OUTPUT_CPP(Cursor.Normal);
+    OUTPUT_CPP(Cursor.Inactive);
+    OUTPUT_CPP(Cursor.OverInactiveItem);
+    OUTPUT_CPP(Cursor.OverSelection);
+
+    OUTPUT_CPP(Selection.Editor);
+    OUTPUT_CPP(Selection.LineMarker);
+    OUTPUT_CPP(Selection.Text);
+    OUTPUT_CPP(Selection.SearchMarker);
+    OUTPUT_CPP(Selection.SimilarText);
+
+    OUTPUT_CPP(ProgressStatus.Empty);
+    OUTPUT_CPP(ProgressStatus.Full);
+
+    OUTPUT_CPP(Menu.Text);
+    OUTPUT_CPP(Menu.HotKey);
+    OUTPUT_CPP(Menu.ShortCut);
+    OUTPUT_CPP(Menu.Symbol);
+    OUTPUT_CPP(ParentMenu.Text);
+    OUTPUT_CPP(ParentMenu.HotKey);
+    OUTPUT_CPP(ParentMenu.ShortCut);
+    OUTPUT_CPP(ParentMenu.Symbol);
+
+    OUTPUT_CPP(Header.Text);
+    OUTPUT_CPP(Header.HotKey);
+    OUTPUT_CPP(Header.Symbol);
+
+    OUTPUT_CPP(ScrollBar.Bar);
+    OUTPUT_CPP(ScrollBar.Arrows);
+    OUTPUT_CPP(ScrollBar.Position);
+
+    OUTPUT_CPP(ToolTip.Text);
+    OUTPUT_CPP(ToolTip.Arrow);
+
+    OUTPUT_CPP(Tab.Text);
+    OUTPUT_CPP(Tab.HotKey);
+    OUTPUT_CPP(Tab.ListText);
+    OUTPUT_CPP(Tab.ListHotKey);
 
     OUTPUT_CPP(Window.Background.Normal);
     OUTPUT_CPP(Window.Background.Inactive);
