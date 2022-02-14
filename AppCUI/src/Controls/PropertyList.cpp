@@ -1657,7 +1657,7 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         MoveTo(this->items.Len());
         return true;
     case Key::PageUp:
-        if ((h >= 1) && (((uint32) h) > this->currentPos))
+        if ((h >= 1) && (((uint32) h) < this->currentPos))
             MoveTo(this->currentPos - (uint32) h);
         else
             MoveTo(0);
