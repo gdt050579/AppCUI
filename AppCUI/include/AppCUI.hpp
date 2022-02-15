@@ -4786,6 +4786,8 @@ namespace Application
 
         void SetDefaultTheme();
         void SetDarkTheme();
+        bool Save(const std::filesystem::path &outputFile);
+        bool Load(const std::filesystem::path& inputFile);
     };
 
     EXPORT Config* GetAppConfig();

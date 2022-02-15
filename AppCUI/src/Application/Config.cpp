@@ -3,6 +3,14 @@ namespace AppCUI::Application
 {
 using namespace Graphics;
 
+bool Config::Save(const std::filesystem::path& outputFile)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool Config::Load(const std::filesystem::path& inputFile)
+{
+    NOT_IMPLEMENTED(false);
+}
 void Config::SetDefaultTheme()
 {
     this->SearchBar.Set(
@@ -16,8 +24,7 @@ void Config::SetDefaultTheme()
           { Color::Silver, Color::Transparent },
           { Color::Gray, Color::Transparent },
           { Color::Yellow, Color::Transparent },
-          { Color::Yellow, Color::Magenta });      
-        
+          { Color::Yellow, Color::Magenta });
 
     this->Lines.Set(
           { Color::DarkGreen, Color::Transparent },
@@ -50,7 +57,7 @@ void Config::SetDefaultTheme()
           { Color::Gray, Color::Black },
           { Color::Magenta, Color::Yellow },
           { Color::DarkRed, Color::Olive });
-        this->Button.ShadowColor = { Color::Black, Color::Transparent };
+    this->Button.ShadowColor = { Color::Black, Color::Transparent };
 
     this->Text.Error       = { Color::Red, Color::Transparent };
     this->Text.Warning     = { Color::Olive, Color::Transparent };
@@ -126,7 +133,6 @@ void Config::SetDefaultTheme()
           { Color::DarkRed, Color::Gray },
           { Color::White, Color::Gray });
 
-
     this->ParentMenu.ShortCut = this->ParentMenu.HotKey;
 
     this->ParentMenu.Symbol.Set(
@@ -189,7 +195,6 @@ void Config::SetDefaultTheme()
     this->Window.Background.Error    = Color::DarkRed;
     this->Window.Background.Warning  = Color::Olive;
     this->Window.Background.Info     = Color::DarkGreen;
-
 }
 void Config::SetDarkTheme()
 {

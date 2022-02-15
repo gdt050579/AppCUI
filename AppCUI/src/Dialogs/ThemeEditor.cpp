@@ -2099,6 +2099,34 @@ class ThemeEditorDialog : public Window
             cfg.SetCategoryAndProperty(prop->GetCurrentItemCategory(), PropID::None);
         }
     }
+    void SaveTheme()
+    {
+        auto res =
+              FileDialog::ShowSaveFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
+        if (res.has_value())
+        {
+            if (this->cfg.GetConfig().Save(res.value())==false)
+            {
+                MessageBox::ShowError("Save", "Fail to save theme file !");
+            }
+            else
+            {
+                MessageBox::ShowNotification("Save", "Theme file saved !");
+            }
+        }
+    }
+    void LoadTheme()
+    {
+        auto res =
+              FileDialog::ShowOpenFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
+        if (res.has_value())
+        {
+            if (this->cfg.GetConfig().Load(res.value()) == false)
+            {
+                MessageBox::ShowError("Load", "Fail to load theme from file !");
+            }
+        }   
+    }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
         if (Window::OnEvent(control, eventType, ID))
@@ -2113,6 +2141,12 @@ class ThemeEditorDialog : public Window
             case BUTTON_CMD_APPLY:
                 (*Application::GetAppConfig()) = cfg.GetConfig();
                 this->Exit(0);
+                return true;
+            case BUTTON_CMD_SAVE:
+                SaveTheme();
+                return true;
+            case BUTTON_CMD_LOAD:
+                LoadTheme();
                 return true;
             }
         }
