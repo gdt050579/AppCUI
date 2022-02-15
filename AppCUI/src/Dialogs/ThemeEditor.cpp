@@ -144,6 +144,9 @@ void CreateCPPCode(AppCUI::Application::Config& cfg, AppCUI::Utils::String& outp
 #endif
 
 constexpr int BUTTON_CMD_CLOSE = 1;
+constexpr int BUTTON_CMD_APPLY = 2;
+constexpr int BUTTON_CMD_SAVE  = 3;
+constexpr int BUTTON_CMD_LOAD  = 4;
 
 enum class PreviewWindowID : uint32
 {
@@ -2071,6 +2074,9 @@ class ThemeEditorDialog : public Window
         prop = Factory::PropertyList::Create(sp, "d:c", &cfg, PropertyListFlags::None);
         UpdateCategoryAndProperty();
         Factory::Button::Create(this, "&Close", "r:1,b:0,w:12", BUTTON_CMD_CLOSE);
+        Factory::Button::Create(this, "&Apply", "r:14,b:0,w:12", BUTTON_CMD_APPLY);
+        Factory::Button::Create(this, "&Save...", "r:27,b:0,w:12", BUTTON_CMD_SAVE);
+        Factory::Button::Create(this, "&Load...", "r:40,b:0,w:12", BUTTON_CMD_LOAD);
         Factory::Label::Create(this, "Preview &Window", "x:1,y:1,w:15");
         previewWindow = Factory::ComboBox::Create(this, "x:17,y:1,w:18", "Normal,Inactive,Error,Warning,Notification");
         previewWindow->SetCurentItemIndex(0);
@@ -2102,6 +2108,10 @@ class ThemeEditorDialog : public Window
             switch (ID)
             {
             case BUTTON_CMD_CLOSE:
+                this->Exit(0);
+                return true;
+            case BUTTON_CMD_APPLY:
+                (*Application::GetAppConfig()) = cfg.GetConfig();
                 this->Exit(0);
                 return true;
             }
