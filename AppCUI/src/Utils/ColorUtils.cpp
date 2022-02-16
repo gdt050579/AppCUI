@@ -13,6 +13,12 @@ uint8 color_indexes[HASH_DEVIDER] = { 0xFF, 0xFF, 0xFF, 2,    5,    16,   0xFF, 
                                       1,    13,   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 14,   12,   0xFF, 0xFF, 0xFF,
                                       0xFF, 3,    0xFF, 0xFF, 4,    6,    0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
+const uint8* SkipSpaces(const uint8* start, const uint8* end)
+{
+    while ((start < end) && ((*start) != ' ') && ((*start) != '\t') && ((*start) != '\n') && ((*start) != '\r'))
+        start++;
+    return start;
+}
 string_view ColorUtils::GetColorName(Graphics::Color color)
 {
     if (((uint8) color) < (sizeof(color_names) / sizeof(string_view)))
@@ -25,6 +31,9 @@ std::optional<Graphics::Color> ColorUtils::GetColor(std::string_view name)
     auto e        = p + name.length();
     uint32 hash   = 0;
     uint32 number = 0;
+    p             = SkipSpaces(p, e);
+    if (p >= e)
+        return std::nullopt;
     if (((*p) >= '0') && ((*p) <= '9'))
     {
         while (p < e)
@@ -35,9 +44,12 @@ std::optional<Graphics::Color> ColorUtils::GetColor(std::string_view name)
                 p++;
                 continue;
             }
-            // invalid number
-            return std::nullopt;
+            break;
         }
+        p = SkipSpaces(p, e);
+        // if not at the end of the string
+        if (p < e)
+            return std::nullopt;
     }
     else
     {
@@ -56,9 +68,12 @@ std::optional<Graphics::Color> ColorUtils::GetColor(std::string_view name)
                 p++;
                 continue;
             }
-            // invalid name
-            return std::nullopt;
+            break;
         }
+        p = SkipSpaces(p, e);
+        // if not at the end of the string
+        if (p < e)
+            return std::nullopt;
         number = color_indexes[hash % HASH_DEVIDER];
     }
     // check the value
@@ -68,5 +83,23 @@ std::optional<Graphics::Color> ColorUtils::GetColor(std::string_view name)
 }
 std::optional<Graphics::ColorPair> ColorUtils::GetColorPair(std::string_view name)
 {
+    auto s = (const char*) name.data();
+    auto e = s + name.length();
+    auto m = s;
+    while ((m < e) && ((*m) != ':') && ((*m) != ','))
+        m++;
+    auto col_1 = ColorUtils::GetColor(string_view( s, (size_t)(m - s) ));
+    if (!col_1.has_value())
+        return std::nullopt;
+    m++;
+    if (m<e)
+    {
+        auto col_2 = ColorUtils::GetColor(string_view( m, (size_t)(e - m) ));
+        if (!col_2.has_value())
+            return std::nullopt;
+        return Graphics::ColorPair{ col_1.value(), col_2.value() };
+    }
+    // if second parameter was not provided, consider the backgourn as transparent
+    return Graphics::ColorPair{ col_1.value(), Graphics::Color::Transparent };
 }
 } // namespace AppCUI::Utils
