@@ -15,7 +15,7 @@ uint8 color_indexes[HASH_DEVIDER] = { 0xFF, 0xFF, 0xFF, 2,    5,    16,   0xFF, 
 
 const uint8* SkipSpaces(const uint8* start, const uint8* end)
 {
-    while ((start < end) && ((*start) != ' ') && ((*start) != '\t') && ((*start) != '\n') && ((*start) != '\r'))
+    while ((start < end) && (((*start) == ' ') || ((*start) == '\t') || ((*start) == '\n') || ((*start) == '\r')))
         start++;
     return start;
 }
