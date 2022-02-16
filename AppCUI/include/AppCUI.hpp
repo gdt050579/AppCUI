@@ -1723,6 +1723,8 @@ namespace Utils
 
       public:
         static string_view GetColorName(Graphics::Color color);
+        static std::optional<Graphics::Color> GetColor(std::string_view name);
+        static std::optional<Graphics::ColorPair> GetColorPair(std::string_view name);
     };
 
     class EXPORT IniValueArray
