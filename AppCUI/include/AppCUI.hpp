@@ -1796,6 +1796,8 @@ namespace Utils
         optional<Graphics::Size> AsSize() const;
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
+        optional<Graphics::Color> AsColor() const;
+        optional<Graphics::ColorPair> AsColorPair() const;
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         uint32 ToUInt32(uint32 defaultValue = 0) const;
@@ -1808,6 +1810,8 @@ namespace Utils
         Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
+        Graphics::Color ToColor(Graphics::Color defaultColor = Graphics::Color::Transparent) const;
+        Graphics::ColorPair ToColorPair(Graphics::ColorPair defaultColorPair = Graphics::NoColorPair) const;
 
         bool IsArray() const;
         uint32 GetArrayCount() const;
