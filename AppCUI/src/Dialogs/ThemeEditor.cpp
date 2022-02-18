@@ -235,10 +235,12 @@ enum class PropID : uint32
     ProgressBarFull,
 
     // Button
+    ButtonTextFocused,
     ButtonTextNormal,
     ButtonTextHovered,
     ButtonTextSelected,
     ButtonTextInactive,
+    ButtonHotKeyFocused,
     ButtonHotKeyNormal,
     ButtonHotKeyHovered,
     ButtonHotKeySelected,
@@ -570,8 +572,10 @@ class ConfigProperty : public PropertiesInterface
         int x, y;
 
         x = (int) (sz.Width / 2) - 14;
-        y = (int) (sz.Height / 2) - 3;
-        DrawPreviewWindow(r, x - 2, y - 2, x + 27, y + 4, " Buttons ");
+        y = (int) (sz.Height / 2);
+        DrawPreviewWindow(r, x - 2, y - 4, x + 27, y + 4, " Buttons ");
+
+        PaintOneButton(r, x, y-2, "  Focused  ", ControlState::Focused, true);
         PaintOneButton(r, x, y, "  Regular  ", ControlState::Normal, true);
         PaintOneButton(r, x, y + 2, "  Hovered  ", ControlState::Hovered, true);
         PaintOneButton(r, x + 14, y, "  Inactiv  ", ControlState::Inactive, true);
@@ -1044,6 +1048,9 @@ class ConfigProperty : public PropertiesInterface
             return true;
 
         // Buttons
+        case PropID::ButtonTextFocused:
+            value = obj.Button.Text.Focused;
+            return true;
         case PropID::ButtonTextNormal:
             value = obj.Button.Text.Normal;
             return true;
@@ -1055,6 +1062,9 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::ButtonTextSelected:
             value = obj.Button.Text.PressedOrSelected;
+            return true;
+        case PropID::ButtonHotKeyFocused:
+            value = obj.Button.HotKey.Focused;
             return true;
         case PropID::ButtonHotKeyNormal:
             value = obj.Button.HotKey.Normal;
@@ -1503,6 +1513,9 @@ class ConfigProperty : public PropertiesInterface
             obj.ProgressStatus.Full.Background = std::get<Color>(value);
             return true;
 
+        case PropID::ButtonTextFocused:
+            obj.Button.Text.Focused = std::get<ColorPair>(value);
+            return true;
         case PropID::ButtonTextNormal:
             obj.Button.Text.Normal = std::get<ColorPair>(value);
             return true;
@@ -1514,6 +1527,9 @@ class ConfigProperty : public PropertiesInterface
             return true;
         case PropID::ButtonTextSelected:
             obj.Button.Text.PressedOrSelected = std::get<ColorPair>(value);
+            return true;
+        case PropID::ButtonHotKeyFocused:
+            obj.Button.HotKey.Focused = std::get<ColorPair>(value);
             return true;
         case PropID::ButtonHotKeyNormal:
             obj.Button.HotKey.Normal = std::get<ColorPair>(value);
@@ -1892,10 +1908,12 @@ class ConfigProperty : public PropertiesInterface
             { PT(PropID::ProgressBarEmpty), CAT(CatID::ProgressBar), "Empty", PropertyType::Color },
             { PT(PropID::ProgressBarFull), CAT(CatID::ProgressBar), "Full", PropertyType::Color },
             // Buttons
+            { PT(PropID::ButtonTextFocused), CAT(CatID::Button), "Text (focused)", PropertyType::ColorPair },
             { PT(PropID::ButtonTextNormal), CAT(CatID::Button), "Text (normal)", PropertyType::ColorPair },
             { PT(PropID::ButtonTextHovered), CAT(CatID::Button), "Text (hovered)", PropertyType::ColorPair },
             { PT(PropID::ButtonTextSelected), CAT(CatID::Button), "Text (pressed)", PropertyType::ColorPair },
             { PT(PropID::ButtonTextInactive), CAT(CatID::Button), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropID::ButtonHotKeyFocused), CAT(CatID::Button), "HotKey (focused)", PropertyType::ColorPair },
             { PT(PropID::ButtonHotKeyNormal), CAT(CatID::Button), "HotKey (normal)", PropertyType::ColorPair },
             { PT(PropID::ButtonHotKeyHovered), CAT(CatID::Button), "HotKey (hovered)", PropertyType::ColorPair },
             { PT(PropID::ButtonHotKeySelected), CAT(CatID::Button), "HotKey (pressed)", PropertyType::ColorPair },
