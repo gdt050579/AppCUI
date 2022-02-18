@@ -5,6 +5,14 @@ using namespace Graphics;
 using namespace Utils;
 using namespace OS;
 
+bool WriteKeyToString(Color col, std::string_view name, Utils::String& output)
+{
+    CHECK(output.Add(name), false, "");
+    CHECK(output.Add(" = "), false, "");
+    CHECK(output.Add(AppCUI::Utils::ColorUtils::GetColorName(col)), false, "");
+    CHECK(output.Add("\n"), false, "");
+    return true;
+}
 bool WriteKeyToString(ColorPair col, std::string_view name, std::string_view field, Utils::String& output)
 {
     CHECK(output.Add(name), false, "");
@@ -31,7 +39,8 @@ bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils:
 }
 #define WRITE_COLORSTATE(key, name) CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
 #define WRITE_COLORPAIR(key, name)  CHECK(WriteKeyToString(key, name, "", temp), false, "Fail to write key: %s", name);
-#define WRITE_SECTION(name)         CHECK(temp.Add(name),false,"Fail to create section: %s",name);
+#define WRITE_COLOR(key, name)      CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
+#define WRITE_SECTION(name)         CHECK(temp.Add(name), false, "Fail to create section: %s", name);
 bool Config::Save(const std::filesystem::path& outputFile)
 {
     AppCUI::Utils::LocalString<8192> temp;
@@ -61,7 +70,6 @@ bool Config::Save(const std::filesystem::path& outputFile)
     WRITE_COLORPAIR(this->Text.Emphasized1, "Emphasized1");
     WRITE_COLORPAIR(this->Text.Emphasized2, "Emphasized2");
 
-
     WRITE_SECTION("\n[Symbol]\n");
     WRITE_COLORPAIR(this->Symbol.Inactive, "Inactive");
     WRITE_COLORPAIR(this->Symbol.Hovered, "Hovered");
@@ -81,6 +89,55 @@ bool Config::Save(const std::filesystem::path& outputFile)
     WRITE_COLORPAIR(this->Cursor.OverInactiveItem, "OverInactiveItem");
     WRITE_COLORPAIR(this->Cursor.OverSelection, "OverSelection");
 
+    WRITE_SECTION("\n[Selection]\n");
+    WRITE_COLORPAIR(this->Selection.Editor, "Editor");
+    WRITE_COLORPAIR(this->Selection.LineMarker, "LineMarker");
+    WRITE_COLORPAIR(this->Selection.Text, "Text");
+    WRITE_COLORPAIR(this->Selection.SearchMarker, "SearchMarker");
+    WRITE_COLORPAIR(this->Selection.SimilarText, "SimilarText");
+
+    WRITE_SECTION("\n[ProgressStatus]\n");
+    WRITE_COLORPAIR(this->ProgressStatus.Empty, "Empty");
+    WRITE_COLORPAIR(this->ProgressStatus.Full, "Full");
+
+    WRITE_SECTION("\n[Menu]\n");
+    WRITE_COLORSTATE(this->Menu.Text, "Text");
+    WRITE_COLORSTATE(this->Menu.HotKey, "HotKey");
+    WRITE_COLORSTATE(this->Menu.ShortCut, "ShortCut");
+    WRITE_COLORSTATE(this->Menu.Symbol, "Symbol");
+
+    WRITE_SECTION("\n[ParentMenu]\n");
+    WRITE_COLORSTATE(this->ParentMenu.Text, "Text");
+    WRITE_COLORSTATE(this->ParentMenu.HotKey, "HotKey");
+    WRITE_COLORSTATE(this->ParentMenu.ShortCut, "ShortCut");
+    WRITE_COLORSTATE(this->ParentMenu.Symbol, "Symbol");
+
+    WRITE_SECTION("\n[Header]\n");
+    WRITE_COLORSTATE(this->Header.Text, "Text");
+    WRITE_COLORSTATE(this->Header.HotKey, "HotKey");
+    WRITE_COLORSTATE(this->Header.Symbol, "Symbol");
+
+    WRITE_SECTION("\n[ScrollBar]\n");
+    WRITE_COLORSTATE(this->ScrollBar.Bar, "Bar");
+    WRITE_COLORSTATE(this->ScrollBar.Arrows, "Arrows");
+    WRITE_COLORSTATE(this->ScrollBar.Position, "Position");
+
+    WRITE_SECTION("\n[ToolTip]\n");
+    WRITE_COLORPAIR(this->ToolTip.Text, "Text");
+    WRITE_COLORPAIR(this->ToolTip.Arrow, "Arrow");
+
+    WRITE_SECTION("\n[Tab]\n");
+    WRITE_COLORSTATE(this->Tab.Text, "Text");
+    WRITE_COLORSTATE(this->Tab.HotKey, "HotKey");
+    WRITE_COLORSTATE(this->Tab.ListText, "ListText");
+    WRITE_COLORSTATE(this->Tab.ListHotKey, "ListHotKey");
+
+    WRITE_SECTION("\n[Window]\n");
+    WRITE_COLOR(this->Window.Background.Normal, "Normal");
+    WRITE_COLOR(this->Window.Background.Inactive, "Inactive");
+    WRITE_COLOR(this->Window.Background.Error, "Error");
+    WRITE_COLOR(this->Window.Background.Warning, "Warning");
+    WRITE_COLOR(this->Window.Background.Info, "Info");
 
     // save
     return File::WriteContent(outputFile, temp.ToStringView());
