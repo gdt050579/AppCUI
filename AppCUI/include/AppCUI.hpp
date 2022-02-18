@@ -2028,6 +2028,7 @@ namespace OS
 
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
         static bool WriteContent(const std::filesystem::path& path, Utils::BufferView buf);
+        static bool WriteContent(const std::filesystem::path& path, string_view text);
     };
 
     class EXPORT Library
