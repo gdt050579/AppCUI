@@ -41,6 +41,16 @@ bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils:
 #define WRITE_COLORPAIR(key, name)  CHECK(WriteKeyToString(key, name, "", temp), false, "Fail to write key: %s", name);
 #define WRITE_COLOR(key, name)      CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
 #define WRITE_SECTION(name)         CHECK(temp.Add(name), false, "Fail to create section: %s", name);
+
+#define READ_COLORSTATE(key, name)                                                                                     \
+    this->key.Focused           = sect.GetValue(#name ".Focused").ToColorPair();                                       \
+    this->key.Normal            = sect.GetValue(#name ".Normal").ToColorPair();                                        \
+    this->key.Inactive          = sect.GetValue(#name ".Inactive").ToColorPair();                                      \
+    this->key.Hovered           = sect.GetValue(#name ".Hovered").ToColorPair();                                       \
+    this->key.PressedOrSelected = sect.GetValue(#name ".Pressed").ToColorPair();
+#define READ_COLORPAIR(key, name) this->key = sect.GetValue(#name).ToColorPair();
+#define READ_COLOR(key, name)     this->key = sect.GetValue(#name).ToColor();
+
 bool Config::Save(const std::filesystem::path& outputFile)
 {
     AppCUI::Utils::LocalString<8192> temp;
@@ -144,7 +154,117 @@ bool Config::Save(const std::filesystem::path& outputFile)
 }
 bool Config::Load(const std::filesystem::path& inputFile)
 {
-    NOT_IMPLEMENTED(false);
+    Utils::IniObject ini;
+    Utils::IniSection sect;
+    CHECK(ini.CreateFromFile(inputFile), false, "");
+    if ((sect = ini.GetSection("General")).Exists())
+    {
+        READ_COLORSTATE(SearchBar, SearchBar);
+        READ_COLORSTATE(Border, Border);
+        READ_COLORSTATE(Lines, Lines);
+        READ_COLORSTATE(Editor, Editor);
+        READ_COLORSTATE(LineMarker, LineMarker);
+    }
+    if ((sect = ini.GetSection("Button")).Exists())
+    {
+        READ_COLORSTATE(Button.Text, Text);
+        READ_COLORSTATE(Button.HotKey, HotKey);
+        READ_COLORPAIR(Button.ShadowColor, ShadowColor);
+    }
+    if ((sect = ini.GetSection("Text")).Exists())
+    {
+        READ_COLORPAIR(Text.Normal, Normal);
+        READ_COLORPAIR(Text.HotKey, HotKey);
+        READ_COLORPAIR(Text.Inactive, Inactive);
+        READ_COLORPAIR(Text.Error, Error);
+        READ_COLORPAIR(Text.Warning, Warning);
+        READ_COLORPAIR(Text.Hovered, Hovered);
+        READ_COLORPAIR(Text.Focused, Focused);
+        READ_COLORPAIR(Text.Highlighted, Highlighted);
+        READ_COLORPAIR(Text.Emphasized1, Emphasized1);
+        READ_COLORPAIR(Text.Emphasized2, Emphasized2);
+    }
+    if ((sect = ini.GetSection("Symbol")).Exists())
+    {
+        READ_COLORPAIR(Symbol.Inactive, Inactive);
+        READ_COLORPAIR(Symbol.Hovered, Hovered);
+        READ_COLORPAIR(Symbol.Pressed, Pressed);
+        READ_COLORPAIR(Symbol.Checked, Checked);
+        READ_COLORPAIR(Symbol.Unchecked, Unchecked);
+        READ_COLORPAIR(Symbol.Unknown, Unknown);
+        READ_COLORPAIR(Symbol.Desktop, Desktop);
+        READ_COLORPAIR(Symbol.Arrows, Arrows);
+        READ_COLORPAIR(Symbol.Close, Close);
+        READ_COLORPAIR(Symbol.Maximized, Maximized);
+        READ_COLORPAIR(Symbol.Resize, Resize);
+    }
+    if ((sect = ini.GetSection("Cursor")).Exists())
+    {
+        READ_COLORPAIR(Cursor.Normal, Normal);
+        READ_COLORPAIR(Cursor.Inactive, Inactive);
+        READ_COLORPAIR(Cursor.OverInactiveItem, OverInactiveItem);
+        READ_COLORPAIR(Cursor.OverSelection, OverSelection);
+    }
+    if ((sect = ini.GetSection("Selection")).Exists())
+    {
+        READ_COLORPAIR(Selection.Editor, Editor);
+        READ_COLORPAIR(Selection.LineMarker, LineMarker);
+        READ_COLORPAIR(Selection.Text, Text);
+        READ_COLORPAIR(Selection.SearchMarker, SearchMarker);
+        READ_COLORPAIR(Selection.SimilarText, SimilarText);
+    }
+    if ((sect = ini.GetSection("ProgressStatus")).Exists())
+    {
+        READ_COLORPAIR(ProgressStatus.Empty, Empty);
+        READ_COLORPAIR(ProgressStatus.Full, Full);
+    }
+    if ((sect = ini.GetSection("Menu")).Exists())
+    {
+        READ_COLORSTATE(Menu.Text, Text);
+        READ_COLORSTATE(Menu.HotKey, HotKey);
+        READ_COLORSTATE(Menu.ShortCut, ShortCut);
+        READ_COLORSTATE(Menu.Symbol, Symbol);
+    }
+    if ((sect = ini.GetSection("ParentMenu")).Exists())
+    {
+        READ_COLORSTATE(ParentMenu.Text, Text);
+        READ_COLORSTATE(ParentMenu.HotKey, HotKey);
+        READ_COLORSTATE(ParentMenu.ShortCut, ShortCut);
+        READ_COLORSTATE(ParentMenu.Symbol, Symbol);
+    }
+    if ((sect = ini.GetSection("Header")).Exists())
+    {
+        READ_COLORSTATE(Header.Text, Text);
+        READ_COLORSTATE(Header.HotKey, HotKey);
+        READ_COLORSTATE(Header.Symbol, Symbol);
+    }
+    if ((sect = ini.GetSection("ScrollBar")).Exists())
+    {
+        READ_COLORSTATE(ScrollBar.Bar, Bar);
+        READ_COLORSTATE(ScrollBar.Arrows, Arrows);
+        READ_COLORSTATE(ScrollBar.Position, Position);
+    }
+    if ((sect = ini.GetSection("ToolTip")).Exists())
+    {
+        READ_COLORPAIR(ToolTip.Text, Text);
+        READ_COLORPAIR(ToolTip.Arrow, Arrow);
+    }
+    if ((sect = ini.GetSection("Tab")).Exists())
+    {
+        READ_COLORSTATE(Tab.Text, Text);
+        READ_COLORSTATE(Tab.HotKey, HotKey);
+        READ_COLORSTATE(Tab.ListText, ListText);
+        READ_COLORSTATE(Tab.ListHotKey, ListHotKey);
+    }
+    if ((sect = ini.GetSection("Window")).Exists())
+    {
+        READ_COLOR(Window.Background.Normal, Normal);
+        READ_COLOR(Window.Background.Inactive, Inactive);
+        READ_COLOR(Window.Background.Error, Error);
+        READ_COLOR(Window.Background.Warning, Warning);
+        READ_COLOR(Window.Background.Info, Info);
+    }
+    return true;
 }
 void Config::SetDefaultTheme()
 {
