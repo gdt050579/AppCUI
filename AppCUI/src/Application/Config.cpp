@@ -31,22 +31,56 @@ bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils:
 }
 #define WRITE_COLORSTATE(key, name) CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
 #define WRITE_COLORPAIR(key, name)  CHECK(WriteKeyToString(key, name, "", temp), false, "Fail to write key: %s", name);
+#define WRITE_SECTION(name)         CHECK(temp.Add(name),false,"Fail to create section: %s",name);
 bool Config::Save(const std::filesystem::path& outputFile)
 {
     AppCUI::Utils::LocalString<8192> temp;
 
     // sections
-    temp.Add("[General]\n");
+    WRITE_SECTION("[General]\n");
     WRITE_COLORSTATE(this->SearchBar, "SearchBar");
     WRITE_COLORSTATE(this->Border, "Border");
     WRITE_COLORSTATE(this->Lines, "Lines");
     WRITE_COLORSTATE(this->Editor, "Editor");
     WRITE_COLORSTATE(this->LineMarker, "LineMarker");
 
-    temp.Add("\n[Button]\n");
+    WRITE_SECTION("\n[Button]\n");
     WRITE_COLORSTATE(this->Button.Text, "Text");
     WRITE_COLORSTATE(this->Button.HotKey, "HotKey");
     WRITE_COLORPAIR(this->Button.ShadowColor, "Shadow");
+
+    WRITE_SECTION("\n[Text]\n");
+    WRITE_COLORPAIR(this->Text.Normal, "Normal");
+    WRITE_COLORPAIR(this->Text.HotKey, "HotKey");
+    WRITE_COLORPAIR(this->Text.Inactive, "Inactive");
+    WRITE_COLORPAIR(this->Text.Error, "Error");
+    WRITE_COLORPAIR(this->Text.Warning, "Warning");
+    WRITE_COLORPAIR(this->Text.Hovered, "Hovered");
+    WRITE_COLORPAIR(this->Text.Focused, "Focused");
+    WRITE_COLORPAIR(this->Text.Highlighted, "Highlighted");
+    WRITE_COLORPAIR(this->Text.Emphasized1, "Emphasized1");
+    WRITE_COLORPAIR(this->Text.Emphasized2, "Emphasized2");
+
+
+    WRITE_SECTION("\n[Symbol]\n");
+    WRITE_COLORPAIR(this->Symbol.Inactive, "Inactive");
+    WRITE_COLORPAIR(this->Symbol.Hovered, "Hovered");
+    WRITE_COLORPAIR(this->Symbol.Pressed, "Pressed");
+    WRITE_COLORPAIR(this->Symbol.Checked, "Checked");
+    WRITE_COLORPAIR(this->Symbol.Unchecked, "Unchecked");
+    WRITE_COLORPAIR(this->Symbol.Unknown, "Unknown");
+    WRITE_COLORPAIR(this->Symbol.Desktop, "Desktop");
+    WRITE_COLORPAIR(this->Symbol.Arrows, "Arrows");
+    WRITE_COLORPAIR(this->Symbol.Close, "Close");
+    WRITE_COLORPAIR(this->Symbol.Maximized, "Maximized");
+    WRITE_COLORPAIR(this->Symbol.Resize, "Resize");
+
+    WRITE_SECTION("\n[Cursor]\n");
+    WRITE_COLORPAIR(this->Cursor.Inactive, "Inactive");
+    WRITE_COLORPAIR(this->Cursor.Normal, "Normal");
+    WRITE_COLORPAIR(this->Cursor.OverInactiveItem, "OverInactiveItem");
+    WRITE_COLORPAIR(this->Cursor.OverSelection, "OverSelection");
+
 
     // save
     return File::WriteContent(outputFile, temp.ToStringView());
