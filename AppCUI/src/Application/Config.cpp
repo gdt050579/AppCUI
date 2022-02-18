@@ -5,40 +5,48 @@ using namespace Graphics;
 using namespace Utils;
 using namespace OS;
 
-void WriteKeyToString(ColorPair col, std::string_view name, std::string_view field, Utils::String& output)
+bool WriteKeyToString(ColorPair col, std::string_view name, std::string_view field, Utils::String& output)
 {
-    output.Add(name);
-    output.Add(field);
-    output.Add(" = ");
-    output.Add(AppCUI::Utils::ColorUtils::GetColorName(col.Foreground));
-    output.Add(",");
-    output.Add(AppCUI::Utils::ColorUtils::GetColorName(col.Background));
-    output.Add("\n");
+    CHECK(output.Add(name), false, "");
+    if (field.length() > 0)
+    {
+        CHECK(output.AddChar('.'), false, "");
+        CHECK(output.Add(field), false, "");
+    }
+    CHECK(output.Add(" = "), false, "");
+    CHECK(output.Add(AppCUI::Utils::ColorUtils::GetColorName(col.Foreground)), false, "");
+    CHECK(output.Add(","), false, "");
+    CHECK(output.Add(AppCUI::Utils::ColorUtils::GetColorName(col.Background)), false, "");
+    CHECK(output.Add("\n"), false, "");
+    return true;
 }
-void WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils::String& output)
+bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils::String& output)
 {
-    WriteKeyToString(col.Focused, name, "Focused", output);
-    WriteKeyToString(col.Normal, name, "Regular", output);
-    WriteKeyToString(col.Inactive, name, "Inactive", output);
-    WriteKeyToString(col.Hovered, name, "Hovered", output);
-    WriteKeyToString(col.PressedOrSelected, name, "Pressed", output);
+    CHECK(WriteKeyToString(col.Focused, name, "Focused", output), false, "");
+    CHECK(WriteKeyToString(col.Normal, name, "Regular", output), false, "");
+    CHECK(WriteKeyToString(col.Inactive, name, "Inactive", output), false, "");
+    CHECK(WriteKeyToString(col.Hovered, name, "Hovered", output), false, "");
+    CHECK(WriteKeyToString(col.PressedOrSelected, name, "Pressed", output), false, "");
+    return true;
 }
+#define WRITE_COLORSTATE(key, name) CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
+#define WRITE_COLORPAIR(key, name)  CHECK(WriteKeyToString(key, name, "", temp), false, "Fail to write key: %s", name);
 bool Config::Save(const std::filesystem::path& outputFile)
 {
     AppCUI::Utils::LocalString<8192> temp;
 
     // sections
     temp.Add("[General]\n");
-    WriteKeyToString(this->SearchBar, "SearchBar", temp);
-    WriteKeyToString(this->Border, "Border", temp);
-    WriteKeyToString(this->Lines, "Lines", temp);
-    WriteKeyToString(this->Editor, "Editor", temp);
-    WriteKeyToString(this->LineMarker, "LineMarker", temp);
+    WRITE_COLORSTATE(this->SearchBar, "SearchBar");
+    WRITE_COLORSTATE(this->Border, "Border");
+    WRITE_COLORSTATE(this->Lines, "Lines");
+    WRITE_COLORSTATE(this->Editor, "Editor");
+    WRITE_COLORSTATE(this->LineMarker, "LineMarker");
 
-    temp.Add("[Button]\n");
-    WriteKeyToString(this->Button.Text, "Text", temp);
-    WriteKeyToString(this->Button.HotKey, "HotKey", temp);
-    WriteKeyToString(this->Button.ShadowColor, "Shadow", "", temp);
+    temp.Add("\n[Button]\n");
+    WRITE_COLORSTATE(this->Button.Text, "Text");
+    WRITE_COLORSTATE(this->Button.HotKey, "HotKey");
+    WRITE_COLORPAIR(this->Button.ShadowColor, "Shadow");
 
     // save
     return File::WriteContent(outputFile, temp.ToStringView());

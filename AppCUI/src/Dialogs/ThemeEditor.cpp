@@ -2105,7 +2105,7 @@ class ThemeEditorDialog : public Window
               FileDialog::ShowSaveFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
         if (res.has_value())
         {
-            if (this->cfg.GetConfig().Save(res.value())==false)
+            if (this->cfg.GetConfig().Save(res.value()) == false)
             {
                 MessageBox::ShowError("Save", "Fail to save theme file !");
             }
@@ -2125,7 +2125,7 @@ class ThemeEditorDialog : public Window
             {
                 MessageBox::ShowError("Load", "Fail to load theme from file !");
             }
-        }   
+        }
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
