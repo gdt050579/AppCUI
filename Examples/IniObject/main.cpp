@@ -15,6 +15,8 @@ Binary = 0b1111 ; 15 decimal
 Octal = 0777
 Float = -15.3
 ScreenSize = 120 x 30
+col = Magenta
+colp = Red,Blue
 
 [Strings]
 Path = C:\Program Files\My Objects\test.txt
@@ -106,6 +108,12 @@ int main()
     LOG_INFO("Shortcut = %d", k2);
     AppCUI::Graphics::Size sz = ini.GetValue("Values/ScreenSize").ToSize();
     LOG_INFO("Size is %dx%d", sz.Width, sz.Height);
+    LOG_INFO("Color is %s -> should be Magenda", ColorUtils::GetColorName(ini.GetValue("Values/col").ToColor()).data());
+    auto cp = ini.GetValue("Values/colp").ToColorPair();
+    LOG_INFO(
+          "Color pair is %s,%s-- > should be Red,Blue",
+          ColorUtils::GetColorName(cp.Foreground).data(),
+          ColorUtils::GetColorName(cp.Background).data());
 
     uint32 value = Utils::Number::ToUInt32("12345678").value();
     LOG_INFO("Number is %u", value);

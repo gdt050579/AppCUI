@@ -268,6 +268,7 @@ namespace Internal
         void ProcessKeyPress(Input::Key keyCode, char16_t unicodeCharacter);
         void ProcessShiftState(Input::Key ShiftState);
         void ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y);
+        void ProcessMenuMouseReleased(Controls::Menu* mnu, int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);
         void OnMouseDown(int x, int y, Input::MouseButton button);
         void OnMouseUp(int x, int y, Input::MouseButton button);

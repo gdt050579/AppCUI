@@ -912,6 +912,17 @@ optional<double> IniValue::AsDouble() const
     VALIDATE_VALUE(std::nullopt);
     return Number::ToDouble((static_cast<string_view>(value->KeyValue)));
 }
+optional<Graphics::Color> IniValue::AsColor() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return ColorUtils::GetColor(static_cast<string_view>(value->KeyValue));
+}
+optional<Graphics::ColorPair> IniValue::AsColorPair() const
+{
+    VALIDATE_VALUE(std::nullopt);
+    return ColorUtils::GetColorPair(static_cast<string_view>(value->KeyValue));
+}
+
 
 uint64 IniValue::ToUInt64(uint64 defaultValue) const
 {
@@ -998,6 +1009,23 @@ double IniValue::ToDouble(double defaultValue) const
     else
         return defaultValue;
 }
+Graphics::Color IniValue::ToColor(Graphics::Color defaultColor) const
+{
+    auto result = this->AsColor();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultColor;
+}
+Graphics::ColorPair IniValue::ToColorPair(Graphics::ColorPair defaultColorPair) const
+{
+    auto result = this->AsColorPair();
+    if (result.has_value())
+        return result.value();
+    else
+        return defaultColorPair;
+}
+
 
 string_view IniValue::GetName() const
 {

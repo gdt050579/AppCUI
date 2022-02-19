@@ -679,7 +679,8 @@ namespace Utils
           CharacterView,
           Input::Key,
           Graphics::Size,
-          Graphics::Color>;
+          Graphics::Color,
+          Graphics::ColorPair>;
     enum class PropertyType : uint8
     {
         Boolean = 0,
@@ -702,6 +703,7 @@ namespace Utils
         Key,
         Size,
         Color,
+        ColorPair,
         List,
         Flags,
         Custom
@@ -1721,6 +1723,8 @@ namespace Utils
 
       public:
         static string_view GetColorName(Graphics::Color color);
+        static std::optional<Graphics::Color> GetColor(std::string_view name);
+        static std::optional<Graphics::ColorPair> GetColorPair(std::string_view name);
     };
 
     class EXPORT IniValueArray
@@ -1792,6 +1796,8 @@ namespace Utils
         optional<Graphics::Size> AsSize() const;
         optional<float> AsFloat() const;
         optional<double> AsDouble() const;
+        optional<Graphics::Color> AsColor() const;
+        optional<Graphics::ColorPair> AsColorPair() const;
 
         uint64 ToUInt64(uint64 defaultValue = 0) const;
         uint32 ToUInt32(uint32 defaultValue = 0) const;
@@ -1804,6 +1810,8 @@ namespace Utils
         Graphics::Size ToSize(Graphics::Size defaultValue = Graphics::Size()) const;
         float ToFloat(float defaultValue = 0.0f) const;
         double ToDouble(double defaultValue = 0.0) const;
+        Graphics::Color ToColor(Graphics::Color defaultColor = Graphics::Color::Transparent) const;
+        Graphics::ColorPair ToColorPair(Graphics::ColorPair defaultColorPair = Graphics::NoColorPair) const;
 
         bool IsArray() const;
         uint32 GetArrayCount() const;
@@ -2020,6 +2028,7 @@ namespace OS
 
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
         static bool WriteContent(const std::filesystem::path& path, Utils::BufferView buf);
+        static bool WriteContent(const std::filesystem::path& path, string_view text);
     };
 
     class EXPORT Library
@@ -2738,6 +2747,7 @@ namespace Controls
         Command,
         NumericSelectorValueChanged,
         SplitterPositionChanged,
+        PropertyItemChanged,
         Custom,
     };
     using ItemHandle                       = uint32;
@@ -4063,6 +4073,10 @@ namespace Controls
 
         void SetObject(Reference<PropertiesInterface> object);
 
+        std::optional<uint32> GetCurrentItemID();
+        string_view GetCurrentItemName();
+        string_view GetCurrentItemCategory();
+
         virtual ~PropertyList();
 
       private:
@@ -4598,9 +4612,18 @@ namespace Dialogs
         static optional<std::filesystem::path> ShowOpenFileWindow(
               const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
     };
+
     class EXPORT WindowManager
     {
         WindowManager() = delete;
+
+      public:
+        static void Show();
+    };
+
+    class EXPORT ThemeEditor
+    {
+        ThemeEditor() = delete;
 
       public:
         static void Show();
@@ -4711,11 +4734,12 @@ namespace Application
 
     struct Config
     {
-        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker, PasswordMarker;
+        Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker;
 
         struct
         {
             Graphics::ObjectColorState Text, HotKey;
+            Graphics::ColorPair ShadowColor;
         } Button;
         struct
         {
@@ -4741,7 +4765,7 @@ namespace Application
         } ProgressStatus;
         struct
         {
-            Graphics::ObjectColorState Text, HotKey, ShortCut, ScrollButtons, Symbol;
+            Graphics::ObjectColorState Text, HotKey, ShortCut, Symbol;
         } Menu, ParentMenu;
         struct
         {
@@ -4767,7 +4791,10 @@ namespace Application
             } Background;
         } Window;
 
+        void SetDefaultTheme();
         void SetDarkTheme();
+        bool Save(const std::filesystem::path &outputFile);
+        bool Load(const std::filesystem::path& inputFile);
     };
 
     EXPORT Config* GetAppConfig();

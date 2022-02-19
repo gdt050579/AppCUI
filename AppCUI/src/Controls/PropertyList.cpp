@@ -263,6 +263,60 @@ class PropertyColorEditDialog : public PropertyEditDialog
         col->SetFocus();
     }
 };
+class PropertyColorPairEditDialog : public PropertyEditDialog
+{
+    Reference<ColorPicker> colFore;
+    Reference<ColorPicker> colBack;
+
+  public:
+    PropertyColorPairEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
+        : PropertyEditDialog("d:c,w:40,h:12", _prop, _object, readOnly)
+    {
+    }
+    void OnInitPropertyDialog() override
+    {
+        Factory::Label::Create(this, "Forenground", "x:2,y:1,w:36");
+        colFore = Factory::ColorPicker::Create(this, "t:2,l:1,r:1", Color::Black);
+        colFore->SetEnabled(!isReadOnly);
+        Factory::Label::Create(this, "Background", "x:2,y:4,w:36");
+        colBack = Factory::ColorPicker::Create(this, "t:5,l:1,r:1", Color::Black);
+        colBack->SetEnabled(!isReadOnly);
+
+        if (!isReadOnly)
+            colFore->SetFocus();
+    }
+    void Refresh() override
+    {
+        PropertyValue tempPropValue;
+        LocalString<256> tmpString;
+
+        if (this->object->GetPropertyValue(prop.id, tempPropValue))
+        {
+            colFore->SetColor(std::get<ColorPair>(tempPropValue).Foreground);
+            colBack->SetColor(std::get<ColorPair>(tempPropValue).Background);
+        }
+        else
+        {
+            Dialogs::MessageBox::ShowError(
+                  "Error", tmpString.Format("Unable to read property value for %s", prop.name.GetText()));
+        }
+        if (!isReadOnly)
+            colFore->SetFocus();
+    }
+    void Validate() override
+    {
+        LocalString<256> error;
+
+        if (object->SetPropertyValue(prop.id, ColorPair{ colFore->GetColor(), colBack->GetColor() }, error))
+        {
+            this->Exit(0);
+            return;
+        }
+        // error
+        Dialogs::MessageBox::ShowError("Error", error);
+        colFore->SetFocus();
+    }
+};
 class PropertyKeyEditDialog : public PropertyEditDialog
 {
     Reference<KeySelector> key;
@@ -1056,6 +1110,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         LocalString<32> tmpString;
         Size tmpSize;
         char16 tmpCh16;
+        ColorPair cp;
         switch (prop.type)
         {
         case PropertyType::Boolean:
@@ -1122,6 +1177,13 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
             break;
         case PropertyType::Color:
             tmpAscii = ColorUtils::GetColorName(std::get<Graphics::Color>(tempPropValue));
+            break;
+        case PropertyType::ColorPair:
+            cp       = std::get<Graphics::ColorPair>(tempPropValue);
+            tmpAscii = tmpString.Format(
+                  "%s,%s",
+                  ColorUtils::GetColorName(cp.Foreground).data(),
+                  ColorUtils::GetColorName(cp.Background).data());
             break;
         case PropertyType::Key:
             if (KeyUtils::ToString(std::get<Input::Key>(tempPropValue), tmpString))
@@ -1199,6 +1261,15 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
                 if (w > 2)
                 {
                     params.Width -= 2;
+                    renderer.WriteText(tmpAscii, params);
+                }
+                break;
+            case PropertyType::ColorPair:
+                renderer.WriteSingleLineText(params.X, y, "Abc", std::get<Graphics::ColorPair>(tempPropValue));
+                params.X += 5;
+                if (w > 5)
+                {
+                    params.Width -= 5;
                     renderer.WriteText(tmpAscii, params);
                 }
                 break;
@@ -1331,12 +1402,21 @@ void PropertyListContext::SetPropertyNameWidth(int32 value, bool adjustPercentag
     if (adjustPercentage)
         this->propetyNamePercentage = (float) this->propertyNameWidth / (float) (this->Layout.Width);
 }
+void PropertyListContext::SetCurrentPosAndRaiseEvent(uint32 newPos)
+{
+    if (newPos != this->currentPos)
+    {
+        this->currentPos = newPos;
+        // Raise event
+        host->RaiseEvent(Event::PropertyItemChanged);
+    }
+}
 void PropertyListContext::MoveTo(uint32 newPos)
 {
     if (this->items.Len() == 0)
     {
-        this->currentPos = 0;
         this->startView  = 0;
+        SetCurrentPosAndRaiseEvent(0);
         return;
     }
     if (newPos >= this->items.Len())
@@ -1347,22 +1427,22 @@ void PropertyListContext::MoveTo(uint32 newPos)
     uint32 height = (uint32) h;
     if ((startView <= newPos) && ((startView + height) > newPos))
     {
-        this->currentPos = newPos;
+        SetCurrentPosAndRaiseEvent(newPos);
         return;
     }
     // adjust start view --> if before scroll up
     if (newPos < startView)
     {
-        this->currentPos = newPos;
         this->startView  = newPos;
+        SetCurrentPosAndRaiseEvent(newPos);
         return;
     }
     // otherwise scroll down
-    this->currentPos = newPos;
     if (newPos >= startView + height - 1)
         this->startView = newPos - (height - 1);
     else
         this->startView = 0;
+    SetCurrentPosAndRaiseEvent(newPos);
 }
 void PropertyListContext::MoveScrollTo(uint32 newPos)
 {
@@ -1431,6 +1511,11 @@ void PropertyListContext::EditAndUpdateColor(const PropertyInfo& prop)
     PropertyColorEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
     dlg.ShowDialog();
 }
+void PropertyListContext::EditAndUpdateColorPair(const PropertyInfo& prop)
+{
+    PropertyColorPairEditDialog dlg(prop, object, IsPropertyReadOnly(prop));
+    dlg.ShowDialog();
+}
 void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isChar8)
 {
     PropertyCharEditDialog dlg(prop, object, IsPropertyReadOnly(prop), isChar8);
@@ -1494,6 +1579,9 @@ void PropertyListContext::ExecuteItemAction()
                 break;
             case PropertyType::Color:
                 EditAndUpdateColor(this->properties[idx]);
+                break;
+            case PropertyType::ColorPair:
+                EditAndUpdateColorPair(this->properties[idx]);
                 break;
             case PropertyType::Key:
                 EditAndUpdateKey(this->properties[idx]);
@@ -1569,7 +1657,7 @@ bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         MoveTo(this->items.Len());
         return true;
     case Key::PageUp:
-        if ((h >= 1) && (((uint32) h) > this->currentPos))
+        if ((h >= 1) && (((uint32) h) < this->currentPos))
             MoveTo(this->currentPos - (uint32) h);
         else
             MoveTo(0);
@@ -1838,6 +1926,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->hoveredItemStatus         = PropertyItemLocation::None;
     Members->hoveredItemIDX            = INVALID_ITEM;
     Members->ScrollBars.OutsideControl = !Members->hasBorder;
+    Members->host                      = this;
 
     SetObject(obj);
 }
@@ -1966,6 +2055,67 @@ void PropertyList::OnUpdateScrollBars()
     if (count > 0)
         count--;
     UpdateVScrollBar(Members->currentPos, count);
+}
+
+std::optional<uint32> PropertyList::GetCurrentItemID()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if ((Members->items.Get(Members->currentPos, value) == false) || (value & CATEGORY_FLAG) ||
+        (value >= Members->properties.size()))
+        return std::nullopt;
+    const auto& prop = Members->properties[value];
+    return prop.id;
+}
+string_view PropertyList::GetCurrentItemName()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if (Members->items.Get(Members->currentPos, value) == false)
+        return string_view{};
+    if (value & CATEGORY_FLAG)
+    {
+        value = value & CATEGORY_INDEX_MASK;
+        if (value >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[value];
+        return cat.name;
+    }
+    else
+    {
+        if (value >= Members->properties.size())
+            return string_view{};
+        const auto& prop = Members->properties[value];
+        return prop.name;
+    }
+}
+string_view PropertyList::GetCurrentItemCategory()
+{
+    auto* Members = (PropertyListContext*) this->Context;
+
+    uint32 value;
+    if (Members->items.Get(Members->currentPos, value) == false)
+        return string_view{};
+    if (value & CATEGORY_FLAG)
+    {
+        value = value & CATEGORY_INDEX_MASK;
+        if (value >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[value];
+        return cat.name;
+    }
+    else
+    {
+        if (value >= Members->properties.size())
+            return string_view{};
+        const auto& prop = Members->properties[value];
+        if (prop.category >= Members->categories.size())
+            return string_view{};
+        const auto& cat = Members->categories[prop.category];
+        return cat.name;
+    }
 }
 
 } // namespace AppCUI
