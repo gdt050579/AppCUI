@@ -1,0 +1,41 @@
+name: Version Increase
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      versionToUpdate:
+        description: 'Verstion to update'     
+        required: true
+        default: 'minor' 
+        type: choice
+        options:
+        - major
+        - minor
+        - patch 
+  pull_request:
+
+
+jobs:
+  build-ubuntu:
+    runs-on: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Get Version to env and increase it
+      run: python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }}
+
+    - name: Commit files
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -m "Updated version to ${{env.APPCUI_NEW_VERSION}}" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
