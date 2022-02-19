@@ -146,4 +146,10 @@ bool File::WriteContent(const std::filesystem::path& path, BufferView buf)
     f.Close();
     return true;
 }
+bool File::WriteContent(const std::filesystem::path& path, string_view text)
+{
+    auto buf_ptr = static_cast<const void*>(text.data());
+    auto buf_sz  = static_cast<size_t>(text.length());
+    return WriteContent(path, BufferView(buf_ptr, buf_sz));
+}
 } // namespace AppCUI

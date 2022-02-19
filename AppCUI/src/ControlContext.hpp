@@ -192,12 +192,14 @@ struct ControlContext
     }
 };
 
-constexpr uint32 WINDOW_DRAG_STATUS_NONE = 0;
-constexpr uint32 WINDOW_DRAG_STATUS_MOVE = 1;
-constexpr uint32 WINDOW_DRAG_STATUS_SIZE = 2;
-
 constexpr uint32 MAX_WINDOWBAR_ITEMS = 32;
 
+enum class WindowDragStatus : uint8
+{
+    None,
+    Move,
+    Resize
+};
 enum class WindowBarItemType : unsigned char
 {
     None = 0,
@@ -270,7 +272,8 @@ struct WindowControlContext : public ControlContext
     Controls::ItemHandle referalItemHandle;
     Controls::ItemHandle windowItemHandle;
     int oldPosX, oldPosY, oldW, oldH;
-    int dragStatus, dragOffsetX, dragOffsetY;
+    WindowDragStatus dragStatus;
+    int dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
     int DialogResult;
     struct
@@ -887,6 +890,7 @@ struct MenuContext
     // mouse events
     void ComputeMousePositionInfo(int x, int y, MenuMousePositionInfo& mpi);
     bool OnMouseMove(int x, int y, bool& repaint);
+    bool OnMouseReleased(int x, int y);
     MousePressedResult OnMousePressed(int x, int y);
     bool IsOnMenu(int x, int y);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
@@ -958,10 +962,12 @@ struct PropertyListContext : public ControlContext
     PropertySeparatorStatus separatorStatus;
     PropertyItemLocation hoveredItemStatus;
     uint32 hoveredItemIDX;
+    Reference<PropertyList> host;
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
     void MoveToPropetyIndex(uint32 idx);
+    void SetCurrentPosAndRaiseEvent(uint32 newPos);
     void MoveTo(uint32 newPos);
     void MoveScrollTo(uint32 newPos);
     void DrawCategory(uint32 index, int32 y, Graphics::Renderer& renderer);
@@ -998,6 +1004,7 @@ struct PropertyListContext : public ControlContext
     void EditAndUpdateFlags(const PropertyInfo& prop);
     void EditAndUpdateKey(const PropertyInfo& prop);
     void EditAndUpdateColor(const PropertyInfo& prop);
+    void EditAndUpdateColorPair(const PropertyInfo& prop);
     void EditAndUpdateChar(const PropertyInfo& prop, bool isChar8);
 
     inline constexpr int32 GetSeparatorXPos() const

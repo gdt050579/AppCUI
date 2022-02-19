@@ -17,9 +17,8 @@ void Password::Paint(Graphics::Renderer& renderer)
 {
     CREATE_CONTROL_CONTEXT(this, Members, );
 
-    const auto state   = Members->GetControlState(ControlStateFlags::ProcessHoverStatus);
-    const auto col     = Members->Cfg->Editor.GetColor(state);
-    const auto colPass = Members->Cfg->PasswordMarker.GetColor(state);
+    const auto state = Members->GetControlState(ControlStateFlags::ProcessHoverStatus);
+    const auto col   = Members->Cfg->Editor.GetColor(state);
 
     int sz = Members->Text.Len();
     if ((sz + 3) > Members->Layout.Width)
@@ -30,13 +29,15 @@ void Password::Paint(Graphics::Renderer& renderer)
     {
         renderer.WriteSingleLineText(
               1, 0, Members->Text.SubString(Members->Text.Len() - (uint32) sz, Members->Text.Len()), col);
-        renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleFilled, colPass);
+        renderer.WriteSpecialCharacter(
+              Members->Layout.Width - 1, 0, SpecialChars::CircleFilled, Members->Cfg->Symbol.Checked);
     }
     else
     {
         if (sz > 0)
             renderer.FillHorizontalLine(1, 0, sz, '*', col);
-        renderer.WriteSpecialCharacter(Members->Layout.Width - 1, 0, SpecialChars::CircleEmpty, colPass);
+        renderer.WriteSpecialCharacter(
+              Members->Layout.Width - 1, 0, SpecialChars::CircleEmpty, Members->Cfg->Symbol.Unchecked);
     }
     if (Members->Focused)
         renderer.SetCursor(1 + sz, 0);
