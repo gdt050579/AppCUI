@@ -10,7 +10,7 @@ namespace AppCUI::Dialogs
 #ifdef SETUP_TO_CPP_MODE
 void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(" = Color::");
     output.Add(ColorUtils::GetColorName(c));
@@ -18,7 +18,7 @@ void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& outpu
 }
 void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(" = {Color::");
     output.Add(ColorUtils::GetColorName(c.Foreground));
