@@ -2100,7 +2100,9 @@ class ThemeEditorDialog : public Window
         previewWindow->SetCurentItemIndex(0);
         previewWindow->SetHotKey('W');
         Factory::Label::Create(this, "&Theme mode", "x:40,y:1,w:11");
-        themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1", "Default,Dark");
+        themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1");
+        themeMode->AddItem("Default", static_cast<uint64>(Application::ThemeType::Default));
+        themeMode->AddItem("Dark", static_cast<uint64>(Application::ThemeType::Dark));
         themeMode->SetCurentItemIndex(0);
         themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);
