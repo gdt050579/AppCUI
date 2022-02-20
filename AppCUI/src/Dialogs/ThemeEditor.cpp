@@ -587,14 +587,13 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(4, 4, "Regular text", obj.Text.Normal, obj.Text.HotKey, 0);
         r.WriteSingleLineText(4, 5, "Inactive text", obj.Text.Inactive);
         r.WriteSingleLineText(4, 6, "Hovered text", obj.Text.Hovered);
-        r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Hovered);
+        r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Focused);
 
         r.WriteSingleLineText(20, 4, "Error messages", obj.Text.Error);
         r.WriteSingleLineText(20, 5, "Warning messages", obj.Text.Warning);
-        r.WriteSingleLineText(20, 6, "Error messages", obj.Text.Error);
-        r.WriteSingleLineText(20, 7, "Highlighted text", obj.Text.Highlighted);
-        r.WriteSingleLineText(20, 8, "Emphasized text (1)", obj.Text.Emphasized1);
-        r.WriteSingleLineText(20, 9, "Emphasized text (12)", obj.Text.Emphasized2);
+        r.WriteSingleLineText(20, 6, "Highlighted text", obj.Text.Highlighted);
+        r.WriteSingleLineText(20, 7, "Emphasized text (1)", obj.Text.Emphasized1);
+        r.WriteSingleLineText(20, 8, "Emphasized text (2)", obj.Text.Emphasized2);
     }
     void PaintSymbols(Graphics::Renderer& r, Size sz)
     {
