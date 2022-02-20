@@ -15,14 +15,6 @@ on:
         - major
         - minor
         - patch
-      resetMinorVersions:
-        description: 'Reset versions lower that current one'
-        required: true
-        default: 'True' 
-        type: choice
-        options:
-        - true
-        - false
 
 
 jobs:

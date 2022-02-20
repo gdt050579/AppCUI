@@ -22,24 +22,24 @@ if len(sys.argv) > 2:
     default_version_to_update = defined_versions[version_to_update]
 
 reset_lower_versions = True
-if len(sys.argv) > 3:
-    reset_versions = sys.argv[3]
-    reset_lower_versions = reset_versions == 'true'
-    print("Reset versions: {}".format(reset_lower_versions))
 
+header_output_location = header_location+'.new'
 found_version = False
 with open(header_location, 'r') as f:
-    with open(header_location+'.new', 'w') as g:
+    with open(header_output_location, 'w') as g:
         for line in f:
             if line.startswith('#define APPCUI_VERSION '):
                 version = line.split('#define APPCUI_VERSION ')[
                     1].strip(' \r\n\t\"')
+
                 version_array = version.split('.')
+
                 value = int(version_array[default_version_to_update])+1
                 version_array[default_version_to_update] = value
-                if reset_lower_versions:
-                    for i in range(default_version_to_update+1, 3):
-                        version_array[i] = 0
+
+                for i in range(default_version_to_update+1, 3):
+                    version_array[i] = 0
+
                 version = "{}.{}.{}".format(
                     version_array[0], version_array[1], version_array[2])
                 line = '#define APPCUI_VERSION "{}"\n'.format(version)
@@ -51,5 +51,5 @@ if not found_version:
     print("Failed to find APPCUI_VERSION")
     exit(1)
 
-shutil.move(header_location+'.new', header_location)
+shutil.move(header_output_location, header_location)
 exit(0)
