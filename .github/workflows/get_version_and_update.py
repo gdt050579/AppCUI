@@ -12,7 +12,6 @@ if not os.path.exists(header_location):
     exit(1)
 
 default_version_to_update = 1  # major=0, minor=1, patch=2
-reset_minor_versions = True
 if len(sys.argv) > 2:
     version_to_update = sys.argv[2]
     defined_versions = {
@@ -22,10 +21,11 @@ if len(sys.argv) > 2:
     }
     default_version_to_update = defined_versions[version_to_update]
 
+reset_lower_versions = True
 if len(sys.argv) > 3:
     reset_versions = sys.argv[3]
-    reset_minor_versions = reset_versions == 'True'
-    print("Reset versions: {}".format(reset_minor_versions))
+    reset_lower_versions = reset_versions == 'true'
+    print("Reset versions: {}".format(reset_lower_versions))
 
 found_version = False
 with open(header_location, 'r') as f:
@@ -37,6 +37,10 @@ with open(header_location, 'r') as f:
                 version_array = version.split('.')
                 value = int(version_array[default_version_to_update])+1
                 version_array[default_version_to_update] = value
+                if reset_lower_versions:
+                    for i in range(default_version_to_update,3):
+                        value = int(version_array[i])+1
+                        version_array[i] = value
                 version = "{}.{}.{}".format(
                     version_array[0], version_array[1], version_array[2])
                 line = '#define APPCUI_VERSION "{}"\n'.format(version)
