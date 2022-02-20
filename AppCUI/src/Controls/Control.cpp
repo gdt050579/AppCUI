@@ -727,7 +727,10 @@ bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignamen
         this->Layout.Format.Y = inf.a_bottom;
         break;
     default:
-        RETURNERROR(false, "Invalid anchor value(%d) for ProcessCornerAnchorLayout (this is an internal error) !");
+        RETURNERROR(
+              false,
+              "Invalid anchor value(%d) for ProcessCornerAnchorLayout (this is an internal error) !",
+              (uint32) anchor);
     }
 
     return true;
@@ -1472,8 +1475,7 @@ bool Controls::Control::GetChildIndex(Reference<Control> control, uint32& index)
     return false;
 }
 
-
-Reference<AppCUI::Application::Config> Controls::Control::GetConfig() 
+Reference<AppCUI::Application::Config> Controls::Control::GetConfig()
 {
     return reinterpret_cast<ControlContext*>(this->Context)->Cfg;
 }
@@ -1485,8 +1487,8 @@ void Controls::Control::MoveTo(int newX, int newY)
         return;
     if ((newX == CTRLC->Layout.X) && (newY == CTRLC->Layout.Y))
         return;
-    CTRLC->Layout.X = newX;
-    CTRLC->Layout.Y = newY;
+    CTRLC->Layout.X                                      = newX;
+    CTRLC->Layout.Y                                      = newY;
     AppCUI::Application::GetApplication()->RepaintStatus = REPAINT_STATUS_ALL;
 }
 bool Controls::Control::Resize(int newWidth, int newHeight)
