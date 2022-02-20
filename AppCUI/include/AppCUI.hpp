@@ -4698,9 +4698,8 @@ namespace Application
     };
     enum class ThemeType : uint32
     {
-        Default        = 0,
-        Dark           = 1,
-        Custom         = 0xFF,
+        Default = 0,
+        Dark    = 1,
     };
 
     struct InitializationData
@@ -4715,7 +4714,8 @@ namespace Application
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None), FontName(""), CustomDesktopConstructor(nullptr)
+              Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
+              CustomDesktopConstructor(nullptr)
         {
         }
     };
@@ -4799,7 +4799,7 @@ namespace Application
         } Window;
 
         void SetTheme(ThemeType type);
-        bool Save(const std::filesystem::path &outputFile);
+        bool Save(const std::filesystem::path& outputFile);
         bool Load(const std::filesystem::path& inputFile);
     };
 

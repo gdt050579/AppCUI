@@ -2084,7 +2084,7 @@ class ThemeEditorDialog : public Window
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
         : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject)
-    {
+    {   
         auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", true);
         sp->SetSecondPanelSize(30);
         pc = sp->CreateChildControl<PreviewControl>();
