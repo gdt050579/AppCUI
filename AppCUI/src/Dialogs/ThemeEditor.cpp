@@ -2102,6 +2102,7 @@ class ThemeEditorDialog : public Window
         themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1");
         themeMode->AddItem("Default", static_cast<uint64>(Application::ThemeType::Default));
         themeMode->AddItem("Dark", static_cast<uint64>(Application::ThemeType::Dark));
+        themeMode->AddItem("Light", static_cast<uint64>(Application::ThemeType::Light));
         themeMode->SetCurentItemIndex(0);
         themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);

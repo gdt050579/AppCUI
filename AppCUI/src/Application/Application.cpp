@@ -653,6 +653,8 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
             initData.Theme = Application::ThemeType::Default;
         else if (String::Equals(themeName, "dark", true))
             initData.Theme = Application::ThemeType::Dark;
+        else if (String::Equals(themeName, "light", true))
+            initData.Theme = Application::ThemeType::Light;
         else
         {
             initData.Theme     = Application::ThemeType::Default;

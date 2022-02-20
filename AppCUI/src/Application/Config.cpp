@@ -383,6 +383,198 @@ void Config_SetDarkTheme(Config& cfg)
     cfg.Window.Background.Warning  = Color::Black;
     cfg.Window.Background.Info     = Color::Black;
 }
+void Config_SetLightTheme(Config& cfg)
+{
+    cfg.SearchBar.Set(
+          { Color::Black, Color::Gray },
+          { Color::DarkBlue, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Gray },
+          { Color::White, Color::DarkRed });
+    cfg.Border.Set(
+          { Color::Black, Color::Transparent },
+          { Color::Black, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Blue, Color::Transparent },
+          { Color::Black, Color::Yellow });
+    cfg.Lines.Set(
+          { Color::Blue, Color::Transparent },
+          { Color::Olive, Color::Transparent },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::White });
+    cfg.Editor.Set(
+          { Color::White, Color::Black },
+          { Color::Silver, Color::Black },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Black },
+          { Color::White, Color::Black });
+    cfg.LineMarker.Set(
+          { Color::Black, Color::Gray },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Gray },
+          { Color::Black, Color::Gray });
+    cfg.Button.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Silver },
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::Olive });
+    cfg.Button.HotKey.Set(
+          { Color::Magenta, Color::White },
+          { Color::DarkRed, Color::Gray },
+          { Color::Gray, Color::Silver },
+          { Color::Magenta, Color::Yellow },
+          { Color::DarkRed, Color::Olive });
+    cfg.Text.Normal             = { Color::Black, Color::Transparent };
+    cfg.Text.HotKey             = { Color::DarkRed, Color::Transparent };
+    cfg.Text.Inactive           = { Color::Gray, Color::Transparent };
+    cfg.Text.Error              = { Color::DarkRed, Color::Transparent };
+    cfg.Text.Warning            = { Color::Red, Color::Transparent };
+    cfg.Text.Hovered            = { Color::Magenta, Color::Transparent };
+    cfg.Text.Focused            = { Color::Black, Color::Transparent };
+    cfg.Text.Highlighted        = { Color::Olive, Color::Transparent };
+    cfg.Text.Emphasized1        = { Color::Blue, Color::Transparent };
+    cfg.Text.Emphasized2        = { Color::Pink, Color::Transparent };
+    cfg.Symbol.Inactive         = { Color::Gray, Color::Transparent };
+    cfg.Symbol.Hovered          = { Color::Black, Color::Yellow };
+    cfg.Symbol.Pressed          = { Color::Black, Color::Silver };
+    cfg.Symbol.Checked          = { Color::DarkGreen, Color::Transparent };
+    cfg.Symbol.Unchecked        = { Color::DarkRed, Color::Transparent };
+    cfg.Symbol.Unknown          = { Color::Teal, Color::Transparent };
+    cfg.Symbol.Desktop          = { Color::Silver, Color::Gray };
+    cfg.Symbol.Arrows           = { Color::Blue, Color::Transparent };
+    cfg.Symbol.Close            = { Color::DarkRed, Color::Transparent };
+    cfg.Symbol.Maximized        = { Color::Magenta, Color::Transparent };
+    cfg.Symbol.Resize           = { Color::Blue, Color::Transparent };
+    cfg.Cursor.Normal           = { Color::White, Color::DarkBlue };
+    cfg.Cursor.Inactive         = { Color::Gray, Color::Transparent };
+    cfg.Cursor.OverInactiveItem = { Color::Gray, Color::DarkBlue };
+    cfg.Cursor.OverSelection    = { Color::Yellow, Color::DarkBlue };
+    cfg.Selection.Editor        = { Color::Black, Color::Yellow };
+    cfg.Selection.LineMarker    = { Color::Yellow, Color::Magenta };
+    cfg.Selection.Text          = { Color::Yellow, Color::Black };
+    cfg.Selection.SearchMarker  = { Color::Yellow, Color::DarkRed };
+    cfg.Selection.SimilarText   = { Color::Black, Color::Green };
+    cfg.ProgressStatus.Empty    = { Color::White, Color::Olive };
+    cfg.ProgressStatus.Full     = { Color::White, Color::Yellow };
+    cfg.Menu.Text.Set(
+          { Color::Black, Color::White },
+          { Color::Black, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Black, Color::Silver },
+          { Color::Yellow, Color::DarkRed });
+    cfg.Menu.HotKey.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::White },
+          { Color::Gray, Color::White },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::DarkRed });
+    cfg.Menu.ShortCut.Set(
+          { Color::DarkRed, Color::White },
+          { Color::DarkRed, Color::White },
+          { Color::Gray, Color::White },
+          { Color::DarkRed, Color::Silver },
+          { Color::White, Color::DarkRed });
+    cfg.Menu.Symbol.Set(
+          { Color::DarkGreen, Color::White },
+          { Color::DarkGreen, Color::White },
+          { Color::Gray, Color::White },
+          { Color::Magenta, Color::Silver },
+          { Color::White, Color::DarkRed });
+    cfg.ParentMenu.Text.Set(
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::Black, Color::Gray },
+          { Color::Yellow, Color::Gray });
+    cfg.ParentMenu.HotKey.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::White, Color::Gray });
+    cfg.ParentMenu.ShortCut.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::DarkRed, Color::Gray },
+          { Color::White, Color::Gray });
+    cfg.ParentMenu.Symbol.Set(
+          { Color::DarkGreen, Color::Silver },
+          { Color::DarkGreen, Color::Silver },
+          { Color::Gray, Color::Silver },
+          { Color::Magenta, Color::Gray },
+          { Color::White, Color::Gray });
+    cfg.Header.Text.Set(
+          { Color::White, Color::DarkRed },
+          { Color::Silver, Color::DarkRed },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Yellow },
+          { Color::White, Color::Red });
+    cfg.Header.HotKey.Set(
+          { Color::Yellow, Color::DarkRed },
+          { Color::Yellow, Color::DarkRed },
+          { Color::Gray, Color::Transparent },
+          { Color::Red, Color::Yellow },
+          { Color::Yellow, Color::Red });
+    cfg.Header.Symbol.Set(
+          { Color::White, Color::DarkRed },
+          { Color::Silver, Color::DarkRed },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Yellow },
+          { Color::White, Color::Red });
+    cfg.ScrollBar.Bar.Set(
+          { Color::White, Color::Teal },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Yellow, Color::Gray },
+          { Color::White, Color::Teal });
+    cfg.ScrollBar.Arrows.Set(
+          { Color::White, Color::Teal },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Blue, Color::Gray },
+          { Color::White, Color::Teal });
+    cfg.ScrollBar.Position.Set(
+          { Color::Green, Color::Teal },
+          { Color::Black, Color::Gray },
+          { Color::Gray, Color::Transparent },
+          { Color::Blue, Color::Silver },
+          { Color::Green, Color::Teal });
+    cfg.ToolTip.Text  = { Color::Black, Color::Aqua };
+    cfg.ToolTip.Arrow = { Color::Black, Color::Silver };
+    cfg.Tab.Text.Set(
+          { Color::Black, Color::Gray },
+          { Color::Black, Color::Silver },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Yellow },
+          { Color::White, Color::Gray });
+    cfg.Tab.HotKey.Set(
+          { Color::DarkRed, Color::Gray },
+          { Color::DarkRed, Color::Silver },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Yellow },
+          { Color::DarkRed, Color::Gray });
+    cfg.Tab.ListText.Set(
+          { Color::Black, Color::Silver },
+          { Color::Black, Color::Silver },
+          { Color::Gray, Color::Transparent },
+          { Color::Black, Color::Yellow },
+          { Color::Black, Color::White });
+    cfg.Tab.ListHotKey.Set(
+          { Color::DarkRed, Color::Silver },
+          { Color::DarkRed, Color::Silver },
+          { Color::Gray, Color::Transparent },
+          { Color::DarkRed, Color::Yellow },
+          { Color::DarkRed, Color::White });
+    cfg.Window.Background.Normal   = Color::Silver;
+    cfg.Window.Background.Inactive = Color::Silver;
+    cfg.Window.Background.Error    = Color::Red;
+    cfg.Window.Background.Warning  = Color::Silver;
+    cfg.Window.Background.Info     = Color::Silver;
+}
 
 bool WriteKeyToString(Color col, std::string_view name, Utils::String& output)
 {
@@ -654,6 +846,9 @@ void Config::SetTheme(ThemeType theme)
         break;
     case ThemeType::Dark:
         Config_SetDarkTheme(*this);
+        break;
+    case ThemeType::Light:
+        Config_SetLightTheme(*this);
         break;
     default:
         Config_SetDefaultTheme(*this);
