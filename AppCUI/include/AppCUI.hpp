@@ -4696,6 +4696,12 @@ namespace Application
         Terminal       = 2,
         WindowsConsole = 3
     };
+    enum class ThemeType : uint32
+    {
+        Default        = 0,
+        Dark           = 1,
+        Custom         = 0xFF,
+    };
 
     struct InitializationData
     {
@@ -4704,6 +4710,7 @@ namespace Application
         CharacterSize CharSize;
         InitializationFlags Flags;
         string_view FontName;
+        ThemeType Theme;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
@@ -4791,8 +4798,7 @@ namespace Application
             } Background;
         } Window;
 
-        void SetDefaultTheme();
-        void SetDarkTheme();
+        void SetTheme(ThemeType type);
         bool Save(const std::filesystem::path &outputFile);
         bool Load(const std::filesystem::path& inputFile);
     };

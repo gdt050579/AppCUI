@@ -2182,15 +2182,9 @@ class ThemeEditorDialog : public Window
             }
             if (control == themeMode)
             {
-                switch (themeMode->GetCurrentItemIndex())
-                {
-                case 0:
-                    cfg.GetConfig().SetDefaultTheme();
-                    return true;
-                case 1:
-                    cfg.GetConfig().SetDarkTheme();
-                    return true;
-                }
+                const auto themeID = static_cast<AppCUI::Application::ThemeType>(themeMode->GetCurrentItemUserData(0));
+                cfg.GetConfig().SetTheme(themeID);
+                return true;
             }
         }
         return false;
