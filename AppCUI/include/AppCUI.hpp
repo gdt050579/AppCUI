@@ -4709,7 +4709,7 @@ namespace Application
         CharacterSize CharSize;
         InitializationFlags Flags;
         string_view FontName;
-        string_view ThemeName;
+        Utils::FixSizeString<32> ThemeName;
         ThemeType Theme;
         Controls::Desktop* (*CustomDesktopConstructor)();
 

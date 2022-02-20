@@ -590,6 +590,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto terminalSize = AppCUISection.GetValue("size");
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
     bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
+    auto themeName    = AppCUISection.GetValue("theme").ToString();
 
     // frontend
     if (frontend)
@@ -644,6 +645,20 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     if (fixedWindows)
         initData.Flags |= Application::InitializationFlags::FixedSize;
 
+    // themes
+    if (themeName)
+    {
+        if (String::Equals(themeName, "default", true))
+            initData.Theme = Application::ThemeType::Default;
+        else if (String::Equals(frontend, "dark", true))
+            initData.Theme = Application::ThemeType::Dark;
+        else
+        {
+            initData.Theme     = Application::ThemeType::Default;
+            initData.ThemeName = themeName;
+        }
+    }
+
     // all good
 }
 bool ApplicationImpl::Init(Application::InitializationData& initData)
@@ -679,7 +694,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     }
 
     // configure theme
-    if (!initData.ThemeName.empty())
+    if (!initData.ThemeName.Empty())
     {
         if (!LoadThemeFile(initData))
         {
