@@ -651,7 +651,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     {
         if (String::Equals(themeName, "default", true))
             initData.Theme = Application::ThemeType::Default;
-        else if (String::Equals(frontend, "dark", true))
+        else if (String::Equals(themeName, "dark", true))
             initData.Theme = Application::ThemeType::Dark;
         else
         {
