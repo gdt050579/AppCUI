@@ -1,10 +1,10 @@
-name: "pre-release"
+name: "Deploy release"
 
 on:
   workflow_dispatch:
     inputs:
       isPreRelease:
-        description: 'Is pre release?'     
+        description: 'Is the build pre release?'     
         required: true
         default: true 
         type: boolean
