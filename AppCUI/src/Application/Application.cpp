@@ -552,7 +552,7 @@ bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
         return false;
     }
     appPath = appPath.remove_filename();
-    appPath += initData.ThemeName;
+    appPath += (string_view)initData.ThemeName;
     appPath.replace_extension(".theme");
     if (this->config.Load(appPath) == false)
     {
