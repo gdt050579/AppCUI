@@ -541,6 +541,25 @@ void ApplicationImpl::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->mouseLockedObject  = MouseLockedObject::None;
 }
+bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
+{
+    auto appPath = OS::GetCurrentApplicationPath();
+    if (appPath.empty())
+    {
+        LOG_WARNING("OS::GetCurrentApplicationPath failed (without current application path, path to theme file can "
+                    "not be found");
+        return false;
+    }
+    appPath = appPath.remove_filename();
+    appPath += initData.ThemeName;
+    appPath.replace_extension(".theme");
+    if (this->config.Load(appPath) == false)
+    {
+        LOG_WARNING("Fail to load theme file from: %s --> reverting to defaul theme", appPath.string().c_str());
+        return false;
+    }
+    return true;
+}
 void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData)
 {
     auto appPath = OS::GetCurrentApplicationPath();
@@ -659,7 +678,18 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
     }
 
-    this->config.SetTheme(AppCUI::Application::ThemeType::Default);
+    // configure theme
+    if (!initData.ThemeName.empty())
+    {
+        if (!LoadThemeFile(initData))
+        {
+            this->config.SetTheme(initData.Theme);
+        }
+    }
+    else
+    {
+        this->config.SetTheme(initData.Theme);
+    }
 
     if (initData.CustomDesktopConstructor)
         this->AppDesktop = initData.CustomDesktopConstructor();
