@@ -46,6 +46,7 @@ Width:
    Size = default          ; possible values: a size (width x height), maximized, fullscreen
    CharacterSize = default ; possible values: default, tiny, small, normal, large, huge
    Fixed = false           ; possible values: true or false
+   Theme = default         ; possible values: default, dark, light or the name of a .theme file
 
 
 InitializationData structure
@@ -62,6 +63,8 @@ InitializationData structure
       CharacterSize                 CharSize;
       InitializationFlags           Flags;
       std::string_view              FontName;
+      Utils::FixSizeString<32>      ThemeName;
+      ThemeType                     Theme;
       AppCUI::Controls::Desktop*    CustomDesktop;
    }
 
@@ -77,7 +80,7 @@ width **FrontendType** defined as follows:
       WindowsConsole = 3
    };
 
-and **CharacterSize** defined as:
+**CharacterSize** defined as:
 
 .. code-block:: c++
 
@@ -90,6 +93,18 @@ and **CharacterSize** defined as:
       Large,
       Huge
    };
+
+and **ThemeType** defined as:
+
+.. code-block:: c++
+
+   enum class ThemeType: unsigned int
+   {
+      Default = 0,
+      Dark,
+      Light,
+   };
+
 
 Examples
 --------
@@ -120,7 +135,7 @@ Examples
       // Appcui failed to initialize
    }
 
-4. Full customized initialization (an SDL based application , with the size of ``120x30`` characters, using **Consolas** font (small size) and with a Menu and CommandBar.
+4. Full customized initialization (an SDL based application , with the size of ``120x30`` characters, dark theme, using **Consolas** font (small size) and with a Menu and CommandBar.
 
 .. code-block:: c++
 
@@ -130,6 +145,7 @@ Examples
    initData.FrontendType   = Frontend::SDL;
    initData.CharSize       = CharacterSize::Small;
    initData.FontName       = "Consolas";
+   initData.Theme          = ThemeType::Dark;
    initData.Flags          = InitializationFlags::Menu | InitializationFlags::CommandBar;
 
    if (AppCUI::Application::Init(initData) == false) {
