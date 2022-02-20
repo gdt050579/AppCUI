@@ -38,9 +38,8 @@ with open(header_location, 'r') as f:
                 value = int(version_array[default_version_to_update])+1
                 version_array[default_version_to_update] = value
                 if reset_lower_versions:
-                    for i in range(default_version_to_update,3):
-                        value = int(version_array[i])+1
-                        version_array[i] = value
+                    for i in range(default_version_to_update+1, 3):
+                        version_array[i] = 0
                 version = "{}.{}.{}".format(
                     version_array[0], version_array[1], version_array[2])
                 line = '#define APPCUI_VERSION "{}"\n'.format(version)
