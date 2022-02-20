@@ -28,7 +28,7 @@ void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& o
 }
 void PrintColorToString(ObjectColorState& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(".Set(");
     output.Add("{Color::");
