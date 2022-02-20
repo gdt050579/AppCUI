@@ -10,7 +10,7 @@ namespace AppCUI::Dialogs
 #ifdef SETUP_TO_CPP_MODE
 void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(" = Color::");
     output.Add(ColorUtils::GetColorName(c));
@@ -18,7 +18,7 @@ void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& outpu
 }
 void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(" = {Color::");
     output.Add(ColorUtils::GetColorName(c.Foreground));
@@ -28,7 +28,7 @@ void PrintColorToString(ColorPair& c, string_view name, AppCUI::Utils::String& o
 }
 void PrintColorToString(ObjectColorState& c, string_view name, AppCUI::Utils::String& output)
 {
-    output.Add("this->");
+    output.Add("cfg.");
     output.Add(name);
     output.Add(".Set(");
     output.Add("{Color::");
@@ -587,14 +587,13 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSingleLineText(4, 4, "Regular text", obj.Text.Normal, obj.Text.HotKey, 0);
         r.WriteSingleLineText(4, 5, "Inactive text", obj.Text.Inactive);
         r.WriteSingleLineText(4, 6, "Hovered text", obj.Text.Hovered);
-        r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Hovered);
+        r.WriteSingleLineText(4, 7, "Focused text", obj.Text.Focused);
 
         r.WriteSingleLineText(20, 4, "Error messages", obj.Text.Error);
         r.WriteSingleLineText(20, 5, "Warning messages", obj.Text.Warning);
-        r.WriteSingleLineText(20, 6, "Error messages", obj.Text.Error);
-        r.WriteSingleLineText(20, 7, "Highlighted text", obj.Text.Highlighted);
-        r.WriteSingleLineText(20, 8, "Emphasized text (1)", obj.Text.Emphasized1);
-        r.WriteSingleLineText(20, 9, "Emphasized text (12)", obj.Text.Emphasized2);
+        r.WriteSingleLineText(20, 6, "Highlighted text", obj.Text.Highlighted);
+        r.WriteSingleLineText(20, 7, "Emphasized text (1)", obj.Text.Emphasized1);
+        r.WriteSingleLineText(20, 8, "Emphasized text (2)", obj.Text.Emphasized2);
     }
     void PaintSymbols(Graphics::Renderer& r, Size sz)
     {
@@ -2084,7 +2083,7 @@ class ThemeEditorDialog : public Window
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
         : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject)
-    {
+    {   
         auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", true);
         sp->SetSecondPanelSize(30);
         pc = sp->CreateChildControl<PreviewControl>();
@@ -2100,7 +2099,10 @@ class ThemeEditorDialog : public Window
         previewWindow->SetCurentItemIndex(0);
         previewWindow->SetHotKey('W');
         Factory::Label::Create(this, "&Theme mode", "x:40,y:1,w:11");
-        themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1", "Default,Dark");
+        themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1");
+        themeMode->AddItem("Default", static_cast<uint64>(Application::ThemeType::Default));
+        themeMode->AddItem("Dark", static_cast<uint64>(Application::ThemeType::Dark));
+        themeMode->AddItem("Light", static_cast<uint64>(Application::ThemeType::Light));
         themeMode->SetCurentItemIndex(0);
         themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);
@@ -2182,15 +2184,9 @@ class ThemeEditorDialog : public Window
             }
             if (control == themeMode)
             {
-                switch (themeMode->GetCurrentItemIndex())
-                {
-                case 0:
-                    cfg.GetConfig().SetDefaultTheme();
-                    return true;
-                case 1:
-                    cfg.GetConfig().SetDarkTheme();
-                    return true;
-                }
+                const auto themeID = static_cast<AppCUI::Application::ThemeType>(themeMode->GetCurrentItemUserData(0));
+                cfg.GetConfig().SetTheme(themeID);
+                return true;
             }
         }
         return false;

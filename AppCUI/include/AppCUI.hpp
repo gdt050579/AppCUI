@@ -4696,6 +4696,12 @@ namespace Application
         Terminal       = 2,
         WindowsConsole = 3
     };
+    enum class ThemeType : uint32
+    {
+        Default = 0,
+        Dark    = 1,
+        Light   = 2,
+    };
 
     struct InitializationData
     {
@@ -4704,11 +4710,14 @@ namespace Application
         CharacterSize CharSize;
         InitializationFlags Flags;
         string_view FontName;
+        Utils::FixSizeString<32> ThemeName;
+        ThemeType Theme;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None), FontName(""), CustomDesktopConstructor(nullptr)
+              Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
+              CustomDesktopConstructor(nullptr)
         {
         }
     };
@@ -4791,9 +4800,8 @@ namespace Application
             } Background;
         } Window;
 
-        void SetDefaultTheme();
-        void SetDarkTheme();
-        bool Save(const std::filesystem::path &outputFile);
+        void SetTheme(ThemeType type);
+        bool Save(const std::filesystem::path& outputFile);
         bool Load(const std::filesystem::path& inputFile);
     };
 

@@ -206,6 +206,7 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
     sect.UpdateValue("Size", "default", true);
     sect.UpdateValue("CharacterSize", "default", true);
     sect.UpdateValue("Fixed", "default", true);
+    sect.UpdateValue("Theme", "default", true);
 }
 bool Application::UpdateAppCUISettings(bool clearExistingSettings)
 {
@@ -541,6 +542,25 @@ void ApplicationImpl::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->mouseLockedObject  = MouseLockedObject::None;
 }
+bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
+{
+    auto appPath = OS::GetCurrentApplicationPath();
+    if (appPath.empty())
+    {
+        LOG_WARNING("OS::GetCurrentApplicationPath failed (without current application path, path to theme file can "
+                    "not be found");
+        return false;
+    }
+    appPath = appPath.remove_filename();
+    appPath += (string_view)initData.ThemeName;
+    appPath.replace_extension(".theme");
+    if (this->config.Load(appPath) == false)
+    {
+        LOG_WARNING("Fail to load theme file from: %s --> reverting to defaul theme", appPath.string().c_str());
+        return false;
+    }
+    return true;
+}
 void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData)
 {
     auto appPath = OS::GetCurrentApplicationPath();
@@ -571,6 +591,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto terminalSize = AppCUISection.GetValue("size");
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
     bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
+    auto themeName    = AppCUISection.GetValue("theme").ToString();
 
     // frontend
     if (frontend)
@@ -625,6 +646,22 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     if (fixedWindows)
         initData.Flags |= Application::InitializationFlags::FixedSize;
 
+    // themes
+    if (themeName)
+    {
+        if (String::Equals(themeName, "default", true))
+            initData.Theme = Application::ThemeType::Default;
+        else if (String::Equals(themeName, "dark", true))
+            initData.Theme = Application::ThemeType::Dark;
+        else if (String::Equals(themeName, "light", true))
+            initData.Theme = Application::ThemeType::Light;
+        else
+        {
+            initData.Theme     = Application::ThemeType::Default;
+            initData.ThemeName = themeName;
+        }
+    }
+
     // all good
 }
 bool ApplicationImpl::Init(Application::InitializationData& initData)
@@ -659,7 +696,18 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
         this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
     }
 
-    this->config.SetDefaultTheme();
+    // configure theme
+    if (!initData.ThemeName.Empty())
+    {
+        if (!LoadThemeFile(initData))
+        {
+            this->config.SetTheme(initData.Theme);
+        }
+    }
+    else
+    {
+        this->config.SetTheme(initData.Theme);
+    }
 
     if (initData.CustomDesktopConstructor)
         this->AppDesktop = initData.CustomDesktopConstructor();

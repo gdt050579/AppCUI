@@ -287,6 +287,7 @@ namespace Internal
 
         // Common implementations
         void LoadSettingsFile(Application::InitializationData& initData);
+        bool LoadThemeFile(Application::InitializationData& initData);
         bool Init(Application::InitializationData& initData);
         bool Uninit();
         bool ExecuteEventLoop(Controls::Control* control = nullptr);
