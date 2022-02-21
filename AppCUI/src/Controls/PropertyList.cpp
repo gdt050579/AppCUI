@@ -263,14 +263,14 @@ class PropertyColorEditDialog : public PropertyEditDialog
         col->SetFocus();
     }
 };
-class PropertyColorPairEditDialog : public PropertyEditDialog
+class PropertyColorPairEditDialog : public PropertyEditDialog, public AppCUI::Controls::Handlers::PaintControlInterface
 {
     Reference<ColorPicker> colFore;
     Reference<ColorPicker> colBack;
 
   public:
     PropertyColorPairEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : PropertyEditDialog("d:c,w:40,h:12", _prop, _object, readOnly)
+        : PropertyEditDialog("d:c,w:40,h:16", _prop, _object, readOnly)
     {
     }
     void OnInitPropertyDialog() override
@@ -281,9 +281,16 @@ class PropertyColorPairEditDialog : public PropertyEditDialog
         Factory::Label::Create(this, "Background", "x:2,y:4,w:36");
         colBack = Factory::ColorPicker::Create(this, "t:5,l:1,r:1", Color::Black);
         colBack->SetEnabled(!isReadOnly);
+        auto prev                      = Factory::Panel::Create(this, "t:7,l:1,r:1,h:3");
+        prev->Handlers()->PaintControl = this;
 
         if (!isReadOnly)
             colFore->SetFocus();
+    }
+    void PaintControl(Reference<Control>, AppCUI::Graphics::Renderer& r)
+    {
+        r.Clear(' ', { Color::Transparent, colBack->GetColor() });
+        r.WriteSingleLineText(1, 1, "Preview", { colFore->GetColor(), colBack->GetColor() });
     }
     void Refresh() override
     {
@@ -1415,7 +1422,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
 {
     if (this->items.Len() == 0)
     {
-        this->startView  = 0;
+        this->startView = 0;
         SetCurrentPosAndRaiseEvent(0);
         return;
     }
@@ -1433,7 +1440,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
     // adjust start view --> if before scroll up
     if (newPos < startView)
     {
-        this->startView  = newPos;
+        this->startView = newPos;
         SetCurrentPosAndRaiseEvent(newPos);
         return;
     }
