@@ -5,7 +5,7 @@ using namespace AppCUI::Graphics;
 
 namespace AppCUI::Dialogs
 {
-#define SETUP_TO_CPP_MODE
+//#define SETUP_TO_CPP_MODE
 
 #ifdef SETUP_TO_CPP_MODE
 void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& output)
