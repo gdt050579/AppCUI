@@ -4,6 +4,7 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
+using namespace AppCUI::Graphics;
 
 constexpr int CMD_CHANGE_THEME_DEFAULT = 0;
 constexpr int CMD_CHANGE_THEME_DARK    = 1;
@@ -19,6 +20,16 @@ class ExampleWin : public Window
         Factory::RadioBox::Create(p, "Default", "x:1,y:0,w:15", 100, CMD_CHANGE_THEME_DEFAULT)->SetChecked(true);
         Factory::RadioBox::Create(p, "Dark", "x:1,y:1,w:15", 100, CMD_CHANGE_THEME_DARK);
         Factory::RadioBox::Create(p, "Light", "x:1,y:2,w:15", 100, CMD_CHANGE_THEME_LIGHT);
+
+        auto lv = Factory::ListView::Create(
+              this, "x:25,y:3,w:40,h:10", ListViewFlags::Sortable | ListViewFlags::CheckBoxes);
+        lv->AddColumn("&Name", TextAlignament::Left, 15);
+        lv->AddColumn("&Grade", TextAlignament::Right, 10);
+        lv->AddColumn("&Class", TextAlignament::Left, 15);
+        lv->AddItem("John", "9", "Math");
+        lv->AddItem("Mary", "8", "English");
+        lv->AddItem("Jeffrey", "7", "Math");
+        lv->AddItem("Carl", "9", "Sport");
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
