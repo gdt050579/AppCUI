@@ -1,9 +1,10 @@
-#include "AppCUI.hpp"
-namespace AppCUI::Application
+#include "Internal.hpp"
+namespace AppCUI
 {
 using namespace Graphics;
 using namespace Utils;
 using namespace OS;
+using namespace Application;
 
 // ======================================== CONFIGS ====================================
 void Config_SetDefaultTheme(Config& cfg)
@@ -614,116 +615,116 @@ bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils:
 #define WRITE_SECTION(name)         CHECK(temp.Add(name), false, "Fail to create section: %s", name);
 
 #define READ_COLORSTATE(key, name)                                                                                     \
-    this->key.Focused           = sect.GetValue(#name ".Focused").ToColorPair();                                       \
-    this->key.Normal            = sect.GetValue(#name ".Normal").ToColorPair();                                        \
-    this->key.Inactive          = sect.GetValue(#name ".Inactive").ToColorPair();                                      \
-    this->key.Hovered           = sect.GetValue(#name ".Hovered").ToColorPair();                                       \
-    this->key.PressedOrSelected = sect.GetValue(#name ".Pressed").ToColorPair();
-#define READ_COLORPAIR(key, name) this->key = sect.GetValue(#name).ToColorPair();
-#define READ_COLOR(key, name)     this->key = sect.GetValue(#name).ToColor();
+    config.key.Focused           = sect.GetValue(#name ".Focused").ToColorPair();                                      \
+    config.key.Normal            = sect.GetValue(#name ".Normal").ToColorPair();                                       \
+    config.key.Inactive          = sect.GetValue(#name ".Inactive").ToColorPair();                                     \
+    config.key.Hovered           = sect.GetValue(#name ".Hovered").ToColorPair();                                      \
+    config.key.PressedOrSelected = sect.GetValue(#name ".Pressed").ToColorPair();
+#define READ_COLORPAIR(key, name) config.key = sect.GetValue(#name).ToColorPair();
+#define READ_COLOR(key, name)     config.key = sect.GetValue(#name).ToColor();
 
-bool Config::Save(const std::filesystem::path& outputFile)
+bool Internal::Config::Save(Application::Config& config, const std::filesystem::path& outputFile)
 {
     AppCUI::Utils::LocalString<8192> temp;
 
     // sections
     WRITE_SECTION("[General]\n");
-    WRITE_COLORSTATE(this->SearchBar, "SearchBar");
-    WRITE_COLORSTATE(this->Border, "Border");
-    WRITE_COLORSTATE(this->Lines, "Lines");
-    WRITE_COLORSTATE(this->Editor, "Editor");
-    WRITE_COLORSTATE(this->LineMarker, "LineMarker");
+    WRITE_COLORSTATE(config.SearchBar, "SearchBar");
+    WRITE_COLORSTATE(config.Border, "Border");
+    WRITE_COLORSTATE(config.Lines, "Lines");
+    WRITE_COLORSTATE(config.Editor, "Editor");
+    WRITE_COLORSTATE(config.LineMarker, "LineMarker");
 
     WRITE_SECTION("\n[Button]\n");
-    WRITE_COLORSTATE(this->Button.Text, "Text");
-    WRITE_COLORSTATE(this->Button.HotKey, "HotKey");
-    WRITE_COLORPAIR(this->Button.ShadowColor, "Shadow");
+    WRITE_COLORSTATE(config.Button.Text, "Text");
+    WRITE_COLORSTATE(config.Button.HotKey, "HotKey");
+    WRITE_COLORPAIR(config.Button.ShadowColor, "Shadow");
 
     WRITE_SECTION("\n[Text]\n");
-    WRITE_COLORPAIR(this->Text.Normal, "Normal");
-    WRITE_COLORPAIR(this->Text.HotKey, "HotKey");
-    WRITE_COLORPAIR(this->Text.Inactive, "Inactive");
-    WRITE_COLORPAIR(this->Text.Error, "Error");
-    WRITE_COLORPAIR(this->Text.Warning, "Warning");
-    WRITE_COLORPAIR(this->Text.Hovered, "Hovered");
-    WRITE_COLORPAIR(this->Text.Focused, "Focused");
-    WRITE_COLORPAIR(this->Text.Highlighted, "Highlighted");
-    WRITE_COLORPAIR(this->Text.Emphasized1, "Emphasized1");
-    WRITE_COLORPAIR(this->Text.Emphasized2, "Emphasized2");
+    WRITE_COLORPAIR(config.Text.Normal, "Normal");
+    WRITE_COLORPAIR(config.Text.HotKey, "HotKey");
+    WRITE_COLORPAIR(config.Text.Inactive, "Inactive");
+    WRITE_COLORPAIR(config.Text.Error, "Error");
+    WRITE_COLORPAIR(config.Text.Warning, "Warning");
+    WRITE_COLORPAIR(config.Text.Hovered, "Hovered");
+    WRITE_COLORPAIR(config.Text.Focused, "Focused");
+    WRITE_COLORPAIR(config.Text.Highlighted, "Highlighted");
+    WRITE_COLORPAIR(config.Text.Emphasized1, "Emphasized1");
+    WRITE_COLORPAIR(config.Text.Emphasized2, "Emphasized2");
 
     WRITE_SECTION("\n[Symbol]\n");
-    WRITE_COLORPAIR(this->Symbol.Inactive, "Inactive");
-    WRITE_COLORPAIR(this->Symbol.Hovered, "Hovered");
-    WRITE_COLORPAIR(this->Symbol.Pressed, "Pressed");
-    WRITE_COLORPAIR(this->Symbol.Checked, "Checked");
-    WRITE_COLORPAIR(this->Symbol.Unchecked, "Unchecked");
-    WRITE_COLORPAIR(this->Symbol.Unknown, "Unknown");
-    WRITE_COLORPAIR(this->Symbol.Desktop, "Desktop");
-    WRITE_COLORPAIR(this->Symbol.Arrows, "Arrows");
-    WRITE_COLORPAIR(this->Symbol.Close, "Close");
-    WRITE_COLORPAIR(this->Symbol.Maximized, "Maximized");
-    WRITE_COLORPAIR(this->Symbol.Resize, "Resize");
+    WRITE_COLORPAIR(config.Symbol.Inactive, "Inactive");
+    WRITE_COLORPAIR(config.Symbol.Hovered, "Hovered");
+    WRITE_COLORPAIR(config.Symbol.Pressed, "Pressed");
+    WRITE_COLORPAIR(config.Symbol.Checked, "Checked");
+    WRITE_COLORPAIR(config.Symbol.Unchecked, "Unchecked");
+    WRITE_COLORPAIR(config.Symbol.Unknown, "Unknown");
+    WRITE_COLORPAIR(config.Symbol.Desktop, "Desktop");
+    WRITE_COLORPAIR(config.Symbol.Arrows, "Arrows");
+    WRITE_COLORPAIR(config.Symbol.Close, "Close");
+    WRITE_COLORPAIR(config.Symbol.Maximized, "Maximized");
+    WRITE_COLORPAIR(config.Symbol.Resize, "Resize");
 
     WRITE_SECTION("\n[Cursor]\n");
-    WRITE_COLORPAIR(this->Cursor.Inactive, "Inactive");
-    WRITE_COLORPAIR(this->Cursor.Normal, "Normal");
-    WRITE_COLORPAIR(this->Cursor.OverInactiveItem, "OverInactiveItem");
-    WRITE_COLORPAIR(this->Cursor.OverSelection, "OverSelection");
+    WRITE_COLORPAIR(config.Cursor.Inactive, "Inactive");
+    WRITE_COLORPAIR(config.Cursor.Normal, "Normal");
+    WRITE_COLORPAIR(config.Cursor.OverInactiveItem, "OverInactiveItem");
+    WRITE_COLORPAIR(config.Cursor.OverSelection, "OverSelection");
 
     WRITE_SECTION("\n[Selection]\n");
-    WRITE_COLORPAIR(this->Selection.Editor, "Editor");
-    WRITE_COLORPAIR(this->Selection.LineMarker, "LineMarker");
-    WRITE_COLORPAIR(this->Selection.Text, "Text");
-    WRITE_COLORPAIR(this->Selection.SearchMarker, "SearchMarker");
-    WRITE_COLORPAIR(this->Selection.SimilarText, "SimilarText");
+    WRITE_COLORPAIR(config.Selection.Editor, "Editor");
+    WRITE_COLORPAIR(config.Selection.LineMarker, "LineMarker");
+    WRITE_COLORPAIR(config.Selection.Text, "Text");
+    WRITE_COLORPAIR(config.Selection.SearchMarker, "SearchMarker");
+    WRITE_COLORPAIR(config.Selection.SimilarText, "SimilarText");
 
     WRITE_SECTION("\n[ProgressStatus]\n");
-    WRITE_COLORPAIR(this->ProgressStatus.Empty, "Empty");
-    WRITE_COLORPAIR(this->ProgressStatus.Full, "Full");
+    WRITE_COLORPAIR(config.ProgressStatus.Empty, "Empty");
+    WRITE_COLORPAIR(config.ProgressStatus.Full, "Full");
 
     WRITE_SECTION("\n[Menu]\n");
-    WRITE_COLORSTATE(this->Menu.Text, "Text");
-    WRITE_COLORSTATE(this->Menu.HotKey, "HotKey");
-    WRITE_COLORSTATE(this->Menu.ShortCut, "ShortCut");
-    WRITE_COLORSTATE(this->Menu.Symbol, "Symbol");
+    WRITE_COLORSTATE(config.Menu.Text, "Text");
+    WRITE_COLORSTATE(config.Menu.HotKey, "HotKey");
+    WRITE_COLORSTATE(config.Menu.ShortCut, "ShortCut");
+    WRITE_COLORSTATE(config.Menu.Symbol, "Symbol");
 
     WRITE_SECTION("\n[ParentMenu]\n");
-    WRITE_COLORSTATE(this->ParentMenu.Text, "Text");
-    WRITE_COLORSTATE(this->ParentMenu.HotKey, "HotKey");
-    WRITE_COLORSTATE(this->ParentMenu.ShortCut, "ShortCut");
-    WRITE_COLORSTATE(this->ParentMenu.Symbol, "Symbol");
+    WRITE_COLORSTATE(config.ParentMenu.Text, "Text");
+    WRITE_COLORSTATE(config.ParentMenu.HotKey, "HotKey");
+    WRITE_COLORSTATE(config.ParentMenu.ShortCut, "ShortCut");
+    WRITE_COLORSTATE(config.ParentMenu.Symbol, "Symbol");
 
     WRITE_SECTION("\n[Header]\n");
-    WRITE_COLORSTATE(this->Header.Text, "Text");
-    WRITE_COLORSTATE(this->Header.HotKey, "HotKey");
-    WRITE_COLORSTATE(this->Header.Symbol, "Symbol");
+    WRITE_COLORSTATE(config.Header.Text, "Text");
+    WRITE_COLORSTATE(config.Header.HotKey, "HotKey");
+    WRITE_COLORSTATE(config.Header.Symbol, "Symbol");
 
     WRITE_SECTION("\n[ScrollBar]\n");
-    WRITE_COLORSTATE(this->ScrollBar.Bar, "Bar");
-    WRITE_COLORSTATE(this->ScrollBar.Arrows, "Arrows");
-    WRITE_COLORSTATE(this->ScrollBar.Position, "Position");
+    WRITE_COLORSTATE(config.ScrollBar.Bar, "Bar");
+    WRITE_COLORSTATE(config.ScrollBar.Arrows, "Arrows");
+    WRITE_COLORSTATE(config.ScrollBar.Position, "Position");
 
     WRITE_SECTION("\n[ToolTip]\n");
-    WRITE_COLORPAIR(this->ToolTip.Text, "Text");
-    WRITE_COLORPAIR(this->ToolTip.Arrow, "Arrow");
+    WRITE_COLORPAIR(config.ToolTip.Text, "Text");
+    WRITE_COLORPAIR(config.ToolTip.Arrow, "Arrow");
 
     WRITE_SECTION("\n[Tab]\n");
-    WRITE_COLORSTATE(this->Tab.Text, "Text");
-    WRITE_COLORSTATE(this->Tab.HotKey, "HotKey");
-    WRITE_COLORSTATE(this->Tab.ListText, "ListText");
-    WRITE_COLORSTATE(this->Tab.ListHotKey, "ListHotKey");
+    WRITE_COLORSTATE(config.Tab.Text, "Text");
+    WRITE_COLORSTATE(config.Tab.HotKey, "HotKey");
+    WRITE_COLORSTATE(config.Tab.ListText, "ListText");
+    WRITE_COLORSTATE(config.Tab.ListHotKey, "ListHotKey");
 
     WRITE_SECTION("\n[Window]\n");
-    WRITE_COLOR(this->Window.Background.Normal, "Normal");
-    WRITE_COLOR(this->Window.Background.Inactive, "Inactive");
-    WRITE_COLOR(this->Window.Background.Error, "Error");
-    WRITE_COLOR(this->Window.Background.Warning, "Warning");
-    WRITE_COLOR(this->Window.Background.Info, "Info");
+    WRITE_COLOR(config.Window.Background.Normal, "Normal");
+    WRITE_COLOR(config.Window.Background.Inactive, "Inactive");
+    WRITE_COLOR(config.Window.Background.Error, "Error");
+    WRITE_COLOR(config.Window.Background.Warning, "Warning");
+    WRITE_COLOR(config.Window.Background.Info, "Info");
 
     // save
     return File::WriteContent(outputFile, temp.ToStringView());
 }
-bool Config::Load(const std::filesystem::path& inputFile)
+bool Internal::Config::Load(Application::Config& config, const std::filesystem::path& inputFile)
 {
     Utils::IniObject ini;
     Utils::IniSection sect;
@@ -837,22 +838,22 @@ bool Config::Load(const std::filesystem::path& inputFile)
     }
     return true;
 }
-void Config::SetTheme(ThemeType theme)
+void Internal::Config::SetTheme(Application::Config& config, ThemeType theme)
 {
     switch (theme)
     {
     case ThemeType::Default:
-        Config_SetDefaultTheme(*this);
+        Config_SetDefaultTheme(config);
         break;
     case ThemeType::Dark:
-        Config_SetDarkTheme(*this);
+        Config_SetDarkTheme(config);
         break;
     case ThemeType::Light:
-        Config_SetLightTheme(*this);
+        Config_SetLightTheme(config);
         break;
     default:
-        Config_SetDefaultTheme(*this);
+        Config_SetDefaultTheme(config);
         break;
     }
 }
-} // namespace AppCUI::Application
+} // namespace AppCUI

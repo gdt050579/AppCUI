@@ -20,6 +20,27 @@ class ExampleWin : public Window
         Factory::RadioBox::Create(p, "Dark", "x:1,y:1,w:15", 100, CMD_CHANGE_THEME_DARK);
         Factory::RadioBox::Create(p, "Light", "x:1,y:2,w:15", 100, CMD_CHANGE_THEME_LIGHT);
     }
+    bool OnEvent(Reference<Control> control, Event eventType, int ID) override
+    {
+        if (Window::OnEvent(control, eventType, ID))
+            return true;
+        if (eventType == Event::CheckedStatusChanged)
+        {
+            switch (ID)
+            {
+            case CMD_CHANGE_THEME_DEFAULT:
+                Application::SetTheme(Application::ThemeType::Default);
+                return true;
+            case CMD_CHANGE_THEME_DARK:
+                Application::SetTheme(Application::ThemeType::Dark);
+                return true;
+            case CMD_CHANGE_THEME_LIGHT:
+                Application::SetTheme(Application::ThemeType::Light);
+                return true;
+            }
+        }
+        return false;
+    }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {
         cmd.SetCommand(Key::F1, "Help", 1);
