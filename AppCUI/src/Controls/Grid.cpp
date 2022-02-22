@@ -23,6 +23,7 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->flags     = flags;
 
     context->columnsSort.insert(context->columnsSort.end(), columnsNo, true);
+    context->columnsFilter.insert(context->columnsFilter.end(), columnsNo, u"");
 
     context->ResetMatrixPosition();
     context->UpdateGridParameters();
@@ -32,6 +33,7 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
 
     context->ReserveMap();
     Sort();
+    Filter();
 }
 
 void Grid::Paint(Renderer& renderer)
@@ -59,7 +61,7 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
-    for (auto const& [key, val] : context->cells)
+    for (auto const& [key, val] : *context->cells)
     {
         context->DrawCellContent(renderer, key);
     }
@@ -442,7 +444,7 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
     context->UpdateGridParameters();
 
     context->columnsSort.insert(context->columnsSort.end(), context->columnsNo, true);
-    context->cells.clear();
+    (*context->cells).clear();
 }
 
 Size Grid::GetGridDimensions() const
@@ -458,7 +460,7 @@ bool Grid::UpdateCell(uint32 index, ConstString content, TextAlignament textAlig
 
     Utils::UnicodeStringBuilder usb{ content };
     std::u16string u16s(usb);
-    context->cells[index] = { textAlignment, u16s };
+    (*context->cells)[index] = { textAlignment, u16s };
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
@@ -634,6 +636,15 @@ void Controls::Grid::Sort()
     if ((context->flags & GridFlags::DisableDuplicates) == GridFlags::None)
     {
         context->FindDuplicates();
+    }
+}
+
+void Controls::Grid::Filter()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    if ((context->flags & GridFlags::Filter) != GridFlags::None)
+    {
+        // TODO:
     }
 }
 
@@ -941,7 +952,7 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     const auto x = offsetX + cellColumn * cWidth + 1; // + 1 -> line
     const auto y = offsetY + cellRow * cHeight + 1;   // + 1 -> line
 
-    const auto& data = cells[cellIndex];
+    const auto& data = (*cells)[cellIndex];
 
     const auto state = GetComponentState(
           ControlStateFlags::All,
@@ -994,7 +1005,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 {
     renderer.FillRect(
           offsetX + 1,
-          offsetY - cHeight + 1,
+          offsetY - GetHeaderHeight() + 1,
           cWidth * columnsNo + offsetX - 1,
           offsetY - 1,
           ' ',
@@ -1005,8 +1016,8 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo; i++)
     {
         const auto x    = offsetX + i * cWidth;
-        const auto y    = offsetY - cHeight + 1;
-        const auto endY = offsetY + cHeight;
+        const auto y    = offsetY - GetHeaderHeight();
+        const auto endY = offsetY + GetHeaderHeight();
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
@@ -1016,7 +1027,8 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
-        renderer.DrawHorizontalLine(offsetX, offsetY - cHeight, cWidth * columnsNo + offsetX, lineColor, true);
+        renderer.DrawHorizontalLine(
+              offsetX, offsetY - GetHeaderHeight(), cWidth * columnsNo + offsetX, lineColor, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
@@ -1026,7 +1038,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
             for (auto i = 0U; i <= columnsNo; i++)
             {
                 const auto x = offsetX + i * cWidth;
-                const auto y = offsetY - cHeight;
+                const auto y = offsetY - GetHeaderHeight();
 
                 if (i == 0)
                 {
@@ -1052,7 +1064,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         wtp.X     = offsetX + i * cWidth + 1; // 1 -> line
-        wtp.Y     = offsetY - cHeight / 2;
+        wtp.Y     = offsetY - GetHeaderHeight() / 2;
         wtp.Width = cWidth - 1; // 1 -> line
         wtp.Align = it->ta;
 
@@ -1141,7 +1153,7 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
 void GridControlContext::ResetMatrixPosition()
 {
     offsetX = -1;
-    offsetY = cHeight - 1; /* header */
+    offsetY = GetHeaderHeight() - 1; /* header */
 }
 
 void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
@@ -1442,8 +1454,8 @@ bool GridControlContext::CopySelectedCellsContent() const
         {
             ConstString cs;
             const auto current = columnsNo * j + i;
-            const auto& it     = cells.find(current);
-            if (it != cells.end())
+            const auto& it     = cells->find(current);
+            if (it != cells->end())
             {
                 const auto& data = it->second;
                 cs               = data.content;
@@ -1525,7 +1537,7 @@ bool GridControlContext::PasteContentToSelectedCells()
     auto index = selectedCellsIndexes.begin();
     for (const auto& token : tokens)
     {
-        auto& data   = cells.at(*index);
+        auto& data   = cells->at(*index);
         data.content = token;
 
         std::advance(index, 1);
@@ -1559,7 +1571,7 @@ void GridControlContext::ReserveMap()
 {
     for (auto i = 0U; i < columnsNo * rowsNo; i++)
     {
-        cells[i] = { Graphics::TextAlignament::Left, u"" };
+        (*cells)[i] = { Graphics::TextAlignament::Left, u"" };
     }
 }
 
@@ -1569,7 +1581,7 @@ void GridControlContext::ToggleSorting(int x, int y)
     for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
     {
         const auto xHeader    = offsetX + i * cWidth + 1; // 1 -> line
-        const auto yHeader    = offsetY - cHeight / 2;
+        const auto yHeader    = offsetY - GetHeaderHeight() / 2;
         const auto endXHeader = xHeader + cWidth - 2;
 
         if (x == endXHeader && y == yHeader)
@@ -1585,7 +1597,7 @@ void GridControlContext::ToggleSorting(int x, int y)
 
 void GridControlContext::SortColumn(int colIndex)
 {
-    if (cells.empty())
+    if (cells->empty())
     {
         return;
     }
@@ -1596,7 +1608,7 @@ void GridControlContext::SortColumn(int colIndex)
     for (auto j = 0U; j < rowsNo; j++)
     {
         const auto cell = colIndex + j * columnsNo;
-        column.emplace_back(cells.at(cell));
+        column.emplace_back(cells->at(cell));
     }
 
     std::sort(
@@ -1612,7 +1624,7 @@ void GridControlContext::SortColumn(int colIndex)
     for (auto j = 0U; j < rowsNo; j++)
     {
         const auto cell = colIndex + j * columnsNo;
-        cells[cell]     = column[j];
+        (*cells)[cell]  = column[j];
     }
 }
 
@@ -1621,8 +1633,8 @@ void GridControlContext::FindDuplicates()
     duplicatedCellsIndexes.clear();
     CHECKRET(selectedCellsIndexes.size() == 1, "");
 
-    const auto& content = cells[selectedCellsIndexes[0]].content;
-    for (const auto& [key, value] : cells)
+    const auto& content = (*cells)[selectedCellsIndexes[0]].content;
+    for (const auto& [key, value] : *cells)
     {
         if (content.compare(value.content) == 0)
         {
@@ -1661,4 +1673,16 @@ void GridControlContext::FindDuplicates()
     duplicatedCellsIndexes.erase(
           std::unique(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end()), duplicatedCellsIndexes.end());
 }
+
+uint32 GridControlContext::GetHeaderHeight() const
+{
+    return cHeight * (1 + ((flags & GridFlags::Filter) != GridFlags::None));
+}
+
+uint32 GridControlContext::GetColumnSelected() const
+{
+    CHECK(selectedCellsIndexes.size() == 1, -1, "");
+    return static_cast<int32>(selectedCellsIndexes[0] / columnsNo);
+}
+
 } // namespace AppCUI

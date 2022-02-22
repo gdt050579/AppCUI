@@ -3992,7 +3992,8 @@ namespace Controls
         DisableZoom           = 0x004000,
         DisableMove           = 0x008000,
         Sort                  = 0x010000,
-        DisableDuplicates     = 0x020000
+        DisableDuplicates     = 0x020000,
+        Filter                = 0x040000
     };
 
     class EXPORT Grid : public Control
@@ -4038,6 +4039,7 @@ namespace Controls
         void ToggleHorizontalLines();
         void ToggleVerticalLines();
         void Sort();
+        void Filter();
 
       private:
         friend Factory::Grid;
