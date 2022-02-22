@@ -50,6 +50,25 @@ class ExampleWin : public Window
         return true;
     }
 };
+void BuildAppMenu()
+{
+    Menu* files = Application::AddMenu("&File");
+    files->AddCommandItem("&Save", 100, Key::Ctrl | Key::S);
+    files->AddCommandItem("Save All", 101);
+    files->AddCommandItem("&Open", 102, Key::Ctrl | Key::O);
+    files->AddSeparator();
+    files->AddCommandItem("E&xit", 103, Key::Ctrl | Key::Q);
+    Menu* edit = Application::AddMenu("&Edit");
+    edit->AddCommandItem("&Copy", 200, Key::Ctrl | Key::Insert);
+    edit->AddCommandItem("&paste", 201, Key::Shift | Key::Insert);
+    edit->AddCommandItem("&Cut", 202, Key::Shift | Key::Delete);
+    edit->AddCommandItem("Special copy", 203, Key::Ctrl | Key::Alt | Key::Shift | Key::Insert);
+    Menu* help = Application::AddMenu("&Help");
+    help->AddCommandItem("&About", 300);
+    help->AddCommandItem("Search &online", 301);
+    help->AddSeparator();
+    help->AddCommandItem("Check for &updates", 302);
+}
 int main()
 {
     InitializationData initData;
@@ -58,6 +77,7 @@ int main()
     if (!Application::Init(initData))
         return 1;
     Application::AddWindow(std::make_unique<ExampleWin>());
+    BuildAppMenu();
     Application::Run();
     return 0;
 }
