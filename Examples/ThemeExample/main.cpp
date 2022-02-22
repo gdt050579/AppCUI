@@ -26,10 +26,15 @@ class ExampleWin : public Window
         lv->AddColumn("&Name", TextAlignament::Left, 15);
         lv->AddColumn("&Grade", TextAlignament::Right, 10);
         lv->AddColumn("&Class", TextAlignament::Left, 15);
-        lv->AddItem("John", "9", "Math");
-        lv->AddItem("Mary", "8", "English");
-        lv->AddItem("Jeffrey", "7", "Math");
-        lv->AddItem("Carl", "9", "Sport");
+        for (uint32 count = 0; count < 100; count++)
+        {
+            lv->AddItem("John", "9", "Math");
+            lv->AddItem("Mary", "8", "English");
+            lv->AddItem("Jeffrey", "7", "Math");
+            lv->AddItem("Carl", "9", "Sport");
+        }
+
+        Factory::ComboBox::Create(this, "x:25,y:13,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
