@@ -36,10 +36,12 @@ class ExampleWin : public Window
             lv->AddItem("Carl", "9", "Sport");
         }
 
-        Factory::ComboBox::Create(this, "x:25,y:13,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);
+        Factory::ComboBox::Create(this, "x:25,y:14,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);
 
         Factory::Button::Create(this, "&Load Dialog", "l:2,b:0,w:21", CMD_LOAD_DIALOG);
         Factory::Button::Create(this, "Theme &Editor", "l:2,b:2,w:21", CMD_LOAD_THEME_EDITOR);
+
+        Factory::TextArea::Create(this, "MultiLine\nText", "x:25,y:16,w:40,h:5", TextAreaFlags::ShowLineNumbers);
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
