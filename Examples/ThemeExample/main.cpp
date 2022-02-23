@@ -9,6 +9,8 @@ using namespace AppCUI::Graphics;
 constexpr int CMD_CHANGE_THEME_DEFAULT = 0;
 constexpr int CMD_CHANGE_THEME_DARK    = 1;
 constexpr int CMD_CHANGE_THEME_LIGHT   = 2;
+constexpr int CMD_LOAD_DIALOG          = 3;
+constexpr int CMD_LOAD_THEME_EDITOR    = 4;
 
 class ExampleWin : public Window
 {
@@ -35,6 +37,9 @@ class ExampleWin : public Window
         }
 
         Factory::ComboBox::Create(this, "x:25,y:13,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);
+
+        Factory::Button::Create(this, "&Load Dialog", "l:2,b:0,w:21", CMD_LOAD_DIALOG);
+        Factory::Button::Create(this, "Theme &Editor", "l:2,b:2,w:21", CMD_LOAD_THEME_EDITOR);
     }
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
@@ -52,6 +57,18 @@ class ExampleWin : public Window
                 return true;
             case CMD_CHANGE_THEME_LIGHT:
                 Application::SetTheme(Application::ThemeType::Light);
+                return true;
+            }
+        }
+        if (eventType == Event::ButtonClicked)
+        {
+            switch (ID)
+            {
+            case CMD_LOAD_DIALOG:
+                Dialogs::FileDialog::ShowOpenFileWindow("", "Images:jpg,png,bmp", ".");
+                return true;
+            case CMD_LOAD_THEME_EDITOR:
+                Dialogs::ThemeEditor::Show();
                 return true;
             }
         }
