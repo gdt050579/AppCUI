@@ -450,7 +450,7 @@ void Config_SetLightTheme(Config& cfg)
     cfg.Symbol.Maximized        = { Color::Magenta, Color::Transparent };
     cfg.Symbol.Resize           = { Color::Blue, Color::Transparent };
     cfg.Cursor.Normal           = { Color::White, Color::DarkBlue };
-    cfg.Cursor.Inactive         = { Color::Gray, Color::Transparent };
+    cfg.Cursor.Inactive         = { Color::Red, Color::Transparent };
     cfg.Cursor.OverInactiveItem = { Color::Gray, Color::DarkBlue };
     cfg.Cursor.OverSelection    = { Color::Yellow, Color::DarkBlue };
     cfg.Selection.Editor        = { Color::Black, Color::Yellow };
