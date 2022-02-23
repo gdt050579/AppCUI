@@ -1,11 +1,15 @@
-#include "AppCUI.hpp"
+#include "Internal.hpp"
 
 using namespace AppCUI::Controls;
 using namespace AppCUI::Graphics;
 
+#ifdef MessageBox
+#    undef MessageBox
+#endif
+
 namespace AppCUI::Dialogs
 {
-#define SETUP_TO_CPP_MODE
+//#define SETUP_TO_CPP_MODE
 
 #ifdef SETUP_TO_CPP_MODE
 void PrintColorToString(Color& c, string_view name, AppCUI::Utils::String& output)
@@ -575,7 +579,7 @@ class ConfigProperty : public PropertiesInterface
         y = (int) (sz.Height / 2);
         DrawPreviewWindow(r, x - 2, y - 4, x + 27, y + 4, " Buttons ");
 
-        PaintOneButton(r, x, y-2, "  Focused  ", ControlState::Focused, true);
+        PaintOneButton(r, x, y - 2, "  Focused  ", ControlState::Focused, true);
         PaintOneButton(r, x, y, "  Regular  ", ControlState::Normal, true);
         PaintOneButton(r, x, y + 2, "  Hovered  ", ControlState::Hovered, true);
         PaintOneButton(r, x + 14, y, "  Inactiv  ", ControlState::Inactive, true);
@@ -755,7 +759,7 @@ class ConfigProperty : public PropertiesInterface
         DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Borders & Lines ");
         r.SetClipMargins(3, 2, 3, 2);
 
-        const auto wx = std::max(9U, (sz.Width - 10) / 3);
+        const auto wx = std::max<uint32>(9U, (sz.Width - 10) / 3);
         r.DrawRectSize(4 + (wx + 1) * 0, 3, wx, 3, obj.Border.Normal, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 1, 3, wx, 3, obj.Border.Focused, LineType::Single);
         r.DrawRectSize(4 + (wx + 1) * 2, 3, wx, 3, obj.Border.Inactive, LineType::Single);
@@ -2083,7 +2087,7 @@ class ThemeEditorDialog : public Window
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
         : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject)
-    {   
+    {
         auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", true);
         sp->SetSecondPanelSize(30);
         pc = sp->CreateChildControl<PreviewControl>();
@@ -2125,7 +2129,7 @@ class ThemeEditorDialog : public Window
               FileDialog::ShowSaveFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
         if (res.has_value())
         {
-            if (this->cfg.GetConfig().Save(res.value()) == false)
+            if (Internal::Config::Save(this->cfg.GetConfig(), res.value()) == false)
             {
                 MessageBox::ShowError("Save", "Fail to save theme file !");
             }
@@ -2141,7 +2145,7 @@ class ThemeEditorDialog : public Window
               FileDialog::ShowOpenFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
         if (res.has_value())
         {
-            if (this->cfg.GetConfig().Load(res.value()) == false)
+            if (Internal::Config::Load(this->cfg.GetConfig(), res.value()) == false)
             {
                 MessageBox::ShowError("Load", "Fail to load theme from file !");
             }
@@ -2185,7 +2189,7 @@ class ThemeEditorDialog : public Window
             if (control == themeMode)
             {
                 const auto themeID = static_cast<AppCUI::Application::ThemeType>(themeMode->GetCurrentItemUserData(0));
-                cfg.GetConfig().SetTheme(themeID);
+                Internal::Config::SetTheme(cfg.GetConfig(), themeID);
                 return true;
             }
         }

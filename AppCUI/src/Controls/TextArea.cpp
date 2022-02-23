@@ -274,7 +274,7 @@ void TextAreaControlContext::DrawLine(
     poz = lineStart + View.HorizontalOffset;
     if (poz >= lineEnd)
     {
-        if (Flags & GATTR_ENABLE)
+        if (Focused)
         {
             // if its the last character (EOF) --> show the cursor
             if (poz == View.CurrentPosition)
@@ -299,7 +299,7 @@ void TextAreaControlContext::DrawLine(
         {
             if (poz == View.CurrentPosition)
                 cursorPoz = pozX;
-            if ((poz >= Selection.Start) && (poz < Selection.End))
+            if ((Focused) && (poz >= Selection.Start) && (poz < Selection.End))
                 col = Cfg->Selection.Editor;
             else if (useHighlighing)
                 col = ch->Color;
@@ -324,7 +324,7 @@ void TextAreaControlContext::DrawLine(
             pozX++;
         }
     }
-    if (Flags & GATTR_ENABLE)
+    if (Focused)
     {
         if (poz == View.CurrentPosition)
             cursorPoz = pozX;

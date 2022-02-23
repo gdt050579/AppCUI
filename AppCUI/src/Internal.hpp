@@ -230,6 +230,13 @@ namespace Internal
         void Uninit();
         void Update();
     };
+    
+    namespace Config
+    {
+        void SetTheme(AppCUI::Application::Config& config, AppCUI::Application::ThemeType type);
+        bool Save(AppCUI::Application::Config& config, const std::filesystem::path& outputFile);
+        bool Load(AppCUI::Application::Config& config, const std::filesystem::path& inputFile);
+    }; // namespace Config
 
     struct ApplicationImpl
     {

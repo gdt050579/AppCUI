@@ -3589,7 +3589,8 @@ namespace Controls
         WarningInformation = 4,
         Emphasized_1       = 5,
         Emphasized_2       = 6,
-        Category           = 7
+        Category           = 7,
+        Colored            = 8
     };
 
     class EXPORT ListView : public Control
@@ -4801,10 +4802,6 @@ namespace Application
                 Graphics::Color Normal, Inactive, Error, Warning, Info;
             } Background;
         } Window;
-
-        void SetTheme(ThemeType type);
-        bool Save(const std::filesystem::path& outputFile);
-        bool Load(const std::filesystem::path& inputFile);
     };
 
     EXPORT Config* GetAppConfig();
@@ -4836,6 +4833,7 @@ namespace Application
           int controlID);
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
+    EXPORT void SetTheme(ThemeType themeType);
 }; // namespace Application
 
 } // namespace AppCUI

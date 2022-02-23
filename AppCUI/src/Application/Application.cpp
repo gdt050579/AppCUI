@@ -85,6 +85,7 @@ bool Application::GetDesktopSize(Graphics::Size& size)
     app->AppDesktop->GetClientSize(size);
     return true;
 }
+
 void Application::ArrangeWindows(ArrangeWindowsMethod method)
 {
     if (app)
@@ -176,6 +177,13 @@ Application::Config* Application::GetAppConfig()
 {
     CHECK(app, nullptr, "Application has not been initialized !");
     return &app->config;
+}
+void Application::SetTheme(ThemeType themeType)
+{
+    if (app)
+    {
+        Internal::Config::SetTheme(app->config, themeType);
+    }
 }
 Utils::IniObject* Application::GetAppSettings()
 {
@@ -552,9 +560,9 @@ bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
         return false;
     }
     appPath = appPath.remove_filename();
-    appPath += (string_view)initData.ThemeName;
+    appPath += (string_view) initData.ThemeName;
     appPath.replace_extension(".theme");
-    if (this->config.Load(appPath) == false)
+    if (Internal::Config::Load(this->config, appPath) == false)
     {
         LOG_WARNING("Fail to load theme file from: %s --> reverting to defaul theme", appPath.string().c_str());
         return false;
@@ -701,12 +709,12 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     {
         if (!LoadThemeFile(initData))
         {
-            this->config.SetTheme(initData.Theme);
+            Internal::Config::SetTheme(this->config, initData.Theme);
         }
     }
     else
     {
-        this->config.SetTheme(initData.Theme);
+        Internal::Config::SetTheme(this->config, initData.Theme);
     }
 
     if (initData.CustomDesktopConstructor)
