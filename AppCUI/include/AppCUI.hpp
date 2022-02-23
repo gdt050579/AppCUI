@@ -3589,7 +3589,8 @@ namespace Controls
         WarningInformation = 4,
         Emphasized_1       = 5,
         Emphasized_2       = 6,
-        Category           = 7
+        Category           = 7,
+        Colored            = 8
     };
 
     class EXPORT ListView : public Control

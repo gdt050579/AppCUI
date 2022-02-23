@@ -222,7 +222,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     switch (item->Type)
     {
     case ListViewItemType::Normal:
-        itemCol = item->ItemColor;
+        itemCol = Cfg->Text.Normal;
         break;
     case ListViewItemType::Highlighted:
         itemCol = Cfg->Text.Highlighted;
@@ -244,6 +244,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         break;
     case ListViewItemType::Category:
         itemCol = Cfg->Text.Highlighted;
+        break;
+    case ListViewItemType::Colored:
+        itemCol = item->ItemColor;
         break;
     default:
         break;
@@ -532,16 +535,16 @@ bool ListViewControlContext::SetItemSelect(ItemHandle item, bool check)
 bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-    CHECK(i.Type == ListViewItemType::Normal,
-          false,
-          "Item color only applies to regular item. Use SetItemType to change item type !");
     i.ItemColor = color;
+    i.Type      = ListViewItemType::Colored;
     return true;
 }
 bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.Type = type;
+    if (type == ListViewItemType::Colored)
+        i.ItemColor = Cfg->Text.Normal;
     return true;
 }
 bool ListViewControlContext::SetItemDataAsValue(ItemHandle item, uint64 value)
@@ -1340,8 +1343,7 @@ bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll
     if (index >= 0)
     {
         // set color for
-        lvi.SubItem[columnID].SetColor(
-              index, index + this->Filter.SearchText.Len(), this->Cfg->Selection.SearchMarker);
+        lvi.SubItem[columnID].SetColor(index, index + this->Filter.SearchText.Len(), this->Cfg->Selection.SearchMarker);
         return true;
     }
 
