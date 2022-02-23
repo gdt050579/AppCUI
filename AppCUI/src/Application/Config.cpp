@@ -399,7 +399,7 @@ void Config_SetLightTheme(Config& cfg)
           { Color::Blue, Color::Transparent },
           { Color::Black, Color::Yellow });
     cfg.Lines.Set(
-          { Color::Blue, Color::Transparent },
+          { Color::Olive, Color::Transparent },
           { Color::Olive, Color::Transparent },
           { Color::Gray, Color::Transparent },
           { Color::Black, Color::Yellow },
