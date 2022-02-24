@@ -32,6 +32,13 @@ Also check out some of our more advanced controls such as PropertyList that allo
 
 ![PropertyList display example](docs/example_images/property_list.gif)
 
+
+---
+
+AppCUI support themes and the posibility to change and modify the way AppCUI controls are drawn.
+
+![Themes example](docs/example_images/theme_change.gif)
+
 ---
 
 _AppCUI_ also supports animantions with a stable 30 frames per second, [BadApple](https://github.com/gdt050579/AppCUI/tree/main/Examples/BadApple) is an ascii art animation, that is also a good example of custom drawing and extensibility of components.
