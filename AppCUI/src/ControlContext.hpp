@@ -400,6 +400,13 @@ class TextAreaControlContext : public ControlContext
     void SetSelection(uint32 start, uint32 end);
     void SetTabCharacter(char tabCharacter);
     void SendMsg(Event eventType);
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+    bool OnMouseOver(int x, int y);
+    bool OnMouseLeave();
+    bool OnMouseEnter();
 };
 
 struct TabControlContext : public ControlContext

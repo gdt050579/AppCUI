@@ -875,6 +875,33 @@ bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16 UnicodeChar)
     }
     return false;
 }
+void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+}
+void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+}
+bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseOver(int x, int y)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseLeave()
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseEnter()
+{
+    NOT_IMPLEMENTED(false);
+}
+
 
 void TextAreaControlContext::OnAfterResize()
 {
@@ -945,21 +972,23 @@ bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 void TextArea::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    WRAPPER->OnMousePressed(x, y, button);
 }
 void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
+    WRAPPER->OnMouseReleased(x, y, button);
 }
 bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
-    NOT_IMPLEMENTED(false);
+    return WRAPPER->OnMouseDrag(x, y, button);
 }
 bool TextArea::OnMouseEnter()
 {
-    NOT_IMPLEMENTED(false);
+    return WRAPPER->OnMouseEnter();
 }
 bool TextArea::OnMouseLeave()
 {
-    NOT_IMPLEMENTED(false);
+    return WRAPPER->OnMouseLeave();
 }
 void TextArea::OnAfterResize(int, int)
 {
