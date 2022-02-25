@@ -943,6 +943,24 @@ bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
+void TextArea::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+}
+void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+}
+bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextArea::OnMouseEnter()
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextArea::OnMouseLeave()
+{
+    NOT_IMPLEMENTED(false);
+}
 void TextArea::OnAfterResize(int, int)
 {
     WRAPPER->OnAfterResize();

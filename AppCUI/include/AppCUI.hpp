@@ -3449,6 +3449,11 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnAfterSetText() override;
         void SetReadOnly(bool value);
