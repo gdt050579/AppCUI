@@ -373,7 +373,7 @@ class TextAreaControlContext : public ControlContext
     void MoveLeft(bool selected);
     void MoveRight(bool selected);
     void MoveUpDown(uint32 times, bool moveUp, bool selected);
-    void MoveTo(int newPoz, bool selected);
+    void MoveTo(uint32 lineIndex, uint32 newPoz, bool selected);
     void MoveHome(bool selected);
     void MoveEnd(bool selected);
     void MoveToNextWord(bool selected);
@@ -400,6 +400,7 @@ class TextAreaControlContext : public ControlContext
     void SetSelection(uint32 start, uint32 end);
     void SetTabCharacter(char tabCharacter);
     void SendMsg(Event eventType);
+    void MousePosToFilePos(int x, int y, uint32 &lineIndex, uint32 &offset);
     void OnMouseReleased(int x, int y, Input::MouseButton button);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseDrag(int x, int y, Input::MouseButton button);

@@ -436,8 +436,25 @@ void TextAreaControlContext::MoveRight(bool selected)
 
     UPDATE_SELECTION;
 }
-void TextAreaControlContext::MoveTo(int, bool)
+void TextAreaControlContext::MoveTo(uint32 lineIndex, uint32 newPos, bool selected)
 {
+    CLEAR_SELECTION;
+    if (lineIndex < View.CurrentLine)
+        MoveUpDown(View.CurrentLine - lineIndex, false, selected);
+    else if (lineIndex > View.CurrentLine)
+        MoveUpDown(lineIndex - View.CurrentLine, true, selected);
+    while (newPos != View.CurrentPosition)
+    {
+        auto cPoz = View.CurrentPosition;
+        if (newPos < View.CurrentPosition)
+            MoveLeft(selected);
+        else
+            MoveRight(selected);
+        // sanity check to avoid infitine loops
+        if (cPoz == View.CurrentPosition)
+            break;
+    }
+    UPDATE_SELECTION;
 }
 void TextAreaControlContext::MoveUpDown(uint32 times, bool moveUp, bool selected)
 {
@@ -875,15 +892,57 @@ bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16 UnicodeChar)
     }
     return false;
 }
+
+void TextAreaControlContext::MousePosToFilePos(int x, int y, uint32& lineIndex, uint32& offset)
+{
+    lineIndex = (y + (int32) View.TopLine) >= 0 ? (uint32) (y + (int32) View.TopLine) : 0U;
+
+    if (this->Lines.Len() == 0)
+    {
+        lineIndex = 0;
+        offset    = 0;
+        return;
+    }
+    if (lineIndex >= Lines.Len())
+    {
+        // move to the end of text
+        lineIndex = Lines.Len() - 1;
+        offset    = Text.Len();
+        return;
+    }
+
+    uint32 start, end;
+    if (GetLineRange(lineIndex, start, end))
+    {
+        offset = (x + (int) View.HorizontalOffset - (int) LINE_NUMBERS_WIDTH) >= 0
+                       ? ((uint32) (x + (int) View.HorizontalOffset - (int) LINE_NUMBERS_WIDTH)) + start
+                       : start;
+        offset = std::min<>(offset, end);
+        return;
+    }
+    else
+    {
+        // move to the end of text (however, this code should not be reached).
+        lineIndex = Lines.Len() - 1;
+        offset    = Text.Len();
+        return;
+    }
+}
 void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
 }
 void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    uint32 lineIndex, ofs;
+    MousePosToFilePos(x, y, lineIndex, ofs);
+    MoveTo(lineIndex, ofs, false);
 }
 bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
-    NOT_IMPLEMENTED(false);
+    uint32 lineIndex, ofs;
+    MousePosToFilePos(x, y, lineIndex, ofs);
+    MoveTo(lineIndex, ofs, true);
+    return true;
 }
 bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
@@ -901,7 +960,6 @@ bool TextAreaControlContext::OnMouseEnter()
 {
     NOT_IMPLEMENTED(false);
 }
-
 
 void TextAreaControlContext::OnAfterResize()
 {
