@@ -946,7 +946,16 @@ bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button
 }
 bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
-    NOT_IMPLEMENTED(false);
+    switch (direction)
+    {
+    case MouseWheel::Up:
+        MoveUpDown(1, true, false);
+        return true;
+    case MouseWheel::Down:
+        MoveUpDown(1, false, false);
+        return true;
+    }
+    return false;
 }
 bool TextAreaControlContext::OnMouseOver(int x, int y)
 {
@@ -1039,6 +1048,10 @@ void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
 bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     return WRAPPER->OnMouseDrag(x, y, button);
+}
+bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    return WRAPPER->OnMouseWheel(x, y, direction);
 }
 bool TextArea::OnMouseEnter()
 {
