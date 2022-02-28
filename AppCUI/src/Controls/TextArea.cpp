@@ -22,6 +22,14 @@ namespace AppCUI
 using namespace OS;
 constexpr uint32 INVALID_SELECTION  = 0xFFFFFFFFU;
 constexpr uint32 LINE_NUMBERS_WIDTH = 4U;
+Internal::TextControlDefaultMenu* textAreaContexMenu = nullptr;
+
+void Controls::UninitTextAreaDefaultMenu()
+{
+    if (textAreaContexMenu)
+        delete textAreaContexMenu;
+    textAreaContexMenu = nullptr;
+}
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
     uint32 extraY = 0;
@@ -945,6 +953,23 @@ void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         MoveTo(lineIndex, ofs, false);
         MoveToPreviousWord(false);
         MoveToNextWord(true);
+    }
+    if (button == MouseButton::Right)
+    {
+        if ((this->handlers) &&
+            ((reinterpret_cast<Handlers::TextControl*>(this->handlers.get()))->OnTextRightClick.obj))
+        {
+            (reinterpret_cast<Handlers::TextControl*>(this->handlers.get()))
+                  ->OnTextRightClick.obj->OnTextRightClick(this->Host, x, y);
+        }
+        else
+        {
+            if (textAreaContexMenu == nullptr)
+            {
+                textAreaContexMenu = new Internal::TextControlDefaultMenu();
+            }
+            textAreaContexMenu->Show(this->Host, x, y + 1, this->Selection.Start >= 0);
+        }
     }
 }
 bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button)
