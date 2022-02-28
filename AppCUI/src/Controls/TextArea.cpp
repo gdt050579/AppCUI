@@ -934,14 +934,27 @@ void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton bu
 void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     uint32 lineIndex, ofs;
-    MousePosToFilePos(x, y, lineIndex, ofs);
-    MoveTo(lineIndex, ofs, false);
+    if (button == MouseButton::Left)
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, false);
+    }
+    if (button == (MouseButton::DoubleClicked | MouseButton::Left))
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, false);
+        MoveToPreviousWord(false);
+        MoveToNextWord(true);
+    }
 }
 bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     uint32 lineIndex, ofs;
-    MousePosToFilePos(x, y, lineIndex, ofs);
-    MoveTo(lineIndex, ofs, true);
+    if (button == MouseButton::Left)
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, true);
+    }
     return true;
 }
 bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
