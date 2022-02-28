@@ -408,6 +408,7 @@ class TextAreaControlContext : public ControlContext
     bool OnMouseOver(int x, int y);
     bool OnMouseLeave();
     bool OnMouseEnter();
+    bool OnEvent(Event eventType, int ID);
 };
 
 struct TabControlContext : public ControlContext

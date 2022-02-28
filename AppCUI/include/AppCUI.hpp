@@ -3446,6 +3446,7 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
+        bool OnEvent(Reference<Control> /*sender*/, Event eventType, int ID) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;

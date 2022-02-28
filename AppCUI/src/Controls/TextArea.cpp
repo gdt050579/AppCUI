@@ -1033,7 +1033,41 @@ void TextAreaControlContext::SendMsg(Event eventType)
 {
     Host->RaiseEvent(eventType);
 }
-
+bool TextAreaControlContext::OnEvent(Event eventType, int ID)
+{
+    if (eventType == Event::Command)
+    {
+        switch (ID)
+        {
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
+            this->CopyToClipboard();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
+            if (Selection.Start != INVALID_SELECTION)
+            {
+                this->CopyToClipboard();
+                OnKeyEvent(Key::Delete, 0);
+            }
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
+            this->PasteFromClipboard();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
+            this->SetSelection(0, this->Text.Len());
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
+            OnKeyEvent(Key::Delete, 0);
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
+            this->ToUpper();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
+            this->ToLower();
+            return true;
+        }
+    }
+    return false;
+}
 //======================================================================================================================================================================
 TextArea::~TextArea()
 {
@@ -1070,6 +1104,10 @@ void TextArea::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
+}
+bool TextArea::OnEvent(Reference<Control> /*sender*/, Event eventType, int ID)
+{
+    return WRAPPER->OnEvent(eventType,ID);
 }
 bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
