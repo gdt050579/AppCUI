@@ -336,5 +336,6 @@ namespace Log
 namespace Controls
 {
     void UninitTextFieldDefaultMenu();
+    void UninitTextAreaDefaultMenu();
 }
 } // namespace AppCUI

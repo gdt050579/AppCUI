@@ -3446,9 +3446,16 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
+        bool OnEvent(Reference<Control> /*sender*/, Event eventType, int ID) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        bool OnMouseEnter() override;
+        bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnAfterSetText() override;
         void SetReadOnly(bool value);

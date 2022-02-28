@@ -22,6 +22,14 @@ namespace AppCUI
 using namespace OS;
 constexpr uint32 INVALID_SELECTION  = 0xFFFFFFFFU;
 constexpr uint32 LINE_NUMBERS_WIDTH = 4U;
+Internal::TextControlDefaultMenu* textAreaContexMenu = nullptr;
+
+void Controls::UninitTextAreaDefaultMenu()
+{
+    if (textAreaContexMenu)
+        delete textAreaContexMenu;
+    textAreaContexMenu = nullptr;
+}
 void TextAreaControlContext::ComputeVisibleLinesAndRows()
 {
     uint32 extraY = 0;
@@ -436,8 +444,25 @@ void TextAreaControlContext::MoveRight(bool selected)
 
     UPDATE_SELECTION;
 }
-void TextAreaControlContext::MoveTo(int, bool)
+void TextAreaControlContext::MoveTo(uint32 lineIndex, uint32 newPos, bool selected)
 {
+    CLEAR_SELECTION;
+    if (lineIndex < View.CurrentLine)
+        MoveUpDown(View.CurrentLine - lineIndex, false, selected);
+    else if (lineIndex > View.CurrentLine)
+        MoveUpDown(lineIndex - View.CurrentLine, true, selected);
+    while (newPos != View.CurrentPosition)
+    {
+        auto cPoz = View.CurrentPosition;
+        if (newPos < View.CurrentPosition)
+            MoveLeft(selected);
+        else
+            MoveRight(selected);
+        // sanity check to avoid infitine loops
+        if (cPoz == View.CurrentPosition)
+            break;
+    }
+    UPDATE_SELECTION;
 }
 void TextAreaControlContext::MoveUpDown(uint32 times, bool moveUp, bool selected)
 {
@@ -876,6 +901,113 @@ bool TextAreaControlContext::OnKeyEvent(Input::Key KeyCode, char16 UnicodeChar)
     return false;
 }
 
+void TextAreaControlContext::MousePosToFilePos(int x, int y, uint32& lineIndex, uint32& offset)
+{
+    lineIndex = (y + (int32) View.TopLine) >= 0 ? (uint32) (y + (int32) View.TopLine) : 0U;
+
+    if (this->Lines.Len() == 0)
+    {
+        lineIndex = 0;
+        offset    = 0;
+        return;
+    }
+    if (lineIndex >= Lines.Len())
+    {
+        // move to the end of text
+        lineIndex = Lines.Len() - 1;
+        offset    = Text.Len();
+        return;
+    }
+
+    uint32 start, end;
+    if (GetLineRange(lineIndex, start, end))
+    {
+        offset = (x + (int) View.HorizontalOffset - (int) LINE_NUMBERS_WIDTH) >= 0
+                       ? ((uint32) (x + (int) View.HorizontalOffset - (int) LINE_NUMBERS_WIDTH)) + start
+                       : start;
+        offset = std::min<>(offset, end);
+        return;
+    }
+    else
+    {
+        // move to the end of text (however, this code should not be reached).
+        lineIndex = Lines.Len() - 1;
+        offset    = Text.Len();
+        return;
+    }
+}
+void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+}
+void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+    uint32 lineIndex, ofs;
+    if (button == MouseButton::Left)
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, false);
+    }
+    if (button == (MouseButton::DoubleClicked | MouseButton::Left))
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, false);
+        MoveToPreviousWord(false);
+        MoveToNextWord(true);
+    }
+    if (button == MouseButton::Right)
+    {
+        if ((this->handlers) &&
+            ((reinterpret_cast<Handlers::TextControl*>(this->handlers.get()))->OnTextRightClick.obj))
+        {
+            (reinterpret_cast<Handlers::TextControl*>(this->handlers.get()))
+                  ->OnTextRightClick.obj->OnTextRightClick(this->Host, x, y);
+        }
+        else
+        {
+            if (textAreaContexMenu == nullptr)
+            {
+                textAreaContexMenu = new Internal::TextControlDefaultMenu();
+            }
+            textAreaContexMenu->Show(this->Host, x, y + 1, this->Selection.Start >= 0);
+        }
+    }
+}
+bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    uint32 lineIndex, ofs;
+    if (button == MouseButton::Left)
+    {
+        MousePosToFilePos(x, y, lineIndex, ofs);
+        MoveTo(lineIndex, ofs, true);
+    }
+    return true;
+}
+bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    switch (direction)
+    {
+    case MouseWheel::Up:
+        MoveUpDown(1, true, false);
+        return true;
+    case MouseWheel::Down:
+        MoveUpDown(1, false, false);
+        return true;
+    }
+    return false;
+}
+bool TextAreaControlContext::OnMouseOver(int x, int y)
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseLeave()
+{
+    NOT_IMPLEMENTED(false);
+}
+bool TextAreaControlContext::OnMouseEnter()
+{
+    NOT_IMPLEMENTED(false);
+}
+
 void TextAreaControlContext::OnAfterResize()
 {
     ComputeVisibleLinesAndRows();
@@ -901,7 +1033,41 @@ void TextAreaControlContext::SendMsg(Event eventType)
 {
     Host->RaiseEvent(eventType);
 }
-
+bool TextAreaControlContext::OnEvent(Event eventType, int ID)
+{
+    if (eventType == Event::Command)
+    {
+        switch (ID)
+        {
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_COPY:
+            this->CopyToClipboard();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_CUT:
+            if (Selection.Start != INVALID_SELECTION)
+            {
+                this->CopyToClipboard();
+                OnKeyEvent(Key::Delete, 0);
+            }
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_PASTE:
+            this->PasteFromClipboard();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_SELECT_ALL:
+            this->SetSelection(0, this->Text.Len());
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_DELETE_SELECTED:
+            OnKeyEvent(Key::Delete, 0);
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_UPPER:
+            this->ToUpper();
+            return true;
+        case Internal::TextControlDefaultMenu::TEXTCONTROL_CMD_TO_LOWER:
+            this->ToLower();
+            return true;
+        }
+    }
+    return false;
+}
 //======================================================================================================================================================================
 TextArea::~TextArea()
 {
@@ -939,9 +1105,37 @@ void TextArea::Paint(Graphics::Renderer& renderer)
     CREATE_TYPECONTROL_CONTEXT(TextAreaControlContext, Members, );
     Members->Paint(renderer);
 }
+bool TextArea::OnEvent(Reference<Control> /*sender*/, Event eventType, int ID)
+{
+    return WRAPPER->OnEvent(eventType,ID);
+}
 bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
+}
+void TextArea::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+    WRAPPER->OnMousePressed(x, y, button);
+}
+void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+    WRAPPER->OnMouseReleased(x, y, button);
+}
+bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    return WRAPPER->OnMouseDrag(x, y, button);
+}
+bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    return WRAPPER->OnMouseWheel(x, y, direction);
+}
+bool TextArea::OnMouseEnter()
+{
+    return WRAPPER->OnMouseEnter();
+}
+bool TextArea::OnMouseLeave()
+{
+    return WRAPPER->OnMouseLeave();
 }
 void TextArea::OnAfterResize(int, int)
 {
