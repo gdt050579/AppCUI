@@ -2965,7 +2965,7 @@ namespace Controls
             ComparereItemHandler callback;
             virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) override
             {
-                callback(control, item1, item2);
+                return callback(control, item1, item2);
             };
         };
 

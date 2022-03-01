@@ -1254,41 +1254,49 @@ void ListViewControlContext::ColumnSort(uint32 columnIndex)
 int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
 {
     ListViewControlContext* lvcc = (ListViewControlContext*) context;
-    if (lvcc->SortParams.CompareCallbak)
+    // indx1 and indx2 are indexes in List.Indexes
+    // first convert them to actual indexes
+    uint32 index_1, index_2;
+    if (!lvcc->Items.Indexes.Get(indx1, index_1))
+        index_1 = 0xFFFFFFFF;
+    if (!lvcc->Items.Indexes.Get(indx2, index_2))
+        index_2 = 0xFFFFFFFF;
+    const uint32 itemsCount = (uint32) lvcc->Items.List.size();
+    if ((index_1 < itemsCount) && (index_2 < itemsCount))
     {
-        return lvcc->SortParams.CompareCallbak(
-              (ListView*) lvcc->Host,
-              indx1,
-              indx2,
-              lvcc->SortParams.ColumnIndex,
-              lvcc->SortParams.CompareCallbakContext);
-    }
-    else
-    {
-        uint32 itemsCount = (uint32) lvcc->Items.List.size();
-        if ((indx1 < itemsCount) && (indx2 < itemsCount) && (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX))
+        // valid indexes
+        if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
-            return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(
-                  lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex], true);
+            return ((Handlers::ListView*) (lvcc->handlers.get()))
+                  ->ComparereItem.obj->CompareItem(lvcc->Host, index_1, index_2);
         }
         else
         {
-            if (indx1 < indx2)
-                return -1;
-            else if (indx1 > indx2)
-                return 1;
+            if (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX)
+            {
+                return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(
+                      lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex], true);
+            }
             else
-                return 0;
+            {
+                if (indx1 < indx2)
+                    return -1;
+                else if (indx1 > indx2)
+                    return 1;
+                else
+                    return 0;
+            }
         }
+    }
+    else
+    {
+        return 0; // dont chage the order
     }
 }
 bool ListViewControlContext::Sort()
 {
-    if (SortParams.CompareCallbak == nullptr)
-    {
-        // sanity check
-        CHECK(SortParams.ColumnIndex < Columns.Count, false, "No sort column or custom sort function defined !");
-    }
+    // sanity check
+    CHECK(SortParams.ColumnIndex < Columns.Count, false, "No sort column or custom sort function defined !");
     Items.Indexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
     return true;
 }
@@ -1433,8 +1441,6 @@ ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListVi
     Members->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
     Members->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     Members->SortParams.Ascendent              = true;
-    Members->SortParams.CompareCallbak         = nullptr;
-    Members->SortParams.CompareCallbakContext  = nullptr;
     Members->Columns.ResizeModeEnabled         = false;
     Members->Filter.FilterModeEnabled          = false;
     Members->Filter.LastFoundItem              = -1;
@@ -1825,11 +1831,7 @@ void ListView::OnFocus()
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }
-void ListView::SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void* Context)
-{
-    WRAPPER->SortParams.CompareCallbak        = fnc;
-    WRAPPER->SortParams.CompareCallbakContext = Context;
-}
+
 bool ListView::Sort()
 {
     return WRAPPER->Sort();
@@ -1852,5 +1854,9 @@ bool ListView::Reserve(uint32 itemsCount)
 {
     WRAPPER->Items.List.reserve(itemsCount);
     return WRAPPER->Items.Indexes.Reserve(itemsCount);
+}
+Handlers::ListView* ListView::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::ListView);
 }
 } // namespace AppCUI
