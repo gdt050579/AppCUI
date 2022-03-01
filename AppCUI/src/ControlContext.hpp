@@ -494,8 +494,6 @@ class ListViewControlContext : public ControlContext
     {
         uint32 ColumnIndex;
         bool Ascendent;
-        Handlers::ListViewItemComparer CompareCallbak;
-        void* CompareCallbakContext;
     } SortParams;
 
     struct

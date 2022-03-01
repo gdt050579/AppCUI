@@ -2783,6 +2783,7 @@ namespace Controls
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
+        using ComparereItemHandler = int (*)(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2);
 
         struct OnButtonPressedInterface
         {
@@ -2955,6 +2956,19 @@ namespace Controls
             };
         };
 
+        struct ComparereItemInterface
+        {
+            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) = 0;
+        };
+        struct ComparereItemCallback : public ComparereItemInterface
+        {
+            ComparereItemHandler callback;
+            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) override
+            {
+                callback(control, item1, item2);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -3006,9 +3020,10 @@ namespace Controls
             Wrapper<OnValidateCharacterInterface, OnValidateCharacterCallback, OnValidateCharacterHandler>
                   OnValidateCharacter;
         };
-
-        using ListViewItemComparer = int (*)(
-              Controls::ListView* control, ItemHandle item1, ItemHandle item2, uint32 columnIndex, void* Context);
+        struct ListView : public Control
+        {
+            Wrapper<ComparereItemInterface, ComparereItemCallback, ComparereItemHandler> ComparereItem;
+        };
 
         struct Tree : public Control
         {
@@ -3724,10 +3739,11 @@ namespace Controls
         void SetClipboardSeparator(char ch);
 
         // sort
-        void SetItemCompareFunction(Handlers::ListViewItemComparer fnc, void* Context = nullptr);
         bool Sort();
         bool Sort(uint32 columnIndex, bool ascendent);
-        bool Sort(uint32 columnIndex, bool ascendent, Handlers::ListViewItemComparer fnc, void* Context = nullptr);
+
+        // handlers covariant
+        Handlers::ListView* Handlers() override;
 
         virtual ~ListView();
 
