@@ -1274,14 +1274,14 @@ int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
         {
             if (lvcc->SortParams.ColumnIndex != INVALID_COLUMN_INDEX)
             {
-                return lvcc->Items.List[indx1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(
-                      lvcc->Items.List[indx2].SubItem[lvcc->SortParams.ColumnIndex], true);
+                return lvcc->Items.List[index_1].SubItem[lvcc->SortParams.ColumnIndex].CompareWith(
+                      lvcc->Items.List[index_2].SubItem[lvcc->SortParams.ColumnIndex], true);
             }
             else
             {
-                if (indx1 < indx2)
+                if (index_1 < index_2)
                     return -1;
-                else if (indx1 > indx2)
+                else if (index_1 > index_2)
                     return 1;
                 else
                     return 0;
