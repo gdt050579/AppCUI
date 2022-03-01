@@ -3647,6 +3647,7 @@ namespace Controls
         bool DeleteColumn(uint32 columnIndex);
         void DeleteAllColumns();
         uint32 GetColumnsCount();
+        uint32 GetSortColumnIndex();
 
         // items add
         ItemHandle AddItem(const ConstString& text);

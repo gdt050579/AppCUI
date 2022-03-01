@@ -3,8 +3,6 @@
 #include <stack>
 #include <vector>
 
-
-
 namespace AppCUI
 {
 using namespace OS;
@@ -67,7 +65,7 @@ void ConvertSizeToString(uint64 size, char result[32])
 uint32 __compute_hash__(const char16* start, const char16* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-    uint32 hash       = 0x811c9dc5;
+    uint32 hash           = 0x811c9dc5;
     const char16* p_start = (const char16*) start;
     const char16* p_end   = (const char16*) end;
 
@@ -205,20 +203,20 @@ FileDialogWindow::FileDialogWindow(
     files->AddColumn("&Name", TextAlignament::Left, 31);
     files->AddColumn("&Size", TextAlignament::Right, 16);
     files->AddColumn("&Modified", TextAlignament::Center, 20);
-    files->SetItemCompareFunction(
-          [](Controls::ListView* control, ItemHandle item1, ItemHandle item2, uint32 columnIndex, void*) -> int
-          {
-              const auto& v1 = control->GetItemData(item1, 0);
-              const auto& v2 = control->GetItemData(item2, 0);
-              if (v1 < v2)
-                  return -1;
-              if (v1 > v2)
-                  return 1;
-              const auto& s1 = control->GetItemText(item1, columnIndex);
-              const auto& s2 = control->GetItemText(item2, columnIndex);
-              return s1.CompareWith(s2, true);
-          },
-          this);
+    files->Handlers()->ComparereItem = [](Reference<Control> control, ItemHandle item1, ItemHandle item2) -> int
+    {
+        auto lv        = control.ToObjectRef<ListView>();
+        const auto& v1 = lv->GetItemData(item1, 0);
+        const auto& v2 = lv->GetItemData(item2, 0);
+        if (v1 < v2)
+            return -1;
+        if (v1 > v2)
+            return 1;
+        auto cindex    = lv->GetSortColumnIndex();
+        const auto& s1 = lv->GetItemText(item1, cindex);
+        const auto& s2 = lv->GetItemText(item2, cindex);
+        return s1.CompareWith(s2, true);
+    };
     files->Sort(0, true); // sort after the first column, ascendent
 
     lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
@@ -381,7 +379,7 @@ void FileDialogWindow::ProcessTextFieldInput()
     err.clear();
     // remove becuase of invalid paths keeps returing an error code, even if the path does not exists
     // const bool isDir = std::filesystem::is_directory(candidateResultedPath, err);
-    //const bool isDir = std::filesystem::is_directory(candidateResultedPath);
+    // const bool isDir = std::filesystem::is_directory(candidateResultedPath);
     // if (err)
     //{
     //    MessageBox::ShowError(

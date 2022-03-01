@@ -1859,4 +1859,8 @@ Handlers::ListView* ListView::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::ListView);
 }
+uint32 ListView::GetSortColumnIndex()
+{
+    return WRAPPER->SortParams.ColumnIndex;
+}
 } // namespace AppCUI
