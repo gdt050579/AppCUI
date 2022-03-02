@@ -1268,7 +1268,7 @@ int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
         if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItem(lvcc->Host, index_1, index_2);
+                  ->ComparereItem.obj->CompareItem(lvcc->Host, indx1, indx2);
         }
         else
         {
