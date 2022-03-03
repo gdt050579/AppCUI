@@ -612,21 +612,29 @@ namespace Utils
         {
             return *ptr;
         }
-        constexpr inline bool operator==(const void* obj)
+        constexpr friend bool operator==(const Reference<T>& lhs, const void* rhs)
         {
-            return ptr == obj;
+            return lhs.ptr == rhs;
         }
-        constexpr inline bool operator==(const Reference<T>& obj)
+        constexpr friend bool operator==(const void* lhs, const Reference<T>& rhs)
         {
-            return ptr == obj.ptr;
+            return lhs == rhs.ptr;
         }
-        constexpr inline bool operator!=(const void* obj)
+        constexpr friend bool operator==(const Reference<T>& lhs, const Reference<T>& rhs)
         {
-            return ptr != obj;
+            return lhs.ptr == rhs.ptr;
         }
-        constexpr inline bool operator!=(const Reference<T>& obj)
+        constexpr friend bool operator!=(const Reference<T>& lhs, const void* rhs)
         {
-            return ptr != obj.ptr;
+            return lhs.ptr != rhs;
+        }
+        constexpr friend bool operator!=(const void* lhs, const Reference<T>& rhs)
+        {
+            return lhs != rhs.ptr;
+        }
+        constexpr friend bool operator!=(const Reference<T>& lhs, const Reference<T>& rhs)
+        {
+            return lhs.ptr != rhs.ptr;
         }
         constexpr inline void Reset()
         {
