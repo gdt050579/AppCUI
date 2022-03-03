@@ -3350,10 +3350,15 @@ namespace Controls
         friend Factory::RadioBox;
         friend Control;
     };
+    enum class SplitterFlags : uint32
+    {
+        Vertical = 0,
+        Horizontal = 0x000100,
+    };
     class EXPORT Splitter : public Control
     {
       protected:
-        Splitter(string_view layout, bool vertical);
+        Splitter(string_view layout, SplitterFlags flags = SplitterFlags::Vertical);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
