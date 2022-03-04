@@ -87,7 +87,7 @@
                   AppCUI::Log::Severity::Error, __FILE__, __FUNCTION__, "", __LINE__, format, ##__VA_ARGS__);          \
             return (returnValue);                                                                                      \
         }
-#    define NOT_IMPLEMENTED(returnValue)                                                                               \
+#    define NOT_IMPLEMENTED(returnValue, ...)                                                                          \
         {                                                                                                              \
             AppCUI::Log::Report(                                                                                       \
                   AppCUI::Log::Severity::Warning,                                                                      \
@@ -95,7 +95,8 @@
                   __FUNCTION__,                                                                                        \
                   "",                                                                                                  \
                   __LINE__,                                                                                            \
-                  "Current function/method is not implemented under current OS");                                      \
+                  "Current function/method is not implemented under current OS",                                       \
+                  ##__VA_ARGS__);                                                                                      \
             return (returnValue);                                                                                      \
         }
 #    define LOG_INFO(format, ...)                                                                                      \
@@ -136,7 +137,7 @@ inline void Unused(...)
 #    define CHECKBK(c, format, ...)                                                                                    \
         if (!(c))                                                                                                      \
             break;
-#    define NOT_IMPLEMENTED(returnValue)                                                                               \
+#    define NOT_IMPLEMENTED(returnValue, ...)                                                                          \
         {                                                                                                              \
             return (returnValue);                                                                                      \
         }
