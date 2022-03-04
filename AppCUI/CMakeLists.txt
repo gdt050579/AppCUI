@@ -68,6 +68,10 @@ if (APPCUI_HAVE_NCURSES)
     endif()
 endif()
 
+if (UNIX AND NOT (SDL2_FOUND OR CURSES_FOUND))
+    message(FATAL_ERROR "On unix you must have either ncurses or SDL")
+endif()
+
 
 if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
 target_link_libraries(AppCUI PRIVATE ${CURSES_LIBRARIES} ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} ${FONT_LIB_NAME} stdc++fs)
