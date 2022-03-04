@@ -20,8 +20,8 @@ if (MSVC)
     target_sources(AppCUI PRIVATE ${WINRC_FOLDER})
 endif()
 
-option(APPCUI_USE_SDL "Use SDL" ON)
-option(APPCUI_USE_NCURSES "Use ncurses" ON)
+option(APPCUI_HAVE_SDL "Use SDL" ON)
+option(APPCUI_HAVE_NCURSES "Use ncurses" ON)
 
 # Add SDL
 set(SDL2_LIBRARY_RELEASE "")

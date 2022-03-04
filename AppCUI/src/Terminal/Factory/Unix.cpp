@@ -12,40 +12,44 @@ namespace AppCUI::Internal
 {
 using namespace Application;
 
-unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
+static unique_ptr<AbstractTerminal> GetTerminalImpl(FrontendType frontend)
 {
-    unique_ptr<AbstractTerminal> term = nullptr;
-
-    switch (initData.Frontend)
+    switch (frontend)
     {
     case FrontendType::Default:
+        if (auto term = GetTerminalImpl(FrontendType::SDL))
+        {
+            return term;
+        }
+        if (auto term = GetTerminalImpl(FrontendType::Terminal))
+        {
+            return term;
+        }
+        break;
     case FrontendType::SDL:
 #ifdef APPCUI_HAVE_SDL
-        term = std::make_unique<SDLTerminal>();
+        return std::make_unique<SDLTerminal>();
 #else
-        RETURNERROR(
-              nullptr,
-              "Unsuported terminal type for UNIX OS (%d): Please install SDL2",
-              (uint32) initData.Frontend);
+        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2", (uint32) frontend);
 #endif
         break;
     case FrontendType::Terminal:
 #ifdef APPCUI_HAVE_NCURSES
-        term = std::make_unique<NcursesTerminal>();
+        return std::make_unique<NcursesTerminal>();
 #else
-        RETURNERROR(
-              nullptr,
-              "Unsuported terminal type for UNIX OS (%d): Please install ncurses",
-              (uint32) initData.Frontend);
+        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses", (uint32) frontend);
 #endif
         break;
-    default:
-        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) initData.Frontend);
     }
+    RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) frontend);
+}
 
-    CHECK(term, nullptr, "Fail to allocate memory for a terminal !");
+unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
+{
+    unique_ptr<AbstractTerminal> term = GetTerminalImpl(initData.Frontend);
+    CHECK(term, nullptr, "No terminal");
     CHECK(term->Init(initData), nullptr, "Fail to initialize the terminal!");
 
     return term;
 }
-}
+} // namespace AppCUI::Internal
