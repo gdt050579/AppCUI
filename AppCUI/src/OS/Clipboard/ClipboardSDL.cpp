@@ -1,6 +1,7 @@
 #include "Internal.hpp"
 #include "SDL.h"
-using namespace OS;
+using namespace AppCUI::Utils;
+using namespace AppCUI::OS;
 
 bool Clipboard::Clear()
 {
