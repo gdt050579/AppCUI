@@ -24,13 +24,13 @@ option(APPCUI_USE_SDL "Use SDL" ON)
 option(APPCUI_USE_NCURSES "Use ncurses" ON)
 
 # Add SDL
-if (APPCUI_USE_SDL)
+if (APPCUI_HAVE_SDL)
     include(FindSDL2)
     include(FindSDL2TTF)
     find_package(SDL2)
     find_package(SDL2TTF)
     if (SDL2_FOUND)
-        target_compile_definitions(AppCUI PRIVATE HAVE_SDL)
+        target_compile_definitions(AppCUI PRIVATE APPCUI_HAVE_SDL)
         message("Have SDL2")
 
         # Add font used by SDL 
@@ -49,7 +49,7 @@ if (APPCUI_USE_SDL)
     endif()
 endif()
 
-if (APPCUI_USE_NCURSES)
+if (APPCUI_HAVE_NCURSES)
     if (UNIX)
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
@@ -58,7 +58,7 @@ if (APPCUI_USE_NCURSES)
 
     if (CURSES_FOUND)
         message("Have Curses")
-        target_compile_definitions(AppCUI PRIVATE HAVE_CURSES)
+        target_compile_definitions(AppCUI PRIVATE APPCUI_HAVE_NCURSES)
         target_include_directories(AppCUI PRIVATE ${CURSES_INCLUDE_DIRS})
         target_compile_definitions(AppCUI PRIVATE NCURSES_WIDECHAR)
     else()

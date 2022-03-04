@@ -1,10 +1,10 @@
 #include "../TerminalFactory.hpp"
 
-#ifdef HAVE_SDL
+#ifdef APPCUI_HAVE_SDL
 #    include "../SDLTerminal/SDLTerminal.hpp"
 #endif
 
-#ifdef HAVE_CURSES
+#ifdef APPCUI_HAVE_NCURSES
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 
@@ -20,7 +20,7 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
     {
     case FrontendType::Default:
     case FrontendType::SDL:
-#ifdef HAVE_SDL
+#ifdef APPCUI_HAVE_SDL
         term = std::make_unique<SDLTerminal>();
 #else
         RETURNERROR(
@@ -30,7 +30,7 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
 #endif
         break;
     case FrontendType::Terminal:
-#ifdef HAVE_CURSES
+#ifdef APPCUI_HAVE_NCURSES
         term = std::make_unique<NcursesTerminal>();
 #else
         RETURNERROR(
