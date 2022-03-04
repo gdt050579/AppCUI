@@ -24,6 +24,9 @@ option(APPCUI_USE_SDL "Use SDL" ON)
 option(APPCUI_USE_NCURSES "Use ncurses" ON)
 
 # Add SDL
+set(SDL2_LIBRARY_RELEASE "")
+set(SDL2TTF_LIBRARY "")
+set(FONT_LIB_NAME "")
 if (APPCUI_HAVE_SDL)
     include(FindSDL2)
     include(FindSDL2TTF)
@@ -43,9 +46,7 @@ if (APPCUI_HAVE_SDL)
         set(FONT_LIB_NAME font)
     else()
         message("Don't have SDL2")
-        set(SDL2_LIBRARY_RELEASE "")
-        set(SDL2TTF_LIBRARY "")
-        set(FONT_LIB_NAME "")
+
     endif()
 endif()
 
