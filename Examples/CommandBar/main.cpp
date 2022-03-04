@@ -87,8 +87,8 @@ class MyWin : public AppCUI::Controls::Window
         l1      = Factory::Label::Create(this, "", "x:1,y:2,w:56");
         auto t  = Factory::Tab::Create(this, "x:1,y:3,w:56,h:14");
         auto tp = Factory::TabPage::Create(t, "TabPage");
-        auto v  = Factory::Splitter::Create(tp, "d:c", false);
-        auto h  = Factory::Splitter::Create(v, "x:1,y:4,w:56,h:10", true);
+        auto v  = Factory::Splitter::Create(tp, "d:c");
+        auto h  = Factory::Splitter::Create(v, "x:1,y:4,w:56,h:10", SplitterFlags::Vertical);
         Factory::Button::Create(this, "A botton", "l:1,b:1,w:20", 1234);
         h->CreateChildControl<MyUserControl>("x:1,y:4,w:56,h:10");
         v->CreateChildControl<MyUserControl2>("x:1,y:4,w:56,h:10");

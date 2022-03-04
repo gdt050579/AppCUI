@@ -178,7 +178,7 @@ FileDialogWindow::FileDialogWindow(
     lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10");
     lbPath     = Factory::Label::Create(this, "", "x:11,y:0,w:62");
 
-    splitListView = Factory::Splitter::Create(this, "x:0,y:1,w:76,h:15", true);
+    splitListView = Factory::Splitter::Create(this, "x:0,y:1,w:76,h:15", SplitterFlags::Vertical);
     splitListView->SetSecondPanelSize(60);
     splitPanelLeft  = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
     splitPanelRight = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");

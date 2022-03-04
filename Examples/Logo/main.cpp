@@ -76,7 +76,7 @@ class LogoWin : public Window
   public:
     LogoWin() : Window("Canvas example", "d:c,w:80,h:22", WindowFlags::None)
     {
-        auto sp = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", true);
+        auto sp = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
         sp->SetSecondPanelSize(60);
         auto viewLogo = Factory::CanvasViewer::Create(sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
 

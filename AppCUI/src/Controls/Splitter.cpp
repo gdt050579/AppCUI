@@ -11,7 +11,7 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr uint32 GATTR_VERTICAL = 1024;
+constexpr uint32 GATTR_VERTICAL   = 1024;
 constexpr int32 SPLITTER_BAR_SIZE = 1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
@@ -104,14 +104,14 @@ Splitter::~Splitter()
 {
     DELETE_CONTROL_CONTEXT(SplitterControlContext);
 }
-Splitter::Splitter(string_view layout, bool vertical) : Control(new SplitterControlContext(), "", layout, false)
+Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members         = reinterpret_cast<SplitterControlContext*>(this->Context);
     Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     Members->mouseStatus = SplitterMouseStatus::None;
-    if (vertical)
+    if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
         Members->Flags |= GATTR_VERTICAL;
-    if (vertical)
+    if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
         Members->SecondPanelSize = Members->Layout.Width / 2;
     else
         Members->SecondPanelSize = Members->Layout.Height / 2;
@@ -350,5 +350,11 @@ uint32 Splitter::GetSecondPanelSize()
     if (Members->SecondPanelSize < 0)
         return 0;
     return (uint32) Members->SecondPanelSize;
+}
+void Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
+{
+}
+void Splitter::SetPane2Sizes(uint32 minSize, uint32 maxSize)
+{
 }
 } // namespace AppCUI

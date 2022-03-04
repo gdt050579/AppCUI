@@ -3352,13 +3352,15 @@ namespace Controls
     };
     enum class SplitterFlags : uint32
     {
-        Vertical = 0,
-        Horizontal = 0x000100,
+        Horizontal         = 0,
+        Vertical           = 0x000100,
+        AutoCollapsePanel1 = 0x000200,
+        AutoCollapsePanel2 = 0x000400,
     };
     class EXPORT Splitter : public Control
     {
       protected:
-        Splitter(string_view layout, SplitterFlags flags = SplitterFlags::Vertical);
+        Splitter(string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -3379,6 +3381,8 @@ namespace Controls
 
         uint32 GetFirstPanelSize();
         uint32 GetSecondPanelSize();
+        void SetPane1Sizes(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
+        void SetPane2Sizes(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
 
         virtual ~Splitter();
 
@@ -4282,9 +4286,12 @@ namespace Controls
             Splitter() = delete;
 
           public:
-            static Reference<Controls::Splitter> Create(Controls::Control* parent, string_view layout, bool vertical);
-            static Reference<Controls::Splitter> Create(Controls::Control& parent, string_view layout, bool vertical);
-            static Pointer<Controls::Splitter> Create(string_view layout, bool vertical);
+            static Reference<Controls::Splitter> Create(
+                  Controls::Control* parent, string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
+            static Reference<Controls::Splitter> Create(
+                  Controls::Control& parent, string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
+            static Pointer<Controls::Splitter> Create(
+                  string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
         };
         class EXPORT Panel
         {
@@ -4887,6 +4894,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::SplitterFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)

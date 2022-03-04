@@ -13,8 +13,8 @@ class MyWin : public Window
   public:
     MyWin() : Window("Splitter example", "d:c,w:60,h:10", WindowFlags::Sizeable)
     {
-        h = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", false);
-        v = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", true);
+        h = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%");
+        v = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
         h->SetSecondPanelSize(2);
         v->SetSecondPanelSize(30);
         auto pleft   = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");
@@ -53,9 +53,9 @@ class MyWin : public Window
         if (eventType == AppCUI::Controls::Event::ButtonClicked)
         {
             auto win = Factory::Window::Create("Empty example", "d:c,w:60,h:20", WindowFlags::Sizeable);
-            auto sp1 = Factory::Splitter::Create(win, "d:c%", false);
+            auto sp1 = Factory::Splitter::Create(win, "d:c%");
             sp1->SetSecondPanelSize(10);
-            Factory::Splitter::Create(sp1, "d:c", true)->SetSecondPanelSize(10);
+            Factory::Splitter::Create(sp1, "d:c", SplitterFlags::Vertical)->SetSecondPanelSize(10);
             win->Show();
             return true;
         }

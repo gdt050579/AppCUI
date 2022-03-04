@@ -30,8 +30,9 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
     {
         open = AppCUI::Controls::Factory::Button::Create(
               this, "&Open", "x:1%, y:6%, w:10%", static_cast<uint32>(ControlIds::ButtonShowOpen));
-        vertical      = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", true);
-        horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%", false);
+        vertical =
+              AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", Controls::SplitterFlags::Vertical);
+        horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%");
         currentFolder = AppCUI::Controls::Factory::TextField::Create(
               this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree = AppCUI::Controls::Factory::Tree::Create(
