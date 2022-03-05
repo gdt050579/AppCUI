@@ -16,6 +16,8 @@ class MyWin : public Window
         h = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%");
         v = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
         h->SetSecondPanelSize(2);
+        h->SetPane2Sizes(1);
+        h->SetPane1Sizes(4);
         v->SetSecondPanelSize(30);
         auto pleft   = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");
         auto pright  = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");

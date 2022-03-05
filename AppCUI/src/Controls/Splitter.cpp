@@ -11,8 +11,8 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr uint32 GATTR_VERTICAL   = 1024;
-constexpr int32 SPLITTER_BAR_SIZE = 1;
+constexpr uint32 GATTR_VERTICAL    = 1024;
+constexpr uint32 SPLITTER_BAR_SIZE = 1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                  "Click to maximize right panel",
@@ -122,22 +122,35 @@ Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new Splitt
         Members->SecondPanelSize = Members->Layout.Height / 2;
 }
 
-bool Splitter::SetSecondPanelSize(int newSize)
+bool Splitter::SetSecondPanelSize(uint32 newSize)
 {
     CHECK(newSize >= 0, false, "");
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    if ((Members->Flags & GATTR_VERTICAL) != 0)
+    const auto iSz = ((Members->Flags & GATTR_VERTICAL) != 0) ? Members->Layout.Width : Members->Layout.Height;
+    const auto sz =
+          (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
+    newSize = std::min<>(sz, newSize);
+
+    // first panel check
+    if ((sz - newSize) > Members->Panel1.maxSize)
+        newSize = sz - Members->Panel1.maxSize;
+    if ((sz - newSize) < Members->Panel1.minSize)
     {
-        if (newSize >= Members->Layout.Width)
-            newSize = Members->Layout.Width - 1;
+        if (Members->Panel1.minSize > sz)
+            newSize = 0;
+        else
+            newSize = sz - Members->Panel1.minSize;
     }
-    else
+    // check the second panel
+    newSize = std::min<>(newSize, Members->Panel2.maxSize);
+    if (newSize < Members->Panel2.minSize)
     {
-        if (newSize >= Members->Layout.Height)
-            newSize = Members->Layout.Height - 1;
+        if (Members->Panel2.minSize < sz)
+            newSize = Members->Panel2.minSize;
+        else
+            newSize = sz;
     }
-    if (newSize < 0)
-        newSize = 0;
+    // set the new value
     Members->SecondPanelSize = newSize;
     Splitter_ResizeComponents(this);
     RaiseEvent(Event::SplitterPositionChanged);
@@ -185,7 +198,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
 
     if ((Members->Flags & GATTR_VERTICAL) != 0)
     {
-        poz = Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        poz = Members->Layout.Width - (int) (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
         renderer.DrawVerticalLine(poz, 0, Members->Layout.Height - 1, col);
         if (Members->Layout.Height > MIN_SPLITTER_SIZE)
         {
@@ -195,7 +208,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
     }
     else
     {
-        poz = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+        poz = Members->Layout.Height - (int) (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
         renderer.DrawHorizontalLine(0, poz, Members->Layout.Width - 1, col);
         if (Members->Layout.Width > MIN_SPLITTER_SIZE)
         {
@@ -215,7 +228,10 @@ bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
             SetSecondPanelSize(Members->SecondPanelSize + SPLITTER_BAR_SIZE);
             return true;
         case Key::Alt | Key::Ctrl | Key::Right:
-            SetSecondPanelSize(Members->SecondPanelSize - SPLITTER_BAR_SIZE);
+            if (Members->SecondPanelSize > SPLITTER_BAR_SIZE)
+                SetSecondPanelSize(Members->SecondPanelSize - SPLITTER_BAR_SIZE);
+            else
+                SetSecondPanelSize(0);
             return true;
         case Key::Alt | Key::Ctrl | Key::Shift | Key::Right:
             SetSecondPanelSize(0);
@@ -233,7 +249,10 @@ bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
             SetSecondPanelSize(Members->SecondPanelSize + SPLITTER_BAR_SIZE);
             return true;
         case Key::Alt | Key::Ctrl | Key::Down:
-            SetSecondPanelSize(Members->SecondPanelSize - SPLITTER_BAR_SIZE);
+            if (Members->SecondPanelSize > SPLITTER_BAR_SIZE)
+                SetSecondPanelSize(Members->SecondPanelSize - SPLITTER_BAR_SIZE);
+            else
+                SetSecondPanelSize(0);
             return true;
         case Key::Alt | Key::Ctrl | Key::Shift | Key::Down:
             SetSecondPanelSize(0);
@@ -282,11 +301,11 @@ bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
     {
         if (Members->Flags & GATTR_VERTICAL)
         {
-            SetSecondPanelSize(Members->Layout.Width - (x + 1));
+            SetSecondPanelSize(Members->Layout.Width > x ? Members->Layout.Width - (x + 1) : 0);
         }
         else
         {
-            SetSecondPanelSize(Members->Layout.Height - (y + 1));
+            SetSecondPanelSize(Members->Layout.Height > y ? Members->Layout.Height - (y + 1) : 0);
         }
         return true;
     }
@@ -340,28 +359,24 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 uint32 Splitter::GetFirstPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
-    int value = 0;
-    if ((Members->Flags & GATTR_VERTICAL) != 0)
-        value = Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
+    const auto iSz = ((Members->Flags & GATTR_VERTICAL) != 0) ? Members->Layout.Width : Members->Layout.Height;
+    const auto sz  = (iSz >= 0) && (iSz <= 0x7FFFFF) ? (uint32) iSz : 0U;
+    if (sz > (Members->SecondPanelSize + SPLITTER_BAR_SIZE))
+        return sz - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
     else
-        value = Members->Layout.Height - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
-    if (value < 0)
-        value = 0;
-    return (uint32) value;
+        return 0;
 }
 uint32 Splitter::GetSecondPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
-    if (Members->SecondPanelSize < 0)
-        return 0;
-    return (uint32) Members->SecondPanelSize;
+    return Members->SecondPanelSize;
 }
 bool Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     CHECK(minSize <= maxSize, false, "Expecting minSize(%d) to be smaller than maxSize(%d)", minSize, maxSize);
-    Members->Panel2.minSize = minSize;
-    Members->Panel2.maxSize = maxSize;
+    Members->Panel1.minSize = minSize;
+    Members->Panel1.maxSize = maxSize;
     this->SetSecondPanelSize(Members->SecondPanelSize); // update with new limits
     return true;
 }
