@@ -315,6 +315,10 @@ class SplitterControlContext : public ControlContext
 {
   public:
     int SecondPanelSize;
+    struct
+    {
+        uint32 minSize, maxSize;
+    } Panel1, Panel2;
     SplitterMouseStatus mouseStatus;
 };
 class TextFieldControlContext : public ControlContext

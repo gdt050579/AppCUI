@@ -106,9 +106,14 @@ Splitter::~Splitter()
 }
 Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new SplitterControlContext(), "", layout, false)
 {
-    auto Members         = reinterpret_cast<SplitterControlContext*>(this->Context);
-    Members->Flags       = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
-    Members->mouseStatus = SplitterMouseStatus::None;
+    auto Members            = reinterpret_cast<SplitterControlContext*>(this->Context);
+    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->mouseStatus    = SplitterMouseStatus::None;
+    Members->Panel1.minSize = 0;
+    Members->Panel1.maxSize = 0xFFFFFFFF;
+    Members->Panel2.minSize = 0;
+    Members->Panel2.maxSize = 0xFFFFFFFF;
+
     if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
         Members->Flags |= GATTR_VERTICAL;
     if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
@@ -351,10 +356,22 @@ uint32 Splitter::GetSecondPanelSize()
         return 0;
     return (uint32) Members->SecondPanelSize;
 }
-void Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
+bool Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
 {
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    CHECK(minSize <= maxSize, false, "Expecting minSize(%d) to be smaller than maxSize(%d)", minSize, maxSize);
+    Members->Panel2.minSize = minSize;
+    Members->Panel2.maxSize = maxSize;
+    this->SetSecondPanelSize(Members->SecondPanelSize); // update with new limits
+    return true;
 }
-void Splitter::SetPane2Sizes(uint32 minSize, uint32 maxSize)
+bool Splitter::SetPane2Sizes(uint32 minSize, uint32 maxSize)
 {
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    CHECK(minSize <= maxSize, false, "Expecting minSize(%d) to be smaller than maxSize(%d)", minSize, maxSize);
+    Members->Panel2.minSize = minSize;
+    Members->Panel2.maxSize = maxSize;
+    this->SetSecondPanelSize(Members->SecondPanelSize); // update with new limits
+    return true;
 }
 } // namespace AppCUI
