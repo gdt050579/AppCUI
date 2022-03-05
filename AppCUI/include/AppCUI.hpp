@@ -3381,8 +3381,8 @@ namespace Controls
 
         uint32 GetFirstPanelSize();
         uint32 GetSecondPanelSize();
-        bool SetPane1Sizes(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
-        bool SetPane2Sizes(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
+        bool SetPanel1Bounderies(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
+        bool SetPanel2Bounderies(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
 
         virtual ~Splitter();
 

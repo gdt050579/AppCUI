@@ -266,6 +266,8 @@ bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
 }
 void Splitter::OnAfterResize(int, int)
 {
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
+    SetSecondPanelSize(Members->SecondPanelSize);
     Splitter_ResizeComponents(this);
 }
 void Splitter::OnFocus()
@@ -371,7 +373,7 @@ uint32 Splitter::GetSecondPanelSize()
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
     return Members->SecondPanelSize;
 }
-bool Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
+bool Splitter::SetPanel1Bounderies(uint32 minSize, uint32 maxSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     CHECK(minSize <= maxSize, false, "Expecting minSize(%d) to be smaller than maxSize(%d)", minSize, maxSize);
@@ -380,7 +382,7 @@ bool Splitter::SetPane1Sizes(uint32 minSize, uint32 maxSize)
     this->SetSecondPanelSize(Members->SecondPanelSize); // update with new limits
     return true;
 }
-bool Splitter::SetPane2Sizes(uint32 minSize, uint32 maxSize)
+bool Splitter::SetPanel2Bounderies(uint32 minSize, uint32 maxSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     CHECK(minSize <= maxSize, false, "Expecting minSize(%d) to be smaller than maxSize(%d)", minSize, maxSize);
