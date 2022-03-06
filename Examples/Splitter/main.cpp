@@ -4,20 +4,20 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-class MyWin : public Window
+class Example1 : public Window
 {
     Reference<Label> l;
     Reference<Splitter> v;
     Reference<Splitter> h;
 
   public:
-    MyWin() : Window("Splitter example", "d:c,w:60,h:10", WindowFlags::Sizeable)
+    Example1() : Window("Splitter example", "d:c,w:60,h:10", WindowFlags::Sizeable)
     {
         h = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%");
         v = Factory::Splitter::Create(h, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
         h->SetSecondPanelSize(2);
-        h->SetPanel2Bounderies(1);
-        h->SetPanel1Bounderies(4);
+        h->SetPanel2Bounderies(1); // minimum 1 line at the bottom
+        h->SetPanel1Bounderies(4); // minimum 4 lines at the top
         v->SetSecondPanelSize(30);
         auto pleft   = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");
         auto pright  = Factory::Panel::Create(v, "x:0,y:0,w:100%,h:100%");
@@ -69,6 +69,21 @@ class MyWin : public Window
         return false;
     }
 };
+
+class MyWin : public Window
+{
+  public:
+    MyWin() : Window("Splitter examples", "d:c,w:30,h:10", WindowFlags::None)
+    {
+        Factory::Button::Create(this, "Simple example", "x:1,y:1,w:26", 1)->Handlers()->OnButtonPressed =
+              [](Reference<Button>)
+        {
+            Example1 dlg;
+            dlg.Show();
+        };
+    }
+};
+
 int main()
 {
     if (!Application::Init())
