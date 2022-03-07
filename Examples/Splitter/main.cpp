@@ -3,6 +3,7 @@
 using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
+using namespace AppCUI::Graphics;
 
 class Example1 : public Window
 {
@@ -75,6 +76,22 @@ class Example2: public Window
   public:
     Example2() : Window("Example 2", "d:c,w:70,h:20", WindowFlags::None)
     {
+        Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
+        auto p = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
+        auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical);
+        sp->SetPanel2Bounderies(0, 15); // maximum 15 chars size on the right
+        auto lv = Factory::ListView::Create(sp, "d:c");
+        lv->AddColumn("Name", TextAlignament::Left, 15);
+        lv->AddColumn("Grade", TextAlignament::Right, 10);
+        lv->AddItem("Dragos", "10");
+        lv->AddItem("Raul", "9");
+        lv->AddItem("Gheorghita", "10");
+        lv->AddItem("Andrei", "7");
+        auto tb = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
+        auto tp1 = Factory::TabPage::Create(tb, "&Infos");
+        auto tp2 = Factory::TabPage::Create(tb, "&Data");
+        auto tp22= Factory::TabPage::Create(tb, "&Extra");
+
     }
 };
 
