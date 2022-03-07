@@ -106,7 +106,7 @@ Splitter::~Splitter()
 Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members            = reinterpret_cast<SplitterControlContext*>(this->Context);
-    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32)flags;
+    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
     Members->mouseStatus    = SplitterMouseStatus::None;
     Members->Panel1.minSize = 0;
     Members->Panel1.maxSize = 0xFFFFFFFF;
@@ -266,6 +266,38 @@ void Splitter::OnAfterResize(int, int)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     SetSecondPanelSize(Members->SecondPanelSize);
     Splitter_ResizeComponents(this);
+}
+bool Splitter::OnFocusRequested(Reference<Control> control)
+{
+    CHECK(control.IsValid(), false, "");
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    // check if at least one of the collapse flags have been set
+    if (!(Members->Flags && (SplitterFlags::AutoCollapsePanel1 | SplitterFlags::AutoCollapsePanel2)))
+        return false;
+    int panel_parent = 0; // unknwon
+    if ((Members->ControlsCount >= 1) && (control->HasDistantParent(Members->Controls[0])))
+        panel_parent = 1; // first panel
+    else if ((Members->ControlsCount >= 2) && (control->HasDistantParent(Members->Controls[1])))
+        panel_parent = 2; // second panel
+    if (panel_parent == 0)
+        return false; // does not belong to any panel (first or second)
+    if (panel_parent==1)
+    {
+        if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
+        {
+            SetSecondPanelSize(0xFFFFFFFF);
+            Splitter_ResizeComponents(this);
+        }
+    }
+    else
+    {
+        if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
+        {
+            SetSecondPanelSize(0);
+            Splitter_ResizeComponents(this);
+        }
+    }
+    return true;
 }
 void Splitter::OnFocus()
 {
