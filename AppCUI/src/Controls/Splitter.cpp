@@ -11,7 +11,6 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr uint32 GATTR_VERTICAL    = 1024;
 constexpr uint32 SPLITTER_BAR_SIZE = 1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
@@ -23,7 +22,7 @@ constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
 SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Members, int x, int y, bool pressed)
 {
     int v = 0;
-    if (Members->Flags & GATTR_VERTICAL)
+    if (Members->Flags && SplitterFlags::Vertical)
     {
         if (x != (Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE)))
             return SplitterMouseStatus::None;
@@ -71,7 +70,7 @@ void Splitter_ResizeComponents(Splitter* control)
             o->SetVisible(tr < 2);
             if (tr == 0)
             {
-                if ((Members->Flags & GATTR_VERTICAL) != 0)
+                if (Members->Flags && SplitterFlags::Vertical)
                 {
                     o->Resize(Members->Layout.Width - sz, Members->Layout.Height);
                     o->MoveTo((Members->Layout.Width - sz) - o->GetWidth(), 0);
@@ -85,7 +84,7 @@ void Splitter_ResizeComponents(Splitter* control)
             }
             if (tr == 1)
             {
-                if ((Members->Flags & GATTR_VERTICAL) != 0)
+                if (Members->Flags && SplitterFlags::Vertical)
                 {
                     o->MoveTo(Members->Layout.Width - Members->SecondPanelSize, 0);
                     o->Resize(Members->SecondPanelSize, Members->Layout.Height);
@@ -107,15 +106,13 @@ Splitter::~Splitter()
 Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new SplitterControlContext(), "", layout, false)
 {
     auto Members            = reinterpret_cast<SplitterControlContext*>(this->Context);
-    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32)flags;
     Members->mouseStatus    = SplitterMouseStatus::None;
     Members->Panel1.minSize = 0;
     Members->Panel1.maxSize = 0xFFFFFFFF;
     Members->Panel2.minSize = 0;
     Members->Panel2.maxSize = 0xFFFFFFFF;
 
-    if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
-        Members->Flags |= GATTR_VERTICAL;
     if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
         Members->SecondPanelSize = Members->Layout.Width / 2;
     else
@@ -126,7 +123,7 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
 {
     CHECK(newSize >= 0, false, "");
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    const auto iSz = ((Members->Flags & GATTR_VERTICAL) != 0) ? Members->Layout.Width : Members->Layout.Height;
+    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
     const auto sz =
           (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
     newSize = std::min<>(sz, newSize);
@@ -196,7 +193,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
     if (!(Members->Flags & GATTR_ENABLE))
         col = Members->Cfg->Lines.Inactive;
 
-    if ((Members->Flags & GATTR_VERTICAL) != 0)
+    if (Members->Flags && SplitterFlags::Vertical)
     {
         poz = Members->Layout.Width - (int) (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
         renderer.DrawVerticalLine(poz, 0, Members->Layout.Height - 1, col);
@@ -220,7 +217,7 @@ void Splitter::Paint(Graphics::Renderer& renderer)
 bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    if ((Members->Flags & GATTR_VERTICAL) != 0)
+    if (Members->Flags && SplitterFlags::Vertical)
     {
         switch (keyCode)
         {
@@ -306,7 +303,7 @@ bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->mouseStatus == SplitterMouseStatus::Drag)
     {
-        if (Members->Flags & GATTR_VERTICAL)
+        if (Members->Flags && SplitterFlags::Vertical)
         {
             SetSecondPanelSize(Members->Layout.Width > x ? Members->Layout.Width - (x + 1) : 0);
         }
@@ -334,10 +331,12 @@ bool Splitter::OnMouseOver(int x, int y)
         toolTipTextID = SPLITTER_TOOLTIPTEXT_DRAG;
         break;
     case SplitterMouseStatus::OnButton1:
-        toolTipTextID = Members->Flags & GATTR_VERTICAL ? SPLITTER_TOOLTIPTEXT_RIGHT : SPLITTER_TOOLTIPTEXT_BOTTOM;
+        toolTipTextID =
+              Members->Flags && SplitterFlags::Vertical ? SPLITTER_TOOLTIPTEXT_RIGHT : SPLITTER_TOOLTIPTEXT_BOTTOM;
         break;
     case SplitterMouseStatus::OnButton2:
-        toolTipTextID = Members->Flags & GATTR_VERTICAL ? SPLITTER_TOOLTIPTEXT_LEFT : SPLITTER_TOOLTIPTEXT_TOP;
+        toolTipTextID =
+              Members->Flags && SplitterFlags::Vertical ? SPLITTER_TOOLTIPTEXT_LEFT : SPLITTER_TOOLTIPTEXT_TOP;
         break;
     case SplitterMouseStatus::None:
         HideToolTip();
@@ -366,7 +365,7 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 uint32 Splitter::GetFirstPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
-    const auto iSz = ((Members->Flags & GATTR_VERTICAL) != 0) ? Members->Layout.Width : Members->Layout.Height;
+    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
     const auto sz  = (iSz >= 0) && (iSz <= 0x7FFFFF) ? (uint32) iSz : 0U;
     if (sz > (Members->SecondPanelSize + SPLITTER_BAR_SIZE))
         return sz - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);

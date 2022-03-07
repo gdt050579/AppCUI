@@ -3127,7 +3127,7 @@ namespace Controls
         Reference<Control> GetChild(uint32 index);
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
-        bool IsDistantParent(Reference<Control> control);
+        bool HasDistantParent(Reference<Control> parent);
 
         Reference<AppCUI::Application::Config> GetConfig();
 
