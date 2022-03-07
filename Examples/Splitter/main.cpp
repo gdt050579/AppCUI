@@ -70,6 +70,14 @@ class Example1 : public Window
     }
 };
 
+class Example2: public Window
+{
+  public:
+    Example2() : Window("Example 2", "d:c,w:70,h:20", WindowFlags::None)
+    {
+    }
+};
+
 class MyWin : public Window
 {
   public:
@@ -79,6 +87,12 @@ class MyWin : public Window
               [](Reference<Button>)
         {
             Example1 dlg;
+            dlg.Show();
+        };
+        Factory::Button::Create(this, "Collapse example", "x:1,y:3,w:26", 1)->Handlers()->OnButtonPressed =
+              [](Reference<Button>)
+        {
+            Example2 dlg;
             dlg.Show();
         };
     }
