@@ -46,7 +46,7 @@ if (APPCUI_HAS_SDL)
         set(FONT_LIB_NAME font)
     else()
         message("Don't have SDL2")
-
+        set(APPCUI_HAS_SDL OFF)
     endif()
 endif()
 
@@ -65,6 +65,7 @@ if (APPCUI_HAS_NCURSES)
     else()
         message("Don't have Curses")
         set(CURSES_LIBRARIES "")
+        set(APPCUI_HAS_NCURSES OFF)
     endif()
 endif()
 
