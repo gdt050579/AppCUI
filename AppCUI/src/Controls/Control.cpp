@@ -1681,7 +1681,7 @@ bool Controls::Control::SetFocus()
 
     /*if (CTRLC->Focused)
         return true;*/
-    // verifica daca pot sa dau focus
+    // check if I can offer focus
     while (obj != nullptr)
     {
         if (((((ControlContext*) (obj->Context))->Flags) & (GATTR_ENABLE | GATTR_VISIBLE)) !=
@@ -1689,7 +1689,12 @@ bool Controls::Control::SetFocus()
             return false;
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
-    // setez focusul la toti
+    // first notify parent chain that an object queries focus
+    obj = this;
+    while ((obj) && (obj->OnFocusRequested(this) == false))
+        obj = ((ControlContext*) (obj->Context))->Parent;
+    
+    // reset focus
     obj = this;
     p   = ((ControlContext*) (obj->Context))->Parent;
 
@@ -1708,6 +1713,7 @@ bool Controls::Control::SetFocus()
         }
         if (((ControlContext*) (p->Context))->CurrentControlIndex == static_cast<unsigned>(-1))
             return false;
+
         obj = p;
         p   = ((ControlContext*) (p->Context))->Parent;
     }
@@ -1763,6 +1769,10 @@ void Controls::Control::OnStart()
 {
 }
 bool Controls::Control::OnKeyEvent(Input::Key, char16)
+{
+    return false;
+}
+bool Controls::Control::OnFocusRequested(Reference<Control> control)
 {
     return false;
 }

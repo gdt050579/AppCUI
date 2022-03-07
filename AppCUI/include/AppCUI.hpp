@@ -3161,6 +3161,7 @@ namespace Controls
         virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
+        virtual bool OnFocusRequested(Reference<Control> control);
         virtual void OnFocus();
         virtual void OnLoseFocus();
         virtual bool OnFrameUpdate();
@@ -3370,6 +3371,7 @@ namespace Controls
         bool MaximizeSecondPanel();
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
+        void OnLoseFocus() override;
         bool OnBeforeAddControl(Reference<Control> ctrl) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;

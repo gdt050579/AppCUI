@@ -274,6 +274,11 @@ void Splitter::OnFocus()
 {
     // Splitter_ResizeComponents(this);    ==> remove as it will cause a stack overflow if called in OnFocus method
 }
+void Splitter::OnLoseFocus()
+{
+    SetSecondPanelSize(0);
+    Splitter_ResizeComponents(this);
+}
 bool Splitter::OnBeforeAddControl(Reference<Control> c)
 {
     CHECK(c != nullptr, false, "");
