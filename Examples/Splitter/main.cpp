@@ -46,13 +46,11 @@ class Example1 : public Window
                   h->GetFirstPanelSize(),
                   h->GetSecondPanelSize()));
     }
-    bool OnEvent(Reference<Control>, AppCUI::Controls::Event eventType, int) override
+    bool OnEvent(Reference<Control> control, AppCUI::Controls::Event eventType, int ID) override
     {
-        if (eventType == AppCUI::Controls::Event::WindowClose)
-        {
-            Application::Close();
+        if (Window::OnEvent(control, eventType, ID))
             return true;
-        }
+
         if (eventType == AppCUI::Controls::Event::ButtonClicked)
         {
             auto win = Factory::Window::Create("Empty example", "d:c,w:60,h:20", WindowFlags::Sizeable);
@@ -79,7 +77,7 @@ class Example2: public Window
         Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
         auto p = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
         auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical);
-        sp->SetPanel2Bounderies(0, 15); // maximum 15 chars size on the right
+        sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
         auto lv = Factory::ListView::Create(sp, "d:c");
         lv->AddColumn("Name", TextAlignament::Left, 15);
         lv->AddColumn("Grade", TextAlignament::Right, 10);
@@ -89,8 +87,16 @@ class Example2: public Window
         lv->AddItem("Andrei", "7");
         auto tb = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
         auto tp1 = Factory::TabPage::Create(tb, "&Infos");
-        auto tp2 = Factory::TabPage::Create(tb, "&Data");
-        auto tp22= Factory::TabPage::Create(tb, "&Extra");
+        Factory::CheckBox::Create(tp1, "Setting &1", "l:1,t:1,r:1");
+        Factory::CheckBox::Create(tp1, "Setting &2", "l:1,t:2,r:1");
+        Factory::CheckBox::Create(tp1, "Setting &3", "l:1,t:3,r:1");
+        auto tp2  = Factory::TabPage::Create(tb, "&Data");
+        Factory::RadioBox::Create(tp2, "Option &1", "l:1,t:1,r:1", 1);
+        Factory::RadioBox::Create(tp2, "Option &2", "l:1,t:2,r:1", 1);
+        Factory::RadioBox::Create(tp2, "Option &3", "l:1,t:3,r:1", 1);
+        auto tp3 = Factory::TabPage::Create(tb, "&Extra");
+        Factory::TextField::Create(tp3, "Number", "l:1,t:1,r:1");
+        Factory::TextField::Create(tp3, "pass", "l:1,t:3,r:1");
 
     }
 };
