@@ -1454,6 +1454,18 @@ uint32 Controls::Control::GetChildrenCount()
 {
     return CTRLC->ControlsCount;
 }
+bool Controls::Control::HasDistantParent(Reference<Control> control)
+{
+    CHECK(control.IsValid(), false, "");
+    auto p = ((ControlContext*) (this->Context))->Parent;
+    while (p)
+    {
+        if (control == p)
+            return true;
+        p = ((ControlContext*) (this->Context))->Parent;
+    }
+    return false;
+}
 
 bool Controls::Control::GetChildIndex(Reference<Control> control, uint32& index)
 {
@@ -1692,8 +1704,10 @@ bool Controls::Control::SetFocus()
     // first notify parent chain that an object queries focus
     obj = this;
     while ((obj) && (obj->OnFocusRequested(this) == false))
+    {
         obj = ((ControlContext*) (obj->Context))->Parent;
-    
+    }
+
     // reset focus
     obj = this;
     p   = ((ControlContext*) (obj->Context))->Parent;
