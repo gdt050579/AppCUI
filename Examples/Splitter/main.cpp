@@ -76,7 +76,7 @@ class Example2: public Window
     {
         Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
         auto p = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
-        auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical);
+        auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical|SplitterFlags::AutoCollapsePanel2);
         sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
         auto lv = Factory::ListView::Create(sp, "d:c");
         lv->AddColumn("Name", TextAlignament::Left, 15);

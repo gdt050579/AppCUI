@@ -1462,7 +1462,7 @@ bool Controls::Control::HasDistantParent(Reference<Control> control)
     {
         if (control == p)
             return true;
-        p = ((ControlContext*) (this->Context))->Parent;
+        p = ((ControlContext*) (p->Context))->Parent;
     }
     return false;
 }

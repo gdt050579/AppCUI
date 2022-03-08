@@ -118,10 +118,17 @@ Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new Splitt
     else
         Members->SecondPanelSize = Members->Layout.Height / 2;
 }
-
+bool Splitter::SetFirstPanelSize(uint32 newSize)
+{
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
+    const auto sz =
+          (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
+    newSize = std::min<>(sz, newSize);
+    return SetSecondPanelSize(sz - newSize);
+}
 bool Splitter::SetSecondPanelSize(uint32 newSize)
 {
-    CHECK(newSize >= 0, false, "");
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
     const auto sz =
@@ -283,17 +290,28 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
         return false; // does not belong to any panel (first or second)
     if (panel_parent==1)
     {
+        // one of forst panel offspring is being activated (panel_parent=1)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
         {
-            SetSecondPanelSize(0xFFFFFFFF);
-            Splitter_ResizeComponents(this);
+
+        }
+        else
+        {
         }
     }
     else
     {
+        // one of second panel offspring is being activated (panel_parent=2)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
         {
+            // we need to extend the second pnel 
             SetSecondPanelSize(0);
+            Splitter_ResizeComponents(this);
+        }
+        else
+        {
+            // we need to collapse the first panel (the flags is AutoCollapsePanel1 since is not AutoCollapsePanel2
+            SetSecondPanelSize(0xFFFFFFFF);
             Splitter_ResizeComponents(this);
         }
     }

@@ -3367,6 +3367,7 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        bool SetFirstPanelSize(uint32 newSize);
         bool SetSecondPanelSize(uint32 newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
