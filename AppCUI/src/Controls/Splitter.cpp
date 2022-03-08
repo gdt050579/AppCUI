@@ -282,21 +282,26 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
     if (!(Members->Flags && (SplitterFlags::AutoCollapsePanel1 | SplitterFlags::AutoCollapsePanel2)))
         return false;
     int panel_parent = 0; // unknwon
-    if ((Members->ControlsCount >= 1) && (control->HasDistantParent(Members->Controls[0])))
+    if ((Members->ControlsCount >= 1) &&
+        ((control == Members->Controls[0]) || (control->HasDistantParent(Members->Controls[0]))))
         panel_parent = 1; // first panel
-    else if ((Members->ControlsCount >= 2) && (control->HasDistantParent(Members->Controls[1])))
+    else if (
+          (Members->ControlsCount >= 2) &&
+          ((control == Members->Controls[1]) || (control->HasDistantParent(Members->Controls[1]))))
         panel_parent = 2; // second panel
     if (panel_parent == 0)
         return false; // does not belong to any panel (first or second)
-    if (panel_parent==1)
+    if (panel_parent == 1)
     {
         // one of forst panel offspring is being activated (panel_parent=1)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
         {
-
         }
         else
         {
+            // we need to collapse the second panel (the flags is AutoCollapsePanel2 since is not AutoCollapsePanel1)
+            SetSecondPanelSize(0);
+            Splitter_ResizeComponents(this);
         }
     }
     else
@@ -304,13 +309,13 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
         // one of second panel offspring is being activated (panel_parent=2)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
         {
-            // we need to extend the second pnel 
-            SetSecondPanelSize(0);
+            // we need to extend the second pnel
+            SetSecondPanelSize(5);
             Splitter_ResizeComponents(this);
         }
         else
         {
-            // we need to collapse the first panel (the flags is AutoCollapsePanel1 since is not AutoCollapsePanel2
+            // we need to collapse the first panel (the flags is AutoCollapsePanel1 since is not AutoCollapsePanel2)
             SetSecondPanelSize(0xFFFFFFFF);
             Splitter_ResizeComponents(this);
         }
