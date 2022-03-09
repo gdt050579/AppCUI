@@ -69,12 +69,15 @@ class Example1 : public Window
     }
 };
 
+constexpr int BTN_CMD_SHOW_DATATAB = 12345;
 class Example2: public Window
 {
+    Reference<TabPage> tp1, tp2, tp3;
   public:
     Example2() : Window("Example 2", "d:c,w:70,h:20", WindowFlags::None)
     {
         Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
+        Factory::Button::Create(this, "Data Tab", "x:1,y:3,w:10", BTN_CMD_SHOW_DATATAB);
         auto p = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
         auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical|SplitterFlags::AutoCollapsePanel2);
         sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
@@ -86,18 +89,30 @@ class Example2: public Window
         lv->AddItem("Gheorghita", "10");
         lv->AddItem("Andrei", "7");
         auto tb = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
-        auto tp1 = Factory::TabPage::Create(tb, "&Infos");
+        tp1 = Factory::TabPage::Create(tb, "&Infos");
         Factory::CheckBox::Create(tp1, "Setting &1", "l:1,t:1,r:1");
         Factory::CheckBox::Create(tp1, "Setting &2", "l:1,t:2,r:1");
         Factory::CheckBox::Create(tp1, "Setting &3", "l:1,t:3,r:1");
-        auto tp2  = Factory::TabPage::Create(tb, "&Data");
+        tp2  = Factory::TabPage::Create(tb, "&Data");
         Factory::RadioBox::Create(tp2, "Option &1", "l:1,t:1,r:1", 1);
         Factory::RadioBox::Create(tp2, "Option &2", "l:1,t:2,r:1", 1);
         Factory::RadioBox::Create(tp2, "Option &3", "l:1,t:3,r:1", 1);
-        auto tp3 = Factory::TabPage::Create(tb, "&Extra");
+        tp3 = Factory::TabPage::Create(tb, "&Extra");
         Factory::TextField::Create(tp3, "Number", "l:1,t:1,r:1");
         Factory::TextField::Create(tp3, "pass", "l:1,t:3,r:1");
 
+    }
+    bool OnEvent(Reference<Control> control, AppCUI::Controls::Event eventType, int ID) override
+    {
+        if (Window::OnEvent(control, eventType, ID))
+            return true;
+        if (eventType == Event::ButtonClicked)
+        {
+            if (ID == BTN_CMD_SHOW_DATATAB)
+                tp2->SetFocus();
+            return true;
+        }
+        return false;
     }
 };
 
