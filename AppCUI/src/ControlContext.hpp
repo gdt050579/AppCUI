@@ -314,7 +314,8 @@ enum class SplitterMouseStatus : unsigned char
 class SplitterControlContext : public ControlContext
 {
   public:
-    int SecondPanelSize;
+    int SecondPanelSize, DefaultSecondPanelSize;
+    
     struct
     {
         uint32 minSize, maxSize;

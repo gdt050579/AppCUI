@@ -117,6 +117,7 @@ Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new Splitt
         Members->SecondPanelSize = Members->Layout.Width / 2;
     else
         Members->SecondPanelSize = Members->Layout.Height / 2;
+    Members->DefaultSecondPanelSize = Members->SecondPanelSize;
 }
 bool Splitter::SetFirstPanelSize(uint32 newSize)
 {
@@ -156,6 +157,13 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
     }
     // set the new value
     Members->SecondPanelSize = newSize;
+    if (newSize != Members->DefaultSecondPanelSize)
+    {
+        if ((Members->Flags && SplitterFlags::AutoCollapsePanel2) && (newSize > Members->Panel2.minSize))
+            Members->DefaultSecondPanelSize = newSize;
+        if ((Members->Flags && SplitterFlags::AutoCollapsePanel1) && (sz - newSize > Members->Panel1.minSize))
+            Members->DefaultSecondPanelSize = sz - newSize;
+    }
     Splitter_ResizeComponents(this);
     RaiseEvent(Event::SplitterPositionChanged);
     return true;
@@ -310,7 +318,7 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
         {
             // we need to extend the second pnel
-            SetSecondPanelSize(5);
+            SetSecondPanelSize(Members->DefaultSecondPanelSize);
             Splitter_ResizeComponents(this);
         }
         else
