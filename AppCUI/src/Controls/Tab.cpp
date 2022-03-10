@@ -275,9 +275,9 @@ Tab::Tab(string_view layout, TabFlags flags, uint32 tabPageSize) : Control(new T
     Members->UpdateMargins();
 }
 
-bool Tab::SetCurrentTabPageByIndex(uint32 index)
+bool Tab::SetCurrentTabPageByIndex(uint32 index, bool setFocus)
 {
-    return Tab_SetCurrentTabPageByIndex(this, index, false);
+    return Tab_SetCurrentTabPageByIndex(this, index, setFocus);
 }
 bool Tab::GoToNextTabPage()
 {
@@ -287,11 +287,11 @@ bool Tab::GoToPreviousTabPage()
 {
     return PreviousTab(this);
 }
-bool Tab::SetCurrentTabPageByRef(Reference<Control> page)
+bool Tab::SetCurrentTabPageByRef(Reference<Control> page, bool setFocus)
 {
     uint32 index = 0xFFFFFFFF;
     CHECK(Control::GetChildIndex(page, index), false, "Fail to find page index in current tab!");
-    return SetCurrentTabPageByIndex(index);
+    return SetCurrentTabPageByIndex(index, setFocus);
 }
 Reference<Control> Tab::GetCurrentTab()
 {

@@ -3534,10 +3534,10 @@ namespace Controls
         Tab(string_view layout, TabFlags flags, uint32 tabPageSize);
 
       public:
-        bool SetCurrentTabPageByIndex(uint32 index);
+        bool SetCurrentTabPageByIndex(uint32 index, bool setFocus = false);
         bool GoToNextTabPage();
         bool GoToPreviousTabPage();
-        bool SetCurrentTabPageByRef(Reference<Control> page);
+        bool SetCurrentTabPageByRef(Reference<Control> page, bool setFocus = false);
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)
         {

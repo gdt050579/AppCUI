@@ -336,8 +336,17 @@ void Splitter::OnFocus()
 }
 void Splitter::OnLoseFocus()
 {
-    SetSecondPanelSize(0);
-    Splitter_ResizeComponents(this);
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
+    if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
+    {
+        SetSecondPanelSize(0);
+        Splitter_ResizeComponents(this);
+    }
+    else if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
+    {
+        SetSecondPanelSize(0xFFFFFFFF);
+        Splitter_ResizeComponents(this);
+    }
 }
 bool Splitter::OnBeforeAddControl(Reference<Control> c)
 {

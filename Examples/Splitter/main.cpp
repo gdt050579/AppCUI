@@ -73,6 +73,7 @@ constexpr int BTN_CMD_SHOW_DATATAB = 12345;
 class Example2: public Window
 {
     Reference<TabPage> tp1, tp2, tp3;
+    Reference<Tab> tb;
   public:
     Example2() : Window("Example 2", "d:c,w:70,h:20", WindowFlags::None)
     {
@@ -88,7 +89,7 @@ class Example2: public Window
         lv->AddItem("Raul", "9");
         lv->AddItem("Gheorghita", "10");
         lv->AddItem("Andrei", "7");
-        auto tb = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
+        tb = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
         tp1 = Factory::TabPage::Create(tb, "&Infos");
         Factory::CheckBox::Create(tp1, "Setting &1", "l:1,t:1,r:1");
         Factory::CheckBox::Create(tp1, "Setting &2", "l:1,t:2,r:1");
@@ -109,7 +110,7 @@ class Example2: public Window
         if (eventType == Event::ButtonClicked)
         {
             if (ID == BTN_CMD_SHOW_DATATAB)
-                tp2->SetFocus();
+                tb->SetCurrentTabPageByIndex(1);
             return true;
         }
         return false;
