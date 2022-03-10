@@ -313,7 +313,7 @@ class PropertyWindowExmaple : public Window
   public:
     PropertyWindowExmaple() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
-        auto sp = Factory::Splitter::Create(this, "d:c", true);
+        auto sp = Factory::Splitter::Create(this, "d:c", SplitterFlags::Vertical);
         ct      = sp->CreateChildControl<MyUserControl>();
         pl = sp->CreateChildControl<PropertyList>("d:c", ct.ToBase<PropertiesInterface>(), PropertyListFlags::Border);
         sp->SetSecondPanelSize(30);

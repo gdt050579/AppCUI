@@ -14,8 +14,8 @@ class MyWin : public Window
   public:
     MyWin() : Window("Test", "d:c,w:50%,h:50%", WindowFlags::Sizeable)
     {
-        auto s2      = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", false);
-        auto s       = Factory::Splitter::Create(s2, "x:0,y:0,w:100%,h:100%", true);
+        auto s2      = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%");
+        auto s       = Factory::Splitter::Create(s2, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
         auto pleft   = Factory::Panel::Create(s, "x:0,y:0,w:100%,h:100%");
         auto pright  = Factory::Panel::Create(s, "x:0,y:0,w:100%,h:100%");
         auto pbottom = Factory::Panel::Create(s2, "x:0,y:0,w:100%,h:100%");

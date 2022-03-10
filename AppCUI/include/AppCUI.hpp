@@ -3128,6 +3128,7 @@ namespace Controls
         Reference<Control> GetChild(uint32 index);
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
+        bool HasDistantParent(Reference<Control> parent);
 
         Reference<AppCUI::Application::Config> GetConfig();
 
@@ -3162,6 +3163,7 @@ namespace Controls
         virtual bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
         virtual void OnHotKey();
         virtual void OnHotKeyChanged();
+        virtual bool OnFocusRequested(Reference<Control> control);
         virtual void OnFocus();
         virtual void OnLoseFocus();
         virtual bool OnFrameUpdate();
@@ -3351,19 +3353,30 @@ namespace Controls
         friend Factory::RadioBox;
         friend Control;
     };
+    enum class SplitterFlags : uint32
+    {
+        Horizontal         = 0,
+        Vertical           = 0x000100,
+        AutoCollapsePanel1 = 0x000200,
+        AutoCollapsePanel2 = 0x000400,
+    };
     class EXPORT Splitter : public Control
     {
       protected:
-        Splitter(string_view layout, bool vertical);
+        Splitter(string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        bool SetSecondPanelSize(int newSize);
+        bool SetFirstPanelSize(uint32 newSize);
+        bool SetSecondPanelSize(uint32 newSize);
+        bool SetDefaultPanelSize(uint32 newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
+        void OnLoseFocus() override;
+        bool OnFocusRequested(Reference<Control> control) override;
         bool OnBeforeAddControl(Reference<Control> ctrl) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
@@ -3375,6 +3388,8 @@ namespace Controls
 
         uint32 GetFirstPanelSize();
         uint32 GetSecondPanelSize();
+        bool SetPanel1Bounderies(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
+        bool SetPanel2Bounderies(uint32 minSize = 0, uint32 maxSize = 0xFFFFFFFF);
 
         virtual ~Splitter();
 
@@ -3521,10 +3536,10 @@ namespace Controls
         Tab(string_view layout, TabFlags flags, uint32 tabPageSize);
 
       public:
-        bool SetCurrentTabPageByIndex(uint32 index);
+        bool SetCurrentTabPageByIndex(uint32 index, bool setFocus = false);
         bool GoToNextTabPage();
         bool GoToPreviousTabPage();
-        bool SetCurrentTabPageByRef(Reference<Control> page);
+        bool SetCurrentTabPageByRef(Reference<Control> page, bool setFocus = false);
         template <typename T>
         inline bool SetCurrentTabPage(Reference<T> page)
         {
@@ -4278,9 +4293,12 @@ namespace Controls
             Splitter() = delete;
 
           public:
-            static Reference<Controls::Splitter> Create(Controls::Control* parent, string_view layout, bool vertical);
-            static Reference<Controls::Splitter> Create(Controls::Control& parent, string_view layout, bool vertical);
-            static Pointer<Controls::Splitter> Create(string_view layout, bool vertical);
+            static Reference<Controls::Splitter> Create(
+                  Controls::Control* parent, string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
+            static Reference<Controls::Splitter> Create(
+                  Controls::Control& parent, string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
+            static Pointer<Controls::Splitter> Create(
+                  string_view layout, SplitterFlags flags = SplitterFlags::Horizontal);
         };
         class EXPORT Panel
         {
@@ -4883,6 +4901,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::SplitterFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)

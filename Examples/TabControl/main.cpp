@@ -64,8 +64,8 @@ class TabExampleWin2 : public Window
     TabExampleWin2(TabFlags flags, uint32 /*tabSize*/, int tabsCount)
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
-        auto spv = Factory::Splitter::Create(this, "d:c", true);
-        auto sph = Factory::Splitter::Create(spv, "d:c", false);
+        auto spv = Factory::Splitter::Create(this, "d:c", SplitterFlags::Vertical);
+        auto sph = Factory::Splitter::Create(spv, "d:c");
 
         Factory::Button::Create(sph, "Add", "d:c", 1234);
 
@@ -111,7 +111,7 @@ class TabExampleWin : public Window
         : Window("Tab Control Example", "d:c,w:60,h:20", WindowFlags::NoCloseButton)
     {
         Factory::Button::Create(this, "Close", "d:b,w:12", CLOSE_BUTTON_ID);
-        auto spl = Factory::Splitter::Create(this, "l:0,t:0,r:0,b:3", false);
+        auto spl = Factory::Splitter::Create(this, "l:0,t:0,r:0,b:3");
         spl->SetSecondPanelSize(8);
         // information panel
         auto p_inf = Factory::Panel::Create(spl, "Informations", "x:1,y:1,w:56,h:5");

@@ -88,18 +88,18 @@ REFERENCE<RadioBox> Factory::RadioBox::Create(
 }
 
 //======[SPLITTER]===================================================================================
-POINTER<Splitter> Factory::Splitter::Create(string_view layout, bool vertical)
+POINTER<Splitter> Factory::Splitter::Create(string_view layout, SplitterFlags flags)
 {
-    return POINTER<Controls::Splitter>(new Controls::Splitter(layout, vertical));
+    return POINTER<Controls::Splitter>(new Controls::Splitter(layout, flags));
 }
-REFERENCE<Splitter> Factory::Splitter::Create(Control* parent, string_view layout, bool vertical)
+REFERENCE<Splitter> Factory::Splitter::Create(Control* parent, string_view layout, SplitterFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
+    return parent->AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, flags));
 }
-REFERENCE<Splitter> Factory::Splitter::Create(Control& parent, string_view layout, bool vertical)
+REFERENCE<Splitter> Factory::Splitter::Create(Control& parent, string_view layout, SplitterFlags flags)
 {
-    return parent.AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, vertical));
+    return parent.AddControl<Controls::Splitter>(Factory::Splitter::Create(layout, flags));
 }
 
 //======[PANEL]======================================================================================
