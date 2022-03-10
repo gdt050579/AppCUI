@@ -168,16 +168,7 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
 bool Splitter::SetDefaultPanelSize(uint32 newSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
-    {
-        const auto sz = Members->GetSplitterSize();
-        CHECK(sz > 0, false, "Object not linked/or initiated !");
-        if (newSize >= sz)
-            newSize = sz - 1;
-        Members->DefaultSecondPanelSize = sz - newSize;
-        return true;
-    }
-    if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
+    if (Members->Flags && (SplitterFlags::AutoCollapsePanel1|SplitterFlags::AutoCollapsePanel2))
     {
         Members->DefaultSecondPanelSize = newSize > 0 ? newSize : 1U;
         return true;
@@ -337,9 +328,12 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
         return false; // does not belong to any panel (first or second)
     if (panel_parent == 1)
     {
-        // one of forst panel offspring is being activated (panel_parent=1)
+        // one of first panel offspring is being activated (panel_parent=1)
         if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
         {
+            // we need to extend the first panel
+            SetFirstPanelSize(Members->DefaultSecondPanelSize);
+            Splitter_ResizeComponents(this);
         }
         else
         {
