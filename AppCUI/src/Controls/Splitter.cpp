@@ -293,7 +293,7 @@ void Splitter::OnAfterResize(int, int)
         (Members->DefaultSecondPanelSize == SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET))
     {
         // we need to compute the default second panel size
-        const auto sz  = Members->GetSplitterSize();
+        int sz  = Members->GetSplitterSize();
         if (sz > 0)
         {
             if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
@@ -467,7 +467,7 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 uint32 Splitter::GetFirstPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
-    const auto sz  = Members->GetSplitterSize();
+    int sz  = Members->GetSplitterSize();
     return (sz > Members->SecondPanelSize) ? sz - Members->SecondPanelSize : 0U;
 }
 uint32 Splitter::GetSecondPanelSize()
