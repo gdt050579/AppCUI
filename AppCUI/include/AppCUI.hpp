@@ -3369,6 +3369,7 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool SetFirstPanelSize(uint32 newSize);
         bool SetSecondPanelSize(uint32 newSize);
+        bool SetDefaultPanelSize(uint32 newSize);
         bool HideSecondPanel();
         bool MaximizeSecondPanel();
         void OnAfterResize(int newWidth, int newHeight) override;

@@ -165,6 +165,28 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
     RaiseEvent(Event::SplitterPositionChanged);
     return true;
 }
+bool Splitter::SetDefaultPanelSize(uint32 newSize)
+{
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
+    {
+        const auto sz = Members->GetSplitterSize();
+        CHECK(sz > 0, false, "Object not linked/or initiated !");
+        if (newSize >= sz)
+            newSize = sz - 1;
+        Members->DefaultSecondPanelSize = sz - newSize;
+        return true;
+    }
+    if (Members->Flags && SplitterFlags::AutoCollapsePanel2)
+    {
+        Members->DefaultSecondPanelSize = newSize > 0 ? newSize : 1U;
+        return true;
+    }
+    RETURNERROR(
+          false,
+          "You should set SplitterFlags::AutoCollapsePanel1 or SplitterFlags::AutoCollapsePanel2 for this method to be "
+          "used !");
+}
 bool Splitter::HideSecondPanel()
 {
     return SetSecondPanelSize(0);
