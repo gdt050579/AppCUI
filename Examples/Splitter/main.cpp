@@ -110,7 +110,7 @@ class Example2: public Window
         if (eventType == Event::ButtonClicked)
         {
             if (ID == BTN_CMD_SHOW_DATATAB)
-                tb->SetCurrentTabPageByIndex(1);
+                tb->SetCurrentTabPageByIndex(1, true);
             return true;
         }
         return false;
