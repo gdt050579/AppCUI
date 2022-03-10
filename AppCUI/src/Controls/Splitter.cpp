@@ -11,7 +11,8 @@ constexpr int SPLITTER_TOOLTIPTEXT_BOTTOM = 2;
 constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
-constexpr uint32 SPLITTER_BAR_SIZE = 1;
+
+constexpr uint32 SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET = 0xFFFFFFFF;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                  "Click to maximize right panel",
@@ -105,35 +106,31 @@ Splitter::~Splitter()
 }
 Splitter::Splitter(string_view layout, SplitterFlags flags) : Control(new SplitterControlContext(), "", layout, false)
 {
-    auto Members            = reinterpret_cast<SplitterControlContext*>(this->Context);
-    Members->Flags          = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
-    Members->mouseStatus    = SplitterMouseStatus::None;
-    Members->Panel1.minSize = 0;
-    Members->Panel1.maxSize = 0xFFFFFFFF;
-    Members->Panel2.minSize = 0;
-    Members->Panel2.maxSize = 0xFFFFFFFF;
+    auto Members                    = reinterpret_cast<SplitterControlContext*>(this->Context);
+    Members->Flags                  = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
+    Members->mouseStatus            = SplitterMouseStatus::None;
+    Members->Panel1.minSize         = 0;
+    Members->Panel1.maxSize         = 0xFFFFFFFF;
+    Members->Panel2.minSize         = 0;
+    Members->Panel2.maxSize         = 0xFFFFFFFF;
+    Members->DefaultSecondPanelSize = SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET;
 
     if ((flags & SplitterFlags::Vertical) == SplitterFlags::Vertical)
         Members->SecondPanelSize = Members->Layout.Width / 2;
     else
         Members->SecondPanelSize = Members->Layout.Height / 2;
-    Members->DefaultSecondPanelSize = Members->SecondPanelSize;
 }
 bool Splitter::SetFirstPanelSize(uint32 newSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
-    const auto sz =
-          (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
+    const auto sz  = Members->GetSplitterSize();
     newSize = std::min<>(sz, newSize);
     return SetSecondPanelSize(sz - newSize);
 }
 bool Splitter::SetSecondPanelSize(uint32 newSize)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
-    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
-    const auto sz =
-          (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
+    const auto sz  = Members->GetSplitterSize();
     newSize = std::min<>(sz, newSize);
 
     // first panel check
@@ -279,6 +276,23 @@ bool Splitter::OnKeyEvent(Input::Key keyCode, char16)
 void Splitter::OnAfterResize(int, int)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
+    if (((Members->Flags && (SplitterFlags::AutoCollapsePanel1 | SplitterFlags::AutoCollapsePanel2))) &&
+        (Members->DefaultSecondPanelSize == SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET))
+    {
+        // we need to compute the default second panel size
+        const auto sz  = Members->GetSplitterSize();
+        if (sz > 0)
+        {
+            if (Members->Flags && SplitterFlags::AutoCollapsePanel1)
+            {
+                Members->DefaultSecondPanelSize = (sz > Members->SecondPanelSize) ? Members->SecondPanelSize : 0U;
+            }
+            else
+            {
+                Members->DefaultSecondPanelSize = Members->SecondPanelSize > 0 ? Members->SecondPanelSize : 1U;
+            }
+        }
+    }
     SetSecondPanelSize(Members->SecondPanelSize);
     Splitter_ResizeComponents(this);
 }
@@ -437,12 +451,8 @@ void Splitter::OnAfterAddControl(Reference<Control>)
 uint32 Splitter::GetFirstPanelSize()
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, 0);
-    const auto iSz = (Members->Flags && SplitterFlags::Vertical) ? Members->Layout.Width : Members->Layout.Height;
-    const auto sz  = (iSz >= 0) && (iSz <= 0x7FFFFF) ? (uint32) iSz : 0U;
-    if (sz > (Members->SecondPanelSize + SPLITTER_BAR_SIZE))
-        return sz - (Members->SecondPanelSize + SPLITTER_BAR_SIZE);
-    else
-        return 0;
+    const auto sz  = Members->GetSplitterSize();
+    return (sz > Members->SecondPanelSize) ? sz - Members->SecondPanelSize : 0U;
 }
 uint32 Splitter::GetSecondPanelSize()
 {

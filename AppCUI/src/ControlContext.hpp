@@ -311,15 +311,20 @@ enum class SplitterMouseStatus : unsigned char
     ClickOnButton2,
     Drag
 };
+constexpr uint32 SPLITTER_BAR_SIZE = 1;
 class SplitterControlContext : public ControlContext
 {
   public:
     int SecondPanelSize, DefaultSecondPanelSize;
-    
     struct
     {
         uint32 minSize, maxSize;
     } Panel1, Panel2;
+    inline uint32 GetSplitterSize() const
+    {
+        const auto iSz = (this->Flags && SplitterFlags::Vertical) ? this->Layout.Width : this->Layout.Height;
+        return (iSz >= (int) SPLITTER_BAR_SIZE) && (iSz <= 0x7FFFFF) ? (uint32) (iSz - (int) SPLITTER_BAR_SIZE) : 0U;
+    }
     SplitterMouseStatus mouseStatus;
 };
 class TextFieldControlContext : public ControlContext
@@ -405,7 +410,7 @@ class TextAreaControlContext : public ControlContext
     void SetSelection(uint32 start, uint32 end);
     void SetTabCharacter(char tabCharacter);
     void SendMsg(Event eventType);
-    void MousePosToFilePos(int x, int y, uint32 &lineIndex, uint32 &offset);
+    void MousePosToFilePos(int x, int y, uint32& lineIndex, uint32& offset);
     void OnMouseReleased(int x, int y, Input::MouseButton button);
     void OnMousePressed(int x, int y, Input::MouseButton button);
     bool OnMouseDrag(int x, int y, Input::MouseButton button);
