@@ -51,7 +51,7 @@ namespace AsciiSpecialChars
     };
 } // namespace AsciiSpecialChars
 
-int* SpecialCharacters = nullptr;
+int* SpecialCharacters          = nullptr;
 LineTypeChars* LineSpecialChars = nullptr;
 
 #define CHECK_CANVAS_INITIALIZE                                                                                        \
@@ -103,6 +103,7 @@ struct DrawTextInfo
     Character* LeftMargin;
     Character* RightMargin;
 };
+
 
 //============================================== Write text [single line] ===========================================
 template <typename T>
@@ -1574,5 +1575,26 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
     }
 }
 } // namespace AppCUI::Graphics
+
+void AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCharacterSetType charSetType)
+{
+    if (charSetType == AppCUI::Application::SpecialCharacterSetType::Auto)
+    {
+        charSetType = AppCUI::Application::SpecialCharacterSetType::Unicode;
+    }
+    switch (charSetType)
+    {
+    case AppCUI::Application::SpecialCharacterSetType::Unicode:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::UnicodeSpecialChars::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::UnicodeSpecialChars::line_types_chars;
+        break;
+    case AppCUI::Application::SpecialCharacterSetType::LinuxTerminal:
+        break;
+    case AppCUI::Application::SpecialCharacterSetType::Ascii:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::AsciiSpecialChars::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::AsciiSpecialChars::line_types_chars;
+        break;
+    }
+}
 
 #undef COMPUTE_RGB

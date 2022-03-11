@@ -2532,6 +2532,7 @@ namespace Graphics
         AsciiRound,
         SingleRound,
     };
+
     class EXPORT Canvas;
     class EXPORT Renderer
     {
@@ -4756,6 +4757,13 @@ namespace Application
         Dark    = 1,
         Light   = 2,
     };
+    enum class SpecialCharacterSetType : uint32
+    {
+        Auto = 0,
+        Unicode = 1,
+        LinuxTerminal = 2,
+        Ascii = 3
+    };
 
     struct InitializationData
     {
@@ -4885,6 +4893,7 @@ namespace Application
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
     EXPORT void SetTheme(ThemeType themeType);
+    EXPORT void SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
 }; // namespace Application
 
 } // namespace AppCUI
