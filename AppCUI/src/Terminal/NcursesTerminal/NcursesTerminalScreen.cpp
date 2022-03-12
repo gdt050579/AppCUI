@@ -88,7 +88,11 @@ bool NcursesTerminal::OnUpdateCursor()
 void NcursesTerminal::RestoreOriginalConsoleSettings()
 {
 }
-
+bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+{
+    // Add logic to test if you are in a TTY or graphic mode
+    return true;
+}
 void NcursesTerminal::uninitScreen()
 {
     endwin();
