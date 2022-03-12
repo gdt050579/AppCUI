@@ -2532,6 +2532,7 @@ namespace Graphics
         AsciiRound,
         SingleRound,
     };
+
     class EXPORT Canvas;
     class EXPORT Renderer
     {
@@ -4756,6 +4757,13 @@ namespace Application
         Dark    = 1,
         Light   = 2,
     };
+    enum class SpecialCharacterSetType : uint32
+    {
+        Auto          = 0,
+        Unicode       = 1,
+        LinuxTerminal = 2,
+        Ascii         = 3
+    };
 
     struct InitializationData
     {
@@ -4766,12 +4774,13 @@ namespace Application
         string_view FontName;
         Utils::FixSizeString<32> ThemeName;
         ThemeType Theme;
+        SpecialCharacterSetType SpecialCharacterSet;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
               Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
-              CustomDesktopConstructor(nullptr)
+              SpecialCharacterSet(SpecialCharacterSetType::Auto),  CustomDesktopConstructor(nullptr)
         {
         }
     };
@@ -4885,6 +4894,7 @@ namespace Application
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
     EXPORT void SetTheme(ThemeType themeType);
+    EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
 }; // namespace Application
 
 } // namespace AppCUI

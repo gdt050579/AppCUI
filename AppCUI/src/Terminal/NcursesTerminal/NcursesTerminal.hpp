@@ -65,6 +65,7 @@ namespace Internal
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual void RestoreOriginalConsoleSettings() override;
+        virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
 
       private:
         bool initScreen();

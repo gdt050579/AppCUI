@@ -216,13 +216,14 @@ namespace Internal
         Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
         bool Inited, LastCursorVisibility;
 
-        virtual bool OnInit(const Application::InitializationData& initData) = 0;
-        virtual void RestoreOriginalConsoleSettings()                        = 0;
-        virtual void OnUninit()                                              = 0;
-        virtual void OnFlushToScreen()                                       = 0;
-        virtual bool OnUpdateCursor()                                        = 0;
-        virtual void GetSystemEvent(Internal::SystemEvent& evnt)             = 0;
-        virtual bool IsEventAvailable()                                      = 0;
+        virtual bool OnInit(const Application::InitializationData& initData)  = 0;
+        virtual void RestoreOriginalConsoleSettings()                         = 0;
+        virtual void OnUninit()                                               = 0;
+        virtual void OnFlushToScreen()                                        = 0;
+        virtual bool OnUpdateCursor()                                         = 0;
+        virtual void GetSystemEvent(Internal::SystemEvent& evnt)              = 0;
+        virtual bool IsEventAvailable()                                       = 0;
+        virtual bool HasSupportFor(Application::SpecialCharacterSetType type) = 0;
 
         virtual ~AbstractTerminal();
 
@@ -230,7 +231,7 @@ namespace Internal
         void Uninit();
         void Update();
     };
-    
+
     namespace Config
     {
         void SetTheme(AppCUI::Application::Config& config, AppCUI::Application::ThemeType type);
@@ -337,5 +338,5 @@ namespace Controls
 {
     void UninitTextFieldDefaultMenu();
     void UninitTextAreaDefaultMenu();
-}
+} // namespace Controls
 } // namespace AppCUI

@@ -47,6 +47,7 @@ namespace Internal
         virtual bool OnUpdateCursor() override;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
+        virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
         virtual ~WindowsTerminal();
     };
 } // namespace Internal

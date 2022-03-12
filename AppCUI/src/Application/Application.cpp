@@ -216,6 +216,7 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
     sect.UpdateValue("CharacterSize", "default", true);
     sect.UpdateValue("Fixed", "default", true);
     sect.UpdateValue("Theme", "default", true);
+    sect.UpdateValue("CharacterSet", "auto", true);
 }
 bool Application::UpdateAppCUISettings(bool clearExistingSettings)
 {
@@ -601,6 +602,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
     bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
     auto themeName    = AppCUISection.GetValue("theme").ToString();
+    auto charSet      = AppCUISection.GetValue("characterSet").ToString();
 
     // frontend
     if (frontend)
@@ -671,6 +673,19 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
         }
     }
 
+    // character set
+    if (charSet)
+    {
+        if (String::Equals(charSet, "unicode", true))
+            initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Unicode;
+        if (String::Equals(charSet, "ascii", true))
+            initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Ascii;
+        else if (String::StartsWith(charSet, "linux", true))
+            initData.SpecialCharacterSet = Application::SpecialCharacterSetType::LinuxTerminal;
+        else
+            initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Auto;
+    }
+
     // all good
 }
 bool ApplicationImpl::Init(Application::InitializationData& initData)
@@ -730,6 +745,12 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
+
+    // update special character set 
+    CHECK(Application::SetSpecialCharacterSet(initData.SpecialCharacterSet),
+          false,
+          "Fail to select a special character set for current application (value=%d) !",
+          (int) initData.SpecialCharacterSet);
 
     loopStatus         = LoopStatus::Normal;
     RepaintStatus      = REPAINT_STATUS_ALL;

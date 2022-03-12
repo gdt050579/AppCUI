@@ -279,7 +279,11 @@ bool SDLTerminal::OnUpdateCursor()
     // Currently no cursor for sdl
     return true;
 }
-
+bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+{
+    // SDL based terminal supports all special character set types
+    return true;
+}
 void SDLTerminal::uninitScreen()
 {
     for (const auto& cacheItem : characterCache)

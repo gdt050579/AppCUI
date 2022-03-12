@@ -670,4 +670,9 @@ bool WindowsTerminal::IsEventAvailable()
         return false;
     return (eventsRead > 0);
 }
+bool WindowsTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+{
+    // Windows terminal supports all special character set types
+    return true;
+}
 } // namespace AppCUI::Internal

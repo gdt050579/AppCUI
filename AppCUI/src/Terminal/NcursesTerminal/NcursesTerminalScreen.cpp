@@ -3,6 +3,8 @@
 
 namespace AppCUI::Internal
 {
+using namespace Application;
+
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
@@ -88,9 +90,31 @@ bool NcursesTerminal::OnUpdateCursor()
 void NcursesTerminal::RestoreOriginalConsoleSettings()
 {
 }
-
+bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+{
+    switch (type)
+    {
+    case AppCUI::Application::SpecialCharacterSetType::Unicode:
+    {
+       auto term = getenv("TERM");
+       if ((term) && (strcmp(term, "linux") == 0))
+           return false; // we are in a real linux tty and as such this mode will not be supported
+        // otherwise we are in an "X" mode terminal that has a font that propertly supports some characters
+        return true;
+    }
+    case AppCUI::Application::SpecialCharacterSetType::LinuxTerminal:
+        // Linux terminal always work (this is a subset of unicode characters so it will be available for both TTY and "X" mode terminals)
+        return true;
+    case AppCUI::Application::SpecialCharacterSetType::Ascii:
+        // ascii always works
+        return true;
+    default:
+        RETURNERROR(false, "Unknwon special character set --> this is a fallback case, it should not be reached !");
+        break;
+    }
+}
 void NcursesTerminal::uninitScreen()
 {
     endwin();
 }
-}
+} // namespace AppCUI::Internal

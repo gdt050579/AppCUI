@@ -1,36 +1,79 @@
-#include "AppCUI.hpp"
+#include "Internal.hpp"
 #include <string.h>
 
 namespace AppCUI::Graphics
 {
 using namespace Utils;
-
-int _special_characters_consolas_unicode_[(uint32) Graphics::SpecialChars::Count] = {
-    0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
-    0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
-    0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
-    32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
-    0x25B2, 0x25BC, 0x25C4, 0x25BA,                                                 // Trangles
-    0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E, 0x2026,                                 // symbols
-    0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
-};
-
 struct LineTypeChars
 {
     char16 TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft, Left;
 };
+namespace UnicodeSpecialChars
+{
+    int special_characters[(uint32) Graphics::SpecialChars::Count] = {
+        0x2554, 0x2557, 0x255D, 0x255A, 0x2550, 0x2551, 0x256C,                         // double line box
+        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
+        0x2191, 0x2193, 0x2190, 0x2192, 0x2195, 0x2194,                                 // arrows
+        32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
+        0x25B2, 0x25BC, 0x25C4, 0x25BA,                                                 // Trangles
+        0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E, 0x2026,                                 // symbols
+        0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
+    };
+    struct AppCUI::Graphics::LineTypeChars line_types_chars[] = {
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Lines */
+        { 0x2554, 0x2550, 0x2557, 0x2551, 0x255D, 0x2550, 0x255A, 0x2551 }, /* Double Lines */
+        { 0x250F, 0x2501, 0x2513, 0x2503, 0x251B, 0x2501, 0x2517, 0x2503 }, /* Single Thick lines */
+        { 0x2584, 0x2584, 0x2584, 0x2588, 0x2580, 0x2580, 0x2580, 0x2588 }, /* Border */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
+        { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
+        { 0x256D, 0x2500, 0x256E, 0x2502, 0x256F, 0x2500, 0x2570, 0x2502 }, /* Single Round */
+    };
+} // namespace UnicodeSpecialChars
+namespace LinuxTerminal
+{
+    int special_characters[(uint32) Graphics::SpecialChars::Count] = {
+        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // double line box
+        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
+        0x25B2, 0x25BC, 0x25C0, 0x25B6, '|',    '-',                                    // arrows
+        32,     0x2591, 0x2592, 0x2592, 0x2588, 0x25A0, 0x25A0, 0x25A0, 0x25A0, 0x25A0, // blocks
+        0x25B2, 0x25BC, 0x25C0, 0x25B6,                                                 // Trangles
+        0x25CF, 'o',    'x',    0x2261, ':',    0x2026,                                 // symbols
+        0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
+    };
+    struct AppCUI::Graphics::LineTypeChars line_types_chars[] = {
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Double Lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Thick lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Border */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
+        { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Round */
+    };
+} // namespace LinuxTerminal
+namespace AsciiSpecialChars
+{
+    int special_characters[(uint32) Graphics::SpecialChars::Count] = {
+        '+', '+', '+', '+', '=', '|', '+',                // double line box
+        '+', '+', '+', '+', '-', '|', '+',                // single line box
+        '^', 'v', '<', '>', '|', '-',                     // arrows
+        ' ', ':', '#', '#', '@', '~', '_', '[', ']', '#', // blocks
+        '^', 'v', '<', '>',                               // Trangles
+        '*', 'o', 'V', '=', ':', '.',                     // symbols
+        '+', '+', '+', '+'                                // middle single line box
+    };
+    struct AppCUI::Graphics::LineTypeChars line_types_chars[] = {
+        { '+', '-', '+', '|', '+', '-', '+', '|' },   /* Single Lines */
+        { '+', '=', '+', '|', '+', '=', '+', '|' },   /* Double Lines */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },   /* Single Thick lines */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },   /* Border */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },   /* Ascii */
+        { '/', '-', '\\', '|', '/', '-', '\\', '|' }, /* Ascii Round */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },   /* Single Round */
+    };
+} // namespace AsciiSpecialChars
 
-struct LineTypeChars line_types_chars[] = {
-    { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Lines */
-    { 0x2554, 0x2550, 0x2557, 0x2551, 0x255D, 0x2550, 0x255A, 0x2551 }, /* Double Lines */
-    { 0x250F, 0x2501, 0x2513, 0x2503, 0x251B, 0x2501, 0x2517, 0x2503 }, /* Single Thick lines */
-    { 0x2584, 0x2584, 0x2584, 0x2588, 0x2580, 0x2580, 0x2580, 0x2588 }, /* Border */
-    { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
-    { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
-    { 0x256D, 0x2500, 0x256E, 0x2502, 0x256F, 0x2500, 0x2570, 0x2502 }, /* Single Round */
-};
-
-int* SpecialCharacters = nullptr;
+int* SpecialCharacters          = nullptr;
+LineTypeChars* LineSpecialChars = nullptr;
 
 #define CHECK_CANVAS_INITIALIZE                                                                                        \
     CHECK(this->Characters, false, "Canvas object is not initialized. Have you called Cretae/Resize methods");
@@ -252,7 +295,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -293,7 +336,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -332,7 +375,9 @@ Renderer::Renderer()
     Characters              = nullptr;
     OffsetRows              = nullptr;
     if (SpecialCharacters == nullptr)
-        SpecialCharacters = _special_characters_consolas_unicode_;
+        SpecialCharacters = UnicodeSpecialChars::special_characters;
+    if (LineSpecialChars == nullptr)
+        LineSpecialChars = UnicodeSpecialChars::line_types_chars;
 
     this->Clip.Visible   = false;
     this->Cursor.Visible = false;
@@ -444,7 +489,7 @@ bool Renderer::_ClearEntireSurface(int character, ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (uint16) (character & 0xFFFF);
+        tmp.Code = (uint16)(character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -637,7 +682,7 @@ bool Renderer::DrawRect(int left, int top, int right, int bottom, ColorPair colo
     Character *p, *e;
     int char_to_draw;
 
-    const auto& chrs = line_types_chars[(uint8) lineType];
+    const auto& chrs = LineSpecialChars[(uint8) lineType];
 
     // top line
     if (top == orig_top)
@@ -1052,7 +1097,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     // Text fit
     if (TextFit)
     {
-        uint32 sz = (uint32) (output->TextEnd - output->TextStart);
+        uint32 sz = (uint32)(output->TextEnd - output->TextStart);
         if (sz > 4)
         {
             sz                   = std::min<>(sz - 3, 3U);
@@ -1261,7 +1306,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, CharacterView charVi
         x = Clip.Left;
         if (buf >= end)
             return false; // ouside clip rect
-        sz = (uint32) (end - buf);
+        sz = (uint32)(end - buf);
     }
     if ((x + (int) sz) > Clip.Right)
     {
@@ -1550,5 +1595,49 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
     }
 }
 } // namespace AppCUI::Graphics
+
+bool AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCharacterSetType charSetType)
+{
+    if (charSetType == AppCUI::Application::SpecialCharacterSetType::Auto)
+    {
+        auto app = AppCUI::Application::GetApplication();
+        CHECK(app, false, "Application was not initialized");
+        CHECK(app->terminal, false, "No terminal was associated/linked to current app");
+        // check if support is available for different special character types
+        Application::SpecialCharacterSetType order[] = { SpecialCharacterSetType::Unicode,
+                                                         SpecialCharacterSetType::LinuxTerminal,
+                                                         SpecialCharacterSetType::Ascii };
+        bool found                                   = false;
+        for (auto index = 0U; index < ARRAY_LEN(order); index++)
+        {
+            if (app->terminal->HasSupportFor(order[index]))
+            {
+                charSetType = order[index];
+                found       = true;
+                break;
+            }
+        }
+        CHECK(found, false, "Current terminal does not support any special character set !");
+    }
+    switch (charSetType)
+    {
+    case AppCUI::Application::SpecialCharacterSetType::Unicode:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::UnicodeSpecialChars::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::UnicodeSpecialChars::line_types_chars;
+        break;
+    case AppCUI::Application::SpecialCharacterSetType::LinuxTerminal:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::LinuxTerminal::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::LinuxTerminal::line_types_chars;
+        break;
+    case AppCUI::Application::SpecialCharacterSetType::Ascii:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::AsciiSpecialChars::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::AsciiSpecialChars::line_types_chars;
+        break;
+    default:
+        RETURNERROR(false, "Unknwon special character set --> this is a fallback case, it should not be reached !");
+        break;
+    }
+    return true;
+}
 
 #undef COMPUTE_RGB

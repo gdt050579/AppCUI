@@ -6,11 +6,14 @@ using namespace AppCUI::Controls;
 using namespace AppCUI::Input;
 using namespace AppCUI::Graphics;
 
-constexpr int CMD_CHANGE_THEME_DEFAULT = 0;
-constexpr int CMD_CHANGE_THEME_DARK    = 1;
-constexpr int CMD_CHANGE_THEME_LIGHT   = 2;
-constexpr int CMD_LOAD_DIALOG          = 3;
-constexpr int CMD_LOAD_THEME_EDITOR    = 4;
+constexpr int CMD_CHANGE_THEME_DEFAULT    = 0;
+constexpr int CMD_CHANGE_THEME_DARK       = 1;
+constexpr int CMD_CHANGE_THEME_LIGHT      = 2;
+constexpr int CMD_LOAD_DIALOG             = 3;
+constexpr int CMD_LOAD_THEME_EDITOR       = 4;
+constexpr int CMD_CHANGE_CHARSET_UNICODE  = 5;
+constexpr int CMD_CHANGE_CHARSET_LINUXTTY = 6;
+constexpr int CMD_CHANGE_CHARSET_ASCII    = 7;
 
 class ExampleWin : public Window
 {
@@ -22,6 +25,11 @@ class ExampleWin : public Window
         Factory::RadioBox::Create(p, "Default", "x:1,y:0,w:15", 100, CMD_CHANGE_THEME_DEFAULT)->SetChecked(true);
         Factory::RadioBox::Create(p, "Dark", "x:1,y:1,w:15", 100, CMD_CHANGE_THEME_DARK);
         Factory::RadioBox::Create(p, "Light", "x:1,y:2,w:15", 100, CMD_CHANGE_THEME_LIGHT);
+
+        p = Factory::Panel::Create(this, "CharSet", "x:2,y:9,w:20,h:5");
+        Factory::RadioBox::Create(p, "Unicode", "x:1,y:0,w:15", 101, CMD_CHANGE_CHARSET_UNICODE)->SetChecked(true);
+        Factory::RadioBox::Create(p, "Linux TTY", "x:1,y:1,w:15", 101, CMD_CHANGE_CHARSET_LINUXTTY);
+        Factory::RadioBox::Create(p, "Ascii", "x:1,y:2,w:15", 101, CMD_CHANGE_CHARSET_ASCII);
 
         auto lv = Factory::ListView::Create(
               this, "x:25,y:3,w:40,h:10", ListViewFlags::Sortable | ListViewFlags::CheckBoxes);
@@ -59,6 +67,15 @@ class ExampleWin : public Window
                 return true;
             case CMD_CHANGE_THEME_LIGHT:
                 Application::SetTheme(Application::ThemeType::Light);
+                return true;
+            case CMD_CHANGE_CHARSET_UNICODE:
+                Application::SetSpecialCharacterSet(Application::SpecialCharacterSetType::Unicode);
+                return true;
+            case CMD_CHANGE_CHARSET_LINUXTTY:
+                Application::SetSpecialCharacterSet(Application::SpecialCharacterSetType::LinuxTerminal);
+                return true;
+            case CMD_CHANGE_CHARSET_ASCII:
+                Application::SetSpecialCharacterSet(Application::SpecialCharacterSetType::Ascii);
                 return true;
             }
         }
