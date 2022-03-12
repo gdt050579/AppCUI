@@ -731,6 +731,11 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
+    // update special character set (always use Auto) to search for the best special character set
+    CHECK(Application::SetSpecialCharacterSet(Application::SpecialCharacterSetType::Auto),
+          false,
+          "Fail to select a special character set for current application !");
+
     loopStatus         = LoopStatus::Normal;
     RepaintStatus      = REPAINT_STATUS_ALL;
     mouseLockedObject  = MouseLockedObject::None;
