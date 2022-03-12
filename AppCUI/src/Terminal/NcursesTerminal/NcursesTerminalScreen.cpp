@@ -3,6 +3,8 @@
 
 namespace AppCUI::Internal
 {
+using namespace Application;
+
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
@@ -90,11 +92,24 @@ void NcursesTerminal::RestoreOriginalConsoleSettings()
 }
 bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
 {
-    // Add logic to test if you are in a TTY or graphic mode
+    // ascii always works
+    if (type == SpecialCharacterSetType::Ascii)
+    {
+        return true;
+    }
+
+    // real linux ttys should set env var TERM=linux
+    // so if we found that, it means we only support ascii
+    auto term = getenv("TERM");
+    if (term)
+    {
+        return strcmp(term, "linux") != 0;
+    }
+
     return true;
 }
 void NcursesTerminal::uninitScreen()
 {
     endwin();
 }
-}
+} // namespace AppCUI::Internal
