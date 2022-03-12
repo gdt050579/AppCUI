@@ -4,11 +4,10 @@ using namespace AppCUI;
 using namespace AppCUI::Application;
 using namespace AppCUI::Controls;
 
-
 class ExampleWin : public Window
 {
   public:
-    ExampleWin() : Window("Example", "d:c,w:40,h:20", WindowFlags::Sizeable)
+    ExampleWin() : Window("Example", "d:c,w:40,h:20", WindowFlags::Sizeable | WindowFlags::Maximized)
     {
         Factory::CharacterTable::Create(this, "l:1,t:1,r:1,b:3");
         Factory::Button::Create(this, "A button", "d:b,w:20", 123);

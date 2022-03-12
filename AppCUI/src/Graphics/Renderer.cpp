@@ -34,10 +34,10 @@ namespace LinuxTerminal
     int special_characters[(uint32) Graphics::SpecialChars::Count] = {
         0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // double line box
         0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
-        '^',    'v',    '<',    '>',    '|',    '-',                                    // arrows
-        32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
-        '^',    'v',    '<',    '>',                                                    // Trangles
-        0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E, 0x2026,                                 // symbols
+        0x25B2, 0x25BC, 0x25C0, 0x25B6, '|',    '-',                                    // arrows
+        32,     0x2591, 0x2592, 0x2592, 0x2588, 0x25A0, 0x25A0, 0x25A0, 0x25A0, 0x25A0, // blocks
+        0x25B2, 0x25BC, 0x25C0, 0x25B6,                                                 // Trangles
+        0x25CF, 'o',    'x',    0x2261, ':',    0x2026,                                 // symbols
         0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
     };
     struct AppCUI::Graphics::LineTypeChars line_types_chars[] = {
@@ -295,7 +295,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -336,7 +336,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -489,7 +489,7 @@ bool Renderer::_ClearEntireSurface(int character, ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (uint16) (character & 0xFFFF);
+        tmp.Code = (uint16)(character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -1097,7 +1097,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     // Text fit
     if (TextFit)
     {
-        uint32 sz = (uint32) (output->TextEnd - output->TextStart);
+        uint32 sz = (uint32)(output->TextEnd - output->TextStart);
         if (sz > 4)
         {
             sz                   = std::min<>(sz - 3, 3U);
@@ -1306,7 +1306,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, CharacterView charVi
         x = Clip.Left;
         if (buf >= end)
             return false; // ouside clip rect
-        sz = (uint32) (end - buf);
+        sz = (uint32)(end - buf);
     }
     if ((x + (int) sz) > Clip.Right)
     {
