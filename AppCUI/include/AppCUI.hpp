@@ -4759,10 +4759,10 @@ namespace Application
     };
     enum class SpecialCharacterSetType : uint32
     {
-        Auto = 0,
-        Unicode = 1,
+        Auto          = 0,
+        Unicode       = 1,
         LinuxTerminal = 2,
-        Ascii = 3
+        Ascii         = 3
     };
 
     struct InitializationData
@@ -4774,12 +4774,13 @@ namespace Application
         string_view FontName;
         Utils::FixSizeString<32> ThemeName;
         ThemeType Theme;
+        SpecialCharacterSetType SpecialCharacterSet;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
               Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
-              CustomDesktopConstructor(nullptr)
+              SpecialCharacterSet(SpecialCharacterSetType::Auto),  CustomDesktopConstructor(nullptr)
         {
         }
     };
