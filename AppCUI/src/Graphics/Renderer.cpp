@@ -1608,7 +1608,7 @@ bool AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCha
                                                          SpecialCharacterSetType::LinuxTerminal,
                                                          SpecialCharacterSetType::Ascii };
         bool found                                   = false;
-        for (auto index = 0U; index < ARRAYSIZE(order); index++)
+        for (auto index = 0U; index < ARRAY_LEN(order); index++)
         {
             if (app->terminal->HasSupportFor(order[index]))
             {
