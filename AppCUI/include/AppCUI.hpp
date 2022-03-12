@@ -4893,7 +4893,7 @@ namespace Application
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     EXPORT void Close();
     EXPORT void SetTheme(ThemeType themeType);
-    EXPORT void SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
+    EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
 }; // namespace Application
 
 } // namespace AppCUI

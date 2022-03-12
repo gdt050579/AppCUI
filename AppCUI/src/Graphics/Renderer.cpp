@@ -49,7 +49,7 @@ namespace LinuxTerminal
         { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
         { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Round */
     };
-} // namespace UnicodeSpecialChars
+} // namespace LinuxTerminal
 namespace AsciiSpecialChars
 {
     int special_characters[(uint32) Graphics::SpecialChars::Count] = {
@@ -124,7 +124,6 @@ struct DrawTextInfo
     Character* LeftMargin;
     Character* RightMargin;
 };
-
 
 //============================================== Write text [single line] ===========================================
 template <typename T>
@@ -1597,11 +1596,28 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
 }
 } // namespace AppCUI::Graphics
 
-void AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCharacterSetType charSetType)
+bool AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCharacterSetType charSetType)
 {
     if (charSetType == AppCUI::Application::SpecialCharacterSetType::Auto)
     {
-        charSetType = AppCUI::Application::SpecialCharacterSetType::Unicode;
+        auto app = AppCUI::Application::GetApplication();
+        CHECK(app, false, "Application was not initialized");
+        CHECK(app->terminal, false, "No terminal was associated/linked to current app");
+        // check if support is available for different special character types
+        Application::SpecialCharacterSetType order[] = { SpecialCharacterSetType::Unicode,
+                                                         SpecialCharacterSetType::LinuxTerminal,
+                                                         SpecialCharacterSetType::Ascii };
+        bool found                                   = false;
+        for (auto index = 0U; index < ARRAYSIZE(order); index++)
+        {
+            if (app->terminal->HasSupportFor(order[index]))
+            {
+                charSetType = order[index];
+                found       = true;
+                break;
+            }
+        }
+        CHECK(found, false, "Current terminal does not support any special character set !");
     }
     switch (charSetType)
     {
@@ -1617,7 +1633,11 @@ void AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCha
         AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::AsciiSpecialChars::special_characters;
         AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::AsciiSpecialChars::line_types_chars;
         break;
+    default:
+        RETURNERROR(false, "Unknwon special character set --> this is a fallback case, it should not be reached !");
+        break;
     }
+    return true;
 }
 
 #undef COMPUTE_RGB
