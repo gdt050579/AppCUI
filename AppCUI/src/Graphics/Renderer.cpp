@@ -29,6 +29,27 @@ namespace UnicodeSpecialChars
         { 0x256D, 0x2500, 0x256E, 0x2502, 0x256F, 0x2500, 0x2570, 0x2502 }, /* Single Round */
     };
 } // namespace UnicodeSpecialChars
+namespace LinuxTerminal
+{
+    int special_characters[(uint32) Graphics::SpecialChars::Count] = {
+        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // double line box
+        0x250C, 0x2510, 0x2518, 0x2514, 0x2500, 0x2502, 0x253C,                         // single line box
+        '^',    'v',    '<',    '>',    '|',    '-',                                    // arrows
+        32,     0x2591, 0x2592, 0x2593, 0x2588, 0x2580, 0x2584, 0x258C, 0x2590, 0x25A0, // blocks
+        '^',    'v',    '<',    '>',                                                    // Trangles
+        0x25CF, 0x25CB, 0x221A, 0x2261, 0x205E, 0x2026,                                 // symbols
+        0x251C, 0x252C, 0x2524, 0x2534                                                  // middle single line box
+    };
+    struct AppCUI::Graphics::LineTypeChars line_types_chars[] = {
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Double Lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Thick lines */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Border */
+        { '+', '-', '+', '|', '+', '-', '+', '|' },                         /* Ascii */
+        { '/', '-', '\\', '|', '/', '-', '\\', '|' },                       /* Ascii Round */
+        { 0x250C, 0x2500, 0x2510, 0x2502, 0x2518, 0x2500, 0x2514, 0x2502 }, /* Single Round */
+    };
+} // namespace UnicodeSpecialChars
 namespace AsciiSpecialChars
 {
     int special_characters[(uint32) Graphics::SpecialChars::Count] = {
@@ -1589,6 +1610,8 @@ void AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCha
         AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::UnicodeSpecialChars::line_types_chars;
         break;
     case AppCUI::Application::SpecialCharacterSetType::LinuxTerminal:
+        AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::LinuxTerminal::special_characters;
+        AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::LinuxTerminal::line_types_chars;
         break;
     case AppCUI::Application::SpecialCharacterSetType::Ascii:
         AppCUI::Graphics::SpecialCharacters = AppCUI::Graphics::AsciiSpecialChars::special_characters;
