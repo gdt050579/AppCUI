@@ -92,14 +92,16 @@ void NcursesTerminal::RestoreOriginalConsoleSettings()
 }
 bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
 {
-    switch (charSetType)
+    switch (type)
     {
     case AppCUI::Application::SpecialCharacterSetType::Unicode:
+    {
        auto term = getenv("TERM");
        if ((term) && (strcmp(term, "linux") == 0))
            return false; // we are in a real linux tty and as such this mode will not be supported
         // otherwise we are in an "X" mode terminal that has a font that propertly supports some characters
         return true;
+    }
     case AppCUI::Application::SpecialCharacterSetType::LinuxTerminal:
         // Linux terminal always work (this is a subset of unicode characters so it will be available for both TTY and "X" mode terminals)
         return true;
