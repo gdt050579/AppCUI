@@ -102,6 +102,8 @@ For example (from our github workflow on windows)
 
 If everything is installed properly, cmake will greet you with `[cmake] Have SDL2`
 
+If you don't want to use SDL, even though you have it, use the build option `-DAPPCUI_HAS_SDL=0`, same applies to ignoring the existing ncurses library `-DAPPCUI_HAS_NCURSES=0`.
+
 
 ### Installing Ncurses
 
