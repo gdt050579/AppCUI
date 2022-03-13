@@ -92,7 +92,7 @@ void RadioBox::OnHotKey()
 }
 bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16)
 {
-    if (KeyCode == Key::Space)
+    if ((KeyCode == Key::Space) || (KeyCode == Key::Enter))
     {
         OnHotKey();
         return true;

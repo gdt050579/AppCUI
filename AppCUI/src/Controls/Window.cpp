@@ -1084,7 +1084,8 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             tmp->SetFocus();
         return true;
     case Key::Escape:
-        RaiseEvent(Event::WindowClose);
+        if (!(Members->Flags && WindowFlags::NoCloseButton))
+            RaiseEvent(Event::WindowClose);
         return true;
     case Key::Enter:
         RaiseEvent(Event::WindowAccept);
