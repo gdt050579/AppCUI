@@ -22,7 +22,6 @@ endif()
 
 option(APPCUI_HAS_SDL "Use SDL" ON)
 option(APPCUI_HAS_NCURSES "Use ncurses" ON)
-message(0${SDL2_LIBRARY_RELEASE})
 
 # Add SDL
 if (APPCUI_HAS_SDL)
