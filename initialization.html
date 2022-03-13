@@ -127,6 +127,7 @@
    <span class="n">std</span><span class="o">::</span><span class="n">string_view</span>              <span class="n">FontName</span><span class="p">;</span>
    <span class="n">Utils</span><span class="o">::</span><span class="n">FixSizeString</span><span class="o">&lt;</span><span class="mi">32</span><span class="o">&gt;</span>      <span class="n">ThemeName</span><span class="p">;</span>
    <span class="n">ThemeType</span>                     <span class="n">Theme</span><span class="p">;</span>
+   <span class="n">SpecialCharacterSetType</span>       <span class="n">SpecialCharacterSet</span><span class="p">;</span>
    <span class="n">AppCUI</span><span class="o">::</span><span class="n">Controls</span><span class="o">::</span><span class="n">Desktop</span><span class="o">*</span>    <span class="n">CustomDesktop</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
@@ -150,6 +151,16 @@
    <span class="n">Normal</span><span class="p">,</span>
    <span class="n">Large</span><span class="p">,</span>
    <span class="n">Huge</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><strong>SpecialCharacterSetType</strong> defined as:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">SpecialCharacterSetType</span><span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
+<span class="p">{</span>
+   <span class="n">Auto</span>          <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="n">Unicode</span>       <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="n">LinuxTerminal</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+   <span class="n">Ascii</span>         <span class="o">=</span> <span class="mi">3</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -195,13 +206,14 @@
 <li><p>Full customized initialization (an SDL based application , with the size of <code class="docutils literal notranslate"><span class="pre">120x30</span></code> characters, dark theme, using <strong>Consolas</strong> font (small size) and with a Menu and CommandBar.</p></li>
 </ol>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">InitializationData</span> <span class="n">initData</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">Width</span>          <span class="o">=</span> <span class="mi">120</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">Height</span>         <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">FrontendType</span>   <span class="o">=</span> <span class="n">Frontend</span><span class="o">::</span><span class="n">SDL</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">CharSize</span>       <span class="o">=</span> <span class="n">CharacterSize</span><span class="o">::</span><span class="n">Small</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">FontName</span>       <span class="o">=</span> <span class="s">&quot;Consolas&quot;</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">Theme</span>          <span class="o">=</span> <span class="n">ThemeType</span><span class="o">::</span><span class="n">Dark</span><span class="p">;</span>
-<span class="n">initData</span><span class="p">.</span><span class="n">Flags</span>          <span class="o">=</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">Menu</span> <span class="o">|</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">CommandBar</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Width</span>               <span class="o">=</span> <span class="mi">120</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Height</span>              <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">FrontendType</span>        <span class="o">=</span> <span class="n">Frontend</span><span class="o">::</span><span class="n">SDL</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">CharSize</span>            <span class="o">=</span> <span class="n">CharacterSize</span><span class="o">::</span><span class="n">Small</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">FontName</span>            <span class="o">=</span> <span class="s">&quot;Consolas&quot;</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Theme</span>               <span class="o">=</span> <span class="n">ThemeType</span><span class="o">::</span><span class="n">Dark</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">SpecialCharacterSet</span> <span class="o">=</span> <span class="n">SpecialCharacterSetType</span><span class="o">::</span><span class="n">Unicode</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Flags</span>               <span class="o">=</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">Menu</span> <span class="o">|</span> <span class="n">InitializationFlags</span><span class="o">::</span><span class="n">CommandBar</span><span class="p">;</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">AppCUI</span><span class="o">::</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">initData</span><span class="p">)</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
    <span class="c1">// Appcui failed to initialize</span>

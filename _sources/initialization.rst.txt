@@ -65,6 +65,7 @@ InitializationData structure
       std::string_view              FontName;
       Utils::FixSizeString<32>      ThemeName;
       ThemeType                     Theme;
+      SpecialCharacterSetType       SpecialCharacterSet;
       AppCUI::Controls::Desktop*    CustomDesktop;
    }
 
@@ -93,6 +94,19 @@ width **FrontendType** defined as follows:
       Large,
       Huge
    };
+
+**SpecialCharacterSetType** defined as:
+
+.. code-block:: c++
+
+   enum class SpecialCharacterSetType: unsigned int
+   {
+      Auto          = 0,
+      Unicode       = 1,
+      LinuxTerminal = 2,
+      Ascii         = 3
+   };
+
 
 and **ThemeType** defined as:
 
@@ -140,13 +154,14 @@ Examples
 .. code-block:: c++
 
    InitializationData initData;
-   initData.Width          = 120;
-   initData.Height         = 30;
-   initData.FrontendType   = Frontend::SDL;
-   initData.CharSize       = CharacterSize::Small;
-   initData.FontName       = "Consolas";
-   initData.Theme          = ThemeType::Dark;
-   initData.Flags          = InitializationFlags::Menu | InitializationFlags::CommandBar;
+   initData.Width               = 120;
+   initData.Height              = 30;
+   initData.FrontendType        = Frontend::SDL;
+   initData.CharSize            = CharacterSize::Small;
+   initData.FontName            = "Consolas";
+   initData.Theme               = ThemeType::Dark;
+   initData.SpecialCharacterSet = SpecialCharacterSetType::Unicode;
+   initData.Flags               = InitializationFlags::Menu | InitializationFlags::CommandBar;
 
    if (AppCUI::Application::Init(initData) == false) {
       // Appcui failed to initialize
