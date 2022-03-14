@@ -74,11 +74,13 @@ class Example2: public Window
 {
     Reference<TabPage> tp1, tp2, tp3;
     Reference<Tab> tb;
+    Reference<Label> lb;
   public:
     Example2() : Window("Example 2", "d:c,w:70,h:20", WindowFlags::None)
     {
         Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
         Factory::Button::Create(this, "Data Tab", "x:1,y:3,w:10", BTN_CMD_SHOW_DATATAB);
+        lb = Factory::Label::Create(this, "", "x:1,y:5,w:10");
         auto p = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
         auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical|SplitterFlags::AutoCollapsePanel2);
         sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
@@ -108,12 +110,23 @@ class Example2: public Window
     {
         if (Window::OnEvent(control, eventType, ID))
             return true;
-        if (eventType == Event::ButtonClicked)
+        switch (eventType)
         {
+        case Event::ButtonClicked:
             if (ID == BTN_CMD_SHOW_DATATAB)
                 tb->SetCurrentTabPageByIndex(1, true);
             return true;
+        case Event::SplitterPositionChanged:
+            lb->SetText("ChangePos");
+            return true;
+        case Event::SplitterPanelAutoExpanded:
+            lb->SetText("Expand");
+            return true;
+        case Event::SplitterPanelAutoCollapsed:
+            lb->SetText("Collapsed");
+            return true;
         }
+
         return false;
     }
 };

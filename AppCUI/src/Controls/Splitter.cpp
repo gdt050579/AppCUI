@@ -335,12 +335,14 @@ void Splitter::OnFocusRequested(Reference<Control> control)
             // we need to extend the first panel
             SetFirstPanelSize(Members->DefaultSecondPanelSize);
             Splitter_ResizeComponents(this);
+            RaiseEvent(Event::SplitterPanelAutoExpanded);
         }
         else
         {
             // we need to collapse the second panel (the flags is AutoCollapsePanel2 since is not AutoCollapsePanel1)
             SetSecondPanelSize(0);
             Splitter_ResizeComponents(this);
+            RaiseEvent(Event::SplitterPanelAutoCollapsed);
         }
     }
     else
@@ -351,12 +353,14 @@ void Splitter::OnFocusRequested(Reference<Control> control)
             // we need to extend the second pnel
             SetSecondPanelSize(Members->DefaultSecondPanelSize);
             Splitter_ResizeComponents(this);
+            RaiseEvent(Event::SplitterPanelAutoExpanded);
         }
         else
         {
             // we need to collapse the first panel (the flags is AutoCollapsePanel1 since is not AutoCollapsePanel2)
             SetSecondPanelSize(0xFFFFFFFF);
             Splitter_ResizeComponents(this);
+            RaiseEvent(Event::SplitterPanelAutoCollapsed);
         }
     }
 }
