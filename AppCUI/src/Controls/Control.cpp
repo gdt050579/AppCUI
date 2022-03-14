@@ -1703,8 +1703,9 @@ bool Controls::Control::SetFocus()
     }
     // first notify parent chain that an object queries focus
     obj = this;
-    while ((obj) && (obj->OnFocusRequested(this) == false))
+    while (obj)
     {
+        obj->OnFocusRequested(this);
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
 
@@ -1786,9 +1787,8 @@ bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
 }
-bool Controls::Control::OnFocusRequested(Reference<Control> control)
+void Controls::Control::OnFocusRequested(Reference<Control> control)
 {
-    return false;
 }
 void Controls::Control::OnFocus()
 {

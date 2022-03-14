@@ -309,13 +309,14 @@ void Splitter::OnAfterResize(int, int)
     SetSecondPanelSize(Members->SecondPanelSize);
     Splitter_ResizeComponents(this);
 }
-bool Splitter::OnFocusRequested(Reference<Control> control)
+void Splitter::OnFocusRequested(Reference<Control> control)
 {
-    CHECK(control.IsValid(), false, "");
-    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
+    if (!control.IsValid())
+        return;
+    CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     // check if at least one of the collapse flags have been set
     if (!(Members->Flags && (SplitterFlags::AutoCollapsePanel1 | SplitterFlags::AutoCollapsePanel2)))
-        return false;
+        return;
     int panel_parent = 0; // unknwon
     if ((Members->ControlsCount >= 1) &&
         ((control == Members->Controls[0]) || (control->HasDistantParent(Members->Controls[0]))))
@@ -325,7 +326,7 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
           ((control == Members->Controls[1]) || (control->HasDistantParent(Members->Controls[1]))))
         panel_parent = 2; // second panel
     if (panel_parent == 0)
-        return false; // does not belong to any panel (first or second)
+        return ; // does not belong to any panel (first or second)
     if (panel_parent == 1)
     {
         // one of first panel offspring is being activated (panel_parent=1)
@@ -358,7 +359,6 @@ bool Splitter::OnFocusRequested(Reference<Control> control)
             Splitter_ResizeComponents(this);
         }
     }
-    return true;
 }
 void Splitter::OnFocus()
 {
