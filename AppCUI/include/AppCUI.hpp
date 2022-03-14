@@ -2758,6 +2758,8 @@ namespace Controls
         NumericSelectorValueChanged,
         SplitterPositionChanged,
         PropertyItemChanged,
+        SplitterPanelAutoExpanded,
+        SplitterPanelAutoCollapsed,
         Custom,
     };
     using ItemHandle                       = uint32;
