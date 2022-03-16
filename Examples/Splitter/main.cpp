@@ -131,6 +131,67 @@ class Example2: public Window
     }
 };
 
+class Example3 : public Window
+{
+    Reference<TabPage> tp1, tp2, tp3;
+    Reference<Tab> tb;
+    Reference<Label> lb;
+
+  public:
+    Example3() : Window("Example 3", "d:c,w:70,h:20", WindowFlags::None)
+    {
+        Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
+        Factory::Button::Create(this, "Data Tab", "x:1,y:3,w:10", BTN_CMD_SHOW_DATATAB);
+        lb      = Factory::Label::Create(this, "", "x:1,y:5,w:10");
+        auto p  = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
+        auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical | SplitterFlags::AutoCollapsePanel2);
+        sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
+        sp->SetDefaultPanelSize(20);
+        auto lv = Factory::ListView::Create(sp, "d:c");
+        lv->AddColumn("Name", TextAlignament::Left, 15);
+        lv->AddColumn("Grade", TextAlignament::Right, 10);
+        lv->AddItem("Dragos", "10");
+        lv->AddItem("Raul", "9");
+        lv->AddItem("Gheorghita", "10");
+        lv->AddItem("Andrei", "7");
+        tb  = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
+        tp1 = Factory::TabPage::Create(tb, "&Infos");
+        Factory::CheckBox::Create(tp1, "Setting &1", "l:1,t:1,r:1");
+        Factory::CheckBox::Create(tp1, "Setting &2", "l:1,t:2,r:1");
+        Factory::CheckBox::Create(tp1, "Setting &3", "l:1,t:3,r:1");
+        tp2 = Factory::TabPage::Create(tb, "&Data");
+        Factory::RadioBox::Create(tp2, "Option &1", "l:1,t:1,r:1", 1);
+        Factory::RadioBox::Create(tp2, "Option &2", "l:1,t:2,r:1", 1);
+        Factory::RadioBox::Create(tp2, "Option &3", "l:1,t:3,r:1", 1);
+        tp3 = Factory::TabPage::Create(tb, "&Extra");
+        Factory::TextField::Create(tp3, "Number", "l:1,t:1,r:1");
+        Factory::TextField::Create(tp3, "pass", "l:1,t:3,r:1");
+    }
+    bool OnEvent(Reference<Control> control, AppCUI::Controls::Event eventType, int ID) override
+    {
+        if (Window::OnEvent(control, eventType, ID))
+            return true;
+        switch (eventType)
+        {
+        case Event::ButtonClicked:
+            if (ID == BTN_CMD_SHOW_DATATAB)
+                tb->SetCurrentTabPageByIndex(1, true);
+            return true;
+        case Event::SplitterPositionChanged:
+            lb->SetText("ChangePos");
+            return true;
+        case Event::SplitterPanelAutoExpanded:
+            lb->SetText("Expand");
+            return true;
+        case Event::SplitterPanelAutoCollapsed:
+            lb->SetText("Collapsed");
+            return true;
+        }
+
+        return false;
+    }
+};
+
 class MyWin : public Window
 {
   public:
@@ -146,6 +207,12 @@ class MyWin : public Window
               [](Reference<Button>)
         {
             Example2 dlg;
+            dlg.Show();
+        };
+        Factory::Button::Create(this, "GView example", "x:1,y:5,w:26", 1)->Handlers()->OnButtonPressed =
+              [](Reference<Button>)
+        {
+            Example3 dlg;
             dlg.Show();
         };
     }
