@@ -135,6 +135,7 @@ class Example3 : public Window
 {
     Reference<TabPage> tp1_1, tp1_2, tp1_3;
     Reference<Tab> tb1, tb2;
+    Reference<Splitter> sp_h;
 
   public:
     Example3() : Window("Example 3", "d:c,w:70,h:20", WindowFlags::None)
@@ -142,7 +143,7 @@ class Example3 : public Window
         Factory::TextField::Create(this, "Some text", "x:1,y:1,w:10");
         Factory::Button::Create(this, "Data Tab", "x:1,y:3,w:10", BTN_CMD_SHOW_DATATAB);
         auto p    = Factory::Panel::Create(this, "Splitter", "l:12,t:1,r:1,b:1");
-        auto sp_h = Factory::Splitter::Create(p, "d:c", SplitterFlags::Horizontal | SplitterFlags::AutoCollapsePanel2);
+        sp_h = Factory::Splitter::Create(p, "d:c", SplitterFlags::Horizontal | SplitterFlags::AutoCollapsePanel2);
         auto sp_v = Factory::Splitter::Create(sp_h, "d:c", SplitterFlags::Vertical | SplitterFlags::AutoCollapsePanel2);
         sp_v->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
         sp_v->SetDefaultPanelSize(20);
@@ -190,6 +191,12 @@ class Example3 : public Window
         case Event::ButtonClicked:
             if (ID == BTN_CMD_SHOW_DATATAB)
                 tb1->SetCurrentTabPageByIndex(1, true);
+            return true;
+        case Event::SplitterPanelAutoCollapsed:
+            if(control == sp_h)
+            {
+                tb2->SetCurrentTabPageByIndex(0);
+            }
             return true;
         }
 
