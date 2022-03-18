@@ -238,7 +238,12 @@ bool Tab_SetCurrentTabPageByIndex(Tab* t, uint32 index, bool forceFocus)
     Members->Controls[index]->SetVisible(true);
     Members->Controls[index]->SetEnabled(true);
     if ((Members->Focused) || (forceFocus))
+    {
         res = Members->Controls[index]->SetFocus();
+        if (!res)
+            Members->CurrentControlIndex = index;
+        // for the cases SetFocus has failed (currentContrlIndex still needs to be changed !
+    }
     else
         Members->CurrentControlIndex = index;
 
