@@ -66,6 +66,8 @@ constexpr uint8 _layout_translate_map_[116] = {
     LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
 };
 
+Control* currentControlBeingFocused = nullptr;
+
 inline uint8 HashToLayoutKey(uint32 hash)
 {
     if (hash >= 116)
@@ -1691,8 +1693,9 @@ bool Controls::Control::SetFocus()
     Control* p;
     uint32 tr, count;
 
-    /*if (CTRLC->Focused)
-        return true;*/
+    if (currentControlBeingFocused)
+        return false; // there already is an object that is being focused
+
     // check if I can offer focus
     while (obj != nullptr)
     {
@@ -1701,6 +1704,9 @@ bool Controls::Control::SetFocus()
             return false;
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
+    // create a sort of mutex
+    currentControlBeingFocused = this; // this will act as a mutex (no other called to SetFocus will work)
+
     // first notify parent chain that an object queries focus
     obj = this;
     while (obj)
@@ -1708,6 +1714,9 @@ bool Controls::Control::SetFocus()
         obj->OnFocusRequested(this);
         obj = ((ControlContext*) (obj->Context))->Parent;
     }
+
+    // all good (ewset currentControlBeingFocused)
+    currentControlBeingFocused = nullptr;
 
     // reset focus
     obj = this;
