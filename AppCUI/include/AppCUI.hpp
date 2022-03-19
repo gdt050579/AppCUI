@@ -3209,6 +3209,7 @@ namespace Controls
         FixedPosition = 0x004000,
         Maximized     = 0x008000,
         Menu          = 0x010000,
+        ProcessReturn = 0x020000,
     };
     enum class WindowControlsBarLayout : uint8
     {

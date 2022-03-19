@@ -1085,11 +1085,18 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         return true;
     case Key::Escape:
         if (!(Members->Flags && WindowFlags::NoCloseButton))
+        {
             RaiseEvent(Event::WindowClose);
-        return true;
+            return true;
+        }
+        return false;
     case Key::Enter:
-        RaiseEvent(Event::WindowAccept);
-        return true;
+        if (Members->Flags && WindowFlags::ProcessReturn)
+        {
+            RaiseEvent(Event::WindowAccept);
+            return true;
+        }
+        return false;
     }
     // first we check menu hot keys
     if (Members->menu)
