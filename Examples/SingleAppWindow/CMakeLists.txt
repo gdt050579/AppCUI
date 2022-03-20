@@ -1,2 +1,2 @@
 include(example)
-create_example(SimpleAppWindow)
+create_example(SingleAppWindow)
