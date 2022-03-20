@@ -27,13 +27,10 @@ class MyWin : public Window
         cmd.SetCommand(Key::F5, "Grid", COMMAND_ID_GRID);
         return true;
     }
-    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> control, Event eventType, int controlID) override
     {
-        if (eventType == Event::WindowClose)
-        {
-            Application::Close();
+        if (Window::OnEvent(control, eventType, controlID))
             return true;
-        }
         if (eventType == Event::Command)
         {
             switch (controlID)

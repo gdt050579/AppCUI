@@ -298,6 +298,7 @@ namespace Internal
         bool LoadThemeFile(Application::InitializationData& initData);
         bool Init(Application::InitializationData& initData);
         bool Uninit();
+        void CheckIfAppShouldClose();
         bool ExecuteEventLoop(Controls::Control* control = nullptr);
         void Paint();
         void RaiseEvent(
