@@ -81,17 +81,18 @@
 <p>Where <strong>InitializationFlags</strong> is defined as follows:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">InitializationFlags</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span>
 <span class="p">{</span>
-    <span class="n">None</span>                <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">None</span>                    <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-    <span class="n">CommandBar</span>          <span class="o">=</span> <span class="mh">0x0001</span><span class="p">,</span>
-    <span class="n">Menu</span>                <span class="o">=</span> <span class="mh">0x0002</span><span class="p">,</span>
-    <span class="n">Maximized</span>           <span class="o">=</span> <span class="mh">0x0004</span><span class="p">,</span>
-    <span class="n">Fullscreen</span>          <span class="o">=</span> <span class="mh">0x0008</span><span class="p">,</span>
-    <span class="n">FixedSize</span>           <span class="o">=</span> <span class="mh">0x0010</span><span class="p">,</span>
-    <span class="n">LoadSettingsFile</span>    <span class="o">=</span> <span class="mh">0x0020</span><span class="p">,</span>
-    <span class="n">AutoHotKeyForWindow</span> <span class="o">=</span> <span class="mh">0x0040</span><span class="p">,</span>
-    <span class="n">EnableFPSMode</span>       <span class="o">=</span> <span class="mh">0x0080</span><span class="p">,</span>
-    <span class="n">SingleAppWindow</span>     <span class="o">=</span> <span class="mh">0x0100</span><span class="p">,</span>
+    <span class="n">CommandBar</span>              <span class="o">=</span> <span class="mh">0x0001</span><span class="p">,</span>
+    <span class="n">Menu</span>                    <span class="o">=</span> <span class="mh">0x0002</span><span class="p">,</span>
+    <span class="n">Maximized</span>               <span class="o">=</span> <span class="mh">0x0004</span><span class="p">,</span>
+    <span class="n">Fullscreen</span>              <span class="o">=</span> <span class="mh">0x0008</span><span class="p">,</span>
+    <span class="n">FixedSize</span>               <span class="o">=</span> <span class="mh">0x0010</span><span class="p">,</span>
+    <span class="n">LoadSettingsFile</span>        <span class="o">=</span> <span class="mh">0x0020</span><span class="p">,</span>
+    <span class="n">AutoHotKeyForWindow</span>     <span class="o">=</span> <span class="mh">0x0040</span><span class="p">,</span>
+    <span class="n">EnableFPSMode</span>           <span class="o">=</span> <span class="mh">0x0080</span><span class="p">,</span>
+    <span class="n">SingleAppWindow</span>         <span class="o">=</span> <span class="mh">0x0100</span><span class="p">,</span>
+    <span class="n">DisableAutoCloseDesktop</span> <span class="o">=</span> <span class="mh">0x0200</span><span class="p">,</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -106,6 +107,7 @@
 <li><p><strong>AutoHotKeyForWindow</strong> - if set, any new window that is being added in the application, will automatically be assign with a hotkey (from Alt+1 to Alt+9) if that hotkey is not being used by another window and if the window that is currently being added does not already have a hot key associated.</p></li>
 <li><p><strong>EnableFPSMode</strong> - if set, enables a mode when <code class="docutils literal notranslate"><span class="pre">Control::OnFrameUpdate</span></code> is called 30 times per second (basically enabling a game or video display mode).</p></li>
 <li><p><strong>SingleAppWindow</strong> - if set, it enable single app mode. This mode will not allow one to add multiple windows to the desktop or to use <code class="docutils literal notranslate"><span class="pre">Application::Run()</span></code> API. Instead, a class derived from <cite>SingleApp</cite> must be derived and AppCUI execution has to be started using <code class="docutils literal notranslate"><span class="pre">Application::RunSingleApp(...)</span></code> API.</p></li>
+<li><p><strong>DisableAutoCloseDesktop</strong> - if set, it will not close the App the moment the last window is closed (this is the default behavior). This is usefull if you have a custom deskopt or menus that can spawn anothe window and as such you do not need to close current application when all existing windows are closed.</p></li>
 </ul>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[AppCUI]</span>
 <span class="na">Frontend</span> <span class="o">=</span> <span class="s">default      ; possible values: default,SDL, terminal, windows</span>
