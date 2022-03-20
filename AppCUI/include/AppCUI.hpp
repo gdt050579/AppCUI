@@ -4727,15 +4727,16 @@ namespace Application
     {
         None = 0,
 
-        CommandBar          = 0x0001,
-        Menu                = 0x0002,
-        Maximized           = 0x0004,
-        Fullscreen          = 0x0008,
-        FixedSize           = 0x0010,
-        LoadSettingsFile    = 0x0020,
-        AutoHotKeyForWindow = 0x0040,
-        EnableFPSMode       = 0x0080,
-        SingleWindowApp     = 0x0100,
+        CommandBar              = 0x0001,
+        Menu                    = 0x0002,
+        Maximized               = 0x0004,
+        Fullscreen              = 0x0008,
+        FixedSize               = 0x0010,
+        LoadSettingsFile        = 0x0020,
+        AutoHotKeyForWindow     = 0x0040,
+        EnableFPSMode           = 0x0080,
+        SingleWindowApp         = 0x0100,
+        DisableAutoCloseDesktop = 0x0200,
     };
 
     enum class CharacterSize : uint32
@@ -4783,7 +4784,7 @@ namespace Application
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
               Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
-              SpecialCharacterSet(SpecialCharacterSetType::Auto),  CustomDesktopConstructor(nullptr)
+              SpecialCharacterSet(SpecialCharacterSetType::Auto), CustomDesktopConstructor(nullptr)
         {
         }
     };

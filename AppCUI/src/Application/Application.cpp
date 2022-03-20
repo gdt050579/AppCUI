@@ -746,7 +746,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
-    // update special character set 
+    // update special character set
     CHECK(Application::SetSpecialCharacterSet(initData.SpecialCharacterSet),
           false,
           "Fail to select a special character set for current application (value=%d) !",
@@ -1289,6 +1289,15 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
             break;
         default:
             break;
+        }
+        // check for desktop without windows
+        if ((ModalControlsCount == 0) &&
+            ((this->InitFlags & Application::InitializationFlags::DisableAutoCloseDesktop) ==
+             Application::InitializationFlags::None) &&
+            (((ControlContext*) this->AppDesktop->Context)->ControlsCount == 0))
+        {
+            // no window on the desktop --> close the app
+            loopStatus = LoopStatus::StopApp;
         }
     }
     if (ctrl != nullptr)
