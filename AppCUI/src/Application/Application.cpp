@@ -746,7 +746,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
         ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
 
-    // update special character set 
+    // update special character set
     CHECK(Application::SetSpecialCharacterSet(initData.SpecialCharacterSet),
           false,
           "Fail to select a special character set for current application (value=%d) !",
@@ -1173,6 +1173,17 @@ void ApplicationImpl::ProcessShiftState(Input::Key ShiftState)
     if ((this->cmdBar) && (this->cmdBar->SetShiftKey(ShiftState)))
         RepaintStatus |= REPAINT_STATUS_DRAW;
 }
+void ApplicationImpl::CheckIfAppShouldClose()
+{
+    if ((ModalControlsCount == 0) &&
+        ((this->InitFlags & Application::InitializationFlags::DisableAutoCloseDesktop) ==
+         Application::InitializationFlags::None) &&
+        (((ControlContext*) this->AppDesktop->Context)->ControlsCount == 0))
+    {
+        // no window on the desktop --> close the app
+        loopStatus = LoopStatus::StopApp;
+    }
+}
 bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
 {
     Internal::SystemEvent evnt;
@@ -1305,11 +1316,13 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
         this->mouseLockedObject  = MouseLockedObject::None;
         RepaintStatus            = REPAINT_STATUS_ALL;
     }
-    // daca vreau sa opresc doar bucla curenta
+    // check if current loop should be stop
     if (loopStatus == LoopStatus::StopCurrent)
     {
         loopStatus    = LoopStatus::Normal;
         RepaintStatus = REPAINT_STATUS_ALL;
+        // check if desktop now has no children windows
+        CheckIfAppShouldClose();
     }
     // pack extended control
     PackControl(true);

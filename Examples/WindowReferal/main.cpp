@@ -76,7 +76,8 @@ int main()
 {
     InitializationData initData;
     initData.CustomDesktopConstructor = []() { return (Desktop*) (new MyDesktop()); };
-    initData.Flags                    = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow;
+    initData.Flags                    = InitializationFlags::Menu | InitializationFlags::AutoHotKeyForWindow |
+                     InitializationFlags::DisableAutoCloseDesktop;
     if (Application::Init(initData) == false)
     {
         return 1;

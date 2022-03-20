@@ -14,17 +14,18 @@ Where **InitializationFlags** is defined as follows:
 
     enum class InitializationFlags : unsigned int
     {
-        None                = 0,       
+        None                    = 0,       
 
-        CommandBar          = 0x0001,
-        Menu                = 0x0002,
-        Maximized           = 0x0004,
-        Fullscreen          = 0x0008,
-        FixedSize           = 0x0010,
-        LoadSettingsFile    = 0x0020,
-        AutoHotKeyForWindow = 0x0040,
-        EnableFPSMode       = 0x0080,
-        SingleAppWindow     = 0x0100,
+        CommandBar              = 0x0001,
+        Menu                    = 0x0002,
+        Maximized               = 0x0004,
+        Fullscreen              = 0x0008,
+        FixedSize               = 0x0010,
+        LoadSettingsFile        = 0x0020,
+        AutoHotKeyForWindow     = 0x0040,
+        EnableFPSMode           = 0x0080,
+        SingleAppWindow         = 0x0100,
+        DisableAutoCloseDesktop = 0x0200,
     };
 
 Width:
@@ -38,6 +39,7 @@ Width:
 * **AutoHotKeyForWindow** - if set, any new window that is being added in the application, will automatically be assign with a hotkey (from Alt+1 to Alt+9) if that hotkey is not being used by another window and if the window that is currently being added does not already have a hot key associated.
 * **EnableFPSMode** - if set, enables a mode when ``Control::OnFrameUpdate`` is called 30 times per second (basically enabling a game or video display mode).
 * **SingleAppWindow** - if set, it enable single app mode. This mode will not allow one to add multiple windows to the desktop or to use ``Application::Run()`` API. Instead, a class derived from `SingleApp` must be derived and AppCUI execution has to be started using ``Application::RunSingleApp(...)`` API.
+* **DisableAutoCloseDesktop** - if set, it will not close the App the moment the last window is closed (this is the default behavior). This is usefull if you have a custom deskopt or menus that can spawn anothe window and as such you do not need to close current application when all existing windows are closed.
 
 .. code-block:: ini
 
