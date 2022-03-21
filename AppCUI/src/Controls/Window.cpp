@@ -288,6 +288,12 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     }
     current->SetFlag(WindowBarItemFlags::Checked);
 }
+void MoveWindowPosTo(WindowControlContext* wcc, int addX, int addY)
+{
+}
+void ResizeWindow(WindowControlContext* wcc, int addToWidth, int addToHeight)
+{
+}
 //=========================================================================================================================================================
 ItemHandle Controls::WindowControlsBar::AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip)
 {
