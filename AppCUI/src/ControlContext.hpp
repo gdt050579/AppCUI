@@ -284,6 +284,7 @@ struct WindowControlContext : public ControlContext
         bool IsCurrentItemPressed;
     } ControlBar;
     bool Maximized;
+    bool ResizeMoveMode;
 
     ColorPair GetSymbolColor(Controls::ControlState state, ColorPair col)
     {

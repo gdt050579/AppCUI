@@ -288,8 +288,22 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     }
     current->SetFlag(WindowBarItemFlags::Checked);
 }
-void MoveWindowPosTo(WindowControlContext* wcc, int addX, int addY)
+void MoveWindowPosTo(Window* win, int addX, int addY)
 {
+    auto x           = win->GetX() + addX;
+    auto y           = win->GetY() + addY;
+    const int w      = win->GetWidth();
+    const int h      = win->GetHeight();
+    Size desktopSize;
+    if (AppCUI::Application::GetApplicationSize(desktopSize) == false)
+        return;
+    x = std::min<>(x, ((int) desktopSize.Width) - 1);
+    y = std::min<>(y, ((int) desktopSize.Height) - 1);
+    if (x + w < 1)
+        x = 1 - w;
+    if (y + h < 1)
+        y = 1 - h;
+    win->MoveTo(x, y);
 }
 void ResizeWindow(WindowControlContext* wcc, int addToWidth, int addToHeight)
 {
@@ -556,6 +570,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) Flags;
 
     Members->Maximized                       = false;
+    Members->ResizeMoveMode                  = false;
     Members->dragStatus                      = WindowDragStatus::None;
     Members->DialogResult                    = -1;
     Members->ControlBar.Current              = NO_CONTROLBAR_ITEM;
@@ -640,13 +655,16 @@ void Window::Paint(Graphics::Renderer& renderer)
         colorBorder = Members->dragStatus == WindowDragStatus::None ? Members->Cfg->Border.Focused
                                                                     : Members->Cfg->Border.PressedOrSelected;
         lineType    = Members->dragStatus == WindowDragStatus::None ? LineType::Double : LineType::Single;
+        if (Members->ResizeMoveMode)
+            colorBorder = Members->Cfg->Border.PressedOrSelected;
     }
     else
     {
-        colorTitle             = Members->Cfg->Text.Normal;
-        colorWindow.Background = Members->Cfg->Window.Background.Inactive;
-        colorBorder            = Members->Cfg->Border.Normal;
-        lineType               = LineType::Single;
+        colorTitle              = Members->Cfg->Text.Normal;
+        colorWindow.Background  = Members->Cfg->Window.Background.Inactive;
+        colorBorder             = Members->Cfg->Border.Normal;
+        lineType                = LineType::Single;
+        Members->ResizeMoveMode = false;
     }
     renderer.Clear(' ', colorWindow);
     renderer.DrawRectSize(0, 0, Members->Layout.Width, Members->Layout.Height, colorBorder, lineType);
@@ -868,6 +886,7 @@ void Window::OnMousePressed(int x, int y, Input::MouseButton button)
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus                      = WindowDragStatus::None;
     Members->ControlBar.IsCurrentItemPressed = false;
+    Members->ResizeMoveMode                  = false;
 
     if (Members->menu)
     {
@@ -935,6 +954,7 @@ void Window::OnMouseReleased(int, int, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->ControlBar.IsCurrentItemPressed = false;
+    Members->ResizeMoveMode                  = false;
     if (Members->dragStatus != WindowDragStatus::None)
     {
         Members->dragStatus = WindowDragStatus::None;
@@ -956,6 +976,7 @@ void Window::OnMouseReleased(int, int, Input::MouseButton)
 bool Window::OnMouseDrag(int x, int y, Input::MouseButton)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    Members->ResizeMoveMode = false;
     if (Members->dragStatus == WindowDragStatus::Resize)
     {
         bool res = Resize(x + 1, y + 1);
@@ -1078,54 +1099,88 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
     Control* tmp;
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
 
-    switch (KeyCode)
+    if (Members->ResizeMoveMode)
     {
-    case Key::Tab | Key::Shift:
-        tmp = FindNextControl(this, false, true, true, true);
-        if (tmp != nullptr)
-            tmp->SetFocus();
-        return true;
-    case Key::Tab:
-        tmp = FindNextControl(this, true, true, true, true);
-        if (tmp != nullptr)
-            tmp->SetFocus();
-        return true;
-    case Key::Escape:
-        if (!(Members->Flags && WindowFlags::NoCloseButton))
+        switch (KeyCode)
         {
-            RaiseEvent(Event::WindowClose);
+        case Key::Escape:
+        case Key::Enter:
+        case Key::Tab:
+            Members->ResizeMoveMode = false;
+            return true;
+        case Key::Up:
+            MoveWindowPosTo(this, 0, -1);
+            return true;
+        case Key::Down:
+            MoveWindowPosTo(this, 0, 1);
+            return true;
+        case Key::Left:
+            MoveWindowPosTo(this, -1, 0);
+            return true;
+        case Key::Right:
+            MoveWindowPosTo(this, 1, 0);
+            return true;
+        case Key::C:
+            CenterScreen();
             return true;
         }
-        return false;
-    case Key::Enter:
-        if (Members->Flags && WindowFlags::ProcessReturn)
-        {
-            RaiseEvent(Event::WindowAccept);
-            return true;
-        }
-        return false;
     }
-    // first we check menu hot keys
-    if (Members->menu)
+    else
     {
-        if (Members->menu->OnKeyEvent(KeyCode))
-            return true;
-    }
-    // check cntrols hot keys
-    if ((((uint32) KeyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
-    {
-        if (ProcessHotKey(this, KeyCode))
-            return true;
-        auto* b = Members->ControlBar.Items;
-        auto* e = b + Members->ControlBar.Count;
-        while (b < e)
+        switch (KeyCode)
         {
-            if (b->HotKey == KeyCode)
+        case Key::Ctrl | Key::Alt | Key::M:
+        case Key::Ctrl | Key::Alt | Key::R:
+            Members->ResizeMoveMode = true;
+            return true;
+
+        case Key::Tab | Key::Shift:
+            tmp = FindNextControl(this, false, true, true, true);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Tab:
+            tmp = FindNextControl(this, true, true, true, true);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Escape:
+            if (!(Members->Flags && WindowFlags::NoCloseButton))
             {
-                if (ProcessControlBarItem((uint32) (b - Members->ControlBar.Items)))
-                    return true;
+                RaiseEvent(Event::WindowClose);
+                return true;
             }
-            b++;
+            return false;
+        case Key::Enter:
+            if (Members->Flags && WindowFlags::ProcessReturn)
+            {
+                RaiseEvent(Event::WindowAccept);
+                return true;
+            }
+            return false;
+        }
+        // first we check menu hot keys
+        if (Members->menu)
+        {
+            if (Members->menu->OnKeyEvent(KeyCode))
+                return true;
+        }
+        // check cntrols hot keys
+        if ((((uint32) KeyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
+        {
+            if (ProcessHotKey(this, KeyCode))
+                return true;
+            auto* b = Members->ControlBar.Items;
+            auto* e = b + Members->ControlBar.Count;
+            while (b < e)
+            {
+                if (b->HotKey == KeyCode)
+                {
+                    if (ProcessControlBarItem((uint32) (b - Members->ControlBar.Items)))
+                        return true;
+                }
+                b++;
+            }
         }
     }
     // key was not prcessed, pass it to my parent
