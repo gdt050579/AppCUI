@@ -317,8 +317,8 @@ void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderie
 }
 void ResizeWindow(Window* win, int addToWidth, int addToHeight)
 {
-    const int w  = win->GetWidth() + addToWidth;
-    const int h  = win->GetHeight() + addToHeight;
+    const int w = win->GetWidth() + addToWidth;
+    const int h = win->GetHeight() + addToHeight;
     win->Resize(w, h);
 }
 //=========================================================================================================================================================
@@ -1331,7 +1331,13 @@ bool Window::IsWindowInResizeMode()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     return (Members->dragStatus == WindowDragStatus::Resize);
 }
-
+bool Window::EnableResizeMode()
+{
+    CHECK(this->HasFocus(), false, "To enable resize mode a window must be focused !");
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    Members->ResizeMoveMode = true;
+    return true;
+}
 Reference<Menu> Window::AddMenu(const ConstString& name)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, nullptr);

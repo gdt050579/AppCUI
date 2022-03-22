@@ -3274,6 +3274,7 @@ namespace Controls
         bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
+        bool EnableResizeMode();
 
         Reference<Menu> AddMenu(const ConstString& name);
         WindowControlsBar GetControlBar(WindowControlsBarLayout layout);
