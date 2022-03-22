@@ -1123,6 +1123,10 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         case Key::C:
             CenterScreen();
             return true;
+        case Key::M:
+        case Key::R:
+            MaximizeRestore();
+            return true;
         }
     }
     else
