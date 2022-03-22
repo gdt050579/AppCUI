@@ -1336,7 +1336,7 @@ bool Window::EnableResizeMode()
     CHECK(this->HasFocus(), false, "To enable resize mode a window must be focused !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->ResizeMoveMode = true;
-    return true;
+    return true; 
 }
 Reference<Menu> Window::AddMenu(const ConstString& name)
 {
