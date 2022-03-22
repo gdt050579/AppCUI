@@ -315,7 +315,7 @@ void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderie
     }
     win->MoveTo(x, y);
 }
-void ResizeWindow(WindowControlContext* wcc, int addToWidth, int addToHeight)
+void ResizeWindow(Window* win, int addToWidth, int addToHeight, bool keepInDesktopounderies)
 {
 }
 //=========================================================================================================================================================
@@ -1115,6 +1115,7 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         {
         case Key::Escape:
         case Key::Enter:
+        case Key::Space:
         case Key::Tab:
             Members->ResizeMoveMode = false;
             return true;
@@ -1148,6 +1149,18 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         case Key::M:
         case Key::R:
             MaximizeRestore();
+            return true;
+        case Key::Ctrl | Key::Up:
+            ResizeWindow(this, 0, -1, false);
+            return true;
+        case Key::Ctrl | Key::Down:
+            ResizeWindow(this, 0, 1, false);
+            return true;
+        case Key::Ctrl | Key::Left:
+            ResizeWindow(this, -1, 0, false);
+            return true;
+        case Key::Ctrl | Key::Right:
+            ResizeWindow(this, 1, 0, false);
             return true;
         }
     }
@@ -1287,6 +1300,7 @@ bool Window::Exit(int dialogResult)
     CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->DialogResult                     = dialogResult;
+    Members->ResizeMoveMode                   = false;
     Application::GetApplication()->loopStatus = Internal::LoopStatus::StopCurrent;
     return true;
 }
