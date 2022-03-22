@@ -315,8 +315,11 @@ void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderie
     }
     win->MoveTo(x, y);
 }
-void ResizeWindow(Window* win, int addToWidth, int addToHeight, bool keepInDesktopounderies)
+void ResizeWindow(Window* win, int addToWidth, int addToHeight)
 {
+    const int w  = win->GetWidth() + addToWidth;
+    const int h  = win->GetHeight() + addToHeight;
+    win->Resize(w, h);
 }
 //=========================================================================================================================================================
 ItemHandle Controls::WindowControlsBar::AddCommandItem(const ConstString& name, int ID, const ConstString& toolTip)
@@ -1131,7 +1134,7 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
         case Key::Right:
             MoveWindowPosTo(this, 1, 0, false);
             return true;
-        case Key::Alt | Key::Up :
+        case Key::Alt | Key::Up:
             MoveWindowPosTo(this, 0, -1000000, true);
             return true;
         case Key::Alt | Key::Down:
@@ -1151,16 +1154,16 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             MaximizeRestore();
             return true;
         case Key::Ctrl | Key::Up:
-            ResizeWindow(this, 0, -1, false);
+            ResizeWindow(this, 0, -1);
             return true;
         case Key::Ctrl | Key::Down:
-            ResizeWindow(this, 0, 1, false);
+            ResizeWindow(this, 0, 1);
             return true;
         case Key::Ctrl | Key::Left:
-            ResizeWindow(this, -1, 0, false);
+            ResizeWindow(this, -1, 0);
             return true;
         case Key::Ctrl | Key::Right:
-            ResizeWindow(this, 1, 0, false);
+            ResizeWindow(this, 1, 0);
             return true;
         }
     }
