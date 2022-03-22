@@ -288,21 +288,31 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     }
     current->SetFlag(WindowBarItemFlags::Checked);
 }
-void MoveWindowPosTo(Window* win, int addX, int addY)
+void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderies)
 {
-    auto x           = win->GetX() + addX;
-    auto y           = win->GetY() + addY;
-    const int w      = win->GetWidth();
-    const int h      = win->GetHeight();
+    auto x      = win->GetX() + addX;
+    auto y      = win->GetY() + addY;
+    const int w = win->GetWidth();
+    const int h = win->GetHeight();
     Size desktopSize;
     if (AppCUI::Application::GetApplicationSize(desktopSize) == false)
         return;
-    x = std::min<>(x, ((int) desktopSize.Width) - 1);
-    y = std::min<>(y, ((int) desktopSize.Height) - 1);
-    if (x + w < 1)
-        x = 1 - w;
-    if (y + h < 1)
-        y = 1 - h;
+    if (keepInDesktopounderies)
+    {
+        x = std::min<>(x, ((int) desktopSize.Width) - w);
+        y = std::min<>(y, ((int) desktopSize.Height) - h);
+        x = std::max<>(0, x);
+        y = std::max<>(0, y);
+    }
+    else
+    {
+        x = std::min<>(x, ((int) desktopSize.Width) - 1);
+        y = std::min<>(y, ((int) desktopSize.Height) - 1);
+        if (x + w < 1)
+            x = 1 - w;
+        if (y + h < 1)
+            y = 1 - h;
+    }
     win->MoveTo(x, y);
 }
 void ResizeWindow(WindowControlContext* wcc, int addToWidth, int addToHeight)
@@ -1109,16 +1119,28 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             Members->ResizeMoveMode = false;
             return true;
         case Key::Up:
-            MoveWindowPosTo(this, 0, -1);
+            MoveWindowPosTo(this, 0, -1, false);
             return true;
         case Key::Down:
-            MoveWindowPosTo(this, 0, 1);
+            MoveWindowPosTo(this, 0, 1, false);
             return true;
         case Key::Left:
-            MoveWindowPosTo(this, -1, 0);
+            MoveWindowPosTo(this, -1, 0, false);
             return true;
         case Key::Right:
-            MoveWindowPosTo(this, 1, 0);
+            MoveWindowPosTo(this, 1, 0, false);
+            return true;
+        case Key::Alt | Key::Up :
+            MoveWindowPosTo(this, 0, -1000000, true);
+            return true;
+        case Key::Alt | Key::Down:
+            MoveWindowPosTo(this, 0, 1000000, true);
+            return true;
+        case Key::Alt | Key::Left:
+            MoveWindowPosTo(this, -1000000, 0, true);
+            return true;
+        case Key::Alt | Key::Right:
+            MoveWindowPosTo(this, 1000000, 0, true);
             return true;
         case Key::C:
             CenterScreen();
