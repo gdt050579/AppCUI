@@ -3,8 +3,10 @@
 
 namespace AppCUI
 {
-constexpr uint8 NO_CONTROLBAR_ITEM = 0xFF;
-constexpr uint32 MAX_TAG_CHARS     = 8U;
+constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
+constexpr uint32 MAX_TAG_CHARS       = 8U;
+constexpr int32 MOVE_TO_LOWER_MARGIN = -1000000;
+constexpr int32 MOVE_TO_UPPER_MARGIN = 1000000;
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -288,7 +290,7 @@ void WindowRadioButtonClicked(WindowBarItem* start, WindowBarItem* end, WindowBa
     }
     current->SetFlag(WindowBarItemFlags::Checked);
 }
-void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderies)
+void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopBounderies)
 {
     auto x      = win->GetX() + addX;
     auto y      = win->GetY() + addY;
@@ -297,7 +299,7 @@ void MoveWindowPosTo(Window* win, int addX, int addY, bool keepInDesktopounderie
     Size desktopSize;
     if (AppCUI::Application::GetApplicationSize(desktopSize) == false)
         return;
-    if (keepInDesktopounderies)
+    if (keepInDesktopBounderies)
     {
         x = std::min<>(x, ((int) desktopSize.Width) - w);
         y = std::min<>(y, ((int) desktopSize.Height) - h);
@@ -1135,16 +1137,16 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             MoveWindowPosTo(this, 1, 0, false);
             return true;
         case Key::Alt | Key::Up:
-            MoveWindowPosTo(this, 0, -1000000, true);
+            MoveWindowPosTo(this, 0, MOVE_TO_LOWER_MARGIN, true);
             return true;
         case Key::Alt | Key::Down:
-            MoveWindowPosTo(this, 0, 1000000, true);
+            MoveWindowPosTo(this, 0, MOVE_TO_UPPER_MARGIN, true);
             return true;
         case Key::Alt | Key::Left:
-            MoveWindowPosTo(this, -1000000, 0, true);
+            MoveWindowPosTo(this, MOVE_TO_LOWER_MARGIN, 0, true);
             return true;
         case Key::Alt | Key::Right:
-            MoveWindowPosTo(this, 1000000, 0, true);
+            MoveWindowPosTo(this, MOVE_TO_UPPER_MARGIN, 0, true);
             return true;
         case Key::C:
             CenterScreen();
@@ -1336,7 +1338,7 @@ bool Window::EnableResizeMode()
     CHECK(this->HasFocus(), false, "To enable resize mode a window must be focused !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->ResizeMoveMode = true;
-    return true; 
+    return true;
 }
 Reference<Menu> Window::AddMenu(const ConstString& name)
 {
