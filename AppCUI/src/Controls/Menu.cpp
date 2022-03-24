@@ -796,6 +796,11 @@ void Menu::Show(Reference<Control> parent, int relativeX, int relativeY, const G
 {
     CTX->Show(this, parent, relativeX, relativeY, maxSize);
 }
+
+bool Menu::ProcessShortcutKey(Input::Key keyCode)
+{
+    NOT_IMPLEMENTED(false);
+}
 } // namespace AppCUI
 
 #undef CTX
