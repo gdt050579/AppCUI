@@ -799,7 +799,7 @@ void Menu::Show(Reference<Control> parent, int relativeX, int relativeY, const G
 
 bool Menu::ProcessShortcutKey(Input::Key keyCode)
 {
-    NOT_IMPLEMENTED(false);
+    return CTX->ProcessShortCut(keyCode);
 }
 } // namespace AppCUI
 
