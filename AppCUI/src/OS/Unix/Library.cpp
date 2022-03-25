@@ -1,7 +1,8 @@
+#include <dlfcn.h>
 #include "Internal.hpp"
 
-using namespace OS;
-
+namespace AppCUI::OS
+{
 Library::Library()
 {
     this->libraryHandle = nullptr;
@@ -23,7 +24,7 @@ void* Library::GetFunction(const char* functionName) const
     CHECK(functionName, nullptr, "Expecting a valid (non-null) function name !");
     CHECK(*functionName, nullptr, "Expecting a valid (non-empty) function name !");
     // all good
-    void* fnPtr             = dlsym(handle, functionName);
+    void* fnPtr             = dlsym(libraryHandle, functionName);
     const char* dlsym_error = dlerror();
     CHECK((dlsym_error == nullptr) && (fnPtr),
           nullptr,
@@ -31,4 +32,5 @@ void* Library::GetFunction(const char* functionName) const
           functionName,
           dlsym_error);
     return fnPtr;
+}
 }
