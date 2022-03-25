@@ -1859,6 +1859,18 @@ namespace Utils
         void* Data;
 
       public:
+        class EXPORT Iterator
+        {
+            alignas(void*) uint8 data[32];
+            Iterator(void*);
+          public:
+            friend class IniSection;
+            Iterator& operator++();
+            bool operator!=(const Iterator& it);
+            IniValue operator*();
+        };
+
+      public:
         IniSection() : Data(nullptr)
         {
         }
@@ -1872,6 +1884,9 @@ namespace Utils
         IniValue GetValue(string_view keyName);
         vector<IniValue> GetValues() const;
         IniValue operator[](string_view keyName);
+
+        Iterator begin();
+        Iterator end();
 
         void Clear();
         bool DeleteValue(string_view keyName);
