@@ -156,6 +156,15 @@ bool MenuBar::OnKeyEvent(Input::Key keyCode)
             }
         }
     }
+    // check recursivelly if a shortcut key was not pressed
+    for (uint32 tr = 0; tr < this->ItemsCount; tr++)
+    {
+        if (this->Items[tr]->Mnu.ProcessShortcutKey(keyCode))
+        {
+            Close();
+            return true;
+        }
+    }
     // nothing to process
     return false;
 }

@@ -3880,6 +3880,8 @@ namespace Controls
 
         void Show(int x, int y, const Graphics::Size& maxSize = { 0, 0 });
         void Show(Reference<Control> parent, int relativeX, int relativeY, const Graphics::Size& maxSize = { 0, 0 });
+
+        bool ProcessShortcutKey(Input::Key keyCode);
     };
 
     class EXPORT NumericSelector : public Control
