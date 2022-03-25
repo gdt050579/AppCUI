@@ -653,7 +653,28 @@ bool Ini::Parser::AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr v
     value.KeyValues.push_back(std::string(string_view((const char*) valueStart, (uint32) (valueEnd - valueStart))));
     return true;
 }
-//============================================================================= INI Section ===
+//============================================================================= INI Section iterator ===
+IniSection::Iterator::Iterator(void* data)
+{
+    static_assert(sizeof(Iterator::data) >= sizeof(std::unordered_map<uint64, IniValue>::iterator));
+    auto* it = reinterpret_cast<std::unordered_map<uint64, IniValue>::iterator*>(data);
+    new (this->data) std::unordered_map<uint64, IniValue>::iterator(*it);
+}
+IniSection::Iterator& IniSection::Iterator::operator++()
+{
+    (*((std::unordered_map<uint64, IniValue>::iterator*) &this->data))++;
+    return *this;
+}
+bool IniSection::Iterator::operator!=(const Iterator& it)
+{
+    return (*((std::unordered_map<uint64, IniValue>::iterator*) &this->data)) !=
+           (*((std::unordered_map<uint64, IniValue>::iterator*) &it.data));
+}
+IniValue IniSection::Iterator::operator*()
+{
+    return IniValue(&((*((std::unordered_map<uint64, IniValue>::iterator*) &this->data))->second));
+}
+//============================================================================= INI Section ============
 string_view IniSection::GetName() const
 {
     CHECK(this->Data, "", "");
@@ -701,6 +722,17 @@ vector<IniValue> IniSection::GetValues() const
     }
 
     return res;
+}
+
+IniSection::Iterator IniSection::begin()
+{
+    auto it = ((Ini::Section*) Data)->Keys.begin();
+    return Iterator(&it);
+}
+IniSection::Iterator IniSection::end()
+{
+    auto it = ((Ini::Section*) Data)->Keys.end();
+    return Iterator(&it);
 }
 void IniSection::Clear()
 {
@@ -923,7 +955,6 @@ optional<Graphics::ColorPair> IniValue::AsColorPair() const
     return ColorUtils::GetColorPair(static_cast<string_view>(value->KeyValue));
 }
 
-
 uint64 IniValue::ToUInt64(uint64 defaultValue) const
 {
     auto result = this->AsUInt64();
@@ -1025,7 +1056,6 @@ Graphics::ColorPair IniValue::ToColorPair(Graphics::ColorPair defaultColorPair) 
     else
         return defaultColorPair;
 }
-
 
 string_view IniValue::GetName() const
 {
