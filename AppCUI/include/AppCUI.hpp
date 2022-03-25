@@ -742,6 +742,51 @@ namespace Utils
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
     };
+
+    // Example:
+    // void f(FunctionRef<bool(int)> pred)
+    // {
+    //     pred(6);
+    // }
+    // int x     = 5;
+    // auto pred = [&x](int arg)
+    // {
+    //     x = arg + 1;
+    //     return x + arg == 10;
+    // };
+    // f(pred);
+
+    template <typename Fn>
+    class FunctionRef;
+
+    template <typename Return, typename... Args>
+    class FunctionRef<Return(Args...)>
+    {
+        using RawCallback = Return (*)(void*, Args...);
+
+        RawCallback callback;
+        void* data;
+
+        template <typename Fn>
+        static Return CallbackImpl(void* data, Args... args)
+        {
+            auto& fn = *reinterpret_cast<Fn*>(data);
+            return fn(args...);
+        }
+
+      public:
+        template <typename Fn>
+        FunctionRef(Fn&& fn)
+        {
+            callback = CallbackImpl<std::remove_reference_t<Fn>>;
+            data     = &fn;
+        }
+
+        Return operator()(Args... args) const
+        {
+            return callback(data, args...);
+        }
+    };
 } // namespace Utils
 using Utils::ConstString;
 namespace Application
