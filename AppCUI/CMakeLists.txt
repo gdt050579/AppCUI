@@ -76,7 +76,7 @@ endif()
 
 
 if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
-target_link_libraries(AppCUI PRIVATE stdc++fs)
+    target_link_libraries(AppCUI PRIVATE stdc++fs)
 endif()
 
 add_subdirectory(src)
@@ -92,8 +92,6 @@ target_compile_definitions(AppCUI PRIVATE -DLODEPNG_NO_COMPILE_ANCILLARY_CHUNKS)
 if (DEBUG_BUILD)
     set_target_properties(AppCUI PROPERTIES DEBUG_POSTFIX "d")
 endif()
-
-
 
 # sln configuration for MSVC
 # headers have to be inserted manually as target_sources 
