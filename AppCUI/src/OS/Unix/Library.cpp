@@ -1,8 +1,8 @@
+#include <dlfcn.h>
 #include "Internal.hpp"
-#include "dlfcn.h"
 
-using namespace AppCUI::OS;
-
+namespace AppCUI::OS
+{
 Library::Library()
 {
     this->libraryHandle = nullptr;
@@ -34,4 +34,5 @@ void* Library::GetFunction(const char* functionName) const
           functionName,	
           dlsym_error);
     return fnPtr;
+}
 }

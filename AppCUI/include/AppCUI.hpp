@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.20.0"
+#define APPCUI_VERSION "1.23.0"
 
 #include <filesystem>
 #include <map>
@@ -741,6 +741,51 @@ namespace Utils
         virtual void SetCustomPropertyValue(uint32 propertyID)                                      = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
+    };
+
+    // Example:
+    // void f(FunctionRef<bool(int)> pred)
+    // {
+    //     pred(6);
+    // }
+    // int x     = 5;
+    // auto pred = [&x](int arg)
+    // {
+    //     x = arg + 1;
+    //     return x + arg == 10;
+    // };
+    // f(pred);
+
+    template <typename Fn>
+    class FunctionRef;
+
+    template <typename Return, typename... Args>
+    class FunctionRef<Return(Args...)>
+    {
+        using RawCallback = Return (*)(void*, Args...);
+
+        RawCallback callback;
+        void* data;
+
+        template <typename Fn>
+        static Return CallbackImpl(void* data, Args... args)
+        {
+            auto& fn = *reinterpret_cast<Fn*>(data);
+            return fn(args...);
+        }
+
+      public:
+        template <typename Fn>
+        FunctionRef(Fn&& fn)
+        {
+            callback = CallbackImpl<std::remove_reference_t<Fn>>;
+            data     = &fn;
+        }
+
+        Return operator()(Args... args) const
+        {
+            return callback(data, args...);
+        }
     };
 } // namespace Utils
 using Utils::ConstString;
@@ -1859,6 +1904,18 @@ namespace Utils
         void* Data;
 
       public:
+        class EXPORT Iterator
+        {
+            alignas(void*) uint8 data[32];
+            Iterator(void*);
+          public:
+            friend class IniSection;
+            Iterator& operator++();
+            bool operator!=(const Iterator& it);
+            IniValue operator*();
+        };
+
+      public:
         IniSection() : Data(nullptr)
         {
         }
@@ -1872,6 +1929,9 @@ namespace Utils
         IniValue GetValue(string_view keyName);
         vector<IniValue> GetValues() const;
         IniValue operator[](string_view keyName);
+
+        Iterator begin();
+        Iterator end();
 
         void Clear();
         bool DeleteValue(string_view keyName);

@@ -140,6 +140,12 @@ int main()
         LOG_INFO(" - %d", av[tr].ToUInt32());
     }
 
+    auto sec_values = ini.GetSection("Values");
+    for (auto v: sec_values)
+    {
+        LOG_INFO("Name = %s", v.GetName().data());
+    }
+
     CreateMyIni();
 
     return 0;
