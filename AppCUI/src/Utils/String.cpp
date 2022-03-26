@@ -327,7 +327,7 @@ void String::Destroy()
 {
     if ((Text != nullptr) && ((Allocated & STRING_FLAG_STACK_BUFFER) == 0))
     {
-        delete Text;
+        delete[] Text;
     }
     Text = nullptr;
     Size = Allocated = 0;
