@@ -1363,7 +1363,7 @@ bool IniObject::Iterator::operator!=(const Iterator& it)
 }
 IniSection IniObject::Iterator::operator*()
 {
-    return IniSection(&((*((IniObjectIterator*) &this->data))->second));
+    return IniSection((*((IniObjectIterator*) &this->data))->second.get());
 }
 //============================================================================= INI Object ===
 IniObject::IniObject()

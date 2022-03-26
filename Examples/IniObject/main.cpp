@@ -145,7 +145,7 @@ int main()
     {
         LOG_INFO("   Value = %s", v.GetName().data());
     }
-    LOG_INFO("Listing all keys using iterators");
+    LOG_INFO("Listing all keys using iterators (except default one)");
     for (auto s: ini)
     {
         LOG_INFO("   Key: %s", s.GetName().data());
