@@ -84,7 +84,10 @@ int main()
     LOG_INFO("Section 'BlaBlabla' status: %d", ini.GetSection("BlaBlaBla").Exists());
     LOG_INFO("Section 'Values' status: %d", ini.GetSection("Values").Exists());
     LOG_INFO("Section 'Strings' status: %d", ini.GetSection("Strings").Exists());
-    LOG_INFO("Section 'Strings' hasi its name: %s", ini.GetSection("strINGS").GetName());
+    LOG_INFO(
+          "Section 'Strings' hasi its name: %.*s",
+          ini.GetSection("strINGS").GetName().size(),
+          ini.GetSection("strINGS").GetName().data());
     LOG_INFO("The negative value of number is %d", ini.GetSection("Values").GetValue("NegativeNumber").ToInt32(-1));
     LOG_INFO("The integer value of number is %d", ini.GetSection("Values").GetValue("Number").ToInt32());
     LOG_INFO(
