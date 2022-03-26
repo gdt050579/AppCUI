@@ -139,11 +139,16 @@ int main()
     {
         LOG_INFO(" - %d", av[tr].ToUInt32());
     }
-
+    LOG_INFO("Lising all values from [Values] using iterators")
     auto sec_values = ini.GetSection("Values");
     for (auto v: sec_values)
     {
-        LOG_INFO("Name = %s", v.GetName().data());
+        LOG_INFO("   Value = %s", v.GetName().data());
+    }
+    LOG_INFO("Listing all keys using iterators");
+    for (auto s: ini)
+    {
+        LOG_INFO("   Key: %s", s.GetName().data());
     }
 
     CreateMyIni();

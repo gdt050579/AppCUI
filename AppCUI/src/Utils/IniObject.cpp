@@ -1345,7 +1345,10 @@ double IniValueArray::ToDouble(double defaultValue) const
 using IniObjectIterator = std::unordered_map<uint64, unique_ptr<Ini::Section>>::iterator;
 IniObject::Iterator::Iterator(void* data)
 {
-    static_assert(sizeof(Iterator::data) >= sizeof(IniObjectIterator));
+    static_assert(
+          sizeof(Iterator::data) >= sizeof(IniObjectIterator),
+          "Please make sure that the size of IniObject::Iterator::data is at least the size of "
+          "IniObject::Sections::iterator");
     auto* it = reinterpret_cast<IniObjectIterator*>(data);
     new (this->data) IniObjectIterator(*it);
 }
