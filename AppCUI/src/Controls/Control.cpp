@@ -1282,7 +1282,7 @@ Reference<Control> Controls::Control::AddChildControl(unique_ptr<Control> ctrl)
             CHECK(tmp != nullptr, nullptr, "");
             for (uint32 tr = 0; tr < CTRLC->ControlsCount; tr++)
                 tmp[tr] = CTRLC->Controls[tr];
-            delete CTRLC->Controls;
+            delete[] CTRLC->Controls;
             CTRLC->Controls = tmp;
         }
     }
