@@ -654,25 +654,28 @@ bool Ini::Parser::AddArrayValue(Ini::Value& value, BuffPtr valueStart, BuffPtr v
     return true;
 }
 //============================================================================= INI Section iterator ===
+using IniSectionIterator = std::unordered_map<uint64, IniValue>::iterator;
 IniSection::Iterator::Iterator(void* data)
 {
-    static_assert(sizeof(Iterator::data) >= sizeof(std::unordered_map<uint64, IniValue>::iterator));
-    auto* it = reinterpret_cast<std::unordered_map<uint64, IniValue>::iterator*>(data);
-    new (this->data) std::unordered_map<uint64, IniValue>::iterator(*it);
+    static_assert(
+          sizeof(Iterator::data) >= sizeof(IniSectionIterator),
+          "Please make sure that the size of IniSection::Iterator::data is at least the size of "
+          "Ini::Section::Keys::iterator");
+    auto* it = reinterpret_cast<IniSectionIterator*>(data);
+    new (this->data) IniSectionIterator(*it);
 }
 IniSection::Iterator& IniSection::Iterator::operator++()
 {
-    (*((std::unordered_map<uint64, IniValue>::iterator*) &this->data))++;
+    (*((IniSectionIterator*) &this->data))++;
     return *this;
 }
 bool IniSection::Iterator::operator!=(const Iterator& it)
 {
-    return (*((std::unordered_map<uint64, IniValue>::iterator*) &this->data)) !=
-           (*((std::unordered_map<uint64, IniValue>::iterator*) &it.data));
+    return (*((IniSectionIterator*) &this->data)) != (*((IniSectionIterator*) &it.data));
 }
 IniValue IniSection::Iterator::operator*()
 {
-    return IniValue(&((*((std::unordered_map<uint64, IniValue>::iterator*) &this->data))->second));
+    return IniValue(&((*((IniSectionIterator*) &this->data))->second));
 }
 //============================================================================= INI Section ============
 string_view IniSection::GetName() const
@@ -1341,6 +1344,30 @@ double IniValueArray::ToDouble(double defaultValue) const
     else
         return defaultValue;
 }
+//============================================================================= INI object iterator ===
+using IniObjectIterator = std::unordered_map<uint64, unique_ptr<Ini::Section>>::iterator;
+IniObject::Iterator::Iterator(void* data)
+{
+    static_assert(
+          sizeof(Iterator::data) >= sizeof(IniObjectIterator),
+          "Please make sure that the size of IniObject::Iterator::data is at least the size of "
+          "IniObject::Sections::iterator");
+    auto* it = reinterpret_cast<IniObjectIterator*>(data);
+    new (this->data) IniObjectIterator(*it);
+}
+IniObject::Iterator& IniObject::Iterator::operator++()
+{
+    (*((IniObjectIterator*) &this->data))++;
+    return *this;
+}
+bool IniObject::Iterator::operator!=(const Iterator& it)
+{
+    return (*((IniObjectIterator*) &this->data)) != (*((IniObjectIterator*) &it.data));
+}
+IniSection IniObject::Iterator::operator*()
+{
+    return IniSection((*((IniObjectIterator*) &this->data))->second.get());
+}
 //============================================================================= INI Object ===
 IniObject::IniObject()
 {
@@ -1471,6 +1498,16 @@ vector<IniSection> IniObject::GetSections() const
     for (auto& s : WRAPPER->Sections)
         res.push_back(IniSection(s.second.get()));
     return res;
+}
+IniObject::Iterator IniObject::begin()
+{
+    auto it = WRAPPER->Sections.begin();
+    return IniObject::Iterator(&it);
+}
+IniObject::Iterator IniObject::end()
+{
+    auto it = WRAPPER->Sections.end();
+    return IniObject::Iterator(&it);
 }
 IniValue IniObject::GetValue(string_view valuePath)
 {
