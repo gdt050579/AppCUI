@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.23.0"
+#define APPCUI_VERSION "1.25.0"
 
 #include <filesystem>
 #include <map>
@@ -1964,6 +1964,18 @@ namespace Utils
         bool Init();
 
       public:
+        class EXPORT Iterator
+        {
+            alignas(void*) uint8 data[32];
+            Iterator(void*);
+
+          public:
+            friend class IniObject;
+            Iterator& operator++();
+            bool operator!=(const Iterator& it);
+            IniSection operator*();
+        };
+      public:
         IniObject();
         ~IniObject();
 
@@ -1983,6 +1995,9 @@ namespace Utils
         IniValue GetValue(string_view valuePath);
         vector<IniSection> GetSections() const;
         uint32 GetSectionsCount();
+
+        Iterator begin();
+        Iterator end();
 
         bool DeleteSection(string_view name);
         bool DeleteValue(string_view valuePath);
