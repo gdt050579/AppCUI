@@ -3204,6 +3204,7 @@ namespace Controls
         Reference<Control> GetParent();
         Control** GetChildrenList();
         Reference<Control> GetChild(uint32 index);
+        Reference<Control> GetFocusedChild();
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
         bool HasDistantParent(Reference<Control> parent);
