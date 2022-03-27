@@ -5,4 +5,3 @@ target_sources(AppCUI PRIVATE
     PlatformFolders.cpp
     Whereami.cpp
 )
-)
