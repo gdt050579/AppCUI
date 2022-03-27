@@ -1910,6 +1910,7 @@ namespace Utils
             Iterator(void*);
           public:
             friend class IniSection;
+            ~Iterator();
             Iterator& operator++();
             bool operator!=(const Iterator& it);
             IniValue operator*();
@@ -1971,6 +1972,7 @@ namespace Utils
 
           public:
             friend class IniObject;
+            ~Iterator();
             Iterator& operator++();
             bool operator!=(const Iterator& it);
             IniSection operator*();

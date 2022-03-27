@@ -664,7 +664,12 @@ IniSection::Iterator::Iterator(void* data)
     auto* it = reinterpret_cast<IniSectionIterator*>(data);
     new (this->data) IniSectionIterator(*it);
 }
-IniSection::Iterator& IniSection::Iterator::operator++()
+IniSection::Iterator::~Iterator()
+{
+    auto* it = reinterpret_cast<IniSectionIterator*>(data);
+    it->~IniSectionIterator();
+}
+      IniSection::Iterator& IniSection::Iterator::operator++()
 {
     (*((IniSectionIterator*) &this->data))++;
     return *this;
@@ -1354,6 +1359,11 @@ IniObject::Iterator::Iterator(void* data)
           "IniObject::Sections::iterator");
     auto* it = reinterpret_cast<IniObjectIterator*>(data);
     new (this->data) IniObjectIterator(*it);
+}
+IniObject::Iterator::~Iterator()
+{
+    auto* it = reinterpret_cast<IniObjectIterator*>(data);
+    it->~IniObjectIterator();
 }
 IniObject::Iterator& IniObject::Iterator::operator++()
 {
