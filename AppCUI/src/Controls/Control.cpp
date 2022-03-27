@@ -1687,6 +1687,15 @@ void Controls::Control::SetControlID(int newID)
     else
         CTRLC->ControlID = 0;
 }
+Reference<Control> Controls::Control::GetFocusedChild()
+{
+    CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, "");
+    CHECK(CTRLC->CurrentControlIndex < CTRLC->ControlsCount, nullptr, "");
+    auto child = CTRLC->Controls[CTRLC->CurrentControlIndex];
+    if ((CTRLC->Focused) && (child->HasFocus()))
+        return child;
+    return nullptr;
+}
 bool Controls::Control::SetFocus()
 {
     Control* obj = this;

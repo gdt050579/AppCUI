@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.25.0"
+#define APPCUI_VERSION "1.26.0"
 
 #include <filesystem>
 #include <map>
@@ -3204,6 +3204,7 @@ namespace Controls
         Reference<Control> GetParent();
         Control** GetChildrenList();
         Reference<Control> GetChild(uint32 index);
+        Reference<Control> GetFocusedChild();
         uint32 GetChildrenCount();
         bool GetChildIndex(Reference<Control> control, uint32& index);
         bool HasDistantParent(Reference<Control> parent);
