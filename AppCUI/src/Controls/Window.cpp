@@ -15,7 +15,13 @@ struct WindowControlBarLayoutData
     WindowBarItem* LeftGroup;
     WindowBarItem* RighGroup;
 };
-
+enum class MoveDirection
+{
+    ToLeft,
+    ToRight,
+    ToTop,
+    ToBottom
+};
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
 {
     if (parent == nullptr)
@@ -95,6 +101,23 @@ Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne
     // daca nu am copii
     if (((Members->Flags & GATTR_TABSTOP) != 0) && (noSteps == false))
         return parent;
+    return nullptr;
+}
+Control* FindClosestControl(Control* parent, MoveDirection dir)
+{
+    if (parent == nullptr)
+        return nullptr;
+    CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
+    // first search current control
+    auto child = parent;
+    while (child != nullptr)
+    {
+        auto ctx = ((ControlContext*) (child->Context));
+        if (ctx->CurrentControlIndex >= ctx->ControlsCount)
+            break;
+        child = ctx->Controls[ctx->CurrentControlIndex];
+    }
+    // now we have the current control
     return nullptr;
 }
 bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
@@ -1185,6 +1208,30 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             return true;
         case Key::Tab:
             tmp = FindNextControl(this, true, true, true, true);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Left:
+        case Key::Left | Key::Ctrl:
+            tmp = FindClosestControl(this, MoveDirection::ToLeft);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Right:
+        case Key::Right | Key::Ctrl:
+            tmp = FindClosestControl(this, MoveDirection::ToRight);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Up:
+        case Key::Up | Key::Ctrl:
+            tmp = FindClosestControl(this, MoveDirection::ToTop);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Down:
+        case Key::Down | Key::Ctrl:
+            tmp = FindClosestControl(this, MoveDirection::ToBottom);
             if (tmp != nullptr)
                 tmp->SetFocus();
             return true;
