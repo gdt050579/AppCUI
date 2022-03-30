@@ -145,6 +145,8 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, Point origin, Po
     uint32 best     = INFINITE_DISTANCE;
     for (auto idx = 0U; idx < Members->ControlsCount; idx++)
     {
+        if (idx == Members->CurrentControlIndex)
+            continue;
         auto child       = Members->Controls[idx];
         Point childPoint = { parentOffset.X + child->GetX() + child->GetWidth() / 2,
                              parentOffset.Y + child->GetY() + child->GetHeight() / 2 };
