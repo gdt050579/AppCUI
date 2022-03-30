@@ -7,6 +7,8 @@ constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
 constexpr uint32 MAX_TAG_CHARS       = 8U;
 constexpr int32 MOVE_TO_LOWER_MARGIN = -1000000;
 constexpr int32 MOVE_TO_UPPER_MARGIN = 1000000;
+constexpr uint32 INFINITE_DISTANCE   = 0xFFFFFFFF;
+
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -103,6 +105,41 @@ Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne
         return parent;
     return nullptr;
 }
+uint32 PointToPointDistance(Point origin, Point object, Size objectSize, MoveDirection dir)
+{
+    // computes the point to point square distance only if the direction is respected
+    int x, y;
+    switch (dir)
+    {
+    case AppCUI::MoveDirection::ToLeft:
+        // we need to have <object>[space]<origin>
+        x = object.X + (int)objectSize.Width;
+        y = object. Y + (int) (objectSize.Height >> 1);
+        if (x >= origin.X)
+            return INFINITE_DISTANCE;
+        break;
+    case AppCUI::MoveDirection::ToRight:
+        break;
+    case AppCUI::MoveDirection::ToTop:
+        break;
+    case AppCUI::MoveDirection::ToBottom:
+        break;
+    }
+    return (x - origin.X) * (x - origin.X) + (y - origin.Y) * (y - origin.Y);
+}
+Control* FindClosestControl(Control* parent, MoveDirection dir, Point p, Point parentOffset)
+{
+    if (parent == nullptr)
+        return nullptr;
+    CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
+    // check my children and find the best fit
+    for (auto idx = 0U; idx < Members->ControlsCount; idx++)
+    {
+        auto child       = Members->Controls[idx];
+        Point childPoint = { parentOffset.X + child->GetX(), parentOffset.Y + child->GetY() };
+        
+    }
+}
 Control* FindClosestControl(Control* parent, MoveDirection dir)
 {
     if (parent == nullptr)
@@ -110,15 +147,23 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
     CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
     // first search current control
     auto child = parent;
+    Point childPos;
     while (child != nullptr)
     {
         auto ctx = ((ControlContext*) (child->Context));
         if (ctx->CurrentControlIndex >= ctx->ControlsCount)
             break;
         child = ctx->Controls[ctx->CurrentControlIndex];
+        childPos.X += child->GetX();
+        childPos.Y += child->GetY();
     }
-    // now we have the current control
-    return nullptr;
+    // if child is nullptr --> then we have an error (return)
+    CHECK(child, nullptr, "");
+    // now we have the current control --> create a center point
+    childPos.X += child->GetWidth() / 2;
+    childPos.Y += child->GetHeight() / 2;
+    // now we need to search the first child that is closest to childPos
+    return FindClosestControl(parent, dir, childPos, {});
 }
 bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
 {
