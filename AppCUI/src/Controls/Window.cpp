@@ -105,40 +105,65 @@ Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne
         return parent;
     return nullptr;
 }
-uint32 PointToPointDistance(Point origin, Point object, Size objectSize, MoveDirection dir)
+uint32 PointToPointDistance(Point origin, Point object, MoveDirection dir)
 {
     // computes the point to point square distance only if the direction is respected
-    int x, y;
+    int x = object.X;
+    int y = object.Y;
     switch (dir)
     {
     case AppCUI::MoveDirection::ToLeft:
         // we need to have <object>[space]<origin>
-        x = object.X + (int)objectSize.Width;
-        y = object. Y + (int) (objectSize.Height >> 1);
         if (x >= origin.X)
             return INFINITE_DISTANCE;
         break;
     case AppCUI::MoveDirection::ToRight:
+        // we need to have <origin>[space]<object>
+        if (x <= origin.X)
+            return INFINITE_DISTANCE;
         break;
     case AppCUI::MoveDirection::ToTop:
+        // we need to have <object>[space]<origin>
+        if (y >= origin.Y)
+            return INFINITE_DISTANCE;
         break;
     case AppCUI::MoveDirection::ToBottom:
+        // we need to have <origin>[space]<object>
+        if (y <= origin.Y)
+            return INFINITE_DISTANCE;
         break;
     }
     return (x - origin.X) * (x - origin.X) + (y - origin.Y) * (y - origin.Y);
 }
-Control* FindClosestControl(Control* parent, MoveDirection dir, Point p, Point parentOffset)
+Control* FindClosestControl(Control* parent, MoveDirection dir, Point origin, Point parentOffset)
 {
     if (parent == nullptr)
         return nullptr;
     CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
     // check my children and find the best fit
+    Control* result = nullptr;
+    uint32 best     = INFINITE_DISTANCE;
     for (auto idx = 0U; idx < Members->ControlsCount; idx++)
     {
         auto child       = Members->Controls[idx];
-        Point childPoint = { parentOffset.X + child->GetX(), parentOffset.Y + child->GetY() };
-        
+        Point childPoint = { parentOffset.X + child->GetX() + child->GetWidth() / 2,
+                             parentOffset.Y + child->GetY() + child->GetHeight() / 2 };
+        auto d           = PointToPointDistance(origin, childPoint, dir);
+        if (d < best)
+        {
+            best   = d;
+            result = child;
+        }
     }
+    if (result)
+    {
+        parentOffset.X += result->GetX();
+        parentOffset.Y += result->GetY();
+        auto childResult = FindClosestControl(result, dir, origin, parentOffset);
+        if (childResult)
+            result = childResult;
+    }
+    return result;
 }
 Control* FindClosestControl(Control* parent, MoveDirection dir)
 {
