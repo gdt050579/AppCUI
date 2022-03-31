@@ -50,6 +50,8 @@ class ExampleWin : public Window
         Factory::Button::Create(p3, "B11", "x:1,y:1,w:8", 100, ButtonFlags::Flat);
         Factory::Button::Create(p3, "B12", "x:1,y:3,w:8", 100, ButtonFlags::Flat);
 
+        // To add --> a tab control and a splitter control
+
     }
 };
 int main()
