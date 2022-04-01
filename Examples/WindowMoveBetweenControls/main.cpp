@@ -23,7 +23,7 @@ class ExampleWin : public Window
         Factory::CheckBox::Create(this, "Checkbox 8", "x:20,y:4,w:14");
         Factory::Button::Create(this, "Button 1", "x:20,y:6,w:14", 100);
 
-        Factory::Button::Create(this, "B2", "x:1,y:8,w:6", 100,ButtonFlags::Flat);
+        Factory::Button::Create(this, "B2", "x:1,y:8,w:6", 100, ButtonFlags::Flat);
         Factory::Button::Create(this, "B3", "x:10,y:8,w:6", 100, ButtonFlags::Flat);
         Factory::Button::Create(this, "B4", "x:19,y:8,w:6", 100, ButtonFlags::Flat);
         Factory::Button::Create(this, "B5", "x:1,y:10,w:6", 100, ButtonFlags::Flat);
@@ -31,7 +31,7 @@ class ExampleWin : public Window
 
         Factory::ComboBox::Create(this, "x:10,y:12,w:22", "Value1,Value2,Value3");
 
-        auto p = Factory::Panel::Create(this, "P1","x:40,y:1,w:36,h:15");
+        auto p = Factory::Panel::Create(this, "P1", "x:40,y:1,w:36,h:15");
         Factory::CheckBox::Create(p, "CB1", "x:1,y:1,w:8");
         Factory::CheckBox::Create(p, "CB2", "x:1,y:2,w:8");
         Factory::CheckBox::Create(p, "CB3", "x:1,y:3,w:8");
@@ -50,8 +50,7 @@ class ExampleWin : public Window
         Factory::Button::Create(p3, "B11", "x:1,y:1,w:8", 100, ButtonFlags::Flat);
         Factory::Button::Create(p3, "B12", "x:1,y:3,w:8", 100, ButtonFlags::Flat);
 
-        // To add --> a tab control and a splitter control
-        auto t = Factory::Tab::Create(this, "x:1,y:14,w:30,h:8", TabFlags::TopTabs,10);
+        auto t   = Factory::Tab::Create(this, "x:1,y:14,w:30,h:8", TabFlags::TopTabs, 10);
         auto pg1 = Factory::TabPage::Create(t, "PG1");
         Factory::CheckBox::Create(pg1, "Checkbox 1", "x:1,y:1,w:14");
         Factory::CheckBox::Create(pg1, "Checkbox 2", "x:1,y:2,w:14");
@@ -74,6 +73,20 @@ class ExampleWin : public Window
         Factory::CheckBox::Create(p4, "CB 2", "x:1,y:1,w:8")->SetEnabled(false);
         Factory::CheckBox::Create(p4, "CB 3", "x:1,y:2,w:8");
         Factory::CheckBox::Create(p4, "CB 4", "x:1,y:3,w:8")->SetEnabled(false);
+
+        auto p5 = Factory::Panel::Create(this, "P5", "x:32,y:16,w:44,h:6");
+        auto sp = Factory::Splitter::Create(p5, "d:c", SplitterFlags::Vertical);
+        sp->SetFirstPanelSize(20);
+        auto p5_left  = Factory::Panel::Create(sp, "d:c");
+        auto p5_right = Factory::Panel::Create(sp, "d:c");
+        Factory::Button::Create(p5_left, "B11", "x:1,y:1,w:8", 100, ButtonFlags::Flat);
+        Factory::Button::Create(p5_left, "B12", "x:1,y:3,w:8", 100, ButtonFlags::Flat);
+        Factory::Button::Create(p5_left, "B13", "x:12,y:2,w:8", 100, ButtonFlags::Flat);
+
+        Factory::TextField::Create(p5_right, "...", "x:1,y:1,w:10");
+        Factory::TextField::Create(p5_right, "...", "x:1,y:3,w:10");
+        Factory::Button::Create(p5_right, "B21", "x:12,y:1,w:8", 100, ButtonFlags::Flat);
+        Factory::Button::Create(p5_right, "B22", "x:12,y:3,w:8", 100, ButtonFlags::Flat);
     }
 };
 int main()
