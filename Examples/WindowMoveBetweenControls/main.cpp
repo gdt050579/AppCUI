@@ -51,7 +51,29 @@ class ExampleWin : public Window
         Factory::Button::Create(p3, "B12", "x:1,y:3,w:8", 100, ButtonFlags::Flat);
 
         // To add --> a tab control and a splitter control
+        auto t = Factory::Tab::Create(this, "x:1,y:14,w:30,h:8", TabFlags::TopTabs,10);
+        auto pg1 = Factory::TabPage::Create(t, "PG1");
+        Factory::CheckBox::Create(pg1, "Checkbox 1", "x:1,y:1,w:14");
+        Factory::CheckBox::Create(pg1, "Checkbox 2", "x:1,y:2,w:14");
+        Factory::CheckBox::Create(pg1, "Checkbox 3", "x:1,y:3,w:14")->SetEnabled(false);
+        Factory::CheckBox::Create(pg1, "Checkbox 4", "x:1,y:4,w:14");
+        Factory::CheckBox::Create(pg1, "Checkbox 5", "x:1,y:5,w:14");
 
+        Factory::CheckBox::Create(pg1, "CB 1", "x:19,y:1,w:8");
+        Factory::CheckBox::Create(pg1, "CB 2", "x:19,y:2,w:8")->SetEnabled(false);
+        Factory::CheckBox::Create(pg1, "CB 3", "x:19,y:3,w:8");
+        Factory::CheckBox::Create(pg1, "CB 4", "x:19,y:4,w:8")->SetEnabled(false);
+        Factory::CheckBox::Create(pg1, "CB 5", "x:19,y:5,w:8");
+
+        auto pg2 = Factory::TabPage::Create(t, "PG2");
+        Factory::Button::Create(pg2, "B7", "x:1,y:1,w:8", 100, ButtonFlags::Flat);
+        Factory::Button::Create(pg2, "B8", "x:1,y:3,w:8", 100, ButtonFlags::Flat);
+        Factory::Button::Create(pg2, "B9", "x:1,y:5,w:8", 100, ButtonFlags::Flat);
+        auto p4 = Factory::Panel::Create(pg2, "P4", "x:11,y:1,w:15,h:6");
+        Factory::CheckBox::Create(p4, "CB 1", "x:1,y:0,w:8");
+        Factory::CheckBox::Create(p4, "CB 2", "x:1,y:1,w:8")->SetEnabled(false);
+        Factory::CheckBox::Create(p4, "CB 3", "x:1,y:2,w:8");
+        Factory::CheckBox::Create(p4, "CB 4", "x:1,y:3,w:8")->SetEnabled(false);
     }
 };
 int main()
