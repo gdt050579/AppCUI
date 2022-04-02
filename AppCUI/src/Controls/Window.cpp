@@ -198,16 +198,17 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
         auto ctx = ((ControlContext*) (child->Context));
         if (ctx->CurrentControlIndex >= ctx->ControlsCount)
             break;
+        auto prnt  = child;
         child      = ctx->Controls[ctx->CurrentControlIndex];
         auto flags = ((ControlContext*) child->Context)->Flags;
         if ((flags & (GATTR_ENABLE | GATTR_VISIBLE)) != (GATTR_ENABLE | GATTR_VISIBLE))
         {
             // current control is unreacheable --> move to parent and stop
-            child = ((ControlContext*) child->Context)->Parent;
+            child = prnt;
             break;
         }
-        childX += child->GetX();
-        childY += child->GetY();
+        childX += child->GetX() + ((ControlContext*) prnt->Context)->Margins.Left;
+        childY += child->GetY() + ((ControlContext*) prnt->Context)->Margins.Top;
     }
     // if child is nullptr --> then we have an error (return)
     CHECK(child, nullptr, "");
@@ -217,7 +218,7 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
     LOG_INFO("Current control (X=%d,Y=%d, Size=%dx%d)", childX, childY, child->GetWidth(), child->GetHeight());
 
     // now we need to search the first child that is closest to childPos
-    return FindClosestControl(parent, dir, currenChild, {});
+    return FindClosestControl(parent, dir, currenChild, {Members->Margins.Left, Members->Margins.Top});
 }
 bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
 {
