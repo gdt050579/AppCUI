@@ -3177,6 +3177,7 @@ namespace Controls
         int GetHeight() const;
         void GetSize(Graphics::Size& size);
         void GetClientSize(Graphics::Size& size);
+        Graphics::Point GetAbsolutePosition();
         void MoveTo(int newX, int newY);
         bool Resize(int newWidth, int newHeight);
         void RecomputeLayout();

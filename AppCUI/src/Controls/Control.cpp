@@ -1388,6 +1388,22 @@ void Controls::Control::GetClientSize(Graphics::Size& size)
     size.Width  = w;
     size.Height = h;
 }
+Graphics::Point Controls::Control::GetAbsolutePosition()
+{
+    Control* c = this;
+    int x      = CTRLC->Layout.X;
+    int y      = CTRLC->Layout.Y;
+    while (c)
+    {
+        c = ((ControlContext*) c->Context)->Parent;
+        if (c)
+        {
+            x += ((ControlContext*) c->Context)->Margins.Left;
+            y += ((ControlContext*) c->Context)->Margins.Top;
+        }
+    }
+    return { x, y };
+}
 bool Controls::Control::IsMouseInControl(int x, int y)
 {
     return (x >= 0) && (y >= 0) && (x < (CTRLC->Layout.Width)) && (y < (CTRLC->Layout.Height));
