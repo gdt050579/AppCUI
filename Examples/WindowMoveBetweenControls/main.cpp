@@ -93,6 +93,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
+    AppCUI::Log::ToOutputDebugString();
     Application::AddWindow(std::make_unique<ExampleWin>());
     Application::Run();
     return 0;

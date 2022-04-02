@@ -2340,6 +2340,7 @@ namespace Graphics
         {
             return Y + Height - 1;
         }
+
     };
 
     class EXPORT Clip
