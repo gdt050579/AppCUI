@@ -1908,6 +1908,7 @@ namespace Utils
         {
             alignas(void*) uint8 data[32];
             Iterator(void*);
+
           public:
             friend class IniSection;
             ~Iterator();
@@ -1977,6 +1978,7 @@ namespace Utils
             bool operator!=(const Iterator& it);
             IniSection operator*();
         };
+
       public:
         IniObject();
         ~IniObject();
@@ -2294,6 +2296,9 @@ namespace Graphics
         Rect() : X(0), Y(0), Width(0), Height(0)
         {
         }
+        Rect(Point p, Size s) : X(p.X), Y(p.Y), Width(s.Width), Height(s.Height)
+        {
+        }
         bool Create(int x, int y, int width, int height, Alignament align);
         void Create(int left, int top, int right, int bottom);
         inline bool Contains(int x, int y) const
@@ -2340,7 +2345,6 @@ namespace Graphics
         {
             return Y + Height - 1;
         }
-
     };
 
     class EXPORT Clip
@@ -3178,6 +3182,7 @@ namespace Controls
         Graphics::Size GetSize() const;
         void GetClientSize(Graphics::Size& size);
         Graphics::Point GetAbsolutePosition() const;
+        Graphics::Rect GetAbsoluteRectangle() const;
         void MoveTo(int newX, int newY);
         bool Resize(int newWidth, int newHeight);
         void RecomputeLayout();

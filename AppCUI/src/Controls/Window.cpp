@@ -144,7 +144,7 @@ uint32 PointToPointDistance(const Rect& originRect, const Rect& objectRect, Move
     }
     return (object.X - origin.X) * (object.X - origin.X) + (object.Y - origin.Y) * (object.Y - origin.Y);
 }
-Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& origin, Point parentOffset)
+Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& origin)
 {
     if (parent == nullptr)
         return nullptr;
@@ -152,7 +152,6 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
     // check my children and find the best fit
     Control* result = nullptr;
     uint32 best     = INFINITE_DISTANCE;
-    Rect childRect;
     for (auto idx = 0U; idx < Members->ControlsCount; idx++)
     {
         if (idx == Members->CurrentControlIndex)
@@ -161,13 +160,7 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
         auto flags = ((ControlContext*) child->Context)->Flags;
         if ((flags & (GATTR_ENABLE | GATTR_VISIBLE)) != (GATTR_ENABLE | GATTR_VISIBLE))
             continue;
-        childRect.Create(
-              parentOffset.X + child->GetX(),
-              parentOffset.Y + child->GetY(),
-              child->GetWidth(),
-              child->GetHeight(),
-              Alignament::TopLeft);
-        auto d = PointToPointDistance(origin, childRect, dir);
+        auto d = PointToPointDistance(origin, child->GetAbsoluteRectangle(), dir);
         if (d < best)
         {
             best   = d;
@@ -176,9 +169,7 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
     }
     if (result)
     {
-        parentOffset.X += result->GetX();
-        parentOffset.Y += result->GetY();
-        auto childResult = FindClosestControl(result, dir, origin, parentOffset);
+        auto childResult = FindClosestControl(result, dir, origin);
         if (childResult)
             result = childResult;
     }
@@ -191,8 +182,6 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
     CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
     // first search current control
     auto child = parent;
-    int childX = 0, childY = 0;
-    Rect currenChild;
     while (child != nullptr)
     {
         auto ctx = ((ControlContext*) (child->Context));
@@ -207,18 +196,21 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
             child = prnt;
             break;
         }
-        childX += child->GetX() + ((ControlContext*) prnt->Context)->Margins.Left;
-        childY += child->GetY() + ((ControlContext*) prnt->Context)->Margins.Top;
     }
     // if child is nullptr --> then we have an error (return)
     CHECK(child, nullptr, "");
     // now we have the current control --> create a center point
-    currenChild.Create(childX, childY, child->GetWidth(), child->GetHeight(), Alignament::TopLeft);
+    Rect currenChild = child->GetAbsoluteRectangle();
     // Log info
-    LOG_INFO("Current control (X=%d,Y=%d, Size=%dx%d)", childX, childY, child->GetWidth(), child->GetHeight());
+    LOG_INFO(
+          "Current control (X=%d,Y=%d, Size=%dx%d)",
+          currenChild.GetLeft(),
+          currenChild.GetTop(),
+          currenChild.GetWidth(),
+          currenChild.GetHeight());
 
     // now we need to search the first child that is closest to childPos
-    return FindClosestControl(parent, dir, currenChild, {Members->Margins.Left, Members->Margins.Top});
+    return FindClosestControl(parent, dir, currenChild);
 }
 bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
 {

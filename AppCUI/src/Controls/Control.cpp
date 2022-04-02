@@ -1390,10 +1390,12 @@ void Controls::Control::GetClientSize(Graphics::Size& size)
 Graphics::Point Controls::Control::GetAbsolutePosition() const
 {
     auto c = this;
-    int x  = CTRLC->Layout.X;
-    int y  = CTRLC->Layout.Y;
+    int x  = 0;
+    int y  = 0;
     while (c)
     {
+        x += ((ControlContext*) c->Context)->Layout.X;
+        y += ((ControlContext*) c->Context)->Layout.Y;
         c = ((ControlContext*) c->Context)->Parent;
         if (c)
         {
@@ -1402,6 +1404,10 @@ Graphics::Point Controls::Control::GetAbsolutePosition() const
         }
     }
     return { x, y };
+}
+Graphics::Rect Controls::Control::GetAbsoluteRectangle() const
+{
+    return { GetAbsolutePosition(), GetSize() };
 }
 bool Controls::Control::IsMouseInControl(int x, int y)
 {
