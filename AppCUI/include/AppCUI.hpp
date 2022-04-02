@@ -3175,9 +3175,9 @@ namespace Controls
         int GetY() const;
         int GetWidth() const;
         int GetHeight() const;
-        void GetSize(Graphics::Size& size);
+        Graphics::Size GetSize() const;
         void GetClientSize(Graphics::Size& size);
-        Graphics::Point GetAbsolutePosition();
+        Graphics::Point GetAbsolutePosition() const;
         void MoveTo(int newX, int newY);
         bool Resize(int newWidth, int newHeight);
         void RecomputeLayout();

@@ -1372,10 +1372,9 @@ int Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
-void Controls::Control::GetSize(Graphics::Size& size)
+Graphics::Size Controls::Control::GetSize() const
 {
-    size.Width  = CTRLC->Layout.Width;
-    size.Height = CTRLC->Layout.Height;
+    return { (uint32) (CTRLC->Layout.Width), (uint32) (CTRLC->Layout.Height) };
 }
 void Controls::Control::GetClientSize(Graphics::Size& size)
 {
@@ -1388,11 +1387,11 @@ void Controls::Control::GetClientSize(Graphics::Size& size)
     size.Width  = w;
     size.Height = h;
 }
-Graphics::Point Controls::Control::GetAbsolutePosition()
+Graphics::Point Controls::Control::GetAbsolutePosition() const
 {
-    Control* c = this;
-    int x      = CTRLC->Layout.X;
-    int y      = CTRLC->Layout.Y;
+    auto c = this;
+    int x  = CTRLC->Layout.X;
+    int y  = CTRLC->Layout.Y;
     while (c)
     {
         c = ((ControlContext*) c->Context)->Parent;
