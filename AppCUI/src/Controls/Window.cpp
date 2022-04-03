@@ -150,8 +150,6 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
         return nullptr;
     CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
     // check my children and find the best fit
-    LOG_INFO(
-          "FindClosestControl(%s) => %d controls", ((std::string) parent->GetText()).c_str(), Members->ControlsCount);
     Control* result = nullptr;
     uint32 best     = INFINITE_DISTANCE;
     for (auto idx = 0U; idx < Members->ControlsCount; idx++)
@@ -176,14 +174,14 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
         
         auto r = child->GetAbsoluteRectangle();
         auto d = PointToPointDistance(origin, r, dir);
-        LOG_INFO(
-              "%s => (%d,%d  %dx%d), D=%d",
-              ((std::string) child->GetText()).c_str(),
-              r.GetLeft(),
-              r.GetTop(),
-              r.GetWidth(),
-              r.GetHeight(),
-              d);
+        //LOG_INFO(
+        //      "%s => (%d,%d  %dx%d), D=%d",
+        //      ((std::string) child->GetText()).c_str(),
+        //      r.GetLeft(),
+        //      r.GetTop(),
+        //      r.GetWidth(),
+        //      r.GetHeight(),
+        //      d);
         if (d < best)
         {
             best   = d;
@@ -219,12 +217,12 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
     // now we have the current control --> create a center point
     Rect currenChild = child->GetAbsoluteRectangle();
     // Log info
-    LOG_INFO(
-          "Current control (X=%d,Y=%d, Size=%dx%d)",
-          currenChild.GetLeft(),
-          currenChild.GetTop(),
-          currenChild.GetWidth(),
-          currenChild.GetHeight());
+    //LOG_INFO(
+    //      "Current control (X=%d,Y=%d, Size=%dx%d)",
+    //      currenChild.GetLeft(),
+    //      currenChild.GetTop(),
+    //      currenChild.GetWidth(),
+    //      currenChild.GetHeight());
 
     // now we need to search the first child that is closest to childPos
     return FindClosestControl(parent, dir, currenChild);
