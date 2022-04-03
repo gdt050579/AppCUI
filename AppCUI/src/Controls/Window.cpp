@@ -150,28 +150,45 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
         return nullptr;
     CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
     // check my children and find the best fit
+    LOG_INFO(
+          "FindClosestControl(%s) => %d controls", ((std::string) parent->GetText()).c_str(), Members->ControlsCount);
     Control* result = nullptr;
     uint32 best     = INFINITE_DISTANCE;
     for (auto idx = 0U; idx < Members->ControlsCount; idx++)
     {
-        if (idx == Members->CurrentControlIndex)
-            continue;
         auto child = Members->Controls[idx];
         auto flags = ((ControlContext*) child->Context)->Flags;
         if ((flags & (GATTR_ENABLE | GATTR_VISIBLE)) != (GATTR_ENABLE | GATTR_VISIBLE))
             continue;
-        auto d = PointToPointDistance(origin, child->GetAbsoluteRectangle(), dir);
+        if (child->GetChildrenCount() > 0)
+        {
+            // check its children
+            child = FindClosestControl(child, dir, origin);
+            if (child == nullptr)
+                continue;
+        }
+        else
+        {
+            // if TABSTOP is not set ==> skip it (e.g. a label)
+            if ((flags & GATTR_TABSTOP) == 0)
+                continue;
+        }
+        
+        auto r = child->GetAbsoluteRectangle();
+        auto d = PointToPointDistance(origin, r, dir);
+        LOG_INFO(
+              "%s => (%d,%d  %dx%d), D=%d",
+              ((std::string) child->GetText()).c_str(),
+              r.GetLeft(),
+              r.GetTop(),
+              r.GetWidth(),
+              r.GetHeight(),
+              d);
         if (d < best)
         {
             best   = d;
             result = child;
         }
-    }
-    if (result)
-    {
-        auto childResult = FindClosestControl(result, dir, origin);
-        if (childResult)
-            result = childResult;
     }
     return result;
 }
@@ -1305,24 +1322,28 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             return true;
         case Key::Left:
         case Key::Left | Key::Ctrl:
+        case Key::Left | Key::Alt:
             tmp = FindClosestControl(this, MoveDirection::ToLeft);
             if (tmp != nullptr)
                 tmp->SetFocus();
             return true;
         case Key::Right:
         case Key::Right | Key::Ctrl:
+        case Key::Right | Key::Alt:
             tmp = FindClosestControl(this, MoveDirection::ToRight);
             if (tmp != nullptr)
                 tmp->SetFocus();
             return true;
         case Key::Up:
         case Key::Up | Key::Ctrl:
+        case Key::Up | Key::Alt:
             tmp = FindClosestControl(this, MoveDirection::ToTop);
             if (tmp != nullptr)
                 tmp->SetFocus();
             return true;
         case Key::Down:
         case Key::Down | Key::Ctrl:
+        case Key::Down | Key::Alt:
             tmp = FindClosestControl(this, MoveDirection::ToBottom);
             if (tmp != nullptr)
                 tmp->SetFocus();

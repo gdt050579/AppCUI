@@ -10,7 +10,7 @@ class ExampleWin : public Window
     ExampleWin() : Window("Example", "d:c,w:80,h:24", WindowFlags::None)
     {
         Factory::Label::Create(
-              this, "Use Up/Down/Left/Right or combine with CTRL to move between controls", "x:0,y:0,w:78");
+              this, "Use Up/Down/Left/Right or combine with CTRL or ALT to move between controls", "x:0,y:0,w:78");
 
         Factory::CheckBox::Create(this, "Checkbox 1", "x:1,y:2,w:14")->SetFocus();
         Factory::CheckBox::Create(this, "Checkbox 2", "x:1,y:3,w:14");
