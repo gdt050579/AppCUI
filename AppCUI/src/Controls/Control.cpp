@@ -1708,6 +1708,12 @@ void Controls::Control::SetControlID(int newID)
     else
         CTRLC->ControlID = 0;
 }
+
+int Controls::Control::GetControlID()
+{
+    return CTRLC->ControlID;
+}
+
 Reference<Control> Controls::Control::GetFocusedChild()
 {
     CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, "");

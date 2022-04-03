@@ -3227,6 +3227,7 @@ namespace Controls
         // focus & expact/pack view
         bool SetFocus();
         void SetControlID(int newID);
+        int GetControlID();
         void ExpandView();
         void PackView();
 
