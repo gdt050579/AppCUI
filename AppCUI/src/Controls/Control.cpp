@@ -1372,10 +1372,9 @@ int Controls::Control::GetHeight() const
 {
     return CTRLC->Layout.Height;
 }
-void Controls::Control::GetSize(Graphics::Size& size)
+Graphics::Size Controls::Control::GetSize() const
 {
-    size.Width  = CTRLC->Layout.Width;
-    size.Height = CTRLC->Layout.Height;
+    return { (uint32) (CTRLC->Layout.Width), (uint32) (CTRLC->Layout.Height) };
 }
 void Controls::Control::GetClientSize(Graphics::Size& size)
 {
@@ -1387,6 +1386,28 @@ void Controls::Control::GetClientSize(Graphics::Size& size)
         h = 0;
     size.Width  = w;
     size.Height = h;
+}
+Graphics::Point Controls::Control::GetAbsolutePosition() const
+{
+    auto c = this;
+    int x  = 0;
+    int y  = 0;
+    while (c)
+    {
+        x += ((ControlContext*) c->Context)->Layout.X;
+        y += ((ControlContext*) c->Context)->Layout.Y;
+        c = ((ControlContext*) c->Context)->Parent;
+        if (c)
+        {
+            x += ((ControlContext*) c->Context)->Margins.Left;
+            y += ((ControlContext*) c->Context)->Margins.Top;
+        }
+    }
+    return { x, y };
+}
+Graphics::Rect Controls::Control::GetAbsoluteRectangle() const
+{
+    return { GetAbsolutePosition(), GetSize() };
 }
 bool Controls::Control::IsMouseInControl(int x, int y)
 {

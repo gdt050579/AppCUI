@@ -2066,8 +2066,7 @@ class PreviewControl : public UserControl
     }
     void Paint(Graphics::Renderer& r) override
     {
-        Size sz;
-        GetSize(sz);
+        Size sz = GetSize();
         if (config.IsValid())
             config->Paint(r, sz);
     }
