@@ -7,6 +7,8 @@ constexpr uint8 NO_CONTROLBAR_ITEM   = 0xFF;
 constexpr uint32 MAX_TAG_CHARS       = 8U;
 constexpr int32 MOVE_TO_LOWER_MARGIN = -1000000;
 constexpr int32 MOVE_TO_UPPER_MARGIN = 1000000;
+constexpr uint32 INFINITE_DISTANCE   = 0xFFFFFFFF;
+
 const static CharacterBuffer tempReferenceChBuf;
 
 struct WindowControlBarLayoutData
@@ -15,7 +17,13 @@ struct WindowControlBarLayoutData
     WindowBarItem* LeftGroup;
     WindowBarItem* RighGroup;
 };
-
+enum class MoveDirection
+{
+    ToLeft,
+    ToRight,
+    ToTop,
+    ToBottom
+};
 Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne, bool rootLevel, bool noSteps)
 {
     if (parent == nullptr)
@@ -96,6 +104,128 @@ Control* FindNextControl(Control* parent, bool forward, bool startFromCurrentOne
     if (((Members->Flags & GATTR_TABSTOP) != 0) && (noSteps == false))
         return parent;
     return nullptr;
+}
+uint32 PointToPointDistance(const Rect& originRect, const Rect& objectRect, MoveDirection dir)
+{
+    // computes the point to point square distance only if the direction is respected
+    Point origin, object;
+
+    switch (dir)
+    {
+    case AppCUI::MoveDirection::ToLeft:
+        // we need to have <object>[space]<origin>
+        // we compare <TOP,LEFT>
+        object.Set(objectRect.GetRight(), objectRect.GetTop());
+        origin.Set(originRect.GetLeft(), originRect.GetTop());
+        if (object.X >= origin.X)
+            return INFINITE_DISTANCE;
+        break;
+    case AppCUI::MoveDirection::ToRight:
+        // we need to have <origin>[space]<object>
+        object.Set(objectRect.GetLeft(), objectRect.GetTop());
+        origin.Set(originRect.GetRight(), originRect.GetTop());
+        if (object.X <= origin.X)
+            return INFINITE_DISTANCE;
+        break;
+    case AppCUI::MoveDirection::ToTop:
+        // we need to have <object>[space]<origin>
+        object.Set(objectRect.GetLeft(), objectRect.GetBottom());
+        origin.Set(originRect.GetLeft(), originRect.GetTop());
+        if (object.Y >= origin.Y)
+            return INFINITE_DISTANCE;
+        break;
+    case AppCUI::MoveDirection::ToBottom:
+        // we need to have <origin>[space]<object>
+        object.Set(objectRect.GetLeft(), objectRect.GetTop());
+        origin.Set(originRect.GetLeft(), originRect.GetBottom());
+        if (object.Y <= origin.Y)
+            return INFINITE_DISTANCE;
+        break;
+    }
+    return (object.X - origin.X) * (object.X - origin.X) + (object.Y - origin.Y) * (object.Y - origin.Y);
+}
+Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& origin)
+{
+    if (parent == nullptr)
+        return nullptr;
+    CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
+    // check my children and find the best fit
+    Control* result = nullptr;
+    uint32 best     = INFINITE_DISTANCE;
+    for (auto idx = 0U; idx < Members->ControlsCount; idx++)
+    {
+        auto child = Members->Controls[idx];
+        auto flags = ((ControlContext*) child->Context)->Flags;
+        if ((flags & (GATTR_ENABLE | GATTR_VISIBLE)) != (GATTR_ENABLE | GATTR_VISIBLE))
+            continue;
+        if (child->GetChildrenCount() > 0)
+        {
+            // check its children
+            child = FindClosestControl(child, dir, origin);
+            if (child == nullptr)
+                continue;
+        }
+        else
+        {
+            // if TABSTOP is not set ==> skip it (e.g. a label)
+            if ((flags & GATTR_TABSTOP) == 0)
+                continue;
+        }
+        
+        auto r = child->GetAbsoluteRectangle();
+        auto d = PointToPointDistance(origin, r, dir);
+        //LOG_INFO(
+        //      "%s => (%d,%d  %dx%d), D=%d",
+        //      ((std::string) child->GetText()).c_str(),
+        //      r.GetLeft(),
+        //      r.GetTop(),
+        //      r.GetWidth(),
+        //      r.GetHeight(),
+        //      d);
+        if (d < best)
+        {
+            best   = d;
+            result = child;
+        }
+    }
+    return result;
+}
+Control* FindClosestControl(Control* parent, MoveDirection dir)
+{
+    if (parent == nullptr)
+        return nullptr;
+    CREATE_CONTROL_CONTEXT(parent, Members, nullptr);
+    // first search current control
+    auto child = parent;
+    while (child != nullptr)
+    {
+        auto ctx = ((ControlContext*) (child->Context));
+        if (ctx->CurrentControlIndex >= ctx->ControlsCount)
+            break;
+        auto prnt  = child;
+        child      = ctx->Controls[ctx->CurrentControlIndex];
+        auto flags = ((ControlContext*) child->Context)->Flags;
+        if ((flags & (GATTR_ENABLE | GATTR_VISIBLE)) != (GATTR_ENABLE | GATTR_VISIBLE))
+        {
+            // current control is unreacheable --> move to parent and stop
+            child = prnt;
+            break;
+        }
+    }
+    // if child is nullptr --> then we have an error (return)
+    CHECK(child, nullptr, "");
+    // now we have the current control --> create a center point
+    Rect currenChild = child->GetAbsoluteRectangle();
+    // Log info
+    //LOG_INFO(
+    //      "Current control (X=%d,Y=%d, Size=%dx%d)",
+    //      currenChild.GetLeft(),
+    //      currenChild.GetTop(),
+    //      currenChild.GetWidth(),
+    //      currenChild.GetHeight());
+
+    // now we need to search the first child that is closest to childPos
+    return FindClosestControl(parent, dir, currenChild);
 }
 bool ProcessHotKey(Control* ctrl, Input::Key KeyCode)
 {
@@ -1185,6 +1315,34 @@ bool Window::OnKeyEvent(Input::Key KeyCode, char16)
             return true;
         case Key::Tab:
             tmp = FindNextControl(this, true, true, true, true);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Left:
+        case Key::Left | Key::Ctrl:
+        case Key::Left | Key::Alt:
+            tmp = FindClosestControl(this, MoveDirection::ToLeft);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Right:
+        case Key::Right | Key::Ctrl:
+        case Key::Right | Key::Alt:
+            tmp = FindClosestControl(this, MoveDirection::ToRight);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Up:
+        case Key::Up | Key::Ctrl:
+        case Key::Up | Key::Alt:
+            tmp = FindClosestControl(this, MoveDirection::ToTop);
+            if (tmp != nullptr)
+                tmp->SetFocus();
+            return true;
+        case Key::Down:
+        case Key::Down | Key::Ctrl:
+        case Key::Down | Key::Alt:
+            tmp = FindClosestControl(this, MoveDirection::ToBottom);
             if (tmp != nullptr)
                 tmp->SetFocus();
             return true;

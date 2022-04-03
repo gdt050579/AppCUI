@@ -415,7 +415,7 @@ bool String::Grow(uint32 newSize)
     {
         memcpy(temp, Text, Size + 1);
         if ((Allocated & STRING_FLAG_STACK_BUFFER) == 0)
-            delete Text;
+            delete []Text;
     }
     Text      = temp;
     Allocated = newSize;
