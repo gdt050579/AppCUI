@@ -3180,7 +3180,7 @@ namespace Controls
         int GetWidth() const;
         int GetHeight() const;
         Graphics::Size GetSize() const;
-        void GetClientSize(Graphics::Size& size);
+        Graphics::Size GetClientSize() const;
         Graphics::Point GetAbsolutePosition() const;
         Graphics::Rect GetAbsoluteRectangle() const;
         void MoveTo(int newX, int newY);

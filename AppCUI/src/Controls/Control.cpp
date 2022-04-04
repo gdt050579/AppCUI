@@ -1101,7 +1101,7 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
         controlParent = this->Parent;
     if (controlParent != nullptr)
     {
-        controlParent->GetClientSize(sz);
+        sz = controlParent->GetClientSize();
     }
     else
     {
@@ -1376,7 +1376,7 @@ Graphics::Size Controls::Control::GetSize() const
 {
     return { (uint32) (CTRLC->Layout.Width), (uint32) (CTRLC->Layout.Height) };
 }
-void Controls::Control::GetClientSize(Graphics::Size& size)
+Graphics::Size Controls::Control::GetClientSize() const
 {
     int w = CTRLC->Layout.Width - (CTRLC->Margins.Left + CTRLC->Margins.Right);
     int h = CTRLC->Layout.Height - (CTRLC->Margins.Top + CTRLC->Margins.Bottom);
@@ -1384,8 +1384,7 @@ void Controls::Control::GetClientSize(Graphics::Size& size)
         w = 0;
     if (h <= 0)
         h = 0;
-    size.Width  = w;
-    size.Height = h;
+    return { (uint32) w, (uint32) h };
 }
 Graphics::Point Controls::Control::GetAbsolutePosition() const
 {
