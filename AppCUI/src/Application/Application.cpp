@@ -83,7 +83,7 @@ bool Application::GetApplicationSize(Graphics::Size& size)
 bool Application::GetDesktopSize(Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    app->AppDesktop->GetClientSize(size);
+    size = app->AppDesktop->GetClientSize();
     return true;
 }
 
@@ -1463,8 +1463,7 @@ void ApplicationImpl::ArrangeWindows(Application::ArrangeWindowsMethod method)
     int gridWinWidth  = 0;
     int gridWinHeight = 0;
 
-    Graphics::Size sz;
-    this->AppDesktop->GetClientSize(sz);
+    Graphics::Size sz = this->AppDesktop->GetClientSize();
 
     if (winListCount == 0)
         return; // nothing to arrange
