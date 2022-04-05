@@ -8,7 +8,6 @@ using namespace std::chrono;
 
 constexpr uint32 PROGRESS_STATUS_PANEL_WIDTH         = 60;
 constexpr uint32 PROGRESS_STATUS_PANEL_HEIGHT        = 8;
-constexpr uint64 MIN_SECONDS_BEFORE_SHOWING_PROGRESS = 2;
 constexpr uint32 MAX_PROGRESS_TIME_TEXT              = 35;
 
 // remove MessageBox definition that comes with Windows.h header
@@ -30,6 +29,7 @@ struct ProgressStatusData
     char progressString[5];
     Utils::FixSizeString<MAX_PROGRESS_TIME_TEXT> timeStr;
     uint32 Progress;
+    uint64 timeToWaitBeforeFirstUpdate;
 };
 
 static ProgressStatusData PSData = {};
@@ -139,7 +139,7 @@ void ProgressStatus_ComputeTime(uint64 time)
     *p++           = '0' + sec % 10;
     PSData.timeStr = { (const char*) temp, (size_t) (p - temp) };
 }
-void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
+void ProgressStatus::Init(const ConstString& Title, uint64 maxValue, uint64 timeToWaitBeforeFirstUpdate)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
@@ -151,15 +151,16 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
           ((int32) appSize.Height - (int32) PROGRESS_STATUS_PANEL_HEIGHT) / 2,
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT);
-    PSData.App               = Application::GetApplication();
-    PSData.progressString[0] = ' ';
-    PSData.progressString[1] = ' ';
-    PSData.progressString[2] = '0';
-    PSData.progressString[3] = '%';
-    PSData.progressString[4] = 0;
-    PSData.Progress          = 0;
-    PSData.Ellapsed          = 0;
-    PSData.LastEllapsed      = 0;
+    PSData.App                         = Application::GetApplication();
+    PSData.progressString[0]           = ' ';
+    PSData.progressString[1]           = ' ';
+    PSData.progressString[2]           = '0';
+    PSData.progressString[3]           = '%';
+    PSData.progressString[4]           = 0;
+    PSData.Progress                    = 0;
+    PSData.Ellapsed                    = 0;
+    PSData.LastEllapsed                = 0;
+    PSData.timeToWaitBeforeFirstUpdate = timeToWaitBeforeFirstUpdate;
     PSData.timeStr.Clear();
     if (PSData.Title.Set(Title) == false)
     {
@@ -218,7 +219,7 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
     }
     PSData.Ellapsed =
           std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - PSData.StartTime).count();
-    if (PSData.Ellapsed >= MIN_SECONDS_BEFORE_SHOWING_PROGRESS)
+    if (PSData.Ellapsed >= PSData.timeToWaitBeforeFirstUpdate)
     {
         if (PSData.LastEllapsed != PSData.Ellapsed)
         {

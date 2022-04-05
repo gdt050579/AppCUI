@@ -2249,7 +2249,7 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0);
+        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0, uint64 timeToWaitBeforeFirstUpdate = 2);
         bool EXPORT Update(uint64 value, const ConstString& content);
         bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
