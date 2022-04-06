@@ -10,8 +10,9 @@ using namespace AppCUI::Graphics;
 
 class MyWin : public AppCUI::Controls::Window
 {
+    Reference<CheckBox> cbDisableDelayedActivation, cbAlwaysUpdate;
   public:
-    MyWin() : Window("Progress status", "d:c,w:70,h:9", WindowFlags::None)
+    MyWin() : Window("Progress status", "d:c,w:70,h:14", WindowFlags::None)
     {
         Factory::Button::Create(this, "Compute", "r:1,t:1,w:14", BUTTON_COMPUTE_ODD);
         Factory::Label::Create(
@@ -24,6 +25,19 @@ class MyWin : public AppCUI::Controls::Window
               this,
               "Compute the 10000 prime number using a slow method\n(check if there are no divisors)",
               "x:1,y:4,w:50,h:2");
+        cbDisableDelayedActivation = Factory::CheckBox::Create(
+              this, "&Disable delayed activation (show the progress bar the from the begining)", "x:1,y:7,w:67,h:2");
+        cbAlwaysUpdate = Factory::CheckBox::Create(
+              this, "&Always update (whenever Update is called everything is updated - percentage, text, ETA", "x:1,y:10,w:67,h:2");
+    }
+    ProgressStatus::Flags GetFlags()
+    {
+        auto f = ProgressStatus::Flags::None;
+        if (cbDisableDelayedActivation->IsChecked())
+            f = f | ProgressStatus::Flags::DisableDelayedActivation;
+        if (cbAlwaysUpdate->IsChecked())
+            f = f | ProgressStatus::Flags::AlwaysUpdate;
+        return f;
     }
     bool IsPrime(uint64 value)
     {
@@ -51,7 +65,7 @@ class MyWin : public AppCUI::Controls::Window
         uint64 count = 0;
 
         // in this case we know the maximum value (1.000.000) so we can use it to initialize the progress status
-        ProgressStatus::Init("Compute", 1000000);
+        ProgressStatus::Init("Compute", 1000000, GetFlags());
 
         while (value < 1000000)
         {
@@ -74,7 +88,7 @@ class MyWin : public AppCUI::Controls::Window
         uint64 count = 0;
 
         // in this case we don't know what is the range (so we will not provide one)
-        ProgressStatus::Init("Compute");
+        ProgressStatus::Init("Compute", 0, GetFlags());
 
         while (count < 10000)
         {

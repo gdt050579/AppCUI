@@ -2249,7 +2249,13 @@ namespace Graphics
 
     namespace ProgressStatus
     {
-        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0);
+        enum class Flags : uint32
+        {
+            None                     = 0,
+            DisableDelayedActivation = 0x0001,
+            AlwaysUpdate             = 0x0002
+        };
+        void EXPORT Init(const ConstString& Title, uint64 maxValue = 0, Flags flags = Flags::None);
         bool EXPORT Update(uint64 value, const ConstString& content);
         bool EXPORT Update(uint64 value);
     }; // namespace ProgressStatus
@@ -4998,6 +5004,7 @@ ADD_FLAG_OPERATORS(AppCUI::Input::Key, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Graphics::ProgressStatus::Flags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
