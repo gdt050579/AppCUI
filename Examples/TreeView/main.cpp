@@ -30,25 +30,26 @@ class TreeExample : public AppCUI::Controls::Window, public AppCUI::Controls::Ha
     {
         open = AppCUI::Controls::Factory::Button::Create(
               this, "&Open", "x:1%, y:6%, w:10%", static_cast<uint32>(ControlIds::ButtonShowOpen));
-        vertical =
-              AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:0, w:11%, h:15%", Controls::SplitterFlags::Vertical);
+        vertical = AppCUI::Controls::Factory::Splitter::Create(
+              this, "x:1%, y:0, w:11%, h:15%", Controls::SplitterFlags::Vertical);
         horizontal    = AppCUI::Controls::Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%");
         currentFolder = AppCUI::Controls::Factory::TextField::Create(
               this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
         tree = AppCUI::Controls::Factory::Tree::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren | AppCUI::Controls::TreeFlags::FilterSearch),
+              (AppCUI::Controls::TreeFlags::DynamicallyPopulateNodeChildren | AppCUI::Controls::TreeFlags::Sortable),
               3);
 
         tree->Handlers()->OnTreeItemToggle = this;
 
         // TODO: maybe add % for column sizes as well
         tree->AddColumnData(
-              0, u"Path", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left, 100);
+              0, u"&Path", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left, 100);
         tree->AddColumnData(
-              1, u"Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
-        tree->AddColumnData(2, u"Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
+              1, u"&Last Write Time", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
+        tree->AddColumnData(
+              2, u"&Size", AppCUI::Graphics::TextAlignament::Left, AppCUI::Graphics::TextAlignament::Left);
 
         tree->ClearItems();
         const auto path = std::filesystem::current_path().u16string();

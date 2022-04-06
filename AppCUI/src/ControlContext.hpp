@@ -674,6 +674,8 @@ struct TreeColumnData
     TextAlignament headerAlignment  = TextAlignament::Left;
     TextAlignament contentAlignment = TextAlignament::Left;
     bool customWidth                = false;
+    uint32 HotKeyOffset             = 0xFFFFFFFF;
+    Key HotKeyCode                  = Key::None;
 };
 
 struct TreeItem
@@ -706,7 +708,7 @@ class TreeControlContext : public ControlContext
     vector<ItemHandle> roots;
     vector<TreeColumnData> columns;
     uint32 treeFlags              = 0;
-    uint32 separatorIndexSelected = 0xFFFFFFFF;
+    int32 separatorIndexSelected  = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch = InvalidItemHandle;
     bool hidSearchBarOnResize     = false;
 
@@ -733,6 +735,14 @@ class TreeControlContext : public ControlContext
         Utils::UnicodeStringBuilder searchText;
         FilterMode mode{ FilterMode::None };
     } filter{};
+
+    uint32 columnIndexToSortBy           = 0xFFFFFFFF;
+    bool sortAscendent                   = true;
+    uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
+    uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
+    void ColumnSort(uint32 columnIndex);
+    void SetSortColumn(uint32 columnIndex);
+    void SelectColumnSeparator(int32 offset);
 };
 
 enum class GridCellStatus
