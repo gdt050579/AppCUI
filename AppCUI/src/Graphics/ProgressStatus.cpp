@@ -4,12 +4,12 @@
 namespace AppCUI::Graphics
 {
 using namespace Internal;
+using namespace std;
 using namespace std::chrono;
 
-constexpr uint32 PROGRESS_STATUS_PANEL_WIDTH         = 60;
-constexpr uint32 PROGRESS_STATUS_PANEL_HEIGHT        = 8;
-constexpr uint64 MIN_SECONDS_BEFORE_SHOWING_PROGRESS = 2;
-constexpr uint32 MAX_PROGRESS_TIME_TEXT              = 35;
+constexpr uint32 PROGRESS_STATUS_PANEL_WIDTH  = 60;
+constexpr uint32 PROGRESS_STATUS_PANEL_HEIGHT = 8;
+constexpr uint32 MAX_PROGRESS_TIME_TEXT       = 35;
 
 // remove MessageBox definition that comes with Windows.h header
 #ifdef MessageBox
@@ -23,6 +23,8 @@ struct ProgressStatusData
 
     uint64 MaxValue;
     bool Showed;
+    bool AlwaysUpdate;
+    bool DelayedActivation;
     time_point<steady_clock> StartTime;
     uint64 Ellapsed, LastEllapsed;
     Clip WindowClip;
@@ -139,7 +141,7 @@ void ProgressStatus_ComputeTime(uint64 time)
     *p++           = '0' + sec % 10;
     PSData.timeStr = { (const char*) temp, (size_t) (p - temp) };
 }
-void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
+void ProgressStatus::Init(const ConstString& Title, uint64 maxValue, ProgressStatus::Flags flags)
 {
     Size appSize = { 0, 0 };
     Application::GetApplicationSize(appSize);
@@ -160,6 +162,8 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue)
     PSData.Progress          = 0;
     PSData.Ellapsed          = 0;
     PSData.LastEllapsed      = 0;
+    PSData.AlwaysUpdate      = (flags & ProgressStatus::Flags::AlwaysUpdate) == ProgressStatus::Flags::AlwaysUpdate;
+    PSData.DelayedActivation = (flags & ProgressStatus::Flags::DisableDelayedActivation) == ProgressStatus::Flags::None;
     PSData.timeStr.Clear();
     if (PSData.Title.Set(Title) == false)
     {
@@ -177,48 +181,74 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
           "Progress status was not initialized ! Have you called ProgressStatus::Init(...) before calling "
           "ProgressStatus::Update(...) ?");
     uint32 newProgress;
-    bool showStatus = false;
-    if (PSData.MaxValue > 0)
+    PSData.Ellapsed  = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - PSData.StartTime).count();
+    auto diff        = PSData.Ellapsed - PSData.LastEllapsed;
+    bool showStatus  = false;
+    bool shouldCheck = false;
+    
+    if (PSData.DelayedActivation)
     {
-        if (value < PSData.MaxValue)
-            newProgress = (uint32) ((value * (uint64) 100) / PSData.MaxValue);
-        else
-            newProgress = 100;
-        if (newProgress != PSData.Progress)
+        // we will not show the progress bar for the first 2 seconds
+        if (PSData.Ellapsed >= 2)
         {
-            PSData.Progress = newProgress;
-            if (newProgress >= 100)
-            {
-                PSData.progressString[0] = '1';
-                PSData.progressString[1] = '0';
-                PSData.progressString[2] = '0';
-            }
+            shouldCheck = true;
+            PSData.DelayedActivation = false;
+        }
+    }
+    else
+    {
+        // if it is the first time it is called and there is no delay activation, show the progress bar
+        if (PSData.Showed == false)
+            showStatus = true;
+        // we should check the data if either AlwaysUpdate flag is present or if 1 second has passed since the last update
+        shouldCheck = (PSData.AlwaysUpdate) || (diff>=1);
+    }
+    if (shouldCheck)
+    {
+        // validate if percentage has changed
+        if (PSData.MaxValue > 0)
+        {
+            if (value < PSData.MaxValue)
+                newProgress = (uint32) ((value * (uint64) 100) / PSData.MaxValue);
             else
+                newProgress = 100;
+            if (newProgress != PSData.Progress)
             {
-                PSData.progressString[0] = ' ';
-                if (newProgress > 9)
+                PSData.Progress = newProgress;
+                if (newProgress >= 100)
                 {
-                    PSData.progressString[1] = (newProgress / 10) + '0';
-                    newProgress %= 10;
+                    PSData.progressString[0] = '1';
+                    PSData.progressString[1] = '0';
+                    PSData.progressString[2] = '0';
                 }
                 else
                 {
-                    PSData.progressString[1] = ' ';
+                    PSData.progressString[0] = ' ';
+                    if (newProgress > 9)
+                    {
+                        PSData.progressString[1] = (newProgress / 10) + '0';
+                        newProgress %= 10;
+                    }
+                    else
+                    {
+                        PSData.progressString[1] = ' ';
+                    }
+                    PSData.progressString[2] = newProgress + '0';
                 }
-                PSData.progressString[2] = newProgress + '0';
+                showStatus = true;
             }
+        }
+
+        // check if new text is provided
+        if (content)
+        {
+            if (!PSData.Text.Set(*content))
+                PSData.Text.Clear();
             showStatus = true;
         }
     }
-    if (content)
-    {
-        if (!PSData.Text.Set(*content))
-            PSData.Text.Clear();
-        showStatus = true;
-    }
-    PSData.Ellapsed =
-          std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - PSData.StartTime).count();
-    if (PSData.Ellapsed >= MIN_SECONDS_BEFORE_SHOWING_PROGRESS)
+    // update the view
+    if (showStatus)
     {
         if (PSData.LastEllapsed != PSData.Ellapsed)
         {
@@ -233,23 +263,16 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
             }
             else
                 ProgressStatus_ComputeTime(PSData.Ellapsed);
-            showStatus          = true;
             PSData.LastEllapsed = PSData.Ellapsed;
         }
         if (PSData.Showed == false)
         {
             ProgressStatus_Paint_Panel();
-            ProgressStatus_Paint_Status();
         }
-        else
-        {
-            // update screen if (message or progress have changed or at least one second has passed from the previous
-            // screen update)
-            if (showStatus)
-                ProgressStatus_Paint_Status();
-        }
+        ProgressStatus_Paint_Status();
     }
 
+    // check for exit events
     if (PSData.App->terminal->IsEventAvailable())
     {
         Internal::SystemEvent evnt;
