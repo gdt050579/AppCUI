@@ -181,11 +181,28 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
           "Progress status was not initialized ! Have you called ProgressStatus::Init(...) before calling "
           "ProgressStatus::Update(...) ?");
     uint32 newProgress;
-    bool showStatus  = PSData.AlwaysUpdate;
     PSData.Ellapsed  = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - PSData.StartTime).count();
     auto diff        = PSData.Ellapsed - PSData.LastEllapsed;
-    bool shouldCheck = (showStatus) || ((PSData.Ellapsed >= 2) && (PSData.DelayedActivation)) || (diff >= 1);
-
+    bool showStatus  = false;
+    bool shouldCheck = false;
+    
+    if (PSData.DelayedActivation)
+    {
+        // we will not show the progress bar for the first 2 seconds
+        if (PSData.Ellapsed >= 2)
+        {
+            shouldCheck = true;
+            PSData.DelayedActivation = false;
+        }
+    }
+    else
+    {
+        // if it is the first time it is called and there is no delay activation, show the progress bar
+        if (PSData.Showed == false)
+            showStatus = true;
+        // we should check the data if either AlwaysUpdate flag is present or if 1 second has passed since the last update
+        shouldCheck = (PSData.AlwaysUpdate) || (diff>=1);
+    }
     if (shouldCheck)
     {
         // validate if percentage has changed
