@@ -28,6 +28,7 @@ struct ProgressStatusData
     time_point<steady_clock> StartTime;
     uint64 Ellapsed, LastEllapsed;
     Clip WindowClip;
+    Rect AbsolutePosition;
     ApplicationImpl* App;
     char progressString[5];
     Utils::FixSizeString<MAX_PROGRESS_TIME_TEXT> timeStr;
@@ -42,7 +43,6 @@ void ProgressStatus_Paint_Panel()
     auto canvas = &PSData.App->terminal->ScreenCanvas;
 
     canvas->DarkenScreen();
-    ;
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
@@ -64,6 +64,8 @@ void ProgressStatus_Paint_Panel()
     params.Color = PSData.App->config.Text.Highlighted;
     params.Width = PROGRESS_STATUS_PANEL_WIDTH - 10;
     canvas->WriteText(PSData.Title, params);
+
+    canvas->WriteSingleLineText(18,6, "Press `ESC` to cancel ...", PSData.App->config.Text.Inactive);
 
     PSData.Showed = true;
     PSData.App->terminal->Update();
@@ -103,7 +105,7 @@ void ProgressStatus_Paint_Status()
           PSData.timeStr,
           PSData.App->config.Text.Highlighted);
 
-    PSData.App->terminal->Update();
+    PSData.App->terminal->OnFlushToScreen(PSData.AbsolutePosition);
 }
 void ProgressStatus_ComputeTime(uint64 time)
 {
@@ -173,6 +175,12 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue, ProgressSta
     PSData.App->RepaintStatus = REPAINT_STATUS_ALL; // once the progress is over, all screen will be re-drawn
     PSData.StartTime          = std::chrono::steady_clock::now();
     progress_inited           = true;
+
+    PSData.AbsolutePosition.Create(
+          std::min<>(0, PSData.WindowClip.ClipRect.X),
+          std::min<>(0, PSData.WindowClip.ClipRect.Y),
+          std::max<>(PSData.WindowClip.ClipRect.X + PSData.WindowClip.ClipRect.Width, (int32) appSize.Width),
+          std::max<>(PSData.WindowClip.ClipRect.Y + PSData.WindowClip.ClipRect.Height, (int32) appSize.Height));
 }
 bool __ProgressStatus_Update(uint64 value, const ConstString* content)
 {
@@ -185,13 +193,13 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
     auto diff        = PSData.Ellapsed - PSData.LastEllapsed;
     bool showStatus  = false;
     bool shouldCheck = false;
-    
+
     if (PSData.DelayedActivation)
     {
         // we will not show the progress bar for the first 2 seconds
         if (PSData.Ellapsed >= 2)
         {
-            shouldCheck = true;
+            shouldCheck              = true;
             PSData.DelayedActivation = false;
         }
     }
@@ -200,8 +208,9 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
         // if it is the first time it is called and there is no delay activation, show the progress bar
         if (PSData.Showed == false)
             showStatus = true;
-        // we should check the data if either AlwaysUpdate flag is present or if 1 second has passed since the last update
-        shouldCheck = (PSData.AlwaysUpdate) || (diff>=1);
+        // we should check the data if either AlwaysUpdate flag is present or if 1 second has passed since the last
+        // update
+        shouldCheck = (PSData.AlwaysUpdate) || (diff >= 1);
     }
     if (shouldCheck)
     {
@@ -297,6 +306,7 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
                 return true;
             }
             // repaint
+            PSData.App->Paint();
             ProgressStatus_Paint_Panel();
         }
     }
