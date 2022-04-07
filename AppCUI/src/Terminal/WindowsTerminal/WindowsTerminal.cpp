@@ -31,8 +31,7 @@ bool WindowsTerminal::ResizeConsoleBuffer(uint32 width, uint32 height)
     this->ConsoleBufferCount = newCount;
     return true;
 }
-bool WindowsTerminal::CopyOriginalScreenBuffer(
-      uint32 width, uint32 height, uint32 mouseX, uint32 mouseY)
+bool WindowsTerminal::CopyOriginalScreenBuffer(uint32 width, uint32 height, uint32 mouseX, uint32 mouseY)
 {
     CHECK(this->OriginalScreenCanvas.Create(width, height),
           false,
@@ -455,10 +454,10 @@ void WindowsTerminal::OnUninit()
 }
 void WindowsTerminal::OnFlushToScreen()
 {
-    uint32 w = this->ScreenCanvas.GetWidth();
-    uint32 h = this->ScreenCanvas.GetHeight();
-    COORD winSize  = { (SHORT) w, (SHORT) h };
-    SMALL_RECT sr  = { 0, 0, winSize.X, winSize.Y };
+    uint32 w      = this->ScreenCanvas.GetWidth();
+    uint32 h      = this->ScreenCanvas.GetHeight();
+    COORD winSize = { (SHORT) w, (SHORT) h };
+    SMALL_RECT sr = { 0, 0, winSize.X, winSize.Y };
     // copy the entire buffer
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
     Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
@@ -470,6 +469,30 @@ void WindowsTerminal::OnFlushToScreen()
         d->Attributes       = ((uint8) c->Color.Foreground) | (((uint8) (c->Color.Background)) << 4);
         d++;
         c++;
+    }
+    WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
+}
+void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
+{
+    const uint32 w         = r.GetWidth();
+    const uint32 h         = r.GetHeight();
+    const auto screenWidth = this->ScreenCanvas.GetWidth();
+    COORD winSize          = { (SHORT) w, (SHORT) h };
+    SMALL_RECT sr          = { r.GetLeft(), r.GetTop(), winSize.X, winSize.Y };
+
+    Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * r.GetTop();
+    CHAR_INFO* d               = this->ConsoleBuffer.get();
+    for (auto y = 0; y < h; y++, start += screenWidth)
+    {
+        Graphics::Character* c = start + r.GetLeft();
+        Graphics::Character* e = c + w;
+        while (c < e)
+        {
+            d->Char.UnicodeChar = c->Code;
+            d->Attributes       = ((uint8) c->Color.Foreground) | (((uint8) (c->Color.Background)) << 4);
+            d++;
+            c++;
+        }
     }
     WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
