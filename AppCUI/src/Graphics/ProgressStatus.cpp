@@ -43,7 +43,6 @@ void ProgressStatus_Paint_Panel()
     auto canvas = &PSData.App->terminal->ScreenCanvas;
 
     canvas->DarkenScreen();
-    ;
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
     canvas->HideCursor();
@@ -104,7 +103,6 @@ void ProgressStatus_Paint_Status()
           PSData.timeStr,
           PSData.App->config.Text.Highlighted);
 
-    //PSData.App->terminal->Update();
     PSData.App->terminal->OnFlushToScreen(PSData.AbsolutePosition);
 }
 void ProgressStatus_ComputeTime(uint64 time)
@@ -155,16 +153,16 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue, ProgressSta
           ((int32) appSize.Height - (int32) PROGRESS_STATUS_PANEL_HEIGHT) / 2,
           PROGRESS_STATUS_PANEL_WIDTH,
           PROGRESS_STATUS_PANEL_HEIGHT);
-    PSData.App               = Application::GetApplication();
-    PSData.progressString[0] = ' ';
-    PSData.progressString[1] = ' ';
-    PSData.progressString[2] = '0';
-    PSData.progressString[3] = '%';
-    PSData.progressString[4] = 0;
-    PSData.Progress          = 0;
-    PSData.Ellapsed          = 0;
-    PSData.LastEllapsed      = 0;
-    PSData.AlwaysUpdate      = (flags & ProgressStatus::Flags::AlwaysUpdate) == ProgressStatus::Flags::AlwaysUpdate;
+    PSData.App                   = Application::GetApplication();
+    PSData.progressString[0]     = ' ';
+    PSData.progressString[1]     = ' ';
+    PSData.progressString[2]     = '0';
+    PSData.progressString[3]     = '%';
+    PSData.progressString[4]     = 0;
+    PSData.Progress              = 0;
+    PSData.Ellapsed              = 0;
+    PSData.LastEllapsed          = 0;
+    PSData.AlwaysUpdate          = (flags & ProgressStatus::Flags::AlwaysUpdate) == ProgressStatus::Flags::AlwaysUpdate;
     PSData.DelayedActivation = (flags & ProgressStatus::Flags::DisableDelayedActivation) == ProgressStatus::Flags::None;
     PSData.timeStr.Clear();
     if (PSData.Title.Set(Title) == false)
@@ -306,6 +304,7 @@ bool __ProgressStatus_Update(uint64 value, const ConstString* content)
                 return true;
             }
             // repaint
+            PSData.App->Paint();
             ProgressStatus_Paint_Panel();
         }
     }
