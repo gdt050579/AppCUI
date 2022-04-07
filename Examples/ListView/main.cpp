@@ -3076,17 +3076,21 @@ const char* english_words[] = { "a",
 class MyListViewExample : public Window, Handlers::OnCheckInterface
 {
     Reference<ListView> lv;
+
   public:
     MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:22", WindowFlags::None)
     {
-        lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:16", flags);
-        lv->AddColumn("&State", TextAlignament::Left, 15);
-        lv->AddColumn("&Abrv", TextAlignament::Center, 4);
-        lv->AddColumn("&Capital", TextAlignament::Left, 10);
-        lv->AddColumn("&Largest City", TextAlignament::Left, 15);
-        lv->AddColumn("&Population", TextAlignament::Right, 12);
-        lv->AddColumn("&Surface (km)", TextAlignament::Right, 12);
-        lv->AddColumn("&Repr", TextAlignament::Center, 6);
+        lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:16",
+              { { "&State", TextAlignament::Left, 15 },
+                { "&Abrv", TextAlignament::Center, 4 },
+                { "&Capital", TextAlignament::Left, 10 },
+                { "&Largest City", TextAlignament::Left, 15 },
+                { "&Population", TextAlignament::Right, 12 },
+                { "&Surface (km)", TextAlignament::Right, 12 },
+                { "&Repr", TextAlignament::Center, 6 } },
+              flags);
         // add items
         lv->Reserve(100); // to populate the list faster
         for (uint32 tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
@@ -3121,9 +3125,9 @@ class SimpleListExample : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:26,h:10",
+              { { "", TextAlignament::Left, 30 } },
               hasCheckboxes ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
                             : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
-        lv->AddColumn("", TextAlignament::Left, 30);
         lv->AddItem("Apple");
         lv->AddItem("Pinaple");
         lv->AddItem("Pears");
@@ -3136,11 +3140,14 @@ class ColumnsExample : public Window
   public:
     ColumnsExample() : Window("Columns/Headers Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::Sortable);
-        // columns
-        lv->AddColumn("&Name", TextAlignament::Left, 30);
-        lv->AddColumn("Cl&ass", TextAlignament::Left, 20);
-        lv->AddColumn("&Grade", TextAlignament::Right, 7);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:7,w:66,h:8",
+              { { "&Name", TextAlignament::Left, 30 },
+                { "Cl&ass", TextAlignament::Left, 20 },
+                { "&Grade", TextAlignament::Right, 7 } },
+              ListViewFlags::Sortable);
+
         // items
         lv->AddItem("Mike", "Mathematics", "9");
         lv->AddItem("Laura", "Mathematics", "7");
@@ -3162,9 +3169,12 @@ class ListViewWithColors : public Window
   public:
     ListViewWithColors() : Window("ListView with colors", "d:c,w:30,h:14", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::None);
-        lv->AddColumn("Color", TextAlignament::Left, 10);
-        lv->AddColumn("RGB", TextAlignament::Center, 10);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:26,h:10",
+              { { "Color", TextAlignament::Left, 10 }, { "RGB", TextAlignament::Center, 10 } },
+              ListViewFlags::None);
+
         ItemHandle handle;
         handle = lv->AddItem("Red", "FF0000");
         lv->SetItemColor(handle, ColorPair{ Color::Red, Color::Transparent });
@@ -3186,10 +3196,14 @@ class ListViewWithTreeItems : public Window
   public:
     ListViewWithTreeItems() : Window("Simulated Process Tree", "d:c,w:60,h:14", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::None);
-        lv->AddColumn("Application", TextAlignament::Left, 20);
-        lv->AddColumn("PID", TextAlignament::Right, 10);
-        lv->AddColumn("Modules", TextAlignament::Right, 10);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:56,h:10",
+              { { "Application", TextAlignament::Left, 20 },
+                { "PID", TextAlignament::Right, 10 },
+                { "Modules", TextAlignament::Right, 10 } },
+              ListViewFlags::None);
+
         ItemHandle handle;
         handle = lv->AddItem("winnt.exe", "500", "10");
         lv->SetItemType(handle, ListViewItemType::Highlighted);
@@ -3252,11 +3266,11 @@ class SearchAndFilter : public Window
               "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that "
               "contains that text.",
               "x:0,y:0,w:100%,h:100%");
-        auto lv1 = Factory::ListView::Create(this, "x:1,y:7,w:34,h:10", ListViewFlags::None);
-        auto lv2 = Factory::ListView::Create(this, "x:37,y:7,w:34,h:10", ListViewFlags::SearchMode);
-        // columns
-        lv1->AddColumn("&Name", TextAlignament::Left, 30);
-        lv2->AddColumn("&Name", TextAlignament::Left, 30);
+        auto lv1 = Factory::ListView::Create(
+              this, "x:1,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::None);
+        auto lv2 = Factory::ListView::Create(
+              this, "x:37,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::SearchMode);
+
         // items
         lv1->AddItem("Mike");
         lv2->AddItem("Mike");
@@ -3281,10 +3295,12 @@ class SelectionDemo : public Window
   public:
     SelectionDemo() : Window("Selection Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::AllowMultipleItemsSelection);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:4,w:66,h:11",
+              { { "&Word", TextAlignament::Left, 60 } },
+              ListViewFlags::AllowMultipleItemsSelection);
         lv->Reserve(3000);
-        // columns
-        lv->AddColumn("&Word", TextAlignament::Left, 60);
         // items
         for (uint32 tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
         {
@@ -3304,9 +3320,9 @@ class ItemTypesDemo : public Window
   public:
     ItemTypesDemo() : Window("Item Types Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::HideColumns);
-        // columns
-        lv->AddColumn("", TextAlignament::Left, 60);
+        auto lv = Factory::ListView::Create(
+              this, "x:1,y:4,w:66,h:11", { { "", TextAlignament::Left, 60 } }, ListViewFlags::HideColumns);
+
         // items
         ItemHandle h;
         h = lv->AddItem("Normal item");
@@ -3339,10 +3355,12 @@ class CategoryDemo : public Window
   public:
     CategoryDemo() : Window("Category Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:13", ListViewFlags::HideColumns);
-        // columns
-        lv->AddColumn("", TextAlignament::Left, 55);
-        lv->AddColumn("", TextAlignament::Right, 4);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:13",
+              { { "", TextAlignament::Left, 55 }, { "", TextAlignament::Right, 4 } },
+              ListViewFlags::HideColumns);
+
         // items
         ItemHandle h;
         h = lv->AddItem("First chapter");
