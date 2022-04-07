@@ -174,9 +174,9 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECK(cc->columns.size() > 0, true, "");
 
-    const auto controlWidth = GetWidth();
+    const auto controlWidth = GetWidth() - 2 * ((cc->treeFlags & TreeFlags::HideBorder) == TreeFlags::None);
 
-    renderer.FillHorizontalLine(GetX() - 1, 1, GetX() + controlWidth - 4, ' ', cc->Cfg->Header.Text.Focused);
+    renderer.FillHorizontalLineSize(GetX() - 1, 1, controlWidth, ' ', cc->Cfg->Header.Text.Focused);
 
     const auto enabled = (cc->Flags & GATTR_ENABLE) != 0;
 
@@ -190,31 +190,29 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
         wtp.Align = col.headerAlignment;
         wtp.X     = col.x;
         wtp.Width = col.width - ((cc->treeFlags & TreeFlags::HideColumnsSeparator) == TreeFlags::None);
-        wtp.Width -= (wtp.X + wtp.Width == controlWidth);
 
-        auto rightX = wtp.X + wtp.Width;
-        if (i == cc->columns.size() - 1)
+        if (wtp.X >= controlWidth)
         {
-            wtp.Width -= 1;
-            if (rightX > controlWidth)
-            {
-                auto diff = rightX - controlWidth;
-                wtp.Width = diff - ((cc->treeFlags & TreeFlags::HideBorder) != TreeFlags::None);
-            }
-            rightX = wtp.X + wtp.Width;
+            continue;
         }
+
+        if (wtp.X + wtp.Width >= controlWidth)
+        {
+            wtp.Width = controlWidth - wtp.X;
+        }
+
         wtp.Color = enabled ? ((i == cc->columnIndexToSortBy) ? cc->Cfg->Header.Text.PressedOrSelected
                                                               : cc->Cfg->Header.Text.Focused)
                             : cc->Cfg->Header.Text.Inactive;
 
-        renderer.FillHorizontalLine(col.x, 1, rightX, ' ', wtp.Color);
+        renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
 
         renderer.WriteText(*const_cast<CharacterBuffer*>(&col.headerValue), wtp);
 
         if (i == cc->columnIndexToSortBy)
         {
             renderer.WriteSpecialCharacter(
-                  static_cast<int32>(rightX),
+                  static_cast<int32>(wtp.X + wtp.Width),
                   1,
                   cc->sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
                   cc->Cfg->Header.HotKey.PressedOrSelected);
@@ -1624,13 +1622,16 @@ bool Tree::AddToColumnWidth(const uint32 columnIndex, const int32 value)
         return true;
     }
 
-    auto width          = static_cast<int32>(currentColumn.width) + value;
-    currentColumn.width = std::max<>(width, static_cast<int32>(MinColumnWidth));
+    const auto newWidth = static_cast<int32>(currentColumn.width) + value;
+    currentColumn.width = std::max<>(newWidth, static_cast<int32>(MinColumnWidth));
 
+    auto previousX = currentColumn.x + currentColumn.width +
+                     ((cc->treeFlags & TreeFlags::HideColumnsSeparator) == TreeFlags::None);
     for (auto i = columnIndex + 1; i < cc->columns.size(); i++)
     {
         auto& column = cc->columns[i];
-        column.x += value;
+        column.x     = previousX;
+        previousX += (column.width + ((cc->treeFlags & TreeFlags::HideColumnsSeparator) == TreeFlags::None));
     }
 
     return true;
