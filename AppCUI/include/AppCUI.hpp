@@ -3763,7 +3763,7 @@ namespace Controls
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        ListView(string_view layout, ListViewFlags flags);
+        ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns);
 
       public:
         bool Reserve(uint32 itemsCount);
@@ -3779,7 +3779,6 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, uint32 Size = 10);
         bool SetColumnText(uint32 columnIndex, const ConstString& text);
         bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
         bool SetColumnWidth(uint32 columnIndex, uint32 width);
@@ -4579,14 +4578,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::ListView> Create(
-                  string_view layout, Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+                  string_view layout,
+                  std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags =
+                        Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,
+                  std::initializer_list<ColumnBuilder> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
                   string_view layout,
+                  std::initializer_list<ColumnBuilder> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox

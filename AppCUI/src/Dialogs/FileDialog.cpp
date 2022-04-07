@@ -185,8 +185,8 @@ FileDialogWindow::FileDialogWindow(
 
     ListViewFlags specialPathsFlags =
           ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
-    lSpecialPaths = Factory::ListView::Create(splitPanelLeft, "x:0,y:0,w:100%,h:100%", specialPathsFlags);
-    lSpecialPaths->AddColumn("Special", TextAlignament::Left, 20);
+    lSpecialPaths = Factory::ListView::Create(
+          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { { "Special", TextAlignament::Left, 20 } }, specialPathsFlags);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
@@ -199,10 +199,13 @@ FileDialogWindow::FileDialogWindow(
         lSpecialPaths->AddItem(locationInfo.locationName);
     }
 
-    files = Factory::ListView::Create(splitPanelRight, "x:0,y:0,w:100%,h:100%", ListViewFlags::Sortable);
-    files->AddColumn("&Name", TextAlignament::Left, 31);
-    files->AddColumn("&Size", TextAlignament::Right, 16);
-    files->AddColumn("&Modified", TextAlignament::Center, 20);
+    files = Factory::ListView::Create(
+          splitPanelRight,
+          "x:0,y:0,w:100%,h:100%",
+          { { "&Name", TextAlignament::Left, 31 },
+            { "&Size", TextAlignament::Right, 16 },
+            { "&Modified", TextAlignament::Center, 20 } },
+          ListViewFlags::Sortable);
     files->Handlers()->ComparereItem = [](Reference<Control> control, ItemHandle item1, ItemHandle item2) -> int
     {
         auto lv        = control.ToObjectRef<ListView>();

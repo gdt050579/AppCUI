@@ -394,8 +394,9 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
+              { { "", TextAlignament::Left, 100 } },
               ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::SearchMode);
-        lv->AddColumn("", TextAlignament::Left, 100);
+
         if (prop.listValues.size() > 0)
         {
             items   = new ItemHandle[prop.listValues.size()];
@@ -486,8 +487,11 @@ class PropertyListEditDialog : public PropertyEditDialog
     }
     void OnInitPropertyDialog() override
     {
-        lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns | ListViewFlags::SearchMode);
-        lv->AddColumn("", TextAlignament::Left, 100);
+        lv = Factory::ListView::Create(
+              this,
+              "l:1,t:1,r:1,b:3",
+              { { "", TextAlignament::Left, 100 } },
+              ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         if (prop.listValues.size() > 0)
         {
             items   = new ItemHandle[prop.listValues.size()];

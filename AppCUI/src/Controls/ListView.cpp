@@ -454,6 +454,8 @@ bool ListViewControlContext::AddColumn(const ConstString& text, TextAlignament A
     Columns.List[Columns.Count].Reset();
     CHECK(Columns.List[Columns.Count].SetName(text), false, "Fail to set column name: %s", text);
     CHECK(Columns.List[Columns.Count].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
+    if (width == ColumnBuilder::AUTO_SIZE)
+        width = Columns.List[Columns.Count].Name.Len() + 3;
     Columns.List[Columns.Count].SetWidth(width);
     Columns.Count++;
     UpdateColumnsWidth();
@@ -1417,7 +1419,8 @@ ListView::~ListView()
     DeleteAllColumns();
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListViewControlContext(), "", layout, false)
+ListView::ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns)
+    : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
@@ -1451,6 +1454,11 @@ ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListVi
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
+    // set up the columns
+    for (const auto& col: columns)
+    {
+        WRAPPER->AddColumn(col.name, col.align, col.width);
+    }
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {
@@ -1477,11 +1485,6 @@ void ListView::OnUpdateScrollBars()
     if (count > 0)
         count--;
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
-}
-
-bool ListView::AddColumn(const ConstString& text, TextAlignament Align, uint32 Size)
-{
-    return WRAPPER->AddColumn(text, Align, Size);
 }
 bool ListView::SetColumnText(uint32 columnIndex, const ConstString& text)
 {
