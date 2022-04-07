@@ -4026,7 +4026,7 @@ namespace Controls
         HideColumns                     = 0x000100, // not implemented
         HideBorder                      = 0x000200,
         HideColumnsSeparator            = 0x000400, // not implemented
-        Sortable                        = 0x000800, // not implemented
+        Sortable                        = 0x000800,
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
         Searchable                      = 0x004000, // shows all elements highlighting the ones matching
@@ -4057,6 +4057,7 @@ namespace Controls
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        bool OnMouseDrag(int x, int, Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
@@ -4117,10 +4118,9 @@ namespace Controls
         bool IsMouseOnSearchField(int x, int y) const;
         bool AdjustElementsOnResize(const int newWidth, const int newHeight);
         bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const uint32 columnIndex, const int value);
+        bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
         bool SetColorForItems(const Graphics::ColorPair& color);
         bool SearchItems();
-        bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
         bool MarkAllItemsAsNotFound();
         bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
 
