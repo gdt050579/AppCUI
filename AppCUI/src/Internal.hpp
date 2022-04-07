@@ -220,6 +220,7 @@ namespace Internal
         virtual void RestoreOriginalConsoleSettings()                         = 0;
         virtual void OnUninit()                                               = 0;
         virtual void OnFlushToScreen()                                        = 0;
+        virtual void OnFlushToScreen(const Graphics::Rect& r)                 = 0;
         virtual bool OnUpdateCursor()                                         = 0;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt)              = 0;
         virtual bool IsEventAvailable()                                       = 0;

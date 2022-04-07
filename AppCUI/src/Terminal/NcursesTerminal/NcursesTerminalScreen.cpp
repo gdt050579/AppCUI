@@ -72,6 +72,11 @@ void NcursesTerminal::OnFlushToScreen()
     move(LastCursorY, LastCursorX);
     refresh();
 }
+void NcursesTerminal::OnFlushToScreen(const Graphics::Rect& r)
+{
+    // No implementation for the moment, copy the entire screem
+    OnFlushToScreen();
+}
 
 bool NcursesTerminal::OnUpdateCursor()
 {

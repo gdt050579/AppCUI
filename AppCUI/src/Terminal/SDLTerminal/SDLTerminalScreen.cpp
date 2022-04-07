@@ -269,6 +269,11 @@ void SDLTerminal::OnFlushToScreen()
     }
     SDL_RenderPresent(renderer);
 }
+void SDLTerminal::OnFlushToScreen(const Graphics::Rect& r)
+{
+    // No implementation for the moment, copy the entire screem
+    OnFlushToScreen();
+}
 
 void SDLTerminal::RestoreOriginalConsoleSettings()
 {
