@@ -674,8 +674,8 @@ struct TreeColumnData
     TextAlignament headerAlignment  = TextAlignament::Left;
     TextAlignament contentAlignment = TextAlignament::Left;
     bool customWidth                = false;
-    uint32 HotKeyOffset             = 0xFFFFFFFF;
-    Key HotKeyCode                  = Key::None;
+    uint32 hotKeyOffset             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    Key hotKeyCode                  = Key::None;
 };
 
 struct TreeItem
@@ -699,7 +699,6 @@ class TreeControlContext : public ControlContext
     std::map<ItemHandle, TreeItem> items;
     vector<ItemHandle> itemsToDrew;
     vector<ItemHandle> orderedItems;
-    vector<ItemHandle> sortedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     uint32 maxItemsToDraw  = 0;

@@ -197,7 +197,7 @@ bool Tree::PaintColumnHeaders(Graphics::Renderer& renderer)
             continue;
         }
 
-        if (wtp.X + wtp.Width >= controlWidth)
+        if (wtp.X + static_cast<int32>(wtp.Width) >= controlWidth)
         {
             wtp.Width = controlWidth - wtp.X;
         }
@@ -898,7 +898,7 @@ bool Tree::OnKeyEvent(Input::Key keyCode, char16 character)
         {
             for (uint32 i = 0; i < cc->columns.size(); i++)
             {
-                if (cc->columns[i].HotKeyCode == keyCode)
+                if (cc->columns[i].hotKeyCode == keyCode)
                 {
                     cc->ColumnSort(i);
                     return true;
@@ -1342,7 +1342,7 @@ bool Tree::AddColumnData(
 
     auto& column = cc->columns[index];
 
-    CHECK(column.headerValue.SetWithHotKey(title, column.HotKeyOffset, column.HotKeyCode, Key::Ctrl), false, "");
+    CHECK(column.headerValue.SetWithHotKey(title, column.hotKeyOffset, column.hotKeyCode, Key::Ctrl), false, "");
     column.headerAlignment  = headerAlignment;
     column.contentAlignment = contentAlignment;
     if (width != 0xFFFFFFFF)
