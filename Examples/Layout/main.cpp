@@ -44,9 +44,10 @@ class MainWin : public Window
   public:
     MainWin() : Window("Layout modes", "x:0,y:0,w:70,h:20", WindowFlags::None)
     {
-        lst = Factory::ListView::Create(this, "x:1,y:1,w:66,h:14");
-        lst->AddColumn("Layout", TextAlignament::Left, 25);
-        lst->AddColumn("Explanation", TextAlignament::Left, 100);
+        lst = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:14",
+              { { "Layout", TextAlignament::Left, 25 }, { "Explanation", TextAlignament::Left, 100 } });
 
         // add list of layouts
         AddGroup("Docking");
