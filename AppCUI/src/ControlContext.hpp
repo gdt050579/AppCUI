@@ -699,6 +699,7 @@ class TreeControlContext : public ControlContext
     std::map<ItemHandle, TreeItem> items;
     vector<ItemHandle> itemsToDrew;
     vector<ItemHandle> orderedItems;
+    vector<ItemHandle> sortedItems;
     ItemHandle nextItemHandle{ 1ULL };
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     uint32 maxItemsToDraw  = 0;
@@ -743,6 +744,9 @@ class TreeControlContext : public ControlContext
     void ColumnSort(uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
     void SelectColumnSeparator(int32 offset);
+    void Sort();
+    bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
+    bool SortByColumn(const ItemHandle handle);
 };
 
 enum class GridCellStatus

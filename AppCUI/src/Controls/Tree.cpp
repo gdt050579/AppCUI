@@ -52,9 +52,13 @@ Tree::Tree(string_view layout, const TreeFlags flags, const uint32 noOfColumns)
         }
     }
 
+    cc->itemsToDrew.reserve(100);
+    cc->orderedItems.reserve(100);
+
     if ((cc->treeFlags & TreeFlags::Sortable) != TreeFlags::None)
     {
         cc->columnIndexToSortBy = 0;
+        cc->Sort();
     }
 
     AdjustItemsBoundsOnResize();
@@ -75,9 +79,6 @@ Tree::Tree(string_view layout, const TreeFlags flags, const uint32 noOfColumns)
     cc->separatorIndexSelected = InvalidIndex;
 
     SetColorForItems(cc->Cfg->Text.Normal);
-
-    cc->itemsToDrew.reserve(100);
-    cc->orderedItems.reserve(100);
 }
 
 bool Tree::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) const
@@ -484,6 +485,11 @@ bool Tree::ToggleExpandRecursive(const ItemHandle handle)
         {
             ancestorRelated.push(handle);
         }
+    }
+
+    if ((cc->treeFlags & TreeFlags::Sortable) != TreeFlags::None)
+    {
+        cc->Sort();
     }
 
     cc->notProcessed = true;
@@ -1717,48 +1723,9 @@ bool Tree::SearchItems()
         ProcessItemsToBeDrawn(InvalidItemHandle);
     }
 
-    ProcessOrderedItems(InvalidItemHandle, true);
+    cc->ProcessOrderedItems(InvalidItemHandle, true);
 
     return found;
-}
-
-bool Tree::ProcessOrderedItems(const ItemHandle handle, const bool clear)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    if (clear)
-    {
-        cc->orderedItems.clear();
-        cc->orderedItems.reserve(cc->items.size());
-    }
-
-    CHECK(cc->items.size() > 0, true, "");
-
-    if (handle == InvalidItemHandle)
-    {
-        for (const auto& rootHandle : cc->roots)
-        {
-            cc->orderedItems.emplace_back(rootHandle);
-
-            const auto& root = cc->items[rootHandle];
-            for (auto& childHandle : root.children)
-            {
-                ProcessOrderedItems(childHandle, false);
-            }
-        }
-    }
-    else
-    {
-        const auto& item = cc->items[handle];
-        cc->orderedItems.emplace_back(item.handle);
-        for (auto& childHandle : item.children)
-        {
-            ProcessOrderedItems(childHandle, false);
-        }
-    }
-
-    return true;
 }
 
 bool Tree::MarkAllItemsAsNotFound()
@@ -1842,14 +1809,13 @@ void TreeControlContext::ColumnSort(uint32 columnIndex)
         columnIndexToSortBy = InvalidIndex;
         return;
     }
+
     if (columnIndex != columnIndexToSortBy)
-        SetSortColumn(columnIndex);
-    else
     {
-        sortAscendent = sortAscendent;
+        SetSortColumn(columnIndex);
     }
 
-    // Sort();
+    Sort();
 }
 
 void TreeControlContext::SetSortColumn(uint32 columnIndex)
@@ -1888,5 +1854,101 @@ void TreeControlContext::SelectColumnSeparator(int32 offset)
     {
         separatorIndexSelected = 0;
     }
+}
+
+void TreeControlContext::Sort()
+{
+    SortByColumn(InvalidItemHandle);
+    notProcessed = true;
+}
+
+bool TreeControlContext::SortByColumn(const ItemHandle handle)
+{
+    CHECK(columnIndexToSortBy != InvalidIndex, false, "");
+    CHECK(items.size() > 0, false, "");
+
+    const auto Comparator = [this](ItemHandle i1, ItemHandle i2) -> bool
+    {
+        const auto& a = items[i1];
+        const auto& b = items[i2];
+
+        const auto result = a.values[columnIndexToSortBy].CompareWith(b.values[columnIndexToSortBy], true);
+
+        if (result == 0)
+        {
+            return false;
+        }
+
+        if (sortAscendent)
+        {
+            return result < 0;
+        }
+        else
+        {
+            return result > 0;
+        }
+    };
+
+    if (handle == InvalidItemHandle)
+    {
+        std::sort(roots.begin(), roots.end(), Comparator);
+
+        for (const auto& rootHandle : roots)
+        {
+            auto& root = items[rootHandle];
+            std::sort(root.children.begin(), root.children.end(), Comparator);
+            for (auto& childHandle : root.children)
+            {
+                SortByColumn(childHandle);
+            }
+        }
+    }
+    else
+    {
+        auto& item = items[handle];
+        std::sort(item.children.begin(), item.children.end(), Comparator);
+        for (auto& childHandle : item.children)
+        {
+            SortByColumn(childHandle);
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::ProcessOrderedItems(const ItemHandle handle, const bool clear)
+{
+    if (clear)
+    {
+        orderedItems.clear();
+        orderedItems.reserve(items.size());
+    }
+
+    CHECK(items.size() > 0, true, "");
+
+    if (handle == InvalidItemHandle)
+    {
+        for (const auto& rootHandle : roots)
+        {
+            orderedItems.emplace_back(rootHandle);
+
+            const auto& root = items[rootHandle];
+            for (auto& childHandle : root.children)
+            {
+                ProcessOrderedItems(childHandle, false);
+            }
+        }
+    }
+    else
+    {
+        const auto& item = items[handle];
+        orderedItems.emplace_back(item.handle);
+        for (auto& childHandle : item.children)
+        {
+            ProcessOrderedItems(childHandle, false);
+        }
+    }
+
+    return true;
 }
 } // namespace AppCUI

@@ -4121,7 +4121,6 @@ namespace Controls
         bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
         bool SetColorForItems(const Graphics::ColorPair& color);
         bool SearchItems();
-        bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
         bool MarkAllItemsAsNotFound();
         bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
 
