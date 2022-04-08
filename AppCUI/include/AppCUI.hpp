@@ -3743,19 +3743,50 @@ namespace Controls
         HideBorder                    = 0x020000,
         HideScrollBar                 = 0x040000
     };
-    enum class ListViewItemType : uint16
-    {
-        Normal             = 0,
-        Highlighted        = 1,
-        GrayedOut          = 2,
-        ErrorInformation   = 3,
-        WarningInformation = 4,
-        Emphasized_1       = 5,
-        Emphasized_2       = 6,
-        Category           = 7,
-        Colored            = 8
-    };
 
+
+    class EXPORT ListViewItem
+    {
+        void* context;
+        ItemHandle item;
+
+        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        {
+        }
+
+      public:
+        enum class Type : uint16
+        {
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
+            WarningInformation = 4,
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Category           = 7,
+            Colored            = 8
+        };
+      public:
+        ListViewItem() : context(nullptr), item(0)
+        {
+        }
+        inline bool Exists() const
+        {
+            return context != nullptr;
+        }
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue);
+        bool SetCheck(bool value);
+        bool IsChecked();
+        bool SetType(ListViewItem::Type type);
+
+
+
+
+        friend class ListView;
+    };
     class EXPORT ListView : public Control
     {
       private:
@@ -3790,7 +3821,7 @@ namespace Controls
         uint32 GetSortColumnIndex();
 
         // items add
-        ItemHandle AddItem(const ConstString& text);
+        ListViewItem AddItem(const ConstString& text);
         ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
         ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
         ItemHandle AddItem(
@@ -3842,15 +3873,13 @@ namespace Controls
         // items properties
         bool SetItemText(ItemHandle item, uint32 subItemIndex, const ConstString& text);
         const Graphics::CharacterBuffer& GetItemText(ItemHandle item, uint32 subItemIndex);
-        bool SetItemCheck(ItemHandle item, bool check);
+
         bool SetItemSelect(ItemHandle item, bool select);
         bool SetItemColor(ItemHandle item, Graphics::ColorPair color);
-        bool SetItemType(ItemHandle item, ListViewItemType type);
-        bool IsItemChecked(ItemHandle item);
+
         bool IsItemSelected(ItemHandle item);
 
-        bool SetItemData(ItemHandle item, uint64 value);
-        uint64 GetItemData(ItemHandle item, uint64 errorValue);
+
 
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
@@ -3868,7 +3897,7 @@ namespace Controls
         uint32 GetItemHeight(ItemHandle item);
         void DeleteAllItems();
         uint32 GetItemsCount();
-        ItemHandle GetCurrentItem();
+        ListViewItem GetCurrentItem();
         bool SetCurrentItem(ItemHandle item);
         void SelectAllItems();
         void UnSelectAllItems();
@@ -4579,8 +4608,8 @@ namespace Controls
           public:
             static Pointer<Controls::ListView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags =
-                        Controls::ListViewFlags::None);
+                  std::initializer_list<ColumnBuilder> columns,
+                  Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,

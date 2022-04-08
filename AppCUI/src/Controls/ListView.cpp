@@ -14,11 +14,11 @@ constexpr uint32 LISTVIEW_SEARCH_BAR_WIDTH = 12;
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
-    ListViewItem& i = Items.List[index];
+    InternalListViewItem& i = Items.List[index];
 
 #define CONST_PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
-    const ListViewItem& i = Items.List[index];
+    const InternalListViewItem& i = Items.List[index];
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
@@ -64,15 +64,15 @@ void ListViewColumn::SetWidth(uint32 width)
     this->Width = (uint8) width;
 }
 
-ListViewItem::ListViewItem() : Data(nullptr)
+InternalListViewItem::InternalListViewItem() : Data(nullptr)
 {
     this->Flags     = 0;
-    this->Type      = ListViewItemType::Normal;
+    this->Type      = ListViewItem::Type::Normal;
     this->ItemColor = DefaultColorPair;
     this->Height    = 1;
     this->XOffset   = 0;
 }
-ListViewItem::ListViewItem(const ListViewItem& obj) : Data(obj.Data)
+InternalListViewItem::InternalListViewItem(const InternalListViewItem& obj) : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
@@ -84,7 +84,7 @@ ListViewItem::ListViewItem(const ListViewItem& obj) : Data(obj.Data)
         this->SubItem[tr] = obj.SubItem[tr];
     }
 }
-ListViewItem::ListViewItem(ListViewItem&& obj) noexcept : Data(obj.Data)
+InternalListViewItem::InternalListViewItem(InternalListViewItem&& obj) noexcept : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
@@ -97,7 +97,7 @@ ListViewItem::ListViewItem(ListViewItem&& obj) noexcept : Data(obj.Data)
     }
 }
 
-ListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
+InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 {
     uint32 idx;
     CHECK(Items.Indexes.Get(index, idx), nullptr, "Fail to get index value for item with ID: %d", index);
@@ -198,7 +198,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         x++;
     }
 }
-void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem* item, int y, bool currentItem)
+void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
     int x = 1 - Columns.XOffset;
     int itemStarts;
@@ -221,31 +221,31 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // select color based on item type
     switch (item->Type)
     {
-    case ListViewItemType::Normal:
+    case ListViewItem::Type::Normal:
         itemCol = Cfg->Text.Normal;
         break;
-    case ListViewItemType::Highlighted:
+    case ListViewItem::Type::Highlighted:
         itemCol = Cfg->Text.Highlighted;
         break;
-    case ListViewItemType::ErrorInformation:
+    case ListViewItem::Type::ErrorInformation:
         itemCol = Cfg->Text.Error;
         break;
-    case ListViewItemType::WarningInformation:
+    case ListViewItem::Type::WarningInformation:
         itemCol = Cfg->Text.Warning;
         break;
-    case ListViewItemType::GrayedOut:
+    case ListViewItem::Type::GrayedOut:
         itemCol = Cfg->Text.Inactive;
         break;
-    case ListViewItemType::Emphasized_1:
+    case ListViewItem::Type::Emphasized_1:
         itemCol = Cfg->Text.Emphasized1;
         break;
-    case ListViewItemType::Emphasized_2:
+    case ListViewItem::Type::Emphasized_2:
         itemCol = Cfg->Text.Emphasized2;
         break;
-    case ListViewItemType::Category:
+    case ListViewItem::Type::Category:
         itemCol = Cfg->Text.Highlighted;
         break;
-    case ListViewItemType::Colored:
+    case ListViewItem::Type::Colored:
         itemCol = item->ItemColor;
         break;
     default:
@@ -267,7 +267,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     params.Color = itemCol;
 
     // for chategory items a special draw is made (only first comlumn is shown)
-    if (item->Type == ListViewItemType::Category)
+    if (item->Type == ListViewItem::Type::Category)
     {
         if (Focused)
             renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Focused, true);
@@ -395,7 +395,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     uint32 count = this->Items.Indexes.Len();
     while ((y < this->Layout.Height) && (index < count))
     {
-        ListViewItem* item = GetFilteredItem(index);
+        InternalListViewItem* item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == static_cast<unsigned>(this->Items.CurentItemIndex));
         y++;
         if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -489,7 +489,7 @@ int ListViewControlContext::GetNrColumns()
 ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (uint32) Items.List.size();
-    Items.List.push_back(ListViewItem(Cfg->Text.Normal));
+    Items.List.push_back(InternalListViewItem(Cfg->Text.Normal));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
     return idx;
@@ -538,14 +538,14 @@ bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.ItemColor = color;
-    i.Type      = ListViewItemType::Colored;
+    i.Type      = ListViewItem::Type::Colored;
     return true;
 }
-bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
+bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItem::Type type)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.Type = type;
-    if (type == ListViewItemType::Colored)
+    if (type == ListViewItem::Type::Colored)
         i.ItemColor = Cfg->Text.Normal;
     return true;
 }
@@ -726,7 +726,7 @@ int ListViewControlContext::GetVisibleItemsCount()
     int sz = (int) Items.Indexes.Len();
     while ((dim < vis) && (poz < sz))
     {
-        ListViewItem* i = GetFilteredItem(poz);
+        InternalListViewItem* i = GetFilteredItem(poz);
         if (i)
             dim += i->Height;
         if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -760,7 +760,7 @@ void ListViewControlContext::UpdateSelectionInfo()
 }
 void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 {
-    ListViewItem* i;
+    InternalListViewItem* i;
     int totalItems = Items.Indexes.Len();
 
     while ((start != end) && (start >= 0) && (start < totalItems))
@@ -805,7 +805,7 @@ void ListViewControlContext::MoveTo(int index)
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
-    ListViewItem* lvi;
+    InternalListViewItem* lvi;
     bool selected;
 
     if (Columns.ResizeModeEnabled)
@@ -1326,7 +1326,7 @@ int ListViewControlContext::SearchItem(uint32 startPoz)
     } while (startPoz != originalStartPoz);
     return found;
 }
-bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll)
+bool ListViewControlContext::FilterItem(InternalListViewItem& lvi, bool clearColorForAll)
 {
     uint32 columnID = 0;
     int index       = -1;
@@ -1539,9 +1539,9 @@ uint32 ListView::GetColumnsCount()
     return WRAPPER->GetNrColumns();
 }
 
-ItemHandle ListView::AddItem(const ConstString& text)
+ListViewItem ListView::AddItem(const ConstString& text)
 {
-    return WRAPPER->AddItem(text);
+    return { this->Context, WRAPPER->AddItem(text) };
 }
 ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
 {
@@ -1679,10 +1679,7 @@ const Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, uint32 s
         return __temp_listviewitem_reference_object__;
     }
 }
-bool ListView::SetItemCheck(ItemHandle item, bool check)
-{
-    return WRAPPER->SetItemCheck(item, check);
-}
+
 bool ListView::SetItemSelect(ItemHandle item, bool select)
 {
     return WRAPPER->SetItemSelect(item, select);
@@ -1690,14 +1687,6 @@ bool ListView::SetItemSelect(ItemHandle item, bool select)
 bool ListView::SetItemColor(ItemHandle item, ColorPair col)
 {
     return WRAPPER->SetItemColor(item, col);
-}
-bool ListView::SetItemType(ItemHandle item, ListViewItemType type)
-{
-    return WRAPPER->SetItemType(item, type);
-}
-bool ListView::IsItemChecked(ItemHandle item)
-{
-    return WRAPPER->IsItemChecked(item);
 }
 bool ListView::IsItemSelected(ItemHandle item)
 {
@@ -1710,16 +1699,6 @@ bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
 GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
 {
     return WRAPPER->GetItemDataAsPointer(item);
-}
-bool ListView::SetItemData(ItemHandle item, uint64 value)
-{
-    return WRAPPER->SetItemDataAsValue(item, value);
-}
-uint64 ListView::GetItemData(ItemHandle item, uint64 errorValue)
-{
-    uint64 value;
-    CHECK(WRAPPER->GetItemDataAsValue(item, value), errorValue, "");
-    return value;
 }
 bool ListView::SetItemXOffset(ItemHandle item, uint32 XOffset)
 {
@@ -1752,13 +1731,13 @@ uint32 ListView::GetItemsCount()
     }
     return 0;
 }
-ItemHandle ListView::GetCurrentItem()
+ListViewItem ListView::GetCurrentItem()
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
     if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int) lvcc->Items.Indexes.Len()))
-        return InvalidItemHandle;
+        return { nullptr, InvalidItemHandle };
     uint32* indexes = lvcc->Items.Indexes.GetUInt32Array();
-    return indexes[lvcc->Items.CurentItemIndex];
+    return { this->Context, indexes[lvcc->Items.CurentItemIndex] };
 }
 bool ListView::SetCurrentItem(ItemHandle item)
 {
@@ -1866,4 +1845,30 @@ uint32 ListView::GetSortColumnIndex()
 {
     return WRAPPER->SortParams.ColumnIndex;
 }
+
+// ================================================================== [ListViewItem] ==========================
+#define LVIC ((ListViewControlContext*) this->context)
+bool ListViewItem::SetData(uint64 value)
+{
+    return LVIC->SetItemDataAsValue(item, value);
+}
+uint64 ListViewItem::GetData(uint64 errorValue)
+{
+    uint64 value;
+    CHECK(LVIC->GetItemDataAsValue(item, value), errorValue, "");
+    return value;
+}
+bool ListViewItem::SetCheck(bool check)
+{
+    return LVIC->SetItemCheck(item, check);
+}
+bool ListViewItem::IsChecked()
+{
+    return LVIC->IsItemChecked(item);
+}
+bool ListViewItem::SetType(ListViewItem::Type type)
+{
+    return LVIC->SetItemType(item, type);
+}
+#undef LVIC
 } // namespace AppCUI
