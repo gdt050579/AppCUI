@@ -3791,6 +3791,8 @@ namespace Controls
         bool SetType(ListViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+        bool SetXOffset(uint32 value);
+        uint32 GetXOffset() const;
 
 
 
@@ -3901,8 +3903,7 @@ namespace Controls
         {
             return this->GetItemDataAsPointer(item).ToReference<T>();
         }
-        bool SetItemXOffset(ItemHandle item, uint32 XOffset);
-        uint32 GetItemXOffset(ItemHandle item);
+
         bool SetItemHeight(ItemHandle item, uint32 Height);
         uint32 GetItemHeight(ItemHandle item);
         void DeleteAllItems();

@@ -32,8 +32,7 @@ class MainWin : public Window
     Reference<Button> b;
     void AddExample(std::string_view layout, std::string_view info)
     {
-        ItemHandle i = lst->AddItem(layout, info);
-        lst->SetItemXOffset(i, 2);
+        lst->AddItem({ layout, info }).SetXOffset(2);
     }
     void AddGroup(std::string_view name)
     {
@@ -155,7 +154,7 @@ class MainWin : public Window
         }
         if (eventType == Event::ListViewCurrentItemChanged)
         {
-            b->SetEnabled(lst->GetItemXOffset(lst->GetCurrentItem()) == 2);
+            b->SetEnabled(lst->GetCurrentItem().GetXOffset() == 2);
             return true;
         }
         return false;

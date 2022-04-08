@@ -1704,14 +1704,6 @@ GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
 {
     return WRAPPER->GetItemDataAsPointer(item);
 }
-bool ListView::SetItemXOffset(ItemHandle item, uint32 XOffset)
-{
-    return WRAPPER->SetItemXOffset(item, XOffset);
-}
-uint32 ListView::GetItemXOffset(ItemHandle item)
-{
-    return WRAPPER->GetItemXOffset(item);
-}
 bool ListView::SetItemHeight(ItemHandle item, uint32 Height)
 {
     return WRAPPER->SetItemHeight(item, Height);
@@ -1899,6 +1891,15 @@ const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) cons
     __temp_listviewitem_reference_object__.Destroy();
     return __temp_listviewitem_reference_object__;
 }
-
+bool ListViewItem::SetXOffset(uint32 XOffset)
+{
+    LVICHECK(false);
+    return LVIC->SetItemXOffset(item, XOffset);
+}
+uint32 ListViewItem::GetXOffset() const
+{
+    LVICHECK(0);
+    return LVIC->GetItemXOffset(item);
+}
 #undef LVIC
 } // namespace AppCUI
