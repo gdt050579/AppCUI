@@ -3763,6 +3763,11 @@ namespace Controls
 
       public:
         bool SetText(const ConstString& text);
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+        bool SetClipboardCopyState(bool allowCopy);
+        bool SetFilterMode(bool allowFilterForThisColumn);
+
         friend class ListView;
     };
     class EXPORT ListViewItem
@@ -3848,10 +3853,7 @@ namespace Controls
         // coloane
         ListViewColumn GetColumn(uint32 index);
 
-        bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
-        bool SetColumnWidth(uint32 columnIndex, uint32 width);
-        bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
-        bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
+
         bool DeleteColumn(uint32 columnIndex);
         void DeleteAllColumns();
         uint32 GetColumnsCount();

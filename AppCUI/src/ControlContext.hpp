@@ -471,7 +471,7 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
-struct ListViewColumn
+struct InternalListViewColumn
 {
     CharacterBuffer Name;
     uint32 HotKeyOffset;
@@ -491,7 +491,7 @@ class ListViewControlContext : public ControlContext
   public:
     struct
     {
-        ListViewColumn List[MAX_LISTVIEW_COLUMNS];
+        InternalListViewColumn List[MAX_LISTVIEW_COLUMNS];
         uint32 Count;
         uint32 TotalWidth;
         uint32 ResizeColumnIndex;

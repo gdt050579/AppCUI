@@ -1494,34 +1494,7 @@ ListViewColumn ListView::GetColumn(uint32 index)
         return { nullptr, 0U };
     return { this->Context, index };
 }
-bool ListView::SetColumnAlignament(uint32 columnIndex, TextAlignament Align)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    return WRAPPER->Columns.List[columnIndex].SetAlign(Align);
-}
-bool ListView::SetColumnWidth(uint32 columnIndex, uint32 width)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    WRAPPER->Columns.List[columnIndex].SetWidth(width);
-    WRAPPER->UpdateColumnsWidth();
-    return true;
-}
-bool ListView::SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy)
-{
-    return WRAPPER->SetColumnClipboardCopyState(columnIndex, allowCopy);
-}
-bool ListView::SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn)
-{
-    return WRAPPER->SetColumnFilterMode(columnIndex, allowFilterForThisColumn);
-}
+
 bool ListView::DeleteColumn(uint32 columnIndex)
 {
     return WRAPPER->DeleteColumn(columnIndex);
@@ -1812,6 +1785,38 @@ bool ListViewColumn::SetText(const ConstString& text)
           index,
           LVCC->Columns.Count);
     return LVCC->Columns.List[index].SetName(text);
+}
+bool ListViewColumn::SetAlignament(TextAlignament Align)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    return LVCC->Columns.List[index].SetAlign(Align);
+}
+bool ListViewColumn::SetWidth(uint32 width)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    LVCC->Columns.List[index].SetWidth(width);
+    LVCC->UpdateColumnsWidth();
+    return true;
+}
+bool ListViewColumn::SetClipboardCopyState(bool allowCopy)
+{
+    LVCCHECK(false);
+    return LVCC->SetColumnClipboardCopyState(index, allowCopy);
+}
+bool ListViewColumn::SetFilterMode(bool allowFilterForThisColumn)
+{
+    LVCCHECK(false);
+    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
 }
 #undef LVICHECK
 #undef LVCCHECK
