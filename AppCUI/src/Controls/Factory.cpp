@@ -361,22 +361,22 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 }
 
 //======[TREE]=======================================================================================
-POINTER<Controls::Tree> Factory::Tree::Create(string_view layout, TreeFlags flags, const uint32 noOfColumns)
+POINTER<Controls::TreeView> Factory::TreeView::Create(string_view layout, TreeViewFlags flags, const uint32 noOfColumns)
 {
-    return POINTER<Controls::Tree>(new Controls::Tree(layout, flags, noOfColumns));
+    return POINTER<Controls::TreeView>(new Controls::TreeView(layout, flags, noOfColumns));
 }
 
-REFERENCE<Tree> Factory::Tree::Create(
-      Controls::Control* parent, string_view layout, const TreeFlags flags, const uint32 noOfColumns)
+REFERENCE<TreeView> Factory::TreeView::Create(
+      Controls::Control* parent, string_view layout, const TreeViewFlags flags, const uint32 noOfColumns)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+    return parent->AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, flags, noOfColumns));
 }
 
-REFERENCE<Tree> Factory::Tree::Create(
-      Controls::Control& parent, string_view layout, const TreeFlags flags, const uint32 noOfColumns)
+REFERENCE<TreeView> Factory::TreeView::Create(
+      Controls::Control& parent, string_view layout, const TreeViewFlags flags, const uint32 noOfColumns)
 {
-    return parent.AddControl<Controls::Tree>(Factory::Tree::Create(layout, flags, noOfColumns));
+    return parent.AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, flags, noOfColumns));
 }
 
 //======[GRID]=======================================================================================
