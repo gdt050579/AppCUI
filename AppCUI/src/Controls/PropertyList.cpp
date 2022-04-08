@@ -165,7 +165,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
     }
     void OnInitPropertyDialog() override
     {
-        chTable = Factory::CharacterTable::Create(this, "t:2,l:1,r:1,b:2");
+        chTable = Factory::CharacterTable::Create(this, "t:1,l:1,r:1,b:3");
         chTable->SetEnabled(!isReadOnly);
         if (!isReadOnly)
             chTable->SetFocus();
