@@ -489,7 +489,7 @@ void FileDialogWindow::ReloadCurrentPath()
             auto item = this->files->AddItem({ fileEntry.path().filename().u16string(), size, dateBuffer });
             if (fileEntry.is_directory())
             {
-                item.SetType(ListViewItem::Type::Highlighted);
+                item.SetType(ListViewItem::Type::Normal);
                 item.SetData(1);
             }
             else
