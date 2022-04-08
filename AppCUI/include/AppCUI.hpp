@@ -3752,7 +3752,18 @@ namespace Controls
         HideScrollBar                 = 0x040000
     };
 
+    class EXPORT ListViewColumn
+    {
+        void* context;
+        uint32 index;
 
+        ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        friend class ListView;
+    };
     class EXPORT ListViewItem
     {
       private:
@@ -3834,6 +3845,7 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
+        ListViewColumn GetColumn(uint32 index);
         bool SetColumnText(uint32 columnIndex, const ConstString& text);
         bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
         bool SetColumnWidth(uint32 columnIndex, uint32 width);

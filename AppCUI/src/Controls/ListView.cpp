@@ -25,7 +25,7 @@ constexpr uint32 LISTVIEW_SEARCH_BAR_WIDTH = 12;
 Graphics::CharacterBuffer
       __temp_listviewitem_reference_object__; // use this as std::option<const T&> is not available yet
 
-void ListViewColumn::Reset()
+void InternalListViewColumn::Reset()
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -34,7 +34,7 @@ void ListViewColumn::Reset()
     this->Width        = 10;
     this->Name.Clear();
 }
-bool ListViewColumn::SetName(const ConstString& text)
+bool InternalListViewColumn::SetName(const ConstString& text)
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -45,7 +45,7 @@ bool ListViewColumn::SetName(const ConstString& text)
 
     return true;
 }
-bool ListViewColumn::SetAlign(TextAlignament align)
+bool InternalListViewColumn::SetAlign(TextAlignament align)
 {
     if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
     {
@@ -57,7 +57,7 @@ bool ListViewColumn::SetAlign(TextAlignament align)
           "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or "
           "TextAlignament::Center");
 }
-void ListViewColumn::SetWidth(uint32 width)
+void InternalListViewColumn::SetWidth(uint32 width)
 {
     width       = std::max<>(width, MINIM_COLUMN_WIDTH);
     width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
@@ -107,8 +107,8 @@ InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 
 void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
 {
-    int x                  = 1 - Columns.XOffset;
-    ListViewColumn* column = this->Columns.List;
+    int x                          = 1 - Columns.XOffset;
+    InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
         x += column->Width;
@@ -130,7 +130,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
     int x = 1 - Columns.XOffset;
 
-    ListViewColumn* column = this->Columns.List;
+    InternalListViewColumn* column = this->Columns.List;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
     params.Y           = 1;
     params.Color       = defaultCol;
@@ -202,9 +202,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
 {
     int x = 1 - Columns.XOffset;
     int itemStarts;
-    ListViewColumn* column   = this->Columns.List;
-    CharacterBuffer* subitem = item->SubItem;
-    ColorPair itemCol        = Cfg->Text.Normal;
+    InternalListViewColumn* column = this->Columns.List;
+    CharacterBuffer* subitem       = item->SubItem;
+    ColorPair itemCol              = Cfg->Text.Normal;
     ColorPair checkCol, uncheckCol;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.Y = y;
@@ -363,8 +363,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            x                      = 1 - Columns.XOffset;
-            ListViewColumn* column = this->Columns.List;
+            x                              = 1 - Columns.XOffset;
+            InternalListViewColumn* column = this->Columns.List;
             for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
             {
                 x += column->Width;
@@ -1071,8 +1071,8 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 bool ListViewControlContext::MouseToHeader(int x, int, uint32& HeaderIndex, uint32& HeaderColumnIndex)
 {
-    int xx                 = 1 - Columns.XOffset;
-    ListViewColumn* column = this->Columns.List;
+    int xx                         = 1 - Columns.XOffset;
+    InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; tr < Columns.Count; tr++, column++)
     {
         if ((x >= xx) && (x <= xx + column->Width) && (x > 1) && (x < (this->Layout.Width - 2)))
@@ -1168,8 +1168,8 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
-        int xx                 = 1 - Columns.XOffset;
-        ListViewColumn* column = this->Columns.List;
+        int xx                         = 1 - Columns.XOffset;
+        InternalListViewColumn* column = this->Columns.List;
         for (uint32 tr = 0; tr < Columns.HoverSeparatorColumnIndex; tr++, column++)
             xx += (((uint32) column->Width) + 1);
         // xx = the start of column
@@ -1487,6 +1487,13 @@ void ListView::OnUpdateScrollBars()
         count--;
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
+
+ListViewColumn ListView::GetColumn(uint32 index)
+{
+    if (index < WRAPPER->Columns.Count)
+        return { nullptr, 0U };
+    return { this->Context, index };
+}
 bool ListView::SetColumnText(uint32 columnIndex, const ConstString& text)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count,
@@ -1557,7 +1564,7 @@ ListViewItem ListView::AddItem(std::initializer_list<ConstString> values)
 }
 void ListView::AddItems(std::initializer_list<std::initializer_list<ConstString>> items)
 {
-    for (auto &item: items)
+    for (auto& item : items)
     {
         AddItem(item);
     }
@@ -1568,11 +1575,11 @@ ListViewItem ListView::GetItem(uint32 index)
         return { nullptr, 0 };
     if (index >= WRAPPER->Items.List.size())
         return { nullptr, 0 };
-    return {this->Context, index};
-    //uint32 value;
-    //if (WRAPPER->Items.Indexes.Get(index, value))
-    //    return { this->Context, value };
-    //return { nullptr, 0 };
+    return { this->Context, index };
+    // uint32 value;
+    // if (WRAPPER->Items.Indexes.Get(index, value))
+    //     return { this->Context, value };
+    // return { nullptr, 0 };
 }
 
 void ListView::DeleteAllItems()
@@ -1799,5 +1806,12 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
     LVICHECK(nullptr);
     return LVIC->GetItemDataAsPointer(item);
 }
+// ================================================================== [InternalListViewColumn]
+// ==========================
+#define LVCC ((ListViewControlContext*) this->context)
+#define LVCCHECK(result)                                                                                               \
+    if (this->context == nullptr)                                                                                      \
+        return result;
+
 #undef LVIC
 } // namespace AppCUI
