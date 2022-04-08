@@ -303,10 +303,10 @@ bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter
 
 void FileDialogWindow::FileListItemClicked()
 {
-    int index = files->GetCurrentItem();
-    if (index < 0)
+    auto current = files->GetCurrentItem();
+    if (!current.Exists())
         return;
-    uint32 value = (int) files->GetItemData(index, 0);
+    uint32 value = (int) current.GetData(0);
     if (value == 0)
     {
         try
@@ -339,13 +339,10 @@ void FileDialogWindow::FileListItemClicked()
 }
 void FileDialogWindow::FileListItemChanged()
 {
-    const int index = files->GetCurrentItem();
-    if (index < 0)
-    {
+    auto current = files->GetCurrentItem();
+    if (!current.Exists())
         return;
-    }
-
-    const auto value = files->GetItemData(index, 0);
+    uint32 value = (int) current.GetData(0);
     if (value == 1)
     {
         txName->SetText(files->GetItemText(index, 0));
@@ -444,13 +441,11 @@ void FileDialogWindow::ReloadCurrentPath()
 
     if (currentPath != currentPath.root_path())
     {
-        files->AddItem("..", "UP-DIR");
-        files->SetItemData(0, 0);
+        files->AddItem("..", "UP-DIR").SetData(0);
     }
 
     char size[32];
     char dateBuffer[64]{ 0 };
-    ItemHandle itemHandle;
     try
     {
         for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
@@ -491,16 +486,16 @@ void FileDialogWindow::ReloadCurrentPath()
             std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
 
-            itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
+            auto item = this->files->AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
             if (fileEntry.is_directory())
             {
-                this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-                this->files->SetItemData(itemHandle, 1);
+                item.SetItemColor(ColorPair{ Color::White, Color::Transparent });
+                item.SetData(1);
             }
             else
             {
-                this->files->SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
-                this->files->SetItemData(itemHandle, 2);
+                item.SetItemColor( ColorPair{ Color::Gray, Color::Transparent });
+                item.SetData(2);
             }
         }
     }
