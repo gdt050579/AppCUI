@@ -148,7 +148,7 @@ class MainWin : public Window
             auto itm = lst->GetCurrentItem();
             if (itm.Exists())
             {
-                LayoutWin dlg((std::string) lst->GetItemText(itm, 0));
+                LayoutWin dlg((std::string) itm.GetText(0));
                 dlg.Show();
                 return true;
             }

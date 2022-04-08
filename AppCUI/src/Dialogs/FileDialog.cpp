@@ -441,7 +441,7 @@ void FileDialogWindow::ReloadCurrentPath()
 
     if (currentPath != currentPath.root_path())
     {
-        files->AddItem("..", "UP-DIR").SetData(0);
+        files->AddItem({ "..", "UP-DIR" }).SetData(0);
     }
 
     char size[32];
@@ -486,15 +486,15 @@ void FileDialogWindow::ReloadCurrentPath()
             std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
 
-            auto item = this->files->AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
+            auto item = this->files->AddItem({ fileEntry.path().filename().u16string(), size, dateBuffer });
             if (fileEntry.is_directory())
             {
-                item.SetItemColor(ColorPair{ Color::White, Color::Transparent });
+                item.SetType(ListViewItem::Type::Highlighted);
                 item.SetData(1);
             }
             else
             {
-                item.SetItemColor( ColorPair{ Color::Gray, Color::Transparent });
+                item.SetType(ListViewItem::Type::GrayedOut);
                 item.SetData(2);
             }
         }
