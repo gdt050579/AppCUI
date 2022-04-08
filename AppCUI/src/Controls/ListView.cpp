@@ -1253,16 +1253,10 @@ void ListViewControlContext::ColumnSort(uint32 columnIndex)
 }
 //----------------------
 
-int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
+int SortIndexesCompareFunction(uint32 index_1, uint32 index_2, void* context)
 {
     ListViewControlContext* lvcc = (ListViewControlContext*) context;
-    // indx1 and indx2 are indexes in List.Indexes
-    // first convert them to actual indexes
-    uint32 index_1, index_2;
-    if (!lvcc->Items.Indexes.Get(indx1, index_1))
-        index_1 = 0xFFFFFFFF;
-    if (!lvcc->Items.Indexes.Get(indx2, index_2))
-        index_2 = 0xFFFFFFFF;
+
     const uint32 itemsCount = (uint32) lvcc->Items.List.size();
     if ((index_1 < itemsCount) && (index_2 < itemsCount))
     {
