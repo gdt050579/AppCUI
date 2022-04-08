@@ -1848,26 +1848,32 @@ uint32 ListView::GetSortColumnIndex()
 
 // ================================================================== [ListViewItem] ==========================
 #define LVIC ((ListViewControlContext*) this->context)
+#define LVICHECK(result) if (this->context==nullptr) return result;
 bool ListViewItem::SetData(uint64 value)
 {
+    LVICHECK(false);
     return LVIC->SetItemDataAsValue(item, value);
 }
 uint64 ListViewItem::GetData(uint64 errorValue)
 {
+    LVICHECK(errorValue);
     uint64 value;
     CHECK(LVIC->GetItemDataAsValue(item, value), errorValue, "");
     return value;
 }
 bool ListViewItem::SetCheck(bool check)
 {
+    LVICHECK(false);
     return LVIC->SetItemCheck(item, check);
 }
 bool ListViewItem::IsChecked()
 {
+    LVICHECK(false);
     return LVIC->IsItemChecked(item);
 }
 bool ListViewItem::SetType(ListViewItem::Type type)
 {
+    LVICHECK(false);
     return LVIC->SetItemType(item, type);
 }
 #undef LVIC
