@@ -1270,7 +1270,8 @@ int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
         if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItem(lvcc->Host, indx1, indx2);
+                  ->ComparereItem.obj->CompareItems(
+                        (ListView*) lvcc->Host, ListViewItem( lvcc->Host, indx1 ), ListViewItem( lvcc->Host, indx2 ));
         }
         else
         {

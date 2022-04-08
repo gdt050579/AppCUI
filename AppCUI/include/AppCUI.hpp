@@ -2855,6 +2855,7 @@ namespace Controls
     class EXPORT Control;
     class EXPORT Button;
     class EXPORT TextField;
+    class EXPORT ListViewItem;
     class EXPORT ListView;
     class EXPORT Tree;
     class EXPORT Menu;
@@ -2883,7 +2884,7 @@ namespace Controls
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
-        using ComparereItemHandler = int (*)(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2);
+        using ListViewItemCompareHandler = int (*)(Reference<Controls::ListView> control, const Controls::ListViewItem& item1, const Controls::ListViewItem& item2);
 
         struct OnButtonPressedInterface
         {
@@ -3056,14 +3057,20 @@ namespace Controls
             };
         };
 
-        struct ComparereItemInterface
+        struct ListViewItemCompareInterface
         {
-            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) = 0;
+            virtual int CompareItems(
+                  Reference<Controls::ListView> control,
+                  const Controls::ListViewItem& item1,
+                  const Controls::ListViewItem& item2) = 0;
         };
-        struct ComparereItemCallback : public ComparereItemInterface
+        struct ListViewItemCompareCallback : public ListViewItemCompareInterface
         {
-            ComparereItemHandler callback;
-            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) override
+            ListViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::ListView> control,
+                  const Controls::ListViewItem& item1,
+                  const Controls::ListViewItem& item2) override
             {
                 return callback(control, item1, item2);
             };
@@ -3122,7 +3129,8 @@ namespace Controls
         };
         struct ListView : public Control
         {
-            Wrapper<ComparereItemInterface, ComparereItemCallback, ComparereItemHandler> ComparereItem;
+            Wrapper<ListViewItemCompareInterface, ListViewItemCompareCallback, ListViewItemCompareHandler>
+                  ComparereItem;
         };
 
         struct Tree : public Control

@@ -206,18 +206,18 @@ FileDialogWindow::FileDialogWindow(
             { "&Size", TextAlignament::Right, 16 },
             { "&Modified", TextAlignament::Center, 20 } },
           ListViewFlags::Sortable);
-    files->Handlers()->ComparereItem = [](Reference<Control> control, ItemHandle item1, ItemHandle item2) -> int
+    files->Handlers()->ComparereItem =
+          [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
     {
-        auto lv        = control.ToObjectRef<ListView>();
-        const auto& v1 = lv->GetItemData(item1, 0);
-        const auto& v2 = lv->GetItemData(item2, 0);
+        const auto& v1 = item1.GetData(0);
+        const auto& v2 = item2.GetData(0);
         if (v1 < v2)
             return -1;
         if (v1 > v2)
             return 1;
-        auto cindex    = lv->GetSortColumnIndex();
-        const auto& s1 = lv->GetItemText(item1, cindex);
-        const auto& s2 = lv->GetItemText(item2, cindex);
+        auto cindex    = control->GetSortColumnIndex();
+        const auto& s1 = item1.GetText(cindex);
+        const auto& s2 = item2.GetText(cindex);
         return s1.CompareWith(s2, true);
     };
     files->Sort(0, true); // sort after the first column, ascendent
