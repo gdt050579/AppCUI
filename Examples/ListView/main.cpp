@@ -3148,11 +3148,11 @@ class ColumnsExample : public Window
               ListViewFlags::Sortable);
 
         // items
-        lv->AddItem("Mike", "Mathematics", "9");
-        lv->AddItem("Laura", "Mathematics", "7");
-        lv->AddItem("John", "Phishics", "8");
-        lv->AddItem("Ana", "Chemestry", "9");
-        lv->AddItem("Willian", "Literature", "6");
+        lv->AddItems({ { "Mike", "Mathematics", "9" },
+                       { "Laura", "Mathematics", "7" },
+                       { "John", "Phishics", "8" },
+                       { "Ana", "Chemestry", "9" },
+                       { "Willian", "Literature", "6" } });
 
         Factory::Label::Create(
               this,
@@ -3174,18 +3174,17 @@ class ListViewWithColors : public Window
               { { "Color", TextAlignament::Left, 10 }, { "RGB", TextAlignament::Center, 10 } },
               ListViewFlags::None);
 
-        ItemHandle handle;
-        handle = lv->AddItem("Red", "FF0000");
+        lv->AddItem({ "Red", "FF0000" });
         lv->SetItemColor(handle, ColorPair{ Color::Red, Color::Transparent });
-        handle = lv->AddItem("Green", "00FF00");
+        lv->AddItem({ "Green", "00FF00" });
         lv->SetItemColor(handle, ColorPair{ Color::Green, Color::Transparent });
-        handle = lv->AddItem("Blue", "0000FF");
+        lv->AddItem({ "Blue", "0000FF" });
         lv->SetItemColor(handle, ColorPair{ Color::Blue, Color::Transparent });
-        handle = lv->AddItem("Yellow", "FFFF00");
+        lv->AddItem({ "Yellow", "FFFF00" });
         lv->SetItemColor(handle, ColorPair{ Color::Yellow, Color::Transparent });
-        handle = lv->AddItem("White", "FFFFFF");
+        lv->AddItem({ "White", "FFFFFF" });
         lv->SetItemColor(handle, ColorPair{ Color::White, Color::Transparent });
-        handle = lv->AddItem("Gray", "808080");
+        lv->AddItem({ "Gray", "808080" });
         lv->SetItemColor(handle, ColorPair{ Color::Gray, Color::Transparent });
     }
 };
@@ -3325,7 +3324,7 @@ class ItemTypesDemo : public Window
         // items
         lv->AddItem("Normal item").SetType(ListViewItem::Type::Normal);
         lv->AddItem("Highlighted item").SetType(ListViewItem::Type::Highlighted);
-        lv->AddItem("Grayed out item").SetType( ListViewItem::Type::GrayedOut);
+        lv->AddItem("Grayed out item").SetType(ListViewItem::Type::GrayedOut);
         lv->AddItem("Error item").SetType(ListViewItem::Type::ErrorInformation);
         lv->AddItem("Warning item").SetType(ListViewItem::Type::WarningInformation);
         lv->AddItem("Emphasized item (color 1)").SetType(ListViewItem::Type::Emphasized_1);

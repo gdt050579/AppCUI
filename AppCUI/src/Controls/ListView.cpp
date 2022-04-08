@@ -1579,10 +1579,6 @@ bool ListView::SetItemSelect(ItemHandle item, bool select)
 {
     return WRAPPER->SetItemSelect(item, select);
 }
-bool ListView::SetItemColor(ItemHandle item, ColorPair col)
-{
-    return WRAPPER->SetItemColor(item, col);
-}
 bool ListView::IsItemSelected(ItemHandle item)
 {
     return WRAPPER->IsItemSelected(item);
@@ -1791,6 +1787,11 @@ uint32 ListViewItem::GetXOffset() const
 {
     LVICHECK(0);
     return LVIC->GetItemXOffset(item);
+}
+bool ListViewItem::SetColor(ColorPair col)
+{
+    LVICHECK(false);
+    return LVIC->SetItemColor(item, col);
 }
 #undef LVIC
 } // namespace AppCUI

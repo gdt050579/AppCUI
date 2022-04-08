@@ -3793,6 +3793,7 @@ namespace Controls
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
+        bool SetColor(Graphics::ColorPair color);
 
 
 
@@ -3842,7 +3843,7 @@ namespace Controls
 
 
         bool SetItemSelect(ItemHandle item, bool select);
-        bool SetItemColor(ItemHandle item, Graphics::ColorPair color);
+        
 
         bool IsItemSelected(ItemHandle item);
 
