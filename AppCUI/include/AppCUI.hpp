@@ -3767,7 +3767,6 @@ namespace Controls
         bool SetWidth(uint32 width);
         bool SetClipboardCopyState(bool allowCopy);
         bool SetFilterMode(bool allowFilterForThisColumn);
-
         friend class ListView;
     };
     class EXPORT ListViewItem
@@ -3852,10 +3851,6 @@ namespace Controls
 
         // coloane
         ListViewColumn GetColumn(uint32 index);
-
-
-        bool DeleteColumn(uint32 columnIndex);
-        void DeleteAllColumns();
         uint32 GetColumnsCount();
         uint32 GetSortColumnIndex();
 

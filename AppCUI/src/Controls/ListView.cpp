@@ -1417,7 +1417,10 @@ void ListViewControlContext::SendMsg(Event eventType)
 ListView::~ListView()
 {
     DeleteAllItems();
-    DeleteAllColumns();
+    if (Context != nullptr)
+    {
+        WRAPPER->DeleteAllColumns();
+    }
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
 ListView::ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns)
@@ -1495,17 +1498,17 @@ ListViewColumn ListView::GetColumn(uint32 index)
     return { this->Context, index };
 }
 
-bool ListView::DeleteColumn(uint32 columnIndex)
-{
-    return WRAPPER->DeleteColumn(columnIndex);
-}
-void ListView::DeleteAllColumns()
-{
-    if (Context != nullptr)
-    {
-        WRAPPER->DeleteAllColumns();
-    }
-}
+//bool ListView::DeleteColumn(uint32 columnIndex)
+//{
+//    return WRAPPER->DeleteColumn(columnIndex);
+//}
+//void ListView::DeleteAllColumns()
+//{
+//    if (Context != nullptr)
+//    {
+//        WRAPPER->DeleteAllColumns();
+//    }
+//}
 uint32 ListView::GetColumnsCount()
 {
     return WRAPPER->GetNrColumns();
