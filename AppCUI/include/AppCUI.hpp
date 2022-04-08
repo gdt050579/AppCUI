@@ -3849,18 +3849,16 @@ namespace Controls
         ListViewItem AddItem(std::initializer_list<ConstString> values);
         void AddItems(std::initializer_list<std::initializer_list<ConstString>> items);
         ListViewItem GetItem(uint32 index);
-
-   
-
-        void DeleteAllItems();
-        uint32 GetItemsCount();
         ListViewItem GetCurrentItem();
-        bool SetCurrentItem(ItemHandle item);
         void SelectAllItems();
         void UnSelectAllItems();
         void CheckAllItems();
         void UncheckAllItems();
+        void DeleteAllItems();
+        uint32 GetItemsCount();
         uint32 GetCheckedItemsCount();
+        bool SetCurrentItem(ListViewItem item);
+
 
         // misc
         void SetClipboardSeparator(char ch);

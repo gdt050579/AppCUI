@@ -1598,7 +1598,7 @@ ListViewItem ListView::GetCurrentItem()
     uint32* indexes = lvcc->Items.Indexes.GetUInt32Array();
     return { this->Context, indexes[lvcc->Items.CurentItemIndex] };
 }
-bool ListView::SetCurrentItem(ItemHandle item)
+bool ListView::SetCurrentItem(ListViewItem item)
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
     uint32* indexes              = lvcc->Items.Indexes.GetUInt32Array();
@@ -1608,7 +1608,7 @@ bool ListView::SetCurrentItem(ItemHandle item)
     // caut indexul
     for (uint32 tr = 0; tr < count; tr++, indexes++)
     {
-        if ((*indexes) == item)
+        if ((*indexes) == item.item)
             return WRAPPER->SetCurrentIndex(tr);
     }
     return false;
