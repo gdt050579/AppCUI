@@ -1269,9 +1269,9 @@ int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
         // valid indexes
         if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
+            auto lv = (ListView*) lvcc->Host;
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItems(
-                        (ListView*) lvcc->Host, ListViewItem( lvcc->Host, indx1 ), ListViewItem( lvcc->Host, indx2 ));
+                  ->ComparereItem.obj->CompareItems(lv, lv->GetItem(indx1), lv->GetItem(indx2));
         }
         else
         {
@@ -1554,6 +1554,14 @@ ListViewItem ListView::AddItem(std::initializer_list<ConstString> values)
         WRAPPER->SetItemText(handle, index++, value);
     }
     return { this->Context, handle };
+}
+ListViewItem ListView::GetItem(uint32 index)
+{
+    if (this->Context == nullptr)
+        return { nullptr, 0 };
+    if (index >= WRAPPER->Items.List.size())
+        return { nullptr, 0 };
+    return { this->Context, index };
 }
 ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
 {
@@ -1891,5 +1899,6 @@ const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) cons
     __temp_listviewitem_reference_object__.Destroy();
     return __temp_listviewitem_reference_object__;
 }
+
 #undef LVIC
 } // namespace AppCUI

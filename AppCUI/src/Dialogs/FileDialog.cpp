@@ -194,9 +194,10 @@ FileDialogWindow::FileDialogWindow(
 
     locations.push_back({ "Initial", initialPath });
     LoadAllSpecialLocations();
+    uint64 idx = 0;
     for (const auto& locationInfo : locations)
     {
-        lSpecialPaths->AddItem(locationInfo.locationName);
+        lSpecialPaths->AddItem(locationInfo.locationName).SetData(idx++);
     }
 
     files = Factory::ListView::Create(
@@ -417,8 +418,7 @@ void FileDialogWindow::ProcessTextFieldInput()
 
 void FileDialogWindow::SpecialFoldersUpdatePath()
 {
-    const auto idx = lSpecialPaths->GetCurrentItem();
-    UpdateCurrentPath(locations[idx].locationPath);
+    UpdateCurrentPath(locations[lSpecialPaths->GetCurrentItem().GetData(0)].locationPath);
 }
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
