@@ -3835,54 +3835,8 @@ namespace Controls
         ListViewItem AddItem(const ConstString& text);
         ListViewItem AddItem(std::initializer_list<ConstString> values);
         ListViewItem GetItem(uint32 index);
-        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
-        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6,
-              const ConstString& subItem7);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6,
-              const ConstString& subItem7,
-              const ConstString& subItem8);
 
+       
         // items properties
 
 

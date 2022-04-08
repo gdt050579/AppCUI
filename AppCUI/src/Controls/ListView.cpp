@@ -1271,7 +1271,7 @@ int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
         {
             auto lv = (ListView*) lvcc->Host;
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItems(lv, lv->GetItem(indx1), lv->GetItem(indx2));
+                  ->ComparereItem.obj->CompareItems(lv, lv->GetItem(index_1), lv->GetItem(index_2));
         }
         else
         {
@@ -1561,127 +1561,11 @@ ListViewItem ListView::GetItem(uint32 index)
         return { nullptr, 0 };
     if (index >= WRAPPER->Items.List.size())
         return { nullptr, 0 };
-    return { this->Context, index };
-}
-ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2, const ConstString& subItem3)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6,
-      const ConstString& subItem7)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 7, subItem7), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6,
-      const ConstString& subItem7,
-      const ConstString& subItem8)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 7, subItem7), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 8, subItem8), InvalidItemHandle, "");
-    return handle;
+    return {this->Context, index};
+    //uint32 value;
+    //if (WRAPPER->Items.Indexes.Get(index, value))
+    //    return { this->Context, value };
+    //return { nullptr, 0 };
 }
 
 bool ListView::SetItemSelect(ItemHandle item, bool select)
