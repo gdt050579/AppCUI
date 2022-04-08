@@ -3755,6 +3755,10 @@ namespace Controls
 
     class EXPORT ListViewItem
     {
+      private:
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef obj);
+
         void* context;
         ItemHandle item;
 
@@ -3798,15 +3802,21 @@ namespace Controls
         bool IsSelected() const;
         bool SetHeight(uint32 Height);
         uint32 GetHeight() const;
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetItemData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
 
         friend class ListView;
     };
     class EXPORT ListView : public Control
     {
-      private:
-        GenericRef GetItemDataAsPointer(ItemHandle item) const;
-        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
-
       protected:
         ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns);
 
@@ -3834,26 +3844,13 @@ namespace Controls
         uint32 GetColumnsCount();
         uint32 GetSortColumnIndex();
 
-        // items add
+        // Items
         ListViewItem AddItem(const ConstString& text);
         ListViewItem AddItem(std::initializer_list<ConstString> values);
         void AddItems(std::initializer_list<std::initializer_list<ConstString>> items);
         ListViewItem GetItem(uint32 index);
 
-       
-        // items properties
-
-        template <typename T>
-        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
-        }
-        template <typename T>
-        constexpr inline Reference<T> GetItemData(ItemHandle item) const
-        {
-            return this->GetItemDataAsPointer(item).ToReference<T>();
-        }
-
+   
 
         void DeleteAllItems();
         uint32 GetItemsCount();

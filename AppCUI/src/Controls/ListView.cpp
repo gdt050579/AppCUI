@@ -1575,15 +1575,6 @@ ListViewItem ListView::GetItem(uint32 index)
     //return { nullptr, 0 };
 }
 
-bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
-{
-    return WRAPPER->SetItemDataAsPointer(item, Data);
-}
-GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
-{
-    return WRAPPER->GetItemDataAsPointer(item);
-}
-
 void ListView::DeleteAllItems()
 {
     if (Context != nullptr)
@@ -1797,6 +1788,16 @@ uint32 ListViewItem::GetHeight() const
 {
     LVICHECK(0);
     return LVIC->GetItemHeight(item);
+}
+bool ListViewItem::SetItemDataAsPointer(GenericRef Data)
+{
+    LVICHECK(false);
+    return LVIC->SetItemDataAsPointer(item, Data);
+}
+GenericRef ListViewItem::GetItemDataAsPointer() const
+{
+    LVICHECK(nullptr);
+    return LVIC->GetItemDataAsPointer(item);
 }
 #undef LVIC
 } // namespace AppCUI
