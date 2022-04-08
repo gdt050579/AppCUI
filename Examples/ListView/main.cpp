@@ -3204,49 +3204,49 @@ class ListViewWithTreeItems : public Window
                 { "Modules", TextAlignament::Right, 10 } },
               ListViewFlags::None);
 
-        ItemHandle handle;
-        handle = lv->AddItem("winnt.exe", "500", "10");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("services.exe", "504", "12");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("svchost.exe", "508", "5");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("svchost.exe", "512", "8");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("svchost.exe", "512", "100");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("lsass.exe", "516", "12");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("winlogon.exe", "520", "10");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("explorer.exe", "524", "100");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("chrome.exe", "528", "200");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("chrome.exe", "532", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "536", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "540", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "544", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "548", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("firefox.exe", "552", "128");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
+        ListViewItem item;
+        lv->AddItem({ "winnt.exe", "500", "10" }).SetType(ListViewItem::Type::Highlighted);
+
+        item = lv->AddItem({ "services.exe", "504", "12" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "svchost.exe", "508", "5" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "svchost.exe", "512", "8" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "svchost.exe", "512", "100" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "lsass.exe", "516", "12" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "winlogon.exe", "520", "10" });
+        item.SetType(ListViewItem::Type::Highlighted);
+        item = lv->AddItem({ "explorer.exe", "524", "100" });
+        item.SetType(ListViewItem::Type::Highlighted);
+        item = lv->AddItem({ "chrome.exe", "528", "200" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "chrome.exe", "532", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "536", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "540", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "544", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "548", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "firefox.exe", "552", "128" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
     }
 };
 
@@ -3324,23 +3324,14 @@ class ItemTypesDemo : public Window
               this, "x:1,y:4,w:66,h:11", { { "", TextAlignament::Left, 60 } }, ListViewFlags::HideColumns);
 
         // items
-        ItemHandle h;
-        h = lv->AddItem("Normal item");
-        lv->SetItemType(h, ListViewItemType::Normal);
-        h = lv->AddItem("Highlighted item");
-        lv->SetItemType(h, ListViewItemType::Highlighted);
-        h = lv->AddItem("Grayed out item");
-        lv->SetItemType(h, ListViewItemType::GrayedOut);
-        h = lv->AddItem("Error item");
-        lv->SetItemType(h, ListViewItemType::ErrorInformation);
-        h = lv->AddItem("Warning item");
-        lv->SetItemType(h, ListViewItemType::WarningInformation);
-        h = lv->AddItem("Emphasized item (color 1)");
-        lv->SetItemType(h, ListViewItemType::Emphasized_1);
-        h = lv->AddItem("Emphasized item (color 2)");
-        lv->SetItemType(h, ListViewItemType::Emphasized_2);
-        h = lv->AddItem("Category item");
-        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Normal item").SetType(ListViewItem::Type::Normal);
+        lv->AddItem("Highlighted item").SetType(ListViewItem::Type::Highlighted);
+        lv->AddItem("Grayed out item").SetType( ListViewItem::Type::GrayedOut);
+        lv->AddItem("Error item").SetType(ListViewItem::Type::ErrorInformation);
+        lv->AddItem("Warning item").SetType(ListViewItem::Type::WarningInformation);
+        lv->AddItem("Emphasized item (color 1)").SetType(ListViewItem::Type::Emphasized_1);
+        lv->AddItem("Emphasized item (color 2)").SetType(ListViewItem::Type::Emphasized_2);
+        lv->AddItem("Category item").SetType(ListViewItem::Type::Category);
 
         Factory::Label::Create(
               this,
@@ -3362,21 +3353,17 @@ class CategoryDemo : public Window
               ListViewFlags::HideColumns);
 
         // items
-        ItemHandle h;
-        h = lv->AddItem("First chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Introduction", "1");
-        lv->AddItem("Related work", "5");
-        lv->AddItem("Explaining the problem", "11");
+        lv->AddItem("First chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Introduction", "1" });
+        lv->AddItem({ "Related work", "5" });
+        lv->AddItem({ "Explaining the problem", "11" });
 
-        h = lv->AddItem("Second chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Databases", "20");
-        lv->AddItem("Results", "25");
+        lv->AddItem("Second chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Databases", "20" });
+        lv->AddItem({ "Results", "25" });
 
-        h = lv->AddItem("Third chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Conclusions", "27");
+        lv->AddItem("Third chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Conclusions", "27" });
     }
 };
 
