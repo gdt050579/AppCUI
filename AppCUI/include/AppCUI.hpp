@@ -3785,12 +3785,12 @@ namespace Controls
         }
 
         bool SetData(uint64 value);
-        uint64 GetData(uint64 errorValue);
+        uint64 GetData(uint64 errorValue) const;
         bool SetCheck(bool value);
-        bool IsChecked();
+        bool IsChecked() const;
         bool SetType(ListViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
 
 
 

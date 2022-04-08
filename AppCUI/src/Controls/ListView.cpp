@@ -1852,7 +1852,7 @@ bool ListViewItem::SetData(uint64 value)
     LVICHECK(false);
     return LVIC->SetItemDataAsValue(item, value);
 }
-uint64 ListViewItem::GetData(uint64 errorValue)
+uint64 ListViewItem::GetData(uint64 errorValue) const
 {
     LVICHECK(errorValue);
     uint64 value;
@@ -1864,7 +1864,7 @@ bool ListViewItem::SetCheck(bool check)
     LVICHECK(false);
     return LVIC->SetItemCheck(item, check);
 }
-bool ListViewItem::IsChecked()
+bool ListViewItem::IsChecked() const
 {
     LVICHECK(false);
     return LVIC->IsItemChecked(item);
@@ -1879,7 +1879,7 @@ bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
     LVICHECK(false);
     return LVIC->SetItemText(item, subItem, text);
 }
-const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex)
+const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) const
 {
     if (this->context)
     {
