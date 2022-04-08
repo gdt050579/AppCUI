@@ -37,8 +37,7 @@ class MainWin : public Window
     }
     void AddGroup(std::string_view name)
     {
-        ItemHandle i = lst->AddItem(name);
-        lst->SetItemType(i, ListViewItemType::Highlighted);
+        lst->AddItem(name).SetType(ListViewItem::Type::Highlighted);
     }
 
   public:
