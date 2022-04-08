@@ -3796,7 +3796,8 @@ namespace Controls
         bool SetColor(Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
-
+        bool SetHeight(uint32 Height);
+        uint32 GetHeight() const;
 
         friend class ListView;
     };
@@ -3842,11 +3843,6 @@ namespace Controls
        
         // items properties
 
-
-
-
-
-
         template <typename T>
         constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
         {
@@ -3858,8 +3854,7 @@ namespace Controls
             return this->GetItemDataAsPointer(item).ToReference<T>();
         }
 
-        bool SetItemHeight(ItemHandle item, uint32 Height);
-        uint32 GetItemHeight(ItemHandle item);
+
         void DeleteAllItems();
         uint32 GetItemsCount();
         ListViewItem GetCurrentItem();
