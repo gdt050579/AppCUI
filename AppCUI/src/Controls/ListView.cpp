@@ -1494,15 +1494,6 @@ ListViewColumn ListView::GetColumn(uint32 index)
         return { nullptr, 0U };
     return { this->Context, index };
 }
-bool ListView::SetColumnText(uint32 columnIndex, const ConstString& text)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    return WRAPPER->Columns.List[columnIndex].SetName(text);
-}
 bool ListView::SetColumnAlignament(uint32 columnIndex, TextAlignament Align)
 {
     CHECK(columnIndex < WRAPPER->Columns.Count,
@@ -1812,6 +1803,18 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 #define LVCCHECK(result)                                                                                               \
     if (this->context == nullptr)                                                                                      \
         return result;
-
+bool ListViewColumn::SetText(const ConstString& text)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    return LVCC->Columns.List[index].SetName(text);
+}
+#undef LVICHECK
+#undef LVCCHECK
 #undef LVIC
+#undef LVCC
 } // namespace AppCUI

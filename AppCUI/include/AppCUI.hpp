@@ -3762,6 +3762,7 @@ namespace Controls
         }
 
       public:
+        bool SetText(const ConstString& text);
         friend class ListView;
     };
     class EXPORT ListViewItem
@@ -3846,7 +3847,7 @@ namespace Controls
 
         // coloane
         ListViewColumn GetColumn(uint32 index);
-        bool SetColumnText(uint32 columnIndex, const ConstString& text);
+
         bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
         bool SetColumnWidth(uint32 columnIndex, uint32 width);
         bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
