@@ -746,6 +746,30 @@ class TreeControlContext : public ControlContext
     void Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
+
+    bool ItemsPainting(Graphics::Renderer& renderer);
+    bool PaintColumnHeaders(Graphics::Renderer& renderer);
+    bool PaintColumnSeparators(Graphics::Renderer& renderer);
+    bool MoveUp();
+    bool MoveDown();
+    bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
+    bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
+    bool ToggleExpandRecursive(const ItemHandle handle, Reference<TreeView> tree);
+    bool ToggleItem(const ItemHandle handle, Reference<TreeView> tree);
+    bool IsMouseOnToggleSymbol(int x, int y) const;
+    bool IsMouseOnItem(int x, int y) const;
+    bool IsMouseOnBorder(int x, int y) const;
+    bool IsMouseOnColumnHeader(int x, int y);
+    bool IsMouseOnColumnSeparator(int x, int y);
+    bool IsMouseOnSearchField(int x, int y) const;
+    bool AdjustElementsOnResize(const int newWidth, const int newHeight);
+    bool AdjustItemsBoundsOnResize();
+    bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
+    bool SetColorForItems(const Graphics::ColorPair& color);
+    bool SearchItems(Reference<TreeView> tree);
+    bool MarkAllItemsAsNotFound();
+    bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
+    bool RemoveItem(const ItemHandle handle, bool process);
 };
 
 enum class GridCellStatus

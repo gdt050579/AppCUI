@@ -4051,8 +4051,8 @@ namespace Controls
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
         Searchable                      = 0x004000, // shows all elements highlighting the ones matching
-        FilterSearch  = 0x008000, // shows only the elements matching the criteria from the previous search action
-        HideSearchBar = 0x010000, // disables FilterMode & SearchMode
+        FilterSearch                    = 0x008000, // filters elements from view
+        HideSearchBar                   = 0x010000, // disables FilterMode & SearchMode
         // Reserved_020000                 = 0x020000,
         // Reserved_040000                 = 0x040000,
         // Reserved_080000                 = 0x080000,
@@ -4062,7 +4062,7 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
-    class EXPORT TreeView : public Control // -> Tree -> TreeView
+    class EXPORT TreeView : public Control
     {
       public:
         inline static const auto RootItemHandle = InvalidItemHandle;
@@ -4125,29 +4125,6 @@ namespace Controls
         bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
 
       private:
-        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
-        bool PaintColumnHeaders(Graphics::Renderer& renderer);
-        bool PaintColumnSeparators(Graphics::Renderer& renderer);
-        bool MoveUp();
-        bool MoveDown();
-        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
-        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
-        bool ToggleExpandRecursive(const ItemHandle handle);
-        bool ToggleItem(const ItemHandle handle);
-        bool IsMouseOnToggleSymbol(int x, int y) const;
-        bool IsMouseOnItem(int x, int y) const;
-        bool IsMouseOnBorder(int x, int y) const;
-        bool IsMouseOnColumnHeader(int x, int y) const;
-        bool IsMouseOnColumnSeparator(int x, int y) const;
-        bool IsMouseOnSearchField(int x, int y) const;
-        bool AdjustElementsOnResize(const int newWidth, const int newHeight);
-        bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
-        bool SetColorForItems(const Graphics::ColorPair& color);
-        bool SearchItems();
-        bool MarkAllItemsAsNotFound();
-        bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
-
         friend Factory::TreeView;
         friend Control;
     };

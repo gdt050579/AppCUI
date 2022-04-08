@@ -61,7 +61,7 @@ TreeView::TreeView(string_view layout, const TreeViewFlags flags, const uint32 n
         cc->Sort();
     }
 
-    AdjustItemsBoundsOnResize();
+    cc->AdjustItemsBoundsOnResize();
 
     const auto columnsCount = std::max<>(noOfColumns, 1U);
     const auto width        = std::max<>((static_cast<uint32>(cc->Layout.Width) / columnsCount), MinColumnWidth);
@@ -78,417 +78,7 @@ TreeView::TreeView(string_view layout, const TreeViewFlags flags, const uint32 n
 
     cc->separatorIndexSelected = InvalidIndex;
 
-    SetColorForItems(cc->Cfg->Text.Normal);
-}
-
-bool TreeView::ItemsPainting(Graphics::Renderer& renderer, const ItemHandle /*ih*/) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    WriteTextParams wtp;
-    wtp.Y = ((cc->treeFlags & TreeViewFlags::HideColumns) == TreeViewFlags::None) +
-            ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None); // 0  is for border | 1 is for header
-
-    for (auto i = cc->offsetTopToDraw; i < std::min<size_t>(cc->offsetBotToDraw, cc->itemsToDrew.size()); i++)
-    {
-        auto& item = cc->items[cc->itemsToDrew[i]];
-
-        uint32 j = 0; // column index
-        for (const auto& col : cc->columns)
-        {
-            wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
-            wtp.Align = col.contentAlignment;
-            if (j == 0)
-            {
-                wtp.X     = col.x + item.depth * ItemSymbolOffset - 1;
-                wtp.Width = col.width - item.depth * ItemSymbolOffset -
-                            ((cc->treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
-
-                if (wtp.X < static_cast<int>(col.x + col.width))
-                {
-                    if (item.isExpandable)
-                    {
-                        if (item.expanded)
-                        {
-                            renderer.WriteSpecialCharacter(
-                                  wtp.X, wtp.Y, SpecialChars::TriangleDown, cc->Cfg->Symbol.Arrows);
-                        }
-                        else
-                        {
-                            renderer.WriteSpecialCharacter(
-                                  wtp.X, wtp.Y, SpecialChars::TriangleRight, cc->Cfg->Symbol.Arrows);
-                        }
-                    }
-                    else
-                    {
-                        renderer.WriteSpecialCharacter(
-                              wtp.X, wtp.Y, SpecialChars::CircleFilled, cc->Cfg->Symbol.Inactive);
-                    }
-                }
-
-                wtp.X += ItemSymbolOffset;
-            }
-            else
-            {
-                wtp.X     = col.x;
-                wtp.Width = col.width;
-            }
-
-            if (j < item.values.size())
-            {
-                if (item.handle == cc->currentSelectedItemHandle)
-                {
-                    wtp.Color = cc->Cfg->Text.Focused;
-                    item.values[j].SetColor(wtp.Color);
-                }
-                else if (item.markedAsFound == false)
-                {
-                    wtp.Color = cc->Cfg->Text.Normal;
-                    item.values[j].SetColor(wtp.Color);
-                }
-
-                if (wtp.X < static_cast<int>(col.x + col.width))
-                {
-                    renderer.WriteText(item.values[j], wtp);
-                }
-            }
-
-            j++;
-        }
-
-        wtp.Y++;
-    }
-
-    return true;
-}
-
-bool TreeView::PaintColumnHeaders(Graphics::Renderer& renderer)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(cc->columns.size() > 0, true, "");
-
-    const auto controlWidth = GetWidth() - 2 * ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
-
-    renderer.FillHorizontalLineSize(GetX() - 1, 1, controlWidth, ' ', cc->Cfg->Header.Text.Focused);
-
-    const auto enabled = (cc->Flags & GATTR_ENABLE) != 0;
-
-    WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
-    wtp.Y     = 1; // 0  is for border
-    wtp.Color = cc->Cfg->Text.Normal;
-
-    uint32 i = 0;
-    for (const auto& col : cc->columns)
-    {
-        wtp.Align = col.headerAlignment;
-        wtp.X     = col.x;
-        wtp.Width = col.width - ((cc->treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
-
-        if (wtp.X >= controlWidth)
-        {
-            continue;
-        }
-
-        if (wtp.X + static_cast<int32>(wtp.Width) >= controlWidth)
-        {
-            wtp.Width = controlWidth - wtp.X;
-        }
-
-        wtp.Color = enabled ? ((i == cc->columnIndexToSortBy) ? cc->Cfg->Header.Text.PressedOrSelected
-                                                              : cc->Cfg->Header.Text.Focused)
-                            : cc->Cfg->Header.Text.Inactive;
-
-        renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
-
-        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.headerValue), wtp);
-
-        if (i == cc->columnIndexToSortBy)
-        {
-            renderer.WriteSpecialCharacter(
-                  static_cast<int32>(wtp.X + wtp.Width),
-                  1,
-                  cc->sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
-                  cc->Cfg->Header.HotKey.PressedOrSelected);
-        }
-
-        i++;
-    }
-
-    return true;
-}
-
-bool TreeView::PaintColumnSeparators(Graphics::Renderer& renderer)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(cc->columns.size() > 0, true, "");
-
-    if (cc->separatorIndexSelected != InvalidIndex)
-    {
-        CHECK(cc->separatorIndexSelected <= cc->columns.size(), // # columns + 1 separators
-              false,
-              "%u %u",
-              cc->separatorIndexSelected,
-              cc->columns.size());
-    }
-
-    for (auto i = 0U; i < cc->columns.size(); i++)
-    {
-        const auto& col = cc->columns[i];
-        if (static_cast<int32>(col.x + col.width) <=
-            GetWidth() - 2 * ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None))
-        {
-            const auto& color = (cc->separatorIndexSelected == i || cc->mouseOverColumnSeparatorIndex == i)
-                                      ? cc->Cfg->Lines.Hovered
-                                      : cc->Cfg->Lines.Normal;
-            renderer.DrawVerticalLine(
-                  col.x + col.width,
-                  1,
-                  cc->Layout.Height - 2 * ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None),
-                  color);
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::MoveUp()
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    if (cc->itemsToDrew.size() > 0)
-    {
-        const auto it       = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-        const auto index    = static_cast<uint32>(it - cc->itemsToDrew.begin());
-        const auto newIndex = std::min<uint32>(index - 1, static_cast<uint32>(cc->itemsToDrew.size() - 1U));
-        cc->currentSelectedItemHandle = cc->itemsToDrew[newIndex];
-
-        if (newIndex == cc->itemsToDrew.size() - 1)
-        {
-            if (cc->itemsToDrew.size() > cc->maxItemsToDraw)
-            {
-                cc->offsetBotToDraw = static_cast<uint32>(cc->itemsToDrew.size());
-            }
-
-            if (cc->offsetBotToDraw >= cc->maxItemsToDraw)
-            {
-                cc->offsetTopToDraw = cc->offsetBotToDraw - cc->maxItemsToDraw;
-            }
-        }
-        else if (newIndex < cc->offsetTopToDraw && cc->offsetTopToDraw > 0)
-        {
-            cc->offsetBotToDraw--;
-            cc->offsetTopToDraw--;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool TreeView::MoveDown()
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    if (cc->itemsToDrew.size() > 0)
-    {
-        const auto it       = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->currentSelectedItemHandle);
-        const auto index    = static_cast<uint32>(it - cc->itemsToDrew.begin());
-        const auto newIndex = std::min<uint32>(index + 1, (index + 1 > cc->itemsToDrew.size() - 1 ? 0 : index + 1));
-        cc->currentSelectedItemHandle = cc->itemsToDrew[newIndex];
-
-        if (newIndex == 0)
-        {
-            cc->offsetBotToDraw = cc->maxItemsToDraw;
-            cc->offsetTopToDraw = 0;
-        }
-        else if (newIndex >= cc->offsetBotToDraw)
-        {
-            cc->offsetBotToDraw++;
-            cc->offsetTopToDraw++;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool TreeView::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    if (clear)
-    {
-        cc->itemsToDrew.clear();
-        cc->itemsToDrew.reserve(cc->items.size());
-    }
-
-    CHECK(cc->items.size() > 0, true, "");
-
-    if (handle == InvalidItemHandle)
-    {
-        for (const auto& handle : cc->roots)
-        {
-            const auto& item = cc->items[handle];
-            if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
-            {
-                if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
-                {
-                    continue;
-                }
-            }
-
-            cc->itemsToDrew.emplace_back(handle);
-
-            if (item.isExpandable == false || item.expanded == false)
-            {
-                continue;
-            }
-
-            for (auto& it : item.children)
-            {
-                const auto& child = cc->items[it];
-
-                if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
-                {
-                    if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
-                    {
-                        continue;
-                    }
-                }
-
-                if (child.isExpandable)
-                {
-                    if (child.expanded)
-                    {
-                        ProcessItemsToBeDrawn(it, false);
-                    }
-                    else
-                    {
-                        cc->itemsToDrew.emplace_back(child.handle);
-                    }
-                }
-                else
-                {
-                    cc->itemsToDrew.emplace_back(child.handle);
-                }
-            }
-        }
-    }
-    else
-    {
-        const auto& item = cc->items[handle];
-
-        if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
-        {
-            if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
-            {
-                return true;
-            }
-        }
-
-        cc->itemsToDrew.emplace_back(item.handle);
-        CHECK(item.isExpandable, true, "");
-
-        for (auto& it : item.children)
-        {
-            const auto& child = cc->items[it];
-
-            if (cc->filter.mode == TreeControlContext::FilterMode::Filter && cc->filter.searchText.Len() > 0)
-            {
-                if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
-                {
-                    continue;
-                }
-            }
-
-            if (child.isExpandable)
-            {
-                if (child.expanded)
-                {
-                    ProcessItemsToBeDrawn(it, false);
-                }
-                else
-                {
-                    cc->itemsToDrew.emplace_back(child.handle);
-                }
-            }
-            else
-            {
-                cc->itemsToDrew.emplace_back(child.handle);
-            }
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    std::queue<ItemHandle> ancestorRelated;
-    ancestorRelated.push(ancestor);
-
-    while (ancestorRelated.empty() == false)
-    {
-        ItemHandle current = ancestorRelated.front();
-        ancestorRelated.pop();
-
-        for (const auto& handle : cc->items[current].children)
-        {
-            if (handle == child)
-            {
-                return true;
-            }
-            else
-            {
-                ancestorRelated.push(handle);
-            }
-        }
-    }
-
-    return false;
-}
-
-bool TreeView::ToggleExpandRecursive(const ItemHandle handle)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    std::queue<ItemHandle> ancestorRelated;
-    ancestorRelated.push(handle);
-
-    while (ancestorRelated.empty() == false)
-    {
-        ItemHandle current = ancestorRelated.front();
-        ancestorRelated.pop();
-
-        ToggleItem(current);
-
-        const auto& item = cc->items[current];
-        for (const auto& handle : item.children)
-        {
-            ancestorRelated.push(handle);
-        }
-    }
-
-    if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
-    {
-        cc->Sort();
-    }
-
-    cc->notProcessed = true;
-
-    return true;
+    cc->SetColorForItems(cc->Cfg->Text.Normal);
 }
 
 void TreeView::Paint(Graphics::Renderer& renderer)
@@ -496,11 +86,11 @@ void TreeView::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    PaintColumnHeaders(renderer);
+    cc->PaintColumnHeaders(renderer);
 
     if (cc->notProcessed)
     {
-        ProcessItemsToBeDrawn(InvalidItemHandle, true);
+        cc->ProcessItemsToBeDrawn(InvalidItemHandle, true);
         cc->notProcessed = false;
     }
 
@@ -522,8 +112,8 @@ void TreeView::Paint(Graphics::Renderer& renderer)
         }
     }
 
-    ItemsPainting(renderer, InvalidItemHandle);
-    PaintColumnSeparators(renderer);
+    cc->ItemsPainting(renderer);
+    cc->PaintColumnSeparators(renderer);
 
     if ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None)
     {
@@ -570,7 +160,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
     switch (keyCode)
     {
     case Key::Up:
-        return MoveUp();
+        return cc->MoveUp();
     case Key::Down:
         if (cc->separatorIndexSelected != InvalidIndex)
         {
@@ -579,7 +169,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         else
         {
-            return MoveDown();
+            return cc->MoveDown();
         }
     case Key::Ctrl | Key::Up:
         if (cc->itemsToDrew.size() > 0)
@@ -689,20 +279,20 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         return true;
 
     case Key::Ctrl | Key::Space:
-        ToggleExpandRecursive(cc->currentSelectedItemHandle);
+        cc->ToggleExpandRecursive(cc->currentSelectedItemHandle, this);
         {
             if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
             {
-                SearchItems();
+                cc->SearchItems(this);
             }
         }
         return true;
     case Key::Space:
-        ToggleItem(cc->currentSelectedItemHandle);
-        ProcessItemsToBeDrawn(InvalidItemHandle);
+        cc->ToggleItem(cc->currentSelectedItemHandle, this);
+        cc->ProcessItemsToBeDrawn(InvalidItemHandle);
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
-            SearchItems();
+            cc->SearchItems(this);
         }
         return true;
 
@@ -718,7 +308,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Clear();
-                SetColorForItems(cc->Cfg->Text.Normal);
+                cc->SetColorForItems(cc->Cfg->Text.Normal);
                 return true;
             }
         }
@@ -727,8 +317,8 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Clear();
-                SetColorForItems(cc->Cfg->Text.Normal);
-                ProcessItemsToBeDrawn(InvalidItemHandle);
+                cc->SetColorForItems(cc->Cfg->Text.Normal);
+                cc->ProcessItemsToBeDrawn(InvalidItemHandle);
                 return true;
             }
         }
@@ -744,7 +334,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
     case Key::Right:
         if (cc->separatorIndexSelected != InvalidIndex)
         {
-            if (AddToColumnWidth(cc->separatorIndexSelected, keyCode == Key::Left ? -1 : 1))
+            if (cc->AddToColumnWidth(cc->separatorIndexSelected, keyCode == Key::Left ? -1 : 1))
             {
                 return true;
             }
@@ -777,7 +367,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
-                SearchItems();
+                cc->SearchItems(this);
                 return true;
             }
         }
@@ -868,18 +458,18 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         if (character > 0)
         {
             cc->filter.searchText.AddChar(character);
-            SetColorForItems(cc->Cfg->Text.Normal);
-            if (SearchItems() == false)
+            cc->SetColorForItems(cc->Cfg->Text.Normal);
+            if (cc->SearchItems(this) == false)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
                 if (cc->filter.searchText.Len() > 0)
                 {
-                    SearchItems();
+                    cc->SearchItems(this);
                 }
                 else
                 {
                     cc->notProcessed = true;
-                    SetColorForItems(cc->Cfg->Text.Normal);
+                    cc->SetColorForItems(cc->Cfg->Text.Normal);
                 }
             }
             return true;
@@ -946,16 +536,16 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             const uint32 index    = y - 2;
             const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
-            ToggleItem(it->second.handle);
+            cc->ToggleItem(it->second.handle, this);
             if (it->second.expanded == false)
             {
-                if (IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
+                if (cc->IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
                 {
                     cc->currentSelectedItemHandle = it->second.handle;
                 }
             }
-            ProcessItemsToBeDrawn(InvalidItemHandle);
-            SearchItems();
+            cc->ProcessItemsToBeDrawn(InvalidItemHandle);
+            cc->SearchItems(this);
         }
         break;
         case TreeControlContext::IsMouseOn::Item:
@@ -996,27 +586,27 @@ bool TreeView::OnMouseOver(int x, int y)
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    if (IsMouseOnBorder(x, y))
+    if (cc->IsMouseOnBorder(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::Border;
     }
-    else if (IsMouseOnColumnSeparator(x, y))
+    else if (cc->IsMouseOnColumnSeparator(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnSeparator;
     }
-    else if (IsMouseOnToggleSymbol(x, y))
+    else if (cc->IsMouseOnToggleSymbol(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::ToggleSymbol;
     }
-    else if (IsMouseOnItem(x, y))
+    else if (cc->IsMouseOnItem(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
     }
-    else if (IsMouseOnColumnHeader(x, y))
+    else if (cc->IsMouseOnColumnHeader(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnHeader;
     }
-    else if (IsMouseOnSearchField(x, y))
+    else if (cc->IsMouseOnSearchField(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::SearchField;
     }
@@ -1030,14 +620,17 @@ bool TreeView::OnMouseOver(int x, int y)
 
 bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
     switch (direction)
     {
     case Input::MouseWheel::None:
         break;
     case Input::MouseWheel::Up:
-        return MoveUp();
+        return cc->MoveUp();
     case Input::MouseWheel::Down:
-        return MoveDown();
+        return cc->MoveDown();
     case Input::MouseWheel::Left:
         break;
     case Input::MouseWheel::Right:
@@ -1071,7 +664,7 @@ bool TreeView::OnMouseDrag(int x, int, Input::MouseButton button)
                 const auto xs    = cc->columns[cc->mouseOverColumnSeparatorIndex].x;
                 const auto w     = cc->columns[cc->mouseOverColumnSeparatorIndex].width;
                 const auto delta = -(static_cast<int32>((xs + w)) - x);
-                if (AddToColumnWidth(cc->mouseOverColumnSeparatorIndex, delta))
+                if (cc->AddToColumnWidth(cc->mouseOverColumnSeparatorIndex, delta))
                 {
                     return true;
                 }
@@ -1110,7 +703,9 @@ void TreeView::OnUpdateScrollBars()
 
 void TreeView::OnAfterResize(int newWidth, int newHeight)
 {
-    CHECKRET(AdjustElementsOnResize(newWidth, newHeight), "");
+    CHECKRET(Context != nullptr, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECKRET(cc->AdjustElementsOnResize(newWidth, newHeight), "");
 }
 
 Handlers::TreeView* TreeView::Handlers()
@@ -1162,7 +757,7 @@ ItemHandle TreeView::AddItem(
 
     if (process)
     {
-        ProcessItemsToBeDrawn(InvalidItemHandle);
+        cc->ProcessItemsToBeDrawn(InvalidItemHandle);
     }
     else
     {
@@ -1176,40 +771,7 @@ bool TreeView::RemoveItem(const ItemHandle handle, bool process)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    std::queue<ItemHandle> ancestorRelated;
-    ancestorRelated.push(handle);
-
-    while (ancestorRelated.empty() == false)
-    {
-        ItemHandle current = ancestorRelated.front();
-        ancestorRelated.pop();
-
-        if (const auto it = cc->items.find(handle); it != cc->items.end())
-        {
-            for (const auto& handle : cc->items[current].children)
-            {
-                ancestorRelated.push(handle);
-            }
-            cc->items.erase(it);
-
-            if (const auto rootIt = std::find(cc->roots.begin(), cc->roots.end(), handle); rootIt != cc->roots.end())
-            {
-                cc->roots.erase(rootIt);
-            }
-        }
-    }
-
-    if (process)
-    {
-        ProcessItemsToBeDrawn(InvalidItemHandle);
-    }
-    else
-    {
-        cc->notProcessed = true;
-    }
-
-    return true;
+    return cc->RemoveItem(handle, process);
 }
 
 bool TreeView::ClearItems()
@@ -1225,7 +787,7 @@ bool TreeView::ClearItems()
 
     cc->roots.clear();
 
-    ProcessItemsToBeDrawn(InvalidItemHandle);
+    cc->ProcessItemsToBeDrawn(InvalidItemHandle);
 
     return true;
 }
@@ -1393,383 +955,6 @@ bool TreeView::AddColumnData(
         }
         maxRightX = col.x;
     }
-
-    return true;
-}
-
-bool TreeView::ToggleItem(const ItemHandle handle)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    auto& item = cc->items[handle];
-    CHECK(item.isExpandable, true, "");
-
-    if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
-    {
-        for (const auto& child : item.children)
-        {
-            RemoveItem(child);
-        }
-        item.children.clear();
-    }
-
-    item.expanded = !item.expanded;
-
-    if (item.expanded)
-    {
-        if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
-        {
-            if (cc->handlers != nullptr)
-            {
-                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                if (handler->OnTreeItemToggle.obj)
-                {
-                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(this, handle);
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::IsMouseOnToggleSymbol(int x, int y) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    const uint32 index = y - 2;
-    if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
-    {
-        return false;
-    }
-
-    const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
-    const auto it         = cc->items.find(itemHandle);
-
-    if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
-        x < static_cast<int>(cc->Layout.Width))
-    {
-        return false; // on item
-    }
-
-    if (x >= static_cast<int>(it->second.depth * ItemSymbolOffset) &&
-        x < static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset - 1U))
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool TreeView::IsMouseOnItem(int x, int y) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc      = reinterpret_cast<TreeControlContext*>(Context);
-    const uint32 index = y - 2;
-    if (index >= cc->offsetBotToDraw || index >= cc->itemsToDrew.size())
-    {
-        return false;
-    }
-
-    const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
-    const auto it         = cc->items.find(itemHandle);
-
-    return (
-          x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
-          x < static_cast<int>(cc->Layout.Width));
-}
-
-bool TreeView::IsMouseOnBorder(int x, int y) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    return (x == 0 || x == cc->Layout.Width - BorderOffset) || (y == 0 || y == cc->Layout.Width - BorderOffset);
-}
-
-bool TreeView::IsMouseOnColumnHeader(int x, int y) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
-    cc->mouseOverColumnIndex = InvalidIndex;
-    CHECK(x >= 0, false, "");
-    CHECK(y == 1, false, "");
-
-    CHECK((cc->treeFlags & TreeViewFlags::HideColumns) == TreeViewFlags::None, false, "");
-
-    auto i                   = 0U;
-    cc->mouseOverColumnIndex = InvalidIndex;
-    for (auto& col : cc->columns)
-    {
-        if (static_cast<uint32>(x) >= col.x && static_cast<uint32>(x) <= col.x + col.width)
-        {
-            cc->mouseOverColumnIndex = i;
-            return true;
-        }
-        i++;
-    }
-
-    return false;
-}
-
-bool TreeView::IsMouseOnColumnSeparator(int x, int y) const
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    cc->mouseOverColumnSeparatorIndex = InvalidIndex;
-    for (auto i = 0U; i < cc->columns.size(); i++)
-    {
-        const auto& col = cc->columns[i];
-        const auto xs   = col.x + col.width;
-
-        if (xs == x)
-        {
-            cc->mouseOverColumnSeparatorIndex = i;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool TreeView::IsMouseOnSearchField(int x, int y) const
-{
-    if (this->HasFocus())
-    {
-        if (y == GetHeight() - 1)
-        {
-            if (x > 0 && x < TreeSearchBarWidth)
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool TreeView::AdjustElementsOnResize(const int /*newWidth*/, const int /*newHeight*/)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    CHECK(AdjustItemsBoundsOnResize(), false, "");
-
-    const uint32 width =
-          (static_cast<uint32>(cc->Layout.Width)) / static_cast<uint32>(std::max<>(cc->columns.size(), size_t(1U)));
-
-    uint32 xPreviousColumn       = 0;
-    uint32 widthOfPreviousColumn = 0;
-    for (auto i = 0U; i < cc->columns.size(); i++)
-    {
-        auto& col  = cc->columns[i];
-        col.height = static_cast<uint32>(cc->Layout.Height - 2);
-        col.x      = static_cast<uint32>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
-        if (col.customWidth == false)
-        {
-            col.width = std::max<>(width, MinColumnWidth);
-        }
-        xPreviousColumn       = col.x;
-        widthOfPreviousColumn = col.width;
-    }
-
-    if (cc->Layout.Width <= TreeScrollbarLeftOffset)
-    {
-        if (cc->hidSearchBarOnResize == false)
-        {
-            if ((cc->treeFlags & TreeViewFlags::HideSearchBar) != TreeViewFlags::None)
-            {
-                cc->filter.mode = TreeControlContext::FilterMode::None;
-                cc->filter.searchText.Clear();
-            }
-            cc->hidSearchBarOnResize = true;
-        }
-    }
-    else
-    {
-        if (cc->hidSearchBarOnResize)
-        {
-            cc->treeFlags ^= static_cast<uint32>(TreeViewFlags::HideSearchBar);
-            cc->hidSearchBarOnResize = false;
-        }
-
-        if ((cc->treeFlags & TreeViewFlags::FilterSearch) != TreeViewFlags::None)
-        {
-            cc->filter.mode = TreeControlContext::FilterMode::Filter;
-        }
-        else if ((cc->treeFlags & TreeViewFlags::Searchable) != TreeViewFlags::None)
-        {
-            cc->filter.mode = TreeControlContext::FilterMode::Search;
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::AdjustItemsBoundsOnResize()
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    cc->maxItemsToDraw  = cc->Layout.Height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
-    cc->offsetBotToDraw = cc->offsetTopToDraw + cc->maxItemsToDraw;
-
-    return true;
-}
-
-bool TreeView::AddToColumnWidth(const uint32 columnIndex, const int32 value)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    auto& currentColumn = cc->columns[columnIndex];
-    if (value < 0 && currentColumn.width == MinColumnWidth)
-    {
-        return true;
-    }
-
-    const auto newWidth = static_cast<int32>(currentColumn.width) + value;
-    currentColumn.width = std::max<>(newWidth, static_cast<int32>(MinColumnWidth));
-
-    auto previousX = currentColumn.x + currentColumn.width +
-                     ((cc->treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
-    for (auto i = columnIndex + 1; i < cc->columns.size(); i++)
-    {
-        auto& column = cc->columns[i];
-        column.x     = previousX;
-        previousX += (column.width + ((cc->treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None));
-    }
-
-    return true;
-}
-
-bool TreeView::SetColorForItems(const ColorPair& color)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    for (auto& item : cc->items)
-    {
-        for (auto& value : item.second.values)
-        {
-            value.SetColor(color);
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::SearchItems()
-{
-    bool found = false;
-
-    MarkAllItemsAsNotFound();
-
-    CHECK(Context != nullptr, found, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    std::set<ItemHandle> toBeExpanded;
-    if (cc->filter.searchText.Len() > 0)
-    {
-        for (auto& item : cc->items)
-        {
-            for (auto& value : item.second.values)
-            {
-                if (const auto index = value.Find(cc->filter.searchText.ToStringView(), true); index >= 0)
-                {
-                    item.second.markedAsFound = true;
-                    if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
-                    {
-                        MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
-                    }
-                    if (found == false)
-                    {
-                        cc->currentSelectedItemHandle = item.second.handle;
-                        SetColorForItems(cc->Cfg->Text.Normal);
-                    }
-                    found = true;
-                    value.SetColor(index, index + cc->filter.searchText.Len(), cc->Cfg->Text.Highlighted);
-
-                    ItemHandle ancestorHandle = item.second.parent;
-                    do
-                    {
-                        if (const auto& it = cc->items.find(ancestorHandle); it != cc->items.end())
-                        {
-                            const auto& ancestor = it->second;
-                            if (ancestor.isExpandable && ancestor.expanded == false &&
-                                (cc->treeFlags & TreeViewFlags::DynamicallyPopulateNodeChildren) == TreeViewFlags::None)
-                            {
-                                toBeExpanded.insert(ancestorHandle);
-                            }
-                            ancestorHandle = ancestor.parent;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    } while (ancestorHandle != InvalidItemHandle);
-                }
-            }
-        }
-    }
-
-    for (const auto handle : toBeExpanded)
-    {
-        ToggleItem(handle);
-    }
-
-    if (toBeExpanded.size() > 0 || cc->filter.mode == TreeControlContext::FilterMode::Filter)
-    {
-        ProcessItemsToBeDrawn(InvalidItemHandle);
-    }
-
-    cc->ProcessOrderedItems(InvalidItemHandle, true);
-
-    return found;
-}
-
-bool TreeView::MarkAllItemsAsNotFound()
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    for (auto& [handle, item] : cc->items)
-    {
-        item.markedAsFound = false;
-
-        if (cc->filter.mode == TreeControlContext::FilterMode::Filter)
-        {
-            item.hasAChildThatIsMarkedAsFound = false;
-        }
-    }
-
-    return true;
-}
-
-bool TreeView::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
-{
-    CHECK(handle != InvalidItemHandle, false, "");
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    const auto& item          = cc->items[handle];
-    ItemHandle ancestorHandle = item.parent;
-    do
-    {
-        if (const auto& it = cc->items.find(ancestorHandle); it != cc->items.end())
-        {
-            auto& ancestor                        = it->second;
-            ancestor.hasAChildThatIsMarkedAsFound = true;
-            ancestorHandle                        = ancestor.parent;
-        }
-        else
-        {
-            break;
-        }
-    } while (ancestorHandle != InvalidItemHandle);
 
     return true;
 }
@@ -1950,6 +1135,769 @@ bool TreeControlContext::ProcessOrderedItems(const ItemHandle handle, const bool
         {
             ProcessOrderedItems(childHandle, false);
         }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::ToggleItem(const ItemHandle handle, Reference<TreeView> tree)
+{
+    auto& item = items[handle];
+    CHECK(item.isExpandable, true, "");
+
+    if (treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
+    {
+        for (const auto& child : item.children)
+        {
+            RemoveItem(child, false);
+        }
+        item.children.clear();
+    }
+
+    item.expanded = !item.expanded;
+
+    if (item.expanded)
+    {
+        if (treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
+        {
+            if (handlers != nullptr)
+            {
+                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
+                if (handler->OnTreeItemToggle.obj)
+                {
+                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(tree, handle);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::IsMouseOnToggleSymbol(int x, int y) const
+{
+    const uint32 index = y - 2;
+    if (index >= offsetBotToDraw || index >= itemsToDrew.size())
+    {
+        return false;
+    }
+
+    const auto itemHandle = itemsToDrew[static_cast<size_t>(offsetTopToDraw) + index];
+    const auto it         = items.find(itemHandle);
+
+    if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
+        x < static_cast<int>(Layout.Width))
+    {
+        return false; // on item
+    }
+
+    if (x >= static_cast<int>(it->second.depth * ItemSymbolOffset) &&
+        x < static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset - 1U))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool TreeControlContext::IsMouseOnItem(int x, int y) const
+{
+    const uint32 index = y - 2;
+    if (index >= offsetBotToDraw || index >= itemsToDrew.size())
+    {
+        return false;
+    }
+
+    const auto itemHandle = itemsToDrew[static_cast<size_t>(offsetTopToDraw) + index];
+    const auto it         = items.find(itemHandle);
+
+    return (
+          x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
+          x < static_cast<int>(Layout.Width));
+}
+
+bool TreeControlContext::IsMouseOnBorder(int x, int y) const
+{
+    return (x == 0 || x == Layout.Width - BorderOffset) || (y == 0 || y == Layout.Width - BorderOffset);
+}
+
+bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
+{
+    mouseOverColumnIndex = InvalidIndex;
+    CHECK(x >= 0, false, "");
+    CHECK(y == 1, false, "");
+
+    CHECK((treeFlags & TreeViewFlags::HideColumns) == TreeViewFlags::None, false, "");
+
+    auto i = 0U;
+    for (auto& col : columns)
+    {
+        if (static_cast<uint32>(x) >= col.x && static_cast<uint32>(x) <= col.x + col.width)
+        {
+            mouseOverColumnIndex = i;
+            return true;
+        }
+        i++;
+    }
+
+    return false;
+}
+
+bool TreeControlContext::IsMouseOnColumnSeparator(int x, int y)
+{
+    mouseOverColumnSeparatorIndex = InvalidIndex;
+    for (auto i = 0U; i < columns.size(); i++)
+    {
+        const auto& col = columns[i];
+        const auto xs   = col.x + col.width;
+
+        if (xs == x)
+        {
+            mouseOverColumnSeparatorIndex = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool TreeControlContext::IsMouseOnSearchField(int x, int y) const
+{
+    if (Focused)
+    {
+        if (y == Layout.Height - 1)
+        {
+            if (x > 0 && x < TreeSearchBarWidth)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool TreeControlContext::AdjustElementsOnResize(const int /*newWidth*/, const int /*newHeight*/)
+{
+    CHECK(AdjustItemsBoundsOnResize(), false, "");
+
+    const uint32 width =
+          (static_cast<uint32>(Layout.Width)) / static_cast<uint32>(std::max<>(columns.size(), size_t(1U)));
+
+    uint32 xPreviousColumn       = 0;
+    uint32 widthOfPreviousColumn = 0;
+    for (auto i = 0U; i < columns.size(); i++)
+    {
+        auto& col  = columns[i];
+        col.height = static_cast<uint32>(Layout.Height - 2);
+        col.x      = static_cast<uint32>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
+        if (col.customWidth == false)
+        {
+            col.width = std::max<>(width, MinColumnWidth);
+        }
+        xPreviousColumn       = col.x;
+        widthOfPreviousColumn = col.width;
+    }
+
+    if (Layout.Width <= TreeScrollbarLeftOffset)
+    {
+        if (hidSearchBarOnResize == false)
+        {
+            if ((treeFlags & TreeViewFlags::HideSearchBar) != TreeViewFlags::None)
+            {
+                filter.mode = TreeControlContext::FilterMode::None;
+                filter.searchText.Clear();
+            }
+            hidSearchBarOnResize = true;
+        }
+    }
+    else
+    {
+        if (hidSearchBarOnResize)
+        {
+            treeFlags ^= static_cast<uint32>(TreeViewFlags::HideSearchBar);
+            hidSearchBarOnResize = false;
+        }
+
+        if ((treeFlags & TreeViewFlags::FilterSearch) != TreeViewFlags::None)
+        {
+            filter.mode = TreeControlContext::FilterMode::Filter;
+        }
+        else if ((treeFlags & TreeViewFlags::Searchable) != TreeViewFlags::None)
+        {
+            filter.mode = TreeControlContext::FilterMode::Search;
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::AdjustItemsBoundsOnResize()
+{
+    maxItemsToDraw  = Layout.Height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
+    offsetBotToDraw = offsetTopToDraw + maxItemsToDraw;
+
+    return true;
+}
+
+bool TreeControlContext::AddToColumnWidth(const uint32 columnIndex, const int32 value)
+{
+    auto& currentColumn = columns[columnIndex];
+    if (value < 0 && currentColumn.width == MinColumnWidth)
+    {
+        return true;
+    }
+
+    const auto newWidth = static_cast<int32>(currentColumn.width) + value;
+    currentColumn.width = std::max<>(newWidth, static_cast<int32>(MinColumnWidth));
+
+    auto previousX = currentColumn.x + currentColumn.width +
+                     ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
+    for (auto i = columnIndex + 1; i < columns.size(); i++)
+    {
+        auto& column = columns[i];
+        column.x     = previousX;
+        previousX += (column.width + ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None));
+    }
+
+    return true;
+}
+
+bool TreeControlContext::SetColorForItems(const ColorPair& color)
+{
+    for (auto& item : items)
+    {
+        for (auto& value : item.second.values)
+        {
+            value.SetColor(color);
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::SearchItems(Reference<TreeView> tree)
+{
+    bool found = false;
+
+    MarkAllItemsAsNotFound();
+
+    std::set<ItemHandle> toBeExpanded;
+    if (filter.searchText.Len() > 0)
+    {
+        for (auto& item : items)
+        {
+            for (auto& value : item.second.values)
+            {
+                if (const auto index = value.Find(filter.searchText.ToStringView(), true); index >= 0)
+                {
+                    item.second.markedAsFound = true;
+                    if (filter.mode == TreeControlContext::FilterMode::Filter)
+                    {
+                        MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
+                    }
+                    if (found == false)
+                    {
+                        currentSelectedItemHandle = item.second.handle;
+                        SetColorForItems(Cfg->Text.Normal);
+                    }
+                    found = true;
+                    value.SetColor(index, index + filter.searchText.Len(), Cfg->Text.Highlighted);
+
+                    ItemHandle ancestorHandle = item.second.parent;
+                    do
+                    {
+                        if (const auto& it = items.find(ancestorHandle); it != items.end())
+                        {
+                            const auto& ancestor = it->second;
+                            if (ancestor.isExpandable && ancestor.expanded == false &&
+                                (treeFlags & TreeViewFlags::DynamicallyPopulateNodeChildren) == TreeViewFlags::None)
+                            {
+                                toBeExpanded.insert(ancestorHandle);
+                            }
+                            ancestorHandle = ancestor.parent;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    } while (ancestorHandle != InvalidItemHandle);
+                }
+            }
+        }
+    }
+
+    for (const auto handle : toBeExpanded)
+    {
+        ToggleItem(handle, tree);
+    }
+
+    if (toBeExpanded.size() > 0 || filter.mode == TreeControlContext::FilterMode::Filter)
+    {
+        ProcessItemsToBeDrawn(InvalidItemHandle);
+    }
+
+    ProcessOrderedItems(InvalidItemHandle, true);
+
+    return found;
+}
+
+bool TreeControlContext::MarkAllItemsAsNotFound()
+{
+    for (auto& [handle, item] : items)
+    {
+        item.markedAsFound = false;
+
+        if (filter.mode == TreeControlContext::FilterMode::Filter)
+        {
+            item.hasAChildThatIsMarkedAsFound = false;
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle)
+{
+    CHECK(handle != InvalidItemHandle, false, "");
+
+    const auto& item          = items[handle];
+    ItemHandle ancestorHandle = item.parent;
+    do
+    {
+        if (const auto& it = items.find(ancestorHandle); it != items.end())
+        {
+            auto& ancestor                        = it->second;
+            ancestor.hasAChildThatIsMarkedAsFound = true;
+            ancestorHandle                        = ancestor.parent;
+        }
+        else
+        {
+            break;
+        }
+    } while (ancestorHandle != InvalidItemHandle);
+
+    return true;
+}
+
+bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
+{
+    WriteTextParams wtp;
+    wtp.Y = ((treeFlags & TreeViewFlags::HideColumns) == TreeViewFlags::None) +
+            ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None); // 0  is for border | 1 is for header
+
+    for (auto i = offsetTopToDraw; i < std::min<size_t>(offsetBotToDraw, itemsToDrew.size()); i++)
+    {
+        auto& item = items[itemsToDrew[i]];
+
+        uint32 j = 0; // column index
+        for (const auto& col : columns)
+        {
+            wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+            wtp.Align = col.contentAlignment;
+            if (j == 0)
+            {
+                wtp.X     = col.x + item.depth * ItemSymbolOffset - 1;
+                wtp.Width = col.width - item.depth * ItemSymbolOffset -
+                            ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
+
+                if (wtp.X < static_cast<int>(col.x + col.width))
+                {
+                    if (item.isExpandable)
+                    {
+                        if (item.expanded)
+                        {
+                            renderer.WriteSpecialCharacter(
+                                  wtp.X, wtp.Y, SpecialChars::TriangleDown, Cfg->Symbol.Arrows);
+                        }
+                        else
+                        {
+                            renderer.WriteSpecialCharacter(
+                                  wtp.X, wtp.Y, SpecialChars::TriangleRight, Cfg->Symbol.Arrows);
+                        }
+                    }
+                    else
+                    {
+                        renderer.WriteSpecialCharacter(wtp.X, wtp.Y, SpecialChars::CircleFilled, Cfg->Symbol.Inactive);
+                    }
+                }
+
+                wtp.X += ItemSymbolOffset;
+            }
+            else
+            {
+                wtp.X     = col.x;
+                wtp.Width = col.width;
+            }
+
+            if (j < item.values.size())
+            {
+                if (item.handle == currentSelectedItemHandle)
+                {
+                    wtp.Color = Cfg->Text.Focused;
+                    item.values[j].SetColor(wtp.Color);
+                }
+                else if (item.markedAsFound == false)
+                {
+                    wtp.Color = Cfg->Text.Normal;
+                    item.values[j].SetColor(wtp.Color);
+                }
+
+                if (wtp.X < static_cast<int>(col.x + col.width))
+                {
+                    renderer.WriteText(item.values[j], wtp);
+                }
+            }
+
+            j++;
+        }
+
+        wtp.Y++;
+    }
+
+    return true;
+}
+
+bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
+{
+    CHECK(columns.size() > 0, true, "");
+
+    const auto controlWidth = Layout.Width - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+
+    renderer.FillHorizontalLineSize(Layout.X - 1, 1, controlWidth, ' ', Cfg->Header.Text.Focused);
+
+    const auto enabled = (Flags & GATTR_ENABLE) != 0;
+
+    WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
+    wtp.Y     = 1; // 0  is for border
+    wtp.Color = Cfg->Text.Normal;
+
+    uint32 i = 0;
+    for (const auto& col : columns)
+    {
+        wtp.Align = col.headerAlignment;
+        wtp.X     = col.x;
+        wtp.Width = col.width - ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
+
+        if (wtp.X >= controlWidth)
+        {
+            continue;
+        }
+
+        if (wtp.X + static_cast<int32>(wtp.Width) >= controlWidth)
+        {
+            wtp.Width = controlWidth - wtp.X;
+        }
+
+        wtp.Color = enabled
+                          ? ((i == columnIndexToSortBy) ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Focused)
+                          : Cfg->Header.Text.Inactive;
+
+        renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
+
+        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.headerValue), wtp);
+
+        if (i == columnIndexToSortBy)
+        {
+            renderer.WriteSpecialCharacter(
+                  static_cast<int32>(wtp.X + wtp.Width),
+                  1,
+                  sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  Cfg->Header.HotKey.PressedOrSelected);
+        }
+
+        i++;
+    }
+
+    return true;
+}
+
+bool TreeControlContext::PaintColumnSeparators(Graphics::Renderer& renderer)
+{
+    CHECK(columns.size() > 0, true, "");
+
+    if (separatorIndexSelected != InvalidIndex)
+    {
+        CHECK(separatorIndexSelected <= columns.size(), // # columns + 1 separators
+              false,
+              "%u %u",
+              separatorIndexSelected,
+              columns.size());
+    }
+
+    for (auto i = 0U; i < columns.size(); i++)
+    {
+        const auto& col = columns[i];
+        if (static_cast<int32>(col.x + col.width) <=
+            Layout.Width - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None))
+        {
+            const auto& color = (separatorIndexSelected == i || mouseOverColumnSeparatorIndex == i) ? Cfg->Lines.Hovered
+                                                                                                    : Cfg->Lines.Normal;
+            renderer.DrawVerticalLine(
+                  col.x + col.width,
+                  1,
+                  Layout.Height - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None),
+                  color);
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::MoveUp()
+{
+    if (itemsToDrew.size() > 0)
+    {
+        const auto it             = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentSelectedItemHandle);
+        const auto index          = static_cast<uint32>(it - itemsToDrew.begin());
+        const auto newIndex       = std::min<uint32>(index - 1, static_cast<uint32>(itemsToDrew.size() - 1U));
+        currentSelectedItemHandle = itemsToDrew[newIndex];
+
+        if (newIndex == itemsToDrew.size() - 1)
+        {
+            if (itemsToDrew.size() > maxItemsToDraw)
+            {
+                offsetBotToDraw = static_cast<uint32>(itemsToDrew.size());
+            }
+
+            if (offsetBotToDraw >= maxItemsToDraw)
+            {
+                offsetTopToDraw = offsetBotToDraw - maxItemsToDraw;
+            }
+        }
+        else if (newIndex < offsetTopToDraw && offsetTopToDraw > 0)
+        {
+            offsetBotToDraw--;
+            offsetTopToDraw--;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool TreeControlContext::MoveDown()
+{
+    if (itemsToDrew.size() > 0)
+    {
+        const auto it       = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentSelectedItemHandle);
+        const auto index    = static_cast<uint32>(it - itemsToDrew.begin());
+        const auto newIndex = std::min<uint32>(index + 1, (index + 1ULL > itemsToDrew.size() - 1 ? 0 : index + 1));
+        currentSelectedItemHandle = itemsToDrew[newIndex];
+
+        if (newIndex == 0)
+        {
+            offsetBotToDraw = maxItemsToDraw;
+            offsetTopToDraw = 0;
+        }
+        else if (newIndex >= offsetBotToDraw)
+        {
+            offsetBotToDraw++;
+            offsetTopToDraw++;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool TreeControlContext::ProcessItemsToBeDrawn(const ItemHandle handle, bool clear)
+{
+    if (clear)
+    {
+        itemsToDrew.clear();
+        itemsToDrew.reserve(items.size());
+    }
+
+    CHECK(items.size() > 0, true, "");
+
+    if (handle == InvalidItemHandle)
+    {
+        for (const auto& handle : roots)
+        {
+            const auto& item = items[handle];
+            if (filter.mode == TreeControlContext::FilterMode::Filter && filter.searchText.Len() > 0)
+            {
+                if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
+                {
+                    continue;
+                }
+            }
+
+            itemsToDrew.emplace_back(handle);
+
+            if (item.isExpandable == false || item.expanded == false)
+            {
+                continue;
+            }
+
+            for (auto& it : item.children)
+            {
+                const auto& child = items[it];
+
+                if (filter.mode == TreeControlContext::FilterMode::Filter && filter.searchText.Len() > 0)
+                {
+                    if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
+                    {
+                        continue;
+                    }
+                }
+
+                if (child.isExpandable)
+                {
+                    if (child.expanded)
+                    {
+                        ProcessItemsToBeDrawn(it, false);
+                    }
+                    else
+                    {
+                        itemsToDrew.emplace_back(child.handle);
+                    }
+                }
+                else
+                {
+                    itemsToDrew.emplace_back(child.handle);
+                }
+            }
+        }
+    }
+    else
+    {
+        const auto& item = items[handle];
+
+        if (filter.mode == TreeControlContext::FilterMode::Filter && filter.searchText.Len() > 0)
+        {
+            if (item.hasAChildThatIsMarkedAsFound == false && item.markedAsFound == false)
+            {
+                return true;
+            }
+        }
+
+        itemsToDrew.emplace_back(item.handle);
+        CHECK(item.isExpandable, true, "");
+
+        for (auto& it : item.children)
+        {
+            const auto& child = items[it];
+
+            if (filter.mode == TreeControlContext::FilterMode::Filter && filter.searchText.Len() > 0)
+            {
+                if (child.hasAChildThatIsMarkedAsFound == false && child.markedAsFound == false)
+                {
+                    continue;
+                }
+            }
+
+            if (child.isExpandable)
+            {
+                if (child.expanded)
+                {
+                    ProcessItemsToBeDrawn(it, false);
+                }
+                else
+                {
+                    itemsToDrew.emplace_back(child.handle);
+                }
+            }
+            else
+            {
+                itemsToDrew.emplace_back(child.handle);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool TreeControlContext::IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child)
+{
+    std::queue<ItemHandle> ancestorRelated;
+    ancestorRelated.push(ancestor);
+
+    while (ancestorRelated.empty() == false)
+    {
+        const ItemHandle current = ancestorRelated.front();
+        ancestorRelated.pop();
+
+        for (const auto& handle : items[current].children)
+        {
+            if (handle == child)
+            {
+                return true;
+            }
+            else
+            {
+                ancestorRelated.push(handle);
+            }
+        }
+    }
+
+    return false;
+}
+
+bool TreeControlContext::ToggleExpandRecursive(const ItemHandle handle, Reference<TreeView> tree)
+{
+    std::queue<ItemHandle> ancestorRelated;
+    ancestorRelated.push(handle);
+
+    while (ancestorRelated.empty() == false)
+    {
+        ItemHandle current = ancestorRelated.front();
+        ancestorRelated.pop();
+
+        ToggleItem(current, tree);
+
+        const auto& item = items[current];
+        for (const auto& handle : item.children)
+        {
+            ancestorRelated.push(handle);
+        }
+    }
+
+    if ((treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
+    {
+        Sort();
+    }
+
+    notProcessed = true;
+
+    return true;
+}
+
+bool TreeControlContext::RemoveItem(const ItemHandle handle, bool process)
+{
+    std::queue<ItemHandle> ancestorRelated;
+    ancestorRelated.push(handle);
+
+    while (ancestorRelated.empty() == false)
+    {
+        ItemHandle current = ancestorRelated.front();
+        ancestorRelated.pop();
+
+        if (const auto it = items.find(handle); it != items.end())
+        {
+            for (const auto& handle : items[current].children)
+            {
+                ancestorRelated.push(handle);
+            }
+            items.erase(it);
+
+            if (const auto rootIt = std::find(roots.begin(), roots.end(), handle); rootIt != roots.end())
+            {
+                roots.erase(rootIt);
+            }
+        }
+    }
+
+    if (process)
+    {
+        ProcessItemsToBeDrawn(InvalidItemHandle);
+    }
+    else
+    {
+        notProcessed = true;
     }
 
     return true;
