@@ -3781,7 +3781,8 @@ namespace Controls
         bool SetCheck(bool value);
         bool IsChecked();
         bool SetType(ListViewItem::Type type);
-
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex);
 
 
 
@@ -3871,8 +3872,7 @@ namespace Controls
               const ConstString& subItem8);
 
         // items properties
-        bool SetItemText(ItemHandle item, uint32 subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetItemText(ItemHandle item, uint32 subItemIndex);
+
 
         bool SetItemSelect(ItemHandle item, bool select);
         bool SetItemColor(ItemHandle item, Graphics::ColorPair color);

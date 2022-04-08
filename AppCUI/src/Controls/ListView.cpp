@@ -1664,22 +1664,6 @@ ItemHandle ListView::AddItem(
     return handle;
 }
 
-bool ListView::SetItemText(ItemHandle item, uint32 subItem, const ConstString& text)
-{
-    return WRAPPER->SetItemText(item, subItem, text);
-}
-const Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, uint32 subItemIndex)
-{
-    auto obj = WRAPPER->GetItemText(item, subItemIndex);
-    if (obj)
-        return *obj;
-    else
-    {
-        __temp_listviewitem_reference_object__.Destroy();
-        return __temp_listviewitem_reference_object__;
-    }
-}
-
 bool ListView::SetItemSelect(ItemHandle item, bool select)
 {
     return WRAPPER->SetItemSelect(item, select);
@@ -1875,6 +1859,23 @@ bool ListViewItem::SetType(ListViewItem::Type type)
 {
     LVICHECK(false);
     return LVIC->SetItemType(item, type);
+}
+bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
+{
+    LVICHECK(false);
+    return LVIC->SetItemText(item, subItem, text);
+}
+const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex)
+{
+    if (this->context)
+    {
+        auto obj = LVIC->GetItemText(item, subItemIndex);
+        if (obj)
+            return *obj;
+    }
+    // error fallback
+    __temp_listviewitem_reference_object__.Destroy();
+    return __temp_listviewitem_reference_object__;
 }
 #undef LVIC
 } // namespace AppCUI

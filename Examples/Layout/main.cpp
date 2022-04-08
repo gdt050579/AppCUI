@@ -146,7 +146,7 @@ class MainWin : public Window
         if (eventType == Event::ButtonClicked)
         {
             auto itm = lst->GetCurrentItem();
-            if (itm != InvalidItemHandle)
+            if (itm.Exists())
             {
                 LayoutWin dlg((std::string) lst->GetItemText(itm, 0));
                 dlg.Show();
