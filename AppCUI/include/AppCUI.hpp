@@ -3823,6 +3823,7 @@ namespace Controls
 
         // items add
         ListViewItem AddItem(const ConstString& text);
+        ListViewItem AddItem(std::initializer_list<ConstString> values);
         ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
         ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
         ItemHandle AddItem(

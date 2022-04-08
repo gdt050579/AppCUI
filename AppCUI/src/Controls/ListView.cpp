@@ -1455,7 +1455,7 @@ ListView::ListView(string_view layout, ListViewFlags flags, std::initializer_lis
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
     // set up the columns
-    for (const auto& col: columns)
+    for (const auto& col : columns)
     {
         WRAPPER->AddColumn(col.name, col.align, col.width);
     }
@@ -1542,6 +1542,17 @@ uint32 ListView::GetColumnsCount()
 ListViewItem ListView::AddItem(const ConstString& text)
 {
     return { this->Context, WRAPPER->AddItem(text) };
+}
+ListViewItem ListView::AddItem(std::initializer_list<ConstString> values)
+{
+    ItemHandle handle = WRAPPER->AddItem("");
+    CHECK(handle != InvalidItemHandle, ListViewItem(nullptr, InvalidItemHandle), "Fail to allocate item for ListView");
+    auto index = 0U;
+    for (auto& value : values)
+    {
+        WRAPPER->SetItemText(handle, index++, value);
+    }
+    return { this->Context, handle };
 }
 ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
 {
@@ -1832,7 +1843,9 @@ uint32 ListView::GetSortColumnIndex()
 
 // ================================================================== [ListViewItem] ==========================
 #define LVIC ((ListViewControlContext*) this->context)
-#define LVICHECK(result) if (this->context==nullptr) return result;
+#define LVICHECK(result)                                                                                               \
+    if (this->context == nullptr)                                                                                      \
+        return result;
 bool ListViewItem::SetData(uint64 value)
 {
     LVICHECK(false);
