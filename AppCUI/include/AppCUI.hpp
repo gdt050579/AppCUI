@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.33.0"
+#define APPCUI_VERSION "1.35.0"
 
 #include <filesystem>
 #include <map>
@@ -3132,6 +3132,26 @@ namespace Controls
         };
 
     } // namespace Handlers
+
+    struct ColumnBuilder
+    {
+        ConstString name;
+        Graphics::TextAlignament align;
+        uint32 width;
+
+        static constexpr uint32 AUTO_SIZE = 0xFFFFFFFF;
+
+        ColumnBuilder(ConstString Name) : name(Name), align(Graphics::TextAlignament::Left), width(AUTO_SIZE)
+        {
+        }
+        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align) : name(Name), align(Align), width(AUTO_SIZE)
+        {
+        }
+        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align, uint32 Width)
+            : name(Name), align(Align), width(Width)
+        {
+        }
+    };
 
     class EXPORT Control
     {
