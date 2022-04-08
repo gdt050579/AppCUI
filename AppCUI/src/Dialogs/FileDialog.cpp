@@ -323,7 +323,7 @@ void FileDialogWindow::FileListItemClicked()
     {
         try
         {
-            UpdateCurrentPath(currentPath / files->GetItemText(index, 0));
+            UpdateCurrentPath(currentPath / current.GetText(0));
         }
         catch (...)
         {
@@ -345,11 +345,11 @@ void FileDialogWindow::FileListItemChanged()
     uint32 value = (int) current.GetData(0);
     if (value == 1)
     {
-        txName->SetText(files->GetItemText(index, 0));
+        txName->SetText(current.GetText(0));
     }
     else if (value == 2)
     {
-        txName->SetText(files->GetItemText(index, 0));
+        txName->SetText(current.GetText(0));
     }
     else
     {
