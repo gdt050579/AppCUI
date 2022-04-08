@@ -3834,6 +3834,7 @@ namespace Controls
         // items add
         ListViewItem AddItem(const ConstString& text);
         ListViewItem AddItem(std::initializer_list<ConstString> values);
+        void AddItems(std::initializer_list<std::initializer_list<ConstString>> items);
         ListViewItem GetItem(uint32 index);
 
        

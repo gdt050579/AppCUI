@@ -3095,14 +3095,13 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface
         lv->Reserve(100); // to populate the list faster
         for (uint32 tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
         {
-            lv->AddItem(
-                  us_states[tr].Name,
-                  us_states[tr].Abbreviation,
-                  us_states[tr].Capital,
-                  us_states[tr].LargestCity,
-                  us_states[tr].Population,
-                  us_states[tr].Surface,
-                  us_states[tr].NrOfReps);
+            lv->AddItem({ us_states[tr].Name,
+                          us_states[tr].Abbreviation,
+                          us_states[tr].Capital,
+                          us_states[tr].LargestCity,
+                          us_states[tr].Population,
+                          us_states[tr].Surface,
+                          us_states[tr].NrOfReps });
         }
         // sort them after the name (first column)
         lv->Sort(0, true);

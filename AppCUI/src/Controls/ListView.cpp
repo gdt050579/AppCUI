@@ -1555,6 +1555,13 @@ ListViewItem ListView::AddItem(std::initializer_list<ConstString> values)
     }
     return { this->Context, handle };
 }
+void ListView::AddItems(std::initializer_list<std::initializer_list<ConstString>> items)
+{
+    for (auto &item: items)
+    {
+        AddItem(item);
+    }
+}
 ListViewItem ListView::GetItem(uint32 index)
 {
     if (this->Context == nullptr)
