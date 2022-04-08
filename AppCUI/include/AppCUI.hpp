@@ -3794,7 +3794,8 @@ namespace Controls
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
         bool SetColor(Graphics::ColorPair color);
-
+        bool SetSelected(bool select);
+        bool IsSelected() const;
 
 
         friend class ListView;
@@ -3842,10 +3843,7 @@ namespace Controls
         // items properties
 
 
-        bool SetItemSelect(ItemHandle item, bool select);
-        
 
-        bool IsItemSelected(ItemHandle item);
 
 
 

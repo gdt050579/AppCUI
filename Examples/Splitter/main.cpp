@@ -89,10 +89,8 @@ class Example2 : public Window
         auto lv = Factory::ListView::Create(
               sp, "d:c", { { "Name", TextAlignament::Left, 15 }, { "Grade", TextAlignament::Right, 10 } });
 
-        lv->AddItem("Dragos", "10");
-        lv->AddItem("Raul", "9");
-        lv->AddItem("Gheorghita", "10");
-        lv->AddItem("Andrei", "7");
+        lv->AddItems({ { "Dragos", "10" }, { "Raul", "9" }, { "Gheorghita", "10" }, { "Andrei", "7" } });
+
         tb  = Factory::Tab::Create(sp, "d:c", TabFlags::ListView);
         tp1 = Factory::TabPage::Create(tb, "&Infos");
         Factory::CheckBox::Create(tp1, "Setting &1", "l:1,t:1,r:1");
@@ -152,10 +150,8 @@ class Example3 : public Window
         auto lv = Factory::ListView::Create(
               sp_v, "d:c", { { "Name", TextAlignament::Left, 15 }, { "Grade", TextAlignament::Right, 10 } });
 
-        lv->AddItem("Dragos", "10");
-        lv->AddItem("Raul", "9");
-        lv->AddItem("Gheorghita", "10");
-        lv->AddItem("Andrei", "7");
+        lv->AddItems({ { "Dragos", "10" }, { "Raul", "9" }, { "Gheorghita", "10" }, { "Andrei", "7" } });
+
         tb1  = Factory::Tab::Create(sp_v, "d:c", TabFlags::ListView);
         tp1_1 = Factory::TabPage::Create(tb1, "&Infos");
         Factory::CheckBox::Create(tp1_1, "Setting &1", "l:1,t:1,r:1");

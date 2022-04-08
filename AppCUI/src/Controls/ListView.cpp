@@ -1575,14 +1575,6 @@ ListViewItem ListView::GetItem(uint32 index)
     //return { nullptr, 0 };
 }
 
-bool ListView::SetItemSelect(ItemHandle item, bool select)
-{
-    return WRAPPER->SetItemSelect(item, select);
-}
-bool ListView::IsItemSelected(ItemHandle item)
-{
-    return WRAPPER->IsItemSelected(item);
-}
 bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
 {
     return WRAPPER->SetItemDataAsPointer(item, Data);
@@ -1792,6 +1784,16 @@ bool ListViewItem::SetColor(ColorPair col)
 {
     LVICHECK(false);
     return LVIC->SetItemColor(item, col);
+}
+bool ListViewItem::SetSelected(bool select)
+{
+    LVICHECK(false);
+    return LVIC->SetItemSelect(item, select);
+}
+bool ListViewItem::IsSelected() const
+{
+    LVICHECK(false);
+    return LVIC->IsItemSelected(item);
 }
 #undef LVIC
 } // namespace AppCUI

@@ -3174,18 +3174,12 @@ class ListViewWithColors : public Window
               { { "Color", TextAlignament::Left, 10 }, { "RGB", TextAlignament::Center, 10 } },
               ListViewFlags::None);
 
-        lv->AddItem({ "Red", "FF0000" });
-        lv->SetItemColor(handle, ColorPair{ Color::Red, Color::Transparent });
-        lv->AddItem({ "Green", "00FF00" });
-        lv->SetItemColor(handle, ColorPair{ Color::Green, Color::Transparent });
-        lv->AddItem({ "Blue", "0000FF" });
-        lv->SetItemColor(handle, ColorPair{ Color::Blue, Color::Transparent });
-        lv->AddItem({ "Yellow", "FFFF00" });
-        lv->SetItemColor(handle, ColorPair{ Color::Yellow, Color::Transparent });
-        lv->AddItem({ "White", "FFFFFF" });
-        lv->SetItemColor(handle, ColorPair{ Color::White, Color::Transparent });
-        lv->AddItem({ "Gray", "808080" });
-        lv->SetItemColor(handle, ColorPair{ Color::Gray, Color::Transparent });
+        lv->AddItem({ "Red", "FF0000" }).SetColor(ColorPair{ Color::Red, Color::Transparent });
+        lv->AddItem({ "Green", "00FF00" }).SetColor(ColorPair{ Color::Green, Color::Transparent });
+        lv->AddItem({ "Blue", "0000FF" }).SetColor(ColorPair{ Color::Blue, Color::Transparent });
+        lv->AddItem({ "Yellow", "FFFF00" }).SetColor(ColorPair{ Color::Yellow, Color::Transparent });
+        lv->AddItem({ "White", "FFFFFF" }).SetColor(ColorPair{ Color::White, Color::Transparent });
+        lv->AddItem({ "Gray", "808080" }).SetColor(ColorPair{ Color::Gray, Color::Transparent });
     }
 };
 

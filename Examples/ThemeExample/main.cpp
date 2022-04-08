@@ -41,10 +41,10 @@ class ExampleWin : public Window
 
         for (uint32 count = 0; count < 100; count++)
         {
-            lv->AddItem("John", "9", "Math");
-            lv->AddItem("Mary", "8", "English");
-            lv->AddItem("Jeffrey", "7", "Math");
-            lv->AddItem("Carl", "9", "Sport");
+            lv->AddItems({ { "John", "9", "Math" },
+                           { "Mary", "8", "English" },
+                           { "Jeffrey", "7", "Math" },
+                           { "Carl", "9", "Sport" } });
         }
 
         Factory::ComboBox::Create(this, "x:25,y:14,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);
