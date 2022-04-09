@@ -2884,7 +2884,10 @@ namespace Controls
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
-        using ListViewItemCompareHandler = int (*)(Reference<Controls::ListView> control, const Controls::ListViewItem& item1, const Controls::ListViewItem& item2);
+        using ListViewItemCompareHandler = int (*)(
+              Reference<Controls::ListView> control,
+              const Controls::ListViewItem& item1,
+              const Controls::ListViewItem& item2);
 
         struct OnButtonPressedInterface
         {
@@ -3795,6 +3798,7 @@ namespace Controls
             Category           = 7,
             Colored            = 8
         };
+
       public:
         ListViewItem() : context(nullptr), item(0)
         {
@@ -3851,8 +3855,15 @@ namespace Controls
 
         // coloane
         ListViewColumn GetColumn(uint32 index);
+        ListViewColumn AddColumn(
+              const ConstString& text,
+              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
+              uint32 width                   = ColumnBuilder::AUTO_SIZE);
+        void AddColumns(std::initializer_list<ColumnBuilder> columns);
         uint32 GetColumnsCount();
         uint32 GetSortColumnIndex();
+        void DeleteAllColumns();
+        bool DeleteColumn(uint32 columnIndex);
 
         // Items
         ListViewItem AddItem(const ConstString& text);
@@ -3868,7 +3879,6 @@ namespace Controls
         uint32 GetItemsCount();
         uint32 GetCheckedItemsCount();
         bool SetCurrentItem(ListViewItem item);
-
 
         // misc
         void SetClipboardSeparator(char ch);
