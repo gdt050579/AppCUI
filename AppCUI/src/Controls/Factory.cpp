@@ -296,7 +296,7 @@ REFERENCE<ImageView> Factory::ImageView::Create(
 POINTER<Controls::ListView> Factory::ListView::Create(
       string_view layout, std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags)
 {
-    return POINTER<Controls::ListView>(new Controls::ListView(layout, flags, columns));
+    return POINTER<Controls::ListView>(new Controls::ListView(layout, columns, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
       Controls::Control* parent,

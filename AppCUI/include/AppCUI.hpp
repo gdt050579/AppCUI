@@ -3834,7 +3834,7 @@ namespace Controls
     class EXPORT ListView : public Control
     {
       protected:
-        ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns);
+        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags = ListViewFlags::None);
 
       public:
         bool Reserve(uint32 itemsCount);

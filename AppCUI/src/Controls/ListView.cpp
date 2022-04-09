@@ -1417,7 +1417,7 @@ ListView::~ListView()
     }
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns)
+ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags)
     : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
