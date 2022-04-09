@@ -225,7 +225,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         itemCol = Cfg->Text.Normal;
         break;
     case ListViewItem::Type::Highlighted:
-        itemCol = Cfg->Text.Highlighted;
+        itemCol = Cfg->Text.Focused;
         break;
     case ListViewItem::Type::ErrorInformation:
         itemCol = Cfg->Text.Error;

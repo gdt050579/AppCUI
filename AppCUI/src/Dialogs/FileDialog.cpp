@@ -305,7 +305,7 @@ bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter
 void FileDialogWindow::FileListItemClicked()
 {
     auto current = files->GetCurrentItem();
-    if (!current.Exists())
+    if (!current.IsValid())
         return;
     uint32 value = (int) current.GetData(0);
     if (value == 0)
@@ -341,7 +341,7 @@ void FileDialogWindow::FileListItemClicked()
 void FileDialogWindow::FileListItemChanged()
 {
     auto current = files->GetCurrentItem();
-    if (!current.Exists())
+    if (!current.IsValid())
         return;
     uint32 value = (int) current.GetData(0);
     if (value == 1)
