@@ -32,21 +32,20 @@ class MainWin : public Window
     Reference<Button> b;
     void AddExample(std::string_view layout, std::string_view info)
     {
-        ItemHandle i = lst->AddItem(layout, info);
-        lst->SetItemXOffset(i, 2);
+        lst->AddItem({ layout, info }).SetXOffset(2);
     }
     void AddGroup(std::string_view name)
     {
-        ItemHandle i = lst->AddItem(name);
-        lst->SetItemType(i, ListViewItemType::Highlighted);
+        lst->AddItem(name).SetType(ListViewItem::Type::Highlighted);
     }
 
   public:
     MainWin() : Window("Layout modes", "x:0,y:0,w:70,h:20", WindowFlags::None)
     {
-        lst = Factory::ListView::Create(this, "x:1,y:1,w:66,h:14");
-        lst->AddColumn("Layout", TextAlignament::Left, 25);
-        lst->AddColumn("Explanation", TextAlignament::Left, 100);
+        lst = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:14",
+              { { "Layout", TextAlignament::Left, 25 }, { "Explanation", TextAlignament::Left, 100 } });
 
         // add list of layouts
         AddGroup("Docking");
@@ -146,16 +145,16 @@ class MainWin : public Window
         if (eventType == Event::ButtonClicked)
         {
             auto itm = lst->GetCurrentItem();
-            if (itm != InvalidItemHandle)
+            if (itm.IsValid())
             {
-                LayoutWin dlg((std::string) lst->GetItemText(itm, 0));
+                LayoutWin dlg((std::string) itm.GetText(0));
                 dlg.Show();
                 return true;
             }
         }
         if (eventType == Event::ListViewCurrentItemChanged)
         {
-            b->SetEnabled(lst->GetItemXOffset(lst->GetCurrentItem()) == 2);
+            b->SetEnabled(lst->GetCurrentItem().GetXOffset() == 2);
             return true;
         }
         return false;

@@ -2855,6 +2855,7 @@ namespace Controls
     class EXPORT Control;
     class EXPORT Button;
     class EXPORT TextField;
+    class EXPORT ListViewItem;
     class EXPORT ListView;
     class EXPORT Tree;
     class EXPORT Menu;
@@ -2883,7 +2884,7 @@ namespace Controls
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
-        using ComparereItemHandler = int (*)(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2);
+        using ListViewItemCompareHandler = int (*)(Reference<Controls::ListView> control, const Controls::ListViewItem& item1, const Controls::ListViewItem& item2);
 
         struct OnButtonPressedInterface
         {
@@ -3056,14 +3057,20 @@ namespace Controls
             };
         };
 
-        struct ComparereItemInterface
+        struct ListViewItemCompareInterface
         {
-            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) = 0;
+            virtual int CompareItems(
+                  Reference<Controls::ListView> control,
+                  const Controls::ListViewItem& item1,
+                  const Controls::ListViewItem& item2) = 0;
         };
-        struct ComparereItemCallback : public ComparereItemInterface
+        struct ListViewItemCompareCallback : public ListViewItemCompareInterface
         {
-            ComparereItemHandler callback;
-            virtual int CompareItem(Reference<Controls::Control> control, ItemHandle item1, ItemHandle item2) override
+            ListViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::ListView> control,
+                  const Controls::ListViewItem& item1,
+                  const Controls::ListViewItem& item2) override
             {
                 return callback(control, item1, item2);
             };
@@ -3122,7 +3129,8 @@ namespace Controls
         };
         struct ListView : public Control
         {
-            Wrapper<ComparereItemInterface, ComparereItemCallback, ComparereItemHandler> ComparereItem;
+            Wrapper<ListViewItemCompareInterface, ListViewItemCompareCallback, ListViewItemCompareHandler>
+                  ComparereItem;
         };
 
         struct Tree : public Control
@@ -3743,27 +3751,90 @@ namespace Controls
         HideBorder                    = 0x020000,
         HideScrollBar                 = 0x040000
     };
-    enum class ListViewItemType : uint16
-    {
-        Normal             = 0,
-        Highlighted        = 1,
-        GrayedOut          = 2,
-        ErrorInformation   = 3,
-        WarningInformation = 4,
-        Emphasized_1       = 5,
-        Emphasized_2       = 6,
-        Category           = 7,
-        Colored            = 8
-    };
 
-    class EXPORT ListView : public Control
+    class EXPORT ListViewColumn
+    {
+        void* context;
+        uint32 index;
+
+        ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        bool SetText(const ConstString& text);
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+        bool SetClipboardCopyState(bool allowCopy);
+        bool SetFilterMode(bool allowFilterForThisColumn);
+        friend class ListView;
+    };
+    class EXPORT ListViewItem
     {
       private:
-        GenericRef GetItemDataAsPointer(ItemHandle item) const;
-        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef obj);
 
+        void* context;
+        ItemHandle item;
+
+        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        {
+        }
+
+      public:
+        enum class Type : uint16
+        {
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
+            WarningInformation = 4,
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Category           = 7,
+            Colored            = 8
+        };
+      public:
+        ListViewItem() : context(nullptr), item(0)
+        {
+        }
+        inline bool IsValid() const
+        {
+            return context != nullptr;
+        }
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue) const;
+        bool SetCheck(bool value);
+        bool IsChecked() const;
+        bool SetType(ListViewItem::Type type);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+        bool SetXOffset(uint32 value);
+        uint32 GetXOffset() const;
+        bool SetColor(Graphics::ColorPair color);
+        bool SetSelected(bool select);
+        bool IsSelected() const;
+        bool SetHeight(uint32 Height);
+        uint32 GetHeight() const;
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetItemData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
+
+        friend class ListView;
+    };
+    class EXPORT ListView : public Control
+    {
       protected:
-        ListView(string_view layout, ListViewFlags flags);
+        ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns);
 
       public:
         bool Reserve(uint32 itemsCount);
@@ -3779,103 +3850,25 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        bool AddColumn(const ConstString& text, Graphics::TextAlignament Align, uint32 Size = 10);
-        bool SetColumnText(uint32 columnIndex, const ConstString& text);
-        bool SetColumnAlignament(uint32 columnIndex, Graphics::TextAlignament Align);
-        bool SetColumnWidth(uint32 columnIndex, uint32 width);
-        bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
-        bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
-        bool DeleteColumn(uint32 columnIndex);
-        void DeleteAllColumns();
+        ListViewColumn GetColumn(uint32 index);
         uint32 GetColumnsCount();
         uint32 GetSortColumnIndex();
 
-        // items add
-        ItemHandle AddItem(const ConstString& text);
-        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1);
-        ItemHandle AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6,
-              const ConstString& subItem7);
-        ItemHandle AddItem(
-              const ConstString& text,
-              const ConstString& subItem1,
-              const ConstString& subItem2,
-              const ConstString& subItem3,
-              const ConstString& subItem4,
-              const ConstString& subItem5,
-              const ConstString& subItem6,
-              const ConstString& subItem7,
-              const ConstString& subItem8);
-
-        // items properties
-        bool SetItemText(ItemHandle item, uint32 subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetItemText(ItemHandle item, uint32 subItemIndex);
-        bool SetItemCheck(ItemHandle item, bool check);
-        bool SetItemSelect(ItemHandle item, bool select);
-        bool SetItemColor(ItemHandle item, Graphics::ColorPair color);
-        bool SetItemType(ItemHandle item, ListViewItemType type);
-        bool IsItemChecked(ItemHandle item);
-        bool IsItemSelected(ItemHandle item);
-
-        bool SetItemData(ItemHandle item, uint64 value);
-        uint64 GetItemData(ItemHandle item, uint64 errorValue);
-
-        template <typename T>
-        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
-        }
-        template <typename T>
-        constexpr inline Reference<T> GetItemData(ItemHandle item) const
-        {
-            return this->GetItemDataAsPointer(item).ToReference<T>();
-        }
-        bool SetItemXOffset(ItemHandle item, uint32 XOffset);
-        uint32 GetItemXOffset(ItemHandle item);
-        bool SetItemHeight(ItemHandle item, uint32 Height);
-        uint32 GetItemHeight(ItemHandle item);
-        void DeleteAllItems();
-        uint32 GetItemsCount();
-        ItemHandle GetCurrentItem();
-        bool SetCurrentItem(ItemHandle item);
+        // Items
+        ListViewItem AddItem(const ConstString& text);
+        ListViewItem AddItem(std::initializer_list<ConstString> values);
+        void AddItems(std::initializer_list<std::initializer_list<ConstString>> items);
+        ListViewItem GetItem(uint32 index);
+        ListViewItem GetCurrentItem();
         void SelectAllItems();
         void UnSelectAllItems();
         void CheckAllItems();
         void UncheckAllItems();
+        void DeleteAllItems();
+        uint32 GetItemsCount();
         uint32 GetCheckedItemsCount();
+        bool SetCurrentItem(ListViewItem item);
+
 
         // misc
         void SetClipboardSeparator(char ch);
@@ -4579,14 +4572,18 @@ namespace Controls
 
           public:
             static Pointer<Controls::ListView> Create(
-                  string_view layout, Controls::ListViewFlags flags = Controls::ListViewFlags::None);
+                  string_view layout,
+                  std::initializer_list<ColumnBuilder> columns,
+                  Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,
+                  std::initializer_list<ColumnBuilder> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
                   string_view layout,
+                  std::initializer_list<ColumnBuilder> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox

@@ -14,18 +14,18 @@ constexpr uint32 LISTVIEW_SEARCH_BAR_WIDTH = 12;
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
-    ListViewItem& i = Items.List[index];
+    InternalListViewItem& i = Items.List[index];
 
 #define CONST_PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                \
     CHECK(index < Items.List.size(), returnValue, "Invalid index: %d", index);                                         \
-    const ListViewItem& i = Items.List[index];
+    const InternalListViewItem& i = Items.List[index];
 
 #define WRAPPER ((ListViewControlContext*) this->Context)
 
 Graphics::CharacterBuffer
       __temp_listviewitem_reference_object__; // use this as std::option<const T&> is not available yet
 
-void ListViewColumn::Reset()
+void InternalListViewColumn::Reset()
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -34,7 +34,7 @@ void ListViewColumn::Reset()
     this->Width        = 10;
     this->Name.Clear();
 }
-bool ListViewColumn::SetName(const ConstString& text)
+bool InternalListViewColumn::SetName(const ConstString& text)
 {
     this->HotKeyCode   = Key::None;
     this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
@@ -45,7 +45,7 @@ bool ListViewColumn::SetName(const ConstString& text)
 
     return true;
 }
-bool ListViewColumn::SetAlign(TextAlignament align)
+bool InternalListViewColumn::SetAlign(TextAlignament align)
 {
     if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
     {
@@ -57,22 +57,22 @@ bool ListViewColumn::SetAlign(TextAlignament align)
           "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or "
           "TextAlignament::Center");
 }
-void ListViewColumn::SetWidth(uint32 width)
+void InternalListViewColumn::SetWidth(uint32 width)
 {
     width       = std::max<>(width, MINIM_COLUMN_WIDTH);
     width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
     this->Width = (uint8) width;
 }
 
-ListViewItem::ListViewItem() : Data(nullptr)
+InternalListViewItem::InternalListViewItem() : Data(nullptr)
 {
     this->Flags     = 0;
-    this->Type      = ListViewItemType::Normal;
+    this->Type      = ListViewItem::Type::Normal;
     this->ItemColor = DefaultColorPair;
     this->Height    = 1;
     this->XOffset   = 0;
 }
-ListViewItem::ListViewItem(const ListViewItem& obj) : Data(obj.Data)
+InternalListViewItem::InternalListViewItem(const InternalListViewItem& obj) : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
@@ -84,7 +84,7 @@ ListViewItem::ListViewItem(const ListViewItem& obj) : Data(obj.Data)
         this->SubItem[tr] = obj.SubItem[tr];
     }
 }
-ListViewItem::ListViewItem(ListViewItem&& obj) noexcept : Data(obj.Data)
+InternalListViewItem::InternalListViewItem(InternalListViewItem&& obj) noexcept : Data(obj.Data)
 {
     this->Flags     = obj.Flags;
     this->Type      = obj.Type;
@@ -97,7 +97,7 @@ ListViewItem::ListViewItem(ListViewItem&& obj) noexcept : Data(obj.Data)
     }
 }
 
-ListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
+InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 {
     uint32 idx;
     CHECK(Items.Indexes.Get(index, idx), nullptr, "Fail to get index value for item with ID: %d", index);
@@ -107,8 +107,8 @@ ListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 
 void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
 {
-    int x                  = 1 - Columns.XOffset;
-    ListViewColumn* column = this->Columns.List;
+    int x                          = 1 - Columns.XOffset;
+    InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
         x += column->Width;
@@ -130,7 +130,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
     int x = 1 - Columns.XOffset;
 
-    ListViewColumn* column = this->Columns.List;
+    InternalListViewColumn* column = this->Columns.List;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
     params.Y           = 1;
     params.Color       = defaultCol;
@@ -198,13 +198,13 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         x++;
     }
 }
-void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem* item, int y, bool currentItem)
+void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
     int x = 1 - Columns.XOffset;
     int itemStarts;
-    ListViewColumn* column   = this->Columns.List;
-    CharacterBuffer* subitem = item->SubItem;
-    ColorPair itemCol        = Cfg->Text.Normal;
+    InternalListViewColumn* column = this->Columns.List;
+    CharacterBuffer* subitem       = item->SubItem;
+    ColorPair itemCol              = Cfg->Text.Normal;
     ColorPair checkCol, uncheckCol;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::OverwriteColors | WriteTextFlags::ClipToWidth);
     params.Y = y;
@@ -221,31 +221,31 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     // select color based on item type
     switch (item->Type)
     {
-    case ListViewItemType::Normal:
+    case ListViewItem::Type::Normal:
         itemCol = Cfg->Text.Normal;
         break;
-    case ListViewItemType::Highlighted:
-        itemCol = Cfg->Text.Highlighted;
+    case ListViewItem::Type::Highlighted:
+        itemCol = Cfg->Text.Focused;
         break;
-    case ListViewItemType::ErrorInformation:
+    case ListViewItem::Type::ErrorInformation:
         itemCol = Cfg->Text.Error;
         break;
-    case ListViewItemType::WarningInformation:
+    case ListViewItem::Type::WarningInformation:
         itemCol = Cfg->Text.Warning;
         break;
-    case ListViewItemType::GrayedOut:
+    case ListViewItem::Type::GrayedOut:
         itemCol = Cfg->Text.Inactive;
         break;
-    case ListViewItemType::Emphasized_1:
+    case ListViewItem::Type::Emphasized_1:
         itemCol = Cfg->Text.Emphasized1;
         break;
-    case ListViewItemType::Emphasized_2:
+    case ListViewItem::Type::Emphasized_2:
         itemCol = Cfg->Text.Emphasized2;
         break;
-    case ListViewItemType::Category:
+    case ListViewItem::Type::Category:
         itemCol = Cfg->Text.Highlighted;
         break;
-    case ListViewItemType::Colored:
+    case ListViewItem::Type::Colored:
         itemCol = item->ItemColor;
         break;
     default:
@@ -267,7 +267,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
     params.Color = itemCol;
 
     // for chategory items a special draw is made (only first comlumn is shown)
-    if (item->Type == ListViewItemType::Category)
+    if (item->Type == ListViewItem::Type::Category)
     {
         if (Focused)
             renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Focused, true);
@@ -363,8 +363,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, ListViewItem
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            x                      = 1 - Columns.XOffset;
-            ListViewColumn* column = this->Columns.List;
+            x                              = 1 - Columns.XOffset;
+            InternalListViewColumn* column = this->Columns.List;
             for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
             {
                 x += column->Width;
@@ -395,7 +395,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     uint32 count = this->Items.Indexes.Len();
     while ((y < this->Layout.Height) && (index < count))
     {
-        ListViewItem* item = GetFilteredItem(index);
+        InternalListViewItem* item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == static_cast<unsigned>(this->Items.CurentItemIndex));
         y++;
         if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -454,6 +454,8 @@ bool ListViewControlContext::AddColumn(const ConstString& text, TextAlignament A
     Columns.List[Columns.Count].Reset();
     CHECK(Columns.List[Columns.Count].SetName(text), false, "Fail to set column name: %s", text);
     CHECK(Columns.List[Columns.Count].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
+    if (width == ColumnBuilder::AUTO_SIZE)
+        width = Columns.List[Columns.Count].Name.Len() + 3;
     Columns.List[Columns.Count].SetWidth(width);
     Columns.Count++;
     UpdateColumnsWidth();
@@ -487,7 +489,7 @@ int ListViewControlContext::GetNrColumns()
 ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 {
     ItemHandle idx = (uint32) Items.List.size();
-    Items.List.push_back(ListViewItem(Cfg->Text.Normal));
+    Items.List.push_back(InternalListViewItem(Cfg->Text.Normal));
     Items.Indexes.Push(idx);
     SetItemText(idx, 0, text);
     return idx;
@@ -536,14 +538,14 @@ bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.ItemColor = color;
-    i.Type      = ListViewItemType::Colored;
+    i.Type      = ListViewItem::Type::Colored;
     return true;
 }
-bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItemType type)
+bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItem::Type type)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
     i.Type = type;
-    if (type == ListViewItemType::Colored)
+    if (type == ListViewItem::Type::Colored)
         i.ItemColor = Cfg->Text.Normal;
     return true;
 }
@@ -724,7 +726,7 @@ int ListViewControlContext::GetVisibleItemsCount()
     int sz = (int) Items.Indexes.Len();
     while ((dim < vis) && (poz < sz))
     {
-        ListViewItem* i = GetFilteredItem(poz);
+        InternalListViewItem* i = GetFilteredItem(poz);
         if (i)
             dim += i->Height;
         if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
@@ -758,7 +760,7 @@ void ListViewControlContext::UpdateSelectionInfo()
 }
 void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 {
-    ListViewItem* i;
+    InternalListViewItem* i;
     int totalItems = Items.Indexes.Len();
 
     while ((start != end) && (start >= 0) && (start < totalItems))
@@ -803,7 +805,7 @@ void ListViewControlContext::MoveTo(int index)
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     LocalUnicodeStringBuilder<256> temp;
-    ListViewItem* lvi;
+    InternalListViewItem* lvi;
     bool selected;
 
     if (Columns.ResizeModeEnabled)
@@ -1069,8 +1071,8 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 bool ListViewControlContext::MouseToHeader(int x, int, uint32& HeaderIndex, uint32& HeaderColumnIndex)
 {
-    int xx                 = 1 - Columns.XOffset;
-    ListViewColumn* column = this->Columns.List;
+    int xx                         = 1 - Columns.XOffset;
+    InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; tr < Columns.Count; tr++, column++)
     {
         if ((x >= xx) && (x <= xx + column->Width) && (x > 1) && (x < (this->Layout.Width - 2)))
@@ -1166,8 +1168,8 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
-        int xx                 = 1 - Columns.XOffset;
-        ListViewColumn* column = this->Columns.List;
+        int xx                         = 1 - Columns.XOffset;
+        InternalListViewColumn* column = this->Columns.List;
         for (uint32 tr = 0; tr < Columns.HoverSeparatorColumnIndex; tr++, column++)
             xx += (((uint32) column->Width) + 1);
         // xx = the start of column
@@ -1251,24 +1253,19 @@ void ListViewControlContext::ColumnSort(uint32 columnIndex)
 }
 //----------------------
 
-int SortIndexesCompareFunction(uint32 indx1, uint32 indx2, void* context)
+int SortIndexesCompareFunction(uint32 index_1, uint32 index_2, void* context)
 {
     ListViewControlContext* lvcc = (ListViewControlContext*) context;
-    // indx1 and indx2 are indexes in List.Indexes
-    // first convert them to actual indexes
-    uint32 index_1, index_2;
-    if (!lvcc->Items.Indexes.Get(indx1, index_1))
-        index_1 = 0xFFFFFFFF;
-    if (!lvcc->Items.Indexes.Get(indx2, index_2))
-        index_2 = 0xFFFFFFFF;
+
     const uint32 itemsCount = (uint32) lvcc->Items.List.size();
     if ((index_1 < itemsCount) && (index_2 < itemsCount))
     {
         // valid indexes
         if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
+            auto lv = (ListView*) lvcc->Host;
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItem(lvcc->Host, indx1, indx2);
+                  ->ComparereItem.obj->CompareItems(lv, lv->GetItem(index_1), lv->GetItem(index_2));
         }
         else
         {
@@ -1324,7 +1321,7 @@ int ListViewControlContext::SearchItem(uint32 startPoz)
     } while (startPoz != originalStartPoz);
     return found;
 }
-bool ListViewControlContext::FilterItem(ListViewItem& lvi, bool clearColorForAll)
+bool ListViewControlContext::FilterItem(InternalListViewItem& lvi, bool clearColorForAll)
 {
     uint32 columnID = 0;
     int index       = -1;
@@ -1414,10 +1411,14 @@ void ListViewControlContext::SendMsg(Event eventType)
 ListView::~ListView()
 {
     DeleteAllItems();
-    DeleteAllColumns();
+    if (Context != nullptr)
+    {
+        WRAPPER->DeleteAllColumns();
+    }
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
-ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListViewControlContext(), "", layout, false)
+ListView::ListView(string_view layout, ListViewFlags flags, std::initializer_list<ColumnBuilder> columns)
+    : Control(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
@@ -1451,6 +1452,11 @@ ListView::ListView(string_view layout, ListViewFlags flags) : Control(new ListVi
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
+    // set up the columns
+    for (const auto& col : columns)
+    {
+        WRAPPER->AddColumn(col.name, col.align, col.width);
+    }
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {
@@ -1479,261 +1485,64 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
-bool ListView::AddColumn(const ConstString& text, TextAlignament Align, uint32 Size)
+ListViewColumn ListView::GetColumn(uint32 index)
 {
-    return WRAPPER->AddColumn(text, Align, Size);
+    if (index < WRAPPER->Columns.Count)
+        return { nullptr, 0U };
+    return { this->Context, index };
 }
-bool ListView::SetColumnText(uint32 columnIndex, const ConstString& text)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    return WRAPPER->Columns.List[columnIndex].SetName(text);
-}
-bool ListView::SetColumnAlignament(uint32 columnIndex, TextAlignament Align)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    return WRAPPER->Columns.List[columnIndex].SetAlign(Align);
-}
-bool ListView::SetColumnWidth(uint32 columnIndex, uint32 width)
-{
-    CHECK(columnIndex < WRAPPER->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          columnIndex,
-          WRAPPER->Columns.Count);
-    WRAPPER->Columns.List[columnIndex].SetWidth(width);
-    WRAPPER->UpdateColumnsWidth();
-    return true;
-}
-bool ListView::SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy)
-{
-    return WRAPPER->SetColumnClipboardCopyState(columnIndex, allowCopy);
-}
-bool ListView::SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn)
-{
-    return WRAPPER->SetColumnFilterMode(columnIndex, allowFilterForThisColumn);
-}
-bool ListView::DeleteColumn(uint32 columnIndex)
-{
-    return WRAPPER->DeleteColumn(columnIndex);
-}
-void ListView::DeleteAllColumns()
-{
-    if (Context != nullptr)
-    {
-        WRAPPER->DeleteAllColumns();
-    }
-}
+
+//bool ListView::DeleteColumn(uint32 columnIndex)
+//{
+//    return WRAPPER->DeleteColumn(columnIndex);
+//}
+//void ListView::DeleteAllColumns()
+//{
+//    if (Context != nullptr)
+//    {
+//        WRAPPER->DeleteAllColumns();
+//    }
+//}
 uint32 ListView::GetColumnsCount()
 {
     return WRAPPER->GetNrColumns();
 }
 
-ItemHandle ListView::AddItem(const ConstString& text)
+ListViewItem ListView::AddItem(const ConstString& text)
 {
-    return WRAPPER->AddItem(text);
+    return { this->Context, WRAPPER->AddItem(text) };
 }
-ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1)
+ListViewItem ListView::AddItem(std::initializer_list<ConstString> values)
 {
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(const ConstString& text, const ConstString& subItem1, const ConstString& subItem2)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text, const ConstString& subItem1, const ConstString& subItem2, const ConstString& subItem3)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6,
-      const ConstString& subItem7)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 7, subItem7), InvalidItemHandle, "");
-    return handle;
-}
-ItemHandle ListView::AddItem(
-      const ConstString& text,
-      const ConstString& subItem1,
-      const ConstString& subItem2,
-      const ConstString& subItem3,
-      const ConstString& subItem4,
-      const ConstString& subItem5,
-      const ConstString& subItem6,
-      const ConstString& subItem7,
-      const ConstString& subItem8)
-{
-    ItemHandle handle = WRAPPER->AddItem(text);
-    CHECK(handle != InvalidItemHandle, InvalidItemHandle, "Fail to allocate item for ListView");
-    CHECK(WRAPPER->SetItemText(handle, 1, subItem1), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 2, subItem2), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 3, subItem3), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 4, subItem4), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 5, subItem5), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 6, subItem6), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 7, subItem7), InvalidItemHandle, "");
-    CHECK(WRAPPER->SetItemText(handle, 8, subItem8), InvalidItemHandle, "");
-    return handle;
-}
-
-bool ListView::SetItemText(ItemHandle item, uint32 subItem, const ConstString& text)
-{
-    return WRAPPER->SetItemText(item, subItem, text);
-}
-const Graphics::CharacterBuffer& ListView::GetItemText(ItemHandle item, uint32 subItemIndex)
-{
-    auto obj = WRAPPER->GetItemText(item, subItemIndex);
-    if (obj)
-        return *obj;
-    else
+    ItemHandle handle = WRAPPER->AddItem("");
+    CHECK(handle != InvalidItemHandle, ListViewItem(nullptr, InvalidItemHandle), "Fail to allocate item for ListView");
+    auto index = 0U;
+    for (auto& value : values)
     {
-        __temp_listviewitem_reference_object__.Destroy();
-        return __temp_listviewitem_reference_object__;
+        WRAPPER->SetItemText(handle, index++, value);
+    }
+    return { this->Context, handle };
+}
+void ListView::AddItems(std::initializer_list<std::initializer_list<ConstString>> items)
+{
+    for (auto& item : items)
+    {
+        AddItem(item);
     }
 }
-bool ListView::SetItemCheck(ItemHandle item, bool check)
+ListViewItem ListView::GetItem(uint32 index)
 {
-    return WRAPPER->SetItemCheck(item, check);
+    if (this->Context == nullptr)
+        return { nullptr, 0 };
+    if (index >= WRAPPER->Items.List.size())
+        return { nullptr, 0 };
+    return { this->Context, index };
+    // uint32 value;
+    // if (WRAPPER->Items.Indexes.Get(index, value))
+    //     return { this->Context, value };
+    // return { nullptr, 0 };
 }
-bool ListView::SetItemSelect(ItemHandle item, bool select)
-{
-    return WRAPPER->SetItemSelect(item, select);
-}
-bool ListView::SetItemColor(ItemHandle item, ColorPair col)
-{
-    return WRAPPER->SetItemColor(item, col);
-}
-bool ListView::SetItemType(ItemHandle item, ListViewItemType type)
-{
-    return WRAPPER->SetItemType(item, type);
-}
-bool ListView::IsItemChecked(ItemHandle item)
-{
-    return WRAPPER->IsItemChecked(item);
-}
-bool ListView::IsItemSelected(ItemHandle item)
-{
-    return WRAPPER->IsItemSelected(item);
-}
-bool ListView::SetItemDataAsPointer(ItemHandle item, GenericRef Data)
-{
-    return WRAPPER->SetItemDataAsPointer(item, Data);
-}
-GenericRef ListView::GetItemDataAsPointer(ItemHandle item) const
-{
-    return WRAPPER->GetItemDataAsPointer(item);
-}
-bool ListView::SetItemData(ItemHandle item, uint64 value)
-{
-    return WRAPPER->SetItemDataAsValue(item, value);
-}
-uint64 ListView::GetItemData(ItemHandle item, uint64 errorValue)
-{
-    uint64 value;
-    CHECK(WRAPPER->GetItemDataAsValue(item, value), errorValue, "");
-    return value;
-}
-bool ListView::SetItemXOffset(ItemHandle item, uint32 XOffset)
-{
-    return WRAPPER->SetItemXOffset(item, XOffset);
-}
-uint32 ListView::GetItemXOffset(ItemHandle item)
-{
-    return WRAPPER->GetItemXOffset(item);
-}
-bool ListView::SetItemHeight(ItemHandle item, uint32 Height)
-{
-    return WRAPPER->SetItemHeight(item, Height);
-}
-uint32 ListView::GetItemHeight(ItemHandle item)
-{
-    return WRAPPER->GetItemHeight(item);
-}
+
 void ListView::DeleteAllItems()
 {
     if (Context != nullptr)
@@ -1749,15 +1558,15 @@ uint32 ListView::GetItemsCount()
     }
     return 0;
 }
-ItemHandle ListView::GetCurrentItem()
+ListViewItem ListView::GetCurrentItem()
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
     if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int) lvcc->Items.Indexes.Len()))
-        return InvalidItemHandle;
+        return { nullptr, InvalidItemHandle };
     uint32* indexes = lvcc->Items.Indexes.GetUInt32Array();
-    return indexes[lvcc->Items.CurentItemIndex];
+    return { this->Context, indexes[lvcc->Items.CurentItemIndex] };
 }
-bool ListView::SetCurrentItem(ItemHandle item)
+bool ListView::SetCurrentItem(ListViewItem item)
 {
     ListViewControlContext* lvcc = ((ListViewControlContext*) this->Context);
     uint32* indexes              = lvcc->Items.Indexes.GetUInt32Array();
@@ -1767,7 +1576,7 @@ bool ListView::SetCurrentItem(ItemHandle item)
     // caut indexul
     for (uint32 tr = 0; tr < count; tr++, indexes++)
     {
-        if ((*indexes) == item)
+        if ((*indexes) == item.item)
             return WRAPPER->SetCurrentIndex(tr);
     }
     return false;
@@ -1863,4 +1672,151 @@ uint32 ListView::GetSortColumnIndex()
 {
     return WRAPPER->SortParams.ColumnIndex;
 }
+
+// ================================================================== [ListViewItem] ==========================
+#define LVIC ((ListViewControlContext*) this->context)
+#define LVICHECK(result)                                                                                               \
+    if (this->context == nullptr)                                                                                      \
+        return result;
+bool ListViewItem::SetData(uint64 value)
+{
+    LVICHECK(false);
+    return LVIC->SetItemDataAsValue(item, value);
+}
+uint64 ListViewItem::GetData(uint64 errorValue) const
+{
+    LVICHECK(errorValue);
+    uint64 value;
+    CHECK(LVIC->GetItemDataAsValue(item, value), errorValue, "");
+    return value;
+}
+bool ListViewItem::SetCheck(bool check)
+{
+    LVICHECK(false);
+    return LVIC->SetItemCheck(item, check);
+}
+bool ListViewItem::IsChecked() const
+{
+    LVICHECK(false);
+    return LVIC->IsItemChecked(item);
+}
+bool ListViewItem::SetType(ListViewItem::Type type)
+{
+    LVICHECK(false);
+    return LVIC->SetItemType(item, type);
+}
+bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
+{
+    LVICHECK(false);
+    return LVIC->SetItemText(item, subItem, text);
+}
+const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) const
+{
+    if (this->context)
+    {
+        auto obj = LVIC->GetItemText(item, subItemIndex);
+        if (obj)
+            return *obj;
+    }
+    // error fallback
+    __temp_listviewitem_reference_object__.Destroy();
+    return __temp_listviewitem_reference_object__;
+}
+bool ListViewItem::SetXOffset(uint32 XOffset)
+{
+    LVICHECK(false);
+    return LVIC->SetItemXOffset(item, XOffset);
+}
+uint32 ListViewItem::GetXOffset() const
+{
+    LVICHECK(0);
+    return LVIC->GetItemXOffset(item);
+}
+bool ListViewItem::SetColor(ColorPair col)
+{
+    LVICHECK(false);
+    return LVIC->SetItemColor(item, col);
+}
+bool ListViewItem::SetSelected(bool select)
+{
+    LVICHECK(false);
+    return LVIC->SetItemSelect(item, select);
+}
+bool ListViewItem::IsSelected() const
+{
+    LVICHECK(false);
+    return LVIC->IsItemSelected(item);
+}
+bool ListViewItem::SetHeight(uint32 Height)
+{
+    LVICHECK(false);
+    return LVIC->SetItemHeight(item, Height);
+}
+uint32 ListViewItem::GetHeight() const
+{
+    LVICHECK(0);
+    return LVIC->GetItemHeight(item);
+}
+bool ListViewItem::SetItemDataAsPointer(GenericRef Data)
+{
+    LVICHECK(false);
+    return LVIC->SetItemDataAsPointer(item, Data);
+}
+GenericRef ListViewItem::GetItemDataAsPointer() const
+{
+    LVICHECK(nullptr);
+    return LVIC->GetItemDataAsPointer(item);
+}
+// ================================================================== [InternalListViewColumn]
+// ==========================
+#define LVCC ((ListViewControlContext*) this->context)
+#define LVCCHECK(result)                                                                                               \
+    if (this->context == nullptr)                                                                                      \
+        return result;
+bool ListViewColumn::SetText(const ConstString& text)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    return LVCC->Columns.List[index].SetName(text);
+}
+bool ListViewColumn::SetAlignament(TextAlignament Align)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    return LVCC->Columns.List[index].SetAlign(Align);
+}
+bool ListViewColumn::SetWidth(uint32 width)
+{
+    LVCCHECK(false);
+    CHECK(index < LVCC->Columns.Count,
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          LVCC->Columns.Count);
+    LVCC->Columns.List[index].SetWidth(width);
+    LVCC->UpdateColumnsWidth();
+    return true;
+}
+bool ListViewColumn::SetClipboardCopyState(bool allowCopy)
+{
+    LVCCHECK(false);
+    return LVCC->SetColumnClipboardCopyState(index, allowCopy);
+}
+bool ListViewColumn::SetFilterMode(bool allowFilterForThisColumn)
+{
+    LVCCHECK(false);
+    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
+}
+#undef LVICHECK
+#undef LVCCHECK
+#undef LVIC
+#undef LVCC
 } // namespace AppCUI

@@ -3076,29 +3076,32 @@ const char* english_words[] = { "a",
 class MyListViewExample : public Window, Handlers::OnCheckInterface
 {
     Reference<ListView> lv;
+
   public:
     MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:22", WindowFlags::None)
     {
-        lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:16", flags);
-        lv->AddColumn("&State", TextAlignament::Left, 15);
-        lv->AddColumn("&Abrv", TextAlignament::Center, 4);
-        lv->AddColumn("&Capital", TextAlignament::Left, 10);
-        lv->AddColumn("&Largest City", TextAlignament::Left, 15);
-        lv->AddColumn("&Population", TextAlignament::Right, 12);
-        lv->AddColumn("&Surface (km)", TextAlignament::Right, 12);
-        lv->AddColumn("&Repr", TextAlignament::Center, 6);
+        lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:16",
+              { { "&State", TextAlignament::Left, 15 },
+                { "&Abrv", TextAlignament::Center, 4 },
+                { "&Capital", TextAlignament::Left, 10 },
+                { "&Largest City", TextAlignament::Left, 15 },
+                { "&Population", TextAlignament::Right, 12 },
+                { "&Surface (km)", TextAlignament::Right, 12 },
+                { "&Repr", TextAlignament::Center, 6 } },
+              flags);
         // add items
         lv->Reserve(100); // to populate the list faster
         for (uint32 tr = 0; tr < sizeof(us_states) / sizeof(US_States); tr++)
         {
-            lv->AddItem(
-                  us_states[tr].Name,
-                  us_states[tr].Abbreviation,
-                  us_states[tr].Capital,
-                  us_states[tr].LargestCity,
-                  us_states[tr].Population,
-                  us_states[tr].Surface,
-                  us_states[tr].NrOfReps);
+            lv->AddItem({ us_states[tr].Name,
+                          us_states[tr].Abbreviation,
+                          us_states[tr].Capital,
+                          us_states[tr].LargestCity,
+                          us_states[tr].Population,
+                          us_states[tr].Surface,
+                          us_states[tr].NrOfReps });
         }
         // sort them after the name (first column)
         lv->Sort(0, true);
@@ -3121,9 +3124,9 @@ class SimpleListExample : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:26,h:10",
+              { { "", TextAlignament::Left, 30 } },
               hasCheckboxes ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
                             : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
-        lv->AddColumn("", TextAlignament::Left, 30);
         lv->AddItem("Apple");
         lv->AddItem("Pinaple");
         lv->AddItem("Pears");
@@ -3136,17 +3139,20 @@ class ColumnsExample : public Window
   public:
     ColumnsExample() : Window("Columns/Headers Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:7,w:66,h:8", ListViewFlags::Sortable);
-        // columns
-        lv->AddColumn("&Name", TextAlignament::Left, 30);
-        lv->AddColumn("Cl&ass", TextAlignament::Left, 20);
-        lv->AddColumn("&Grade", TextAlignament::Right, 7);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:7,w:66,h:8",
+              { { "&Name", TextAlignament::Left, 30 },
+                { "Cl&ass", TextAlignament::Left, 20 },
+                { "&Grade", TextAlignament::Right, 7 } },
+              ListViewFlags::Sortable);
+
         // items
-        lv->AddItem("Mike", "Mathematics", "9");
-        lv->AddItem("Laura", "Mathematics", "7");
-        lv->AddItem("John", "Phishics", "8");
-        lv->AddItem("Ana", "Chemestry", "9");
-        lv->AddItem("Willian", "Literature", "6");
+        lv->AddItems({ { "Mike", "Mathematics", "9" },
+                       { "Laura", "Mathematics", "7" },
+                       { "John", "Phishics", "8" },
+                       { "Ana", "Chemestry", "9" },
+                       { "Willian", "Literature", "6" } });
 
         Factory::Label::Create(
               this,
@@ -3162,22 +3168,18 @@ class ListViewWithColors : public Window
   public:
     ListViewWithColors() : Window("ListView with colors", "d:c,w:30,h:14", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:26,h:10", ListViewFlags::None);
-        lv->AddColumn("Color", TextAlignament::Left, 10);
-        lv->AddColumn("RGB", TextAlignament::Center, 10);
-        ItemHandle handle;
-        handle = lv->AddItem("Red", "FF0000");
-        lv->SetItemColor(handle, ColorPair{ Color::Red, Color::Transparent });
-        handle = lv->AddItem("Green", "00FF00");
-        lv->SetItemColor(handle, ColorPair{ Color::Green, Color::Transparent });
-        handle = lv->AddItem("Blue", "0000FF");
-        lv->SetItemColor(handle, ColorPair{ Color::Blue, Color::Transparent });
-        handle = lv->AddItem("Yellow", "FFFF00");
-        lv->SetItemColor(handle, ColorPair{ Color::Yellow, Color::Transparent });
-        handle = lv->AddItem("White", "FFFFFF");
-        lv->SetItemColor(handle, ColorPair{ Color::White, Color::Transparent });
-        handle = lv->AddItem("Gray", "808080");
-        lv->SetItemColor(handle, ColorPair{ Color::Gray, Color::Transparent });
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:26,h:10",
+              { { "Color", TextAlignament::Left, 10 }, { "RGB", TextAlignament::Center, 10 } },
+              ListViewFlags::None);
+
+        lv->AddItem({ "Red", "FF0000" }).SetColor(ColorPair{ Color::Red, Color::Transparent });
+        lv->AddItem({ "Green", "00FF00" }).SetColor(ColorPair{ Color::Green, Color::Transparent });
+        lv->AddItem({ "Blue", "0000FF" }).SetColor(ColorPair{ Color::Blue, Color::Transparent });
+        lv->AddItem({ "Yellow", "FFFF00" }).SetColor(ColorPair{ Color::Yellow, Color::Transparent });
+        lv->AddItem({ "White", "FFFFFF" }).SetColor(ColorPair{ Color::White, Color::Transparent });
+        lv->AddItem({ "Gray", "808080" }).SetColor(ColorPair{ Color::Gray, Color::Transparent });
     }
 };
 
@@ -3186,53 +3188,57 @@ class ListViewWithTreeItems : public Window
   public:
     ListViewWithTreeItems() : Window("Simulated Process Tree", "d:c,w:60,h:14", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:56,h:10", ListViewFlags::None);
-        lv->AddColumn("Application", TextAlignament::Left, 20);
-        lv->AddColumn("PID", TextAlignament::Right, 10);
-        lv->AddColumn("Modules", TextAlignament::Right, 10);
-        ItemHandle handle;
-        handle = lv->AddItem("winnt.exe", "500", "10");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("services.exe", "504", "12");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("svchost.exe", "508", "5");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("svchost.exe", "512", "8");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("svchost.exe", "512", "100");
-        lv->SetItemType(handle, ListViewItemType::WarningInformation);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("lsass.exe", "516", "12");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("winlogon.exe", "520", "10");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("explorer.exe", "524", "100");
-        lv->SetItemType(handle, ListViewItemType::Highlighted);
-        handle = lv->AddItem("chrome.exe", "528", "200");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
-        handle = lv->AddItem("chrome.exe", "532", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "536", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "540", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "544", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("chrome.exe", "548", "180");
-        lv->SetItemType(handle, ListViewItemType::GrayedOut);
-        lv->SetItemXOffset(handle, 4);
-        handle = lv->AddItem("firefox.exe", "552", "128");
-        lv->SetItemType(handle, ListViewItemType::Normal);
-        lv->SetItemXOffset(handle, 2);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:56,h:10",
+              { { "Application", TextAlignament::Left, 20 },
+                { "PID", TextAlignament::Right, 10 },
+                { "Modules", TextAlignament::Right, 10 } },
+              ListViewFlags::None);
+
+        ListViewItem item;
+        lv->AddItem({ "winnt.exe", "500", "10" }).SetType(ListViewItem::Type::Highlighted);
+
+        item = lv->AddItem({ "services.exe", "504", "12" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "svchost.exe", "508", "5" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "svchost.exe", "512", "8" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "svchost.exe", "512", "100" });
+        item.SetType(ListViewItem::Type::WarningInformation);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "lsass.exe", "516", "12" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "winlogon.exe", "520", "10" });
+        item.SetType(ListViewItem::Type::Highlighted);
+        item = lv->AddItem({ "explorer.exe", "524", "100" });
+        item.SetType(ListViewItem::Type::Highlighted);
+        item = lv->AddItem({ "chrome.exe", "528", "200" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
+        item = lv->AddItem({ "chrome.exe", "532", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "536", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "540", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "544", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "chrome.exe", "548", "180" });
+        item.SetType(ListViewItem::Type::GrayedOut);
+        item.SetXOffset(4);
+        item = lv->AddItem({ "firefox.exe", "552", "128" });
+        item.SetType(ListViewItem::Type::Normal);
+        item.SetXOffset(2);
     }
 };
 
@@ -3252,11 +3258,11 @@ class SearchAndFilter : public Window
               "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that "
               "contains that text.",
               "x:0,y:0,w:100%,h:100%");
-        auto lv1 = Factory::ListView::Create(this, "x:1,y:7,w:34,h:10", ListViewFlags::None);
-        auto lv2 = Factory::ListView::Create(this, "x:37,y:7,w:34,h:10", ListViewFlags::SearchMode);
-        // columns
-        lv1->AddColumn("&Name", TextAlignament::Left, 30);
-        lv2->AddColumn("&Name", TextAlignament::Left, 30);
+        auto lv1 = Factory::ListView::Create(
+              this, "x:1,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::None);
+        auto lv2 = Factory::ListView::Create(
+              this, "x:37,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::SearchMode);
+
         // items
         lv1->AddItem("Mike");
         lv2->AddItem("Mike");
@@ -3281,10 +3287,12 @@ class SelectionDemo : public Window
   public:
     SelectionDemo() : Window("Selection Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::AllowMultipleItemsSelection);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:4,w:66,h:11",
+              { { "&Word", TextAlignament::Left, 60 } },
+              ListViewFlags::AllowMultipleItemsSelection);
         lv->Reserve(3000);
-        // columns
-        lv->AddColumn("&Word", TextAlignament::Left, 60);
         // items
         for (uint32 tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
         {
@@ -3304,27 +3312,18 @@ class ItemTypesDemo : public Window
   public:
     ItemTypesDemo() : Window("Item Types Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", ListViewFlags::HideColumns);
-        // columns
-        lv->AddColumn("", TextAlignament::Left, 60);
+        auto lv = Factory::ListView::Create(
+              this, "x:1,y:4,w:66,h:11", { { "", TextAlignament::Left, 60 } }, ListViewFlags::HideColumns);
+
         // items
-        ItemHandle h;
-        h = lv->AddItem("Normal item");
-        lv->SetItemType(h, ListViewItemType::Normal);
-        h = lv->AddItem("Highlighted item");
-        lv->SetItemType(h, ListViewItemType::Highlighted);
-        h = lv->AddItem("Grayed out item");
-        lv->SetItemType(h, ListViewItemType::GrayedOut);
-        h = lv->AddItem("Error item");
-        lv->SetItemType(h, ListViewItemType::ErrorInformation);
-        h = lv->AddItem("Warning item");
-        lv->SetItemType(h, ListViewItemType::WarningInformation);
-        h = lv->AddItem("Emphasized item (color 1)");
-        lv->SetItemType(h, ListViewItemType::Emphasized_1);
-        h = lv->AddItem("Emphasized item (color 2)");
-        lv->SetItemType(h, ListViewItemType::Emphasized_2);
-        h = lv->AddItem("Category item");
-        lv->SetItemType(h, ListViewItemType::Category);
+        lv->AddItem("Normal item").SetType(ListViewItem::Type::Normal);
+        lv->AddItem("Highlighted item").SetType(ListViewItem::Type::Highlighted);
+        lv->AddItem("Grayed out item").SetType(ListViewItem::Type::GrayedOut);
+        lv->AddItem("Error item").SetType(ListViewItem::Type::ErrorInformation);
+        lv->AddItem("Warning item").SetType(ListViewItem::Type::WarningInformation);
+        lv->AddItem("Emphasized item (color 1)").SetType(ListViewItem::Type::Emphasized_1);
+        lv->AddItem("Emphasized item (color 2)").SetType(ListViewItem::Type::Emphasized_2);
+        lv->AddItem("Category item").SetType(ListViewItem::Type::Category);
 
         Factory::Label::Create(
               this,
@@ -3339,26 +3338,24 @@ class CategoryDemo : public Window
   public:
     CategoryDemo() : Window("Category Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(this, "x:1,y:1,w:66,h:13", ListViewFlags::HideColumns);
-        // columns
-        lv->AddColumn("", TextAlignament::Left, 55);
-        lv->AddColumn("", TextAlignament::Right, 4);
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:1,w:66,h:13",
+              { { "", TextAlignament::Left, 55 }, { "", TextAlignament::Right, 4 } },
+              ListViewFlags::HideColumns);
+
         // items
-        ItemHandle h;
-        h = lv->AddItem("First chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Introduction", "1");
-        lv->AddItem("Related work", "5");
-        lv->AddItem("Explaining the problem", "11");
+        lv->AddItem("First chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Introduction", "1" });
+        lv->AddItem({ "Related work", "5" });
+        lv->AddItem({ "Explaining the problem", "11" });
 
-        h = lv->AddItem("Second chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Databases", "20");
-        lv->AddItem("Results", "25");
+        lv->AddItem("Second chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Databases", "20" });
+        lv->AddItem({ "Results", "25" });
 
-        h = lv->AddItem("Third chapter");
-        lv->SetItemType(h, ListViewItemType::Category);
-        lv->AddItem("Conclusions", "27");
+        lv->AddItem("Third chapter").SetType(ListViewItem::Type::Category);
+        lv->AddItem({ "Conclusions", "27" });
     }
 };
 
