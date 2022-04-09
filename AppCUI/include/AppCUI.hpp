@@ -3824,7 +3824,7 @@ namespace Controls
             return this->SetItemDataAsPointer(obj.ToGenericRef());
         }
         template <typename T>
-        constexpr inline Reference<T> GetItemData() const
+        constexpr inline Reference<T> GetData() const
         {
             return this->GetItemDataAsPointer().ToReference<T>();
         }
@@ -3834,7 +3834,7 @@ namespace Controls
     class EXPORT ListView : public Control
     {
       protected:
-        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags = ListViewFlags::None);
+        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags);
 
       public:
         bool Reserve(uint32 itemsCount);
