@@ -3799,7 +3799,7 @@ namespace Controls
         ListViewItem() : context(nullptr), item(0)
         {
         }
-        inline bool Exists() const
+        inline bool IsValid() const
         {
             return context != nullptr;
         }
