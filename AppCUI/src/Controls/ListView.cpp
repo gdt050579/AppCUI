@@ -1491,18 +1491,30 @@ ListViewColumn ListView::GetColumn(uint32 index)
         return { nullptr, 0U };
     return { this->Context, index };
 }
-
-//bool ListView::DeleteColumn(uint32 columnIndex)
-//{
-//    return WRAPPER->DeleteColumn(columnIndex);
-//}
-//void ListView::DeleteAllColumns()
-//{
-//    if (Context != nullptr)
-//    {
-//        WRAPPER->DeleteAllColumns();
-//    }
-//}
+ListViewColumn ListView::AddColumn(const ConstString& text, TextAlignament align, uint32 width)
+{
+    if (!WRAPPER->AddColumn(text, align, width))
+        return { nullptr, 0 };
+    return { this->Context, WRAPPER->Columns.Count - 1 };
+}
+void ListView::AddColumns(std::initializer_list<ColumnBuilder> columns)
+{
+    for (auto& column: columns)
+    {
+        WRAPPER->AddColumn(column.name, column.align, column.width);
+    }
+}
+bool ListView::DeleteColumn(uint32 columnIndex)
+{
+    return WRAPPER->DeleteColumn(columnIndex);
+}
+void ListView::DeleteAllColumns()
+{
+    if (Context != nullptr)
+    {
+        WRAPPER->DeleteAllColumns();
+    }
+}
 uint32 ListView::GetColumnsCount()
 {
     return WRAPPER->GetNrColumns();
