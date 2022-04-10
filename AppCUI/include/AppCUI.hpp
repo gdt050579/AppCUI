@@ -3859,9 +3859,17 @@ namespace Controls
               const ConstString& text,
               Graphics::TextAlignament align = Graphics::TextAlignament::Left,
               uint32 width                   = ColumnBuilder::AUTO_SIZE);
+        inline ListViewColumn AddColumn(ColumnBuilder column)
+        {
+            return AddColumn(column.name, column.align, column.width);
+        }
         void AddColumns(std::initializer_list<ColumnBuilder> columns);
         uint32 GetColumnsCount();
         uint32 GetSortColumnIndex();
+        inline ListViewColumn GetSortColumn()
+        {
+            return GetColumn(GetSortColumnIndex());
+        }
         void DeleteAllColumns();
         bool DeleteColumn(uint32 columnIndex);
 
