@@ -688,7 +688,6 @@ struct TreeItem
     bool expanded     = false;
     bool isExpandable = false;
     vector<ItemHandle> children;
-    Utils::UnicodeStringBuilder metadata;
     uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;

@@ -16,7 +16,7 @@ constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
 const static Utils::UnicodeStringBuilder cb{};
 
-TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> columns, const TreeViewFlags flags)
+TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> columns, TreeViewFlags flags)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
@@ -705,17 +705,22 @@ Handlers::TreeView* TreeView::Handlers()
     GET_CONTROL_HANDLERS(Handlers::TreeView);
 }
 
-TreeViewItem TreeView::GetRoot() const
+TreeViewItem TreeView::GetRoot()
 {
-    return { Context, InvalidItemHandle };
+    return { this, InvalidItemHandle };
+}
+
+TreeViewItem TreeViewItem::AddChild(
+      const std::initializer_list<ConstString> values, const ConstString data, bool isExpandable)
+{
+    CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+
+    TreeViewItem tvi{ obj, obj->AddItem(item, values, data, isExpandable) };
+    return tvi;
 }
 
 ItemHandle TreeView::AddItem(
-      const ItemHandle parent,
-      std::initializer_list<ConstString> values,
-      const ConstString metadata,
-      bool process,
-      bool isExpandable)
+      const ItemHandle parent, std::initializer_list<ConstString> values, const ConstString data, bool isExpandable)
 {
     CHECK(values.size() > 0, InvalidItemHandle, "");
 
@@ -732,7 +737,7 @@ ItemHandle TreeView::AddItem(
 
     cc->items[cc->nextItemHandle]              = { parent, cc->nextItemHandle, std::move(cbvs) };
     cc->items[cc->nextItemHandle].isExpandable = isExpandable;
-    CHECK(cc->items[cc->nextItemHandle].metadata.Set(metadata), false, "");
+    CHECK(cc->items[cc->nextItemHandle].data.Set(data), false, "");
 
     if (parent == RootItemHandle)
     {
@@ -751,14 +756,7 @@ ItemHandle TreeView::AddItem(
         cc->currentSelectedItemHandle = cc->items[cc->nextItemHandle].handle;
     }
 
-    if (process)
-    {
-        cc->ProcessItemsToBeDrawn(InvalidItemHandle);
-    }
-    else
-    {
-        cc->notProcessed = true;
-    }
+    cc->notProcessed = true;
 
     return cc->items[cc->nextItemHandle++].handle;
 }
@@ -942,6 +940,8 @@ bool TreeView::DeleteAllColumns()
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
     cc->columns.clear();
+
+    return true;
 }
 
 bool TreeView::DeleteColumn(uint32 index)
@@ -965,10 +965,10 @@ const Utils::UnicodeStringBuilder& TreeView::GetItemMetadata(ItemHandle handle)
     }
 
     auto& item = cc->items.at(handle);
-    return item.metadata;
+    return item.data;
 }
 
-bool TreeView::SetItemMetadata(ItemHandle handle, const ConstString& metadata)
+bool TreeView::SetItemMetadata(ItemHandle handle, const ConstString& data)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -978,7 +978,7 @@ bool TreeView::SetItemMetadata(ItemHandle handle, const ConstString& metadata)
     }
 
     auto& item = cc->items.at(handle);
-    item.metadata.Set(metadata);
+    item.data.Set(data);
 
     return true;
 }
@@ -1952,7 +1952,7 @@ bool TreeControlContext::AddColumn(
     }
 
     // shift columns back if needed
-    auto maxRightX = Layout.Width - ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+    uint32 maxRightX = Layout.Width - ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
     for (auto i = static_cast<int>(columns.size()) - 1; i >= 0; i--)
     {
         auto& col                = columns[i];

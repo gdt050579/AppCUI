@@ -559,6 +559,7 @@ namespace Graphics
         static uint32 GetSupportedCodePagesCount();
     };
 }; // namespace Graphics
+
 namespace Utils
 {
     class EXPORT String;
@@ -2824,6 +2825,7 @@ namespace Controls
         class EXPORT ColorPicker;
         class EXPORT CharacterTable;
     }; // namespace Factory
+
     enum class Event : uint32
     {
         WindowClose,
@@ -2851,6 +2853,7 @@ namespace Controls
         SplitterPanelAutoCollapsed,
         Custom,
     };
+
     using ItemHandle                       = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
@@ -2858,6 +2861,7 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListViewItem;
     class EXPORT ListView;
+    class EXPORT TreeViewItem;
     class EXPORT TreeView;
     class EXPORT Menu;
     class EXPORT Window;
@@ -3804,6 +3808,7 @@ namespace Controls
         ListViewItem() : context(nullptr), item(0)
         {
         }
+
         inline bool IsValid() const
         {
             return context != nullptr;
@@ -3823,6 +3828,7 @@ namespace Controls
         bool IsSelected() const;
         bool SetHeight(uint32 Height);
         uint32 GetHeight() const;
+
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
         {
@@ -4082,7 +4088,7 @@ namespace Controls
         {
         }
 
-    public:
+      public:
         bool SetText(const ConstString& text);
         bool SetAlignament(Graphics::TextAlignament Align);
         bool SetWidth(uint32 width);
@@ -4092,46 +4098,56 @@ namespace Controls
 
     class EXPORT TreeViewItem
     {
-    private:
+      private:
         GenericRef GetItemDataAsPointer() const;
         bool SetItemDataAsPointer(GenericRef obj);
 
-        void* context;
+        // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
+        // 'TreeViewItem'
+#pragma warning(push)
+#pragma warning(disable : 4251)
+        Reference<TreeView> obj;
+#pragma warning(pop)
         ItemHandle item;
 
-        TreeViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        TreeViewItem(Reference<class TreeView> _obj, ItemHandle _item) : obj(_obj), item(_item)
         {
         }
 
-    public:
+      public:
         enum class Type : uint16
         {
-            Normal = 0,
-            Highlighted = 1,
-            GrayedOut = 2,
-            ErrorInformation = 3,
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
             WarningInformation = 4,
-            Emphasized_1 = 5,
-            Emphasized_2 = 6,
-            Category = 7,
-            Colored = 8
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Category           = 7,
+            Colored            = 8
         };
 
-    public:
-        TreeViewItem() : context(nullptr), item(0)
+      public:
+        TreeViewItem() : obj(nullptr), item(InvalidItemHandle)
         {
         }
 
         inline bool IsValid() const
         {
-            return context != nullptr;
+            return obj != nullptr;
         }
+
+        TreeViewItem AddChild(
+            const std::initializer_list<ConstString> values = {},
+            const ConstString data = "",
+            bool isExpandable = false);
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
         bool SetCheck(bool value);
         bool IsChecked() const;
-        bool SetType(ListViewItem::Type type);
+        bool SetType(TreeViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
@@ -4154,7 +4170,7 @@ namespace Controls
             return this->GetItemDataAsPointer().ToReference<T>();
         }
 
-        friend class TreeView;
+        friend TreeView;
     };
 
     class EXPORT TreeView : public Control
@@ -4170,7 +4186,7 @@ namespace Controls
         TreeView(
               string_view layout,
               std::initializer_list<ColumnBuilder> columns,
-              const TreeViewFlags flags = TreeViewFlags::None);
+              TreeViewFlags flags = TreeViewFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4187,13 +4203,26 @@ namespace Controls
         Handlers::TreeView* Handlers() override;
 
         // items
-        TreeViewItem GetRoot() const;
+        TreeViewItem GetRoot();
+
+        TreeViewItem AddItem(const TreeViewItem& parent, const ConstString& text);
+        TreeViewItem AddItem(const TreeViewItem& parent, std::initializer_list<ConstString> values);
+        void AddItems(const TreeViewItem& parent, std::initializer_list<std::initializer_list<ConstString>> items);
+        TreeViewItem GetItem(const TreeViewItem& parent, uint32 index);
+        TreeViewItem GetCurrentItem(const TreeViewItem& parent);
+        void SelectAllItems(const TreeViewItem& parent);
+        void UnSelectAllItems(const TreeViewItem& parent);
+        void CheckAllItems(const TreeViewItem& parent);
+        void UncheckAllItems(const TreeViewItem& parent);
+        void DeleteAllItems(const TreeViewItem& parent);
+        uint32 GetItemsCount(const TreeViewItem& parent);
+        uint32 GetCheckedItemsCount(const TreeViewItem& parent);
+        bool SetCurrentItem(const TreeViewItem item);
 
         ItemHandle AddItem(
               const ItemHandle parent,
               const std::initializer_list<ConstString> values,
-              const ConstString metadata,
-              bool process      = false,
+              const ConstString data,
               bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
@@ -4217,14 +4246,14 @@ namespace Controls
 
         uint32 GetItemsCount() const;
         const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
-        bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
+        bool SetItemMetadata(ItemHandle handle, const ConstString& data);
 
         // columns
         TreeViewColumn GetColumn(uint32 index);
         TreeViewColumn AddColumn(
-            const ConstString& title,
-            Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-            uint32 width = ColumnBuilder::AUTO_SIZE);
+              const ConstString& title,
+              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
+              uint32 width                   = ColumnBuilder::AUTO_SIZE);
         inline TreeViewColumn AddColumn(ColumnBuilder column)
         {
             return AddColumn(column.name, column.align, column.width);

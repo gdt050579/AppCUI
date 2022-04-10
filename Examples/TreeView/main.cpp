@@ -60,12 +60,13 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
+        //tree->GetRoot().AddChild();
+
         const auto cpath = std::filesystem::current_path().u16string();
         const auto root  = tree->AddItem(
               AppCUI::Controls::InvalidItemHandle,
               { filename, pathLastWriteTime, pathSizeText },
               cpath,
-              false,
               std::filesystem::is_directory(path));
     }
 
@@ -107,7 +108,6 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                           TreeView::RootItemHandle,
                           { filename, pathLastWriteTime, pathSizeText },
                           localPath,
-                          false,
                           std::filesystem::is_directory(path));
 
                     auto& metadata = tree->GetItemMetadata(root);
@@ -143,7 +143,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
                 const auto cpath             = p.path().u16string();
 
-                ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, cpath, false, p.is_directory());
+                ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, cpath, p.is_directory());
             }
         }
         catch (std::exception& e)

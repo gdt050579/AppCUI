@@ -233,7 +233,7 @@ bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int i
 bool InternalWindowManager::AddItem(Window* w, const ItemHandle parent, ItemHandle& child)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
-    child          = tree->AddItem(parent, { wcc->Text, *const_cast<CharacterBuffer*>(&w->GetTag()) }, "", w);
+    child          = tree->AddItem(parent, { wcc->Text, *const_cast<CharacterBuffer*>(&w->GetTag()) }, "", true);
     tree->SetItemData(child, Reference<Window>(w));
     return true;
 }
