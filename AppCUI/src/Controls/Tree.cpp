@@ -1589,9 +1589,19 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
             wtp.Width = controlWidth - wtp.X;
         }
 
+        if (i != columnIndexToSortBy) // skip triangle / sort sign
+        {
+            wtp.Width++;
+        }
+
         wtp.Color = enabled
                           ? ((i == columnIndexToSortBy) ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Focused)
                           : Cfg->Header.Text.Inactive;
+
+        if (enabled && Focused && i == mouseOverColumnIndex && i != columnIndexToSortBy)
+        {
+            wtp.Color = Cfg->Header.Text.Hovered;
+        }
 
         renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
 
