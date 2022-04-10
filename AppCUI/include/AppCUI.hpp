@@ -13,6 +13,7 @@
 #include <vector>
 #include <functional>
 #include <string.h>
+#include <initializer_list>
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -2816,7 +2817,7 @@ namespace Controls
         class EXPORT NumericSelector;
         class EXPORT Window;
         class EXPORT Desktop;
-        class EXPORT Tree;
+        class EXPORT TreeView;
         class EXPORT Grid;
         class EXPORT PropertyList;
         class EXPORT KeySelector;
@@ -2857,7 +2858,7 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListViewItem;
     class EXPORT ListView;
-    class EXPORT Tree;
+    class EXPORT TreeView;
     class EXPORT Menu;
     class EXPORT Window;
     class EXPORT Grid;
@@ -2879,7 +2880,7 @@ namespace Controls
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::Tree> control, ItemHandle handle);
+        using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::TreeView> control, ItemHandle handle);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3035,13 +3036,13 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) = 0;
+            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
 
-            virtual bool OnTreeItemToggle(Reference<Controls::Tree> ctrl, ItemHandle handle) override
+            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) override
             {
                 return callback(ctrl, handle);
             };
@@ -3136,7 +3137,7 @@ namespace Controls
                   ComparereItem;
         };
 
-        struct Tree : public Control
+        struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
         };
@@ -4051,7 +4052,7 @@ namespace Controls
     {
     };
 
-    enum class TreeFlags : uint32
+    enum class TreeViewFlags : uint32
     {
         None                            = 0x000000,
         HideColumns                     = 0x000100, // not implemented
@@ -4061,8 +4062,8 @@ namespace Controls
         DynamicallyPopulateNodeChildren = 0x001000,
         HideScrollBar                   = 0x002000,
         Searchable                      = 0x004000, // shows all elements highlighting the ones matching
-        FilterSearch  = 0x008000, // shows only the elements matching the criteria from the previous search action
-        HideSearchBar = 0x010000, // disables FilterMode & SearchMode
+        FilterSearch                    = 0x008000, // filters elements from view
+        HideSearchBar                   = 0x010000, // disables FilterMode & SearchMode
         // Reserved_020000                 = 0x020000,
         // Reserved_040000                 = 0x040000,
         // Reserved_080000                 = 0x080000,
@@ -4072,14 +4073,17 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
-    class EXPORT Tree : public Control
+    class EXPORT TreeView : public Control
     {
+      public:
+        inline static const auto RootItemHandle = InvalidItemHandle;
+
       private:
         GenericRef GetItemDataAsPointer(const ItemHandle item) const;
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        Tree(string_view layout, const TreeFlags flags = TreeFlags::None, const uint32 noOfColumns = 1);
+        TreeView(string_view layout, const TreeViewFlags flags = TreeViewFlags::None, const uint32 noOfColumns = 1);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4093,11 +4097,11 @@ namespace Controls
         void OnAfterResize(int newWidth, int newHeight) override;
 
         // handlers covariant
-        Handlers::Tree* Handlers() override;
+        Handlers::TreeView* Handlers() override;
 
         ItemHandle AddItem(
               const ItemHandle parent,
-              const vector<Graphics::CharacterBuffer>& values,
+              const std::initializer_list<ConstString> values,
               const ConstString metadata,
               bool process      = false,
               bool isExpandable = false);
@@ -4132,30 +4136,7 @@ namespace Controls
         bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
 
       private:
-        bool ItemsPainting(Graphics::Renderer& renderer, const ItemHandle ih) const;
-        bool PaintColumnHeaders(Graphics::Renderer& renderer);
-        bool PaintColumnSeparators(Graphics::Renderer& renderer);
-        bool MoveUp();
-        bool MoveDown();
-        bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
-        bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child) const;
-        bool ToggleExpandRecursive(const ItemHandle handle);
-        bool ToggleItem(const ItemHandle handle);
-        bool IsMouseOnToggleSymbol(int x, int y) const;
-        bool IsMouseOnItem(int x, int y) const;
-        bool IsMouseOnBorder(int x, int y) const;
-        bool IsMouseOnColumnHeader(int x, int y) const;
-        bool IsMouseOnColumnSeparator(int x, int y) const;
-        bool IsMouseOnSearchField(int x, int y) const;
-        bool AdjustElementsOnResize(const int newWidth, const int newHeight);
-        bool AdjustItemsBoundsOnResize();
-        bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
-        bool SetColorForItems(const Graphics::ColorPair& color);
-        bool SearchItems();
-        bool MarkAllItemsAsNotFound();
-        bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
-
-        friend Factory::Tree;
+        friend Factory::TreeView;
         friend Control;
     };
 
@@ -4660,25 +4641,25 @@ namespace Controls
           public:
             static Pointer<Controls::Desktop> Create();
         };
-        class EXPORT Tree
+        class EXPORT TreeView
         {
-            Tree() = delete;
+            TreeView() = delete;
 
           public:
-            static Pointer<Controls::Tree> Create(
+            static Pointer<Controls::TreeView> Create(
                   string_view layout,
-                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns        = 1);
-            static Reference<Controls::Tree> Create(
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
+                  const uint32 noOfColumns            = 1);
+            static Reference<Controls::TreeView> Create(
                   Control* parent,
                   string_view layout,
-                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns        = 1);
-            static Reference<Controls::Tree> Create(
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
+                  const uint32 noOfColumns            = 1);
+            static Reference<Controls::TreeView> Create(
                   Control& parent,
                   string_view layout,
-                  const Controls::TreeFlags flags = Controls::TreeFlags::None,
-                  const uint32 noOfColumns        = 1);
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
+                  const uint32 noOfColumns            = 1);
         };
         class EXPORT Grid
         {
@@ -5049,7 +5030,7 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::SplitterFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
-ADD_FLAG_OPERATORS(AppCUI::Controls::TreeFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::TreeViewFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
