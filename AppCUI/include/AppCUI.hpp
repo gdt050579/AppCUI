@@ -4138,10 +4138,7 @@ namespace Controls
             return obj != nullptr;
         }
 
-        TreeViewItem AddChild(
-            const std::initializer_list<ConstString> values = {},
-            const ConstString data = "",
-            bool isExpandable = false);
+        TreeViewItem AddChild(const std::initializer_list<ConstString> values = {}, bool isExpandable = false);
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
@@ -4220,10 +4217,7 @@ namespace Controls
         bool SetCurrentItem(const TreeViewItem item);
 
         ItemHandle AddItem(
-              const ItemHandle parent,
-              const std::initializer_list<ConstString> values,
-              const ConstString data,
-              bool isExpandable = false);
+              const ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
         bool RemoveItem(const ItemHandle handle, bool process = false);
         bool ClearItems();
         ItemHandle GetCurrentItem();
@@ -4245,8 +4239,6 @@ namespace Controls
         ItemHandle GetItemHandleByIndex(const uint32 index) const;
 
         uint32 GetItemsCount() const;
-        const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
-        bool SetItemMetadata(ItemHandle handle, const ConstString& data);
 
         // columns
         TreeViewColumn GetColumn(uint32 index);

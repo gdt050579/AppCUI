@@ -2,6 +2,7 @@
 #include <cstring>
 #include <string>
 #include <charconv>
+#include <list>
 
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
 #    include <sys/stat.h>
@@ -25,6 +26,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
     Reference<Splitter> vertical;
     Reference<Splitter> horizontal;
     Reference<TreeView> tree;
+
+    std::list<std::u16string> pieces;
 
   public:
     TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", WindowFlags::Sizeable)
@@ -60,14 +63,15 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        //tree->GetRoot().AddChild();
+        // tree->GetRoot().AddChild();
 
-        const auto cpath = std::filesystem::current_path().u16string();
-        const auto root  = tree->AddItem(
+        const auto root = tree->AddItem(
               AppCUI::Controls::InvalidItemHandle,
               { filename, pathLastWriteTime, pathSizeText },
-              cpath,
               std::filesystem::is_directory(path));
+
+        auto& cpath = pieces.emplace_back(std::filesystem::current_path().u16string());
+        tree->SetItemData(root, Reference<std::u16string>(&cpath));
     }
 
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
@@ -103,18 +107,17 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                         pathSizeText = "0";
                     }
 
-                    const auto localPath = path.u16string();
-                    const auto root      = tree->AddItem(
+                    const auto root = tree->AddItem(
                           TreeView::RootItemHandle,
                           { filename, pathLastWriteTime, pathSizeText },
-                          localPath,
                           std::filesystem::is_directory(path));
 
-                    auto& metadata = tree->GetItemMetadata(root);
-                    UnicodeStringBuilder usb;
-                    usb.Add(ConstString{ metadata });
-                    usb.Add(res->u16string());
-                    tree->SetItemMetadata(root, usb);
+                    auto& localPath = pieces.emplace_back(path.u16string());
+                    tree->SetItemData(root, Reference<std::u16string>(&localPath));
+
+                    auto data   = tree->GetItemData<Reference<std::u16string>>(root).ToObjectRef<std::u16string>();
+                    auto& piece = pieces.emplace_back(std::u16string{} + data->c_str() + res->u16string());
+                    tree->SetItemData(root, Reference<std::u16string>(&piece));
                     OnTreeItemToggle(tree, root);
                 }
 
@@ -128,10 +131,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
 
     bool OnTreeItemToggle(Reference<TreeView> ctrl, ItemHandle handle) override
     {
-        const auto& usb = ctrl->GetItemMetadata(handle);
-        std::u16string u16Path;
-        usb.ToString(u16Path);
-        const auto fsPath = std::filesystem::path(u16Path);
+        auto data         = ctrl->GetItemData<Reference<std::u16string>>(handle).ToObjectRef<std::u16string>();
+        const auto fsPath = std::filesystem::path(data->c_str());
         try
         {
             const auto rdi = std::filesystem::directory_iterator(fsPath);
@@ -141,9 +142,12 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
                 uint64 pathSize              = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
-                const auto cpath             = p.path().u16string();
 
-                ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, cpath, p.is_directory());
+                auto childHandle =
+                      ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, p.is_directory());
+
+                auto& cpath = pieces.emplace_back(p.path().u16string());
+                tree->SetItemData(childHandle, Reference<std::u16string>(&cpath));
             }
         }
         catch (std::exception& e)

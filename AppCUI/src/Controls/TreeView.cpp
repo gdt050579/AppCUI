@@ -710,17 +710,13 @@ TreeViewItem TreeView::GetRoot()
     return { this, InvalidItemHandle };
 }
 
-TreeViewItem TreeViewItem::AddChild(
-      const std::initializer_list<ConstString> values, const ConstString data, bool isExpandable)
+TreeViewItem TreeViewItem::AddChild(const std::initializer_list<ConstString> values, bool isExpandable)
 {
     CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-
-    TreeViewItem tvi{ obj, obj->AddItem(item, values, data, isExpandable) };
-    return tvi;
+    return { obj, obj->AddItem(item, values, isExpandable) };
 }
 
-ItemHandle TreeView::AddItem(
-      const ItemHandle parent, std::initializer_list<ConstString> values, const ConstString data, bool isExpandable)
+ItemHandle TreeView::AddItem(const ItemHandle parent, std::initializer_list<ConstString> values, bool isExpandable)
 {
     CHECK(values.size() > 0, InvalidItemHandle, "");
 
@@ -737,7 +733,6 @@ ItemHandle TreeView::AddItem(
 
     cc->items[cc->nextItemHandle]              = { parent, cc->nextItemHandle, std::move(cbvs) };
     cc->items[cc->nextItemHandle].isExpandable = isExpandable;
-    CHECK(cc->items[cc->nextItemHandle].data.Set(data), false, "");
 
     if (parent == RootItemHandle)
     {
@@ -951,34 +946,6 @@ bool TreeView::DeleteColumn(uint32 index)
     CHECK(index < cc->columns.size(), false, "");
 
     cc->columns.erase(cc->columns.begin() + index);
-
-    return true;
-}
-
-const Utils::UnicodeStringBuilder& TreeView::GetItemMetadata(ItemHandle handle)
-{
-    CHECK(Context != nullptr, cb, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    if (cc->items.find(handle) == cc->items.end())
-    {
-        return cb;
-    }
-
-    auto& item = cc->items.at(handle);
-    return item.data;
-}
-
-bool TreeView::SetItemMetadata(ItemHandle handle, const ConstString& data)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    if (cc->items.find(handle) != cc->items.end())
-    {
-        return false;
-    }
-
-    auto& item = cc->items.at(handle);
-    item.data.Set(data);
 
     return true;
 }
