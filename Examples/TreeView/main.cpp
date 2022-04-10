@@ -38,14 +38,12 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         tree = Factory::TreeView::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable),
-              3);
+              { { u"&Path", TextAlignament::Left, 100 },
+                { u"&Last Write Time", TextAlignament::Right, 25 },
+                { u"&Size (bytes)", TextAlignament::Right, 25 } },
+              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
 
         tree->Handlers()->OnTreeItemToggle = this;
-
-        tree->AddColumnData(0, u"&Path", TextAlignament::Left, TextAlignament::Left, 200);
-        tree->AddColumnData(1, u"&Last Write Time", TextAlignament::Right, TextAlignament::Right, 25);
-        tree->AddColumnData(2, u"&Size (bytes)", TextAlignament::Right, TextAlignament::Right, 25);
 
         tree->ClearItems();
         const auto path              = std::filesystem::current_path().u16string();

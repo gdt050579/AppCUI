@@ -256,7 +256,11 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 
 bool InternalWindowManager::Create()
 {
-    CHECK((tree = Factory::TreeView::Create(this, "l:1,t:1,r:1,b:3", TreeViewFlags::Searchable, 2)).IsValid(), false, "");
+    CHECK((tree = Factory::TreeView::Create(
+                 this, "l:1,t:1,r:1,b:3", { { "Window" }, { "Tag" } }, TreeViewFlags::Searchable))
+                .IsValid(),
+          false,
+          "");
     CHECK((btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO)).IsValid(), false, "");
     CHECK((btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE)).IsValid(), false, "");
     CHECK((btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC))

@@ -4073,6 +4073,90 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
+    class EXPORT TreeViewColumn
+    {
+        void* context;
+        uint32 index;
+
+        TreeViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+    public:
+        bool SetText(const ConstString& text);
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+
+        friend class TreeView;
+    };
+
+    class EXPORT TreeViewItem
+    {
+    private:
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef obj);
+
+        void* context;
+        ItemHandle item;
+
+        TreeViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        {
+        }
+
+    public:
+        enum class Type : uint16
+        {
+            Normal = 0,
+            Highlighted = 1,
+            GrayedOut = 2,
+            ErrorInformation = 3,
+            WarningInformation = 4,
+            Emphasized_1 = 5,
+            Emphasized_2 = 6,
+            Category = 7,
+            Colored = 8
+        };
+
+    public:
+        TreeViewItem() : context(nullptr), item(0)
+        {
+        }
+
+        inline bool IsValid() const
+        {
+            return context != nullptr;
+        }
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue) const;
+        bool SetCheck(bool value);
+        bool IsChecked() const;
+        bool SetType(ListViewItem::Type type);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+        bool SetXOffset(uint32 value);
+        uint32 GetXOffset() const;
+        bool SetColor(Graphics::ColorPair color);
+        bool SetSelected(bool select);
+        bool IsSelected() const;
+        bool SetHeight(uint32 Height);
+        uint32 GetHeight() const;
+
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+
+        template <typename T>
+        constexpr inline Reference<T> GetData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
+
+        friend class TreeView;
+    };
+
     class EXPORT TreeView : public Control
     {
       public:
@@ -4083,7 +4167,10 @@ namespace Controls
         bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
 
       protected:
-        TreeView(string_view layout, const TreeViewFlags flags = TreeViewFlags::None, const uint32 noOfColumns = 1);
+        TreeView(
+              string_view layout,
+              std::initializer_list<ColumnBuilder> columns,
+              const TreeViewFlags flags = TreeViewFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4098,6 +4185,9 @@ namespace Controls
 
         // handlers covariant
         Handlers::TreeView* Handlers() override;
+
+        // items
+        TreeViewItem GetRoot() const;
 
         ItemHandle AddItem(
               const ItemHandle parent,
@@ -4126,14 +4216,28 @@ namespace Controls
         ItemHandle GetItemHandleByIndex(const uint32 index) const;
 
         uint32 GetItemsCount() const;
-        bool AddColumnData(
-              const uint32 index,
-              const ConstString title,
-              const Graphics::TextAlignament headerAlignment,
-              const Graphics::TextAlignament contentAlignment,
-              const uint32 width = 0xFFFFFFFF);
         const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
         bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
+
+        // columns
+        TreeViewColumn GetColumn(uint32 index);
+        TreeViewColumn AddColumn(
+            const ConstString& title,
+            Graphics::TextAlignament align = Graphics::TextAlignament::Left,
+            uint32 width = ColumnBuilder::AUTO_SIZE);
+        inline TreeViewColumn AddColumn(ColumnBuilder column)
+        {
+            return AddColumn(column.name, column.align, column.width);
+        }
+        bool AddColumns(std::initializer_list<ColumnBuilder> columns);
+        uint32 GetColumnsCount();
+        uint32 GetSortColumnIndex();
+        inline TreeViewColumn GetSortColumn()
+        {
+            return GetColumn(GetSortColumnIndex());
+        }
+        bool DeleteAllColumns();
+        bool DeleteColumn(uint32 index);
 
       private:
         friend Factory::TreeView;
@@ -4648,18 +4752,18 @@ namespace Controls
           public:
             static Pointer<Controls::TreeView> Create(
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control* parent,
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control& parent,
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
         };
         class EXPORT Grid
         {

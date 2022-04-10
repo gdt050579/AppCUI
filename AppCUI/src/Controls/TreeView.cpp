@@ -16,7 +16,7 @@ constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
 const static Utils::UnicodeStringBuilder cb{};
 
-TreeView::TreeView(string_view layout, const TreeViewFlags flags, const uint32 noOfColumns)
+TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> columns, const TreeViewFlags flags)
     : Control(new TreeControlContext(), "", layout, true)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
@@ -63,17 +63,9 @@ TreeView::TreeView(string_view layout, const TreeViewFlags flags, const uint32 n
 
     cc->AdjustItemsBoundsOnResize();
 
-    const auto columnsCount = std::max<>(noOfColumns, 1U);
-    const auto width        = std::max<>((static_cast<uint32>(cc->Layout.Width) / columnsCount), MinColumnWidth);
-    for (auto i = 0U; i < columnsCount; i++)
+    for (const auto& column : columns)
     {
-        TreeColumnData cd{ static_cast<uint32>(cc->columns.size() * width + BorderOffset),
-                           width,
-                           static_cast<uint32>(cc->Layout.Height - 2),
-                           {},
-                           TextAlignament::Center,
-                           TextAlignament::Left };
-        cc->columns.emplace_back(cd);
+        AddColumn(column.name, column.align, column.width);
     }
 
     cc->separatorIndexSelected = InvalidIndex;
@@ -713,6 +705,11 @@ Handlers::TreeView* TreeView::Handlers()
     GET_CONTROL_HANDLERS(Handlers::TreeView);
 }
 
+TreeViewItem TreeView::GetRoot() const
+{
+    return { Context, InvalidItemHandle };
+}
+
 ItemHandle TreeView::AddItem(
       const ItemHandle parent,
       std::initializer_list<ConstString> values,
@@ -727,11 +724,10 @@ ItemHandle TreeView::AddItem(
 
     std::vector<CharacterBuffer> cbvs;
     cbvs.reserve(values.size());
-    CharacterBuffer cb;
     for (const auto& value : values)
     {
+        auto& cb = cbvs.emplace_back();
         cb.Set(value);
-        cbvs.emplace_back(std::move(cb));
     }
 
     cc->items[cc->nextItemHandle]              = { parent, cc->nextItemHandle, std::move(cbvs) };
@@ -893,68 +889,68 @@ uint32 TreeView::GetItemsCount() const
     return static_cast<uint32>(cc->items.size());
 }
 
-bool TreeView::AddColumnData(
-      const uint32 index,
-      const ConstString title,
-      const TextAlignament headerAlignment,
-      const TextAlignament contentAlignment,
-      const uint32 width)
+TreeViewColumn TreeView::GetColumn(uint32 index)
+{
+    CHECK(Context != nullptr, (TreeViewColumn{ nullptr, 0 }), "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(index < cc->columns.size(), (TreeViewColumn{ nullptr, 0 }), "");
+
+    return { Context, index };
+}
+
+TreeViewColumn TreeView::AddColumn(const ConstString& title, Graphics::TextAlignament align, uint32 width)
+{
+    CHECK(Context != nullptr, (TreeViewColumn{ nullptr, 0 }), "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(cc->AddColumn(title, align, width), (TreeViewColumn{ nullptr, 0 }), "");
+
+    return { Context, static_cast<uint32>(cc->columns.size() - 1ULL) };
+}
+
+bool TreeView::AddColumns(std::initializer_list<ColumnBuilder> columns)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
+    for (auto& column : columns)
+    {
+        CHECK(cc->AddColumn(column.name, column.align, column.width), false, "");
+    }
+
+    return true;
+}
+
+uint32 TreeView::GetColumnsCount()
+{
+    CHECK(Context != nullptr, 0, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    return static_cast<uint32>(cc->columns.size());
+}
+
+uint32 TreeView::GetSortColumnIndex()
+{
+    CHECK(Context != nullptr, 0xFFFFFFFF, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    return cc->columnIndexToSortBy;
+}
+
+bool TreeView::DeleteAllColumns()
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    cc->columns.clear();
+}
+
+bool TreeView::DeleteColumn(uint32 index)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECK(index < cc->columns.size(), false, "");
 
-    auto& column = cc->columns[index];
-
-    CHECK(column.headerValue.SetWithHotKey(title, column.hotKeyOffset, column.hotKeyCode, Key::Ctrl), false, "");
-    column.headerAlignment  = headerAlignment;
-    column.contentAlignment = contentAlignment;
-    if (width != 0xFFFFFFFF)
-    {
-        column.width       = std::max<>(width, MinColumnWidth);
-        column.customWidth = true;
-
-        // shifts columns
-        uint32 currentX = column.x + column.width;
-        for (auto i = index + 1; i < cc->columns.size(); i++)
-        {
-            auto& col       = cc->columns[i];
-            col.customWidth = true;
-            if (currentX < col.x)
-            {
-                const auto diff = col.x - currentX;
-                col.x -= diff;
-            }
-            else
-            {
-                const auto diff = currentX - col.x;
-                col.x += diff;
-            }
-            currentX = col.x + col.width + 1;
-        }
-    }
-
-    // shift columns back if needed
-    auto maxRightX = cc->Layout.Width - BorderOffset;
-    for (auto i = static_cast<int>(cc->columns.size()) - 1; i >= 0; i--)
-    {
-        auto& col                = cc->columns[i];
-        const auto currentRightX = col.x + col.width;
-        if (currentRightX > maxRightX)
-        {
-            const auto diff = currentRightX - maxRightX;
-            if (col.width > diff && col.width - diff >= MinColumnWidth)
-            {
-                col.width -= diff;
-            }
-            else
-            {
-                col.x -= diff;
-            }
-        }
-        maxRightX = col.x;
-    }
+    cc->columns.erase(cc->columns.begin() + index);
 
     return true;
 }
@@ -1494,7 +1490,7 @@ bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
         for (const auto& col : columns)
         {
             wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
-            wtp.Align = col.contentAlignment;
+            wtp.Align = col.alignment;
             if (j == 0)
             {
                 wtp.X     = col.x + item.depth * ItemSymbolOffset - 1;
@@ -1564,7 +1560,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 
     const auto controlWidth = Layout.Width - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
 
-    renderer.FillHorizontalLineSize(Layout.X - 1, 1, controlWidth, ' ', Cfg->Header.Text.Focused);
+    renderer.FillHorizontalLineSize(Layout.X, 1, controlWidth, ' ', Cfg->Header.Text.Focused);
 
     const auto enabled = (Flags & GATTR_ENABLE) != 0;
 
@@ -1575,7 +1571,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
     uint32 i = 0;
     for (const auto& col : columns)
     {
-        wtp.Align = col.headerAlignment;
+        wtp.Align = col.alignment;
         wtp.X     = col.x;
         wtp.Width = col.width - ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
 
@@ -1605,7 +1601,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 
         renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
 
-        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.headerValue), wtp);
+        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.title), wtp);
 
         if (i == columnIndexToSortBy)
         {
@@ -1909,6 +1905,121 @@ bool TreeControlContext::RemoveItem(const ItemHandle handle, bool process)
     {
         notProcessed = true;
     }
+
+    return true;
+}
+
+bool TreeControlContext::AddColumn(
+      const ConstString title, const Graphics::TextAlignament alignment, const uint32 width)
+{
+    auto x = 0U + ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+
+    for (const auto& column : columns)
+    {
+        x += column.width;
+    }
+
+    auto& column     = columns.emplace_back();
+    const auto index = columns.size() - 1;
+
+    column.height = Layout.Height - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+
+    CHECK(column.title.SetWithHotKey(title, column.hotKeyOffset, column.hotKeyCode, Key::Ctrl), false, "");
+    column.alignment = alignment;
+    if (width != 0xFFFFFFFF)
+    {
+        column.width       = std::max<>(width, MinColumnWidth);
+        column.customWidth = true;
+
+        // shifts columns
+        uint32 currentX = column.x + column.width;
+        for (auto i = index + 1; i < columns.size(); i++)
+        {
+            auto& col       = columns[i];
+            col.customWidth = true;
+            if (currentX < col.x)
+            {
+                const auto diff = col.x - currentX;
+                col.x -= diff;
+            }
+            else
+            {
+                const auto diff = currentX - col.x;
+                col.x += diff;
+            }
+            currentX = col.x + col.width + 1;
+        }
+    }
+
+    // shift columns back if needed
+    auto maxRightX = Layout.Width - ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+    for (auto i = static_cast<int>(columns.size()) - 1; i >= 0; i--)
+    {
+        auto& col                = columns[i];
+        const auto currentRightX = col.x + col.width;
+        if (currentRightX > maxRightX)
+        {
+            const auto diff = currentRightX - maxRightX;
+            if (col.width > diff && col.width - diff >= MinColumnWidth)
+            {
+                col.width -= diff;
+            }
+            else
+            {
+                col.x -= diff;
+            }
+        }
+        maxRightX = col.x;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+
+bool TreeViewColumn::SetText(const ConstString& text)
+{
+    CHECK(context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(context);
+
+    CHECK(index < cc->columns.size(),
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          cc->columns.size());
+
+    return cc->columns[index].title.Set(text);
+}
+
+bool TreeViewColumn::SetAlignament(TextAlignament Align)
+{
+    CHECK(context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(context);
+
+    CHECK(index < cc->columns.size(),
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          cc->columns.size());
+
+    cc->columns[index].alignment = Align;
+
+    return true;
+}
+
+bool TreeViewColumn::SetWidth(uint32 width)
+{
+    CHECK(context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(context);
+
+    CHECK(index < cc->columns.size(),
+          false,
+          "Invalid column index:%d (should be smaller than %d)",
+          index,
+          cc->columns.size());
+
+    cc->columns[index].width       = width;
+    cc->columns[index].customWidth = true;
 
     return true;
 }

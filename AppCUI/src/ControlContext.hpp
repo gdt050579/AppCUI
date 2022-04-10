@@ -471,6 +471,7 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
+
 struct InternalListViewColumn
 {
     CharacterBuffer Name;
@@ -617,6 +618,7 @@ struct ComboBoxItem
     ComboBoxItem& operator=(const ComboBoxItem&);
     ComboBoxItem& operator=(ComboBoxItem&&) noexcept;
 };
+
 class ComboBoxControlContext : public ControlContext
 {
   public:
@@ -670,12 +672,11 @@ struct TreeColumnData
     uint32 x      = 0;
     uint32 width  = 0;
     uint32 height = 0;
-    CharacterBuffer headerValue;
-    TextAlignament headerAlignment  = TextAlignament::Left;
-    TextAlignament contentAlignment = TextAlignament::Left;
-    bool customWidth                = false;
-    uint32 hotKeyOffset             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    Key hotKeyCode                  = Key::None;
+    CharacterBuffer title;
+    TextAlignament alignment = TextAlignament::Left;
+    bool customWidth         = false;
+    uint32 hotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    Key hotKeyCode           = Key::None;
 };
 
 struct TreeItem
@@ -770,6 +771,8 @@ class TreeControlContext : public ControlContext
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
     bool RemoveItem(const ItemHandle handle, bool process);
+
+    bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
 };
 
 enum class GridCellStatus
