@@ -4100,7 +4100,7 @@ namespace Controls
     {
       private:
         GenericRef GetItemDataAsPointer() const;
-        bool SetItemDataAsPointer(GenericRef obj);
+        bool SetItemDataAsPointer(GenericRef ref);
 
         // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
         // 'TreeViewItem'
@@ -4110,7 +4110,7 @@ namespace Controls
 #pragma warning(pop)
         ItemHandle item;
 
-        TreeViewItem(Reference<class TreeView> _obj, ItemHandle _item) : obj(_obj), item(_item)
+        TreeViewItem(Reference<TreeView> _obj, ItemHandle _item) : obj(_obj), item(_item)
         {
         }
 
@@ -4146,6 +4146,7 @@ namespace Controls
         bool IsChecked() const;
         bool SetType(TreeViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
+        ConstString GetText();
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
@@ -4202,11 +4203,7 @@ namespace Controls
         // items
         TreeViewItem GetRoot();
 
-        TreeViewItem AddItem(const TreeViewItem& parent, const ConstString& text);
-        TreeViewItem AddItem(const TreeViewItem& parent, std::initializer_list<ConstString> values);
-        void AddItems(const TreeViewItem& parent, std::initializer_list<std::initializer_list<ConstString>> items);
-        TreeViewItem GetItem(const TreeViewItem& parent, uint32 index);
-        TreeViewItem GetCurrentItem(const TreeViewItem& parent);
+        TreeViewItem GetCurrentItem();
         void SelectAllItems(const TreeViewItem& parent);
         void UnSelectAllItems(const TreeViewItem& parent);
         void CheckAllItems(const TreeViewItem& parent);
@@ -4218,10 +4215,8 @@ namespace Controls
 
         ItemHandle AddItem(
               const ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
-        bool RemoveItem(const ItemHandle handle, bool process = false);
+        bool RemoveItem(TreeViewItem& item);
         bool ClearItems();
-        ItemHandle GetCurrentItem();
-        const ConstString GetItemText(const ItemHandle handle);
 
         bool SetItemData(ItemHandle item, uint64 value);
         template <typename T>
@@ -4262,6 +4257,7 @@ namespace Controls
 
       private:
         friend Factory::TreeView;
+        friend TreeViewItem; // TODO: remove!
         friend Control;
     };
 

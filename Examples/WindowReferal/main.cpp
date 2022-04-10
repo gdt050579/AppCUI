@@ -72,6 +72,7 @@ class MyDesktop : public Desktop
         return false;
     }
 };
+
 int main()
 {
     InitializationData initData;

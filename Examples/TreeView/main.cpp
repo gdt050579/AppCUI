@@ -63,7 +63,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        // tree->GetRoot().AddChild();
+        tree->GetRoot().AddChild();
 
         const auto root = tree->AddItem(
               AppCUI::Controls::InvalidItemHandle,

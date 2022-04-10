@@ -769,7 +769,7 @@ class TreeControlContext : public ControlContext
     bool SearchItems(Reference<TreeView> tree);
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
-    bool RemoveItem(const ItemHandle handle, bool process);
+    bool RemoveItem(const ItemHandle handle);
 
     bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
 };

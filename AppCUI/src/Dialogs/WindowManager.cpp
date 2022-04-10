@@ -47,28 +47,21 @@ class InternalWindowManager : public Controls::Window
 void InternalWindowManager::UpdateButtonsStatus()
 {
     const auto i = tree->GetCurrentItem();
-    btnGoTo->SetEnabled(i != InvalidItemHandle);
-    btnClose->SetEnabled(i != InvalidItemHandle);
+    btnGoTo->SetEnabled(i.IsValid());
+    btnClose->SetEnabled(i.IsValid());
     btnCloseDescendands->SetEnabled(false);
-    if (i == InvalidItemHandle)
-    {
-        return;
-    }
+    CHECKRET(i.IsValid(), "");
 
-    auto data = tree->GetItemData<Window>(i);
-    if (!data.IsValid())
-        return;
+    auto data = i.GetData<Window>();
+    CHECKRET(data.IsValid(), "");
 
-    const auto Members = reinterpret_cast<WindowControlContext*>(data->Context);
-    if (Members == nullptr)
-    {
-        return;
-    }
+    const auto wcc = reinterpret_cast<WindowControlContext*>(data->Context);
+    CHECKRET(wcc != nullptr, "");
 
     // check if there is at least one descendent
     for (const auto& itm : rel)
     {
-        if (itm.second.Referal == Members->windowItemHandle)
+        if (itm.second.Referal == wcc->windowItemHandle)
         {
             btnCloseDescendands->SetEnabled(true);
             break;
@@ -90,19 +83,16 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
 
 bool InternalWindowManager::RemoveCurrentWindow()
 {
-    const auto current = tree->GetCurrentItem();
-    if (current == InvalidItemHandle)
-    {
-        return false;
-    }
+    auto current = tree->GetCurrentItem();
+    CHECK(current.IsValid(), false, "");
 
     LocalUnicodeStringBuilder<256> tmp;
     tmp.Add("Close ");
-    tmp.Add(tree->GetItemText(current));
+    tmp.Add(current.GetText());
     tmp.Add(" ?");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        if (auto win = tree->GetItemData<Window>(current); win.IsValid())
+        if (auto win = current.GetData<Window>(); win.IsValid())
         {
             win->RemoveMe();
         }
@@ -115,30 +105,24 @@ bool InternalWindowManager::RemoveCurrentWindow()
 
 bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
 {
-    const auto i = tree->GetCurrentItem();
-    if (i == InvalidItemHandle)
-    {
-        return false;
-    }
+    auto current = tree->GetCurrentItem();
+    CHECK(current.IsValid(), false, "");
 
     LocalUnicodeStringBuilder<256> tmp;
     CHECK(tmp.Add("Close "), false, "");
-    CHECK(tmp.Add(tree->GetItemText(i)), false, "");
+    CHECK(tmp.Add(current.GetText()), false, "");
     CHECK(tmp.Add(" and all of its descendants ?"), false, "");
-    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) != Result::Ok)
-    {
-        return false;
-    }
+    CHECK(MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok, false, "");
 
-    if (auto win = tree->GetItemData<Window>(i); win.IsValid())
+    if (auto win = current.GetData<Window>(); win.IsValid())
     {
-        if (const auto Members = reinterpret_cast<WindowControlContext*>(win->Context); Members)
+        if (const auto wcc = reinterpret_cast<WindowControlContext*>(win->Context); wcc)
         {
-            CloseDescendants(Members->windowItemHandle);
+            CloseDescendants(wcc->windowItemHandle);
         }
     }
 
-    tree->RemoveItem(i);
+    tree->RemoveItem(current);
 
     return true;
 }
@@ -169,7 +153,8 @@ bool InternalWindowManager::CloseAll()
 
 void InternalWindowManager::GoToSelectedItem()
 {
-    if (auto win = tree->GetItemData<Window>(tree->GetCurrentItem()); win.IsValid())
+    auto current = tree->GetCurrentItem();
+    if (auto win = current.GetData<Window>(); win.IsValid())
     {
         win->SetFocus();
     }
