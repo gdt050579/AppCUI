@@ -478,11 +478,11 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
     const uint32 h         = r.GetHeight();
     const auto screenWidth = this->ScreenCanvas.GetWidth();
     COORD winSize          = { (SHORT) w, (SHORT) h };
-    SMALL_RECT sr          = { r.GetLeft(), r.GetTop(), winSize.X, winSize.Y };
+    SMALL_RECT sr          = { (SHORT) r.GetLeft(), (SHORT) r.GetTop(), winSize.X, winSize.Y };
 
     Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * r.GetTop();
     CHAR_INFO* d               = this->ConsoleBuffer.get();
-    for (auto y = 0; y < h; y++, start += screenWidth)
+    for (auto y = 0U; y < h; y++, start += screenWidth)
     {
         Graphics::Character* c = start + r.GetLeft();
         Graphics::Character* e = c + w;

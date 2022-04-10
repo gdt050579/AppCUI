@@ -185,8 +185,8 @@ FileDialogWindow::FileDialogWindow(
 
     ListViewFlags specialPathsFlags =
           ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
-    lSpecialPaths = Factory::ListView::Create(splitPanelLeft, "x:0,y:0,w:100%,h:100%", specialPathsFlags);
-    lSpecialPaths->AddColumn("Special", TextAlignament::Left, 20);
+    lSpecialPaths = Factory::ListView::Create(
+          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { { "Special", TextAlignament::Left, 20 } }, specialPathsFlags);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
@@ -194,27 +194,31 @@ FileDialogWindow::FileDialogWindow(
 
     locations.push_back({ "Initial", initialPath });
     LoadAllSpecialLocations();
+    uint64 idx = 0;
     for (const auto& locationInfo : locations)
     {
-        lSpecialPaths->AddItem(locationInfo.locationName);
+        lSpecialPaths->AddItem(locationInfo.locationName).SetData(idx++);
     }
 
-    files = Factory::ListView::Create(splitPanelRight, "x:0,y:0,w:100%,h:100%", ListViewFlags::Sortable);
-    files->AddColumn("&Name", TextAlignament::Left, 31);
-    files->AddColumn("&Size", TextAlignament::Right, 16);
-    files->AddColumn("&Modified", TextAlignament::Center, 20);
-    files->Handlers()->ComparereItem = [](Reference<Control> control, ItemHandle item1, ItemHandle item2) -> int
+    files = Factory::ListView::Create(
+          splitPanelRight,
+          "x:0,y:0,w:100%,h:100%",
+          { { "&Name", TextAlignament::Left, 31 },
+            { "&Size", TextAlignament::Right, 16 },
+            { "&Modified", TextAlignament::Center, 20 } },
+          ListViewFlags::Sortable);
+    files->Handlers()->ComparereItem =
+          [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
     {
-        auto lv        = control.ToObjectRef<ListView>();
-        const auto& v1 = lv->GetItemData(item1, 0);
-        const auto& v2 = lv->GetItemData(item2, 0);
+        const auto& v1 = item1.GetData(0);
+        const auto& v2 = item2.GetData(0);
         if (v1 < v2)
             return -1;
         if (v1 > v2)
             return 1;
-        auto cindex    = lv->GetSortColumnIndex();
-        const auto& s1 = lv->GetItemText(item1, cindex);
-        const auto& s2 = lv->GetItemText(item2, cindex);
+        auto cindex    = control->GetSortColumnIndex();
+        const auto& s1 = item1.GetText(cindex);
+        const auto& s2 = item2.GetText(cindex);
         return s1.CompareWith(s2, true);
     };
     files->Sort(0, true); // sort after the first column, ascendent
@@ -300,10 +304,10 @@ bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter
 
 void FileDialogWindow::FileListItemClicked()
 {
-    int index = files->GetCurrentItem();
-    if (index < 0)
+    auto current = files->GetCurrentItem();
+    if (!current.IsValid())
         return;
-    uint32 value = (int) files->GetItemData(index, 0);
+    uint32 value = (int) current.GetData(0);
     if (value == 0)
     {
         try
@@ -320,7 +324,7 @@ void FileDialogWindow::FileListItemClicked()
     {
         try
         {
-            UpdateCurrentPath(currentPath / files->GetItemText(index, 0));
+            UpdateCurrentPath(currentPath / current.GetText(0));
         }
         catch (...)
         {
@@ -336,20 +340,17 @@ void FileDialogWindow::FileListItemClicked()
 }
 void FileDialogWindow::FileListItemChanged()
 {
-    const int index = files->GetCurrentItem();
-    if (index < 0)
-    {
+    auto current = files->GetCurrentItem();
+    if (!current.IsValid())
         return;
-    }
-
-    const auto value = files->GetItemData(index, 0);
+    uint32 value = (int) current.GetData(0);
     if (value == 1)
     {
-        txName->SetText(files->GetItemText(index, 0));
+        txName->SetText(current.GetText(0));
     }
     else if (value == 2)
     {
-        txName->SetText(files->GetItemText(index, 0));
+        txName->SetText(current.GetText(0));
     }
     else
     {
@@ -417,8 +418,7 @@ void FileDialogWindow::ProcessTextFieldInput()
 
 void FileDialogWindow::SpecialFoldersUpdatePath()
 {
-    const auto idx = lSpecialPaths->GetCurrentItem();
-    UpdateCurrentPath(locations[idx].locationPath);
+    UpdateCurrentPath(locations[lSpecialPaths->GetCurrentItem().GetData(0)].locationPath);
 }
 
 void FileDialogWindow::UpdateCurrentExtensionFilter()
@@ -441,13 +441,11 @@ void FileDialogWindow::ReloadCurrentPath()
 
     if (currentPath != currentPath.root_path())
     {
-        files->AddItem("..", "UP-DIR");
-        files->SetItemData(0, 0);
+        files->AddItem({ "..", "UP-DIR" }).SetData(0);
     }
 
     char size[32];
     char dateBuffer[64]{ 0 };
-    ItemHandle itemHandle;
     try
     {
         for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
@@ -488,16 +486,16 @@ void FileDialogWindow::ReloadCurrentPath()
             std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
 #endif
 
-            itemHandle = this->files->AddItem(fileEntry.path().filename().u16string(), size, dateBuffer);
+            auto item = this->files->AddItem({ fileEntry.path().filename().u16string(), size, dateBuffer });
             if (fileEntry.is_directory())
             {
-                this->files->SetItemColor(itemHandle, ColorPair{ Color::White, Color::Transparent });
-                this->files->SetItemData(itemHandle, 1);
+                item.SetType(ListViewItem::Type::Highlighted);
+                item.SetData(1);
             }
             else
             {
-                this->files->SetItemColor(itemHandle, ColorPair{ Color::Gray, Color::Transparent });
-                this->files->SetItemData(itemHandle, 2);
+                item.SetType(ListViewItem::Type::GrayedOut);
+                item.SetData(2);
             }
         }
     }

@@ -293,20 +293,27 @@ REFERENCE<ImageView> Factory::ImageView::Create(
 }
 
 //======[LISTVIEW]===================================================================================
-POINTER<Controls::ListView> Factory::ListView::Create(string_view layout, Controls::ListViewFlags flags)
+POINTER<Controls::ListView> Factory::ListView::Create(
+      string_view layout, std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags)
 {
-    return POINTER<Controls::ListView>(new Controls::ListView(layout, flags));
+    return POINTER<Controls::ListView>(new Controls::ListView(layout, columns, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
-      Controls::Control* parent, string_view layout, Controls::ListViewFlags flags)
+      Controls::Control* parent,
+      string_view layout,
+      std::initializer_list<ColumnBuilder> columns,
+      Controls::ListViewFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::ListView>(Factory::ListView::Create(layout, flags));
+    return parent->AddControl<Controls::ListView>(Factory::ListView::Create(layout, columns, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
-      Controls::Control& parent, string_view layout, Controls::ListViewFlags flags)
+      Controls::Control& parent,
+      string_view layout,
+      std::initializer_list<ColumnBuilder> columns,
+      Controls::ListViewFlags flags)
 {
-    return parent.AddControl<Controls::ListView>(Factory::ListView::Create(layout, flags));
+    return parent.AddControl<Controls::ListView>(Factory::ListView::Create(layout, columns, flags));
 }
 
 //======[COMBOBOX]===================================================================================

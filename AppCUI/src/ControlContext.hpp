@@ -454,24 +454,24 @@ struct CanvasControlContext : public ControlContext
 constexpr uint32 MAX_LISTVIEW_COLUMNS     = 64;
 constexpr uint32 MAX_LISTVIEW_HEADER_TEXT = 32;
 
-struct ListViewItem
+struct InternalListViewItem
 {
     CharacterBuffer SubItem[MAX_LISTVIEW_COLUMNS];
-    ListViewItemType Type;
+    ListViewItem::Type Type;
     uint16 Flags;
     uint32 XOffset;
     uint32 Height;
     ColorPair ItemColor;
     variant<GenericRef, uint64> Data;
-    ListViewItem();
-    ListViewItem(const ColorPair col) : ListViewItem()
+    InternalListViewItem();
+    InternalListViewItem(const ColorPair col) : InternalListViewItem()
     {
         this->ItemColor = col;
     }
-    ListViewItem(const ListViewItem& obj);
-    ListViewItem(ListViewItem&& obj) noexcept;
+    InternalListViewItem(const InternalListViewItem& obj);
+    InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
-struct ListViewColumn
+struct InternalListViewColumn
 {
     CharacterBuffer Name;
     uint32 HotKeyOffset;
@@ -491,7 +491,7 @@ class ListViewControlContext : public ControlContext
   public:
     struct
     {
-        ListViewColumn List[MAX_LISTVIEW_COLUMNS];
+        InternalListViewColumn List[MAX_LISTVIEW_COLUMNS];
         uint32 Count;
         uint32 TotalWidth;
         uint32 ResizeColumnIndex;
@@ -509,7 +509,7 @@ class ListViewControlContext : public ControlContext
 
     struct
     {
-        vector<ListViewItem> List;
+        vector<InternalListViewItem> List;
         Utils::Array32 Indexes;
         int FirstVisibleIndex, CurentItemIndex;
     } Items;
@@ -530,14 +530,14 @@ class ListViewControlContext : public ControlContext
 
     Controls::Control* Host;
 
-    ListViewItem* GetFilteredItem(uint32 index);
+    InternalListViewItem* GetFilteredItem(uint32 index);
 
     int SearchItem(uint32 startPoz);
     void UpdateSearch(int startPoz);
     void UpdateSelectionInfo();
     void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
     void DrawColumn(Graphics::Renderer& renderer);
-    void DrawItem(Graphics::Renderer& renderer, ListViewItem* item, int y, bool currentItem);
+    void DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem);
 
     // movement
     void UpdateSelection(int start, int end, bool select);
@@ -558,7 +558,7 @@ class ListViewControlContext : public ControlContext
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
-    bool SetItemType(ItemHandle item, ListViewItemType type);
+    bool SetItemType(ItemHandle item, ListViewItem::Type type);
     void SetClipboardSeparator(char ch);
     bool IsItemChecked(ItemHandle item);
     bool IsItemSelected(ItemHandle item);
@@ -598,7 +598,7 @@ class ListViewControlContext : public ControlContext
     void SendMsg(Event eventType);
     bool Sort();
 
-    bool FilterItem(ListViewItem& lvi, bool clearColorForAll);
+    bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
 };
 

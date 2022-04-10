@@ -32,16 +32,19 @@ class ExampleWin : public Window
         Factory::RadioBox::Create(p, "Ascii", "x:1,y:2,w:15", 101, CMD_CHANGE_CHARSET_ASCII);
 
         auto lv = Factory::ListView::Create(
-              this, "x:25,y:3,w:40,h:10", ListViewFlags::Sortable | ListViewFlags::CheckBoxes);
-        lv->AddColumn("&Name", TextAlignament::Left, 15);
-        lv->AddColumn("&Grade", TextAlignament::Right, 10);
-        lv->AddColumn("&Class", TextAlignament::Left, 15);
+              this,
+              "x:25,y:3,w:40,h:10",
+              { { "&Name", TextAlignament::Left, 15 },
+                { "&Grade", TextAlignament::Right, 10 },
+                { "&Class", TextAlignament::Left, 15 } },
+              ListViewFlags::Sortable | ListViewFlags::CheckBoxes);
+
         for (uint32 count = 0; count < 100; count++)
         {
-            lv->AddItem("John", "9", "Math");
-            lv->AddItem("Mary", "8", "English");
-            lv->AddItem("Jeffrey", "7", "Math");
-            lv->AddItem("Carl", "9", "Sport");
+            lv->AddItems({ { "John", "9", "Math" },
+                           { "Mary", "8", "English" },
+                           { "Jeffrey", "7", "Math" },
+                           { "Carl", "9", "Sport" } });
         }
 
         Factory::ComboBox::Create(this, "x:25,y:14,w:40", "Apple,Orange,Grapes")->SetCurentItemIndex(0);

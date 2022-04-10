@@ -165,7 +165,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
     }
     void OnInitPropertyDialog() override
     {
-        chTable = Factory::CharacterTable::Create(this, "t:2,l:1,r:1,b:2");
+        chTable = Factory::CharacterTable::Create(this, "t:1,l:1,r:1,b:3");
         chTable->SetEnabled(!isReadOnly);
         if (!isReadOnly)
             chTable->SetFocus();
@@ -376,7 +376,7 @@ class PropertyKeyEditDialog : public PropertyEditDialog
 class PropertyFlagsEditDialog : public PropertyEditDialog
 {
     Reference<ListView> lv;
-    ItemHandle* items;
+    ListViewItem* items;
 
   public:
     PropertyFlagsEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
@@ -394,16 +394,17 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
+              { { "", TextAlignament::Left, 100 } },
               ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::SearchMode);
-        lv->AddColumn("", TextAlignament::Left, 100);
+
         if (prop.listValues.size() > 0)
         {
-            items   = new ItemHandle[prop.listValues.size()];
+            items   = new ListViewItem[prop.listValues.size()];
             auto* i = items;
             for (auto& entry : prop.listValues)
             {
                 *i = lv->AddItem(entry.second);
-                lv->SetItemData(*i, entry.first);
+                i->SetData(entry.first);
                 i++;
             }
         }
@@ -423,8 +424,8 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
                 auto* e = items + prop.listValues.size();
                 while (i < e)
                 {
-                    auto flagValue = lv->GetItemData(*i, 0);
-                    lv->SetItemCheck(*i, (flagValue & result) == flagValue);
+                    auto flagValue = i->GetData(0);
+                    i->SetCheck((flagValue & result) == flagValue);
                     i++;
                 }
             }
@@ -454,8 +455,8 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         auto* e      = items + prop.listValues.size();
         while (i < e)
         {
-            if (lv->IsItemChecked(*i))
-                value |= lv->GetItemData(*i, 0);
+            if (i->IsChecked())
+                value |= i->GetData(0);
             i++;
         }
         if (object->SetPropertyValue(prop.id, value, error))
@@ -471,7 +472,7 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
 class PropertyListEditDialog : public PropertyEditDialog
 {
     Reference<ListView> lv;
-    ItemHandle* items;
+    ListViewItem* items;
 
   public:
     PropertyListEditDialog(const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
@@ -486,16 +487,19 @@ class PropertyListEditDialog : public PropertyEditDialog
     }
     void OnInitPropertyDialog() override
     {
-        lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", ListViewFlags::HideColumns | ListViewFlags::SearchMode);
-        lv->AddColumn("", TextAlignament::Left, 100);
+        lv = Factory::ListView::Create(
+              this,
+              "l:1,t:1,r:1,b:3",
+              { { "", TextAlignament::Left, 100 } },
+              ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         if (prop.listValues.size() > 0)
         {
-            items   = new ItemHandle[prop.listValues.size()];
+            items   = new ListViewItem[prop.listValues.size()];
             auto* i = items;
             for (auto& entry : prop.listValues)
             {
                 *i = lv->AddItem(entry.second);
-                lv->SetItemData(*i, entry.first);
+                i->SetData(entry.first);
                 i++;
             }
         }
@@ -509,7 +513,7 @@ class PropertyListEditDialog : public PropertyEditDialog
         auto* e = items + prop.listValues.size();
         while (i < e)
         {
-            lv->SetItemType(*i, ListViewItemType::Normal);
+            i->SetType(ListViewItem::Type::Normal);
             i++;
         }
         if (this->object->GetPropertyValue(prop.id, tempPropValue))
@@ -520,8 +524,8 @@ class PropertyListEditDialog : public PropertyEditDialog
                 i = items;
                 while (i < e)
                 {
-                    if (lv->GetItemData(*i, INVALID_LISTVIEW_ITEM) == result)
-                        lv->SetItemType(*i, ListViewItemType::Emphasized_1);
+                    if (i->GetData(INVALID_LISTVIEW_ITEM) == result)
+                        i->SetType(ListViewItem::Type::Emphasized_1);
                     i++;
                 }
             }
@@ -546,7 +550,7 @@ class PropertyListEditDialog : public PropertyEditDialog
         if (lv->GetItemsCount() == 0)
             return;
         LocalString<256> error;
-        auto result = lv->GetItemData(lv->GetCurrentItem(), INVALID_LISTVIEW_ITEM);
+        auto result = lv->GetCurrentItem().GetData(INVALID_LISTVIEW_ITEM);
         if (result != INVALID_LISTVIEW_ITEM)
         {
             if (object->SetPropertyValue(prop.id, result, error))
