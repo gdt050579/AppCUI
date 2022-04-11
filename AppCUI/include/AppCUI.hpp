@@ -3623,13 +3623,14 @@ namespace Controls
     };
     enum class TextAreaFlags : uint32
     {
-        None               = 0x000000,
-        Border             = 0x000100,
-        ShowLineNumbers    = 0x000200,
-        ProcessTabKey      = 0x000400,
-        Readonly           = 0x000800,
-        ScrollBars         = 0x001000,
-        SyntaxHighlighting = 0x002000,
+        None                     = 0x000000,
+        Border                   = 0x000100,
+        ShowLineNumbers          = 0x000200,
+        ProcessTabKey            = 0x000400,
+        Readonly                 = 0x000800,
+        ScrollBars               = 0x001000,
+        SyntaxHighlighting       = 0x002000,
+        DisableAutoSelectOnFocus = 0x004000,
     };
 
     class EXPORT TextArea : public Control
