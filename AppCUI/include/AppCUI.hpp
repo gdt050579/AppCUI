@@ -2893,6 +2893,10 @@ namespace Controls
               Reference<Controls::ListView> control,
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
+        using OnListViewItemSelectedHandler =
+              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+        using OnListViewItemCheckedHandler =
+              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
 
         struct OnButtonPressedInterface
         {
@@ -3084,6 +3088,21 @@ namespace Controls
             };
         };
 
+        struct OnListViewItemSelectedInterface
+        {
+            virtual int OnListViewItemSelected(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
+        };
+        struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
+        {
+            OnListViewItemSelectedHandler callback;
+            virtual int OnListViewItemSelected(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
+            {
+                return callback(lv, item);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -3139,6 +3158,8 @@ namespace Controls
         {
             Wrapper<ListViewItemCompareInterface, ListViewItemCompareCallback, ListViewItemCompareHandler>
                   ComparereItem;
+            Wrapper<OnListViewItemSelectedInterface, OnListViewItemSelectedCallback, OnListViewItemSelectedHandler>
+                  OnItemSelected;
         };
 
         struct TreeView : public Control
@@ -3826,6 +3847,7 @@ namespace Controls
         bool SetColor(Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
+        bool IsCurrent() const;
         bool SetHeight(uint32 Height);
         uint32 GetHeight() const;
 

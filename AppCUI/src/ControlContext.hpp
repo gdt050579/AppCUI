@@ -529,7 +529,7 @@ class ListViewControlContext : public ControlContext
     } Selection;
     char clipboardSeparator;
 
-    Controls::Control* Host;
+    Controls::ListView* Host;
 
     InternalListViewItem* GetFilteredItem(uint32 index);
 
@@ -597,6 +597,7 @@ class ListViewControlContext : public ControlContext
     void SetSortColumn(uint32 colIndex);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
+    void TriggerSelectionChangeEvent(uint32 itemIndex);
     bool Sort();
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
