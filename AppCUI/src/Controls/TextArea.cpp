@@ -1148,7 +1148,10 @@ void TextArea::OnUpdateScrollBars()
 }
 void TextArea::OnFocus()
 {
-    WRAPPER->SelAll();
+    if (!(WRAPPER->Flags && TextAreaFlags::DisableAutoSelectOnFocus))
+    {
+        WRAPPER->SelAll();
+    }
 }
 void TextArea::OnAfterSetText()
 {
