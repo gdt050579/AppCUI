@@ -4142,7 +4142,9 @@ namespace Controls
             return obj != nullptr;
         }
 
-        TreeViewItem AddChild(const std::initializer_list<ConstString> values = {}, bool isExpandable = false);
+        TreeViewItem AddChild(ConstString name, bool isExpandable = false);
+        bool SetName(ConstString name);
+        bool SetValues(const std::initializer_list<ConstString> values);
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
@@ -4180,8 +4182,9 @@ namespace Controls
 
     class EXPORT TreeView : public Control
     {
-    public:
+      public:
         const static auto RootHandle = InvalidItemHandle;
+
       protected:
         TreeView(
               string_view layout,
@@ -4209,7 +4212,7 @@ namespace Controls
         TreeViewItem GetItemByIndex(const uint32 index);
         uint32 GetItemsCount() const;
         TreeViewItem GetItemByHandle(ItemHandle handle);
-        TreeViewItem AddItem(const std::initializer_list<ConstString> values = {}, bool isExpandable = false);
+        TreeViewItem AddItem(ConstString name, bool isExpandable = false);
 
         // columns
         TreeViewColumn GetColumn(uint32 index);

@@ -912,13 +912,52 @@ bool TreeViewItem::ToggleItem()
     return true;
 }
 
-TreeViewItem TreeViewItem::AddChild(const std::initializer_list<ConstString> values, bool isExpandable)
+TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
 {
     CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
     auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
     CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { obj, cc->AddItem(handle, values, isExpandable) };
+    return { obj, cc->AddItem(handle, { name }, isExpandable) };
+}
+
+bool TreeViewItem::SetName(ConstString name)
+{
+    CHECK(IsValid(), false, "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
+    CHECK(cc != nullptr, false, "");
+
+    return cc->items.at(handle).values.at(0).Set(name);
+}
+
+bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
+{
+    CHECK(IsValid(), false, "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
+    CHECK(cc != nullptr, false, "");
+
+    auto& vals = cc->items.at(handle).values;
+    auto it    = vals.begin();
+    std::advance(it, 1); // past name
+
+    bool end = (it == vals.end());
+
+    for (const auto& value : values)
+    {
+        if (end)
+        {
+            auto& val = vals.emplace_back();
+            val.Set(value);
+        }
+        else
+        {
+            it->Set(value);
+            std::advance(it, 1);
+            end = (it == vals.end());
+        }
+    }
+
+    return true;
 }
 
 bool TreeViewItem::SetData(uint64 value)
@@ -1024,12 +1063,12 @@ TreeViewItem TreeView::GetItemByHandle(ItemHandle handle)
     return { this, handle };
 }
 
-TreeViewItem TreeView::AddItem(const std::initializer_list<ConstString> values, bool isExpandable)
+TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
 {
     auto cc = reinterpret_cast<TreeControlContext*>(this->Context);
     CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, cc->AddItem(InvalidItemHandle, values, isExpandable) };
+    return { this, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
 }
 
 TreeViewColumn TreeView::GetColumn(uint32 index)

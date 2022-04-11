@@ -63,7 +63,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        auto root = tree->AddItem({ filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
+        auto root = tree->AddItem(filename, std::filesystem::is_directory(path));
+        root.SetValues({ pathLastWriteTime, pathSizeText });
 
         auto& cpath = pieces.emplace_back(std::filesystem::current_path().u16string());
         root.SetData(Reference<std::u16string>(&cpath));
@@ -102,8 +103,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                         pathSizeText = "0";
                     }
 
-                    auto root = tree->AddItem(
-                          { filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
+                    auto root = tree->AddItem(filename, std::filesystem::is_directory(path));
+                    root.SetValues({ pathLastWriteTime, pathSizeText });
 
                     auto& localPath = pieces.emplace_back(path.u16string());
                     root.SetData(Reference<std::u16string>(&localPath));
@@ -136,7 +137,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 uint64 pathSize              = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
 
-                auto child = item.AddChild({ filename, pathLastWriteTime, pathSizeText }, p.is_directory());
+                auto child = item.AddChild(filename, p.is_directory());
+                child.SetValues({ pathLastWriteTime, pathSizeText });
 
                 auto& cpath = pieces.emplace_back(p.path().u16string());
                 child.SetData(Reference<std::u16string>(&cpath));

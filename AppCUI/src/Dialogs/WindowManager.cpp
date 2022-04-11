@@ -218,7 +218,8 @@ bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int i
 bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
-    child          = parent.AddChild({ wcc->Text.operator std::string(), w->GetTag().operator std::string() }, true);
+    child          = parent.AddChild(wcc->Text.operator std::string(), true);
+    child.SetValues({ w->GetTag().operator std::string() });
     child.SetData(Reference<Window>(w));
     return true;
 }
