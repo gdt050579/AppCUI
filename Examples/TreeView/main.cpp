@@ -145,7 +145,9 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         }
         catch (std::exception& e)
         {
+#ifdef _DEBUG
             LOG_ERROR("%s", e.what());
+#endif
         }
 
         return true;

@@ -4102,12 +4102,16 @@ namespace Controls
         GenericRef GetItemDataAsPointer() const;
         bool SetItemDataAsPointer(GenericRef ref);
 
+#ifdef _MSC_VER
         // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
         // 'TreeViewItem'
-#pragma warning(push)
-#pragma warning(disable : 4251)
+#    pragma warning(push)
+#    pragma warning(disable : 4251)
+#endif
         Reference<TreeView> obj;
-#pragma warning(pop)
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
         ItemHandle handle;
 
         TreeViewItem(Reference<TreeView> _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
