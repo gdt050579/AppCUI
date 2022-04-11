@@ -723,7 +723,7 @@ ConstString TreeViewItem::GetText()
     CHECK(IsValid(), "", "");
     const auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
 
-    const auto it = cc->items.find(item);
+    const auto it = cc->items.find(handle);
     if (it != cc->items.end())
     {
         return it->second.values.at(0);
@@ -735,19 +735,41 @@ ConstString TreeViewItem::GetText()
 TreeViewItem TreeViewItem::AddChild(const std::initializer_list<ConstString> values, bool isExpandable)
 {
     CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-    return { obj, obj->AddItem(item, values, isExpandable) };
+    return { obj, obj->AddItem(handle, values, isExpandable) };
+}
+
+bool TreeViewItem::SetData(uint64 value)
+{
+    CHECK(IsValid(), false, "");
+
+    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
+    CHECK(cc != nullptr, InvalidItemHandle, "");
+
+    cc->items.at(handle).data = value;
+
+    return true;
+}
+
+uint64 TreeViewItem::GetData(uint64 errorValue) const
+{
+    CHECK(IsValid(), errorValue, "");
+
+    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, errorValue, "");
+
+    return std::get<uint64>(cc->items.at(handle).data);
 }
 
 GenericRef TreeViewItem::GetItemDataAsPointer() const
 {
     CHECK(IsValid(), nullptr, "");
-    return obj.ToGenericRef().ToReference<TreeView>()->GetItemDataAsPointer(item);
+    return obj.ToGenericRef().ToReference<TreeView>()->GetItemDataAsPointer(handle);
 }
 
 bool TreeViewItem::SetItemDataAsPointer(GenericRef ref)
 {
     CHECK(IsValid(), false, "");
-    return obj->SetItemDataAsPointer(item, ref);
+    return obj->SetItemDataAsPointer(handle, ref);
 }
 
 ItemHandle TreeView::AddItem(const ItemHandle parent, std::initializer_list<ConstString> values, bool isExpandable)
@@ -794,10 +816,10 @@ bool TreeView::RemoveItem(TreeViewItem& item)
 {
     CHECK(item.IsValid(), false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(item.obj->Context);
-    if (cc->RemoveItem(item.item))
+    if (cc->RemoveItem(item.handle))
     {
-        item.obj  = nullptr;
-        item.item = InvalidItemHandle;
+        item.obj    = nullptr;
+        item.handle = InvalidItemHandle;
         return true;
     }
 

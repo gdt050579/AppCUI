@@ -4108,9 +4108,9 @@ namespace Controls
 #pragma warning(disable : 4251)
         Reference<TreeView> obj;
 #pragma warning(pop)
-        ItemHandle item;
+        ItemHandle handle;
 
-        TreeViewItem(Reference<TreeView> _obj, ItemHandle _item) : obj(_obj), item(_item)
+        TreeViewItem(Reference<TreeView> _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
         {
         }
 
@@ -4129,7 +4129,7 @@ namespace Controls
         };
 
       public:
-        TreeViewItem() : obj(nullptr), item(InvalidItemHandle)
+        TreeViewItem() : obj(nullptr), handle(InvalidItemHandle)
         {
         }
 
@@ -4142,19 +4142,17 @@ namespace Controls
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
-        bool SetCheck(bool value);
-        bool IsChecked() const;
-        bool SetType(TreeViewItem::Type type);
+        bool SetType(TreeViewItem::Type type)
+        {
+            /* TODO: */
+            return false;
+        }
         bool SetText(uint32 subItemIndex, const ConstString& text);
         ConstString GetText();
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
-        bool SetXOffset(uint32 value);
-        uint32 GetXOffset() const;
         bool SetColor(Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
-        bool SetHeight(uint32 Height);
-        uint32 GetHeight() const;
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
