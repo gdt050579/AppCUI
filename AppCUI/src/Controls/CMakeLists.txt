@@ -17,7 +17,7 @@ target_sources(AppCUI PRIVATE
 	Tab.cpp
 	TextField.cpp
 	TextArea.cpp
-	Tree.cpp
+	TreeView.cpp
 	UserControl.cpp
 	Menu.cpp
 	Window.cpp

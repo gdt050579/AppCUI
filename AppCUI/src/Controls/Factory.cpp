@@ -368,22 +368,29 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 }
 
 //======[TREE]=======================================================================================
-POINTER<Controls::TreeView> Factory::TreeView::Create(string_view layout, TreeViewFlags flags, const uint32 noOfColumns)
+POINTER<Controls::TreeView> Factory::TreeView::Create(
+      string_view layout, std::initializer_list<ColumnBuilder> columns, TreeViewFlags flags)
 {
-    return POINTER<Controls::TreeView>(new Controls::TreeView(layout, flags, noOfColumns));
+    return POINTER<Controls::TreeView>(new Controls::TreeView(layout, columns, flags));
 }
 
 REFERENCE<TreeView> Factory::TreeView::Create(
-      Controls::Control* parent, string_view layout, const TreeViewFlags flags, const uint32 noOfColumns)
+      Controls::Control* parent,
+      string_view layout,
+      std::initializer_list<ColumnBuilder> columns,
+      const TreeViewFlags flags)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, flags, noOfColumns));
+    return parent->AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, columns, flags));
 }
 
 REFERENCE<TreeView> Factory::TreeView::Create(
-      Controls::Control& parent, string_view layout, const TreeViewFlags flags, const uint32 noOfColumns)
+      Controls::Control& parent,
+      string_view layout,
+      std::initializer_list<ColumnBuilder> columns,
+      const TreeViewFlags flags)
 {
-    return parent.AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, flags, noOfColumns));
+    return parent.AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, columns, flags));
 }
 
 //======[GRID]=======================================================================================

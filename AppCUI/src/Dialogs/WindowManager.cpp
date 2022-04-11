@@ -33,8 +33,8 @@ class InternalWindowManager : public Controls::Window
     {
     }
     bool Create();
-    bool AddItem(Window* w, const ItemHandle parent, ItemHandle& child);
-    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent);
+    bool AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child);
+    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, ItemHandle handleParent);
     bool OnEvent(Reference<Control> c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
@@ -47,28 +47,21 @@ class InternalWindowManager : public Controls::Window
 void InternalWindowManager::UpdateButtonsStatus()
 {
     const auto i = tree->GetCurrentItem();
-    btnGoTo->SetEnabled(i != InvalidItemHandle);
-    btnClose->SetEnabled(i != InvalidItemHandle);
+    btnGoTo->SetEnabled(i.IsValid());
+    btnClose->SetEnabled(i.IsValid());
     btnCloseDescendands->SetEnabled(false);
-    if (i == InvalidItemHandle)
-    {
-        return;
-    }
+    CHECKRET(i.IsValid(), "");
 
-    auto data = tree->GetItemData<Window>(i);
-    if (!data.IsValid())
-        return;
+    auto data = i.GetData<Window>();
+    CHECKRET(data.IsValid(), "");
 
-    const auto Members = reinterpret_cast<WindowControlContext*>(data->Context);
-    if (Members == nullptr)
-    {
-        return;
-    }
+    const auto wcc = reinterpret_cast<WindowControlContext*>(data->Context);
+    CHECKRET(wcc != nullptr, "");
 
     // check if there is at least one descendent
     for (const auto& itm : rel)
     {
-        if (itm.second.Referal == Members->windowItemHandle)
+        if (itm.second.Referal == wcc->windowItemHandle)
         {
             btnCloseDescendands->SetEnabled(true);
             break;
@@ -90,19 +83,16 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
 
 bool InternalWindowManager::RemoveCurrentWindow()
 {
-    const auto current = tree->GetCurrentItem();
-    if (current == InvalidItemHandle)
-    {
-        return false;
-    }
+    auto current = tree->GetCurrentItem();
+    CHECK(current.IsValid(), false, "");
 
     LocalUnicodeStringBuilder<256> tmp;
     tmp.Add("Close ");
-    tmp.Add(tree->GetItemText(current));
+    tmp.Add(current.GetText());
     tmp.Add(" ?");
     if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok)
     {
-        if (auto win = tree->GetItemData<Window>(current); win.IsValid())
+        if (auto win = current.GetData<Window>(); win.IsValid())
         {
             win->RemoveMe();
         }
@@ -115,30 +105,24 @@ bool InternalWindowManager::RemoveCurrentWindow()
 
 bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
 {
-    const auto i = tree->GetCurrentItem();
-    if (i == InvalidItemHandle)
-    {
-        return false;
-    }
+    auto current = tree->GetCurrentItem();
+    CHECK(current.IsValid(), false, "");
 
     LocalUnicodeStringBuilder<256> tmp;
     CHECK(tmp.Add("Close "), false, "");
-    CHECK(tmp.Add(tree->GetItemText(i)), false, "");
+    CHECK(tmp.Add(current.GetText()), false, "");
     CHECK(tmp.Add(" and all of its descendants ?"), false, "");
-    if (MessageBox::ShowOkCancel("Close", tmp.ToStringView()) != Result::Ok)
-    {
-        return false;
-    }
+    CHECK(MessageBox::ShowOkCancel("Close", tmp.ToStringView()) == Result::Ok, false, "");
 
-    if (auto win = tree->GetItemData<Window>(i); win.IsValid())
+    if (auto win = current.GetData<Window>(); win.IsValid())
     {
-        if (const auto Members = reinterpret_cast<WindowControlContext*>(win->Context); Members)
+        if (const auto wcc = reinterpret_cast<WindowControlContext*>(win->Context); wcc)
         {
-            CloseDescendants(Members->windowItemHandle);
+            CloseDescendants(wcc->windowItemHandle);
         }
     }
 
-    tree->RemoveItem(i);
+    tree->RemoveItem(current);
 
     return true;
 }
@@ -153,9 +137,9 @@ bool InternalWindowManager::CloseAll()
     const auto count = tree->GetItemsCount();
     for (auto i = 0U; i < count; i++)
     {
-        if (const auto handle = tree->GetItemHandleByIndex(i); handle != InvalidItemHandle)
+        if (const auto item = tree->GetItemByIndex(i); item.IsValid())
         {
-            if (auto win = tree->GetItemData<Window>(handle); win.IsValid())
+            if (auto win = item.GetData<Window>(); win.IsValid())
             {
                 win->RemoveMe();
             }
@@ -169,7 +153,8 @@ bool InternalWindowManager::CloseAll()
 
 void InternalWindowManager::GoToSelectedItem()
 {
-    if (auto win = tree->GetItemData<Window>(tree->GetCurrentItem()); win.IsValid())
+    auto current = tree->GetCurrentItem();
+    if (auto win = current.GetData<Window>(); win.IsValid())
     {
         win->SetFocus();
     }
@@ -230,17 +215,19 @@ bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int i
     return false;
 }
 
-bool InternalWindowManager::AddItem(Window* w, const ItemHandle parent, ItemHandle& child)
+bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
-    child          = tree->AddItem(parent, { wcc->Text, *const_cast<CharacterBuffer*>(&w->GetTag()) }, "", w);
-    tree->SetItemData(child, Reference<Window>(w));
+    child          = parent.AddChild(wcc->Text.operator std::string(), true);
+    child.SetValues({ w->GetTag().operator std::string() });
+    child.SetData(Reference<Window>(w));
     return true;
 }
 
-void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent)
+void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, ItemHandle handleParent)
 {
-    ItemHandle child = 0xFFFFFFFF;
+    TreeViewItem child{};
+    TreeViewItem parent = tree->GetItemByHandle(handleParent);
     AddItem(rel[id].wnd, parent, child);
     rel[id].added = true;
 
@@ -249,14 +236,18 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
     {
         if (i.second.Referal == id)
         {
-            Process(rel, i.first, child);
+            Process(rel, i.first, child.GetHandle());
         }
     }
 }
 
 bool InternalWindowManager::Create()
 {
-    CHECK((tree = Factory::TreeView::Create(this, "l:1,t:1,r:1,b:3", TreeViewFlags::Searchable, 2)).IsValid(), false, "");
+    CHECK((tree = Factory::TreeView::Create(
+                 this, "l:1,t:1,r:1,b:3", { { "Window" }, { "Tag" } }, TreeViewFlags::Searchable))
+                .IsValid(),
+          false,
+          "");
     CHECK((btnGoTo = Factory::Button::Create(this, "&Goto", "l:1,b:0,w:13", BUTTON_ID_GOTO)).IsValid(), false, "");
     CHECK((btnClose = Factory::Button::Create(this, "&Close", "l:15,b:0,w:13", BUTTON_ID_CLOSE)).IsValid(), false, "");
     CHECK((btnCloseDescendands = Factory::Button::Create(this, "Close &desc", "l:29,b:0,w:13", BUTTON_ID_CLOSE_DESC))
@@ -293,15 +284,15 @@ bool InternalWindowManager::Create()
             wnd++;
         }
 
-        for (const auto& i : rel)
+        for (const auto& [handle, info] : rel)
         {
-            if (rel.contains(i.second.Referal))
+            if (rel.contains(info.Referal))
             {
                 continue;
             }
 
             // add this item
-            Process(rel, i.first, 0xFFFFFFFF);
+            Process(rel, handle, TreeView::RootHandle);
         }
     }
 
