@@ -4180,6 +4180,8 @@ namespace Controls
 
     class EXPORT TreeView : public Control
     {
+    public:
+        const static auto RootHandle = InvalidItemHandle;
       protected:
         TreeView(
               string_view layout,
@@ -4201,13 +4203,13 @@ namespace Controls
         Handlers::TreeView* Handlers() override;
 
         // items
-        TreeViewItem GetRoot();
         TreeViewItem GetCurrentItem();
         bool RemoveItem(TreeViewItem& item);
         bool ClearItems();
         TreeViewItem GetItemByIndex(const uint32 index);
         uint32 GetItemsCount() const;
         TreeViewItem GetItemByHandle(ItemHandle handle);
+        TreeViewItem AddItem(const std::initializer_list<ConstString> values = {}, bool isExpandable = false);
 
         // columns
         TreeViewColumn GetColumn(uint32 index);

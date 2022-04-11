@@ -710,11 +710,6 @@ Handlers::TreeView* TreeView::Handlers()
     GET_CONTROL_HANDLERS(Handlers::TreeView);
 }
 
-TreeViewItem TreeView::GetRoot()
-{
-    return { this, InvalidItemHandle };
-}
-
 TreeViewItem TreeView::GetCurrentItem()
 {
     CHECK(Context != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
@@ -1027,6 +1022,14 @@ TreeViewItem TreeView::GetItemByHandle(ItemHandle handle)
     CHECK(cc->items.find(handle) != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
     return { this, handle };
+}
+
+TreeViewItem TreeView::AddItem(const std::initializer_list<ConstString> values, bool isExpandable)
+{
+    auto cc = reinterpret_cast<TreeControlContext*>(this->Context);
+    CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+
+    return { this, cc->AddItem(InvalidItemHandle, values, isExpandable) };
 }
 
 TreeViewColumn TreeView::GetColumn(uint32 index)

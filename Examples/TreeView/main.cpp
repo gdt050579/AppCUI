@@ -63,11 +63,10 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        auto child = tree->GetRoot().AddChild(
-              { filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
+        auto root = tree->AddItem({ filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
 
         auto& cpath = pieces.emplace_back(std::filesystem::current_path().u16string());
-        child.SetData(Reference<std::u16string>(&cpath));
+        root.SetData(Reference<std::u16string>(&cpath));
     }
 
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
@@ -103,16 +102,16 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                         pathSizeText = "0";
                     }
 
-                    auto child = tree->GetRoot().AddChild(
+                    auto root = tree->AddItem(
                           { filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
 
                     auto& localPath = pieces.emplace_back(path.u16string());
-                    child.SetData(Reference<std::u16string>(&localPath));
+                    root.SetData(Reference<std::u16string>(&localPath));
 
-                    auto data   = child.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
+                    auto data   = root.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
                     auto& piece = pieces.emplace_back(std::u16string{} + data->c_str() + res->u16string());
-                    child.SetData(Reference<std::u16string>(&piece));
-                    OnTreeItemToggle(child);
+                    root.SetData(Reference<std::u16string>(&piece));
+                    OnTreeItemToggle(root);
                 }
 
                 return true;

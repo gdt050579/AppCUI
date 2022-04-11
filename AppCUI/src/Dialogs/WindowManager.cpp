@@ -34,7 +34,7 @@ class InternalWindowManager : public Controls::Window
     }
     bool Create();
     bool AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child);
-    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, TreeViewItem& parent);
+    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, ItemHandle handleParent);
     bool OnEvent(Reference<Control> c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
@@ -223,9 +223,10 @@ bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewIte
     return true;
 }
 
-void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, TreeViewItem& parent)
+void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, ItemHandle handleParent)
 {
     TreeViewItem child{};
+    TreeViewItem parent = tree->GetItemByHandle(handleParent);
     AddItem(rel[id].wnd, parent, child);
     rel[id].added = true;
 
@@ -234,7 +235,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
     {
         if (i.second.Referal == id)
         {
-            Process(rel, i.first, child);
+            Process(rel, i.first, child.GetHandle());
         }
     }
 }
@@ -282,16 +283,15 @@ bool InternalWindowManager::Create()
             wnd++;
         }
 
-        for (const auto& i : rel)
+        for (const auto& [handle, info] : rel)
         {
-            if (rel.contains(i.second.Referal))
+            if (rel.contains(info.Referal))
             {
                 continue;
             }
 
             // add this item
-            auto parent = tree->GetRoot();
-            Process(rel, i.first, parent);
+            Process(rel, handle, TreeView::RootHandle);
         }
     }
 
