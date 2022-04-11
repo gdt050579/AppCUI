@@ -1771,6 +1771,17 @@ bool ListViewItem::IsSelected() const
     LVICHECK(false);
     return LVIC->IsItemSelected(item);
 }
+bool ListViewItem::IsCurrent() const
+{
+    LVICHECK(false);
+    ListViewControlContext* lvcc = ((ListViewControlContext*) this->context);
+    if ((lvcc->Items.CurentItemIndex < 0) || (lvcc->Items.CurentItemIndex >= (int) lvcc->Items.Indexes.Len()))
+        return false;
+    uint32* indexes = lvcc->Items.Indexes.GetUInt32Array();
+    return ((uint32) this->item) == indexes[lvcc->Items.CurentItemIndex];
+}
+
+
 bool ListViewItem::SetHeight(uint32 Height)
 {
     LVICHECK(false);

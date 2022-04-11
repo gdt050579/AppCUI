@@ -3842,6 +3842,7 @@ namespace Controls
         bool SetColor(Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
+        bool IsCurrent() const;
         bool SetHeight(uint32 Height);
         uint32 GetHeight() const;
         template <typename T>
