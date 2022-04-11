@@ -691,6 +691,8 @@ struct TreeItem
     uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
+    TreeViewItem::Type type           = TreeViewItem::Type::Normal; // TODO: not yet used
+    ColorPair color;                                                // TODO: not yet used
 };
 
 class TreeControlContext : public ControlContext
@@ -754,8 +756,7 @@ class TreeControlContext : public ControlContext
     bool MoveDown();
     bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
     bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
-    bool ToggleExpandRecursive(const ItemHandle handle, Reference<TreeView> tree);
-    bool ToggleItem(const ItemHandle handle, Reference<TreeView> tree);
+    bool ToggleExpandRecursive(Reference<TreeView> tree, TreeViewItem& item);
     bool IsMouseOnToggleSymbol(int x, int y) const;
     bool IsMouseOnItem(int x, int y) const;
     bool IsMouseOnBorder(int x, int y) const;
@@ -772,6 +773,11 @@ class TreeControlContext : public ControlContext
     bool RemoveItem(const ItemHandle handle);
 
     bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
+
+    GenericRef GetItemDataAsPointer(ItemHandle handle) const;
+    bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
+
+    ItemHandle AddItem(ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
 };
 
 enum class GridCellStatus

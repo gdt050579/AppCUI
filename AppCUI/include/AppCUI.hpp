@@ -2884,7 +2884,7 @@ namespace Controls
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::TreeView> control, ItemHandle handle);
+        using OnTreeItemToggleHandler    = bool (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3040,15 +3040,15 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) = 0;
+            virtual bool OnTreeItemToggle(TreeViewItem& item) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
 
-            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) override
+            virtual bool OnTreeItemToggle(TreeViewItem& item) override
             {
-                return callback(ctrl, handle);
+                return callback(item);
             };
         };
 
@@ -4142,17 +4142,21 @@ namespace Controls
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
-        bool SetType(TreeViewItem::Type type)
-        {
-            /* TODO: */
-            return false;
-        }
-        bool SetText(uint32 subItemIndex, const ConstString& text);
+        bool SetType(TreeViewItem::Type type);
+        bool SetText(const ConstString& text);
         ConstString GetText();
-        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
-        bool SetColor(Graphics::ColorPair color);
-        bool SetSelected(bool select);
+        bool SetColor(const Graphics::ColorPair& color);
+        bool Select();
         bool IsSelected() const;
+        bool SetExpand(bool expand);
+        bool GetExpand();
+        bool SetExpandable(bool expanded);
+        bool IsExpandable() const;
+        uint32 GetChildrenCount() const;
+        TreeViewItem GetChild(uint32 index);
+        bool DeleteChildren();
+        ItemHandle GetHandle() const;
+        bool ToggleItem();
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
@@ -4166,18 +4170,12 @@ namespace Controls
             return this->GetItemDataAsPointer().ToReference<T>();
         }
 
+      public:
         friend TreeView;
     };
 
     class EXPORT TreeView : public Control
     {
-      public:
-        inline static const auto RootItemHandle = InvalidItemHandle;
-
-      private:
-        GenericRef GetItemDataAsPointer(const ItemHandle item) const;
-        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
-
       protected:
         TreeView(
               string_view layout,
@@ -4200,38 +4198,12 @@ namespace Controls
 
         // items
         TreeViewItem GetRoot();
-
         TreeViewItem GetCurrentItem();
-        void SelectAllItems(const TreeViewItem& parent);
-        void UnSelectAllItems(const TreeViewItem& parent);
-        void CheckAllItems(const TreeViewItem& parent);
-        void UncheckAllItems(const TreeViewItem& parent);
-        void DeleteAllItems(const TreeViewItem& parent);
-        uint32 GetItemsCount(const TreeViewItem& parent);
-        uint32 GetCheckedItemsCount(const TreeViewItem& parent);
-        bool SetCurrentItem(const TreeViewItem item);
-
-        ItemHandle AddItem(
-              const ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
         bool RemoveItem(TreeViewItem& item);
         bool ClearItems();
-
-        bool SetItemData(ItemHandle item, uint64 value);
-        template <typename T>
-        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
-        }
-
-        template <typename T>
-        Reference<T> GetItemData(const ItemHandle item)
-        {
-            return GetItemDataAsPointer(item).ToReference<T>();
-        }
-        uint64 GetItemData(const size_t index, uint64 errorValue);
-        ItemHandle GetItemHandleByIndex(const uint32 index) const;
-
+        TreeViewItem GetItemByIndex(const uint32 index);
         uint32 GetItemsCount() const;
+        TreeViewItem GetItemByHandle(ItemHandle handle);
 
         // columns
         TreeViewColumn GetColumn(uint32 index);

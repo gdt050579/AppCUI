@@ -63,15 +63,11 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        tree->GetRoot().AddChild();
-
-        const auto root = tree->AddItem(
-              AppCUI::Controls::InvalidItemHandle,
-              { filename, pathLastWriteTime, pathSizeText },
-              std::filesystem::is_directory(path));
+        auto child = tree->GetRoot().AddChild(
+              { filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
 
         auto& cpath = pieces.emplace_back(std::filesystem::current_path().u16string());
-        tree->SetItemData(root, Reference<std::u16string>(&cpath));
+        child.SetData(Reference<std::u16string>(&cpath));
     }
 
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
@@ -107,18 +103,16 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                         pathSizeText = "0";
                     }
 
-                    const auto root = tree->AddItem(
-                          TreeView::RootItemHandle,
-                          { filename, pathLastWriteTime, pathSizeText },
-                          std::filesystem::is_directory(path));
+                    auto child = tree->GetRoot().AddChild(
+                          { filename, pathLastWriteTime, pathSizeText }, std::filesystem::is_directory(path));
 
                     auto& localPath = pieces.emplace_back(path.u16string());
-                    tree->SetItemData(root, Reference<std::u16string>(&localPath));
+                    child.SetData(Reference<std::u16string>(&localPath));
 
-                    auto data   = tree->GetItemData<Reference<std::u16string>>(root).ToObjectRef<std::u16string>();
+                    auto data   = child.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
                     auto& piece = pieces.emplace_back(std::u16string{} + data->c_str() + res->u16string());
-                    tree->SetItemData(root, Reference<std::u16string>(&piece));
-                    OnTreeItemToggle(tree, root);
+                    child.SetData(Reference<std::u16string>(&piece));
+                    OnTreeItemToggle(child);
                 }
 
                 return true;
@@ -129,9 +123,9 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         return false;
     }
 
-    bool OnTreeItemToggle(Reference<TreeView> ctrl, ItemHandle handle) override
+    bool OnTreeItemToggle(TreeViewItem& item) override
     {
-        auto data         = ctrl->GetItemData<Reference<std::u16string>>(handle).ToObjectRef<std::u16string>();
+        auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
         try
         {
@@ -143,11 +137,10 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 uint64 pathSize              = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
 
-                auto childHandle =
-                      ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, p.is_directory());
+                auto child = item.AddChild({ filename, pathLastWriteTime, pathSizeText }, p.is_directory());
 
                 auto& cpath = pieces.emplace_back(p.path().u16string());
-                tree->SetItemData(childHandle, Reference<std::u16string>(&cpath));
+                child.SetData(Reference<std::u16string>(&cpath));
             }
         }
         catch (std::exception& e)

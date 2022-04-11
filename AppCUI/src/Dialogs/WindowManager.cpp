@@ -33,8 +33,8 @@ class InternalWindowManager : public Controls::Window
     {
     }
     bool Create();
-    bool AddItem(Window* w, const ItemHandle parent, ItemHandle& child);
-    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent);
+    bool AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child);
+    void Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, TreeViewItem& parent);
     bool OnEvent(Reference<Control> c, Event eventType, int id) override;
     void GoToSelectedItem();
     bool RemoveCurrentWindow();
@@ -137,9 +137,9 @@ bool InternalWindowManager::CloseAll()
     const auto count = tree->GetItemsCount();
     for (auto i = 0U; i < count; i++)
     {
-        if (const auto handle = tree->GetItemHandleByIndex(i); handle != InvalidItemHandle)
+        if (const auto item = tree->GetItemByIndex(i); item.IsValid())
         {
-            if (auto win = tree->GetItemData<Window>(handle); win.IsValid())
+            if (auto win = item.GetData<Window>(); win.IsValid())
             {
                 win->RemoveMe();
             }
@@ -215,17 +215,17 @@ bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int i
     return false;
 }
 
-bool InternalWindowManager::AddItem(Window* w, const ItemHandle parent, ItemHandle& child)
+bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewItem& child)
 {
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
-    child = tree->AddItem(parent, { wcc->Text.operator std::string(), w->GetTag().operator std::string() }, true);
-    tree->SetItemData(child, Reference<Window>(w));
+    child          = parent.AddChild({ wcc->Text.operator std::string(), w->GetTag().operator std::string() }, true);
+    child.SetData(Reference<Window>(w));
     return true;
 }
 
-void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, const ItemHandle parent)
+void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, ItemHandle id, TreeViewItem& parent)
 {
-    ItemHandle child = 0xFFFFFFFF;
+    TreeViewItem child{};
     AddItem(rel[id].wnd, parent, child);
     rel[id].added = true;
 
@@ -290,7 +290,8 @@ bool InternalWindowManager::Create()
             }
 
             // add this item
-            Process(rel, i.first, 0xFFFFFFFF);
+            auto parent = tree->GetRoot();
+            Process(rel, i.first, parent);
         }
     }
 
