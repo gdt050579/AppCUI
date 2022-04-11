@@ -1264,9 +1264,9 @@ int SortIndexesCompareFunction(uint32 index_1, uint32 index_2, void* context)
         // valid indexes
         if ((lvcc->handlers) && ((Handlers::ListView*) (lvcc->handlers.get()))->ComparereItem.obj)
         {
-            auto lv = (ListView*) lvcc->Host;
             return ((Handlers::ListView*) (lvcc->handlers.get()))
-                  ->ComparereItem.obj->CompareItems(lv, lv->GetItem(index_1), lv->GetItem(index_2));
+                  ->ComparereItem.obj->CompareItems(
+                        lvcc->Host, lvcc->Host->GetItem(index_1), lvcc->Host->GetItem(index_2));
         }
         else
         {
@@ -1414,8 +1414,7 @@ void ListViewControlContext::TriggerSelectionChangeEvent(uint32 itemIndex)
         auto lvh = (Handlers::ListView*) (this->handlers.get());
         if (lvh->OnItemSelected.obj)
         {
-            auto* lv = (ListView*) (this->Host);
-            lvh->OnItemSelected.obj->OnListViewItemSelected(lv, lv->GetItem(itemIndex));
+            lvh->OnItemSelected.obj->OnListViewItemSelected(this->Host, this->Host->GetItem(itemIndex));
         }
     }
     Host->RaiseEvent(Event::ListViewSelectionChanged);

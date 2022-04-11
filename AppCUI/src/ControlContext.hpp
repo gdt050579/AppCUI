@@ -528,7 +528,7 @@ class ListViewControlContext : public ControlContext
     } Selection;
     char clipboardSeparator;
 
-    Controls::Control* Host;
+    Controls::ListView* Host;
 
     InternalListViewItem* GetFilteredItem(uint32 index);
 
