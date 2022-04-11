@@ -847,6 +847,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         if ((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
             lvi = GetFilteredItem(Items.CurentItemIndex);
+            auto currentItemIndex = Items.CurentItemIndex;
             if (lvi != nullptr)
                 selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
             else
@@ -857,38 +858,38 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
                 MoveTo(Items.CurentItemIndex - 1);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             case Key::Insert:
             case Key::Down | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
                 MoveTo(Items.CurentItemIndex + 1);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             case Key::PageUp | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
                 MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             case Key::PageDown | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
                 MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             case Key::Home | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, 0, !selected);
                 MoveTo(0);
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             case Key::End | Key::Shift:
                 UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
                 MoveTo(Items.Indexes.Len());
                 Filter.FilterModeEnabled = false;
-                SendMsg(Event::ListViewSelectionChanged);
+                TriggerSelectionChangeEvent(currentItemIndex);
                 return true;
             };
         }
@@ -1406,7 +1407,19 @@ void ListViewControlContext::SendMsg(Event eventType)
 {
     Host->RaiseEvent(eventType);
 }
-
+void ListViewControlContext::TriggerSelectionChangeEvent(uint32 itemIndex)
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnItemSelected.obj)
+        {
+            auto* lv = (ListView*) (this->Host);
+            lvh->OnItemSelected.obj->OnListViewItemSelected(lv, lv->GetItem(itemIndex));
+        }
+    }
+    Host->RaiseEvent(Event::ListViewSelectionChanged);
+}
 //=====================================================================================================
 ListView::~ListView()
 {

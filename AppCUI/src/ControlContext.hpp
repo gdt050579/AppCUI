@@ -596,6 +596,7 @@ class ListViewControlContext : public ControlContext
     void SetSortColumn(uint32 colIndex);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
+    void TriggerSelectionChangeEvent(uint32 itemIndex);
     bool Sort();
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
