@@ -4154,15 +4154,20 @@ namespace Controls
         bool SetColor(const Graphics::ColorPair& color);
         bool Select();
         bool IsSelected() const;
-        bool SetExpand(bool expand);
-        bool GetExpand();
-        bool SetExpandable(bool expanded);
+        bool SetExpanded(bool expanded);
+        bool GetExpanded();
+        bool SetExpandable(bool expandable);
         bool IsExpandable() const;
         uint32 GetChildrenCount() const;
         TreeViewItem GetChild(uint32 index);
         bool DeleteChildren();
         ItemHandle GetHandle() const;
-        bool ToggleItem();
+        bool Toggle();
+        bool ToggleRecursively();
+        bool Fold();
+        bool Unfold();
+        bool FoldAll();
+        bool UnfoldAll();
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)

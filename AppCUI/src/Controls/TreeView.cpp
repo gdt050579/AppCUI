@@ -272,8 +272,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
 
     case Key::Ctrl | Key::Space:
     {
-        auto current = GetCurrentItem();
-        cc->ToggleExpandRecursive(this, current);
+        GetCurrentItem().ToggleRecursively();
 
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
@@ -283,7 +282,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         return true;
     }
     case Key::Space:
-        GetCurrentItem().ToggleItem();
+        GetCurrentItem().Toggle();
 
         cc->ProcessItemsToBeDrawn(InvalidItemHandle);
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
@@ -533,7 +532,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
             auto item             = TreeViewItem{ this, it->second.handle };
-            item.ToggleItem();
+            item.Toggle();
             if (it->second.expanded == false)
             {
                 if (cc->IsAncestorOfChild(it->second.handle, cc->currentSelectedItemHandle))
@@ -790,7 +789,7 @@ bool TreeViewItem::IsSelected() const
     return cc->currentSelectedItemHandle == handle;
 }
 
-bool TreeViewItem::SetExpand(bool expand)
+bool TreeViewItem::SetExpanded(bool expand)
 {
     CHECK(IsValid(), false, "");
 
@@ -802,7 +801,7 @@ bool TreeViewItem::SetExpand(bool expand)
     return true;
 }
 
-bool TreeViewItem::GetExpand()
+bool TreeViewItem::GetExpanded()
 {
     CHECK(IsValid(), false, "");
 
@@ -812,14 +811,14 @@ bool TreeViewItem::GetExpand()
     return cc->items.at(handle).expanded;
 }
 
-bool TreeViewItem::SetExpandable(bool expanded)
+bool TreeViewItem::SetExpandable(bool expandable)
 {
     CHECK(IsValid(), false, "");
 
     auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
     CHECK(cc != nullptr, false, "");
 
-    cc->items.at(handle).isExpandable = expanded;
+    cc->items.at(handle).isExpandable = expandable;
 
     return true;
 }
@@ -879,10 +878,10 @@ ItemHandle TreeViewItem::GetHandle() const
     return handle;
 }
 
-bool TreeViewItem::ToggleItem()
+bool TreeViewItem::Toggle()
 {
     CHECK(IsValid(), false, "");
-    CHECK(IsExpandable(), true, "")
+    CHECK(IsExpandable(), true, ""); // nothing to expand
 
     auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
     CHECK(cc != nullptr, false, "");
@@ -892,9 +891,9 @@ bool TreeViewItem::ToggleItem()
         CHECK(DeleteChildren(), false, "");
     }
 
-    SetExpand(!GetExpand());
+    SetExpanded(!GetExpanded());
 
-    if (GetExpand())
+    if (GetExpanded())
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
@@ -910,6 +909,78 @@ bool TreeViewItem::ToggleItem()
     }
 
     return true;
+}
+
+bool TreeViewItem::ToggleRecursively()
+{
+    CHECK(IsValid(), false, "");
+    CHECK(IsExpandable(), true, ""); // nothing to expand
+
+    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, false, "");
+
+    std::queue<ItemHandle> ancestorRelated;
+    ancestorRelated.push(handle);
+
+    while (ancestorRelated.empty() == false)
+    {
+        ItemHandle handle = ancestorRelated.front();
+        ancestorRelated.pop();
+
+        auto treeItem = obj->GetItemByHandle(handle);
+        treeItem.Toggle();
+
+        const auto& item = cc->items[handle];
+        for (const auto& handle : item.children)
+        {
+            ancestorRelated.push(handle);
+        }
+    }
+
+    if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
+    {
+        cc->Sort();
+    }
+
+    cc->notProcessed = true;
+
+    return true;
+}
+
+bool TreeViewItem::Fold()
+{
+    CHECK(IsValid(), false, "");
+    CHECK(IsExpandable(), false, "");
+    CHECK(GetExpanded(), false, "");
+
+    return Toggle();
+}
+
+bool TreeViewItem::Unfold()
+{
+    CHECK(IsValid(), false, "");
+    CHECK(IsExpandable(), false, "");
+    CHECK(GetExpanded() == false, false, "");
+
+    return Toggle();
+}
+
+bool TreeViewItem::FoldAll()
+{
+    CHECK(IsValid(), false, "");
+    CHECK(IsExpandable(), false, "");
+    CHECK(GetExpanded(), false, "");
+
+    return ToggleRecursively();
+}
+
+bool TreeViewItem::UnfoldAll()
+{
+    CHECK(IsValid(), false, "");
+    CHECK(IsExpandable(), false, "");
+    CHECK(GetExpanded() == false, false, "");
+
+    return ToggleRecursively();
 }
 
 TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
@@ -1549,7 +1620,7 @@ bool TreeControlContext::SearchItems(Reference<TreeView> tree)
     for (const auto itemHandle : toBeExpanded)
     {
         auto item = tree->GetItemByHandle(itemHandle);
-        item.ToggleItem();
+        item.Toggle();
     }
 
     if (toBeExpanded.size() > 0 || filter.mode == TreeControlContext::FilterMode::Filter)
@@ -1965,36 +2036,6 @@ bool TreeControlContext::IsAncestorOfChild(const ItemHandle ancestor, const Item
     }
 
     return false;
-}
-
-bool TreeControlContext::ToggleExpandRecursive(Reference<TreeView> tree, TreeViewItem& item)
-{
-    std::queue<ItemHandle> ancestorRelated;
-    ancestorRelated.push(item.GetHandle());
-
-    while (ancestorRelated.empty() == false)
-    {
-        ItemHandle handle = ancestorRelated.front();
-        ancestorRelated.pop();
-
-        auto treeItem = tree->GetItemByHandle(handle);
-        treeItem.ToggleItem();
-
-        const auto& item = items[handle];
-        for (const auto& handle : item.children)
-        {
-            ancestorRelated.push(handle);
-        }
-    }
-
-    if ((treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
-    {
-        Sort();
-    }
-
-    notProcessed = true;
-
-    return true;
 }
 
 bool TreeControlContext::RemoveItem(const ItemHandle handle)

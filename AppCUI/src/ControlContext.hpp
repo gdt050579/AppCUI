@@ -756,7 +756,6 @@ class TreeControlContext : public ControlContext
     bool MoveDown();
     bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
     bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
-    bool ToggleExpandRecursive(Reference<TreeView> tree, TreeViewItem& item);
     bool IsMouseOnToggleSymbol(int x, int y) const;
     bool IsMouseOnItem(int x, int y) const;
     bool IsMouseOnBorder(int x, int y) const;
