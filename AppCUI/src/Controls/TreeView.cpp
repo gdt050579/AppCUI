@@ -1339,6 +1339,16 @@ bool TreeControlContext::SortByColumn(const ItemHandle handle)
         const auto& a = items[i1];
         const auto& b = items[i2];
 
+        if (columnIndexToSortBy >= a.values.size())
+        {
+            return false;
+        }
+
+        if (columnIndexToSortBy >= b.values.size())
+        {
+            return true;
+        }
+
         const auto result = a.values[columnIndexToSortBy].CompareWith(b.values[columnIndexToSortBy], true);
 
         if (result == 0)
