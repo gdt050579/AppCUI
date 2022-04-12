@@ -2901,6 +2901,10 @@ namespace Controls
               int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
         using OnListViewItemCheckedHandler =
               int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+        using TreeViewItemCompareHandler = int (*)(
+              Reference<Controls::TreeView> control,
+              const Controls::TreeViewItem& item1,
+              const Controls::TreeViewItem& item2);
 
         struct OnButtonPressedInterface
         {
@@ -3166,9 +3170,29 @@ namespace Controls
                   OnItemSelected;
         };
 
+        struct TreeViewItemCompareInterface
+        {
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) = 0;
+        };
+        struct TreeViewItemCompareCallback : public TreeViewItemCompareInterface
+        {
+            TreeViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) override
+            {
+                return callback(control, item1, item2);
+            };
+        };
+
         struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+            Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
         };
 
     } // namespace Handlers
