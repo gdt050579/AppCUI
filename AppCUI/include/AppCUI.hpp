@@ -4191,6 +4191,7 @@ namespace Controls
         bool Unfold();
         bool FoldAll();
         bool UnfoldAll();
+        TreeViewItem GetParent() const;
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
