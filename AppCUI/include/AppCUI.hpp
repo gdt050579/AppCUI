@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.46.0"
+#define APPCUI_VERSION "1.48.0"
 
 #include <filesystem>
 #include <map>
