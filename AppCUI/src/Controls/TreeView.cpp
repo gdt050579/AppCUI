@@ -785,7 +785,7 @@ bool TreeViewItem::IsFolded()
     auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
     CHECK(cc != nullptr, false, "");
 
-    return cc->items.at(handle).expanded;
+    return !cc->items.at(handle).expanded;
 }
 
 bool TreeViewItem::SetExpandable(bool expandable)
@@ -868,9 +868,9 @@ bool TreeViewItem::Toggle()
         CHECK(DeleteChildren(), false, "");
     }
 
-    SetFolding(!IsFolded());
+    SetFolding(IsFolded());
 
-    if (IsFolded())
+    if (!IsFolded())
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
@@ -928,7 +928,7 @@ bool TreeViewItem::Fold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(IsFolded(), false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return Toggle();
 }
@@ -937,7 +937,7 @@ bool TreeViewItem::Unfold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(IsFolded() == false, false, "");
+    CHECK(IsFolded(), false, "");
 
     return Toggle();
 }
@@ -946,7 +946,7 @@ bool TreeViewItem::FoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(IsFolded(), false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return ToggleRecursively();
 }
@@ -955,7 +955,7 @@ bool TreeViewItem::UnfoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(IsFolded() == false, false, "");
+    CHECK(IsFolded(), false, "");
 
     return ToggleRecursively();
 }
