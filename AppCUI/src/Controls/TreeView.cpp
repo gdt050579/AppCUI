@@ -1244,6 +1244,26 @@ bool TreeView::DeleteColumn(uint32 index)
 
     return true;
 }
+
+bool TreeView::Sort()
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    return cc->Sort();
+}
+
+bool TreeView::Sort(uint32 columnIndex, bool ascendent)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(columnIndex < cc->columns.size(), false, "");
+
+    cc->sortAscendent       = ascendent;
+    cc->columnIndexToSortBy = columnIndex;
+
+    return cc->Sort();
+}
+
 } // namespace AppCUI::Controls
 
 namespace AppCUI
@@ -1302,10 +1322,11 @@ void TreeControlContext::SelectColumnSeparator(int32 offset)
     }
 }
 
-void TreeControlContext::Sort()
+bool TreeControlContext::Sort()
 {
-    SortByColumn(InvalidItemHandle);
-    notProcessed = true;
+    const auto result = SortByColumn(InvalidItemHandle);
+    notProcessed      = true;
+    return result;
 }
 
 bool TreeControlContext::SortByColumn(const ItemHandle handle)

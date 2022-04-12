@@ -4273,6 +4273,9 @@ namespace Controls
         bool DeleteAllColumns();
         bool DeleteColumn(uint32 index);
 
+        bool Sort();
+        bool Sort(uint32 columnIndex, bool ascendent);
+
       private:
         friend Factory::TreeView;
         friend TreeViewItem; // TODO: remove!
