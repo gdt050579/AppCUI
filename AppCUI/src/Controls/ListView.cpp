@@ -953,6 +953,15 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                     else
                         lvi->Flags |= ITEM_FLAG_CHECKED;
                 }
+                if (this->handlers)
+                {
+                    auto lvh = (Handlers::ListView*) (this->handlers.get());
+                    if (lvh->OnItemChecked.obj)
+                    {
+                        lvh->OnItemChecked.obj->OnListViewItemChecked(
+                              this->Host, this->Host->GetItem(Items.CurentItemIndex));
+                    }
+                }
                 SendMsg(Event::ListViewItemChecked);
             }
             else

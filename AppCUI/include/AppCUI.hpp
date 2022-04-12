@@ -3099,6 +3099,21 @@ namespace Controls
             };
         };
 
+        struct OnListViewItemCheckedInterface
+        {
+            virtual int OnListViewItemChecked(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
+        };
+        struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
+        {
+            OnListViewItemCheckedHandler callback;
+            virtual int OnListViewItemChecked(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
+            {
+                return callback(lv, item);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -3156,6 +3171,8 @@ namespace Controls
                   ComparereItem;
             Wrapper<OnListViewItemSelectedInterface, OnListViewItemSelectedCallback, OnListViewItemSelectedHandler>
                   OnItemSelected;
+            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnItemChecked;
         };
 
         struct TreeView : public Control
