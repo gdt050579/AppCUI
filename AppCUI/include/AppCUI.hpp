@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.49.0"
+#define APPCUI_VERSION "1.51.0"
 
 #include <filesystem>
 #include <map>
@@ -14,6 +14,10 @@
 #include <functional>
 #include <string.h>
 #include <initializer_list>
+#include <cstdint>
+#ifdef _MSC_VER
+#    include <stdlib.h>
+#endif
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -5146,7 +5150,215 @@ namespace Application
     EXPORT void SetTheme(ThemeType themeType);
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
 }; // namespace Application
+namespace Endian
+{
 
+#ifdef _MSC_VER
+// if it's msvc, we assume little endian
+#    define GVIEW_LITTLE_ENDIAN
+#elif defined(__BYTE_ORDER__)
+#    if __BYTE_ORDER__ == __LITTLE_ENDIAN__
+#        define GVIEW_LITTLE_ENDIAN
+#    else
+#        define GVIEW_BIG_ENDIAN
+#    endif
+#else
+#    error "Unknown endianness"
+#endif
+
+    inline uint8_t Swap(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t Swap(uint16_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_ushort(x);
+#else
+        return __builtin_bswap16(x);
+#endif
+    }
+
+    inline uint32_t Swap(uint32_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_ulong(x);
+#else
+        return __builtin_bswap32(x);
+#endif
+    }
+
+    inline uint64_t Swap(uint64_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_uint64(x);
+#else
+        return __builtin_bswap64(x);
+#endif
+    }
+
+#define SWAP_SIGNED(fn, t)                                                                                             \
+    inline int##t##_t fn(int##t##_t x)                                                                                 \
+    {                                                                                                                  \
+        return fn(static_cast<uint##t##_t>(x));                                                                        \
+    }
+    SWAP_SIGNED(Swap, 8);
+    SWAP_SIGNED(Swap, 16);
+    SWAP_SIGNED(Swap, 32);
+    SWAP_SIGNED(Swap, 64);
+
+    inline uint8_t NativeToBig(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t NativeToBig(uint16_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t NativeToBig(uint32_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t NativeToBig(uint64_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(NativeToBig, 8);
+    SWAP_SIGNED(NativeToBig, 16);
+    SWAP_SIGNED(NativeToBig, 32);
+    SWAP_SIGNED(NativeToBig, 64);
+
+    inline uint8_t BigToNative(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t BigToNative(uint16_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t BigToNative(uint32_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t BigToNative(uint64_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(BigToNative, 8);
+    SWAP_SIGNED(BigToNative, 16);
+    SWAP_SIGNED(BigToNative, 32);
+    SWAP_SIGNED(BigToNative, 64);
+
+    inline uint8_t LittleToNative(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t LittleToNative(uint16_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t LittleToNative(uint32_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t LittleToNative(uint64_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(LittleToNative, 8);
+    SWAP_SIGNED(LittleToNative, 16);
+    SWAP_SIGNED(LittleToNative, 32);
+    SWAP_SIGNED(LittleToNative, 64);
+
+    inline uint8_t NativeToLittle(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t NativeToLittle(uint16_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t NativeToLittle(uint32_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t NativeToLittle(uint64_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(NativeToLittle, 8);
+    SWAP_SIGNED(NativeToLittle, 16);
+    SWAP_SIGNED(NativeToLittle, 32);
+    SWAP_SIGNED(NativeToLittle, 64);
+
+#undef SWAP_SIGNED
+
+} // namespace Endian
 } // namespace AppCUI
 
 // inline operations for enum classes
