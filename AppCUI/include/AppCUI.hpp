@@ -3576,10 +3576,11 @@ namespace Controls
     };
     enum class TextFieldFlags : uint32
     {
-        None               = 0,
-        ProcessEnter       = 0x000100,
-        Readonly           = 0x000200,
-        SyntaxHighlighting = 0x000400,
+        None                     = 0,
+        ProcessEnter             = 0x000100,
+        Readonly                 = 0x000200,
+        SyntaxHighlighting       = 0x000400,
+        DisableAutoSelectOnFocus = 0x000800,
     };
     class EXPORT TextField : public Control
     {
