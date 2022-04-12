@@ -879,7 +879,7 @@ bool TreeViewItem::Toggle()
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
                 if (handler->OnTreeItemToggle.obj)
                 {
-                    return handler->OnTreeItemToggle.obj->OnTreeItemToggle(*this);
+                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(*this);
                 }
             }
         }

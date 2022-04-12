@@ -125,7 +125,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         return false;
     }
 
-    bool OnTreeItemToggle(TreeViewItem& item) override
+    void OnTreeItemToggle(TreeViewItem& item) override
     {
         auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
@@ -156,8 +156,6 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             LOG_ERROR("%s", e.what());
 #endif
         }
-
-        return true;
     }
 
     static const std::string GetLastFileWriteText(const std::filesystem::path& path)
