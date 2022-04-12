@@ -692,8 +692,8 @@ struct TreeItem
     uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
-    TreeViewItem::Type type           = TreeViewItem::Type::Normal; // TODO: not yet used
-    ColorPair color;                                                // TODO: not yet used
+    TreeViewItem::Type type           = TreeViewItem::Type::Normal;
+    ColorPair color;                                               
 };
 
 class TreeControlContext : public ControlContext
