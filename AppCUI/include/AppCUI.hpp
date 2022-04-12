@@ -4178,8 +4178,8 @@ namespace Controls
         bool SetColor(const Graphics::ColorPair& color);
         bool SetCurrent();
         bool IsCurrent() const;
-        bool SetExpanded(bool expanded);
-        bool GetExpanded();
+        bool SetFolding(bool expanded);
+        bool IsFolded();
         bool SetExpandable(bool expandable);
         bool IsExpandable() const;
         uint32 GetChildrenCount() const;

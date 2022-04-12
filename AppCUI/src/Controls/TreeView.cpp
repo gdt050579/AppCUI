@@ -766,7 +766,7 @@ bool TreeViewItem::IsCurrent() const
     return cc->currentSelectedItemHandle == handle;
 }
 
-bool TreeViewItem::SetExpanded(bool expand)
+bool TreeViewItem::SetFolding(bool expand)
 {
     CHECK(IsValid(), false, "");
 
@@ -778,7 +778,7 @@ bool TreeViewItem::SetExpanded(bool expand)
     return true;
 }
 
-bool TreeViewItem::GetExpanded()
+bool TreeViewItem::IsFolded()
 {
     CHECK(IsValid(), false, "");
 
@@ -868,9 +868,9 @@ bool TreeViewItem::Toggle()
         CHECK(DeleteChildren(), false, "");
     }
 
-    SetExpanded(!GetExpanded());
+    SetFolding(!IsFolded());
 
-    if (GetExpanded())
+    if (IsFolded())
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
@@ -879,7 +879,7 @@ bool TreeViewItem::Toggle()
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
                 if (handler->OnTreeItemToggle.obj)
                 {
-                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(*this);
+                    return handler->OnTreeItemToggle.obj->OnTreeItemToggle(*this);
                 }
             }
         }
@@ -928,7 +928,7 @@ bool TreeViewItem::Fold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded(), false, "");
+    CHECK(IsFolded(), false, "");
 
     return Toggle();
 }
@@ -937,7 +937,7 @@ bool TreeViewItem::Unfold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded() == false, false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return Toggle();
 }
@@ -946,7 +946,7 @@ bool TreeViewItem::FoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded(), false, "");
+    CHECK(IsFolded(), false, "");
 
     return ToggleRecursively();
 }
@@ -955,7 +955,7 @@ bool TreeViewItem::UnfoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded() == false, false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return ToggleRecursively();
 }
