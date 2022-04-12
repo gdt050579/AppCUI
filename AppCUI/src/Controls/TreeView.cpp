@@ -580,7 +580,8 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
 bool TreeView::OnMouseOver(int x, int y)
 {
     CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
+    cc->mouseOverColumnIndex = 0xFFFFFFFF;
 
     if (cc->IsMouseOnBorder(x, y))
     {
@@ -1758,14 +1759,44 @@ bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
             {
                 if (item.handle == currentSelectedItemHandle)
                 {
-                    wtp.Color = Cfg->Text.Focused;
-                    item.values[j].SetColor(wtp.Color);
+                    wtp.Color = Cfg->Cursor.Normal;
                 }
                 else if (item.markedAsFound == false)
                 {
-                    wtp.Color = Cfg->Text.Normal;
-                    item.values[j].SetColor(wtp.Color);
+                    switch (item.type)
+                    {
+                    case TreeViewItem::Type::Normal:
+                        wtp.Color = Cfg->Text.Normal;
+                        break;
+                    case TreeViewItem::Type::Highlighted:
+                        wtp.Color = Cfg->Text.Focused;
+                        break;
+                    case TreeViewItem::Type::GrayedOut:
+                        wtp.Color = Cfg->Text.Inactive;
+                        break;
+                    case TreeViewItem::Type::ErrorInformation:
+                        wtp.Color = Cfg->Text.Error;
+                        break;
+                    case TreeViewItem::Type::WarningInformation:
+                        wtp.Color = Cfg->Text.Warning;
+                        break;
+                    case TreeViewItem::Type::Emphasized_1:
+                        wtp.Color = Cfg->Text.Emphasized1;
+                        break;
+                    case TreeViewItem::Type::Emphasized_2:
+                        wtp.Color = Cfg->Text.Emphasized2;
+                        break;
+                    case TreeViewItem::Type::Category:
+                        wtp.Color = Cfg->Text.Highlighted;
+                        break;
+                    case TreeViewItem::Type::Colored:
+                        wtp.Color = item.color;
+                        break;
+                    default:
+                        break;
+                    }
                 }
+                item.values[j].SetColor(wtp.Color);
 
                 if (wtp.X < static_cast<int>(col.x + col.width))
                 {
@@ -1774,6 +1805,12 @@ bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
             }
 
             j++;
+        }
+
+        if (item.handle == currentSelectedItemHandle)
+        {
+            const uint32 addX = treeFlags && TreeViewFlags::HideBorder ? 0 : 1;
+            renderer.FillHorizontalLine(addX, wtp.Y, this->Layout.Width - 1 - addX, -1, Cfg->Cursor.Normal);
         }
 
         wtp.Y++;
@@ -1786,7 +1823,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 {
     CHECK(columns.size() > 0, true, "");
 
-    const auto controlWidth = Layout.Width - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
+    const auto controlWidth = Layout.Width - 2 * ((treeFlags && TreeViewFlags::HideBorder) ? 0 : 1) - 1;
 
     renderer.FillHorizontalLineSize(Layout.X, 1, controlWidth, ' ', Cfg->Header.Text.Focused);
 
