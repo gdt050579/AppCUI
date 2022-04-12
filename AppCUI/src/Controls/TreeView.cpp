@@ -731,30 +731,6 @@ bool TreeViewItem::SetType(TreeViewItem::Type type)
     return true;
 }
 
-bool TreeViewItem::SetText(const ConstString& text)
-{
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
-    return cc->items.at(handle).values.at(0).Set(text);
-}
-
-ConstString TreeViewItem::GetText()
-{
-    CHECK(IsValid(), "", "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-
-    const auto it = cc->items.find(handle);
-    if (it != cc->items.end())
-    {
-        return it->second.values.at(0);
-    }
-
-    return "";
-}
-
 bool TreeViewItem::SetColor(const Graphics::ColorPair& color)
 {
     CHECK(IsValid(), false, "");
@@ -767,7 +743,7 @@ bool TreeViewItem::SetColor(const Graphics::ColorPair& color)
     return true;
 }
 
-bool TreeViewItem::Select()
+bool TreeViewItem::SetCurrent()
 {
     CHECK(IsValid(), false, "");
 
@@ -779,7 +755,7 @@ bool TreeViewItem::Select()
     return true;
 }
 
-bool TreeViewItem::IsSelected() const
+bool TreeViewItem::IsCurrent() const
 {
     CHECK(IsValid(), false, "");
 
@@ -1007,13 +983,28 @@ TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
     return { obj, cc->AddItem(handle, { name }, isExpandable) };
 }
 
-bool TreeViewItem::SetName(ConstString name)
+bool TreeViewItem::SetText(ConstString name)
 {
     CHECK(IsValid(), false, "");
     auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
     CHECK(cc != nullptr, false, "");
 
     return cc->items.at(handle).values.at(0).Set(name);
+}
+
+const CharacterBuffer& TreeViewItem::GetText() const
+{
+    static const CharacterBuffer cb{};
+    CHECK(IsValid(), cb, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+
+    const auto it = cc->items.find(handle);
+    if (it != cc->items.end())
+    {
+        return it->second.values.at(0);
+    }
+
+    return cb;
 }
 
 bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
