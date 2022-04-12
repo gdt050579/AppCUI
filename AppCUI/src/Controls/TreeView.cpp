@@ -1790,7 +1790,14 @@ bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
             {
                 if (item.handle == currentSelectedItemHandle)
                 {
-                    wtp.Color = Cfg->Cursor.Normal;
+                    if (Focused)
+                    {
+                        wtp.Color = Cfg->Cursor.Normal;
+                    }
+                    else
+                    {
+                        wtp.Color = Cfg->Text.Focused;
+                    }
                 }
                 else if (item.markedAsFound == false)
                 {
@@ -1838,7 +1845,7 @@ bool TreeControlContext::ItemsPainting(Graphics::Renderer& renderer)
             j++;
         }
 
-        if (item.handle == currentSelectedItemHandle)
+        if (item.handle == currentSelectedItemHandle && Focused)
         {
             const uint32 addX = treeFlags && TreeViewFlags::HideBorder ? 0 : 1;
             renderer.FillHorizontalLine(addX, wtp.Y, this->Layout.Width - 1 - addX, -1, Cfg->Cursor.Normal);
@@ -1950,24 +1957,18 @@ bool TreeControlContext::MoveUp()
 {
     if (itemsToDrew.size() > 0)
     {
-        const auto it             = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentSelectedItemHandle);
-        const auto index          = static_cast<uint32>(it - itemsToDrew.begin());
-        const auto newIndex       = std::min<uint32>(index - 1, static_cast<uint32>(itemsToDrew.size() - 1U));
-        currentSelectedItemHandle = itemsToDrew[newIndex];
+        const auto it       = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentSelectedItemHandle);
+        const auto index    = static_cast<uint32>(it - itemsToDrew.begin());
+        const auto newIndex = std::min<uint32>(index - 1, static_cast<uint32>(itemsToDrew.size() - 1U));
 
         if (newIndex == itemsToDrew.size() - 1)
         {
-            if (itemsToDrew.size() > maxItemsToDraw)
-            {
-                offsetBotToDraw = static_cast<uint32>(itemsToDrew.size());
-            }
-
-            if (offsetBotToDraw >= maxItemsToDraw)
-            {
-                offsetTopToDraw = offsetBotToDraw - maxItemsToDraw;
-            }
+            return true;
         }
-        else if (newIndex < offsetTopToDraw && offsetTopToDraw > 0)
+
+        currentSelectedItemHandle = itemsToDrew[newIndex];
+
+        if (newIndex < offsetTopToDraw && offsetTopToDraw > 0)
         {
             offsetBotToDraw--;
             offsetTopToDraw--;
@@ -1986,14 +1987,15 @@ bool TreeControlContext::MoveDown()
         const auto it       = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentSelectedItemHandle);
         const auto index    = static_cast<uint32>(it - itemsToDrew.begin());
         const auto newIndex = std::min<uint32>(index + 1, (index + 1ULL > itemsToDrew.size() - 1 ? 0 : index + 1));
-        currentSelectedItemHandle = itemsToDrew[newIndex];
 
         if (newIndex == 0)
         {
-            offsetBotToDraw = maxItemsToDraw;
-            offsetTopToDraw = 0;
+            return true;
         }
-        else if (newIndex >= offsetBotToDraw)
+
+        currentSelectedItemHandle = itemsToDrew[newIndex];
+
+        if (newIndex >= offsetBotToDraw)
         {
             offsetBotToDraw++;
             offsetTopToDraw++;
