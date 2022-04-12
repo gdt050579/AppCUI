@@ -983,6 +983,21 @@ bool TreeViewItem::UnfoldAll()
     return ToggleRecursively();
 }
 
+TreeViewItem TreeViewItem::GetParent() const
+{
+    CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+
+    auto& parent = cc->items.at(handle).parent;
+    if (parent == InvalidItemHandle)
+    {
+        return { nullptr, InvalidItemHandle };
+    }
+
+    return { this->obj, parent };
+}
+
 TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
 {
     CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
