@@ -746,7 +746,7 @@ class TreeControlContext : public ControlContext
     void ColumnSort(uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
     void SelectColumnSeparator(int32 offset);
-    void Sort();
+    bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
 

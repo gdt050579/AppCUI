@@ -766,7 +766,7 @@ bool TreeViewItem::IsCurrent() const
     return cc->currentSelectedItemHandle == handle;
 }
 
-bool TreeViewItem::SetExpanded(bool expand)
+bool TreeViewItem::SetFolding(bool expand)
 {
     CHECK(IsValid(), false, "");
 
@@ -778,7 +778,7 @@ bool TreeViewItem::SetExpanded(bool expand)
     return true;
 }
 
-bool TreeViewItem::GetExpanded()
+bool TreeViewItem::IsFolded()
 {
     CHECK(IsValid(), false, "");
 
@@ -868,9 +868,9 @@ bool TreeViewItem::Toggle()
         CHECK(DeleteChildren(), false, "");
     }
 
-    SetExpanded(!GetExpanded());
+    SetFolding(!IsFolded());
 
-    if (GetExpanded())
+    if (IsFolded())
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
@@ -928,7 +928,7 @@ bool TreeViewItem::Fold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded(), false, "");
+    CHECK(IsFolded(), false, "");
 
     return Toggle();
 }
@@ -937,7 +937,7 @@ bool TreeViewItem::Unfold()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded() == false, false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return Toggle();
 }
@@ -946,7 +946,7 @@ bool TreeViewItem::FoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded(), false, "");
+    CHECK(IsFolded(), false, "");
 
     return ToggleRecursively();
 }
@@ -955,7 +955,7 @@ bool TreeViewItem::UnfoldAll()
 {
     CHECK(IsValid(), false, "");
     CHECK(IsExpandable(), false, "");
-    CHECK(GetExpanded() == false, false, "");
+    CHECK(IsFolded() == false, false, "");
 
     return ToggleRecursively();
 }
@@ -1244,6 +1244,26 @@ bool TreeView::DeleteColumn(uint32 index)
 
     return true;
 }
+
+bool TreeView::Sort()
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    return cc->Sort();
+}
+
+bool TreeView::Sort(uint32 columnIndex, bool ascendent)
+{
+    CHECK(Context != nullptr, false, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    CHECK(columnIndex < cc->columns.size(), false, "");
+
+    cc->sortAscendent       = ascendent;
+    cc->columnIndexToSortBy = columnIndex;
+
+    return cc->Sort();
+}
+
 } // namespace AppCUI::Controls
 
 namespace AppCUI
@@ -1302,10 +1322,11 @@ void TreeControlContext::SelectColumnSeparator(int32 offset)
     }
 }
 
-void TreeControlContext::Sort()
+bool TreeControlContext::Sort()
 {
-    SortByColumn(InvalidItemHandle);
-    notProcessed = true;
+    const auto result = SortByColumn(InvalidItemHandle);
+    notProcessed      = true;
+    return result;
 }
 
 bool TreeControlContext::SortByColumn(const ItemHandle handle)

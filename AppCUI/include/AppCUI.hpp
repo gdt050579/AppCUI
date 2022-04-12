@@ -2888,7 +2888,7 @@ namespace Controls
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = bool (*)(TreeViewItem& item);
+        using OnTreeItemToggleHandler    = void (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3048,13 +3048,13 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(TreeViewItem& item) = 0;
+            virtual void OnTreeItemToggle(TreeViewItem& item) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
 
-            virtual bool OnTreeItemToggle(TreeViewItem& item) override
+            virtual void OnTreeItemToggle(TreeViewItem& item) override
             {
                 return callback(item);
             };
@@ -4182,8 +4182,8 @@ namespace Controls
         bool SetColor(const Graphics::ColorPair& color);
         bool SetCurrent();
         bool IsCurrent() const;
-        bool SetExpanded(bool expanded);
-        bool GetExpanded();
+        bool SetFolding(bool expanded);
+        bool IsFolded();
         bool SetExpandable(bool expandable);
         bool IsExpandable() const;
         uint32 GetChildrenCount() const;
@@ -4272,6 +4272,9 @@ namespace Controls
         }
         bool DeleteAllColumns();
         bool DeleteColumn(uint32 index);
+
+        bool Sort();
+        bool Sort(uint32 columnIndex, bool ascendent);
 
       private:
         friend Factory::TreeView;
