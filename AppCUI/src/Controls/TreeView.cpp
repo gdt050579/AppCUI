@@ -1037,6 +1037,33 @@ bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
     return true;
 }
 
+bool TreeViewItem::SetText(uint32 subItemIndex, const ConstString& text)
+{
+    CHECK(IsValid(), false, "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
+    CHECK(cc != nullptr, false, "");
+    CHECK(subItemIndex < cc->columns.size(), false, "");
+
+    auto& item = cc->items.at(handle);
+    if (item.values.size() < subItemIndex)
+    {
+        item.values.resize(subItemIndex + 1ULL);
+    }
+
+    return item.values.at(subItemIndex).Set(text);
+}
+
+const Graphics::CharacterBuffer& TreeViewItem::GetText(uint32 subItemIndex) const
+{
+    static const CharacterBuffer cb{};
+    CHECK(IsValid(), cb, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, cb, "");
+    CHECK(subItemIndex < cc->items.at(handle).values.size(), cb, "");
+
+    return cc->items.at(handle).values.at(subItemIndex);
+}
+
 bool TreeViewItem::SetData(uint64 value)
 {
     CHECK(IsValid(), false, "");

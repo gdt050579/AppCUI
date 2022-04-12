@@ -4169,6 +4169,8 @@ namespace Controls
         bool SetText(ConstString name);
         const AppCUI::Graphics::CharacterBuffer& GetText() const;
         bool SetValues(const std::initializer_list<ConstString> values);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
