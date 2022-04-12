@@ -4206,6 +4206,11 @@ namespace Controls
             return this->GetItemDataAsPointer().ToReference<T>();
         }
 
+        inline bool operator==(const TreeViewItem& other) const
+        {
+            return obj == other.obj && handle == other.handle;
+        }
+
       public:
         friend TreeView;
     };
