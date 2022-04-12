@@ -4166,17 +4166,16 @@ namespace Controls
         }
 
         TreeViewItem AddChild(ConstString name, bool isExpandable = false);
-        bool SetName(ConstString name);
+        bool SetText(ConstString name);
+        const AppCUI::Graphics::CharacterBuffer& GetText() const;
         bool SetValues(const std::initializer_list<ConstString> values);
 
         bool SetData(uint64 value);
         uint64 GetData(uint64 errorValue) const;
         bool SetType(TreeViewItem::Type type);
-        bool SetText(const ConstString& text);
-        ConstString GetText();
         bool SetColor(const Graphics::ColorPair& color);
-        bool Select();
-        bool IsSelected() const;
+        bool SetCurrent();
+        bool IsCurrent() const;
         bool SetExpanded(bool expanded);
         bool GetExpanded();
         bool SetExpandable(bool expandable);
