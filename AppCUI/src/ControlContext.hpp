@@ -694,7 +694,8 @@ struct TreeItem
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
     TreeViewItem::Type type           = TreeViewItem::Type::Normal;
-    ColorPair color;                                               
+    ColorPair color;
+    uint32 priority = 0;
 };
 
 class TreeControlContext : public ControlContext

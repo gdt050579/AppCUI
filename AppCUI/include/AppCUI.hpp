@@ -2964,12 +2964,15 @@ namespace Controls
               Reference<Controls::ListView> control,
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
-        using OnListViewItemSelectedHandler =
-              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
-        using OnListViewItemCheckedHandler =
-              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemSelectedHandler = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemCheckedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+
+        using TreeViewItemCompareHandler = int (*)(
+              Reference<Controls::TreeView> control,
+              const Controls::TreeViewItem& item1,
+              const Controls::TreeViewItem& item2);
 
         struct OnButtonPressedInterface
         {
@@ -3163,14 +3166,12 @@ namespace Controls
 
         struct OnListViewItemSelectedInterface
         {
-            virtual void OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
         {
             OnListViewItemSelectedHandler callback;
-            virtual void OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
                 callback(lv, item);
             };
@@ -3178,14 +3179,12 @@ namespace Controls
 
         struct OnListViewItemCheckedInterface
         {
-            virtual void OnListViewItemChecked(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
         {
             OnListViewItemCheckedHandler callback;
-            virtual void OnListViewItemChecked(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
                 callback(lv, item);
             };
@@ -3267,12 +3266,32 @@ namespace Controls
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
                   OnItemChecked;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
-                  OnCurrentItemChanged;            
+                  OnCurrentItemChanged;
+        };
+
+        struct TreeViewItemCompareInterface
+        {
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) = 0;
+        };
+        struct TreeViewItemCompareCallback : public TreeViewItemCompareInterface
+        {
+            TreeViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) override
+            {
+                return callback(control, item1, item2);
+            };
         };
 
         struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+            Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
         };
 
     } // namespace Handlers
@@ -4237,6 +4256,8 @@ namespace Controls
         bool FoldAll();
         bool UnfoldAll();
         TreeViewItem GetParent() const;
+        uint32 GetPriority() const;
+        bool SetPriority(uint32 priority) const;
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
