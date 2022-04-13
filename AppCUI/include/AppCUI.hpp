@@ -2125,6 +2125,31 @@ namespace OS
         static bool WriteContent(const std::filesystem::path& path, string_view text);
     };
 
+    class EXPORT MemoryFile : public DataObject
+    {
+        uint8* buffer;
+        uint64 size;
+        uint64 allocated;
+        uint64 pos;
+
+      protected:
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
+      
+      public:
+        MemoryFile();
+        ~MemoryFile();
+
+        bool Create(uint64 allocatedMemory = 0);
+        bool Create(const void* buffer, uint64 size);
+
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
+        void Close() override;
+    };
+
     class EXPORT Library
     {
         void* libraryHandle;
@@ -2964,10 +2989,8 @@ namespace Controls
               Reference<Controls::ListView> control,
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
-        using OnListViewItemSelectedHandler =
-              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
-        using OnListViewItemCheckedHandler =
-              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemSelectedHandler = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemCheckedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
@@ -3163,14 +3186,12 @@ namespace Controls
 
         struct OnListViewItemSelectedInterface
         {
-            virtual void OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
         {
             OnListViewItemSelectedHandler callback;
-            virtual void OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
                 callback(lv, item);
             };
@@ -3178,14 +3199,12 @@ namespace Controls
 
         struct OnListViewItemCheckedInterface
         {
-            virtual void OnListViewItemChecked(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
         {
             OnListViewItemCheckedHandler callback;
-            virtual void OnListViewItemChecked(
-                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
                 callback(lv, item);
             };
@@ -3267,7 +3286,7 @@ namespace Controls
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
                   OnItemChecked;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
-                  OnCurrentItemChanged;            
+                  OnCurrentItemChanged;
         };
 
         struct TreeView : public Control

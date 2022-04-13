@@ -1,4 +1,4 @@
-target_sources(AppCUI PRIVATE DataObject.cpp StaticFileMethods.cpp)
+target_sources(AppCUI PRIVATE DataObject.cpp StaticFileMethods.cpp MemoryFile.cpp)
 if (MSVC)
     add_subdirectory(Windows)
 elseif (UNIX)
