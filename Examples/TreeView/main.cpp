@@ -2,6 +2,7 @@
 #include <cstring>
 #include <string>
 #include <charconv>
+#include <list>
 
 #if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
 #    include <sys/stat.h>
@@ -26,6 +27,8 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
     Reference<Splitter> horizontal;
     Reference<TreeView> tree;
 
+    std::list<std::u16string> pieces;
+
   public:
     TreeExample() : Window("Tree view example", "d:c, w:100%, h:100%", WindowFlags::Sizeable)
     {
@@ -38,14 +41,12 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         tree = Factory::TreeView::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable),
-              3);
+              { { u"&Path", TextAlignament::Left, 100 },
+                { u"&Last Write Time", TextAlignament::Right, 25 },
+                { u"&Size (bytes)", TextAlignament::Right, 25 } },
+              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
 
         tree->Handlers()->OnTreeItemToggle = this;
-
-        tree->AddColumnData(0, u"&Path", TextAlignament::Left, TextAlignament::Left, 200);
-        tree->AddColumnData(1, u"&Last Write Time", TextAlignament::Right, TextAlignament::Right, 25);
-        tree->AddColumnData(2, u"&Size (bytes)", TextAlignament::Right, TextAlignament::Right, 25);
 
         tree->ClearItems();
         const auto path              = std::filesystem::current_path().u16string();
@@ -62,13 +63,12 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
             pathSizeText = "0";
         }
 
-        const auto cpath = std::filesystem::current_path().u16string();
-        const auto root  = tree->AddItem(
-              AppCUI::Controls::InvalidItemHandle,
-              { filename, pathLastWriteTime, pathSizeText },
-              cpath,
-              false,
-              std::filesystem::is_directory(path));
+        auto root = tree->AddItem(filename, std::filesystem::is_directory(path));
+        root.SetValues({ pathLastWriteTime, pathSizeText });
+        root.SetType(TreeViewItem::Type::Emphasized_1);
+
+        auto& cpath = pieces.emplace_back(std::filesystem::current_path().u16string());
+        root.SetData(Reference<std::u16string>(&cpath));
     }
 
     bool OnEvent(Reference<Control>, Event eventType, int controlID) override
@@ -104,20 +104,17 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                         pathSizeText = "0";
                     }
 
-                    const auto localPath = path.u16string();
-                    const auto root      = tree->AddItem(
-                          TreeView::RootItemHandle,
-                          { filename, pathLastWriteTime, pathSizeText },
-                          localPath,
-                          false,
-                          std::filesystem::is_directory(path));
+                    auto root = tree->AddItem(filename, std::filesystem::is_directory(path));
+                    root.SetValues({ pathLastWriteTime, pathSizeText });
+                    if (std::filesystem::is_directory(path))
+                    {
+                        root.SetType(TreeViewItem::Type::Emphasized_1);
+                    }
 
-                    auto& metadata = tree->GetItemMetadata(root);
-                    UnicodeStringBuilder usb;
-                    usb.Add(ConstString{ metadata });
-                    usb.Add(res->u16string());
-                    tree->SetItemMetadata(root, usb);
-                    OnTreeItemToggle(tree, root);
+                    auto& localPath = pieces.emplace_back(path.u16string());
+                    root.SetData(Reference<std::u16string>(&localPath));
+
+                    OnTreeItemToggle(root);
                 }
 
                 return true;
@@ -128,12 +125,10 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         return false;
     }
 
-    bool OnTreeItemToggle(Reference<TreeView> ctrl, ItemHandle handle) override
+    void OnTreeItemToggle(TreeViewItem& item) override
     {
-        const auto& usb = ctrl->GetItemMetadata(handle);
-        std::u16string u16Path;
-        usb.ToString(u16Path);
-        const auto fsPath = std::filesystem::path(u16Path);
+        auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
+        const auto fsPath = std::filesystem::path(data->c_str());
         try
         {
             const auto rdi = std::filesystem::directory_iterator(fsPath);
@@ -143,17 +138,24 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 const auto pathLastWriteTime = GetLastFileWriteText(p.path());
                 uint64 pathSize              = p.file_size();
                 const auto pathSizeText      = GetTextFromNumber(pathSize);
-                const auto cpath             = p.path().u16string();
 
-                ctrl->AddItem(handle, { filename, pathLastWriteTime, pathSizeText }, cpath, false, p.is_directory());
+                auto child = item.AddChild(filename, p.is_directory());
+                child.SetValues({ pathLastWriteTime, pathSizeText });
+                if (p.is_directory())
+                {
+                    child.SetType(TreeViewItem::Type::Emphasized_1);
+                }
+
+                auto& cpath = pieces.emplace_back(p.path().u16string());
+                child.SetData(Reference<std::u16string>(&cpath));
             }
         }
         catch (std::exception& e)
         {
+#ifdef _DEBUG
             LOG_ERROR("%s", e.what());
+#endif
         }
-
-        return true;
     }
 
     static const std::string GetLastFileWriteText(const std::filesystem::path& path)

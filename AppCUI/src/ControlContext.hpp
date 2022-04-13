@@ -471,6 +471,7 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
+
 struct InternalListViewColumn
 {
     CharacterBuffer Name;
@@ -618,6 +619,7 @@ struct ComboBoxItem
     ComboBoxItem& operator=(const ComboBoxItem&);
     ComboBoxItem& operator=(ComboBoxItem&&) noexcept;
 };
+
 class ComboBoxControlContext : public ControlContext
 {
   public:
@@ -671,12 +673,11 @@ struct TreeColumnData
     uint32 x      = 0;
     uint32 width  = 0;
     uint32 height = 0;
-    CharacterBuffer headerValue;
-    TextAlignament headerAlignment  = TextAlignament::Left;
-    TextAlignament contentAlignment = TextAlignament::Left;
-    bool customWidth                = false;
-    uint32 hotKeyOffset             = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    Key hotKeyCode                  = Key::None;
+    CharacterBuffer title;
+    TextAlignament alignment = TextAlignament::Left;
+    bool customWidth         = false;
+    uint32 hotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    Key hotKeyCode           = Key::None;
 };
 
 struct TreeItem
@@ -688,10 +689,11 @@ struct TreeItem
     bool expanded     = false;
     bool isExpandable = false;
     vector<ItemHandle> children;
-    Utils::UnicodeStringBuilder metadata;
     uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
+    TreeViewItem::Type type           = TreeViewItem::Type::Normal;
+    ColorPair color;                                               
 };
 
 class TreeControlContext : public ControlContext
@@ -744,7 +746,7 @@ class TreeControlContext : public ControlContext
     void ColumnSort(uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
     void SelectColumnSeparator(int32 offset);
-    void Sort();
+    bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
 
@@ -755,8 +757,6 @@ class TreeControlContext : public ControlContext
     bool MoveDown();
     bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
     bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
-    bool ToggleExpandRecursive(const ItemHandle handle, Reference<TreeView> tree);
-    bool ToggleItem(const ItemHandle handle, Reference<TreeView> tree);
     bool IsMouseOnToggleSymbol(int x, int y) const;
     bool IsMouseOnItem(int x, int y) const;
     bool IsMouseOnBorder(int x, int y) const;
@@ -770,7 +770,14 @@ class TreeControlContext : public ControlContext
     bool SearchItems(Reference<TreeView> tree);
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
-    bool RemoveItem(const ItemHandle handle, bool process);
+    bool RemoveItem(const ItemHandle handle);
+
+    bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
+
+    GenericRef GetItemDataAsPointer(ItemHandle handle) const;
+    bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
+
+    ItemHandle AddItem(ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
 };
 
 enum class GridCellStatus

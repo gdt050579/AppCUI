@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.42.0"
+#define APPCUI_VERSION "1.55.0"
 
 #include <filesystem>
 #include <map>
@@ -14,6 +14,10 @@
 #include <functional>
 #include <string.h>
 #include <initializer_list>
+#include <cstdint>
+#ifdef _MSC_VER
+#    include <stdlib.h>
+#endif
 
 // https://en.cppreference.com/w/cpp/feature_test
 #if defined(__has_cpp_attribute)
@@ -559,6 +563,7 @@ namespace Graphics
         static uint32 GetSupportedCodePagesCount();
     };
 }; // namespace Graphics
+
 namespace Utils
 {
     class EXPORT String;
@@ -2824,6 +2829,7 @@ namespace Controls
         class EXPORT ColorPicker;
         class EXPORT CharacterTable;
     }; // namespace Factory
+
     enum class Event : uint32
     {
         WindowClose,
@@ -2851,6 +2857,7 @@ namespace Controls
         SplitterPanelAutoCollapsed,
         Custom,
     };
+
     using ItemHandle                       = uint32;
     constexpr ItemHandle InvalidItemHandle = 0xFFFFFFFF;
     class EXPORT Control;
@@ -2858,6 +2865,7 @@ namespace Controls
     class EXPORT TextField;
     class EXPORT ListViewItem;
     class EXPORT ListView;
+    class EXPORT TreeViewItem;
     class EXPORT TreeView;
     class EXPORT Menu;
     class EXPORT Window;
@@ -2880,7 +2888,7 @@ namespace Controls
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = bool (*)(Reference<Controls::TreeView> control, ItemHandle handle);
+        using OnTreeItemToggleHandler    = void (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3040,15 +3048,15 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) = 0;
+            virtual void OnTreeItemToggle(TreeViewItem& item) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
 
-            virtual bool OnTreeItemToggle(Reference<Controls::TreeView> ctrl, ItemHandle handle) override
+            virtual void OnTreeItemToggle(TreeViewItem& item) override
             {
-                return callback(ctrl, handle);
+                return callback(item);
             };
         };
 
@@ -3844,6 +3852,7 @@ namespace Controls
         ListViewItem() : context(nullptr), item(0)
         {
         }
+
         inline bool IsValid() const
         {
             return context != nullptr;
@@ -3864,6 +3873,7 @@ namespace Controls
         bool IsCurrent() const;
         bool SetHeight(uint32 Height);
         uint32 GetHeight() const;
+
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
         {
@@ -4114,17 +4124,129 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
+    class EXPORT TreeViewColumn
+    {
+        void* context;
+        uint32 index;
+
+        TreeViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        bool SetText(const ConstString& text);
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+
+        friend class TreeView;
+    };
+
+    class EXPORT TreeViewItem
+    {
+      private:
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef ref);
+
+#ifdef _MSC_VER
+        // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
+        // 'TreeViewItem'
+#    pragma warning(push)
+#    pragma warning(disable : 4251)
+#endif
+        Reference<TreeView> obj;
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
+        ItemHandle handle;
+
+        TreeViewItem(Reference<TreeView> _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
+        {
+        }
+
+      public:
+        enum class Type : uint16
+        {
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
+            WarningInformation = 4,
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Category           = 7,
+            Colored            = 8
+        };
+
+      public:
+        TreeViewItem() : obj(nullptr), handle(InvalidItemHandle)
+        {
+        }
+
+        inline bool IsValid() const
+        {
+            return obj != nullptr;
+        }
+
+        TreeViewItem AddChild(ConstString name, bool isExpandable = false);
+        bool SetText(ConstString name);
+        const AppCUI::Graphics::CharacterBuffer& GetText() const;
+        bool SetValues(const std::initializer_list<ConstString> values);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue) const;
+        bool SetType(TreeViewItem::Type type);
+        bool SetColor(const Graphics::ColorPair& color);
+        bool SetCurrent();
+        bool IsCurrent() const;
+        bool SetFolding(bool expanded);
+        bool IsFolded();
+        bool SetExpandable(bool expandable);
+        bool IsExpandable() const;
+        uint32 GetChildrenCount() const;
+        TreeViewItem GetChild(uint32 index);
+        bool DeleteChildren();
+        ItemHandle GetHandle() const;
+        bool Toggle();
+        bool ToggleRecursively();
+        bool Fold();
+        bool Unfold();
+        bool FoldAll();
+        bool UnfoldAll();
+        TreeViewItem GetParent() const;
+
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+
+        template <typename T>
+        constexpr inline Reference<T> GetData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
+
+        inline bool operator==(const TreeViewItem& other) const
+        {
+            return obj == other.obj && handle == other.handle;
+        }
+
+      public:
+        friend TreeView;
+    };
+
     class EXPORT TreeView : public Control
     {
       public:
-        inline static const auto RootItemHandle = InvalidItemHandle;
-
-      private:
-        GenericRef GetItemDataAsPointer(const ItemHandle item) const;
-        bool SetItemDataAsPointer(ItemHandle item, GenericRef obj);
+        const static auto RootHandle = InvalidItemHandle;
 
       protected:
-        TreeView(string_view layout, const TreeViewFlags flags = TreeViewFlags::None, const uint32 noOfColumns = 1);
+        TreeView(
+              string_view layout,
+              std::initializer_list<ColumnBuilder> columns,
+              TreeViewFlags flags = TreeViewFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
@@ -4140,44 +4262,41 @@ namespace Controls
         // handlers covariant
         Handlers::TreeView* Handlers() override;
 
-        ItemHandle AddItem(
-              const ItemHandle parent,
-              const std::initializer_list<ConstString> values,
-              const ConstString metadata,
-              bool process      = false,
-              bool isExpandable = false);
-        bool RemoveItem(const ItemHandle handle, bool process = false);
+        // items
+        TreeViewItem GetCurrentItem();
+        bool RemoveItem(TreeViewItem& item);
         bool ClearItems();
-        ItemHandle GetCurrentItem();
-        const ConstString GetItemText(const ItemHandle handle);
-
-        bool SetItemData(ItemHandle item, uint64 value);
-        template <typename T>
-        constexpr inline bool SetItemData(ItemHandle item, Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(item, obj.ToGenericRef());
-        }
-
-        template <typename T>
-        Reference<T> GetItemData(const ItemHandle item)
-        {
-            return GetItemDataAsPointer(item).ToReference<T>();
-        }
-        uint64 GetItemData(const size_t index, uint64 errorValue);
-        ItemHandle GetItemHandleByIndex(const uint32 index) const;
-
+        TreeViewItem GetItemByIndex(const uint32 index);
         uint32 GetItemsCount() const;
-        bool AddColumnData(
-              const uint32 index,
-              const ConstString title,
-              const Graphics::TextAlignament headerAlignment,
-              const Graphics::TextAlignament contentAlignment,
-              const uint32 width = 0xFFFFFFFF);
-        const Utils::UnicodeStringBuilder& GetItemMetadata(ItemHandle handle);
-        bool SetItemMetadata(ItemHandle handle, const ConstString& metadata);
+        TreeViewItem GetItemByHandle(ItemHandle handle);
+        TreeViewItem AddItem(ConstString name, bool isExpandable = false);
+
+        // columns
+        TreeViewColumn GetColumn(uint32 index);
+        TreeViewColumn AddColumn(
+              const ConstString& title,
+              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
+              uint32 width                   = ColumnBuilder::AUTO_SIZE);
+        inline TreeViewColumn AddColumn(ColumnBuilder column)
+        {
+            return AddColumn(column.name, column.align, column.width);
+        }
+        bool AddColumns(std::initializer_list<ColumnBuilder> columns);
+        uint32 GetColumnsCount();
+        uint32 GetSortColumnIndex();
+        inline TreeViewColumn GetSortColumn()
+        {
+            return GetColumn(GetSortColumnIndex());
+        }
+        bool DeleteAllColumns();
+        bool DeleteColumn(uint32 index);
+
+        bool Sort();
+        bool Sort(uint32 columnIndex, bool ascendent);
 
       private:
         friend Factory::TreeView;
+        friend TreeViewItem; // TODO: remove!
         friend Control;
     };
 
@@ -4689,18 +4808,18 @@ namespace Controls
           public:
             static Pointer<Controls::TreeView> Create(
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control* parent,
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control& parent,
                   string_view layout,
-                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None,
-                  const uint32 noOfColumns            = 1);
+                  std::initializer_list<ColumnBuilder> columns,
+                  const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
         };
         class EXPORT Grid
         {
@@ -5052,7 +5171,215 @@ namespace Application
     EXPORT void SetTheme(ThemeType themeType);
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
 }; // namespace Application
+namespace Endian
+{
 
+#ifdef _MSC_VER
+// if it's msvc, we assume little endian
+#    define GVIEW_LITTLE_ENDIAN
+#elif defined(__BYTE_ORDER__)
+#    if __BYTE_ORDER__ == __LITTLE_ENDIAN__
+#        define GVIEW_LITTLE_ENDIAN
+#    else
+#        define GVIEW_BIG_ENDIAN
+#    endif
+#else
+#    error "Unknown endianness"
+#endif
+
+    inline uint8_t Swap(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t Swap(uint16_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_ushort(x);
+#else
+        return __builtin_bswap16(x);
+#endif
+    }
+
+    inline uint32_t Swap(uint32_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_ulong(x);
+#else
+        return __builtin_bswap32(x);
+#endif
+    }
+
+    inline uint64_t Swap(uint64_t x)
+    {
+#ifdef _MSC_VER
+        return _byteswap_uint64(x);
+#else
+        return __builtin_bswap64(x);
+#endif
+    }
+
+#define SWAP_SIGNED(fn, t)                                                                                             \
+    inline int##t##_t fn(int##t##_t x)                                                                                 \
+    {                                                                                                                  \
+        return fn(static_cast<uint##t##_t>(x));                                                                        \
+    }
+    SWAP_SIGNED(Swap, 8);
+    SWAP_SIGNED(Swap, 16);
+    SWAP_SIGNED(Swap, 32);
+    SWAP_SIGNED(Swap, 64);
+
+    inline uint8_t NativeToBig(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t NativeToBig(uint16_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t NativeToBig(uint32_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t NativeToBig(uint64_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(NativeToBig, 8);
+    SWAP_SIGNED(NativeToBig, 16);
+    SWAP_SIGNED(NativeToBig, 32);
+    SWAP_SIGNED(NativeToBig, 64);
+
+    inline uint8_t BigToNative(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t BigToNative(uint16_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t BigToNative(uint32_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t BigToNative(uint64_t x)
+    {
+#ifdef GVIEW_LITTLE_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(BigToNative, 8);
+    SWAP_SIGNED(BigToNative, 16);
+    SWAP_SIGNED(BigToNative, 32);
+    SWAP_SIGNED(BigToNative, 64);
+
+    inline uint8_t LittleToNative(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t LittleToNative(uint16_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t LittleToNative(uint32_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t LittleToNative(uint64_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(LittleToNative, 8);
+    SWAP_SIGNED(LittleToNative, 16);
+    SWAP_SIGNED(LittleToNative, 32);
+    SWAP_SIGNED(LittleToNative, 64);
+
+    inline uint8_t NativeToLittle(uint8_t x)
+    {
+        return x;
+    }
+
+    inline uint16_t NativeToLittle(uint16_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint32_t NativeToLittle(uint32_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    inline uint64_t NativeToLittle(uint64_t x)
+    {
+#ifdef GVIEW_BIG_ENDIAN
+        return Swap(x);
+#else
+        return x;
+#endif
+    }
+
+    SWAP_SIGNED(NativeToLittle, 8);
+    SWAP_SIGNED(NativeToLittle, 16);
+    SWAP_SIGNED(NativeToLittle, 32);
+    SWAP_SIGNED(NativeToLittle, 64);
+
+#undef SWAP_SIGNED
+
+} // namespace Endian
 } // namespace AppCUI
 
 // inline operations for enum classes
