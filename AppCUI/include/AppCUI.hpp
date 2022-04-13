@@ -2028,7 +2028,7 @@ namespace OS
         static bool Clear();
         static bool HasText();
     };
-    class EXPORT IFile
+    class EXPORT DataObject
     {
       protected:
         // virtual methods (protected)
@@ -2036,7 +2036,7 @@ namespace OS
         virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
 
       public:
-        virtual ~IFile();
+        virtual ~DataObject();
 
         // virtual methods (public)
         virtual uint64 GetSize();
@@ -2077,7 +2077,7 @@ namespace OS
         }
     };
 
-    class EXPORT File : public IFile
+    class EXPORT File : public DataObject
     {
         union
         {
