@@ -3400,15 +3400,19 @@ class HandlersDemo : public Window,
     }
     virtual void OnListViewCurrentItemChanged(Reference<ListView>, ListViewItem item) override
     {
-        log->AddItem(GetEventAndName("Current item = ", item));
+        log->SetCurrentItem(log->AddItem(GetEventAndName("Current item = ", item)));        
     }
     virtual void OnListViewItemSelected(Reference<ListView>, ListViewItem item) override
     {
+        LocalString<256> temp;
+        log->SetCurrentItem(log->AddItem(
+              temp.Format("%s => Status: %d", GetEventAndName("Selected item = ", item).c_str(), item.IsSelected())));
     }
     virtual void OnListViewItemChecked(Reference<ListView>, ListViewItem item) override
     {
         LocalString<256> temp;
-        log->AddItem(temp.Format("%s => Status: %d",GetEventAndName("Current item = ", item).c_str(), item.IsChecked()));
+        log->SetCurrentItem(log->AddItem(
+              temp.Format("%s => Status: %d", GetEventAndName("Checked item = ", item).c_str(), item.IsChecked())));
     }
 };
 
