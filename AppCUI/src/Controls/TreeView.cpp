@@ -975,6 +975,26 @@ TreeViewItem TreeViewItem::GetParent() const
     return { this->obj, parent };
 }
 
+uint32 TreeViewItem::GetPriority() const
+{
+    CHECK(IsValid(), -1, "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, -1, "");
+
+    return cc->items.at(handle).priority;
+}
+
+bool TreeViewItem::SetPriority(uint32 priority) const
+{
+    CHECK(IsValid(), false, "");
+    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
+    CHECK(cc != nullptr, false, "");
+
+    cc->items.at(handle).priority = priority;
+
+    return true;
+}
+
 TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
 {
     CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
@@ -1338,6 +1358,11 @@ bool TreeControlContext::SortByColumn(const ItemHandle handle)
     {
         const auto& a = items[i1];
         const auto& b = items[i2];
+
+        if (a.priority != b.priority)
+        {
+            return a.priority > b.priority;
+        }
 
         if (columnIndexToSortBy >= a.values.size())
         {
