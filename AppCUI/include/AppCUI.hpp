@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.55.0"
+#define APPCUI_VERSION "1.56.0"
 
 #include <filesystem>
 #include <map>
@@ -2874,6 +2874,73 @@ namespace Controls
 
     using namespace Utils;
 
+    class EXPORT ListViewItem
+    {
+      private:
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef obj);
+
+        void* context;
+        ItemHandle item;
+
+        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        {
+        }
+
+      public:
+        enum class Type : uint16
+        {
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
+            WarningInformation = 4,
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Category           = 7,
+            Colored            = 8
+        };
+
+      public:
+        ListViewItem() : context(nullptr), item(0)
+        {
+        }
+
+        inline bool IsValid() const
+        {
+            return context != nullptr;
+        }
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue) const;
+        bool SetCheck(bool value);
+        bool IsChecked() const;
+        bool SetType(ListViewItem::Type type);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+        bool SetXOffset(uint32 value);
+        uint32 GetXOffset() const;
+        bool SetColor(Graphics::ColorPair color);
+        bool SetSelected(bool select);
+        bool IsSelected() const;
+        bool IsCurrent() const;
+        bool SetHeight(uint32 Height);
+        uint32 GetHeight() const;
+
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
+
+        friend class ListView;
+    };
+
     namespace Handlers
     {
         using namespace Graphics;
@@ -2898,9 +2965,11 @@ namespace Controls
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
         using OnListViewItemSelectedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewItemCheckedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewCurrentItemChangedHandler =
+              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
         struct OnButtonPressedInterface
         {
@@ -3094,16 +3163,47 @@ namespace Controls
 
         struct OnListViewItemSelectedInterface
         {
-            virtual int OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
+            virtual void OnListViewItemSelected(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
         {
             OnListViewItemSelectedHandler callback;
-            virtual int OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
+            virtual void OnListViewItemSelected(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
-                return callback(lv, item);
+                callback(lv, item);
+            };
+        };
+
+        struct OnListViewItemCheckedInterface
+        {
+            virtual void OnListViewItemChecked(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
+        {
+            OnListViewItemCheckedHandler callback;
+            virtual void OnListViewItemChecked(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
+            };
+        };
+
+        // OnListViewCurrentItemChangedHandler
+        struct OnListViewCurrentItemChangedInterface
+        {
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewCurrentItemChangedCallback : public OnListViewCurrentItemChangedInterface
+        {
+            OnListViewCurrentItemChangedHandler callback;
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
             };
         };
 
@@ -3164,6 +3264,10 @@ namespace Controls
                   ComparereItem;
             Wrapper<OnListViewItemSelectedInterface, OnListViewItemSelectedCallback, OnListViewItemSelectedHandler>
                   OnItemSelected;
+            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnItemChecked;
+            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnCurrentItemChanged;            
         };
 
         struct TreeView : public Control
@@ -3584,10 +3688,11 @@ namespace Controls
     };
     enum class TextFieldFlags : uint32
     {
-        None               = 0,
-        ProcessEnter       = 0x000100,
-        Readonly           = 0x000200,
-        SyntaxHighlighting = 0x000400,
+        None                     = 0,
+        ProcessEnter             = 0x000100,
+        Readonly                 = 0x000200,
+        SyntaxHighlighting       = 0x000400,
+        DisableAutoSelectOnFocus = 0x000800,
     };
     class EXPORT TextField : public Control
     {
@@ -3803,72 +3908,7 @@ namespace Controls
         bool SetFilterMode(bool allowFilterForThisColumn);
         friend class ListView;
     };
-    class EXPORT ListViewItem
-    {
-      private:
-        GenericRef GetItemDataAsPointer() const;
-        bool SetItemDataAsPointer(GenericRef obj);
 
-        void* context;
-        ItemHandle item;
-
-        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
-        {
-        }
-
-      public:
-        enum class Type : uint16
-        {
-            Normal             = 0,
-            Highlighted        = 1,
-            GrayedOut          = 2,
-            ErrorInformation   = 3,
-            WarningInformation = 4,
-            Emphasized_1       = 5,
-            Emphasized_2       = 6,
-            Category           = 7,
-            Colored            = 8
-        };
-
-      public:
-        ListViewItem() : context(nullptr), item(0)
-        {
-        }
-
-        inline bool IsValid() const
-        {
-            return context != nullptr;
-        }
-
-        bool SetData(uint64 value);
-        uint64 GetData(uint64 errorValue) const;
-        bool SetCheck(bool value);
-        bool IsChecked() const;
-        bool SetType(ListViewItem::Type type);
-        bool SetText(uint32 subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
-        bool SetXOffset(uint32 value);
-        uint32 GetXOffset() const;
-        bool SetColor(Graphics::ColorPair color);
-        bool SetSelected(bool select);
-        bool IsSelected() const;
-        bool IsCurrent() const;
-        bool SetHeight(uint32 Height);
-        uint32 GetHeight() const;
-
-        template <typename T>
-        constexpr inline bool SetData(Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(obj.ToGenericRef());
-        }
-        template <typename T>
-        constexpr inline Reference<T> GetData() const
-        {
-            return this->GetItemDataAsPointer().ToReference<T>();
-        }
-
-        friend class ListView;
-    };
     class EXPORT ListView : public Control
     {
       protected:

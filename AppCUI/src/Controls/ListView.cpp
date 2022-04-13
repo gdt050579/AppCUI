@@ -800,7 +800,7 @@ void ListViewControlContext::MoveTo(int index)
     if (rel >= vis)
         Items.FirstVisibleIndex = (index - vis) + 1;
     if (originalPoz != index)
-        SendMsg(Event::ListViewCurrentItemChanged);
+        TriggerListViewItemChangedEvent();
 }
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
@@ -952,6 +952,15 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                         lvi->Flags -= ITEM_FLAG_CHECKED;
                     else
                         lvi->Flags |= ITEM_FLAG_CHECKED;
+                }
+                if (this->handlers)
+                {
+                    auto lvh = (Handlers::ListView*) (this->handlers.get());
+                    if (lvh->OnItemChecked.obj)
+                    {
+                        lvh->OnItemChecked.obj->OnListViewItemChecked(
+                              this->Host, this->Host->GetItem(Items.CurentItemIndex));
+                    }
                 }
                 SendMsg(Event::ListViewItemChecked);
             }
@@ -1375,7 +1384,7 @@ void ListViewControlContext::FilterItems()
     }
     this->Items.FirstVisibleIndex = 0;
     this->Items.CurentItemIndex   = 0;
-    SendMsg(Event::ListViewCurrentItemChanged);
+    TriggerListViewItemChangedEvent();    
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
 {
@@ -1418,6 +1427,18 @@ void ListViewControlContext::TriggerSelectionChangeEvent(uint32 itemIndex)
         }
     }
     Host->RaiseEvent(Event::ListViewSelectionChanged);
+}
+void ListViewControlContext::TriggerListViewItemChangedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnCurrentItemChanged.obj)
+        {
+            lvh->OnCurrentItemChanged.obj->OnListViewItemChecked(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewCurrentItemChanged);
 }
 //=====================================================================================================
 ListView::~ListView()
