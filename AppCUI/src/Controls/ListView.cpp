@@ -800,7 +800,7 @@ void ListViewControlContext::MoveTo(int index)
     if (rel >= vis)
         Items.FirstVisibleIndex = (index - vis) + 1;
     if (originalPoz != index)
-        SendMsg(Event::ListViewCurrentItemChanged);
+        TriggerListViewItemChangedEvent();
 }
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
@@ -1384,7 +1384,7 @@ void ListViewControlContext::FilterItems()
     }
     this->Items.FirstVisibleIndex = 0;
     this->Items.CurentItemIndex   = 0;
-    SendMsg(Event::ListViewCurrentItemChanged);
+    TriggerListViewItemChangedEvent();    
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
 {
@@ -1427,6 +1427,18 @@ void ListViewControlContext::TriggerSelectionChangeEvent(uint32 itemIndex)
         }
     }
     Host->RaiseEvent(Event::ListViewSelectionChanged);
+}
+void ListViewControlContext::TriggerListViewItemChangedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnCurrentItemChanged.obj)
+        {
+            lvh->OnCurrentItemChanged.obj->OnListViewItemChecked(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewCurrentItemChanged);
 }
 //=====================================================================================================
 ListView::~ListView()

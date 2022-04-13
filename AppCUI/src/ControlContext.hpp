@@ -598,6 +598,7 @@ class ListViewControlContext : public ControlContext
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
     void TriggerSelectionChangeEvent(uint32 itemIndex);
+    void TriggerListViewItemChangedEvent();
     bool Sort();
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);

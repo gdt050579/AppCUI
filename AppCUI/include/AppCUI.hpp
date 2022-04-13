@@ -3199,6 +3199,8 @@ namespace Controls
                   OnItemSelected;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
                   OnItemChecked;
+            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnCurrentItemChanged;            
         };
 
         struct TreeView : public Control
