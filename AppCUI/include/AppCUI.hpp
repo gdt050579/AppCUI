@@ -2898,9 +2898,11 @@ namespace Controls
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
         using OnListViewItemSelectedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+              void (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
         using OnListViewItemCheckedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+              void (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+        using OnListViewCurrentItemChangedHandler =
+              void (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
 
         struct OnButtonPressedInterface
         {
@@ -3094,31 +3096,47 @@ namespace Controls
 
         struct OnListViewItemSelectedInterface
         {
-            virtual int OnListViewItemSelected(
+            virtual void OnListViewItemSelected(
                   Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
         };
         struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
         {
             OnListViewItemSelectedHandler callback;
-            virtual int OnListViewItemSelected(
+            virtual void OnListViewItemSelected(
                   Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
             {
-                return callback(lv, item);
+                callback(lv, item);
             };
         };
 
         struct OnListViewItemCheckedInterface
         {
-            virtual int OnListViewItemChecked(
+            virtual void OnListViewItemChecked(
                   Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
         };
         struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
         {
             OnListViewItemCheckedHandler callback;
-            virtual int OnListViewItemChecked(
+            virtual void OnListViewItemChecked(
                   Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
             {
-                return callback(lv, item);
+                callback(lv, item);
+            };
+        };
+
+        // OnListViewCurrentItemChangedHandler
+        struct OnListViewCurrentItemChangedInterface
+        {
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
+        };
+        struct OnListViewCurrentItemChangedCallback : public OnListViewCurrentItemChangedInterface
+        {
+            OnListViewCurrentItemChangedHandler callback;
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
+            {
+                callback(lv, item);
             };
         };
 
