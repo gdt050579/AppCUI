@@ -3359,16 +3359,69 @@ class CategoryDemo : public Window
     }
 };
 
+class HandlersDemo : public Window,
+                     public Handlers::OnListViewCurrentItemChangedInterface,
+                     public Handlers::OnListViewItemSelectedInterface,
+                     public Handlers::OnListViewItemCheckedInterface
+{
+    Reference<ListView> log;
+
+  public:
+    HandlersDemo() : Window("Handlers Usage Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(
+              this,
+              "x:1,y:9,w:66,h:6",
+              { { "", TextAlignament::Left, 55 } },
+              ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::AllowMultipleItemsSelection);
+
+        // items
+        lv->AddItems({ { "Dragos" }, { "Andrei" }, { "Raul" }, { "Gheorghita" } });
+        // set handlers for the list view
+        lv->Handlers()->OnCurrentItemChanged = this;
+        lv->Handlers()->OnItemSelected       = this;
+        lv->Handlers()->OnItemChecked        = this;
+        log = Factory::ListView::Create(
+              this, "x:30,y:1,w:36,h:8", { { "", TextAlignament::Left, 55 } }, ListViewFlags::HideColumns);
+        Factory::Label::Create(
+              this,
+              "Use:\n- Arrows to change current\n  item\n- Space to check or uncheck\n- Shift+arrows to select or\n  "
+              "unselect items",
+              "x:1,y:1,w:28,h:8");
+    }
+    std::string GetEventAndName(std::string_view text, ListViewItem item)
+    {
+        std::string name;
+        item.GetText(0).ToString(name);
+        std::string txt;
+        txt += text;
+        txt += name;
+        return txt;
+    }
+    virtual void OnListViewCurrentItemChanged(Reference<ListView>, ListViewItem item) override
+    {
+        log->AddItem(GetEventAndName("Current item = ", item));
+    }
+    virtual void OnListViewItemSelected(Reference<ListView>, ListViewItem item) override
+    {
+    }
+    virtual void OnListViewItemChecked(Reference<ListView>, ListViewItem item) override
+    {
+        LocalString<256> temp;
+        log->AddItem(temp.Format("%s => Status: %d",GetEventAndName("Current item = ", item).c_str(), item.IsChecked()));
+    }
+};
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar, cbHideBorder, cbHideScrollBar;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes, rbCategory;
+          rbSelect, rbItemTypes, rbCategory, rbHandlers;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:25", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:26", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3397,6 +3450,8 @@ class MyWin : public Window
               Factory::RadioBox::Create(this, "Selection examples using a 3000 items list", "x:1,y:17,w:56", MY_GROUP);
         rbItemTypes = Factory::RadioBox::Create(this, "Items types", "x:1,y:18,w:56", MY_GROUP);
         rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:19,w:56", MY_GROUP);
+        rbHandlers  = Factory::RadioBox::Create(
+              this, "Usage of handlers to intercept ListView events", "x:1,y:20,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
@@ -3482,6 +3537,11 @@ class MyWin : public Window
         if (rbCategory->IsChecked())
         {
             CategoryDemo win;
+            win.Show();
+        }
+        if (rbHandlers->IsChecked())
+        {
+            HandlersDemo win;
             win.Show();
         }
     }
