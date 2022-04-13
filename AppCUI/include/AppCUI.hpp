@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.57.0"
+#define APPCUI_VERSION "1.58.0"
 
 #include <filesystem>
 #include <map>
@@ -2994,6 +2994,11 @@ namespace Controls
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
+        using TreeViewItemCompareHandler = int (*)(
+              Reference<Controls::TreeView> control,
+              const Controls::TreeViewItem& item1,
+              const Controls::TreeViewItem& item2);
+
         struct OnButtonPressedInterface
         {
             virtual void OnButtonPressed(Reference<Controls::Button> r) = 0;
@@ -3289,9 +3294,29 @@ namespace Controls
                   OnCurrentItemChanged;
         };
 
+        struct TreeViewItemCompareInterface
+        {
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) = 0;
+        };
+        struct TreeViewItemCompareCallback : public TreeViewItemCompareInterface
+        {
+            TreeViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) override
+            {
+                return callback(control, item1, item2);
+            };
+        };
+
         struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+            Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
         };
 
     } // namespace Handlers
@@ -4256,6 +4281,8 @@ namespace Controls
         bool FoldAll();
         bool UnfoldAll();
         TreeViewItem GetParent() const;
+        uint32 GetPriority() const;
+        bool SetPriority(uint32 priority) const;
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
