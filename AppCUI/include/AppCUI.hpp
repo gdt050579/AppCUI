@@ -2028,7 +2028,7 @@ namespace OS
         static bool Clear();
         static bool HasText();
     };
-    class EXPORT IFile
+    class EXPORT DataObject
     {
       protected:
         // virtual methods (protected)
@@ -2036,7 +2036,7 @@ namespace OS
         virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
 
       public:
-        virtual ~IFile();
+        virtual ~DataObject();
 
         // virtual methods (public)
         virtual uint64 GetSize();
@@ -2077,7 +2077,7 @@ namespace OS
         }
     };
 
-    class EXPORT File : public IFile
+    class EXPORT File : public DataObject
     {
         union
         {
@@ -2123,6 +2123,31 @@ namespace OS
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
         static bool WriteContent(const std::filesystem::path& path, Utils::BufferView buf);
         static bool WriteContent(const std::filesystem::path& path, string_view text);
+    };
+
+    class EXPORT MemoryFile : public DataObject
+    {
+        uint8* buffer;
+        uint64 size;
+        uint64 allocated;
+        uint64 pos;
+
+      protected:
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
+      
+      public:
+        MemoryFile();
+        ~MemoryFile();
+
+        bool Create(uint64 allocatedMemory = 0);
+        bool Create(const void* buffer, uint64 size);
+
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
+        void Close() override;
     };
 
     class EXPORT Library
