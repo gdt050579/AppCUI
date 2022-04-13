@@ -1046,7 +1046,7 @@ bool TreeViewItem::SetText(uint32 subItemIndex, const ConstString& text)
     CHECK(subItemIndex < cc->columns.size(), false, "");
 
     auto& item = cc->items.at(handle);
-    if (item.values.size() < subItemIndex)
+    if (item.values.size() <= subItemIndex)
     {
         item.values.resize(subItemIndex + 1ULL);
     }
