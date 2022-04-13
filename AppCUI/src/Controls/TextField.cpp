@@ -595,8 +595,11 @@ void TextField::OnAfterResize(int /*newWidth*/, int /*newHeight*/)
 void TextField::OnFocus()
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
-    SelectAll();
-    Members->FullSelectionDueToOnFocusEvent = Members->Text.Len() > 0;
+    if (!(Members->Flags && TextFieldFlags::DisableAutoSelectOnFocus))
+    {
+        SelectAll();
+        Members->FullSelectionDueToOnFocusEvent = Members->Text.Len() > 0;
+    }
 }
 bool TextField::OnMouseEnter()
 {
