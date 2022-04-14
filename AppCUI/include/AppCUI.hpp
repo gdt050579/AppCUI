@@ -2980,7 +2980,7 @@ namespace Controls
         using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = void (*)(TreeViewItem& item);
+        using OnTreeItemToggleHandler    = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
         using OnTreeItemSelectedHandler  = void (*)(TreeViewItem& item);
         using OnTreeItemPressedHandler   = void (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
@@ -3147,15 +3147,15 @@ namespace Controls
 
         struct OnTreeItemToggleInterface
         {
-            virtual void OnTreeItemToggle(TreeViewItem& item) = 0;
+            virtual void OnTreeItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
         struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
         {
             OnTreeItemToggleHandler callback;
 
-            virtual void OnTreeItemToggle(TreeViewItem& item) override
+            virtual void OnTreeItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
-                return callback(item);
+                return callback(tree, item);
             };
         };
 
