@@ -127,7 +127,7 @@ class PropertyEditDialog : public Window
             else
                 Validate();
             return true;
-        case Event::ListViewItemClicked:
+        case Event::ListViewItemPressed:
             if (!this->isReadOnly)
                 Validate();
             return true;
