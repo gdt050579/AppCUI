@@ -3362,7 +3362,8 @@ class CategoryDemo : public Window
 class HandlersDemo : public Window,
                      public Handlers::OnListViewCurrentItemChangedInterface,
                      public Handlers::OnListViewItemSelectedInterface,
-                     public Handlers::OnListViewItemCheckedInterface
+                     public Handlers::OnListViewItemCheckedInterface,
+                     public Handlers::OnListViewItemPressedInterface
 {
     Reference<ListView> log;
 
@@ -3381,6 +3382,7 @@ class HandlersDemo : public Window,
         lv->Handlers()->OnCurrentItemChanged = this;
         lv->Handlers()->OnItemSelected       = this;
         lv->Handlers()->OnItemChecked        = this;
+        lv->Handlers()->OnItemPressed        = this;
         log = Factory::ListView::Create(
               this, "x:30,y:1,w:36,h:8", { { "", TextAlignament::Left, 55 } }, ListViewFlags::HideColumns);
         Factory::Label::Create(
@@ -3401,6 +3403,10 @@ class HandlersDemo : public Window,
     virtual void OnListViewCurrentItemChanged(Reference<ListView>, ListViewItem item) override
     {
         log->SetCurrentItem(log->AddItem(GetEventAndName("Current item = ", item)));        
+    }
+    virtual void OnListViewItemPressed(Reference<ListView>, ListViewItem item) override
+    {
+        log->SetCurrentItem(log->AddItem(GetEventAndName("Pressed = ", item)));
     }
     virtual void OnListViewItemSelected(Reference<ListView>, ListViewItem item) override
     {

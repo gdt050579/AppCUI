@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.59.0"
+#define APPCUI_VERSION "1.60.0"
 
 #include <filesystem>
 #include <map>
@@ -2868,7 +2868,7 @@ namespace Controls
         ListViewCurrentItemChanged,
         ListViewSelectionChanged,
         ListViewItemChecked,
-        ListViewItemClicked,
+        ListViewItemPressed,
         ComboBoxSelectedItemChanged,
         ComboBoxClosed,
         ColorPickerSelectedColorChanged,
@@ -2993,6 +2993,7 @@ namespace Controls
               const Controls::ListViewItem& item2);
         using OnListViewItemSelectedHandler = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewItemCheckedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemPressedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
@@ -3217,6 +3218,19 @@ namespace Controls
             };
         };
 
+        struct OnListViewItemPressedInterface
+        {
+            virtual void OnListViewItemPressed(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewItemPressedCallback : public OnListViewItemPressedInterface
+        {
+            OnListViewItemPressedHandler callback;
+            virtual void OnListViewItemPressed(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
+            };
+        };
+
         // OnListViewCurrentItemChangedHandler
         struct OnListViewCurrentItemChangedInterface
         {
@@ -3292,6 +3306,8 @@ namespace Controls
                   OnItemSelected;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
                   OnItemChecked;
+            Wrapper<OnListViewItemPressedInterface, OnListViewItemPressedCallback, OnListViewItemPressedHandler>
+                  OnItemPressed;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
                   OnCurrentItemChanged;
         };

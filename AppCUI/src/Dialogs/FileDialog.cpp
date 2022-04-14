@@ -589,7 +589,7 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
             FileListItemChanged();
         }
         return true;
-    case Event::ListViewItemClicked:
+    case Event::ListViewItemPressed:
         if (sender == lSpecialPaths.ToBase<Control>())
         {
             SpecialFoldersUpdatePath();

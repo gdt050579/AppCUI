@@ -953,16 +953,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                     else
                         lvi->Flags |= ITEM_FLAG_CHECKED;
                 }
-                if (this->handlers)
-                {
-                    auto lvh = (Handlers::ListView*) (this->handlers.get());
-                    if (lvh->OnItemChecked.obj)
-                    {
-                        lvh->OnItemChecked.obj->OnListViewItemChecked(
-                              this->Host, this->Host->GetItem(Items.CurentItemIndex));
-                    }
-                }
-                SendMsg(Event::ListViewItemChecked);
+                TriggerListViewItemCheckedEvent();
             }
             else
             {
@@ -985,7 +976,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
             }
             return false;
         case Key::Enter:
-            SendMsg(Event::ListViewItemClicked);
+            TriggerListViewItemPressedEvent();
             return true;
         case Key::Escape:
             if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
@@ -1164,12 +1155,12 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
                     i->Flags -= ITEM_FLAG_CHECKED;
                 else
                     i->Flags |= ITEM_FLAG_CHECKED;
-                SendMsg(Event::ListViewItemChecked);
+                TriggerListViewItemCheckedEvent();
             }
             else
             {
                 if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
-                    SendMsg(Event::ListViewItemClicked);
+                    TriggerListViewItemPressedEvent();
             }
         }
     }
@@ -1439,6 +1430,30 @@ void ListViewControlContext::TriggerListViewItemChangedEvent()
         }
     }
     Host->RaiseEvent(Event::ListViewCurrentItemChanged);
+}
+void ListViewControlContext::TriggerListViewItemPressedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnItemPressed.obj)
+        {
+            lvh->OnItemPressed.obj->OnListViewItemPressed(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewItemPressed);
+}
+void ListViewControlContext::TriggerListViewItemCheckedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnItemChecked.obj)
+        {
+            lvh->OnItemChecked.obj->OnListViewItemChecked(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewItemChecked);
 }
 //=====================================================================================================
 ListView::~ListView()
