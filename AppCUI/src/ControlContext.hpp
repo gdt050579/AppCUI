@@ -758,7 +758,7 @@ class TreeControlContext : public ControlContext
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(Reference<TreeView> tv, const ItemHandle handle);
 
-    bool ItemsPainting(Graphics::Renderer& renderer);
+    bool PaintItems(Graphics::Renderer& renderer);
     bool PaintColumnHeaders(Graphics::Renderer& renderer);
     bool PaintColumnSeparators(Graphics::Renderer& renderer);
     bool MoveUp();
