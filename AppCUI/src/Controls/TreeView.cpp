@@ -23,6 +23,7 @@ TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> colu
     cc->Layout.MinHeight = 1;
     cc->Layout.MaxHeight = 200000;
     cc->Layout.MinWidth  = 20;
+    cc->host             = this;
 
     cc->treeFlags = static_cast<uint32>(flags);
 
@@ -316,7 +317,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 if (handler->OnItemPressed.obj)
                 {
                     TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
-                    handler->OnItemPressed.obj->OnTreeItemPressed(tvi);
+                    handler->OnItemPressed.obj->OnTreeItemPressed(this, tvi);
                 }
             }
         }
@@ -1337,7 +1338,7 @@ void TreeControlContext::SetSelectedItemHandle(TreeViewItem& item)
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
         if (handler->OnItemSelected.obj)
         {
-            handler->OnItemSelected.obj->OnTreeItemSelected(item);
+            handler->OnItemSelected.obj->OnTreeItemSelected(this->host, item);
         }
     }
 }
