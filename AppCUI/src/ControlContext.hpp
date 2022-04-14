@@ -599,6 +599,8 @@ class ListViewControlContext : public ControlContext
     void SendMsg(Event eventType);
     void TriggerSelectionChangeEvent(uint32 itemIndex);
     void TriggerListViewItemChangedEvent();
+    void TriggerListViewItemPressedEvent();
+    void TriggerListViewItemCheckedEvent();
     bool Sort();
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);

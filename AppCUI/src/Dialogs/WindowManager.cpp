@@ -199,7 +199,7 @@ bool InternalWindowManager::OnEvent(Reference<Control> c, Event eventType, int i
         }
     }
 
-    if (eventType == Event::ListViewItemClicked)
+    if (eventType == Event::ListViewItemPressed)
     {
         GoToSelectedItem();
         Exit(Result::Ok);
