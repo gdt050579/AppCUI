@@ -985,7 +985,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
             }
             return false;
         case Key::Enter:
-            SendMsg(Event::ListViewItemClicked);
+            TriggerListViewItemPressedEvent();
             return true;
         case Key::Escape:
             if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
@@ -1169,7 +1169,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
             else
             {
                 if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
-                    SendMsg(Event::ListViewItemClicked);
+                    TriggerListViewItemPressedEvent();
             }
         }
     }
@@ -1439,6 +1439,18 @@ void ListViewControlContext::TriggerListViewItemChangedEvent()
         }
     }
     Host->RaiseEvent(Event::ListViewCurrentItemChanged);
+}
+void ListViewControlContext::TriggerListViewItemPressedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnItemPressed.obj)
+        {
+            lvh->OnItemPressed.obj->OnListViewItemPressed(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewItemPressed);
 }
 //=====================================================================================================
 ListView::~ListView()
