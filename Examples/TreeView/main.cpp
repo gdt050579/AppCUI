@@ -71,7 +71,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         root.SetData(Reference<std::u16string>(&cpath));
     }
 
-    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> control, Event eventType, int controlID) override
     {
         switch (eventType)
         {
@@ -114,7 +114,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                     auto& localPath = pieces.emplace_back(path.u16string());
                     root.SetData(Reference<std::u16string>(&localPath));
 
-                    OnTreeItemToggle(root);
+                    OnTreeItemToggle(control.ToObjectRef<TreeView>(), root);
                 }
 
                 return true;
@@ -125,7 +125,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         return false;
     }
 
-    void OnTreeItemToggle(TreeViewItem& item) override
+    void OnTreeItemToggle(Reference<TreeView> tree, TreeViewItem& item) override
     {
         auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
