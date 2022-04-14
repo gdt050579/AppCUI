@@ -464,6 +464,20 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         break;
 
+    case Key::Enter:
+        if (cc->Focused && cc->GetSelectedItemHandle() != InvalidItemHandle)
+        {
+            if (cc->handlers != nullptr)
+            {
+                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
+                if (handler->OnTreeItemPressed.obj)
+                {
+                    TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
+                    handler->OnTreeItemPressed.obj->OnTreeItemPressed(tvi);
+                }
+            }
+        }
+        break;
     default:
         break;
     }
@@ -577,8 +591,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
 
-            if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
-                x < static_cast<int>(cc->Layout.Width))
+            if (x > static_cast<int>(it->second.depth * ItemSymbolOffset) && x < static_cast<int>(cc->Layout.Width))
             {
                 TreeViewItem tvi{ this, itemHandle };
                 cc->SetSelectedItemHandle(tvi);
@@ -593,7 +606,19 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
         break;
     case Input::MouseButton::Right:
         break;
-    case Input::MouseButton::DoubleClicked:
+    case Input::MouseButton::DoubleClicked | Input::MouseButton::Left:
+        if (cc->Focused && cc->GetSelectedItemHandle() != InvalidItemHandle)
+        {
+            if (cc->handlers != nullptr)
+            {
+                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
+                if (handler->OnTreeItemPressed.obj)
+                {
+                    TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
+                    handler->OnTreeItemPressed.obj->OnTreeItemPressed(tvi);
+                }
+            }
+        }
         break;
     default:
         break;
@@ -1557,9 +1582,7 @@ bool TreeControlContext::IsMouseOnItem(int x, int y) const
     const auto itemHandle = itemsToDrew[static_cast<size_t>(offsetTopToDraw) + index];
     const auto it         = items.find(itemHandle);
 
-    return (
-          x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
-          x < static_cast<int>(Layout.Width));
+    return (x > static_cast<int>(it->second.depth * ItemSymbolOffset) && x < static_cast<int>(Layout.Width));
 }
 
 bool TreeControlContext::IsMouseOnBorder(int x, int y) const

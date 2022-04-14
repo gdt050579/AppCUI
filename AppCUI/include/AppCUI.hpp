@@ -2135,7 +2135,7 @@ namespace OS
       protected:
         bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
         bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
-      
+
       public:
         MemoryFile();
         ~MemoryFile();
@@ -2982,6 +2982,7 @@ namespace Controls
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
         using OnTreeItemToggleHandler    = void (*)(TreeViewItem& item);
         using OnTreeItemSelectedHandler  = void (*)(TreeViewItem& item);
+        using OnTreeItemPressedHandler   = void (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3328,12 +3329,27 @@ namespace Controls
             };
         };
 
+        struct OnTreeItemPressedInterface
+        {
+            virtual void OnTreeItemPressed(TreeViewItem& item) = 0;
+        };
+        struct OnTreeItemPressedCallback : public OnTreeItemPressedInterface
+        {
+            OnTreeItemPressedHandler callback;
+
+            virtual void OnTreeItemPressed(TreeViewItem& item) override
+            {
+                return callback(item);
+            };
+        };
+
         struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
             Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler>
                   OnTreeItemSelected;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
+            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnTreeItemPressed;
         };
 
     } // namespace Handlers
