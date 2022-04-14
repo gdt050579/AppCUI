@@ -2956,6 +2956,7 @@ namespace Controls
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
         using OnTreeItemToggleHandler    = void (*)(TreeViewItem& item);
+        using OnTreeItemSelectedHandler  = void (*)(TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3288,9 +3289,25 @@ namespace Controls
             };
         };
 
+        struct OnTreeItemSelectedInterface
+        {
+            virtual void OnTreeItemSelected(TreeViewItem& item) = 0;
+        };
+        struct OnTreeItemSelectedCallback : public OnTreeItemSelectedInterface
+        {
+            OnTreeItemSelectedHandler callback;
+
+            virtual void OnTreeItemSelected(TreeViewItem& item) override
+            {
+                return callback(item);
+            };
+        };
+
         struct TreeView : public Control
         {
             Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+            Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler>
+                  OnTreeItemSelected;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
         };
 

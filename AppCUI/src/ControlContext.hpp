@@ -700,12 +700,14 @@ struct TreeItem
 
 class TreeControlContext : public ControlContext
 {
+  private:
+    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
+
   public:
     std::map<ItemHandle, TreeItem> items;
     vector<ItemHandle> itemsToDrew;
     vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
-    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     uint32 maxItemsToDraw  = 0;
     uint32 offsetTopToDraw = 0;
     uint32 offsetBotToDraw = 0;
@@ -745,12 +747,16 @@ class TreeControlContext : public ControlContext
     bool sortAscendent                   = true;
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
-    void ColumnSort(uint32 columnIndex);
+
+    void SetSelectedItemHandle(TreeViewItem& item);
+    ItemHandle GetSelectedItemHandle();
+
+    void ColumnSort(Reference<TreeView> tv, uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
     void SelectColumnSeparator(int32 offset);
-    bool Sort();
+    bool Sort(Reference<TreeView> tv);
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
-    bool SortByColumn(const ItemHandle handle);
+    bool SortByColumn(Reference<TreeView> tv, const ItemHandle handle);
 
     bool ItemsPainting(Graphics::Renderer& renderer);
     bool PaintColumnHeaders(Graphics::Renderer& renderer);
