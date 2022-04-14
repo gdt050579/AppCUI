@@ -313,10 +313,10 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->handlers != nullptr)
             {
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                if (handler->OnTreeItemPressed.obj)
+                if (handler->OnItemPressed.obj)
                 {
                     TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
-                    handler->OnTreeItemPressed.obj->OnTreeItemPressed(tvi);
+                    handler->OnItemPressed.obj->OnTreeItemPressed(tvi);
                 }
             }
         }
@@ -917,9 +917,9 @@ bool TreeViewItem::Toggle()
             if (cc->handlers != nullptr)
             {
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                if (handler->OnTreeItemToggle.obj)
+                if (handler->OnItemToggle.obj)
                 {
-                    handler->OnTreeItemToggle.obj->OnTreeItemToggle(obj, *this);
+                    handler->OnItemToggle.obj->OnTreeItemToggle(obj, *this);
                 }
             }
         }
@@ -1335,9 +1335,9 @@ void TreeControlContext::SetSelectedItemHandle(TreeViewItem& item)
     if (handlers != nullptr)
     {
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
-        if (handler->OnTreeItemSelected.obj)
+        if (handler->OnItemSelected.obj)
         {
-            handler->OnTreeItemSelected.obj->OnTreeItemSelected(item);
+            handler->OnItemSelected.obj->OnTreeItemSelected(item);
         }
     }
 }

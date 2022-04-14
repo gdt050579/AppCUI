@@ -3361,11 +3361,10 @@ namespace Controls
 
         struct TreeView : public Control
         {
-            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
-            Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler>
-                  OnTreeItemSelected;
+            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnItemToggle;
+            Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler> OnItemSelected;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
-            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnTreeItemPressed;
+            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnItemPressed;
         };
 
     } // namespace Handlers
