@@ -953,16 +953,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                     else
                         lvi->Flags |= ITEM_FLAG_CHECKED;
                 }
-                if (this->handlers)
-                {
-                    auto lvh = (Handlers::ListView*) (this->handlers.get());
-                    if (lvh->OnItemChecked.obj)
-                    {
-                        lvh->OnItemChecked.obj->OnListViewItemChecked(
-                              this->Host, this->Host->GetItem(Items.CurentItemIndex));
-                    }
-                }
-                SendMsg(Event::ListViewItemChecked);
+                TriggerListViewItemCheckedEvent();
             }
             else
             {
@@ -1164,7 +1155,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
                     i->Flags -= ITEM_FLAG_CHECKED;
                 else
                     i->Flags |= ITEM_FLAG_CHECKED;
-                SendMsg(Event::ListViewItemChecked);
+                TriggerListViewItemCheckedEvent();
             }
             else
             {
@@ -1451,6 +1442,18 @@ void ListViewControlContext::TriggerListViewItemPressedEvent()
         }
     }
     Host->RaiseEvent(Event::ListViewItemPressed);
+}
+void ListViewControlContext::TriggerListViewItemCheckedEvent()
+{
+    if (this->handlers)
+    {
+        auto lvh = (Handlers::ListView*) (this->handlers.get());
+        if (lvh->OnItemChecked.obj)
+        {
+            lvh->OnItemChecked.obj->OnListViewItemChecked(this->Host, this->Host->GetCurrentItem());
+        }
+    }
+    Host->RaiseEvent(Event::ListViewItemChecked);
 }
 //=====================================================================================================
 ListView::~ListView()
