@@ -846,7 +846,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     {
         if ((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
-            lvi = GetFilteredItem(Items.CurentItemIndex);
+            lvi                   = GetFilteredItem(Items.CurentItemIndex);
             auto currentItemIndex = Items.CurentItemIndex;
             if (lvi != nullptr)
                 selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
@@ -1375,7 +1375,7 @@ void ListViewControlContext::FilterItems()
     }
     this->Items.FirstVisibleIndex = 0;
     this->Items.CurentItemIndex   = 0;
-    TriggerListViewItemChangedEvent();    
+    TriggerListViewItemChangedEvent();
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
 {
@@ -1547,7 +1547,7 @@ ListViewColumn ListView::AddColumn(const ConstString& text, TextAlignament align
 }
 void ListView::AddColumns(std::initializer_list<ColumnBuilder> columns)
 {
-    for (auto& column: columns)
+    for (auto& column : columns)
     {
         WRAPPER->AddColumn(column.name, column.align, column.width);
     }
@@ -1770,6 +1770,20 @@ bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
     LVICHECK(false);
     return LVIC->SetItemText(item, subItem, text);
 }
+bool ListViewItem::SetValues(std::initializer_list<ConstString> values)
+{
+    LVICHECK(false);
+    auto idx        = 0U;
+    auto maxColumns = LVIC->Columns.Count;
+    for (auto& value : values)
+    {
+        if (idx >= maxColumns)
+            break;
+        CHECK(LVIC->SetItemText(item, idx, value), false, "Fail to set value for item: %d", idx);
+        idx++;
+    }
+    return true;
+}
 const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) const
 {
     if (this->context)
@@ -1817,7 +1831,6 @@ bool ListViewItem::IsCurrent() const
     return ((uint32) this->item) == indexes[lvcc->Items.CurentItemIndex];
 }
 
-
 bool ListViewItem::SetHeight(uint32 Height)
 {
     LVICHECK(false);
@@ -1843,35 +1856,32 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 #define LVCC ((ListViewControlContext*) this->context)
 #define LVCCHECK(result)                                                                                               \
     if (this->context == nullptr)                                                                                      \
-        return result;
+        return result;                                                                                                 \
+    CHECK(index < LVCC->Columns.Count,                                                                                 \
+          result,                                                                                                      \
+          "Invalid column index:%d (should be smaller than %d)",                                                       \
+          index,                                                                                                       \
+          LVCC->Columns.Count);
+
 bool ListViewColumn::SetText(const ConstString& text)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     return LVCC->Columns.List[index].SetName(text);
+}
+const Graphics::CharacterBuffer& ListViewColumn::GetText() const
+{
+    __temp_listviewitem_reference_object__.Destroy();
+    LVCCHECK(__temp_listviewitem_reference_object__);
+    return LVCC->Columns.List[index].Name;
 }
 bool ListViewColumn::SetAlignament(TextAlignament Align)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     return LVCC->Columns.List[index].SetAlign(Align);
 }
 bool ListViewColumn::SetWidth(uint32 width)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     LVCC->Columns.List[index].SetWidth(width);
     LVCC->UpdateColumnsWidth();
     return true;

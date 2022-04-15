@@ -2942,6 +2942,7 @@ namespace Controls
         bool IsChecked() const;
         bool SetType(ListViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
+        bool SetValues(std::initializer_list<ConstString> value);
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
@@ -3994,6 +3995,7 @@ namespace Controls
 
       public:
         bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
         bool SetAlignament(Graphics::TextAlignament Align);
         bool SetWidth(uint32 width);
         bool SetClipboardCopyState(bool allowCopy);
