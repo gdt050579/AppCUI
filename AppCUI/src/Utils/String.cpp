@@ -321,7 +321,16 @@ String::String(String&& s)
     if (s.Allocated & STRING_FLAG_STACK_BUFFER)
     {
         // we need to copy
-        Set(s.Text, s.Size);
+        Text = nullptr;
+        Size = Allocated = 0;
+        if (Create(s.Size + 32))
+        {
+            if (s.Text)
+            {
+                memcpy(this->Text, s.Text, s.Size + 1);
+                this->Size = s.Size;
+            }
+        }
     }
     else
     {
