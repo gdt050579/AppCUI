@@ -846,7 +846,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     {
         if ((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
-            lvi = GetFilteredItem(Items.CurentItemIndex);
+            lvi                   = GetFilteredItem(Items.CurentItemIndex);
             auto currentItemIndex = Items.CurentItemIndex;
             if (lvi != nullptr)
                 selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
@@ -1375,7 +1375,7 @@ void ListViewControlContext::FilterItems()
     }
     this->Items.FirstVisibleIndex = 0;
     this->Items.CurentItemIndex   = 0;
-    TriggerListViewItemChangedEvent();    
+    TriggerListViewItemChangedEvent();
 }
 void ListViewControlContext::UpdateSearch(int startPoz)
 {
@@ -1547,7 +1547,7 @@ ListViewColumn ListView::AddColumn(const ConstString& text, TextAlignament align
 }
 void ListView::AddColumns(std::initializer_list<ColumnBuilder> columns)
 {
-    for (auto& column: columns)
+    for (auto& column : columns)
     {
         WRAPPER->AddColumn(column.name, column.align, column.width);
     }
@@ -1770,6 +1770,20 @@ bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
     LVICHECK(false);
     return LVIC->SetItemText(item, subItem, text);
 }
+bool ListViewItem::SetValues(std::initializer_list<ConstString> values)
+{
+    LVICHECK(false);
+    auto idx        = 0U;
+    auto maxColumns = LVIC->Columns.Count;
+    for (auto& value : values)
+    {
+        if (idx >= maxColumns)
+            break;
+        CHECK(LVIC->SetItemText(item, idx, value), false, "Fail to set value for item: %d", idx);
+        idx++;
+    }
+    return true;
+}
 const Graphics::CharacterBuffer& ListViewItem::GetText(uint32 subItemIndex) const
 {
     if (this->context)
@@ -1816,7 +1830,6 @@ bool ListViewItem::IsCurrent() const
     uint32* indexes = lvcc->Items.Indexes.GetUInt32Array();
     return ((uint32) this->item) == indexes[lvcc->Items.CurentItemIndex];
 }
-
 
 bool ListViewItem::SetHeight(uint32 Height)
 {
