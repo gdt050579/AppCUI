@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.60.0"
+#define APPCUI_VERSION "1.66.0"
 
 #include <filesystem>
 #include <map>
@@ -1022,6 +1022,7 @@ namespace Utils
       public:
         String(void);
         String(const String& s);
+        String(String&& s);
         ~String(void);
 
         // Static functions
@@ -1118,11 +1119,31 @@ namespace Utils
             this->Set(s);
             return *this;
         }
+        inline String& operator=(String&& s)
+        {
+            if (s.Allocated & 0x80000000)
+            {
+                // we need to copy
+                Set(s.Text, s.Size);
+            }
+            else
+            {
+                Text      = s.Text;
+                Size      = s.Size;
+                Allocated = s.Allocated;
+
+                s.Text      = nullptr;
+                s.Size      = 0;
+                s.Allocated = 0;
+            }
+            return *this;
+        }
         inline String& operator=(const char* text)
         {
             this->Set(text);
             return *this;
         }
+
         inline operator char*() const
         {
             return Text;
@@ -2942,6 +2963,7 @@ namespace Controls
         bool IsChecked() const;
         bool SetType(ListViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
+        bool SetValues(std::initializer_list<ConstString> value);
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
@@ -2981,8 +3003,8 @@ namespace Controls
         using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
         using OnStartHandler     = void (*)(Reference<Controls::Control> control);
         using OnTreeItemToggleHandler    = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
-        using OnTreeItemSelectedHandler  = void (*)(TreeViewItem& item);
-        using OnTreeItemPressedHandler   = void (*)(TreeViewItem& item);
+        using OnTreeItemSelectedHandler  = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
+        using OnTreeItemPressedHandler   = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
         using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
@@ -3333,39 +3355,38 @@ namespace Controls
 
         struct OnTreeItemSelectedInterface
         {
-            virtual void OnTreeItemSelected(TreeViewItem& item) = 0;
+            virtual void OnTreeItemSelected(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
         struct OnTreeItemSelectedCallback : public OnTreeItemSelectedInterface
         {
             OnTreeItemSelectedHandler callback;
 
-            virtual void OnTreeItemSelected(TreeViewItem& item) override
+            virtual void OnTreeItemSelected(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
-                return callback(item);
+                return callback(tree, item);
             };
         };
 
         struct OnTreeItemPressedInterface
         {
-            virtual void OnTreeItemPressed(TreeViewItem& item) = 0;
+            virtual void OnTreeItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
         struct OnTreeItemPressedCallback : public OnTreeItemPressedInterface
         {
             OnTreeItemPressedHandler callback;
 
-            virtual void OnTreeItemPressed(TreeViewItem& item) override
+            virtual void OnTreeItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
-                return callback(item);
+                return callback(tree, item);
             };
         };
 
         struct TreeView : public Control
         {
-            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
-            Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler>
-                  OnTreeItemSelected;
+            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnItemToggle;
+            Wrapper<OnTreeItemSelectedInterface, OnTreeItemSelectedCallback, OnTreeItemSelectedHandler> OnItemSelected;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
-            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnTreeItemPressed;
+            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnItemPressed;
         };
 
     } // namespace Handlers
@@ -3995,6 +4016,7 @@ namespace Controls
 
       public:
         bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
         bool SetAlignament(Graphics::TextAlignament Align);
         bool SetWidth(uint32 width);
         bool SetClipboardCopyState(bool allowCopy);
