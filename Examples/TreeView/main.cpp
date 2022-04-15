@@ -46,7 +46,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                 { u"&Size (bytes)", TextAlignament::Right, 25 } },
               (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
 
-        tree->Handlers()->OnTreeItemToggle = this;
+        tree->Handlers()->OnItemToggle = this;
 
         tree->ClearItems();
         const auto path              = std::filesystem::current_path().u16string();

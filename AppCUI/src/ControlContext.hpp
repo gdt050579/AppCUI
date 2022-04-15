@@ -706,6 +706,7 @@ class TreeControlContext : public ControlContext
     ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
 
   public:
+    Reference<TreeView> host;
     std::map<ItemHandle, TreeItem> items;
     vector<ItemHandle> itemsToDrew;
     vector<ItemHandle> orderedItems;

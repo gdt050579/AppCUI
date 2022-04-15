@@ -23,9 +23,6 @@ const uint8 string_lowercase_table[256] = {
 };
 constexpr uint32 STRING_FLAG_STACK_BUFFER = 0x80000000;
 
-constexpr uint32 STRING_FLAG_STATIC_BUFFER    = 1;
-constexpr uint32 STRING_FLAG_CONSTANT         = 2;
-constexpr uint32 STRING_FLAG_STATIC_WITH_GROW = 4;
 
 #define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
     if (textSize == 0xFFFFFFFF)                                                                                        \
@@ -319,6 +316,34 @@ String::String(const String& s)
         }
     }
 }
+String::String(String&& s)
+{
+    if (s.Allocated & STRING_FLAG_STACK_BUFFER)
+    {
+        // we need to copy
+        Text = nullptr;
+        Size = Allocated = 0;
+        if (Create(s.Size + 32))
+        {
+            if (s.Text)
+            {
+                memcpy(this->Text, s.Text, s.Size + 1);
+                this->Size = s.Size;
+            }
+        }
+    }
+    else
+    {
+        // we can move
+        Text      = s.Text;
+        Size      = s.Size;
+        Allocated = s.Allocated;
+
+        s.Text      = nullptr;
+        s.Size      = 0;
+        s.Allocated = 0;
+    }
+}
 String::~String(void)
 {
     Destroy();
@@ -335,7 +360,7 @@ void String::Destroy()
 
 bool String::Create(uint32 initialAllocatedBufferSize)
 {
-    CHECK(initialAllocatedBufferSize == 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
+    CHECK(initialAllocatedBufferSize != 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
     initialAllocatedBufferSize = ((initialAllocatedBufferSize | 15) + 1) & 0x7FFFFFFF;
     if (initialAllocatedBufferSize <= (Allocated & 0x7FFFFFFF))
     {
@@ -415,7 +440,7 @@ bool String::Grow(uint32 newSize)
     {
         memcpy(temp, Text, Size + 1);
         if ((Allocated & STRING_FLAG_STACK_BUFFER) == 0)
-            delete []Text;
+            delete[] Text;
     }
     Text      = temp;
     Allocated = newSize;
