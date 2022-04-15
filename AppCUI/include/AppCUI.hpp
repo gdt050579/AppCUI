@@ -1121,14 +1121,21 @@ namespace Utils
         }
         inline String& operator=(String&& s)
         {
-            Text      = s.Text;
-            Size      = s.Size;
-            Allocated = s.Allocated;
+            if (s.Allocated & 0x80000000)
+            {
+                // we need to copy
+                Set(s.Text, s.Size);
+            }
+            else
+            {
+                Text      = s.Text;
+                Size      = s.Size;
+                Allocated = s.Allocated;
 
-            s.Text      = nullptr;
-            s.Size      = 0;
-            s.Allocated = 0;
-
+                s.Text      = nullptr;
+                s.Size      = 0;
+                s.Allocated = 0;
+            }
             return *this;
         }
         inline String& operator=(const char* text)

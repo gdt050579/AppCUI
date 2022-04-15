@@ -23,9 +23,6 @@ const uint8 string_lowercase_table[256] = {
 };
 constexpr uint32 STRING_FLAG_STACK_BUFFER = 0x80000000;
 
-constexpr uint32 STRING_FLAG_STATIC_BUFFER    = 1;
-constexpr uint32 STRING_FLAG_CONSTANT         = 2;
-constexpr uint32 STRING_FLAG_STATIC_WITH_GROW = 4;
 
 #define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
     if (textSize == 0xFFFFFFFF)                                                                                        \
@@ -321,14 +318,22 @@ String::String(const String& s)
 }
 String::String(String&& s)
 {
-    Text      = s.Text;
-    Size      = s.Size;
-    Allocated = s.Allocated;
-    
-    s.Text      = nullptr;
-    s.Size      = 0;
-    s.Allocated = 0;
+    if (s.Allocated & STRING_FLAG_STACK_BUFFER)
+    {
+        // we need to copy
+        Set(s.Text, s.Size);
+    }
+    else
+    {
+        // we can move
+        Text      = s.Text;
+        Size      = s.Size;
+        Allocated = s.Allocated;
 
+        s.Text      = nullptr;
+        s.Size      = 0;
+        s.Allocated = 0;
+    }
 }
 String::~String(void)
 {
