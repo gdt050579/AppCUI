@@ -62,11 +62,11 @@ bool MemoryFile::Create(uint64 allocatedMemory)
 }
 bool MemoryFile::Create(const void* _buffer, uint64 _size)
 {
-    CHECK(Create(size), false, "Fail to create buffers !");
+    CHECK(Create(_size), false, "Fail to create buffers !");
     if (_buffer)
     {
-        memcpy(this->buffer, _buffer, size);
-        this->pos  = size;
+        memcpy(this->buffer, _buffer, _size);
+        this->pos  = _size;
         this->size = _size;
     }
     return true;
