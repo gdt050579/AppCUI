@@ -319,6 +319,17 @@ String::String(const String& s)
         }
     }
 }
+String::String(String&& s)
+{
+    Text      = s.Text;
+    Size      = s.Size;
+    Allocated = s.Allocated;
+    
+    s.Text      = nullptr;
+    s.Size      = 0;
+    s.Allocated = 0;
+
+}
 String::~String(void)
 {
     Destroy();
@@ -335,7 +346,7 @@ void String::Destroy()
 
 bool String::Create(uint32 initialAllocatedBufferSize)
 {
-    CHECK(initialAllocatedBufferSize == 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
+    CHECK(initialAllocatedBufferSize != 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
     initialAllocatedBufferSize = ((initialAllocatedBufferSize | 15) + 1) & 0x7FFFFFFF;
     if (initialAllocatedBufferSize <= (Allocated & 0x7FFFFFFF))
     {
@@ -415,7 +426,7 @@ bool String::Grow(uint32 newSize)
     {
         memcpy(temp, Text, Size + 1);
         if ((Allocated & STRING_FLAG_STACK_BUFFER) == 0)
-            delete []Text;
+            delete[] Text;
     }
     Text      = temp;
     Allocated = newSize;

@@ -1022,6 +1022,7 @@ namespace Utils
       public:
         String(void);
         String(const String& s);
+        String(String&& s);
         ~String(void);
 
         // Static functions
@@ -1118,11 +1119,24 @@ namespace Utils
             this->Set(s);
             return *this;
         }
+        inline String& operator=(String&& s)
+        {
+            Text      = s.Text;
+            Size      = s.Size;
+            Allocated = s.Allocated;
+
+            s.Text      = nullptr;
+            s.Size      = 0;
+            s.Allocated = 0;
+
+            return *this;
+        }
         inline String& operator=(const char* text)
         {
             this->Set(text);
             return *this;
         }
+
         inline operator char*() const
         {
             return Text;
