@@ -1856,35 +1856,32 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 #define LVCC ((ListViewControlContext*) this->context)
 #define LVCCHECK(result)                                                                                               \
     if (this->context == nullptr)                                                                                      \
-        return result;
+        return result;                                                                                                 \
+    CHECK(index < LVCC->Columns.Count,                                                                                 \
+          result,                                                                                                      \
+          "Invalid column index:%d (should be smaller than %d)",                                                       \
+          index,                                                                                                       \
+          LVCC->Columns.Count);
+
 bool ListViewColumn::SetText(const ConstString& text)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     return LVCC->Columns.List[index].SetName(text);
+}
+const Graphics::CharacterBuffer& ListViewColumn::GetText() const
+{
+    __temp_listviewitem_reference_object__.Destroy();
+    LVCCHECK(__temp_listviewitem_reference_object__);
+    return LVCC->Columns.List[index].Name;
 }
 bool ListViewColumn::SetAlignament(TextAlignament Align)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     return LVCC->Columns.List[index].SetAlign(Align);
 }
 bool ListViewColumn::SetWidth(uint32 width)
 {
     LVCCHECK(false);
-    CHECK(index < LVCC->Columns.Count,
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          LVCC->Columns.Count);
     LVCC->Columns.List[index].SetWidth(width);
     LVCC->UpdateColumnsWidth();
     return true;

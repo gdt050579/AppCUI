@@ -3995,6 +3995,7 @@ namespace Controls
 
       public:
         bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
         bool SetAlignament(Graphics::TextAlignament Align);
         bool SetWidth(uint32 width);
         bool SetClipboardCopyState(bool allowCopy);
