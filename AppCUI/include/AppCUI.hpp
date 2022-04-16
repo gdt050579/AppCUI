@@ -4019,7 +4019,9 @@ namespace Controls
         const Graphics::CharacterBuffer& GetText() const;
         bool SetAlignament(Graphics::TextAlignament Align);
         bool SetWidth(uint32 width);
+        uint32 GetWidth() const;
         bool SetClipboardCopyState(bool allowCopy);
+        bool GetClipboardCopyState() const;
         bool SetFilterMode(bool allowFilterForThisColumn);
         friend class ListView;
     };
