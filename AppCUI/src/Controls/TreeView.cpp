@@ -827,7 +827,7 @@ TreeViewItem TreeViewItem::GetChild(uint32 index)
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(TreeViewItem());
     CHECK(index < cc->items.at(handle).children.size(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-
+     
     return { this->obj, cc->items.at(handle).children.at(index) };
 }
 
