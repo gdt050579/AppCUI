@@ -299,19 +299,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         return true;
     }
     case Key::Shift | Key::Space:
-
-        GetCurrentItem().Toggle();
-
-        cc->ProcessItemsToBeDrawn(InvalidItemHandle);
-        if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
-        {
-            cc->SearchItems();
-        }
-
-        return true;
-
-    case Key::Space:
-    case Key::Enter:
+    case Key::Shift | Key::Enter:
 
         if (cc->Focused && cc->GetSelectedItemHandle() != InvalidItemHandle)
         {
@@ -322,6 +310,40 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 {
                     TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
                     handler->OnItemPressed.obj->OnTreeItemPressed(this, tvi);
+                }
+            }
+        }
+
+        return true;
+
+    case Key::Space:
+    case Key::Enter:
+
+        if (cc->GetSelectedItemHandle() != InvalidItemHandle)
+        {
+            if (GetCurrentItem().IsExpandable())
+            {
+                GetCurrentItem().Toggle();
+
+                cc->ProcessItemsToBeDrawn(InvalidItemHandle);
+                if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
+                {
+                    cc->SearchItems();
+                }
+            }
+            else
+            {
+                if (cc->Focused)
+                {
+                    if (cc->handlers != nullptr)
+                    {
+                        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
+                        if (handler->OnItemPressed.obj)
+                        {
+                            TreeViewItem tvi = GetItemByHandle(cc->GetSelectedItemHandle());
+                            handler->OnItemPressed.obj->OnTreeItemPressed(this, tvi);
+                        }
+                    }
                 }
             }
         }
