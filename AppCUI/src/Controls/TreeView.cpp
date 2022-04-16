@@ -1658,6 +1658,8 @@ bool TreeControlContext::SearchItems()
     bool found = false;
 
     MarkAllItemsAsNotFound();
+    SetColorForItems(Cfg->Text.Normal);
+    ItemComparator ic(host);
 
     std::set<ItemHandle> toBeExpanded;
     if (filter.searchText.Len() > 0)
@@ -1673,13 +1675,32 @@ bool TreeControlContext::SearchItems()
                     {
                         MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
                     }
-                    if (found == false)
+
+                    if (items[currentSelectedItemHandle].markedAsFound == false)
                     {
-                        currentSelectedItemHandle = item.second.handle;
-                        SetColorForItems(Cfg->Text.Normal);
+                        auto tvi = host->GetItemByHandle(item.second.handle);
+                        SetSelectedItemHandle(tvi);
                     }
+                    else
+                    {
+                        if (currentSelectedItemHandle != item.second.handle &&
+                            items[currentSelectedItemHandle].depth == item.second.depth)
+                        {
+                            if (ic.operator()(currentSelectedItemHandle, item.second.handle) == false)
+                            {
+                                auto tvi = host->GetItemByHandle(item.second.handle);
+                                SetSelectedItemHandle(tvi);
+                            }
+                        }
+                        else if (items[currentSelectedItemHandle].depth > item.second.depth)
+                        {
+                            auto tvi = host->GetItemByHandle(item.second.handle);
+                            SetSelectedItemHandle(tvi);
+                        }
+                    }
+
                     found = true;
-                    value.SetColor(index, index + filter.searchText.Len(), Cfg->Text.Highlighted);
+                    value.SetColor(index, index + filter.searchText.Len(), Cfg->Selection.SearchMarker);
 
                     ItemHandle ancestorHandle = item.second.parent;
                     do
@@ -1821,7 +1842,11 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
                         wtp.Color = Cfg->Text.Focused;
                     }
                 }
-                else if (item.markedAsFound == false)
+                else if (item.markedAsFound)
+                {
+                    // nothing - color already set
+                }
+                else
                 {
                     switch (item.type)
                     {
@@ -1856,7 +1881,11 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
                         break;
                     }
                 }
-                item.values[j].SetColor(wtp.Color);
+
+                if (item.markedAsFound == false)
+                {
+                    item.values[j].SetColor(wtp.Color);
+                }
 
                 if (wtp.X < static_cast<int>(col.x + col.width))
                 {
