@@ -2322,27 +2322,6 @@ bool TreeControlContext::AddColumn(
         }
     }
 
-    // shift columns back if needed
-    uint32 maxRightX = Layout.Width - ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
-    for (auto i = static_cast<int>(columns.size()) - 1; i >= 0; i--)
-    {
-        auto& col                = columns[i];
-        const auto currentRightX = col.x + col.width;
-        if (currentRightX > maxRightX)
-        {
-            const auto diff = currentRightX - maxRightX;
-            if (col.width > diff && col.width - diff >= MinColumnWidth)
-            {
-                col.width -= diff;
-            }
-            else
-            {
-                col.x -= diff;
-            }
-        }
-        maxRightX = col.x;
-    }
-
     return true;
 }
 
