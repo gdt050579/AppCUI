@@ -1934,9 +1934,10 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 {
     CHECK(columns.size() > 0, true, "");
 
-    const auto controlWidth = Layout.Width - 2 * ((treeFlags && TreeViewFlags::HideBorder) ? 0 : 1) - 1;
+    const auto addX         = ((treeFlags && TreeViewFlags::HideBorder) ? 0 : 1);
+    const auto controlWidth = Layout.Width - 2 * addX;
 
-    renderer.FillHorizontalLineSize(Layout.X, 1, controlWidth, ' ', Cfg->Header.Text.Focused);
+    renderer.FillHorizontalLineSize(Layout.X + addX, 1, controlWidth - Layout.X, ' ', Cfg->Header.Text.Focused);
 
     const auto enabled = (Flags & GATTR_ENABLE) != 0;
 
@@ -1958,7 +1959,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 
         if (wtp.X + static_cast<int32>(wtp.Width) >= controlWidth)
         {
-            wtp.Width = controlWidth - wtp.X;
+            wtp.Width = controlWidth - wtp.X - addX;
         }
 
         if (i != columnIndexToSortBy) // skip triangle / sort sign
