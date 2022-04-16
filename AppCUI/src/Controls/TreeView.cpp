@@ -756,136 +756,91 @@ TreeViewItem TreeView::GetCurrentItem()
     CHECK(Context != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    return { this, cc->GetSelectedItemHandle() };
+    return { this->Context, cc->GetSelectedItemHandle() };
 }
 
 // --------------------------------------
-
+#define CREATE_TREE_VIEW_ITEM_CONTEXT(result)                                                                          \
+    auto cc = reinterpret_cast<TreeControlContext*>(this->obj);                                                        \
+    if (cc == nullptr)                                                                                                 \
+        return (result);
 bool TreeViewItem::SetType(TreeViewItem::Type type)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).type = type;
-
     return true;
 }
 
 bool TreeViewItem::SetColor(const Graphics::ColorPair& color)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).color = color;
-
     return true;
 }
 
 bool TreeViewItem::SetCurrent()
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->SetSelectedItemHandle(*this);
-
     return true;
 }
 
 bool TreeViewItem::IsCurrent() const
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     return cc->GetSelectedItemHandle() == handle;
 }
 
 bool TreeViewItem::SetFolding(bool expand)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).expanded = expand;
-
     return true;
 }
 
 bool TreeViewItem::IsFolded()
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     return !cc->items.at(handle).expanded;
 }
 
 bool TreeViewItem::SetExpandable(bool expandable)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).isExpandable = expandable;
-
     return true;
 }
 
 bool TreeViewItem::IsExpandable() const
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     return cc->items.at(handle).isExpandable;
 }
 
 uint32 TreeViewItem::GetChildrenCount() const
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(0);
     return static_cast<uint32>(cc->items.at(handle).children.size());
 }
 
 TreeViewItem TreeViewItem::GetChild(uint32 index)
 {
-    CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(TreeViewItem());
     CHECK(index < cc->items.at(handle).children.size(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-
+     
     return { this->obj, cc->items.at(handle).children.at(index) };
 }
 
 bool TreeViewItem::DeleteChildren()
 {
-    CHECK(IsValid(), false, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
 
     const auto noChildren = GetChildrenCount();
     for (auto i = 0U; i < noChildren; i++)
     {
         auto child = GetChild(i);
-        CHECK(obj->RemoveItem(child), false, "");
+        CHECK(cc->host->RemoveItem(child), false, "");
     }
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
     cc->items.at(handle).children.clear();
 
     return true;
@@ -898,11 +853,8 @@ ItemHandle TreeViewItem::GetHandle() const
 
 bool TreeViewItem::Toggle()
 {
-    CHECK(IsValid(), false, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     CHECK(IsExpandable(), true, ""); // nothing to expand
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
 
     if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
     {
@@ -920,7 +872,7 @@ bool TreeViewItem::Toggle()
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
                 if (handler->OnItemToggle.obj)
                 {
-                    handler->OnItemToggle.obj->OnTreeItemToggle(obj, *this);
+                    handler->OnItemToggle.obj->OnTreeItemToggle(cc->host, *this);
                 }
             }
         }
@@ -931,11 +883,8 @@ bool TreeViewItem::Toggle()
 
 bool TreeViewItem::ToggleRecursively()
 {
-    CHECK(IsValid(), false, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     CHECK(IsExpandable(), true, ""); // nothing to expand
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
 
     std::queue<ItemHandle> ancestorRelated;
     ancestorRelated.push(handle);
@@ -945,7 +894,7 @@ bool TreeViewItem::ToggleRecursively()
         ItemHandle handle = ancestorRelated.front();
         ancestorRelated.pop();
 
-        auto treeItem = obj->GetItemByHandle(handle);
+        auto treeItem = cc->host->GetItemByHandle(handle);
         treeItem.Toggle();
 
         const auto& item = cc->items[handle];
@@ -957,7 +906,7 @@ bool TreeViewItem::ToggleRecursively()
 
     if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
     {
-        cc->Sort(obj);
+        cc->Sort(cc->host);
     }
 
     cc->notProcessed = true;
@@ -1003,9 +952,7 @@ bool TreeViewItem::UnfoldAll()
 
 TreeViewItem TreeViewItem::GetParent() const
 {
-    CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(TreeViewItem());
 
     auto& parent = cc->items.at(handle).parent;
     if (parent == InvalidItemHandle)
@@ -1018,48 +965,33 @@ TreeViewItem TreeViewItem::GetParent() const
 
 uint32 TreeViewItem::GetPriority() const
 {
-    CHECK(IsValid(), -1, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, -1, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(-1);
     return cc->items.at(handle).priority;
 }
 
 bool TreeViewItem::SetPriority(uint32 priority) const
 {
-    CHECK(IsValid(), false, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).priority = priority;
-
     return true;
 }
 
 TreeViewItem TreeViewItem::AddChild(ConstString name, bool isExpandable)
 {
-    CHECK(IsValid(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(TreeViewItem());
     return { obj, cc->AddItem(handle, { name }, isExpandable) };
 }
 
 bool TreeViewItem::SetText(ConstString name)
 {
-    CHECK(IsValid(), false, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false)
     return cc->items.at(handle).values.at(0).Set(name);
 }
 
 const CharacterBuffer& TreeViewItem::GetText() const
 {
     static const CharacterBuffer cb{};
-    CHECK(IsValid(), cb, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(cb);
     const auto it = cc->items.find(handle);
     if (it != cc->items.end())
     {
@@ -1071,9 +1003,7 @@ const CharacterBuffer& TreeViewItem::GetText() const
 
 bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
 {
-    CHECK(IsValid(), false, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, false, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
 
     auto& vals = cc->items.at(handle).values;
     auto it    = vals.begin();
@@ -1101,9 +1031,7 @@ bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
 
 bool TreeViewItem::SetText(uint32 subItemIndex, const ConstString& text)
 {
-    CHECK(IsValid(), false, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, false, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     CHECK(subItemIndex < cc->columns.size(), false, "");
 
     auto& item = cc->items.at(handle);
@@ -1118,9 +1046,7 @@ bool TreeViewItem::SetText(uint32 subItemIndex, const ConstString& text)
 const Graphics::CharacterBuffer& TreeViewItem::GetText(uint32 subItemIndex) const
 {
     static const CharacterBuffer cb{};
-    CHECK(IsValid(), cb, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, cb, "");
+    CREATE_TREE_VIEW_ITEM_CONTEXT(cb);
     CHECK(subItemIndex < cc->items.at(handle).values.size(), cb, "");
 
     return cc->items.at(handle).values.at(subItemIndex);
@@ -1128,49 +1054,33 @@ const Graphics::CharacterBuffer& TreeViewItem::GetText(uint32 subItemIndex) cons
 
 bool TreeViewItem::SetData(uint64 value)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     cc->items.at(handle).data = value;
-
     return true;
 }
 
 uint64 TreeViewItem::GetData(uint64 errorValue) const
 {
-    CHECK(IsValid(), errorValue, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, errorValue, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(errorValue);
     return std::get<uint64>(cc->items.at(handle).data);
 }
 
 GenericRef TreeViewItem::GetItemDataAsPointer() const
 {
-    CHECK(IsValid(), nullptr, "");
-    auto cc = reinterpret_cast<TreeControlContext*>(obj.ToGenericRef().ToReference<TreeView>()->Context);
-    CHECK(cc != nullptr, nullptr, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(nullptr);
     return cc->GetItemDataAsPointer(handle);
 }
 
 bool TreeViewItem::SetItemDataAsPointer(GenericRef ref)
 {
-    CHECK(IsValid(), false, "");
-
-    auto cc = reinterpret_cast<TreeControlContext*>(obj->Context);
-    CHECK(cc != nullptr, false, "");
-
+    CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     return cc->SetItemDataAsPointer(handle, ref);
 }
 
 bool TreeView::RemoveItem(TreeViewItem& item)
 {
     CHECK(item.IsValid(), false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(item.obj->Context);
+    const auto cc = reinterpret_cast<TreeControlContext*>(item.obj);
     if (cc->RemoveItem(item.handle))
     {
         item.obj    = nullptr;
@@ -1210,7 +1120,7 @@ TreeViewItem TreeView::GetItemByIndex(const uint32 index)
     std::advance(it, index);
     CHECK(it != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, it->second.handle };
+    return { this->Context, it->second.handle };
 }
 
 uint32 TreeView::GetItemsCount() const
@@ -1227,7 +1137,7 @@ TreeViewItem TreeView::GetItemByHandle(ItemHandle handle)
 
     CHECK(cc->items.find(handle) != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, handle };
+    return { this->Context, handle };
 }
 
 TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
@@ -1235,7 +1145,7 @@ TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
     auto cc = reinterpret_cast<TreeControlContext*>(this->Context);
     CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
+    return { this->Context, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
 }
 
 TreeViewColumn TreeView::GetColumn(uint32 index)

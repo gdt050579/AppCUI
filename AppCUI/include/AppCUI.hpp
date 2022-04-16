@@ -4283,22 +4283,13 @@ namespace Controls
     class EXPORT TreeViewItem
     {
       private:
+        void* obj;
+        ItemHandle handle;
+
         GenericRef GetItemDataAsPointer() const;
         bool SetItemDataAsPointer(GenericRef ref);
 
-#ifdef _MSC_VER
-        // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
-        // 'TreeViewItem'
-#    pragma warning(push)
-#    pragma warning(disable : 4251)
-#endif
-        Reference<TreeView> obj;
-#ifdef _MSC_VER
-#    pragma warning(pop)
-#endif
-        ItemHandle handle;
-
-        TreeViewItem(Reference<TreeView> _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
+        TreeViewItem(void* _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
         {
         }
 
