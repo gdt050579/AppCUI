@@ -1886,10 +1886,20 @@ bool ListViewColumn::SetWidth(uint32 width)
     LVCC->UpdateColumnsWidth();
     return true;
 }
+uint32 ListViewColumn::GetWidth() const
+{
+    LVCCHECK(0);
+    return LVCC->Columns.List[index].Width;
+}
 bool ListViewColumn::SetClipboardCopyState(bool allowCopy)
 {
     LVCCHECK(false);
     return LVCC->SetColumnClipboardCopyState(index, allowCopy);
+}
+bool ListViewColumn::GetClipboardCopyState() const
+{
+    LVCCHECK(false);
+    return (LVCC->Columns.List[index].Flags & COLUMN_DONT_COPY) == 0;
 }
 bool ListViewColumn::SetFilterMode(bool allowFilterForThisColumn)
 {
