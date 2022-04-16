@@ -756,7 +756,7 @@ TreeViewItem TreeView::GetCurrentItem()
     CHECK(Context != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    return { this, cc->GetSelectedItemHandle() };
+    return { this->Context, cc->GetSelectedItemHandle() };
 }
 
 // --------------------------------------
@@ -1120,7 +1120,7 @@ TreeViewItem TreeView::GetItemByIndex(const uint32 index)
     std::advance(it, index);
     CHECK(it != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, it->second.handle };
+    return { this->Context, it->second.handle };
 }
 
 uint32 TreeView::GetItemsCount() const
@@ -1137,7 +1137,7 @@ TreeViewItem TreeView::GetItemByHandle(ItemHandle handle)
 
     CHECK(cc->items.find(handle) != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, handle };
+    return { this->Context, handle };
 }
 
 TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
@@ -1145,7 +1145,7 @@ TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
     auto cc = reinterpret_cast<TreeControlContext*>(this->Context);
     CHECK(cc != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
 
-    return { this, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
+    return { this->Context, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
 }
 
 TreeViewColumn TreeView::GetColumn(uint32 index)
