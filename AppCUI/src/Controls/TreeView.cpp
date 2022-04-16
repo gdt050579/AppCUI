@@ -59,7 +59,7 @@ TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> colu
     if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
     {
         cc->columnIndexToSortBy = 0;
-        cc->Sort(this);
+        cc->Sort();
     }
 
     cc->AdjustItemsBoundsOnResize();
@@ -293,21 +293,25 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
 
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
-            cc->SearchItems(this);
+            cc->SearchItems();
         }
 
         return true;
     }
-    case Key::Space:
-    case Key::Enter:
+    case Key::Shift | Key::Space:
 
         GetCurrentItem().Toggle();
 
         cc->ProcessItemsToBeDrawn(InvalidItemHandle);
         if (cc->filter.searchText.Len() > 0 && cc->filter.mode != TreeControlContext::FilterMode::None)
         {
-            cc->SearchItems(this);
+            cc->SearchItems();
         }
+
+        return true;
+
+    case Key::Space:
+    case Key::Enter:
 
         if (cc->Focused && cc->GetSelectedItemHandle() != InvalidItemHandle)
         {
@@ -321,7 +325,6 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 }
             }
         }
-        break;
 
         return true;
 
@@ -396,7 +399,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             if (cc->filter.searchText.Len() > 0)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
-                cc->SearchItems(this);
+                cc->SearchItems();
                 return true;
             }
         }
@@ -492,12 +495,12 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         {
             cc->filter.searchText.AddChar(character);
             cc->SetColorForItems(cc->Cfg->Text.Normal);
-            if (cc->SearchItems(this) == false)
+            if (cc->SearchItems() == false)
             {
                 cc->filter.searchText.Truncate(cc->filter.searchText.Len() - 1);
                 if (cc->filter.searchText.Len() > 0)
                 {
-                    cc->SearchItems(this);
+                    cc->SearchItems();
                 }
                 else
                 {
@@ -517,7 +520,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             {
                 if (cc->columns[i].hotKeyCode == keyCode)
                 {
-                    cc->ColumnSort(this, i);
+                    cc->ColumnSort(i);
                     return true;
                 }
             }
@@ -560,7 +563,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             if (cc->mouseOverColumnIndex != InvalidIndex)
             {
                 cc->sortAscendent = !cc->sortAscendent;
-                cc->ColumnSort(this, cc->mouseOverColumnIndex);
+                cc->ColumnSort(cc->mouseOverColumnIndex);
             }
             break;
         case TreeControlContext::IsMouseOn::ColumnSeparator:
@@ -581,7 +584,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
                 }
             }
             cc->ProcessItemsToBeDrawn(InvalidItemHandle);
-            cc->SearchItems(this);
+            cc->SearchItems();
         }
         break;
         case TreeControlContext::IsMouseOn::Item:
@@ -762,8 +765,8 @@ TreeViewItem TreeView::GetCurrentItem()
 // --------------------------------------
 #define CREATE_TREE_VIEW_ITEM_CONTEXT(result)                                                                          \
     auto cc = reinterpret_cast<TreeControlContext*>(this->obj);                                                        \
-    if (cc == nullptr)                                                                                                 \
-        return (result);
+    CHECK(cc != nullptr, (result), "");
+
 bool TreeViewItem::SetType(TreeViewItem::Type type)
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(false);
@@ -827,7 +830,7 @@ TreeViewItem TreeViewItem::GetChild(uint32 index)
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(TreeViewItem());
     CHECK(index < cc->items.at(handle).children.size(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
-     
+
     return { this->obj, cc->items.at(handle).children.at(index) };
 }
 
@@ -906,7 +909,7 @@ bool TreeViewItem::ToggleRecursively()
 
     if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
     {
-        cc->Sort(cc->host);
+        cc->Sort();
     }
 
     cc->notProcessed = true;
@@ -1221,7 +1224,7 @@ bool TreeView::Sort()
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    return cc->Sort(this);
+    return cc->Sort();
 }
 
 bool TreeView::Sort(uint32 columnIndex, bool ascendent)
@@ -1233,7 +1236,7 @@ bool TreeView::Sort(uint32 columnIndex, bool ascendent)
     cc->sortAscendent       = ascendent;
     cc->columnIndexToSortBy = columnIndex;
 
-    return cc->Sort(this);
+    return cc->Sort();
 }
 
 } // namespace AppCUI::Controls
@@ -1258,7 +1261,7 @@ ItemHandle TreeControlContext::GetSelectedItemHandle()
     return currentSelectedItemHandle;
 }
 
-void TreeControlContext::ColumnSort(Reference<TreeView> tv, uint32 columnIndex)
+void TreeControlContext::ColumnSort(uint32 columnIndex)
 {
     if ((treeFlags & TreeViewFlags::Sortable) == TreeViewFlags::None)
     {
@@ -1271,7 +1274,7 @@ void TreeControlContext::ColumnSort(Reference<TreeView> tv, uint32 columnIndex)
         SetSortColumn(columnIndex);
     }
 
-    Sort(tv);
+    Sort();
 }
 
 void TreeControlContext::SetSortColumn(uint32 columnIndex)
@@ -1312,9 +1315,9 @@ void TreeControlContext::SelectColumnSeparator(int32 offset)
     }
 }
 
-bool TreeControlContext::Sort(Reference<TreeView> tv)
+bool TreeControlContext::Sort()
 {
-    const auto result = SortByColumn(tv, InvalidItemHandle);
+    const auto result = SortByColumn(InvalidItemHandle);
     notProcessed      = true;
     return result;
 }
@@ -1380,32 +1383,32 @@ struct ItemComparator
     }
 };
 
-bool TreeControlContext::SortByColumn(Reference<TreeView> tv, const ItemHandle handle)
+bool TreeControlContext::SortByColumn(const ItemHandle handle)
 {
     CHECK(columnIndexToSortBy != InvalidIndex, false, "");
     CHECK(items.size() > 0, false, "");
 
     if (handle == InvalidItemHandle)
     {
-        std::sort(roots.begin(), roots.end(), ItemComparator(tv));
+        std::sort(roots.begin(), roots.end(), ItemComparator(host));
 
         for (const auto& rootHandle : roots)
         {
             auto& root = items[rootHandle];
-            std::sort(root.children.begin(), root.children.end(), ItemComparator(tv));
+            std::sort(root.children.begin(), root.children.end(), ItemComparator(host));
             for (auto& childHandle : root.children)
             {
-                SortByColumn(tv, childHandle);
+                SortByColumn(childHandle);
             }
         }
     }
     else
     {
         auto& item = items[handle];
-        std::sort(item.children.begin(), item.children.end(), ItemComparator(tv));
+        std::sort(item.children.begin(), item.children.end(), ItemComparator(host));
         for (auto& childHandle : item.children)
         {
-            SortByColumn(tv, childHandle);
+            SortByColumn(childHandle);
         }
     }
 
@@ -1650,11 +1653,13 @@ bool TreeControlContext::SetColorForItems(const ColorPair& color)
     return true;
 }
 
-bool TreeControlContext::SearchItems(Reference<TreeView> tree)
+bool TreeControlContext::SearchItems()
 {
     bool found = false;
 
     MarkAllItemsAsNotFound();
+    SetColorForItems(Cfg->Text.Normal);
+    ItemComparator ic(host);
 
     std::set<ItemHandle> toBeExpanded;
     if (filter.searchText.Len() > 0)
@@ -1670,13 +1675,32 @@ bool TreeControlContext::SearchItems(Reference<TreeView> tree)
                     {
                         MarkAllAncestorsWithChildFoundInFilterSearch(item.second.handle);
                     }
-                    if (found == false)
+
+                    if (items[currentSelectedItemHandle].markedAsFound == false)
                     {
-                        currentSelectedItemHandle = item.second.handle;
-                        SetColorForItems(Cfg->Text.Normal);
+                        auto tvi = host->GetItemByHandle(item.second.handle);
+                        SetSelectedItemHandle(tvi);
                     }
+                    else
+                    {
+                        if (currentSelectedItemHandle != item.second.handle &&
+                            items[currentSelectedItemHandle].depth == item.second.depth)
+                        {
+                            if (ic.operator()(currentSelectedItemHandle, item.second.handle) == false)
+                            {
+                                auto tvi = host->GetItemByHandle(item.second.handle);
+                                SetSelectedItemHandle(tvi);
+                            }
+                        }
+                        else if (items[currentSelectedItemHandle].depth > item.second.depth)
+                        {
+                            auto tvi = host->GetItemByHandle(item.second.handle);
+                            SetSelectedItemHandle(tvi);
+                        }
+                    }
+
                     found = true;
-                    value.SetColor(index, index + filter.searchText.Len(), Cfg->Text.Highlighted);
+                    value.SetColor(index, index + filter.searchText.Len(), Cfg->Selection.SearchMarker);
 
                     ItemHandle ancestorHandle = item.second.parent;
                     do
@@ -1703,7 +1727,7 @@ bool TreeControlContext::SearchItems(Reference<TreeView> tree)
 
     for (const auto itemHandle : toBeExpanded)
     {
-        auto item = tree->GetItemByHandle(itemHandle);
+        auto item = host->GetItemByHandle(itemHandle);
         item.Toggle();
     }
 
@@ -1818,7 +1842,11 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
                         wtp.Color = Cfg->Text.Focused;
                     }
                 }
-                else if (item.markedAsFound == false)
+                else if (item.markedAsFound)
+                {
+                    // nothing - color already set
+                }
+                else
                 {
                     switch (item.type)
                     {
@@ -1853,7 +1881,11 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
                         break;
                     }
                 }
-                item.values[j].SetColor(wtp.Color);
+
+                if (item.markedAsFound == false)
+                {
+                    item.values[j].SetColor(wtp.Color);
+                }
 
                 if (wtp.X < static_cast<int>(col.x + col.width))
                 {
