@@ -754,12 +754,12 @@ class TreeControlContext : public ControlContext
     void SetSelectedItemHandle(TreeViewItem& item);
     ItemHandle GetSelectedItemHandle();
 
-    void ColumnSort(Reference<TreeView> tv, uint32 columnIndex);
+    void ColumnSort(uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
     void SelectColumnSeparator(int32 offset);
-    bool Sort(Reference<TreeView> tv);
+    bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
-    bool SortByColumn(Reference<TreeView> tv, const ItemHandle handle);
+    bool SortByColumn(const ItemHandle handle);
 
     bool PaintItems(Graphics::Renderer& renderer);
     bool PaintColumnHeaders(Graphics::Renderer& renderer);
@@ -778,7 +778,7 @@ class TreeControlContext : public ControlContext
     bool AdjustItemsBoundsOnResize();
     bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
     bool SetColorForItems(const Graphics::ColorPair& color);
-    bool SearchItems(Reference<TreeView> tree);
+    bool SearchItems();
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
     bool RemoveItem(const ItemHandle handle);
