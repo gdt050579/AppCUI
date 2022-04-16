@@ -703,7 +703,7 @@ struct TreeItem
 class TreeControlContext : public ControlContext
 {
   private:
-    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
+    ItemHandle currentItemHandle{ InvalidItemHandle };
 
   public:
     Reference<TreeView> host;
@@ -751,8 +751,8 @@ class TreeControlContext : public ControlContext
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
 
-    void SetSelectedItemHandle(TreeViewItem& item);
-    ItemHandle GetSelectedItemHandle();
+    void SetCurrentItemHandle(TreeViewItem& item);
+    ItemHandle GetCurrentItemHandle() const;
 
     void ColumnSort(uint32 columnIndex);
     void SetSortColumn(uint32 columnIndex);
