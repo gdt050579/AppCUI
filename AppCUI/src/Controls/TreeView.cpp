@@ -309,7 +309,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 if (handler->OnItemPressed.obj)
                 {
                     TreeViewItem tvi = GetItemByHandle(cc->GetCurrentItemHandle());
-                    handler->OnItemPressed.obj->OnTreeItemPressed(this, tvi);
+                    handler->OnItemPressed.obj->OnTreeViewItemPressed(this, tvi);
                 }
             }
         }
@@ -341,7 +341,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                         if (handler->OnItemPressed.obj)
                         {
                             TreeViewItem tvi = GetItemByHandle(cc->GetCurrentItemHandle());
-                            handler->OnItemPressed.obj->OnTreeItemPressed(this, tvi);
+                            handler->OnItemPressed.obj->OnTreeViewItemPressed(this, tvi);
                         }
                     }
                 }
@@ -897,7 +897,7 @@ bool TreeViewItem::Toggle()
                 auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
                 if (handler->OnItemToggle.obj)
                 {
-                    handler->OnItemToggle.obj->OnTreeItemToggle(cc->host, *this);
+                    handler->OnItemToggle.obj->OnTreeViewItemToggle(cc->host, *this);
                 }
             }
         }
@@ -1273,7 +1273,7 @@ void TreeControlContext::SetCurrentItemHandle(TreeViewItem& item)
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
         if (handler->OnCurrentItemChanged.obj)
         {
-            handler->OnCurrentItemChanged.obj->OnCurrentTreeItemChanged(this->host, item);
+            handler->OnCurrentItemChanged.obj->OnTreeViewCurrentItemChanged(this->host, item);
         }
     }
 }

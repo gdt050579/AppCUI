@@ -2996,19 +2996,17 @@ namespace Controls
 
         using OnButtonPressedHandler = void (*)(Reference<Controls::Button> r);
         using PaintControlHandler    = void (*)(Reference<Controls::Control> control, Renderer& renderer);
-        using OnEventHandler     = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
-        using OnKeyEventHandler  = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
-        using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
-        using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
-        using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
-        using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler         = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
-        using OnCurrentTreeItemChangedHandler = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
-        using OnTreeItemPressedHandler        = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
-        using OnAfterSetTextHandler           = void (*)(Reference<Controls::Control> control);
-        using OnTextRightClickHandler         = void (*)(Reference<Controls::Control> control, int x, int y);
+        using OnEventHandler        = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
+        using OnKeyEventHandler     = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
+        using OnCheckHandler        = void (*)(Reference<Controls::Control> control, bool value);
+        using OnFocusHandler        = void (*)(Reference<Controls::Control> control);
+        using OnLoseFocusHandler    = void (*)(Reference<Controls::Control> control);
+        using OnStartHandler        = void (*)(Reference<Controls::Control> control);
+        using OnAfterSetTextHandler = void (*)(Reference<Controls::Control> control);
+        using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
+        // ListView
         using ListViewItemCompareHandler = int (*)(
               Reference<Controls::ListView> control,
               const Controls::ListViewItem& item1,
@@ -3019,10 +3017,14 @@ namespace Controls
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
+        // TreeView
         using TreeViewItemCompareHandler = int (*)(
               Reference<Controls::TreeView> control,
               const Controls::TreeViewItem& item1,
               const Controls::TreeViewItem& item2);
+        using OnTreeViewItemToggleHandler         = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
+        using OnTreeViewCurrentItemChangedHandler = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
+        using OnTreeViewItemPressedHandler        = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
 
         struct OnButtonPressedInterface
         {
@@ -3168,15 +3170,15 @@ namespace Controls
             };
         };
 
-        struct OnTreeItemToggleInterface
+        struct OnTreeViewItemToggleInterface
         {
-            virtual void OnTreeItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+            virtual void OnTreeViewItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
-        struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
+        struct OnTreeViewItemToggleCallback : public OnTreeViewItemToggleInterface
         {
-            OnTreeItemToggleHandler callback;
+            OnTreeViewItemToggleHandler callback;
 
-            virtual void OnTreeItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            virtual void OnTreeViewItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
                 return callback(tree, item);
             };
@@ -3353,29 +3355,29 @@ namespace Controls
             };
         };
 
-        struct OnCurrentTreeItemChangedInterface
+        struct OnTreeViewCurrentItemChangedInterface
         {
-            virtual void OnCurrentTreeItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+            virtual void OnTreeViewCurrentItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
-        struct OnCurrentTreeItemChangedCallback : public OnCurrentTreeItemChangedInterface
+        struct OnTreeViewCurrentItemChangedCallback : public OnTreeViewCurrentItemChangedInterface
         {
-            OnCurrentTreeItemChangedHandler callback;
+            OnTreeViewCurrentItemChangedHandler callback;
 
-            virtual void OnCurrentTreeItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            virtual void OnTreeViewCurrentItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
                 return callback(tree, item);
             };
         };
 
-        struct OnTreeItemPressedInterface
+        struct OnTreeViewItemPressedInterface
         {
-            virtual void OnTreeItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+            virtual void OnTreeViewItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
         };
-        struct OnTreeItemPressedCallback : public OnTreeItemPressedInterface
+        struct OnTreeViewItemPressedCallback : public OnTreeViewItemPressedInterface
         {
-            OnTreeItemPressedHandler callback;
+            OnTreeViewItemPressedHandler callback;
 
-            virtual void OnTreeItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            virtual void OnTreeViewItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) override
             {
                 return callback(tree, item);
             };
@@ -3383,14 +3385,16 @@ namespace Controls
 
         struct TreeView : public Control
         {
-            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnItemToggle;
+            Wrapper<OnTreeViewItemToggleInterface, OnTreeViewItemToggleCallback, OnTreeViewItemToggleHandler>
+                  OnItemToggle;
             Wrapper<
-                  OnCurrentTreeItemChangedInterface,
-                  OnCurrentTreeItemChangedCallback,
-                  OnCurrentTreeItemChangedHandler>
+                  OnTreeViewCurrentItemChangedInterface,
+                  OnTreeViewCurrentItemChangedCallback,
+                  OnTreeViewCurrentItemChangedHandler>
                   OnCurrentItemChanged;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
-            Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnItemPressed;
+            Wrapper<OnTreeViewItemPressedInterface, OnTreeViewItemPressedCallback, OnTreeViewItemPressedHandler>
+                  OnItemPressed;
         };
 
     } // namespace Handlers
