@@ -6537,13 +6537,20 @@ uint32 gdt_pixels[150 * 150] = {
     0x141717, 0x14171A, 0x15171A, 0x15171A, 0x16191C
 };
 
-class ImageWinViewer : public Window
+class ImageWinViewer : public Window, public Handlers::OnCheckInterface
 {
+    Reference<ImageView> img;
   public:
-    ImageWinViewer(const AppCUI::Graphics::Image& img, ImageRenderingMethod method, ImageScaleMethod scale)
+    ImageWinViewer(const AppCUI::Graphics::Image& _img, ImageRenderingMethod method, ImageScaleMethod scale)
         : Window("Image view", "d:c,w:100%,h:100%", WindowFlags::None)
     {
-        Factory::ImageView::Create(this, "x:0,y:0,w:100%,h:100%")->SetImage(img, method, scale);
+        img = Factory::ImageView::Create(this, "l:0,t:1,r:0,b:0");
+        img->SetImage(_img, method, scale);
+        Factory::CheckBox::Create(this, "Disable image view", "x:1,y:0,w:30")->Handlers()->OnCheck = this;
+    }
+    void OnCheck(Reference<Controls::Control> control, bool value) override
+    {
+        img->SetEnabled(!control->IsChecked());
     }
 };
 
