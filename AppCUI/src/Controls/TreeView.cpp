@@ -1271,9 +1271,9 @@ void TreeControlContext::SetCurrentItemHandle(TreeViewItem& item)
     if (handlers != nullptr)
     {
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
-        if (handler->OnItemSelected.obj)
+        if (handler->OnCurrentItemChanged.obj)
         {
-            handler->OnItemSelected.obj->OnCurrentTreeItemChanged(this->host, item);
+            handler->OnCurrentItemChanged.obj->OnCurrentTreeItemChanged(this->host, item);
         }
     }
 }

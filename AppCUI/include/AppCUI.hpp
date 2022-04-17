@@ -3388,7 +3388,7 @@ namespace Controls
                   OnCurrentTreeItemChangedInterface,
                   OnCurrentTreeItemChangedCallback,
                   OnCurrentTreeItemChangedHandler>
-                  OnItemSelected;
+                  OnCurrentItemChanged;
             Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
             Wrapper<OnTreeItemPressedInterface, OnTreeItemPressedCallback, OnTreeItemPressedHandler> OnItemPressed;
         };
