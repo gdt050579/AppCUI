@@ -197,7 +197,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - cc->maxItemsToDraw;
 
-            TreeViewItem tvi{ this, cc->itemsToDrew[index] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
             cc->SetCurrentItemHandle(tvi);
 
             cc->offsetTopToDraw -= cc->maxItemsToDraw;
@@ -210,7 +210,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - difference;
 
-            TreeViewItem tvi{ this, cc->itemsToDrew[index] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
             cc->SetCurrentItemHandle(tvi);
 
             cc->offsetTopToDraw -= difference;
@@ -218,7 +218,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         else
         {
-            TreeViewItem tvi{ this, cc->itemsToDrew[0] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[0] };
             cc->SetCurrentItemHandle(tvi);
         }
 
@@ -234,7 +234,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + cc->maxItemsToDraw;
 
-            TreeViewItem tvi{ this, cc->itemsToDrew[index] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
             cc->SetCurrentItemHandle(tvi);
 
             cc->offsetTopToDraw += cc->maxItemsToDraw;
@@ -247,7 +247,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + difference;
 
-            TreeViewItem tvi{ this, cc->itemsToDrew[index] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
             cc->SetCurrentItemHandle(tvi);
 
             cc->offsetTopToDraw += static_cast<uint32>(difference);
@@ -255,7 +255,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         else
         {
-            TreeViewItem tvi{ this, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
             cc->SetCurrentItemHandle(tvi);
         }
 
@@ -269,7 +269,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         cc->offsetTopToDraw = 0;
         cc->offsetBotToDraw = cc->maxItemsToDraw;
         {
-            TreeViewItem tvi{ this, cc->itemsToDrew[0] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[0] };
             cc->SetCurrentItemHandle(tvi);
         }
         return true;
@@ -282,7 +282,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         cc->offsetTopToDraw = static_cast<uint32>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
         cc->offsetBotToDraw = cc->offsetTopToDraw + cc->maxItemsToDraw;
         {
-            TreeViewItem tvi{ this, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
             cc->SetCurrentItemHandle(tvi);
         }
         return true;
@@ -445,7 +445,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this, handle };
+                        TreeViewItem tvi{ this->Context, handle };
                         cc->SetCurrentItemHandle(tvi);
                         return true;
                     }
@@ -457,7 +457,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this, handle };
+                        TreeViewItem tvi{ this->Context, handle };
                         cc->SetCurrentItemHandle(tvi);
                         return true;
                     }
@@ -485,7 +485,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this, handle };
+                        TreeViewItem tvi{ this->Context, handle };
                         cc->SetCurrentItemHandle(tvi);
                         return true;
                     }
@@ -498,7 +498,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item  = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this, handle };
+                        TreeViewItem tvi{ this->Context, handle };
                         cc->SetCurrentItemHandle(tvi);
                         return true;
                     }
@@ -561,7 +561,7 @@ void TreeView::OnFocus()
     {
         if (cc->GetCurrentItemHandle() == InvalidItemHandle)
         {
-            TreeViewItem tvi{ this, cc->itemsToDrew[cc->offsetTopToDraw] };
+            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->offsetTopToDraw] };
             cc->SetCurrentItemHandle(tvi);
         }
     }
@@ -595,13 +595,13 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             const uint32 index    = y - 2;
             const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
             const auto it         = cc->items.find(itemHandle);
-            auto item             = TreeViewItem{ this, it->second.handle };
+            auto item             = TreeViewItem{ this->Context, it->second.handle };
             item.Toggle();
             if (it->second.expanded == false)
             {
                 if (cc->IsAncestorOfChild(it->second.handle, cc->GetCurrentItemHandle()))
                 {
-                    TreeViewItem tvi{ this, it->second.handle };
+                    TreeViewItem tvi{ this->Context, it->second.handle };
                     cc->SetCurrentItemHandle(tvi);
                 }
             }
@@ -623,7 +623,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
                 x < static_cast<int>(cc->Layout.Width))
             {
-                TreeViewItem tvi{ this, itemHandle };
+                TreeViewItem tvi{ this->Context, itemHandle };
                 cc->SetCurrentItemHandle(tvi);
             }
         }
