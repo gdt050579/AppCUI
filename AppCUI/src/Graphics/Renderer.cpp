@@ -295,7 +295,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -336,7 +336,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -489,7 +489,7 @@ bool Renderer::_ClearEntireSurface(int character, ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (uint16)(character & 0xFFFF);
+        tmp.Code = (uint16) (character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -1097,7 +1097,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     // Text fit
     if (TextFit)
     {
-        uint32 sz = (uint32)(output->TextEnd - output->TextStart);
+        uint32 sz = (uint32) (output->TextEnd - output->TextStart);
         if (sz > 4)
         {
             sz                   = std::min<>(sz - 3, 3U);
@@ -1306,7 +1306,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, CharacterView charVi
         x = Clip.Left;
         if (buf >= end)
             return false; // ouside clip rect
-        sz = (uint32)(end - buf);
+        sz = (uint32) (end - buf);
     }
     if ((x + (int) sz) > Clip.Right)
     {
@@ -1494,7 +1494,15 @@ void Paint_SmallBlocks(Renderer& r, const Graphics::Image& img, int x, int y, ui
                 cp = { RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
                        RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
 
-            r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
+            if (cp.Background == cp.Foreground)
+            {
+                if (cp.Background == Color::Black)
+                    r.WriteCharacter(px, y, ' ', cp);
+                else
+                    r.WriteSpecialCharacter(px, y, SpecialChars::Block100, cp);
+            }
+            else
+                r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
         }
     }
 }
