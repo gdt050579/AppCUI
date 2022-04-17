@@ -53,7 +53,7 @@ TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> colu
     cc->itemsToDrew.reserve(100);
     cc->orderedItems.reserve(100);
 
-    if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
+    if (cc->treeFlags && TreeViewFlags::Sortable)
     {
         cc->columnIndexToSortBy = 0;
         cc->Sort();
@@ -269,10 +269,13 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         {
             break;
         }
-        cc->offsetTopToDraw = static_cast<uint32>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
-        cc->offsetBotToDraw = cc->offsetTopToDraw + cc->maxItemsToDraw;
+        {
+            const auto itemsFitInList = cc->maxItemsToDraw >= static_cast<uint32>(cc->itemsToDrew.size());
+            cc->offsetTopToDraw = itemsFitInList ? 0 : static_cast<uint32>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
+            cc->offsetBotToDraw = cc->offsetTopToDraw + cc->maxItemsToDraw;
 
-        cc->SetCurrentItemHandle(cc->itemsToDrew[cc->itemsToDrew.size() - 1]);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[cc->itemsToDrew.size() - 1]);
+        }
 
         return true;
 
@@ -550,10 +553,13 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
         case TreeControlContext::IsMouseOn::Border:
             break;
         case TreeControlContext::IsMouseOn::ColumnHeader:
-            if (cc->mouseOverColumnIndex != InvalidIndex)
+            if (cc->treeFlags && TreeViewFlags::Sortable)
             {
-                cc->sortAscendent = !cc->sortAscendent;
-                cc->ColumnSort(cc->mouseOverColumnIndex);
+                if (cc->mouseOverColumnIndex != InvalidIndex)
+                {
+                    cc->sortAscendent = !cc->sortAscendent;
+                    cc->ColumnSort(cc->mouseOverColumnIndex);
+                }
             }
             break;
         case TreeControlContext::IsMouseOn::ColumnSeparator:
@@ -615,6 +621,8 @@ bool TreeView::OnMouseOver(int x, int y)
     const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
     cc->mouseOverColumnIndex = 0xFFFFFFFF;
 
+    cc->isMouseOn = TreeControlContext::IsMouseOn::None;
+
     if (cc->IsMouseOnBorder(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::Border;
@@ -627,24 +635,20 @@ bool TreeView::OnMouseOver(int x, int y)
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::ToggleSymbol;
     }
-    else if (cc->IsMouseOnItem(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
-    }
     else if (cc->IsMouseOnColumnHeader(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnHeader;
+    }
+    else if (cc->IsMouseOnItem(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
     }
     else if (cc->IsMouseOnSearchField(x, y))
     {
         cc->isMouseOn = TreeControlContext::IsMouseOn::SearchField;
     }
-    else
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::None;
-    }
 
-    return false;
+    return cc->isMouseOn != TreeControlContext::IsMouseOn::None;
 }
 
 bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
@@ -1236,37 +1240,21 @@ ItemHandle TreeControlContext::GetCurrentItemHandle() const
 
 void TreeControlContext::ColumnSort(uint32 columnIndex)
 {
-    if ((treeFlags & TreeViewFlags::Sortable) == TreeViewFlags::None)
-    {
-        columnIndexToSortBy = InvalidIndex;
-        return;
-    }
-
-    if (columnIndex != columnIndexToSortBy)
+    if (treeFlags && TreeViewFlags::Sortable)
     {
         SetSortColumn(columnIndex);
+        Sort();
     }
-
-    Sort();
 }
 
 void TreeControlContext::SetSortColumn(uint32 columnIndex)
 {
-    if ((treeFlags & TreeViewFlags::Sortable) == TreeViewFlags::None)
+    if ((treeFlags && TreeViewFlags::Sortable) == false || columnIndexToSortBy >= columns.size())
     {
         columnIndexToSortBy = InvalidIndex;
     }
-    else
-    {
-        if (columnIndexToSortBy >= columns.size())
-        {
-            columnIndexToSortBy = InvalidIndex;
-        }
-        else
-        {
-            columnIndexToSortBy = columnIndex;
-        }
-    }
+
+    columnIndexToSortBy = columnIndex;
 }
 
 void TreeControlContext::SelectColumnSeparator(int32 offset)
@@ -1302,24 +1290,33 @@ struct ItemComparator
     inline bool operator()(const ItemHandle i1, const ItemHandle i2)
     {
         auto tcc = reinterpret_cast<TreeControlContext*>(tv->Context);
-        CHECK(tcc != nullptr, 0, "");
+        CHECK(tcc != nullptr, true, "");
 
         auto& a = tcc->items.at(i1);
         auto& b = tcc->items.at(i2);
 
-        if (a.priority != b.priority)
+        auto result                 = a.priority > b.priority;
+        const auto sortedByPriority = a.priority != b.priority;
+
+        if (sortedByPriority)
         {
-            return a.priority > b.priority;
+            return result;
         }
 
-        if (tcc->columnIndexToSortBy >= a.values.size())
-        {
-            return false;
-        }
+        const auto aInvalidColumnIndex = tcc->columnIndexToSortBy >= a.values.size();
+        const auto bInvalidColumnIndex = tcc->columnIndexToSortBy >= b.values.size();
 
-        if (tcc->columnIndexToSortBy >= b.values.size())
+        if (aInvalidColumnIndex && bInvalidColumnIndex)
+        {
+            return a.handle < b.handle;
+        }
+        else if (aInvalidColumnIndex)
         {
             return true;
+        }
+        else if (bInvalidColumnIndex)
+        {
+            return false;
         }
 
         if (tcc->handlers != nullptr)
@@ -1327,28 +1324,36 @@ struct ItemComparator
             auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(tcc->handlers.get());
             if (handler->CompareItems.obj)
             {
-                return handler->CompareItems.obj->CompareItems(tv, tv->GetItemByHandle(i1), tv->GetItemByHandle(i2));
+                result = handler->CompareItems.obj->CompareItems(tv, tv->GetItemByHandle(i1), tv->GetItemByHandle(i2));
+
+                if (tcc->sortAscendent)
+                {
+                    result = !result;
+                }
+
+                return result;
             }
         }
 
         const auto& aVal = a.values.at(tcc->columnIndexToSortBy);
         const auto& bVal = b.values.at(tcc->columnIndexToSortBy);
 
-        const auto result = aVal.CompareWith(bVal, true);
+        const auto cResult = aVal.CompareWith(bVal, true);
 
-        if (result == 0)
+        if (cResult == 0)
         {
-            return false;
-        }
-
-        if (tcc->sortAscendent)
-        {
-            return result < 0;
+            result = false;
         }
         else
         {
-            return result > 0;
+            result = cResult < 0;
+            if (!tcc->sortAscendent)
+            {
+                result = !result;
+            }
         }
+
+        return result;
     }
 
     ItemComparator(Reference<TreeView> _tv) : tv(_tv)
@@ -1477,7 +1482,7 @@ bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
     CHECK(x >= 0, false, "");
     CHECK(y == 1, false, "");
 
-    CHECK((treeFlags & TreeViewFlags::HideColumns) == TreeViewFlags::None, false, "");
+    CHECK((treeFlags && TreeViewFlags::HideColumns) == false, false, "");
 
     auto i = 0U;
     for (auto& col : columns)
@@ -1887,7 +1892,8 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 
     renderer.FillHorizontalLineSize(Layout.X + addX, 1, controlWidth - Layout.X, ' ', Cfg->Header.Text.Focused);
 
-    const auto enabled = (Flags & GATTR_ENABLE) != 0;
+    const auto enabled  = (Flags & GATTR_ENABLE) != 0;
+    const auto sortable = (treeFlags && TreeViewFlags::Sortable);
 
     WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
     wtp.Y     = 1; // 0  is for border
@@ -1915,11 +1921,11 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
             wtp.Width++;
         }
 
-        wtp.Color = enabled
-                          ? ((i == columnIndexToSortBy) ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Focused)
-                          : Cfg->Header.Text.Inactive;
+        wtp.Color = enabled ? ((sortable && i == columnIndexToSortBy) ? Cfg->Header.Text.PressedOrSelected
+                                                                      : Cfg->Header.Text.Focused)
+                            : Cfg->Header.Text.Inactive;
 
-        if (enabled && Focused && i == mouseOverColumnIndex && i != columnIndexToSortBy)
+        if (enabled && Focused && i == mouseOverColumnIndex && i != columnIndexToSortBy && sortable)
         {
             wtp.Color = Cfg->Header.Text.Hovered;
         }
@@ -1928,7 +1934,7 @@ bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
 
         renderer.WriteText(*const_cast<CharacterBuffer*>(&col.title), wtp);
 
-        if (i == columnIndexToSortBy)
+        if (sortable && i == columnIndexToSortBy)
         {
             renderer.WriteSpecialCharacter(
                   static_cast<int32>(wtp.X + wtp.Width),
