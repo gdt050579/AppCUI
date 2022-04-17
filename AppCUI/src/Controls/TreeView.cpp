@@ -1,9 +1,6 @@
 #include "ControlContext.hpp"
-#include <deque>
+
 #include <queue>
-#include <stack>
-#include <set>
-#include <charconv>
 
 namespace AppCUI::Controls
 {
@@ -293,17 +290,9 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
     case Key::Shift | Key::Space:
     case Key::Shift | Key::Enter:
 
-        if (cc->Focused && cc->GetCurrentItemHandle() != InvalidItemHandle)
+        if (cc->Focused)
         {
-            if (cc->handlers != nullptr)
-            {
-                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                if (handler->OnItemPressed.obj)
-                {
-                    TreeViewItem tvi = GetItemByHandle(cc->GetCurrentItemHandle());
-                    handler->OnItemPressed.obj->OnTreeViewItemPressed(this, tvi);
-                }
-            }
+            cc->TriggerOnItemPressed();
         }
 
         return true;
@@ -327,15 +316,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             {
                 if (cc->Focused)
                 {
-                    if (cc->handlers != nullptr)
-                    {
-                        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                        if (handler->OnItemPressed.obj)
-                        {
-                            TreeViewItem tvi = GetItemByHandle(cc->GetCurrentItemHandle());
-                            handler->OnItemPressed.obj->OnTreeViewItemPressed(this, tvi);
-                        }
-                    }
+                    cc->TriggerOnItemPressed();
                 }
             }
         }
@@ -864,7 +845,7 @@ ItemHandle TreeViewItem::GetHandle() const
 bool TreeViewItem::Toggle()
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(false);
-    CHECK(IsExpandable(), true, ""); // nothing to expand
+    CHECK(IsExpandable(), true, "");
 
     if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
     {
@@ -877,14 +858,7 @@ bool TreeViewItem::Toggle()
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
-            if (cc->handlers != nullptr)
-            {
-                auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(cc->handlers.get());
-                if (handler->OnItemToggle.obj)
-                {
-                    handler->OnItemToggle.obj->OnTreeViewItemToggle(cc->host, *this);
-                }
-            }
+            cc->TriggerOnItemToggled(*this);
         }
     }
 
@@ -1252,15 +1226,7 @@ namespace AppCUI
 void TreeControlContext::SetCurrentItemHandle(ItemHandle handle)
 {
     currentItemHandle = handle;
-    if (handlers != nullptr)
-    {
-        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
-        if (handler->OnCurrentItemChanged.obj)
-        {
-            auto item = host->GetItemByHandle(handle);
-            handler->OnCurrentItemChanged.obj->OnTreeViewCurrentItemChanged(host, item);
-        }
-    }
+    TriggerOnCurrentItemChanged();
 }
 
 ItemHandle TreeControlContext::GetCurrentItemHandle() const
@@ -2022,7 +1988,7 @@ bool TreeControlContext::MoveUp()
             return true;
         }
 
-        currentItemHandle = itemsToDrew[newIndex];
+        SetCurrentItemHandle(itemsToDrew[newIndex]);
 
         if (newIndex < offsetTopToDraw && offsetTopToDraw > 0)
         {
@@ -2049,7 +2015,7 @@ bool TreeControlContext::MoveDown()
             return true;
         }
 
-        currentItemHandle = itemsToDrew[newIndex];
+        SetCurrentItemHandle(itemsToDrew[newIndex]);
 
         if (newIndex >= offsetBotToDraw)
         {
@@ -2325,12 +2291,50 @@ ItemHandle TreeControlContext::AddItem(ItemHandle parent, std::initializer_list<
 
     if (items.size() == 1)
     {
-        currentItemHandle = items[nextItemHandle].handle;
+        SetCurrentItemHandle(items[nextItemHandle].handle);
     }
 
     notProcessed = true;
 
     return items[nextItemHandle++].handle;
+}
+
+void TreeControlContext::TriggerOnCurrentItemChanged()
+{
+    if (handlers != nullptr)
+    {
+        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
+        if (handler->OnCurrentItemChanged.obj)
+        {
+            auto item = host->GetCurrentItem();
+            handler->OnCurrentItemChanged.obj->OnTreeViewCurrentItemChanged(host, item);
+        }
+    }
+}
+
+void TreeControlContext::TriggerOnItemPressed()
+{
+    if (handlers != nullptr)
+    {
+        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
+        if (handler->OnItemPressed.obj)
+        {
+            TreeViewItem item = host->GetCurrentItem();
+            handler->OnItemPressed.obj->OnTreeViewItemPressed(host, item);
+        }
+    }
+}
+
+void TreeControlContext::TriggerOnItemToggled(TreeViewItem& item)
+{
+    if (handlers != nullptr)
+    {
+        auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
+        if (handler->OnItemToggle.obj)
+        {
+            handler->OnItemToggle.obj->OnTreeViewItemToggle(host, item);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

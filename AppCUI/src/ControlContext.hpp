@@ -789,6 +789,11 @@ class TreeControlContext : public ControlContext
     bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
 
     ItemHandle AddItem(ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
+
+    // trigers
+    void TriggerOnCurrentItemChanged();
+    void TriggerOnItemPressed();
+    void TriggerOnItemToggled(TreeViewItem& item);
 };
 
 enum class GridCellStatus
