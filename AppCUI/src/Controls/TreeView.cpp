@@ -197,8 +197,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - cc->maxItemsToDraw;
 
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[index]);
 
             cc->offsetTopToDraw -= cc->maxItemsToDraw;
             cc->offsetBotToDraw -= cc->maxItemsToDraw;
@@ -210,16 +209,14 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) - difference;
 
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[index]);
 
             cc->offsetTopToDraw -= difference;
             cc->offsetBotToDraw -= difference;
         }
         else
         {
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[0] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[0]);
         }
 
         return true;
@@ -234,8 +231,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + cc->maxItemsToDraw;
 
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[index]);
 
             cc->offsetTopToDraw += cc->maxItemsToDraw;
             cc->offsetBotToDraw += cc->maxItemsToDraw;
@@ -247,16 +243,14 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
             const auto it    = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
             const auto index = static_cast<uint32>(it - cc->itemsToDrew.begin()) + difference;
 
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[index] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[index]);
 
             cc->offsetTopToDraw += static_cast<uint32>(difference);
             cc->offsetBotToDraw += static_cast<uint32>(difference);
         }
         else
         {
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[cc->itemsToDrew.size() - 1]);
         }
 
         return true;
@@ -268,10 +262,9 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         cc->offsetTopToDraw = 0;
         cc->offsetBotToDraw = cc->maxItemsToDraw;
-        {
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[0] };
-            cc->SetCurrentItemHandle(tvi);
-        }
+
+        cc->SetCurrentItemHandle(cc->itemsToDrew[0]);
+
         return true;
 
     case Key::End:
@@ -281,10 +274,9 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
         cc->offsetTopToDraw = static_cast<uint32>(cc->itemsToDrew.size()) - cc->maxItemsToDraw;
         cc->offsetBotToDraw = cc->offsetTopToDraw + cc->maxItemsToDraw;
-        {
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->itemsToDrew.size() - 1] };
-            cc->SetCurrentItemHandle(tvi);
-        }
+
+        cc->SetCurrentItemHandle(cc->itemsToDrew[cc->itemsToDrew.size() - 1]);
+
         return true;
 
     case Key::Ctrl | Key::Space:
@@ -445,8 +437,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this->Context, handle };
-                        cc->SetCurrentItemHandle(tvi);
+                        cc->SetCurrentItemHandle(handle);
                         return true;
                     }
                 }
@@ -457,8 +448,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this->Context, handle };
-                        cc->SetCurrentItemHandle(tvi);
+                        cc->SetCurrentItemHandle(handle);
                         return true;
                     }
                 }
@@ -485,8 +475,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this->Context, handle };
-                        cc->SetCurrentItemHandle(tvi);
+                        cc->SetCurrentItemHandle(handle);
                         return true;
                     }
                 }
@@ -498,8 +487,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                     const auto& item  = cc->items[handle];
                     if (item.markedAsFound == true)
                     {
-                        TreeViewItem tvi{ this->Context, handle };
-                        cc->SetCurrentItemHandle(tvi);
+                        cc->SetCurrentItemHandle(handle);
                         return true;
                     }
                 }
@@ -561,8 +549,7 @@ void TreeView::OnFocus()
     {
         if (cc->GetCurrentItemHandle() == InvalidItemHandle)
         {
-            TreeViewItem tvi{ this->Context, cc->itemsToDrew[cc->offsetTopToDraw] };
-            cc->SetCurrentItemHandle(tvi);
+            cc->SetCurrentItemHandle(cc->itemsToDrew[cc->offsetTopToDraw]);
         }
     }
 }
@@ -601,8 +588,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             {
                 if (cc->IsAncestorOfChild(it->second.handle, cc->GetCurrentItemHandle()))
                 {
-                    TreeViewItem tvi{ this->Context, it->second.handle };
-                    cc->SetCurrentItemHandle(tvi);
+                    cc->SetCurrentItemHandle(it->second.handle);
                 }
             }
             cc->ProcessItemsToBeDrawn(InvalidItemHandle);
@@ -623,8 +609,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
                 x < static_cast<int>(cc->Layout.Width))
             {
-                TreeViewItem tvi{ this->Context, itemHandle };
-                cc->SetCurrentItemHandle(tvi);
+                cc->SetCurrentItemHandle(itemHandle);
             }
         }
         break;
@@ -806,7 +791,7 @@ bool TreeViewItem::SetColor(const Graphics::ColorPair& color)
 bool TreeViewItem::SetCurrent()
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(false);
-    cc->SetCurrentItemHandle(*this);
+    cc->SetCurrentItemHandle(handle);
     return true;
 }
 
@@ -1125,8 +1110,7 @@ bool TreeView::ClearItems()
 
     cc->nextItemHandle = 1ULL;
 
-    TreeViewItem tvi{ nullptr, InvalidItemHandle };
-    cc->SetCurrentItemHandle(tvi);
+    cc->SetCurrentItemHandle(InvalidItemHandle);
 
     cc->roots.clear();
 
@@ -1157,12 +1141,12 @@ uint32 TreeView::GetItemsCount() const
 
 TreeViewItem TreeView::GetItemByHandle(ItemHandle handle)
 {
-    CHECK(Context != nullptr, (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+    CHECK(Context != nullptr, TreeViewItem{}, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    CHECK(cc->items.find(handle) != cc->items.end(), (TreeViewItem{ nullptr, InvalidItemHandle }), "");
+    CHECK(cc->items.find(handle) != cc->items.end(), TreeViewItem{}, "");
 
-    return { this->Context, handle };
+    return { Context, handle };
 }
 
 TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
@@ -1265,15 +1249,16 @@ bool TreeView::Sort(uint32 columnIndex, bool ascendent)
 
 namespace AppCUI
 {
-void TreeControlContext::SetCurrentItemHandle(TreeViewItem& item)
+void TreeControlContext::SetCurrentItemHandle(ItemHandle handle)
 {
-    currentItemHandle = item.GetHandle();
+    currentItemHandle = handle;
     if (handlers != nullptr)
     {
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
         if (handler->OnCurrentItemChanged.obj)
         {
-            handler->OnCurrentItemChanged.obj->OnTreeViewCurrentItemChanged(this->host, item);
+            auto item = host->GetItemByHandle(handle);
+            handler->OnCurrentItemChanged.obj->OnTreeViewCurrentItemChanged(host, item);
         }
     }
 }
@@ -1700,8 +1685,7 @@ bool TreeControlContext::SearchItems()
 
                     if (items[currentItemHandle].markedAsFound == false)
                     {
-                        auto tvi = host->GetItemByHandle(item.second.handle);
-                        SetCurrentItemHandle(tvi);
+                        SetCurrentItemHandle(item.second.handle);
                     }
                     else
                     {
@@ -1710,14 +1694,12 @@ bool TreeControlContext::SearchItems()
                         {
                             if (ic.operator()(currentItemHandle, item.second.handle) == false)
                             {
-                                auto tvi = host->GetItemByHandle(item.second.handle);
-                                SetCurrentItemHandle(tvi);
+                                SetCurrentItemHandle(item.second.handle);
                             }
                         }
                         else if (items[currentItemHandle].depth > item.second.depth)
                         {
-                            auto tvi = host->GetItemByHandle(item.second.handle);
-                            SetCurrentItemHandle(tvi);
+                            SetCurrentItemHandle(item.second.handle);
                         }
                     }
 

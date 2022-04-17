@@ -751,7 +751,7 @@ class TreeControlContext : public ControlContext
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
 
-    void SetCurrentItemHandle(TreeViewItem& item);
+    void SetCurrentItemHandle(ItemHandle handle);
     ItemHandle GetCurrentItemHandle() const;
 
     void ColumnSort(uint32 columnIndex);
