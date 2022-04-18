@@ -1516,6 +1516,7 @@ ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> colu
     Members->clipboardSeparator                = '\t';
     Members->Columns.TotalWidth                = 0;
     Members->Host                              = this;
+    Members->ScrollBars.OutsideControl         = Members->Flags && ListViewFlags::HideBorder;
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
