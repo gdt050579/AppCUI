@@ -1114,7 +1114,8 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         uint32 hIndex, hColumn;
         if (MouseToHeader(x, y, hIndex, hColumn))
         {
-            if ((y == 1) && (hIndex != INVALID_COLUMN_INDEX))
+            const auto columnY = (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+            if ((y == columnY) && (hIndex != INVALID_COLUMN_INDEX))
             {
                 ColumnSort(hIndex);
                 return;
@@ -1135,11 +1136,21 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
     }
 
     // check if items are pressed
-    if ((Flags & ListViewFlags::HideColumns) != ListViewFlags::None)
-        y--;
+    if (Flags && ListViewFlags::HideBorder)
+    {
+        if (!(Flags && ListViewFlags::HideColumns))
+            y--;
+    }
     else
-        y -= 2;
-    if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
+    {
+        if (Flags && ListViewFlags::HideColumns)
+            y--;
+        else
+            y -= 2;
+    }
+
+
+    if (Flags && ListViewFlags::ItemSeparators)
         y = y / 2;
 
     if (y < GetVisibleItemsCount())
