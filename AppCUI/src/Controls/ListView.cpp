@@ -388,14 +388,14 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
         if (!this->Filter.FilterModeEnabled)
             return false; // Popup search bar is only visible when FilterModeEnabled is true
         x = (this->Layout.Width - LISTVIEW_SEARCH_BAR_WIDTH) / 2;
-        y = this->Layout.Height >= 4 ? (this->Layout.Height - 3) : this->Layout.Height;
+        y = this->Layout.Height >= 4 ? (this->Layout.Height - 2) : this->Layout.Height;
     }
     else
     {
         x = 2;
         y = ((int) this->Layout.Height) - 1;
     }
-    renderer.FillHorizontalLine(x, y, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
+    renderer.FillHorizontalLine(x, y, LISTVIEW_SEARCH_BAR_WIDTH + x + 1, ' ', Cfg->SearchBar.Focused);
     const auto search_text = this->Filter.SearchText.ToStringView();
     if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
     {
@@ -1508,6 +1508,10 @@ ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> colu
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
+
+    // PopupSearchBar is implicitelly set if HideBorder is set
+    if (Members->Flags && ListViewFlags::HideBorder)
+        Members->Flags = Members->Flags | ListViewFlags::PopupSearchBar;
     if (!(Members->Flags && ListViewFlags::HideScrollBar))
     {
         Members->Flags |= (GATTR_HSCROLL | GATTR_VSCROLL);

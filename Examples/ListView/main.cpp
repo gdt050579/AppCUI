@@ -3431,7 +3431,7 @@ class NoBorderDemo : public Window
               this,
               "d:c",
               { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
-              ListViewFlags::HideBorder|ListViewFlags::Sortable);
+              ListViewFlags::HideBorder|ListViewFlags::SearchMode);
 
         // items
         lv->AddItem("Math").SetType(ListViewItem::Type::Category);
