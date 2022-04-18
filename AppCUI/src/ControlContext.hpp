@@ -761,7 +761,7 @@ class TreeControlContext : public ControlContext
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
 
-    void SetCurrentItemHandle(TreeViewItem& item);
+    void SetCurrentItemHandle(ItemHandle handle);
     ItemHandle GetCurrentItemHandle() const;
 
     void ColumnSort(uint32 columnIndex);
@@ -799,6 +799,11 @@ class TreeControlContext : public ControlContext
     bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
 
     ItemHandle AddItem(ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
+
+    // trigers
+    void TriggerOnCurrentItemChanged();
+    void TriggerOnItemPressed();
+    void TriggerOnItemToggled(TreeViewItem& item);
 };
 
 enum class GridCellStatus
