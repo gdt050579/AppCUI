@@ -3422,16 +3422,37 @@ class HandlersDemo : public Window,
     }
 };
 
+class NoBorderDemo : public Window
+{
+  public:
+    NoBorderDemo() : Window("No border Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(
+              this,
+              "d:c",
+              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 4 } },
+              ListViewFlags::HideBorder);
+
+        // items
+        lv->AddItems({ { "Dragos", "10" },
+                       { "Raul", "8" },
+                       { "Ionut", "5" },
+                       { "Gheorghita", "10" },
+                       { "Andrei", "10" },
+                       { "John", "7" } });
+    }
+};
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar, cbHideBorder, cbHideScrollBar;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes, rbCategory, rbHandlers;
+          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:26", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:27", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3462,6 +3483,8 @@ class MyWin : public Window
         rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:19,w:56", MY_GROUP);
         rbHandlers  = Factory::RadioBox::Create(
               this, "Usage of handlers to intercept ListView events", "x:1,y:20,w:56", MY_GROUP);
+        rbNoBorder = Factory::RadioBox::Create(
+              this, "Build a list view without border", "x:1,y:21,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
@@ -3552,6 +3575,11 @@ class MyWin : public Window
         if (rbHandlers->IsChecked())
         {
             HandlersDemo win;
+            win.Show();
+        }
+        if (rbNoBorder->IsChecked())
+        {
+            NoBorderDemo win;
             win.Show();
         }
     }
