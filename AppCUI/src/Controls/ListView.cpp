@@ -272,12 +272,12 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     if (item->Type == ListViewItem::Type::Category)
     {
         if (Focused)
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Focused, true);
+            renderer.DrawHorizontalLine(x, y, this->Layout.Width - x, Cfg->Border.Focused, true);
         else
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Normal, true);
+            renderer.DrawHorizontalLine(x, y, this->Layout.Width - x, Cfg->Border.Normal, true);
         params.Align = TextAlignament::Center;
         params.Width = this->Layout.Width - 2;
-        params.X     = 1;
+        params.X     = x;
         params.Flags |= WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin;
         if (currentItem)
             params.Color = Cfg->Cursor.Normal;

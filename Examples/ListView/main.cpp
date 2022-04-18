@@ -3430,16 +3430,24 @@ class NoBorderDemo : public Window
         auto lv = Factory::ListView::Create(
               this,
               "d:c",
-              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 4 } },
+              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
               ListViewFlags::HideBorder);
 
         // items
+        lv->AddItem("Math").SetType(ListViewItem::Type::Category);
         lv->AddItems({ { "Dragos", "10" },
                        { "Raul", "8" },
                        { "Ionut", "5" },
                        { "Gheorghita", "10" },
                        { "Andrei", "10" },
                        { "John", "7" } });
+        lv->AddItem("English").SetType(ListViewItem::Type::Category);
+        lv->AddItems({ { "Dragos", "9" },
+                       { "Raul", "8" },
+                       { "Ionut", "10" },
+                       { "Gheorghita", "7" },
+                       { "Andrei", "8" },
+                       { "John", "10" } });
     }
 };
 
