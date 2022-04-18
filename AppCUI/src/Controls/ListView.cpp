@@ -1143,7 +1143,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         }
     }
     // check is the search bar was pressed
-    if ((Flags && (ListViewFlags::HideBorder | ListViewFlags::HideSearchBar)) == false)
+    if ((Flags && (ListViewFlags::HideBorder | ListViewFlags::HideSearchBar | ListViewFlags::PopupSearchBar)) == false)
     {
         if ((this->Layout.Width > 20) && (y == (this->Layout.Height - 1)))
         {
