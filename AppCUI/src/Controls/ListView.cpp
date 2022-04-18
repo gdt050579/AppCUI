@@ -107,7 +107,7 @@ InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 
 void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
 {
-    int x                          = 1 - Columns.XOffset;
+    int x                          = this->GetLeftPos();
     InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
@@ -125,14 +125,16 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
     const auto state        = GetControlState(ControlStateFlags::None);
     const auto defaultCol   = Cfg->Header.Text.GetColor(state);
     const auto defaultHK    = Cfg->Header.HotKey.GetColor(state);
+    const auto y            = (this->Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    int x                   = y; // either (0,0) or (1,1)
 
-    renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol);
+    renderer.FillHorizontalLine(x, y, Layout.Width, ' ', defaultCol);
 
-    int x = 1 - Columns.XOffset;
+    x -= Columns.XOffset;
 
     InternalListViewColumn* column = this->Columns.List;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y           = 1;
+    params.Y           = y;
     params.Color       = defaultCol;
     params.HotKeyColor = defaultHK;
 
@@ -143,12 +145,12 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
             if (tr == SortParams.ColumnIndex)
             {
                 params.Color = enabled ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
             }
             else if (tr == Columns.HoverColumnIndex)
             {
                 params.Color = enabled ? Cfg->Header.Text.Hovered : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
             }
             else
                 params.Color = defaultCol;
@@ -186,21 +188,21 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         {
             renderer.WriteSpecialCharacter(
                   x - 1,
-                  1,
+                  y,
                   this->SortParams.Ascendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
                   Cfg->Header.HotKey.PressedOrSelected);
         }
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->Lines.GetColor(state));
+            renderer.DrawVerticalLine(x, y, Layout.Height, Cfg->Lines.GetColor(state));
         }
         x++;
     }
 }
 void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
-    int x = 1 - Columns.XOffset;
+    int x = GetLeftPos();
     int itemStarts;
     InternalListViewColumn* column = this->Columns.List;
     CharacterBuffer* subitem       = item->SubItem;
@@ -270,12 +272,12 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     if (item->Type == ListViewItem::Type::Category)
     {
         if (Focused)
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Focused, true);
+            renderer.DrawHorizontalLine(x, y, this->Layout.Width - x, Cfg->Border.Focused, true);
         else
-            renderer.DrawHorizontalLine(1, y, this->Layout.Width - 1, Cfg->Border.Normal, true);
+            renderer.DrawHorizontalLine(x, y, this->Layout.Width - x, Cfg->Border.Normal, true);
         params.Align = TextAlignament::Center;
         params.Width = this->Layout.Width - 2;
-        params.X     = 1;
+        params.X     = x;
         params.Flags |= WriteTextFlags::LeftMargin | WriteTextFlags::RightMargin;
         if (currentItem)
             params.Color = Cfg->Cursor.Normal;
@@ -363,7 +365,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            x                              = 1 - Columns.XOffset;
+            x                              = GetLeftPos();
             InternalListViewColumn* column = this->Columns.List;
             for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
             {
@@ -374,17 +376,56 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         }
     }
 }
-
+bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
+{
+    if (Flags && ListViewFlags::HideSearchBar)
+        return false; // search bar will not be drawn
+    if (this->Layout.Width < (LISTVIEW_SEARCH_BAR_WIDTH + 6))
+        return false; // width is too small to render the seach bar
+    int x, y;
+    if (Flags && ListViewFlags::PopupSearchBar)
+    {
+        if (!this->Filter.FilterModeEnabled)
+            return false; // Popup search bar is only visible when FilterModeEnabled is true
+        x = (this->Layout.Width - LISTVIEW_SEARCH_BAR_WIDTH) / 2;
+        y = this->Layout.Height >= 4 ? (this->Layout.Height - 3) : this->Layout.Height;
+    }
+    else
+    {
+        x = 2;
+        y = ((int) this->Layout.Height) - 1;
+    }
+    renderer.FillHorizontalLine(x, y, LISTVIEW_SEARCH_BAR_WIDTH + x + 1, ' ', Cfg->SearchBar.Focused);
+    const auto search_text = this->Filter.SearchText.ToStringView();
+    if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
+    {
+        renderer.WriteSingleLineText(x + 1, y, search_text, Cfg->SearchBar.Focused);
+        if (Filter.FilterModeEnabled)
+            renderer.SetCursor((int) (x + 1 + search_text.length()), y);
+    }
+    else
+    {
+        renderer.WriteSingleLineText(
+              x + 1,
+              y,
+              search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
+              Cfg->SearchBar.Focused);
+        if (Filter.FilterModeEnabled)
+            renderer.SetCursor(x + 1 + LISTVIEW_SEARCH_BAR_WIDTH, y);
+    }
+    return true;
+}
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
-    int y     = 1;
+    int y     = 0;
     auto colB = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
+        renderer.SetClipMargins(1, 1, 1, 1);
+        y = 1;
     }
-    renderer.SetClipMargins(1, 1, 1, 1);
 
     if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
     {
@@ -412,30 +453,9 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         int x_ofs = 2;
         int yPoz  = ((int) this->Layout.Height) - 1;
         renderer.ResetClip();
+        if (DrawSearchBar(renderer))
+            x_ofs += 17;
 
-        // search bar
-        if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
-        {
-            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
-            const auto search_text = this->Filter.SearchText.ToStringView();
-            if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
-            {
-                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->SearchBar.Focused);
-                if (Filter.FilterModeEnabled)
-                    renderer.SetCursor((int) (3 + search_text.length()), yPoz);
-            }
-            else
-            {
-                renderer.WriteSingleLineText(
-                      3,
-                      yPoz,
-                      search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
-                      Cfg->SearchBar.Focused);
-                if (Filter.FilterModeEnabled)
-                    renderer.SetCursor(3 + LISTVIEW_SEARCH_BAR_WIDTH, yPoz);
-            }
-            x_ofs = 17;
-        }
         // status information
         if ((this->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
@@ -1072,11 +1092,13 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 bool ListViewControlContext::MouseToHeader(int x, int, uint32& HeaderIndex, uint32& HeaderColumnIndex)
 {
-    int xx                         = 1 - Columns.XOffset;
+    int xx                         = GetLeftPos();
+    const int viewLeft             = (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    const int viewRight            = (Flags && ListViewFlags::HideBorder) ? this->Layout.Width : this->Layout.Width - 2;
     InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; tr < Columns.Count; tr++, column++)
     {
-        if ((x >= xx) && (x <= xx + column->Width) && (x > 1) && (x < (this->Layout.Width - 2)))
+        if ((x >= xx) && (x <= xx + column->Width) && (x > viewLeft) && (x < viewRight))
         {
             if (x == (xx + column->Width))
             {
@@ -1111,7 +1133,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         uint32 hIndex, hColumn;
         if (MouseToHeader(x, y, hIndex, hColumn))
         {
-            if ((y == 1) && (hIndex != INVALID_COLUMN_INDEX))
+            if ((y == this->GetColumnY()) && (hIndex != INVALID_COLUMN_INDEX))
             {
                 ColumnSort(hIndex);
                 return;
@@ -1121,22 +1143,33 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         }
     }
     // check is the search bar was pressed
-    if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) &&
-        (y == (this->Layout.Height - 1)))
+    if ((Flags && (ListViewFlags::HideBorder | ListViewFlags::HideSearchBar | ListViewFlags::PopupSearchBar)) == false)
     {
-        if ((x >= 2) && (x <= (3 + LISTVIEW_SEARCH_BAR_WIDTH)))
+        if ((this->Layout.Width > 20) && (y == (this->Layout.Height - 1)))
         {
-            this->Filter.FilterModeEnabled = true;
-            return;
+            if ((x >= 2) && (x <= (3 + LISTVIEW_SEARCH_BAR_WIDTH)))
+            {
+                this->Filter.FilterModeEnabled = true;
+                return;
+            }
         }
     }
 
     // check if items are pressed
-    if ((Flags & ListViewFlags::HideColumns) != ListViewFlags::None)
-        y--;
+    if (Flags && ListViewFlags::HideBorder)
+    {
+        if (!(Flags && ListViewFlags::HideColumns))
+            y--;
+    }
     else
-        y -= 2;
-    if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
+    {
+        if (Flags && ListViewFlags::HideColumns)
+            y--;
+        else
+            y -= 2;
+    }
+
+    if (Flags && ListViewFlags::ItemSeparators)
         y = y / 2;
 
     if (y < GetVisibleItemsCount())
@@ -1169,7 +1202,7 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
-        int xx                         = 1 - Columns.XOffset;
+        int xx                         = GetLeftPos();
         InternalListViewColumn* column = this->Columns.List;
         for (uint32 tr = 0; tr < Columns.HoverSeparatorColumnIndex; tr++, column++)
             xx += (((uint32) column->Width) + 1);
@@ -1185,21 +1218,26 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 }
 bool ListViewControlContext::OnMouseOver(int x, int y)
 {
-    if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
+    if (!(Flags && ListViewFlags::HideColumns))
     {
         uint32 hIndex, hColumn;
         MouseToHeader(x, y, hIndex, hColumn);
-        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) &&
+        if ((hIndex != Columns.HoverColumnIndex) && (y == this->GetColumnY()) &&
             ((Flags & ListViewFlags::Sortable) != ListViewFlags::None))
         {
             Columns.HoverColumnIndex          = hIndex;
-            Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+            Columns.HoverSeparatorColumnIndex = hColumn;
             return true;
         }
-        if (hColumn != Columns.HoverSeparatorColumnIndex)
+        if ((hColumn != Columns.HoverSeparatorColumnIndex) && (y >= this->GetColumnY()))
         {
             Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
             Columns.HoverSeparatorColumnIndex = hColumn;
+            return true;
+        }
+        if ((y != this->GetColumnY()) && (Columns.HoverColumnIndex != INVALID_COLUMN_INDEX))
+        {
+            Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
             return true;
         }
     }
@@ -1472,7 +1510,11 @@ ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> colu
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
-    if (((((uint32) flags) & ((uint32) ListViewFlags::HideScrollBar)) == 0))
+
+    // PopupSearchBar is implicitelly set if HideBorder is set
+    if (Members->Flags && ListViewFlags::HideBorder)
+        Members->Flags = Members->Flags | ListViewFlags::PopupSearchBar;
+    if (!(Members->Flags && ListViewFlags::HideScrollBar))
     {
         Members->Flags |= (GATTR_HSCROLL | GATTR_VSCROLL);
         Members->ScrollBars.LeftMargin = 25;
@@ -1497,6 +1539,7 @@ ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> colu
     Members->clipboardSeparator                = '\t';
     Members->Columns.TotalWidth                = 0;
     Members->Host                              = this;
+    Members->ScrollBars.OutsideControl         = Members->Flags && ListViewFlags::HideBorder;
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
