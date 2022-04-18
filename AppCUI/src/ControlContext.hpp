@@ -539,6 +539,7 @@ class ListViewControlContext : public ControlContext
     void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
     void DrawColumn(Graphics::Renderer& renderer);
     void DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem);
+    bool DrawSearchBar(Graphics::Renderer& renderer);
 
     // movement
     void UpdateSelection(int start, int end, bool select);

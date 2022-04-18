@@ -4010,7 +4010,8 @@ namespace Controls
         SearchMode                    = 0x008000,
         HideSearchBar                 = 0x010000,
         HideBorder                    = 0x020000,
-        HideScrollBar                 = 0x040000
+        HideScrollBar                 = 0x040000,
+        PopupSearchBar                = 0x080000
     };
 
     class EXPORT ListViewColumn

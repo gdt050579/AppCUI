@@ -376,7 +376,45 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         }
     }
 }
-
+bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
+{
+    if (Flags && ListViewFlags::HideSearchBar)
+        return false; // search bar will not be drawn
+    if (this->Layout.Width < (LISTVIEW_SEARCH_BAR_WIDTH + 6))
+        return false; // width is too small to render the seach bar
+    int x, y;
+    if (Flags && ListViewFlags::PopupSearchBar)
+    {
+        if (!this->Filter.FilterModeEnabled)
+            return false; // Popup search bar is only visible when FilterModeEnabled is true
+        x = (this->Layout.Width - LISTVIEW_SEARCH_BAR_WIDTH) / 2;
+        y = this->Layout.Height >= 4 ? (this->Layout.Height - 3) : this->Layout.Height;
+    }
+    else
+    {
+        x = 2;
+        y = ((int) this->Layout.Height) - 1;
+    }
+    renderer.FillHorizontalLine(x, y, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
+    const auto search_text = this->Filter.SearchText.ToStringView();
+    if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
+    {
+        renderer.WriteSingleLineText(x + 1, y, search_text, Cfg->SearchBar.Focused);
+        if (Filter.FilterModeEnabled)
+            renderer.SetCursor((int) (x + 1 + search_text.length()), y);
+    }
+    else
+    {
+        renderer.WriteSingleLineText(
+              x + 1,
+              y,
+              search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
+              Cfg->SearchBar.Focused);
+        if (Filter.FilterModeEnabled)
+            renderer.SetCursor(x + 1 + LISTVIEW_SEARCH_BAR_WIDTH, y);
+    }
+    return true;
+}
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y     = 0;
@@ -415,30 +453,9 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         int x_ofs = 2;
         int yPoz  = ((int) this->Layout.Height) - 1;
         renderer.ResetClip();
+        if (DrawSearchBar(renderer))
+            x_ofs += 17;
 
-        // search bar
-        if ((this->Layout.Width > 20) && ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None))
-        {
-            renderer.FillHorizontalLine(x_ofs, yPoz, LISTVIEW_SEARCH_BAR_WIDTH + 3, ' ', Cfg->SearchBar.Focused);
-            const auto search_text = this->Filter.SearchText.ToStringView();
-            if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
-            {
-                renderer.WriteSingleLineText(3, yPoz, search_text, Cfg->SearchBar.Focused);
-                if (Filter.FilterModeEnabled)
-                    renderer.SetCursor((int) (3 + search_text.length()), yPoz);
-            }
-            else
-            {
-                renderer.WriteSingleLineText(
-                      3,
-                      yPoz,
-                      search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
-                      Cfg->SearchBar.Focused);
-                if (Filter.FilterModeEnabled)
-                    renderer.SetCursor(3 + LISTVIEW_SEARCH_BAR_WIDTH, yPoz);
-            }
-            x_ofs = 17;
-        }
         // status information
         if ((this->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         {
@@ -1491,7 +1508,7 @@ ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> colu
     Members->Layout.MinWidth  = 5;
     Members->Layout.MinHeight = 3;
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | (uint32) flags;
-    if (((((uint32) flags) & ((uint32) ListViewFlags::HideScrollBar)) == 0))
+    if (!(Members->Flags && ListViewFlags::HideScrollBar))
     {
         Members->Flags |= (GATTR_HSCROLL | GATTR_VSCROLL);
         Members->ScrollBars.LeftMargin = 25;
