@@ -388,7 +388,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
         if (!this->Filter.FilterModeEnabled)
             return false; // Popup search bar is only visible when FilterModeEnabled is true
         x = (this->Layout.Width - LISTVIEW_SEARCH_BAR_WIDTH) / 2;
-        y = this->Layout.Height >= 4 ? (this->Layout.Height - 2) : this->Layout.Height;
+        y = this->Layout.Height >= 4 ? (this->Layout.Height - 3) : this->Layout.Height;
     }
     else
     {
