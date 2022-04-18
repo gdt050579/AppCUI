@@ -107,7 +107,7 @@ InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 
 void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
 {
-    int x                          = 1 - Columns.XOffset;
+    int x                          = this->GetLeftPos();
     InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
     {
@@ -125,14 +125,16 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
     const auto state        = GetControlState(ControlStateFlags::None);
     const auto defaultCol   = Cfg->Header.Text.GetColor(state);
     const auto defaultHK    = Cfg->Header.HotKey.GetColor(state);
+    const auto y            = (this->Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    int x                   = y; // either (0,0) or (1,1)
 
-    renderer.FillHorizontalLine(1, 1, Layout.Width - 2, ' ', defaultCol);
+    renderer.FillHorizontalLine(x, y, Layout.Width, ' ', defaultCol);
 
-    int x = 1 - Columns.XOffset;
+    x -= Columns.XOffset;
 
     InternalListViewColumn* column = this->Columns.List;
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y           = 1;
+    params.Y           = y;
     params.Color       = defaultCol;
     params.HotKeyColor = defaultHK;
 
@@ -143,12 +145,12 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
             if (tr == SortParams.ColumnIndex)
             {
                 params.Color = enabled ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
             }
             else if (tr == Columns.HoverColumnIndex)
             {
                 params.Color = enabled ? Cfg->Header.Text.Hovered : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, 1, column->Width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
             }
             else
                 params.Color = defaultCol;
@@ -193,14 +195,14 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
 
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->Lines.GetColor(state));
+            renderer.DrawVerticalLine(x, y, Layout.Height, Cfg->Lines.GetColor(state));
         }
         x++;
     }
 }
 void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
-    int x = 1 - Columns.XOffset;
+    int x = GetLeftPos();
     int itemStarts;
     InternalListViewColumn* column = this->Columns.List;
     CharacterBuffer* subitem       = item->SubItem;
@@ -363,7 +365,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            x                              = 1 - Columns.XOffset;
+            x                              = GetLeftPos();
             InternalListViewColumn* column = this->Columns.List;
             for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
             {
@@ -377,14 +379,15 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
 
 void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
-    int y     = 1;
+    int y     = 0;
     auto colB = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
+        renderer.SetClipMargins(1, 1, 1, 1);
+        y = 1;
     }
-    renderer.SetClipMargins(1, 1, 1, 1);
 
     if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
     {
@@ -1072,7 +1075,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 bool ListViewControlContext::MouseToHeader(int x, int, uint32& HeaderIndex, uint32& HeaderColumnIndex)
 {
-    int xx                         = 1 - Columns.XOffset;
+    int xx                         = GetLeftPos();
     InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; tr < Columns.Count; tr++, column++)
     {
@@ -1169,7 +1172,7 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 {
     if (Columns.HoverSeparatorColumnIndex != INVALID_COLUMN_INDEX)
     {
-        int xx                         = 1 - Columns.XOffset;
+        int xx                         = GetLeftPos();
         InternalListViewColumn* column = this->Columns.List;
         for (uint32 tr = 0; tr < Columns.HoverSeparatorColumnIndex; tr++, column++)
             xx += (((uint32) column->Width) + 1);
