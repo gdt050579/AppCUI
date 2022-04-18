@@ -188,7 +188,7 @@ void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
         {
             renderer.WriteSpecialCharacter(
                   x - 1,
-                  1,
+                  y,
                   this->SortParams.Ascendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
                   Cfg->Header.HotKey.PressedOrSelected);
         }
