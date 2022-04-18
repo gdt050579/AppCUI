@@ -610,6 +610,10 @@ class ListViewControlContext : public ControlContext
     {
         return (this->Flags && ListViewFlags::HideBorder) ? -Columns.XOffset : 1 - Columns.XOffset;
     }
+    constexpr inline int GetColumnY() const
+    {
+        return (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    }
 };
 
 struct ComboBoxItem

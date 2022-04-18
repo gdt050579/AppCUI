@@ -1076,10 +1076,12 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 bool ListViewControlContext::MouseToHeader(int x, int, uint32& HeaderIndex, uint32& HeaderColumnIndex)
 {
     int xx                         = GetLeftPos();
+    const int viewLeft             = (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    const int viewRight            = (Flags && ListViewFlags::HideBorder) ? this->Layout.Width : this->Layout.Width - 2;
     InternalListViewColumn* column = this->Columns.List;
     for (uint32 tr = 0; tr < Columns.Count; tr++, column++)
     {
-        if ((x >= xx) && (x <= xx + column->Width) && (x > 1) && (x < (this->Layout.Width - 2)))
+        if ((x >= xx) && (x <= xx + column->Width) && (x > viewLeft) && (x < viewRight))
         {
             if (x == (xx + column->Width))
             {
@@ -1114,8 +1116,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         uint32 hIndex, hColumn;
         if (MouseToHeader(x, y, hIndex, hColumn))
         {
-            const auto columnY = (Flags && ListViewFlags::HideBorder) ? 0 : 1;
-            if ((y == columnY) && (hIndex != INVALID_COLUMN_INDEX))
+            if ((y == this->GetColumnY()) && (hIndex != INVALID_COLUMN_INDEX))
             {
                 ColumnSort(hIndex);
                 return;
@@ -1148,7 +1149,6 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         else
             y -= 2;
     }
-
 
     if (Flags && ListViewFlags::ItemSeparators)
         y = y / 2;
@@ -1199,21 +1199,26 @@ bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
 }
 bool ListViewControlContext::OnMouseOver(int x, int y)
 {
-    if ((Flags & ListViewFlags::HideColumns) == ListViewFlags::None)
+    if (!(Flags && ListViewFlags::HideColumns))
     {
         uint32 hIndex, hColumn;
         MouseToHeader(x, y, hIndex, hColumn);
-        if ((hIndex != Columns.HoverColumnIndex) && (y == 1) &&
+        if ((hIndex != Columns.HoverColumnIndex) && (y == this->GetColumnY()) &&
             ((Flags & ListViewFlags::Sortable) != ListViewFlags::None))
         {
             Columns.HoverColumnIndex          = hIndex;
-            Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+            Columns.HoverSeparatorColumnIndex = hColumn;
             return true;
         }
-        if (hColumn != Columns.HoverSeparatorColumnIndex)
+        if ((hColumn != Columns.HoverSeparatorColumnIndex) && (y >= this->GetColumnY()))
         {
             Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
             Columns.HoverSeparatorColumnIndex = hColumn;
+            return true;
+        }
+        if ((y != this->GetColumnY()) && (Columns.HoverColumnIndex != INVALID_COLUMN_INDEX))
+        {
+            Columns.HoverColumnIndex = INVALID_COLUMN_INDEX;
             return true;
         }
     }
