@@ -114,7 +114,7 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
                     auto& localPath = pieces.emplace_back(path.u16string());
                     root.SetData(Reference<std::u16string>(&localPath));
 
-                    OnTreeViewItemToggle(control.ToObjectRef<TreeView>(), root);
+                    OnTreeViewItemToggle(control.ToObjectRef<TreeView>(), root, std::filesystem::is_directory(path));
                 }
 
                 return true;
@@ -125,7 +125,7 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
         return false;
     }
 
-    void OnTreeViewItemToggle(Reference<TreeView> tree, TreeViewItem& item) override
+    bool OnTreeViewItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall) override
     {
         auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
@@ -155,7 +155,10 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
 #ifdef _DEBUG
             LOG_ERROR("%s", e.what());
 #endif
+            return false;
         }
+
+        return true;
     }
 
     static const std::string GetLastFileWriteText(const std::filesystem::path& path)

@@ -862,7 +862,7 @@ bool TreeViewItem::Toggle(bool recursiveCall)
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
-            return cc->TriggerOnItemToggled(*this, false);
+            return cc->TriggerOnItemToggled(*this, recursiveCall);
         }
     }
 
