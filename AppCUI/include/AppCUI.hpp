@@ -3022,7 +3022,8 @@ namespace Controls
               Reference<Controls::TreeView> control,
               const Controls::TreeViewItem& item1,
               const Controls::TreeViewItem& item2);
-        using OnTreeViewItemToggleHandler         = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
+        using OnTreeViewItemToggleHandler =
+              bool (*)(Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall);
         using OnTreeViewCurrentItemChangedHandler = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
         using OnTreeViewItemPressedHandler        = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
 
@@ -3172,15 +3173,17 @@ namespace Controls
 
         struct OnTreeViewItemToggleInterface
         {
-            virtual void OnTreeViewItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+            virtual bool OnTreeViewItemToggle(
+                  Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall) = 0;
         };
         struct OnTreeViewItemToggleCallback : public OnTreeViewItemToggleInterface
         {
             OnTreeViewItemToggleHandler callback;
 
-            virtual void OnTreeViewItemToggle(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            virtual bool OnTreeViewItemToggle(
+                  Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall) override
             {
-                return callback(tree, item);
+                return callback(tree, item, recursiveCall);
             };
         };
 
@@ -4347,7 +4350,7 @@ namespace Controls
         TreeViewItem GetChild(uint32 index);
         bool DeleteChildren();
         ItemHandle GetHandle() const;
-        bool Toggle();
+        bool Toggle(bool recursiveCall = false);
         bool ToggleRecursively();
         bool Fold();
         bool Unfold();

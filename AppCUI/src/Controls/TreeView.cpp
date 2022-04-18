@@ -846,7 +846,7 @@ ItemHandle TreeViewItem::GetHandle() const
     return handle;
 }
 
-bool TreeViewItem::Toggle()
+bool TreeViewItem::Toggle(bool recursiveCall)
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(false);
     CHECK(IsExpandable(), true, "");
@@ -862,7 +862,7 @@ bool TreeViewItem::Toggle()
     {
         if (cc->treeFlags && TreeViewFlags::DynamicallyPopulateNodeChildren)
         {
-            cc->TriggerOnItemToggled(*this);
+            return cc->TriggerOnItemToggled(*this, false);
         }
     }
 
@@ -883,7 +883,10 @@ bool TreeViewItem::ToggleRecursively()
         ancestorRelated.pop();
 
         auto treeItem = cc->host->GetItemByHandle(handle);
-        treeItem.Toggle();
+        if (treeItem.Toggle(true) == false)
+        {
+            break;
+        }
 
         const auto& item = cc->items[handle];
         for (const auto& handle : item.children)
@@ -892,7 +895,7 @@ bool TreeViewItem::ToggleRecursively()
         }
     }
 
-    if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
+    if (cc->treeFlags && TreeViewFlags::Sortable)
     {
         cc->Sort();
     }
@@ -2331,16 +2334,18 @@ void TreeControlContext::TriggerOnItemPressed()
     }
 }
 
-void TreeControlContext::TriggerOnItemToggled(TreeViewItem& item)
+bool TreeControlContext::TriggerOnItemToggled(TreeViewItem& item, bool recursiveCall)
 {
     if (handlers != nullptr)
     {
         auto handler = reinterpret_cast<Controls::Handlers::TreeView*>(handlers.get());
         if (handler->OnItemToggle.obj)
         {
-            handler->OnItemToggle.obj->OnTreeViewItemToggle(host, item);
+            return handler->OnItemToggle.obj->OnTreeViewItemToggle(host, item, recursiveCall);
         }
     }
+
+    return true;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -803,7 +803,7 @@ class TreeControlContext : public ControlContext
     // trigers
     void TriggerOnCurrentItemChanged();
     void TriggerOnItemPressed();
-    void TriggerOnItemToggled(TreeViewItem& item);
+    bool TriggerOnItemToggled(TreeViewItem& item, bool recursiveCall);
 };
 
 enum class GridCellStatus
