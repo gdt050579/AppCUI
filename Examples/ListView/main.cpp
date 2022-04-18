@@ -3448,6 +3448,13 @@ class NoBorderDemo : public Window
                        { "Gheorghita", "7" },
                        { "Andrei", "8" },
                        { "John", "10" } });
+        lv->AddItem("Geographt").SetType(ListViewItem::Type::Category);
+        lv->AddItems({ { "Dragos", "10" },
+                       { "Raul", "7" },
+                       { "Ionut", "5" },
+                       { "Gheorghita", "9" },
+                       { "Andrei", "7" },
+                       { "John", "8" } });
     }
 };
 
