@@ -539,6 +539,7 @@ class ListViewControlContext : public ControlContext
     void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
     void DrawColumn(Graphics::Renderer& renderer);
     void DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem);
+    bool DrawSearchBar(Graphics::Renderer& renderer);
 
     // movement
     void UpdateSelection(int start, int end, bool select);
@@ -605,6 +606,15 @@ class ListViewControlContext : public ControlContext
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
+
+    constexpr inline int GetLeftPos() const
+    {
+        return (this->Flags && ListViewFlags::HideBorder) ? -Columns.XOffset : 1 - Columns.XOffset;
+    }
+    constexpr inline int GetColumnY() const
+    {
+        return (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    }
 };
 
 struct ComboBoxItem
